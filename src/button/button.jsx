@@ -1,6 +1,10 @@
+import Icon from '../icon/index.vue'
 import './button.pcss'
 
 export default {
+  components: {
+    Icon
+  },
   props: {
     buttonType: {
       type: String,
@@ -49,7 +53,7 @@ export default {
         onClick={ this.onClick }>
         {
           this.icon
-            ? <i class={this.icon} />
+            ? <icon icon={this.icon} />
             : undefined
         }
         {

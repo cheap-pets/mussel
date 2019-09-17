@@ -5,6 +5,7 @@ import VBox from './layout/flex-v-box'
 import Splitter from './layout/splitter.vue'
 
 import Button from './button/button.jsx'
+import IconButton from './button/icon-button'
 import ButtonGroup from './button/button-group.vue'
 
 import Icon from './icon/index.vue'
@@ -17,6 +18,7 @@ function install (Vue) {
   Vue.component('mu-splitter', Splitter)
 
   Vue.component('mu-button', Button)
+  Vue.component('mu-icon-button', IconButton)
   Vue.component('mu-button-group', ButtonGroup)
 
   Vue.component('mu-icon', Icon)
@@ -34,6 +36,7 @@ export {
   VBox,
   // button
   Button,
+  IconButton,
   ButtonGroup,
   // icon
   Icon
