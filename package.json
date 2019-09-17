@@ -1,0 +1,40 @@
+{
+  "name": "buebue",
+  "version": "0.0.1",
+  "description": "another vue components library",
+  "main": "dist/buebue.js",
+  "modules": "dist/buebue.esm.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c && rollup --c rollup.dev.js",
+    "builddev": "rollup --c rollup.dev.js --watch"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "autoprefixer": "^9.6.1",
+    "clean-css": "^4.2.1",
+    "core-js": "^3.2.1",
+    "postcss": "^7.0.18",
+    "postcss-clean": "^1.1.0",
+    "postcss-for": "^2.1.1",
+    "postcss-import": "^12.0.1",
+    "postcss-nested": "^4.1.2",
+    "postcss-simple-vars": "^5.0.2",
+    "postcss-unprefix": "^2.1.4",
+    "rollup": "^1.21.4",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-vue": "^5.0.1",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "repository": "https://github.com/cheap-pets/buebue.git",
+  "author": "scrollbar-ww <scrollbar@163.com>",
+  "license": "MIT"
+}

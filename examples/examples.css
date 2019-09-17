@@ -1,0 +1,16 @@
+* {
+  box-sizing: border-box;
+}
+
+.page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(68, 21, 21, 0.1)
+}
+
+.cell {
+  background: rgba(0, 0, 0, .05);
+}
