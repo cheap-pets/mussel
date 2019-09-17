@@ -5,12 +5,16 @@ import commonjs from 'rollup-plugin-commonjs'
 
 import postcss from 'rollup-plugin-postcss'
 import postcssAutoprefixer from 'autoprefixer'
-import postcssImport from 'postcss-import'
+import postcssCalc from 'postcss-calc'
 import postcssClean from 'postcss-clean'
+import postcssConditionals from 'postcss-conditionals'
 import postcssFor from 'postcss-for'
+import postcssImport from 'postcss-import'
 import postcssNested from 'postcss-nested'
 import postcssVars from 'postcss-simple-vars'
 import postcssUnprefix from 'postcss-unprefix'
+
+import variables from './src/style-variables'
 
 export default {
   input: 'src/index.js',
@@ -23,8 +27,10 @@ export default {
         postcssImport,
         postcssUnprefix,
         postcssFor,
-        postcssVars,
+        postcssVars({ variables }),
+        postcssCalc,
         postcssNested,
+        postcssConditionals,
         postcssAutoprefixer,
         postcssClean({
           format: {

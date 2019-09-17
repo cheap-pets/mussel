@@ -1,0 +1,285 @@
+.bue-button {
+  position: relative;
+  display: inline-block;
+  height: $(buttonHeightPx)px;
+  padding: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2)px 15px;
+  outline: none;
+  border: 1px solid $buttonDefaultColor;
+  border-radius: $(buttonBorderRadiusPx)px;
+  background: #fff;
+  line-height: $(buttonLineHeightPx)px;
+  text-decoration: none;
+  text-align: center;
+  font-size: 1rem;
+  color: $buttonDefaultColor;
+  fill: $buttonDefaultColor;
+  cursor: pointer;
+
+  &::before {
+    display: inline-block;
+    width: 0;
+    content: '\00a0';
+  }
+
+  &:not([button-type]),
+  &[button-type="normal"] {
+    &[button-style="link"] {
+      &:hover {
+        color: $buttonDefaultHoverColor;
+        fill: $buttonDefaultHoverColor;
+      }
+    }
+
+    &[active] {
+      background: $buttonDefaultActiveColor;
+    }
+
+    &:hover {
+      background: $buttonDefaultHoverColor;
+      border-color: $buttonDefaultHoverColor;
+      color: #fff;
+      fill: #fff;
+    }
+
+    &[disabled] {
+      &[button-style="link"] {
+        color: $buttonDefaultDisabledColor;
+        fill: $buttonDefaultDisabledColor;
+      }
+      &:not([button-style="link"]) {
+        background: $buttonDefaultDisabledColor;
+        border-color: $buttonDefaultDisabledColor;
+      }
+    }
+  }
+
+  &[button-type="primary"] {
+    color: #fff;
+    fill: #fff;
+    background: $buttonPrimaryColor;
+    border-color: $buttonPrimaryColor;
+
+    &[button-style="link"] {
+      color: $buttonPrimaryColor;
+      fill: $buttonPrimaryColor;
+      &:hover {
+        color: $buttonPrimaryHoverColor;
+        fill: $buttonPrimaryHoverColor;
+      }
+    }
+
+    &[button-style="text"],
+    &[button-style="outline"] {
+      color: $buttonPrimaryColor;
+      fill: $buttonPrimaryColor;
+    }
+
+    &[active] {
+      background: $buttonPrimaryActiveColor;
+      border-color: $buttonPrimaryActiveColor;
+    }
+
+    &:hover {
+      background: $buttonPrimaryHoverColor;
+      border-color: $buttonPrimaryHoverColor;
+      color: #fff;
+      fill: #fff;
+    }
+
+    &[disabled] {
+      &[button-style="link"] {
+        color: $buttonPrimaryDisabledColor;
+        fill: $buttonPrimaryDisabledColor;
+      }
+      &:not([button-style="link"]) {
+        background: $buttonPrimaryDisabledColor;
+        border-color: $buttonPrimaryDisabledColor;
+      }
+    }
+  }
+
+  &[button-type="submit"] {
+    color: #fff;
+    fill: #fff;
+    background: $buttonSubmitColor;
+    border-color: $buttonSubmitColor;
+
+    &[button-style="link"] {
+      color: $buttonSubmitColor;
+      fill: $buttonSubmitColor;
+      &:hover {
+        color: $buttonSubmitHoverColor;
+        fill: $buttonSubmitHoverColor;
+      }
+    }
+
+    &[button-style="text"],
+    &[button-style="outline"] {
+      color: $buttonSubmitColor;
+      fill: $buttonSubmitColor;
+    }
+
+    &[active] {
+      background: $buttonSubmitActiveColor;
+      border-color: $buttonSubmitActiveColor;
+    }
+
+    &:hover {
+      background: $buttonSubmitHoverColor;
+      border-color: $buttonSubmitHoverColor;
+      color: #fff;
+      fill: #fff;
+    }
+
+    &[disabled] {
+      &[button-style="link"] {
+        color: $buttonSubmitDisabledColor;
+        fill: $buttonSubmitDisabledColor;
+      }
+      &:not([button-style="link"]) {
+        background: $buttonSubmitDisabledColor;
+        border-color: $buttonSubmitDisabledColor;
+      }
+    }
+  }
+
+  &[button-type="danger"] {
+    color: #fff;
+    fill: #fff;
+    background: $buttonDangerColor;
+    border-color: $buttonDangerColor;
+
+    &[button-style="link"] {
+      color: $buttonDangerColor;
+      fill: $buttonDangerColor;
+      &:hover {
+        color: $buttonDangerHoverColor;
+        fill: $buttonDangerHoverColor;
+      }
+    }
+
+    &[button-style="text"],
+    &[button-style="outline"] {
+      color: $buttonDangerColor;
+      fill: $buttonDangerColor;
+    }
+
+    &[active] {
+      background: $buttonDangerActiveColor;
+      border-color: $buttonDangerActiveColor;
+    }
+
+    &:hover {
+      background: $buttonDangerHoverColor;
+      border-color: $buttonDangerHoverColor;
+      color: #fff;
+      fill: #fff;
+    }
+
+    &[disabled] {
+      &[button-style="link"] {
+        color: $buttonDangerDisabledColor;
+        fill: $buttonDangerDisabledColor;
+      }
+      &:not([button-style="link"]) {
+        background: $buttonDangerDisabledColor;
+        border-color: $buttonDangerDisabledColor;
+      }
+    }
+  }
+
+  &[button-style="link"],
+  &[button-style="link"]:hover,
+  &[button-style="link"][active],
+  &[button-style="text"] {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  &[button-style="outline"] {
+    background: #fff;
+  }
+  &[button-style="link"]:not([disabled]):hover {
+    text-decoration: underline;
+  }
+  &[active] {
+    color: #fff;
+    fill: #fff;
+  }
+  &[disabled] {
+    cursor: default;
+    &:not([button-style="link"]) {
+      color: $textLight;
+      fill: $textLight;
+    }
+  }
+  &:not([disabled]) {
+    @if $buttonShadow {
+      box-shadow: $boxShadowLevel1;
+    }
+    &[button-style="text"] {
+      box-shadow: none;
+    }
+    &:hover {
+      @if $buttonShadow {
+        box-shadow: $boxShadowLevel2;
+      }
+    }
+    &[button-style="link"] {
+      box-shadow: none;
+    }
+  }
+
+  &[icon-only],
+  &:empty {
+    width: $(buttonHeightPx)px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  & > * + span,
+  & > span + * {
+    margin-left: 4px;
+  }
+}
+
+.bue-button-group {
+  position: relative;
+  display: inline-block;
+  border-radius: $(buttonBorderRadiusPx)px;
+
+  @if $buttonShadow == 1 {
+    box-shadow: $boxShadowLevel1;
+  }
+  
+  & > .bue-button {
+    float: left;
+    box-shadow: none;
+    z-index : 0;
+
+    &:hover:not([disabled]) {
+      z-index : 1;
+    }
+
+    &:not(:first-child) {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      &[button-type]:not([button-type="normal"]):not(:hover):not([active]) {
+        &:not([button-style]),
+        &[button-style="normal"] {
+          border-left-color: rgba(255, 255, 255, .5);
+        }
+      }
+    }
+    &:not(:last-child) {
+      margin-right: -1px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+
+[button-shape="round"],
+[button-shape="round"] > .bue-button {
+  border-radius: calc($buttonHeightPx / 2)px;
+}

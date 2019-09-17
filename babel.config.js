@@ -8,5 +8,6 @@ module.exports = {
         corejs: 3
       }
     ]
-  ]
+  ],
+  plugins: ['@vue/babel-plugin-transform-vue-jsx']
 }

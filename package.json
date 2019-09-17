@@ -1,9 +1,8 @@
 {
   "name": "buebue",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "another vue components library",
-  "main": "dist/buebue.js",
-  "modules": "dist/buebue.esm.js",
+  "main": "dist/buebue.esm.js",
   "files": [
     "dist"
   ],
@@ -12,13 +11,17 @@
     "builddev": "rollup --c rollup.dev.js --watch"
   },
   "devDependencies": {
+    "@ant-design/colors": "^3.2.1",
     "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
+    "@vue/babel-plugin-transform-vue-jsx": "^1.0.0",
     "autoprefixer": "^9.6.1",
     "clean-css": "^4.2.1",
     "core-js": "^3.2.1",
     "postcss": "^7.0.18",
+    "postcss-calc": "^7.0.1",
     "postcss-clean": "^1.1.0",
+    "postcss-conditionals": "^2.1.0",
     "postcss-for": "^2.1.1",
     "postcss-import": "^12.0.1",
     "postcss-nested": "^4.1.2",
