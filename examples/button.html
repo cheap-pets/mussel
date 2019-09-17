@@ -8,9 +8,9 @@
     content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
   >
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
-  <script type="text/javascript" src="../dist/buebue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
   <style>
-    .bue-button:not(:empty):not([icon-only]) {
+    .mu-button:not(:empty):not([icon-only]) {
       min-width: 120px;
     }
   </style>
@@ -25,108 +25,108 @@
       <h3>按钮：样式与状态</h3>
       <h5>普通按钮 button-type="normal"（亦可省略 button-type="normal）</h5>
       <div>
-        <bue-button button-type="normal">NORMAL</bue-button>
-        <bue-button button-type="normal" button-style="text">TEXT</bue-button>
-        <bue-button button-type="normal" button-style="link">LINK</bue-button>
-        <bue-button button-type="normal" button-style="outline">OUTLINE</bue-button>
-        <bue-button button-type="normal" active>ACTIVE</bue-button>
-        <bue-button button-type="normal" disabled>DISABLED</bue-button>
+        <mu-button button-type="normal">NORMAL</mu-button>
+        <mu-button button-type="normal" button-style="text">TEXT</mu-button>
+        <mu-button button-type="normal" button-style="link">LINK</mu-button>
+        <mu-button button-type="normal" button-style="outline">OUTLINE</mu-button>
+        <mu-button button-type="normal" active>ACTIVE</mu-button>
+        <mu-button button-type="normal" disabled>DISABLED</mu-button>
       </div>
       <h5>主要按钮 button-type="primary"</h5>
       <div>
-        <bue-button button-type="primary">PRIMARY</bue-button>
-        <bue-button button-type="primary" button-style="text">TEXT</bue-button>
-        <bue-button button-type="primary" button-style="link">LINK</bue-button>
-        <bue-button button-type="primary" button-style="outline">OUTLINE</bue-button>
-        <bue-button button-type="primary" active>ACTIVE</bue-button>
-        <bue-button button-type="primary" disabled>DISABLED</bue-button>
+        <mu-button button-type="primary">PRIMARY</mu-button>
+        <mu-button button-type="primary" button-style="text">TEXT</mu-button>
+        <mu-button button-type="primary" button-style="link">LINK</mu-button>
+        <mu-button button-type="primary" button-style="outline">OUTLINE</mu-button>
+        <mu-button button-type="primary" active>ACTIVE</mu-button>
+        <mu-button button-type="primary" disabled>DISABLED</mu-button>
       </div>
       <h5>提交按钮 button-type="submit"</h5>
       <div>
-        <bue-button button-type="submit">SUBMIT</bue-button>
-        <bue-button button-type="submit" button-style="text">TEXT</bue-button>
-        <bue-button button-type="submit" button-style="link">LINK</bue-button>
-        <bue-button button-type="submit" button-style="outline">OUTLINE</bue-button>
-        <bue-button button-type="submit" active>ACTIVE</bue-button>
-        <bue-button button-type="submit" disabled>DISABLED</bue-button>
+        <mu-button button-type="submit">SUBMIT</mu-button>
+        <mu-button button-type="submit" button-style="text">TEXT</mu-button>
+        <mu-button button-type="submit" button-style="link">LINK</mu-button>
+        <mu-button button-type="submit" button-style="outline">OUTLINE</mu-button>
+        <mu-button button-type="submit" active>ACTIVE</mu-button>
+        <mu-button button-type="submit" disabled>DISABLED</mu-button>
       </div>
       <h5>危险按钮 button-type="danger"</h5>
       <div>
-        <bue-button button-type="danger">DANGER</bue-button>
-        <bue-button button-type="danger" button-style="text">TEXT</bue-button>
-        <bue-button button-type="danger" button-style="link">LINK</bue-button>
-        <bue-button button-type="danger" button-style="outline">OUTLINE</bue-button>
-        <bue-button button-type="danger" active>ACTIVE</bue-button>
-        <bue-button button-type="danger" disabled>DISABLED</bue-button>
+        <mu-button button-type="danger">DANGER</mu-button>
+        <mu-button button-type="danger" button-style="text">TEXT</mu-button>
+        <mu-button button-type="danger" button-style="link">LINK</mu-button>
+        <mu-button button-type="danger" button-style="outline">OUTLINE</mu-button>
+        <mu-button button-type="danger" active>ACTIVE</mu-button>
+        <mu-button button-type="danger" disabled>DISABLED</mu-button>
       </div>
     </div>
     <div>
       <h3>按钮：形状</h3>
       <h5>圆边按钮</h5>
-      <bue-button button-type="primary" button-shape="round">PRIMARY</bue-button>
-      <bue-button button-type="submit" button-shape="round">SUBMIT</bue-button>
-      <bue-button button-shape="round" icon-only>
-        <bue-icon icon="close"></bue-icon>
-      </bue-button>
-      <bue-button class="icon icon-trash-can" button-type="danger" button-shape="round"></bue-button>
+      <mu-button button-type="primary" button-shape="round">PRIMARY</mu-button>
+      <mu-button button-type="submit" button-shape="round">SUBMIT</mu-button>
+      <mu-button button-shape="round" icon-only>
+        <mu-icon icon="close"></mu-icon>
+      </mu-button>
+      <mu-button class="icon icon-trash-can" button-type="danger" button-shape="round"></mu-button>
     </div>
 
     <div>
       <h3>按钮：内容</h3>
-      <bue-button button-type="primary">仅文字</bue-button>
-      <bue-button title="仅图标" icon-only>
-        <bue-icon icon="close"></bue-icon>
-      </bue-button>
-      <bue-button title="仅图标" icon-only>
-        <bue-icon icon="ok"></bue-icon>
-      </bue-button>
-      <bue-button button-type="submit">
+      <mu-button button-type="primary">仅文字</mu-button>
+      <mu-button title="仅图标" icon-only>
+        <mu-icon icon="close"></mu-icon>
+      </mu-button>
+      <mu-button title="仅图标" icon-only>
+        <mu-icon icon="ok"></mu-icon>
+      </mu-button>
+      <mu-button button-type="submit">
         文字在左
-        <bue-icon icon="key-down"></bue-icon>
-      </bue-button>
-      <bue-button button-type="danger">
-        <bue-icon icon="key-left"></bue-icon>
+        <mu-icon icon="key-down"></mu-icon>
+      </mu-button>
+      <mu-button button-type="danger">
+        <mu-icon icon="key-left"></mu-icon>
         文字在右
-      </bue-button>
+      </mu-button>
     </div>
     <div>
       <h3>按钮组</h3>
       <h5>普通按钮</h5>
-      <bue-button-group>
-        <bue-button>按钮一</bue-button>
-        <bue-button>按钮二</bue-button>
-        <bue-button>按钮三</bue-button>
-      </bue-button-group>
+      <mu-button-group>
+        <mu-button>按钮一</mu-button>
+        <mu-button>按钮二</mu-button>
+        <mu-button>按钮三</mu-button>
+      </mu-button-group>
       <h5>主要按钮</h5>
-      <bue-button-group>
-        <bue-button button-type="primary">按钮一</bue-button>
-        <bue-button button-type="primary">按钮二</bue-button>
-        <bue-button button-type="primary">按钮三</bue-button>
-      </bue-button-group>
+      <mu-button-group>
+        <mu-button button-type="primary">按钮一</mu-button>
+        <mu-button button-type="primary">按钮二</mu-button>
+        <mu-button button-type="primary">按钮三</mu-button>
+      </mu-button-group>
       <h5>圆角样式</h5>
-      <bue-button-group button-shape="round">
-        <bue-button button-type="primary" button-style="outline">按钮一</bue-button>
-        <bue-button button-type="primary" button-style="outline">按钮二</bue-button>
-        <bue-button button-type="primary" button-style="outline">按钮三</bue-button>
-      </bue-button-group>
+      <mu-button-group button-shape="round">
+        <mu-button button-type="primary" button-style="outline">按钮一</mu-button>
+        <mu-button button-type="primary" button-style="outline">按钮二</mu-button>
+        <mu-button button-type="primary" button-style="outline">按钮三</mu-button>
+      </mu-button-group>
       <h5>分裂按钮</h5>
-      <bue-button-group>
-        <bue-button button-type="primary">分裂按钮</bue-button>
-        <bue-button button-type="primary" icon-only>
-          <bue-icon icon="key-down"></bue-icon>
-        </bue-button>
-      </bue-button-group>
+      <mu-button-group>
+        <mu-button button-type="primary">分裂按钮</mu-button>
+        <mu-button button-type="primary" icon-only>
+          <mu-icon icon="key-down"></mu-icon>
+        </mu-button>
+      </mu-button-group>
       <h5>均分充满</h5>
-      <div class="bue-button-group su-tab-box">
-        <bue-button button-type="primary">按钮一</bue-button>
-        <bue-button button-type="primary">按钮二</bue-button>
-        <bue-button button-type="primary">按钮三</bue-button>
+      <div class="mu-button-group su-tab-box">
+        <mu-button button-type="primary">按钮一</mu-button>
+        <mu-button button-type="primary">按钮二</mu-button>
+        <mu-button button-type="primary">按钮三</mu-button>
       </div>
       <p></p>
-      <div class="bue-button-group su-tab-box">
-        <bue-button button-type="primary" button-style="text">按钮一</bue-button>
-        <bue-button button-type="primary" button-style="text">按钮二</bue-button>
-        <bue-button button-type="primary" button-style="text">按钮三</bue-button>
+      <div class="mu-button-group su-tab-box">
+        <mu-button button-type="primary" button-style="text">按钮一</mu-button>
+        <mu-button button-type="primary" button-style="text">按钮二</mu-button>
+        <mu-button button-type="primary" button-style="text">按钮三</mu-button>
       </div>
     </div>
     <div>

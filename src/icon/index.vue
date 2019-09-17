@@ -1,6 +1,6 @@
 <template>
   <svg
-    class="bue-svg-icon"
+    class="mu-svg-icon"
     viewBox="0 0 1024 1024"
     :width="size"
     :height="size">
@@ -31,7 +31,7 @@
 </script>
 
 <style lang="postcss">
-  .bue-svg-icon {
+  .mu-svg-icon {
     vertical-align: -0.15em;
   }
 </style>

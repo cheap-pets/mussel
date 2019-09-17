@@ -6,46 +6,46 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Example</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
-  <script type="text/javascript" src="../dist/buebue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
   <link rel="stylesheet" type="text/css" href="./examples.css" />
   <style>
   </style>
 </head>
 
 <body>
-  <script type="x-template" id="bue-body">
-    <bue-h-box itemspacing>
-      <bue-flex-item size="20%" class="cell" cellspacing>
-      </bue-flex-item>
-      <bue-splitter></bue-splitter>
-      <bue-v-box size="auto" bordered>
-        <bue-flex-item size="300px" style="max-height: 400px;" class="cell">
-        </bue-flex-item>
-        <bue-splitter></bue-splitter>
-        <bue-flex-item size="auto" class="cell">
-        </bue-flex-item>
-      </bue-v-box>
-      <bue-splitter></bue-splitter>
-      <bue-v-box size="20%" direction="column" cellspacing>
-        <bue-flex-item size="1" class="cell">
-        </bue-flex-item>
-        <bue-splitter></bue-splitter>
-        <bue-flex-item size="1" class="cell">
-        </bue-flex-item>
-        <bue-splitter></bue-splitter>
-        <bue-flex-item size="1" class="cell">
-        </bue-flex-item>
-      </bue-v-box>
-    </bue-h-box>
+  <script type="x-template" id="mu-body">
+    <mu-h-box itemspacing>
+      <mu-flex-item size="20%" class="cell" cellspacing>
+      </mu-flex-item>
+      <mu-splitter></mu-splitter>
+      <mu-v-box size="auto" bordered>
+        <mu-flex-item size="300px" style="max-height: 400px;" class="cell">
+        </mu-flex-item>
+        <mu-splitter></mu-splitter>
+        <mu-flex-item size="auto" class="cell">
+        </mu-flex-item>
+      </mu-v-box>
+      <mu-splitter></mu-splitter>
+      <mu-v-box size="20%" direction="column" cellspacing>
+        <mu-flex-item size="1" class="cell">
+        </mu-flex-item>
+        <mu-splitter></mu-splitter>
+        <mu-flex-item size="1" class="cell">
+        </mu-flex-item>
+        <mu-splitter></mu-splitter>
+        <mu-flex-item size="1" class="cell">
+        </mu-flex-item>
+      </mu-v-box>
+    </mu-h-box>
   </script>
 
-  <div id="app" class="page bue-flex-box">
+  <div id="app" class="page mu-flex-box">
     <layout size="auto"></layout>
   </div>
 
   <script type="text/javascript">
     var Layout = Vue.component('Layout', {
-      template: '#bue-body'
+      template: '#mu-body'
     })
     var app = new Vue({
       el: '#app',

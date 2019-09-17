@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bue-flex-box"
+    class="mu-flex-box"
     :direction="flexDirection"
     :size="sizeAttr"
     :style="style">
@@ -31,7 +31,7 @@
 </script>
 
 <style lang="postcss">
-  .bue-flex-box {
+  .mu-flex-box {
     position: relative;
     display: flex;
     align-items: stretch;

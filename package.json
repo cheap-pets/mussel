@@ -1,8 +1,8 @@
 {
-  "name": "buebue",
-  "version": "0.0.2",
+  "name": "mussel",
+  "version": "0.0.1",
   "description": "another vue components library",
-  "main": "dist/buebue.esm.js",
+  "main": "dist/mussel.esm.js",
   "files": [
     "dist"
   ],
@@ -37,7 +37,7 @@
     "vue": "^2.6.10",
     "vue-template-compiler": "^2.6.10"
   },
-  "repository": "https://github.com/cheap-pets/buebue.git",
+  "repository": "https://github.com/cheap-pets/mussel.git",
   "author": "scrollbar-ww <scrollbar@163.com>",
   "license": "MIT"
 }

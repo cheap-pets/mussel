@@ -58,13 +58,13 @@ export default {
   },
   output: [
     {
-      file: 'dist/buebue.min.js',
+      file: 'dist/mussel.min.js',
       format: 'umd',
       name: 'Bue',
       sourcemap: true
     },
     {
-      file: 'dist/buebue.esm.min.js',
+      file: 'dist/mussel.esm.min.js',
       format: 'esm',
       sourcemap: true
     }

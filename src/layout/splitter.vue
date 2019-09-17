@@ -1,5 +1,5 @@
 <template>
-  <div class="bue-splitter" @mousedown="onDragStart" />
+  <div class="mu-splitter" @mousedown="onDragStart" />
 </template>
 
 <script>
@@ -112,7 +112,7 @@
 </script>
 
 <style lang="postcss">
-  .bue-splitter {
+  .mu-splitter {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
     user-select: none;
@@ -127,17 +127,17 @@
     }
   }
   [cellpadding], [item-spacing] {
-    & > .bue-splitter {
+    & > .mu-splitter {
       margin: 8px;
     }
   }
-  [direction="row"] > .bue-splitter {
+  [direction="row"] > .mu-splitter {
     width: 4px;
     margin-left: 0;
     margin-right: 0;
     cursor: 'col-resize';
   }
-  [direction="column"] > .bue-splitter {
+  [direction="column"] > .mu-splitter {
     height: 4px;
     margin-top: 0;
     margin-bottom: 0;

@@ -1,4 +1,4 @@
-.bue-button {
+.mu-button {
   position: relative;
   display: inline-block;
   height: $(buttonHeightPx)px;
@@ -243,7 +243,7 @@
   }
 }
 
-.bue-button-group {
+.mu-button-group {
   position: relative;
   display: inline-block;
   border-radius: $(buttonBorderRadiusPx)px;
@@ -252,7 +252,7 @@
     box-shadow: $boxShadowLevel1;
   }
   
-  & > .bue-button {
+  & > .mu-button {
     float: left;
     box-shadow: none;
     z-index : 0;
@@ -280,6 +280,6 @@
 }
 
 [button-shape="round"],
-[button-shape="round"] > .bue-button {
+[button-shape="round"] > .mu-button {
   border-radius: calc($buttonHeightPx / 2)px;
 }

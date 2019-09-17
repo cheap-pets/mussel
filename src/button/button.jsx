@@ -41,7 +41,7 @@ export default {
   render (h) {
     return (
       <button
-        class="bue-button"
+        class="mu-button"
         icon-only={ this.isIconOnly }
         button-type={ this.buttonType === 'normal' ? undefined : this.buttonType }
         button-style={ this.buttonStyle === 'normal' ? undefined : this.buttonStyle }
