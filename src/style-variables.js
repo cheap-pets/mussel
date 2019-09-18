@@ -12,8 +12,9 @@ const variables = {
   documentFontSizePx: 14,
 
   /* button */
-  buttonHeightPx: 34,
+  buttonHeightPx: 32,
   buttonLineHeightPx: 20,
+  buttonXPaddingPx: 10,
   buttonBorderRadiusPx: 2,
   buttonFontSize: '1rem',
   buttonShadow: 1,
@@ -23,9 +24,12 @@ const variables = {
   buttonDefaultDisabledColor: grey[4],
 
   /* input */
-  inputHeightPx: 34,
+  inputHeightPx: 32,
+  inputLineHeightPx: 20,
+  inputXPaddingPx: 10,
   inputBorderRadiusPx: 2,
   inputFontSize: '1rem',
+  inputTextColor: grey[8],
   inputBorderColor: grey[5],
   inputReadonlyBackground: '#feffe6',
   inputDisabledBackground: grey[1],
@@ -37,10 +41,10 @@ const variables = {
   textLightGrey: grey[6],
   textDark: 'rgba(0, 0, 0, .7)',
   textHalfDark: 'rgba(0, 0, 0, .35)',
-  textQuarterDark: 'rgba(0, 0, 0, .175)',
+  textQuarterDark: 'rgba(0, 0, 0, .17)',
   textLight: 'rgba(255, 255, 255, .7)',
   textHalfLight: 'rgba(255, 255, 255, .35)',
-  textQuarterLight: 'rgba(255, 255, 25, .175)',
+  textQuarterLight: 'rgba(255, 255, 25, .17)',
 
   /* margin, padding */
   marginUnitSize: 8,
@@ -75,7 +79,8 @@ Object.defineProperties(variables, {
       setButtonColors('Primary', colors)
       this.inputFocusShadowColor = colors[2]
       this.inputHoverBorderColor = colors[5]
-    }
+    },
+    enumerable: true
   },
   successColor: {
     get () {
@@ -85,7 +90,8 @@ Object.defineProperties(variables, {
       _successColor = v
       const colors = generate(v)
       setButtonColors('Submit', colors)
-    }
+    },
+    enumerable: true
   },
   warningColor: {
     get () {
@@ -93,7 +99,8 @@ Object.defineProperties(variables, {
     },
     set (v) {
       _warningColor = v
-    }
+    },
+    enumerable: true
   },
   dangerColor: {
     get () {
@@ -105,7 +112,8 @@ Object.defineProperties(variables, {
       setButtonColors('Danger', colors)
       this.inputInvalidShadowColor = colors[2]
       this.inputInvalidBorderColor = colors[5]
-    }
+    },
+    enumerable: true
   },
   infoColor: {
     get () {
@@ -113,7 +121,8 @@ Object.defineProperties(variables, {
     },
     set (v) {
       _infoColor = v
-    }
+    },
+    enumerable: true
   }
 })
 

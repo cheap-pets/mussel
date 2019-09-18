@@ -1,0 +1,119 @@
+$inputIconSize: calc($inputHeightPx - 2);
+
+.mu-input-box {
+  position: relative;
+  display: inline-block;
+  width: 200px;
+
+  &:hover {
+    & > .mu-input {
+      border-color: $inputHoverBorderColor;
+    }
+    & > [type="icon"] {
+      color: $inputHoverBorderColor;
+      fill: $inputHoverBorderColor;
+    }
+  }
+
+  &[disabled] > .mu-input,
+  & > .mu-input[disabled] {
+    border-color: $inputBorderColor;
+  }
+
+  & > .mu-input {
+    width: 100%;
+    padding-right: $(inputIconSize)px;
+  }
+
+  &[buttons="0"] > .mu-input {
+    padding-right: $(inputXPaddingPx)px;
+  }
+
+  &[buttons="2"] {
+    & > input {
+      padding-right: calc($inputIconSize * 2)px;
+      & + .mu-input-icon {
+        right: $(inputIconSize)px;
+      }
+    }
+    & > .mu-input-icon:first-child {
+      & + .mu-input-icon {
+        left: $(inputIconSize)px;
+        right: auto;
+      }
+      & ~ input {
+        padding-left: calc($inputIconSize * 2)px;
+        padding-right: $(inputXPaddingPx)px;
+      }
+      & + input {
+        padding-left: $(inputIconSize)px;
+        padding-right: $(inputIconSize)px;
+        & + .mu-input-icon {
+          right: 8px;
+        }
+      }
+    }
+  }
+
+  &[disabled],
+  &[readonly] {
+    & > .mu-input {
+      padding-left: $(inputXPaddingPx)px;
+      padding-right: $(inputXPaddingPx)px;
+    }
+    & > .mu-input-icon {
+      display: none;
+    }
+  }
+}
+
+.mu-input-icon {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  right: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $(inputIconSize)px;
+  color: $textHalfDark;
+  fill: $textHalfDark;
+
+  &:first-child {
+    left: 1px;
+    right: auto;
+
+    & + input {
+      padding-left: $(inputIconSize)px;
+      padding-right: $(inputXPaddingPx)px;
+    }
+  }
+
+  & > .mu-svg-icon {
+    vertical-align: 0;
+  }
+
+  &[type="button"] {
+    cursor: pointer;
+    &:hover {
+      fill: $buttonPrimaryHoverColor;
+      color: $buttonPrimaryHoverColor;
+    }
+    &[icon="close"]:hover {
+      fill: $buttonDangerHoverColor;
+      color: $buttonDangerHoverColor;
+    }
+  }
+}
+
+.mu-input-box[invalid],
+[invalid] .mu-input-box {
+  & > .mu-input {
+    border-color: $inputInvalidBorderColor;
+  }
+  & > [type="button"]:hover,
+  & > [type="icon"] {
+    color: $inputInvalidBorderColor;
+    fill: $inputInvalidBorderColor;
+  }
+}

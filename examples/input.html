@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <title>输入框与表单</title>
+</head>
+
+<body>
+  <div id="app">
+    <h2>输入框与输入框组</h2>
+    <hr>
+    <div>
+      <h3>输入框</h3>
+      <h5>正常状态</h5>
+      <mu-input placeholder="请输入文字" v-model="inputValue"></mu-input>
+      <h5>只读状态</h5>
+      <mu-input value="我是只读的" readonly></mu-input>
+      <h5>无效状态</h5>
+      <mu-input value="我是无效的" invalid></mu-input>
+      <h5>禁用状态</h5>
+      <mu-input value="我是禁用的" disabled></mu-input>
+    </div>
+
+    <div>
+      <h3>输入框组</h3>
+      <h5>带图标的输入框</h5>
+      <mu-input-box v-model="inputValue" invalid button-type="button" :clearable="false" />
+      <div class="mu-input-box">
+        <input class="mu-input" type="text" value="图标在后">
+        <i class="mu-input-icon icon icon-search"></i>
+      </div>
+      <h5>带按钮的输入框</h5>
+      <div class="mu-input-box">
+        <a class="mu-input-icon icon icon-org"></a>
+        <input class="mu-input" type="text" value="按钮在前">
+      </div>
+      <div class="mu-input-box">
+        <input class="mu-input" type="text" value="按钮在后">
+        <a class="mu-input-icon icon icon-org"></a>
+      </div>
+      <h5>两个按钮</h5>
+      <div class="mu-input-box" buttons="2">
+        <a class="mu-input-icon icon icon-home"></a>
+        <a class="mu-input-icon icon icon-org"></a>
+        <input class="mu-input" type="text" value="按钮在前">
+      </div>
+      <div class="mu-input-box" buttons="2">
+        <a class="mu-input-icon icon icon-home"></a>
+        <input class="mu-input" type="text" value="分居两侧">
+        <a class="mu-input-icon icon icon-org"></a>
+      </div>
+      <div class="mu-input-box" buttons="2">
+        <input class="mu-input" type="text" value="按钮在后">
+        <a class="mu-input-icon icon icon-home"></a>
+        <a class="mu-input-icon icon icon-org" link-type="danger"></a>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    const view = new Vue({
+      el: '#app',
+      data: {
+        inputValue: ''
+      }
+    })
+  </script>
+</body>
+
+</html>

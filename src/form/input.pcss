@@ -1,0 +1,51 @@
+$inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
+
+.mu-input {
+  width: 200px;
+  padding: $(inputYPaddingPx)px $(inputXPaddingPx)px;
+  border: 1px solid $inputBorderColor;
+  border-radius: $(inputBorderRadiusPx)px;
+  outline: none;
+  background-color: #fff;
+  color: $inputTextColor;
+  line-height: $(inputLineHeightPx)px;
+  font-size: $inputFontSize;
+  &:hover,
+  &:focus {
+    border-color: $inputHoverBorderColor;
+  }
+  &:focus {
+    text-align: left !important;
+    box-shadow: inset 0 0 1px 1px $inputFocusShadowColor;
+  }
+  &[readonly] {
+    background-color: $inputReadonlyBackground;
+  }
+  &[disabled] {
+    background-color: $inputDisabledBackground;
+    border-color: $inputBorderColor;
+    color: $textLightGrey;
+    box-shadow: none;
+  }
+  &::-ms-clear {
+    display: none;
+  }
+}
+
+[invalid] .mu-input,
+.mu-input[invalid] {
+  color: $dangerColor;
+  border-color: $inputInvalidBorderColor;
+  &:focus {
+    box-shadow: inset 0 0 1px 1px $inputInvalidShadowColor;
+  }
+}
+
+textarea.mu-input {
+  min-height: 80px;
+  resize: none;
+}
+
+[input-shape="round"] {
+  border-radius: calc($inputHeightPx / 2)px;
+}
