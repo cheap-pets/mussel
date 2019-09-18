@@ -10,7 +10,8 @@
       v-if="inputBtnType"
       :button-type="inputBtnType"
       :icon-class="iconClass"
-      :icon="icon" />
+      :icon="icon"
+      @click="onButtonClick" />
   </div>
 </template>
 
@@ -24,6 +25,11 @@
     components: {
       'mu-input': Input,
       'mu-input-button': InputButton
+    },
+    inject: {
+      form: {
+        default: null
+      }
     },
     model: {
       prop: 'value',
@@ -71,8 +77,12 @@
       onChange (value) {
         this.$emit('change', value)
       },
+      onButtonClick () {
+        this.$emit('buttonclick')
+      },
       clear () {
         this.$emit('change', '')
+        this.$emit('clear', '')
       }
     }
   }

@@ -2207,6 +2207,11 @@ var script$7 = {
     'mu-input': Input,
     'mu-input-button': InputButton
   },
+  inject: {
+    form: {
+      "default": null
+    }
+  },
   model: {
     prop: 'value',
     event: 'change'
@@ -2249,8 +2254,12 @@ var script$7 = {
     onChange: function onChange(value) {
       this.$emit('change', value);
     },
+    onButtonClick: function onButtonClick() {
+      this.$emit('buttonclick');
+    },
     clear: function clear() {
       this.$emit('change', '');
+      this.$emit('clear', '');
     }
   }
 };
@@ -2292,6 +2301,9 @@ var __vue_render__$7 = function __vue_render__() {
       "button-type": _vm.inputBtnType,
       "icon-class": _vm.iconClass,
       icon: _vm.icon
+    },
+    on: {
+      click: _vm.onButtonClick
     }
   }) : _vm._e()], 1);
 };

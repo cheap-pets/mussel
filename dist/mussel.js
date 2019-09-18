@@ -2213,6 +2213,11 @@
       'mu-input': Input,
       'mu-input-button': InputButton
     },
+    inject: {
+      form: {
+        "default": null
+      }
+    },
     model: {
       prop: 'value',
       event: 'change'
@@ -2255,8 +2260,12 @@
       onChange: function onChange(value) {
         this.$emit('change', value);
       },
+      onButtonClick: function onButtonClick() {
+        this.$emit('buttonclick');
+      },
       clear: function clear() {
         this.$emit('change', '');
+        this.$emit('clear', '');
       }
     }
   };
@@ -2298,6 +2307,9 @@
         "button-type": _vm.inputBtnType,
         "icon-class": _vm.iconClass,
         icon: _vm.icon
+      },
+      on: {
+        click: _vm.onButtonClick
       }
     }) : _vm._e()], 1);
   };
