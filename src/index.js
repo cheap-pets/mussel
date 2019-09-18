@@ -14,6 +14,7 @@ import ButtonGroup from './button/button-group.vue'
 
 import Input from './form/input.vue'
 import InputBox from './form/input-box.vue'
+import ComboBox from './form/combo-box.vue'
 
 function install (Vue) {
   Vue.component('mu-flex-box', FlexBox)
@@ -30,6 +31,7 @@ function install (Vue) {
 
   Vue.component('mu-input', Input)
   Vue.component('mu-input-box', InputBox)
+  Vue.component('mu-combo-box', ComboBox)
 }
 
 if (window.Vue) install(window.Vue)

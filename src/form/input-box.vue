@@ -18,6 +18,7 @@
       :icon-class="iconClass"
       :icon="icon"
       @click="onButtonClick" />
+    <slot />
   </div>
 </template>
 

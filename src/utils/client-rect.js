@@ -1,5 +1,12 @@
 export default function getClientRect (el) {
-  const { top, bottom, left, right, width: w, height: h } = el.getBoundingClientRect()
+  const {
+    top,
+    bottom,
+    left,
+    right,
+    width: w,
+    height: h
+  } = el.getBoundingClientRect()
   return {
     top,
     bottom,

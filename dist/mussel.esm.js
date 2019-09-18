@@ -27,7 +27,7 @@ function styleInject(css, ref) {
   }
 }
 
-var css = "* {\r\n  box-sizing: border-box;\r\n}\r\nhtml {\r\n  color: #1a1a1a;\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}";
+var css = "* {\r\n  box-sizing: border-box;\r\n}\r\nhtml {\r\n  color: #1a1a1a;\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  position: relative;\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}";
 styleInject(css);
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -2323,7 +2323,7 @@ var __vue_render__$7 = function __vue_render__() {
     on: {
       click: _vm.onButtonClick
     }
-  }) : _vm._e()], 1);
+  }) : _vm._e(), _vm._v(" "), _vm._t("default")], 2);
 };
 
 var __vue_staticRenderFns__$7 = [];
@@ -2349,6 +2349,208 @@ var InputBox = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$7
 }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, undefined, undefined);
 
+function getClientRect(el) {
+  var _el$getBoundingClient = el.getBoundingClientRect(),
+      top = _el$getBoundingClient.top,
+      bottom = _el$getBoundingClient.bottom,
+      left = _el$getBoundingClient.left,
+      right = _el$getBoundingClient.right,
+      w = _el$getBoundingClient.width,
+      h = _el$getBoundingClient.height;
+
+  return {
+    top: top,
+    bottom: bottom,
+    left: left,
+    right: right,
+    width: w || right - left,
+    height: h || bottom - top
+  };
+}
+
+//
+var script$8 = {
+  model: {
+    prop: 'visible',
+    event: 'change'
+  },
+  props: {
+    visible: Boolean,
+    renderToBody: {
+      type: Boolean,
+      "default": true
+    }
+  },
+  data: function data() {
+    return {
+      top: undefined,
+      left: undefined,
+      right: undefined,
+      bottom: undefined
+    };
+  },
+  computed: {
+    style: function style() {
+      return {
+        top: this.top,
+        left: this.left,
+        right: this.right,
+        bottom: this.bottom,
+        width: this.width
+      };
+    }
+  },
+  watch: {
+    visible: function visible(value) {
+      if (value) this.$nextTick(this.setPosition);
+    }
+  },
+  mounted: function mounted() {
+    if (this.renderToBody) {
+      document.body.appendChild(this.$el);
+    }
+
+    window.addEventListener('resize', this.setPosition);
+    window.addEventListener('scroll', this.setPosition);
+  },
+  beforeDestroy: function beforeDestroy() {
+    if (this.$el.parentNode === document.body) {
+      document.body.removeChild(this.$el);
+    }
+
+    window.removeEventListener('resize', this.setPosition);
+    window.removeEventListener('scroll', this.setPosition);
+  },
+  methods: {
+    setPosition: function setPosition() {
+      var rect = getClientRect(this.$parent.$el);
+      var h = this.$el.offsetHeight;
+      var top = rect.bottom + 1;
+
+      if (top + h > window.innerHeight && rect.top - h - 1 > 0) {
+        top = rect.top - h - 1;
+      }
+
+      this.left = rect.left + 'px';
+      this.top = top + 'px';
+      this.width = rect.width + 'px';
+    }
+  }
+};
+
+var css$8 = ".mu-dropdown {\r\n  position: fixed;\r\n  z-index: 100;\r\n  display: none;\r\n  background: #fff;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n}\r\n.mu-dropdown[visible] {\r\n  display: block;\r\n}";
+styleInject(css$8);
+
+/* script */
+var __vue_script__$8 = script$8;
+/* template */
+
+var __vue_render__$8 = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("div", {
+    staticClass: "mu-dropdown",
+    style: _vm.style,
+    attrs: {
+      visible: _vm.visible
+    }
+  }, [_vm._t("default")], 2);
+};
+
+var __vue_staticRenderFns__$8 = [];
+__vue_render__$8._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$8 = undefined;
+/* scoped */
+
+var __vue_scope_id__$8 = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$8 = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$8 = false;
+/* style inject */
+
+/* style inject SSR */
+
+var Dropdown = normalizeComponent_1({
+  render: __vue_render__$8,
+  staticRenderFns: __vue_staticRenderFns__$8
+}, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
+
+//
+var script$9 = {
+  components: {
+    InputBox: InputBox,
+    Dropdown: Dropdown
+  },
+  data: function data() {
+    return {
+      visible: false
+    };
+  }
+};
+
+/* script */
+var __vue_script__$9 = script$9;
+/* template */
+
+var __vue_render__$9 = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("input-box", {
+    attrs: {
+      "button-type": "button"
+    },
+    on: {
+      buttonclick: function buttonclick($event) {
+        _vm.visible = !_vm.visible;
+      }
+    }
+  }, [_c("dropdown", {
+    model: {
+      value: _vm.visible,
+      callback: function callback($$v) {
+        _vm.visible = $$v;
+      },
+      expression: "visible"
+    }
+  }, [_vm._t("default")], 2)], 1);
+};
+
+var __vue_staticRenderFns__$9 = [];
+__vue_render__$9._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$9 = undefined;
+/* scoped */
+
+var __vue_scope_id__$9 = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$9 = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$9 = false;
+/* style inject */
+
+/* style inject SSR */
+
+var ComboBox = normalizeComponent_1({
+  render: __vue_render__$9,
+  staticRenderFns: __vue_staticRenderFns__$9
+}, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, undefined, undefined);
+
 function install(Vue) {
   Vue.component('mu-flex-box', FlexBox);
   Vue.component('mu-flex-item', FlexItem);
@@ -2361,6 +2563,7 @@ function install(Vue) {
   Vue.component('mu-button-group', ButtonGroup);
   Vue.component('mu-input', Input);
   Vue.component('mu-input-box', InputBox);
+  Vue.component('mu-combo-box', ComboBox);
 }
 
 if (window.Vue) install(window.Vue);
