@@ -5,14 +5,8 @@ $inputIconSize: calc($inputHeightPx - 2);
   display: inline-block;
   width: 200px;
 
-  &:hover {
-    & > .mu-input {
-      border-color: $inputHoverBorderColor;
-    }
-    & > [type="icon"] {
-      color: $inputHoverBorderColor;
-      fill: $inputHoverBorderColor;
-    }
+  &:hover > .mu-input {
+    border-color: $inputHoverBorderColor;
   }
 
   &[disabled] > .mu-input,
@@ -49,7 +43,7 @@ $inputIconSize: calc($inputHeightPx - 2);
         padding-left: $(inputIconSize)px;
         padding-right: $(inputIconSize)px;
         & + .mu-input-icon {
-          right: 8px;
+          right: 1px;
         }
       }
     }
@@ -98,6 +92,7 @@ $inputIconSize: calc($inputHeightPx - 2);
     &:hover {
       fill: $buttonPrimaryHoverColor;
       color: $buttonPrimaryHoverColor;
+      background: rgba(0, 0, 0, .05);
     }
     &[icon="close"]:hover {
       fill: $buttonDangerHoverColor;
@@ -111,8 +106,7 @@ $inputIconSize: calc($inputHeightPx - 2);
   & > .mu-input {
     border-color: $inputInvalidBorderColor;
   }
-  & > [type="button"]:hover,
-  & > [type="icon"] {
+  & > [type="button"]:hover {
     color: $inputInvalidBorderColor;
     fill: $inputInvalidBorderColor;
   }

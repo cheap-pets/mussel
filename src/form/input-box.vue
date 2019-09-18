@@ -1,5 +1,11 @@
 <template>
   <div class="mu-input-box" :buttons="buttons">
+    <mu-input-button
+      v-if="inputBtnType && buttonPosition === 'left'"
+      :button-type="inputBtnType"
+      :icon-class="iconClass"
+      :icon="icon"
+      @click="onButtonClick" />
     <mu-input :type="type" :value="value" @change="onChange" />
     <mu-input-button
       v-if="clearBtnVisible"
@@ -7,7 +13,7 @@
       icon="close"
       @click="clear" />
     <mu-input-button
-      v-if="inputBtnType"
+      v-if="inputBtnType && buttonPosition === 'right'"
       :button-type="inputBtnType"
       :icon-class="iconClass"
       :icon="icon"
@@ -52,6 +58,13 @@
         type: String,
         validator (value) {
           return ['button', 'icon'].indexOf(value) !== -1
+        }
+      },
+      buttonPosition: {
+        type: String,
+        default: 'right',
+        validator (value) {
+          return ['left', 'right'].indexOf(value) !== -1
         }
       },
       icon: String,
