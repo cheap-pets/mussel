@@ -15,8 +15,8 @@
   })
 
   function popOnTop (parentRect, height) {
-    return parentRect.bottom + 2 + height > window.innerHeight &&
-      parentRect.top - height - 2 >= 0
+    return parentRect.bottom + 4 + height > window.innerHeight &&
+      parentRect.top - height - 4 >= 0
   }
 
   function popOnRight (parentRect, width) {
@@ -27,14 +27,14 @@
   function getAbsolutePosition (isOnTop, isOnRight, parentRect, height, width) {
     const { top, bottom, left, right } = parentRect
     return {
-      top: `${isOnTop ? top - height - 2 : bottom + 2}px`,
+      top: `${isOnTop ? top - height - 4 : bottom + 4}px`,
       left: `${isOnRight ? right - width : left}px`
     }
   }
   function getRelativePosition (isOnTop, isOnRight, parentRect, settingWidth) {
     return {
-      top: isOnTop ? undefined : `${parentRect.height + 2}px`,
-      bottom: isOnTop ? `${parentRect.height + 2}px` : undefined,
+      top: isOnTop ? undefined : `${parentRect.height + 4}px`,
+      bottom: isOnTop ? `${parentRect.height + 4}px` : undefined,
       left: isOnRight ? undefined : '0',
       right: isOnRight || !settingWidth ? '0' : undefined
     }
