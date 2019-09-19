@@ -1,12 +1,18 @@
 <template>
-  <div class="mu-input-box" :buttons="buttons">
+  <div class="mu-input-box" :buttons="buttons" :disabled="disabled">
     <mu-input-button
       v-if="inputBtnType && buttonPosition === 'left'"
       :button-type="inputBtnType"
       :icon-class="iconClass"
       :icon="icon"
       @click="onButtonClick" />
-    <mu-input :type="type" :value="inputValue" @change="onChange" />
+    <mu-input
+      :type="type"
+      :value="inputValue"
+      :disabled="disabled"
+      :readonly="readonly"
+      @change="onChange"
+      @click="onInputClick" />
     <mu-input-button
       v-if="clearBtnVisible"
       button-type="button"
@@ -68,8 +74,13 @@
           return ['left', 'right'].indexOf(value) !== -1
         }
       },
+      disabled: {
+        type: Boolean,
+        default: false
+      },
       icon: String,
       iconClass: String,
+      readonly: Boolean,
       validator: Function
     },
     data () {
@@ -106,7 +117,11 @@
         this.$emit('change', value)
       },
       onButtonClick () {
+        this.$el.querySelector('input').focus()
         this.$emit('buttonclick')
+      },
+      onInputClick () {
+        this.$emit('inputclick')
       },
       clear () {
         this.inputValue = ''

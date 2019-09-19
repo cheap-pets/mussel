@@ -12,10 +12,12 @@ $inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
   line-height: $(inputLineHeightPx)px;
   font-size: $inputFontSize;
   &:hover,
-  &:focus {
+  &:focus,
+  &[focus] {
     border-color: $inputHoverBorderColor;
   }
-  &:focus {
+  &:focus,
+  &[focus] {
     z-index: 2;
     text-align: left !important;
     box-shadow: $inputShadow;
@@ -38,7 +40,8 @@ $inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
 .mu-input[invalid] {
   color: $dangerColor;
   border-color: $inputInvalidBorderColor;
-  &:focus {
+  &:focus,
+  &[focus] {
     box-shadow: $inputInvalidShadow;
   }
 }

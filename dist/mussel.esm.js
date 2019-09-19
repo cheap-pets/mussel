@@ -2049,7 +2049,7 @@ var ButtonGroup = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$4
 }, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, undefined, undefined);
 
-var css$6 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #8c8c8c;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n[invalid] .mu-input:focus {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
+var css$6 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #8c8c8c;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
 styleInject(css$6);
 
 //
@@ -2071,11 +2071,18 @@ var script$5 = {
       type: String,
       "default": 'key-down'
     },
+    disabled: {
+      type: Boolean,
+      "default": false
+    },
     validator: Function
   },
   methods: {
     onInput: function onInput(event) {
       this.$emit('change', event.target.value);
+    },
+    onClick: function onClick() {
+      if (!this.disabled) this.$emit('click');
     },
     validate: function validate() {}
   }
@@ -2095,13 +2102,15 @@ var __vue_render__$5 = function __vue_render__() {
   return _c("input", {
     staticClass: "mu-input",
     attrs: {
-      type: _vm.type
+      type: _vm.type,
+      disabled: _vm.disabled
     },
     domProps: {
       value: _vm.value
     },
     on: {
-      input: _vm.onInput
+      input: _vm.onInput,
+      click: _vm.onClick
     }
   });
 };
@@ -2129,7 +2138,7 @@ var Input = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$5
 }, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, undefined, undefined);
 
-var css$7 = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon > .mu-svg-icon {\r\n  vertical-align: 0;\r\n}\r\n.mu-input-icon[type=button] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[type=button]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[type=button][icon=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [type=button]:hover,\r\n[invalid] .mu-input-box > [type=button]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
+var css$7 = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-box[select-mode] > .mu-input-icon,\r\n.mu-input-box[select-mode] > input {\r\n  cursor: pointer;\r\n}\r\n.mu-input-box[select-mode]:hover > .mu-input-icon {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-input-box[select-mode]:hover > [icon=close] {\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-box > .mu-dropdown {\r\n  left: 0;\r\n  right: 0;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon > .mu-svg-icon {\r\n  vertical-align: 0;\r\n}\r\n.mu-input-icon[type=button] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[type=button]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[type=button][icon=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [type=button]:hover,\r\n[invalid] .mu-input-box > [type=button]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
 styleInject(css$7);
 
 //
@@ -2149,7 +2158,7 @@ var script$6 = {
   },
   methods: {
     onClick: function onClick() {
-      if (this.buttonType === 'button') this.$emit('click');
+      this.$emit('click');
     }
   }
 };
@@ -2244,8 +2253,13 @@ var script$7 = {
         return ['left', 'right'].indexOf(value) !== -1;
       }
     },
+    disabled: {
+      type: Boolean,
+      "default": false
+    },
     icon: String,
     iconClass: String,
+    readonly: Boolean,
     validator: Function
   },
   data: function data() {
@@ -2278,7 +2292,11 @@ var script$7 = {
       this.$emit('change', value);
     },
     onButtonClick: function onButtonClick() {
+      this.$el.querySelector('input').focus();
       this.$emit('buttonclick');
+    },
+    onInputClick: function onInputClick() {
+      this.$emit('inputclick');
     },
     clear: function clear() {
       this.inputValue = '';
@@ -2302,7 +2320,8 @@ var __vue_render__$7 = function __vue_render__() {
   return _c("div", {
     staticClass: "mu-input-box",
     attrs: {
-      buttons: _vm.buttons
+      buttons: _vm.buttons,
+      disabled: _vm.disabled
     }
   }, [_vm.inputBtnType && _vm.buttonPosition === "left" ? _c("mu-input-button", {
     attrs: {
@@ -2316,10 +2335,13 @@ var __vue_render__$7 = function __vue_render__() {
   }) : _vm._e(), _vm._v(" "), _c("mu-input", {
     attrs: {
       type: _vm.type,
-      value: _vm.inputValue
+      value: _vm.inputValue,
+      disabled: _vm.disabled,
+      readonly: _vm.readonly
     },
     on: {
-      change: _vm.onChange
+      change: _vm.onChange,
+      click: _vm.onInputClick
     }
   }), _vm._v(" "), _vm.clearBtnVisible ? _c("mu-input-button", {
     attrs: {
@@ -2614,20 +2636,49 @@ var Dropdown = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$8
 }, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
 
-//
 var script$9 = {
   components: {
-    InputBox: InputBox,
     Dropdown: Dropdown
   },
+  "extends": InputBox,
   props: {
-    ddWidth: String,
-    ddHeight: String
+    dropdownHeight: String,
+    dropdownWidth: String,
+    dropdownStyle: {
+      type: String,
+      "default": 'dropdownList',
+      validator: function validator(value) {
+        return ['none', 'dropdown', 'dropdownList', 'drawer', 'drawerList'].indexOf(value) !== -1;
+      }
+    },
+    clearable: {
+      type: Boolean,
+      "default": true
+    }
   },
   data: function data() {
     return {
       dropdownVisible: false
     };
+  },
+  computed: {
+    isListStyle: function isListStyle() {
+      return this.dropdownStyle.indexOf('List') > 0;
+    },
+    buttonType: function buttonType() {
+      return this.isListStyle ? 'icon' : this.dropdownStyle === 'none' ? false : 'button';
+    },
+    inputReadonly: function inputReadonly() {
+      return this.readonly || this.isListStyle;
+    }
+  },
+  methods: {
+    onInputClick: function onInputClick() {
+      if (this.isListStyle) this.dropdownVisible = !this.dropdownVisible;
+    },
+    onButtonClick: function onButtonClick() {
+      this.dropdownVisible = !this.dropdownVisible;
+    }
   }
 };
 
@@ -2642,19 +2693,47 @@ var __vue_render__$9 = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c("input-box", {
+  return _c("div", {
+    staticClass: "mu-input-box",
     attrs: {
-      "button-type": "button"
+      buttons: _vm.buttons,
+      disabled: _vm.disabled,
+      "select-mode": _vm.isListStyle,
+      "select-on": _vm.dropdownVisible
+    }
+  }, [_c("mu-input", {
+    attrs: {
+      type: _vm.type,
+      value: _vm.inputValue,
+      disabled: _vm.disabled,
+      readonly: _vm.inputReadonly,
+      focus: _vm.dropdownVisible
     },
     on: {
-      buttonclick: function buttonclick($event) {
-        _vm.dropdownVisible = !_vm.dropdownVisible;
-      }
+      change: _vm.onChange,
+      click: _vm.onInputClick
     }
-  }, [_c("dropdown", {
+  }), _vm._v(" "), _vm.clearBtnVisible ? _c("mu-input-button", {
     attrs: {
-      height: _vm.ddHeight,
-      width: _vm.ddWidth
+      "button-type": "button",
+      icon: "close"
+    },
+    on: {
+      click: _vm.clear
+    }
+  }) : _vm._e(), _vm._v(" "), _vm.buttonType ? _c("mu-input-button", {
+    attrs: {
+      "button-type": _vm.buttonType,
+      "icon-class": _vm.iconClass,
+      icon: _vm.icon
+    },
+    on: {
+      click: _vm.onButtonClick
+    }
+  }) : _vm._e(), _vm._v(" "), _vm.buttonType ? _c("dropdown", {
+    attrs: {
+      height: _vm.dropdownHeight,
+      width: _vm.dropdownWidth
     },
     model: {
       value: _vm.dropdownVisible,
@@ -2663,7 +2742,7 @@ var __vue_render__$9 = function __vue_render__() {
       },
       expression: "dropdownVisible"
     }
-  }, [_vm._t("default")], 2)], 1);
+  }, [_vm._t("default")], 2) : _vm._e()], 1);
 };
 
 var __vue_staticRenderFns__$9 = [];
@@ -2689,6 +2768,12 @@ var ComboBox = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$9
 }, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, undefined, undefined);
 
+function hideDropdown() {
+  if (window.__mussel_dropdown) {
+    window.__mussel_dropdown.hide();
+  }
+}
+
 function install(Vue) {
   Vue.component('mu-flex-box', FlexBox);
   Vue.component('mu-flex-item', FlexItem);
@@ -2706,4 +2791,4 @@ function install(Vue) {
 
 if (window.Vue) install(window.Vue);
 
-export { Button, ButtonGroup, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, Splitter, VBox, install };
+export { Button, ButtonGroup, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, Splitter, VBox, hideDropdown, install };

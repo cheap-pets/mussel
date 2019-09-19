@@ -56,9 +56,9 @@
       <mu-input-box invalid button-type="button" value="按钮在前" button-position="left">
       </mu-input-box>
       <h5>下拉框</h5>
-      <mu-combo-box dd-width="400px">
-        <div>123</div>
-        <div>123</div>
+      <mu-combo-box dropdown-width="auto">
+        <div @click="onDropdownItemClick">123</div>
+        <div>123123123123123123123123123123123123</div>
         <div>123</div>
         <div>123</div>
         <div>123</div>
@@ -76,6 +76,11 @@
       el: '#app',
       data: {
         inputValue: ''
+      },
+      methods: {
+        onDropdownItemClick () {
+          window.mussel.hideDropdown()
+        }
       }
     })
   </script>

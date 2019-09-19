@@ -60,7 +60,7 @@ export default {
     {
       file: 'dist/mussel.min.js',
       format: 'umd',
-      name: 'Bue',
+      name: 'mussel',
       sourcemap: true
     },
     {

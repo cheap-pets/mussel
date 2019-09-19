@@ -3,7 +3,9 @@
     class="mu-input"
     :type="type"
     :value="value"
+    :disabled="disabled"
     @input="onInput"
+    @click="onClick"
   >
 </template>
 
@@ -28,11 +30,18 @@
         type: String,
         default: 'key-down'
       },
+      disabled: {
+        type: Boolean,
+        default: false
+      },
       validator: Function
     },
     methods: {
       onInput (event) {
         this.$emit('change', event.target.value)
+      },
+      onClick () {
+        if (!this.disabled) this.$emit('click')
       },
       validate () {
       }

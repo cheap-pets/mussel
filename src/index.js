@@ -16,6 +16,8 @@ import Input from './form/input.vue'
 import InputBox from './form/input-box.vue'
 import ComboBox from './form/combo-box.vue'
 
+export * from './layer'
+
 function install (Vue) {
   Vue.component('mu-flex-box', FlexBox)
   Vue.component('mu-flex-item', FlexItem)

@@ -60,6 +60,25 @@ $inputIconSize: calc($inputHeightPx - 2);
       display: none;
     }
   }
+
+  &[select-mode] {
+    & > input,
+    & > .mu-input-icon {
+      cursor: pointer;
+    }
+    &:hover > .mu-input-icon {
+      fill: $buttonPrimaryHoverColor;
+      color: $buttonPrimaryHoverColor;
+    }
+    &:hover > [icon="close"] {
+      fill: $textHalfDark;
+    }
+  }
+
+  & > .mu-dropdown {
+    left: 0;
+    right: 0;
+  }
 }
 
 .mu-input-icon {
