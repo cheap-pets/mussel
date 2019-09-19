@@ -61,11 +61,12 @@ $inputIconSize: calc($inputHeightPx - 2);
     }
   }
 
-  &[select-mode] {
+  &[select-only] {
     & > input,
     & > .mu-input-icon {
       cursor: pointer;
     }
+    & > .mu-input-icon[focus],
     &:hover > .mu-input-icon {
       fill: $buttonPrimaryHoverColor;
       color: $buttonPrimaryHoverColor;

@@ -3,7 +3,7 @@
     class="mu-input-box"
     :buttons="buttons"
     :disabled="disabled"
-    :select-mode="isListStyle"
+    :select-only="isListStyle"
     :select-on="dropdownVisible">
     <mu-input
       :type="type"
@@ -21,6 +21,7 @@
     <mu-input-button
       v-if="buttonType"
       :button-type="buttonType"
+      :focus="dropdownVisible"
       :icon-class="iconClass"
       :icon="icon"
       @click="onButtonClick" />
