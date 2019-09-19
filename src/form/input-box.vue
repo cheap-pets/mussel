@@ -6,7 +6,7 @@
       :icon-class="iconClass"
       :icon="icon"
       @click="onButtonClick" />
-    <mu-input :type="type" :value="value" @change="onChange" />
+    <mu-input :type="type" :value="inputValue" @change="onChange" />
     <mu-input-button
       v-if="clearBtnVisible"
       button-type="button"
@@ -72,9 +72,14 @@
       iconClass: String,
       validator: Function
     },
+    data () {
+      return {
+        inputValue: this.value
+      }
+    },
     computed: {
       clearBtnVisible () {
-        return this.clearable && !!this.value
+        return this.clearable && !!this.inputValue
       },
       inputBtnType () {
         return this.buttonType || (
@@ -87,14 +92,24 @@
         return 0 + (this.clearBtnVisible ? 1 : 0) + (this.inputBtnType ? 1 : 0)
       }
     },
+    watch: {
+      value: {
+        handler (v) {
+          this.inputValue = v
+        },
+        immediate: true
+      }
+    },
     methods: {
       onChange (value) {
+        this.inputValue = value
         this.$emit('change', value)
       },
       onButtonClick () {
         this.$emit('buttonclick')
       },
       clear () {
+        this.inputValue = ''
         this.$emit('change', '')
         this.$emit('clear', '')
       }

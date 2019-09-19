@@ -43,6 +43,10 @@ const variables = {
   inputShadow: '0 0 0 0.2rem $inputShadowColor',
   inputInvalidShadow: '0 0 0 0.2rem $inputInvalidShadowColor',
 
+  /* dropdown */
+  dropdownShadow: 'none',
+  dropdownBorder: `1px solid ${grey[3]}`,
+
   /* text colours */
   textBlack: grey[9],
   textGrey: grey[7],

@@ -4,7 +4,6 @@ $inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
   position: relative;
   z-index: 1;
   width: 200px;
-  padding: $(inputYPaddingPx)px $(inputXPaddingPx)px;
   border: 1px solid $inputBorderColor;
   border-radius: $(inputBorderRadiusPx)px;
   outline: none;
@@ -43,8 +42,14 @@ $inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
     box-shadow: $inputInvalidShadow;
   }
 }
+input.mu-input {
+  height: $(inputHeightPx)px;
+  padding-left: $(inputXPaddingPx)px;
+  padding-right: $(inputXPaddingPx)px;
+}
 
 textarea.mu-input {
+  padding: $(inputYPaddingPx)px $(inputXPaddingPx)px;
   min-height: 80px;
   resize: none;
 }

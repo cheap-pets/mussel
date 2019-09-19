@@ -1,6 +1,11 @@
 <template>
-  <input-box button-type="button" @buttonclick="visible = !visible">
-    <dropdown v-model="visible">
+  <input-box
+    button-type="button"
+    @buttonclick="dropdownVisible = !dropdownVisible">
+    <dropdown
+      v-model="dropdownVisible"
+      :height="ddHeight"
+      :width="ddWidth">
       <slot />
     </dropdown>
   </input-box>
@@ -15,9 +20,13 @@
       InputBox,
       Dropdown
     },
+    props: {
+      ddWidth: String,
+      ddHeight: String
+    },
     data () {
       return {
-        visible: false
+        dropdownVisible: false
       }
     }
   }

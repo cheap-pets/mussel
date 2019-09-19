@@ -33,7 +33,7 @@
     }
   }
 
-  var css = "* {\r\n  box-sizing: border-box;\r\n}\r\nhtml {\r\n  color: #1a1a1a;\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  position: relative;\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}";
+  var css = "* {\r\n  box-sizing: border-box;\r\n}\r\nhtml {\r\n  color: #1a1a1a;\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}";
   styleInject(css);
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -2055,7 +2055,7 @@
     staticRenderFns: __vue_staticRenderFns__$4
   }, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, undefined, undefined);
 
-  var css$6 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #8c8c8c;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n[invalid] .mu-input:focus {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
+  var css$6 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #8c8c8c;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n[invalid] .mu-input:focus {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$6);
 
   //
@@ -2135,7 +2135,7 @@
     staticRenderFns: __vue_staticRenderFns__$5
   }, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, undefined, undefined);
 
-  var css$7 = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon > .mu-svg-icon {\r\n  vertical-align: 0;\r\n}\r\n.mu-input-icon[type=button] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[type=button]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[type=button][icon=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [type=button]:hover,\r\n[invalid] .mu-input-box > [type=button]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
+  var css$7 = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon > .mu-svg-icon {\r\n  vertical-align: 0;\r\n}\r\n.mu-input-icon[type=button] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[type=button]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[type=button][icon=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [type=button]:hover,\r\n[invalid] .mu-input-box > [type=button]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
   styleInject(css$7);
 
   //
@@ -2254,9 +2254,14 @@
       iconClass: String,
       validator: Function
     },
+    data: function data() {
+      return {
+        inputValue: this.value
+      };
+    },
     computed: {
       clearBtnVisible: function clearBtnVisible() {
-        return this.clearable && !!this.value;
+        return this.clearable && !!this.inputValue;
       },
       inputBtnType: function inputBtnType() {
         return this.buttonType || (this.icon || this.iconClass ? 'icon' : undefined);
@@ -2265,14 +2270,24 @@
         return 0 + (this.clearBtnVisible ? 1 : 0) + (this.inputBtnType ? 1 : 0);
       }
     },
+    watch: {
+      value: {
+        handler: function handler(v) {
+          this.inputValue = v;
+        },
+        immediate: true
+      }
+    },
     methods: {
       onChange: function onChange(value) {
+        this.inputValue = value;
         this.$emit('change', value);
       },
       onButtonClick: function onButtonClick() {
         this.$emit('buttonclick');
       },
       clear: function clear() {
+        this.inputValue = '';
         this.$emit('change', '');
         this.$emit('clear', '');
       }
@@ -2307,7 +2322,7 @@
     }) : _vm._e(), _vm._v(" "), _c("mu-input", {
       attrs: {
         type: _vm.type,
-        value: _vm.value
+        value: _vm.inputValue
       },
       on: {
         change: _vm.onChange
@@ -2355,6 +2370,45 @@
     staticRenderFns: __vue_staticRenderFns__$7
   }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, undefined, undefined);
 
+  var nativeAssign = Object.assign;
+
+  // `Object.assign` method
+  // https://tc39.github.io/ecma262/#sec-object.assign
+  // should work with symbols and should have deterministic property order (V8 bug)
+  var objectAssign = !nativeAssign || fails(function () {
+    var A = {};
+    var B = {};
+    // eslint-disable-next-line no-undef
+    var symbol = Symbol();
+    var alphabet = 'abcdefghijklmnopqrst';
+    A[symbol] = 7;
+    alphabet.split('').forEach(function (chr) { B[chr] = chr; });
+    return nativeAssign({}, A)[symbol] != 7 || objectKeys(nativeAssign({}, B)).join('') != alphabet;
+  }) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+    var T = toObject(target);
+    var argumentsLength = arguments.length;
+    var index = 1;
+    var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
+    var propertyIsEnumerable = objectPropertyIsEnumerable.f;
+    while (argumentsLength > index) {
+      var S = indexedObject(arguments[index++]);
+      var keys = getOwnPropertySymbols ? objectKeys(S).concat(getOwnPropertySymbols(S)) : objectKeys(S);
+      var length = keys.length;
+      var j = 0;
+      var key;
+      while (length > j) {
+        key = keys[j++];
+        if (!descriptors || propertyIsEnumerable.call(S, key)) T[key] = S[key];
+      }
+    } return T;
+  } : nativeAssign;
+
+  // `Object.assign` method
+  // https://tc39.github.io/ecma262/#sec-object.assign
+  _export({ target: 'Object', stat: true, forced: Object.assign !== objectAssign }, {
+    assign: objectAssign
+  });
+
   function getClientRect(el) {
     var _el$getBoundingClient = el.getBoundingClientRect(),
         top = _el$getBoundingClient.top,
@@ -2374,7 +2428,54 @@
     };
   }
 
-  //
+  function isParentElement(element, parentElement) {
+    while (Object(element.parentNode).nodeType === 1) {
+      element = element.parentNode;
+      if (element === parentElement) return true;
+    }
+
+    return false;
+  }
+
+  function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+  function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$1(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+  function _defineProperty$1(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+  document.addEventListener('mousedown', function (event) {
+    if (window.__mussel_dropdown) {
+      window.__mussel_dropdown.hideIf(event.target);
+    }
+  });
+
+  function popOnTop(parentRect, height) {
+    return parentRect.bottom + 2 + height > window.innerHeight && parentRect.top - height - 2 >= 0;
+  }
+
+  function popOnRight(parentRect, width) {
+    return parentRect.right + width > window.innerWidth && parentRect.left - width >= 0;
+  }
+
+  function getAbsolutePosition(isOnTop, isOnRight, parentRect, height, width) {
+    var top = parentRect.top,
+        bottom = parentRect.bottom,
+        left = parentRect.left,
+        right = parentRect.right;
+    return {
+      top: "".concat(isOnTop ? top - height - 2 : bottom + 2, "px"),
+      left: "".concat(isOnRight ? right - width : left, "px")
+    };
+  }
+
+  function getRelativePosition(isOnTop, isOnRight, parentRect, settingWidth) {
+    return {
+      top: isOnTop ? undefined : "".concat(parentRect.height + 2, "px"),
+      bottom: isOnTop ? "".concat(parentRect.height + 2, "px") : undefined,
+      left: isOnRight ? undefined : '0',
+      right: isOnRight || !settingWidth ? '0' : undefined
+    };
+  }
+
   var script$8 = {
     model: {
       prop: 'visible',
@@ -2384,31 +2485,37 @@
       visible: Boolean,
       renderToBody: {
         type: Boolean,
-        "default": true
-      }
+        "default": false
+      },
+      width: String,
+      height: String
     },
     data: function data() {
       return {
-        top: undefined,
-        left: undefined,
-        right: undefined,
-        bottom: undefined
+        dropdownVisible: false,
+        style: {
+          visibility: 'hidden',
+          top: undefined,
+          left: undefined,
+          right: undefined,
+          bottom: undefined,
+          width: undefined,
+          height: undefined
+        }
       };
     },
     computed: {
-      style: function style() {
-        return {
-          top: this.top,
-          left: this.left,
-          right: this.right,
-          bottom: this.bottom,
-          width: this.width
-        };
+      dropdownStyle: function dropdownStyle() {
+        var s = _objectSpread$1({}, this.style);
+
+        if (this.width) s.width = this.width;
+        if (this.height) s.height = this.height;
+        return s;
       }
     },
     watch: {
       visible: function visible(value) {
-        if (value) this.$nextTick(this.setPosition);
+        this.$nextTick(value ? this.show : this.hide);
       }
     },
     mounted: function mounted() {
@@ -2420,6 +2527,8 @@
       window.addEventListener('scroll', this.setPosition);
     },
     beforeDestroy: function beforeDestroy() {
+      this.deactivate();
+
       if (this.$el.parentNode === document.body) {
         document.body.removeChild(this.$el);
       }
@@ -2428,25 +2537,44 @@
       window.removeEventListener('scroll', this.setPosition);
     },
     methods: {
+      deactivate: function deactivate() {
+        if (window.__mussel_dropdown === this) window.__mussel_dropdown = null;
+      },
+      show: function show() {
+        window.__mussel_dropdown = this;
+        this.dropdownVisible = true;
+        this.$nextTick(this.setPosition);
+        this.$emit('show');
+        this.$emit('change', true);
+      },
+      hide: function hide() {
+        this.deactivate();
+        this.style.visibility = 'hidden';
+        this.dropdownVisible = false;
+        this.$emit('hide');
+        this.$emit('change', false);
+      },
+      hideIf: function hideIf(triggerEl) {
+        if (!isParentElement(triggerEl, this.$parent.$el)) this.hide();
+      },
       setPosition: function setPosition() {
-        if (this.renderToBody) {
-          var rect = getClientRect(this.$parent.$el);
-          var h = this.$el.offsetHeight;
-          var top = rect.bottom + 1;
-
-          if (top + h > window.innerHeight && rect.top - h - 1 > 0) {
-            top = rect.top - h - 1;
-          }
-
-          this.left = rect.left + 'px';
-          this.top = top + 'px';
-          this.width = rect.width + 'px';
-        }
+        if (!this.dropdownVisible) return;
+        var _this$$el = this.$el,
+            height = _this$$el.offsetHeight,
+            width = _this$$el.offsetWidth;
+        var pRect = getClientRect(this.$parent.$el);
+        var isOnTop = popOnTop(pRect, height);
+        var isOnRight = !!this.width && popOnRight(pRect, width);
+        Object.assign(this.style, this.renderToBody && !this.width ? {
+          width: "".concat(pRect.width, "px")
+        } : {}, this.renderToBody ? getAbsolutePosition(isOnTop, isOnRight, pRect, height, width) : getRelativePosition(isOnTop, isOnRight, pRect, this.width), {
+          visibility: 'visible'
+        });
       }
     }
   };
 
-  var css$8 = ".mu-dropdown {\r\n  position: fixed;\r\n  z-index: 100;\r\n  display: none;\r\n  background: #fff;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n}\r\n.mu-dropdown[visible] {\r\n  display: block;\r\n}";
+  var css$8 = ".mu-dropdown {\r\n  position: absolute;\r\n  z-index: 100;\r\n  display: none;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  box-shadow: none;\r\n  overflow: auto;\r\n}\r\n.mu-dropdown[visible] {\r\n  display: block;\r\n}\r\nbody > .mu-dropdown {\r\n  position: fixed;\r\n}";
   styleInject(css$8);
 
   /* script */
@@ -2462,9 +2590,9 @@
 
     return _c("div", {
       staticClass: "mu-dropdown",
-      style: _vm.style,
+      style: _vm.dropdownStyle,
       attrs: {
-        visible: _vm.visible
+        visible: _vm.dropdownVisible
       }
     }, [_vm._t("default")], 2);
   };
@@ -2498,9 +2626,13 @@
       InputBox: InputBox,
       Dropdown: Dropdown
     },
+    props: {
+      ddWidth: String,
+      ddHeight: String
+    },
     data: function data() {
       return {
-        visible: false
+        dropdownVisible: false
       };
     }
   };
@@ -2522,16 +2654,20 @@
       },
       on: {
         buttonclick: function buttonclick($event) {
-          _vm.visible = !_vm.visible;
+          _vm.dropdownVisible = !_vm.dropdownVisible;
         }
       }
     }, [_c("dropdown", {
+      attrs: {
+        height: _vm.ddHeight,
+        width: _vm.ddWidth
+      },
       model: {
-        value: _vm.visible,
+        value: _vm.dropdownVisible,
         callback: function callback($$v) {
-          _vm.visible = $$v;
+          _vm.dropdownVisible = $$v;
         },
-        expression: "visible"
+        expression: "dropdownVisible"
       }
     }, [_vm._t("default")], 2)], 1);
   };
