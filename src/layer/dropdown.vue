@@ -59,15 +59,17 @@
     },
     methods: {
       setPosition () {
-        const rect = getClientRect(this.$parent.$el)
-        const h = this.$el.offsetHeight
-        let top = rect.bottom + 1
-        if (top + h > window.innerHeight && rect.top - h - 1 > 0) {
-          top = rect.top - h - 1
+        if (this.renderToBody) {
+          const rect = getClientRect(this.$parent.$el)
+          const h = this.$el.offsetHeight
+          let top = rect.bottom + 1
+          if (top + h > window.innerHeight && rect.top - h - 1 > 0) {
+            top = rect.top - h - 1
+          }
+          this.left = rect.left + 'px'
+          this.top = top + 'px'
+          this.width = rect.width + 'px'
         }
-        this.left = rect.left + 'px'
-        this.top = top + 'px'
-        this.width = rect.width + 'px'
       }
     }
   }

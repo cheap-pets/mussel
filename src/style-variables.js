@@ -7,6 +7,10 @@ const grey = generate('#b2b2b2')
 */
 let _primaryColor, _successColor, _warningColor, _dangerColor, _infoColor
 
+const buttonShadow = 'none'
+const buttonHoverShadow = '0 0 0 0.2rem $$shadowColor'
+const buttonActiveShadow = 'none'
+
 const variables = {
   /* document */
   documentFontSizePx: 14,
@@ -17,11 +21,16 @@ const variables = {
   buttonXPaddingPx: 10,
   buttonBorderRadiusPx: 2,
   buttonFontSize: '1rem',
-  buttonShadow: 1,
+  buttonShadow,
+  buttonHoverShadow,
+  buttonActiveShadow,
   buttonDefaultColor: grey[7],
   buttonDefaultHoverColor: grey[6],
   buttonDefaultActiveColor: grey[8],
   buttonDefaultDisabledColor: grey[4],
+  buttonDefaultShadow: buttonShadow.replace('$$shadowColor', grey[3]),
+  buttonDefaultHoverShadow: buttonHoverShadow.replace('$$shadowColor', grey[3]),
+  buttonDefaultActiveShadow: buttonActiveShadow.replace('$$shadowColor', grey[4]),
 
   /* input */
   inputHeightPx: 32,
@@ -33,6 +42,8 @@ const variables = {
   inputBorderColor: grey[5],
   inputReadonlyBackground: '#feffe6',
   inputDisabledBackground: grey[1],
+  inputShadow: '0 0 0 0.2rem $inputShadowColor',
+  inputInvalidShadow: '0 0 0 0.2rem $inputInvalidShadowColor',
 
   /* text colours */
   textBlack: grey[9],
@@ -66,6 +77,21 @@ function setButtonColors (buttonType, colors) {
   variables[`button${buttonType}HoverColor`] = colors[4]
   variables[`button${buttonType}ActiveColor`] = colors[6]
   variables[`button${buttonType}DisabledColor`] = colors[2]
+
+  const {
+    buttonShadow,
+    buttonHoverShadow,
+    buttonActiveShadow
+  } = variables
+
+  variables[`button${buttonType}Shadow`] =
+    buttonShadow.replace('$$shadowColor', colors[2])
+
+  variables[`button${buttonType}HoverShadow`] =
+    buttonHoverShadow.replace('$$shadowColor', colors[2])
+
+  variables[`button${buttonType}ActiveShadow`] =
+    buttonActiveShadow.replace('$$shadowColor', colors[4])
 }
 
 Object.defineProperties(variables, {
@@ -77,7 +103,7 @@ Object.defineProperties(variables, {
       _primaryColor = v
       const colors = generate(v)
       setButtonColors('Primary', colors)
-      this.inputFocusShadowColor = colors[2]
+      this.inputShadowColor = colors[2]
       this.inputHoverBorderColor = colors[5]
     },
     enumerable: true

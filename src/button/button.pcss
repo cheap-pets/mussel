@@ -25,6 +25,8 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
 
   &:not([button-type]),
   &[button-type="normal"] {
+    box-shadow: $buttonDefaultShadow;
+
     &[button-style="link"] {
       &:hover {
         color: $buttonDefaultHoverColor;
@@ -39,6 +41,7 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
     &:hover {
       background: $buttonDefaultHoverColor;
       border-color: $buttonDefaultHoverColor;
+      box-shadow: $buttonDefaultHoverShadow;
       color: #fff;
       fill: #fff;
     }
@@ -54,12 +57,22 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
       }
     }
   }
+  
+  &[button-style="text"] {
+    box-shadow: none;
+  }
+
+  &[button-style="link"],
+  &[disabled] {
+    box-shadow: none !important;
+  }
 
   &[button-type="primary"] {
     color: #fff;
     fill: #fff;
     background: $buttonPrimaryColor;
     border-color: $buttonPrimaryColor;
+    box-shadow: $buttonPrimaryShadow;
 
     &[button-style="link"] {
       color: $buttonPrimaryColor;
@@ -79,11 +92,13 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
     &[active] {
       background: $buttonPrimaryActiveColor;
       border-color: $buttonPrimaryActiveColor;
+      box-shadow: $buttonPrimaryActiveShadow;
     }
 
     &:hover {
       background: $buttonPrimaryHoverColor;
       border-color: $buttonPrimaryHoverColor;
+      box-shadow: $buttonPrimaryHoverShadow;
       color: #fff;
       fill: #fff;
     }
@@ -105,6 +120,7 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
     fill: #fff;
     background: $buttonSubmitColor;
     border-color: $buttonSubmitColor;
+    box-shadow: $buttonSubmitShadow;
 
     &[button-style="link"] {
       color: $buttonSubmitColor;
@@ -124,11 +140,13 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
     &[active] {
       background: $buttonSubmitActiveColor;
       border-color: $buttonSubmitActiveColor;
+      box-shadow: $buttonSubmitActiveShadow;
     }
 
     &:hover {
       background: $buttonSubmitHoverColor;
       border-color: $buttonSubmitHoverColor;
+      box-shadow: $buttonSubmitHoverShadow;
       color: #fff;
       fill: #fff;
     }
@@ -150,6 +168,7 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
     fill: #fff;
     background: $buttonDangerColor;
     border-color: $buttonDangerColor;
+    box-shadow: $buttonDangerShadow;
 
     &[button-style="link"] {
       color: $buttonDangerColor;
@@ -169,11 +188,13 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
     &[active] {
       background: $buttonDangerActiveColor;
       border-color: $buttonDangerActiveColor;
+      box-shadow: $buttonDangerActiveShadow;
     }
 
     &:hover {
       background: $buttonDangerHoverColor;
       border-color: $buttonDangerHoverColor;
+      box-shadow: $buttonDangerHoverShadow;
       color: #fff;
       fill: #fff;
     }
@@ -215,32 +236,11 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
       fill: $textLight;
     }
   }
-  &:not([disabled]) {
-    @if $buttonShadow {
-      box-shadow: $boxShadowLevel1;
-    }
-    &[button-style="text"] {
-      box-shadow: none;
-    }
-    &:hover {
-      @if $buttonShadow {
-        box-shadow: $boxShadowLevel2;
-      }
-    }
-    &[button-style="link"] {
-      box-shadow: none;
-    }
-  }
 
   &[icon-only],
   &:empty {
     width: $(buttonHeightPx)px;
     padding-left: 0;
     padding-right: 0;
-  }
-
-  & > * + span,
-  & > span + * {
-    margin-left: 4px;
   }
 }

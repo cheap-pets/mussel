@@ -27,7 +27,7 @@
     },
     methods: {
       onClick () {
-        this.$emit('click')
+        if (this.buttonType === 'button') this.$emit('click')
       }
     }
   }

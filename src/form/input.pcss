@@ -1,6 +1,8 @@
 $inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
 
 .mu-input {
+  position: relative;
+  z-index: 1;
   width: 200px;
   padding: $(inputYPaddingPx)px $(inputXPaddingPx)px;
   border: 1px solid $inputBorderColor;
@@ -15,8 +17,9 @@ $inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
     border-color: $inputHoverBorderColor;
   }
   &:focus {
+    z-index: 2;
     text-align: left !important;
-    box-shadow: inset 0 0 1px 1px $inputFocusShadowColor;
+    box-shadow: $inputShadow;
   }
   &[readonly] {
     background-color: $inputReadonlyBackground;
@@ -37,7 +40,7 @@ $inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
   color: $dangerColor;
   border-color: $inputInvalidBorderColor;
   &:focus {
-    box-shadow: inset 0 0 1px 1px $inputInvalidShadowColor;
+    box-shadow: $inputInvalidShadow;
   }
 }
 
