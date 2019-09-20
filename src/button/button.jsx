@@ -27,9 +27,10 @@ export default {
         return ['normal', 'round'].indexOf(value) !== -1
       }
     },
-    caption: String,
     icon: String,
-    iconOnly: Boolean
+    iconClass: String,
+    iconOnly: Boolean,
+    caption: String
   },
   computed: {
     isIconOnly () {
@@ -53,13 +54,13 @@ export default {
         onClick={ this.onClick }>
         {
           this.icon
-            ? <icon icon={this.icon} />
+            ? <icon icon={ this.icon } icon-class={ this.iconClass } />
             : undefined
         }
         {
           this.$slots.default
             ? (
-              this.icon
+              this.icon || this.iconClass
                 ? <span>{ this.$slots.default }</span>
                 : this.$slots.default
             )

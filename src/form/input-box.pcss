@@ -61,7 +61,7 @@ $inputIconSize: calc($inputHeightPx - 2);
     }
   }
 
-  &[select-only] {
+  &[fixed] {
     & > input,
     & > .mu-input-icon {
       cursor: pointer;
@@ -102,10 +102,6 @@ $inputIconSize: calc($inputHeightPx - 2);
       padding-left: $(inputIconSize)px;
       padding-right: $(inputXPaddingPx)px;
     }
-  }
-
-  & > .mu-svg-icon {
-    vertical-align: 0;
   }
 
   &[type="button"] {

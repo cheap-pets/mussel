@@ -11,7 +11,7 @@
       :value="inputValue"
       :disabled="disabled"
       :readonly="readonly"
-      @change="onChange"
+      @input="onInput"
       @click="onInputClick" />
     <mu-input-button
       v-if="clearBtnVisible"
@@ -31,9 +31,14 @@
   import './input-box.pcss'
 
   import Input from './input.vue'
-  import InputButton from './input-button.vue'
+  import InputButton from './input-button.js'
 
   export default {
+    provide () {
+      return {
+        inputBox: this
+      }
+    },
     components: {
       'mu-input': Input,
       'mu-input-button': InputButton
@@ -52,10 +57,7 @@
         type: String,
         default: 'text'
       },
-      value: {
-        type: String,
-        default: ''
-      },
+      value: [String, Number],
       clearable: {
         type: Boolean,
         default: true
@@ -111,7 +113,7 @@
       }
     },
     methods: {
-      onChange (value) {
+      onInput (value) {
         this.inputValue = value
         this.$emit('change', value)
       },

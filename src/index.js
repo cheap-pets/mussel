@@ -15,6 +15,12 @@ import ButtonGroup from './button/button-group.vue'
 import Input from './form/input.vue'
 import InputBox from './form/input-box.vue'
 import ComboBox from './form/combo-box.vue'
+import Option from './form/option.js'
+
+import ListItem from './list/list-item.vue'
+import ListDivider from './list/list-divider.vue'
+
+import './transform'
 
 export * from './layer'
 
@@ -34,6 +40,10 @@ function install (Vue) {
   Vue.component('mu-input', Input)
   Vue.component('mu-input-box', InputBox)
   Vue.component('mu-combo-box', ComboBox)
+  Vue.component('mu-option', Option)
+
+  Vue.component('mu-list-item', ListItem)
+  Vue.component('mu-list-divider', ListDivider)
 }
 
 if (window.Vue) install(window.Vue)
@@ -54,5 +64,10 @@ export {
   ButtonGroup,
   // form
   Input,
-  InputBox
+  InputBox,
+  ComboBox,
+  Option,
+  // list
+  ListItem,
+  ListDivider
 }

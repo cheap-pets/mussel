@@ -41,24 +41,31 @@
   }
 
   export default {
+    provide () {
+      return {
+        keepIconIndent: this.keepIconIndent
+      }
+    },
     model: {
       prop: 'visible',
       event: 'change'
     },
     props: {
+      keepIconIndent: Boolean,
       visible: Boolean,
+      height: String,
+      width: String,
       renderToBody: {
         type: Boolean,
         default: false
-      },
-      width: String,
-      height: String
+      }
     },
     data () {
       return {
         dropdownVisible: false,
         style: {
           visibility: 'hidden',
+          opacity: 0,
           top: undefined,
           left: undefined,
           right: undefined,
@@ -109,6 +116,7 @@
       },
       hide () {
         this.deactivate()
+        this.style.opacity = 0
         this.style.visibility = 'hidden'
         this.dropdownVisible = false
         this.$emit('hide')
@@ -131,7 +139,8 @@
             ? getAbsolutePosition(isOnTop, isOnRight, pRect, height, width)
             : getRelativePosition(isOnTop, isOnRight, pRect, this.width),
           {
-            visibility: 'visible'
+            visibility: 'visible',
+            opacity: 1
           }
         )
       }
@@ -148,6 +157,7 @@
     border: $dropdownBorder;
     box-shadow: $dropdownShadow;
     overflow: auto;
+    transition: opacity .2s ease-in-out;
 
     &[visible] {
       display: block;
@@ -155,5 +165,8 @@
   }
   body > .mu-dropdown {
     position: fixed;
+  }
+  .mu-dropdown-list, .mu-dropdown-menu {
+    padding: $(dropdownListPadding);
   }
 </style>

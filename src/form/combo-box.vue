@@ -2,16 +2,15 @@
   <div
     class="mu-input-box"
     :buttons="buttons"
-    :disabled="disabled"
-    :select-only="isListStyle"
-    :select-on="dropdownVisible">
+    :fixed="isListStyle"
+    :disabled="disabled">
     <mu-input
       :type="type"
       :value="inputValue"
       :disabled="disabled"
       :readonly="inputReadonly"
       :focus="dropdownVisible"
-      @change="onChange"
+      @input="onInput"
       @click="onInputClick" />
     <mu-input-button
       v-if="clearBtnVisible"
@@ -19,17 +18,20 @@
       icon="close"
       @click="clear" />
     <mu-input-button
-      v-if="buttonType"
+      v-if="inputBtnType"
+      class="mu-expand-trigger"
+      icon="key-down"
+      :trigger-on="dropdownVisible"
       :button-type="buttonType"
       :focus="dropdownVisible"
-      :icon-class="iconClass"
-      :icon="icon"
       @click="onButtonClick" />
     <dropdown
-      v-if="buttonType"
+      v-if="inputBtnType"
       v-model="dropdownVisible"
+      class="mu-dropdown-list"
+      :width="dropdownWidth"
       :height="dropdownHeight"
-      :width="dropdownWidth">
+      :keep-icon-indent="keepIconIndent">
       <slot />
     </dropdown>
   </div>
@@ -45,13 +47,21 @@
     },
     extends: InputBox,
     props: {
+      value: [String, Number, Array],
+      keepIconIndent: Boolean,
       dropdownHeight: String,
       dropdownWidth: String,
       dropdownStyle: {
         type: String,
         default: 'dropdownList',
         validator (value) {
-          return ['none', 'dropdown', 'dropdownList', 'drawer', 'drawerList'].indexOf(value) !== -1
+          return [
+            'none',
+            'dropdown',
+            'dropdownList',
+            'drawer',
+            'drawerList'
+          ].indexOf(value) !== -1
         }
       },
       clearable: {
@@ -68,7 +78,7 @@
       isListStyle () {
         return this.dropdownStyle.indexOf('List') > 0
       },
-      buttonType () {
+      inputBtnType () {
         return this.isListStyle
           ? 'icon'
           : (this.dropdownStyle === 'none' ? false : 'button')
@@ -78,11 +88,21 @@
       }
     },
     methods: {
+      onInput (value) {
+        this.inputValue = value
+        this.$emit('input', value)
+        this.$emit('change', { value })
+      },
       onInputClick () {
         if (this.isListStyle) this.dropdownVisible = !this.dropdownVisible
       },
       onButtonClick () {
         this.dropdownVisible = !this.dropdownVisible
+      },
+      selectOption (option) {
+        this.inputValue = option.label || option.value
+        this.dropdownVisible = false
+        this.$emit('change', option)
       }
     }
   }

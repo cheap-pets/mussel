@@ -46,6 +46,16 @@ const variables = {
   /* dropdown */
   dropdownShadow: 'none',
   dropdownBorder: `1px solid ${grey[3]}`,
+  dropdownItemYPaddingPx: 5,
+  dropdownListPadding: '4px 0',
+
+  /* list */
+  listItemXPaddingPx: 10,
+  listItemYPaddingPx: 10,
+  listItemLineHeightPx: 20,
+  listDividerColor: 'rgba(0, 0, 0, .1)',
+  listItemBackground: '#fff',
+  listItemHoverBackground: 'rgba(0, 0, 0, .05)',
 
   /* text colours */
   textBlack: grey[9],
@@ -58,6 +68,9 @@ const variables = {
   textLight: 'rgba(255, 255, 255, .7)',
   textHalfLight: 'rgba(255, 255, 255, .35)',
   textQuarterLight: 'rgba(255, 255, 25, .17)',
+
+  /* border colours */
+  defaultBorderColor: grey[3],
 
   /* margin, padding */
   marginUnitSize: 8,

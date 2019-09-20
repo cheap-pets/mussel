@@ -15,7 +15,7 @@
   export default {
     model: {
       prop: 'value',
-      event: 'change'
+      event: 'input'
     },
     props: {
       type: {
@@ -38,7 +38,7 @@
     },
     methods: {
       onInput (event) {
-        this.$emit('change', event.target.value)
+        this.$emit('input', event.target.value)
       },
       onClick () {
         if (!this.disabled) this.$emit('click')

@@ -56,18 +56,13 @@
       <mu-input-box invalid button-type="button" value="按钮在前" button-position="left">
       </mu-input-box>
       <h5>下拉框</h5>
-      <mu-combo-box dropdown-width="auto">
-        <div @click="onDropdownItemClick">123</div>
-        <div>1231231231223123</div>
-        <div>123</div>
-        <div>123</div>
-        <div>123</div>
-        <div>123</div>
-        <div>123</div>
-        <div>123</div>
-        <div>123</div>
-        <div>123</div>
-        <div>123</div>
+      <mu-combo-box dropdown-style="dropdown" keep-icon-indent>
+        <mu-option icon="ok" value='好好学习1'></mu-option>
+        <mu-option icon="2" value='好好学习2'></mu-option>
+        <mu-option value='好好学习3'></mu-option>
+        <mu-list-divider></mu-list-divider>
+        <mu-option value='好好学习4'></mu-option>
+        <mu-option value='好好学习5'></mu-option>
       </mu-combo-box>
     </div>
   </div>
@@ -78,7 +73,7 @@
         inputValue: ''
       },
       methods: {
-        onDropdownItemClick () {
+        onDropdownItemClick: function () {
           window.mussel.hideDropdown()
         }
       }

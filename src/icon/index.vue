@@ -1,11 +1,17 @@
 <template>
-  <svg
-    class="mu-svg-icon"
-    viewBox="0 0 1024 1024"
-    :width="size"
-    :height="size">
-    <path :d="d" />
-  </svg>
+  <span
+    class="mu-icon"
+    :class="className"
+    :type="iconType"
+    :icon="icon"
+    @click="onClick">
+    <svg v-if="icon" :icon="icon"
+      viewBox="0 0 1024 1024"
+      :width="size"
+      :height="size">
+      <path :d="d" />
+    </svg>
+  </span>
 </template>
 
 <script>
@@ -13,10 +19,8 @@
 
   export default {
     props: {
-      icon: {
-        type: String,
-        defalt: 'close'
-      },
+      iconClass: String,
+      icon: String,
       size: {
         type: String,
         default: '1em'
@@ -25,13 +29,24 @@
     computed: {
       d () {
         return d[this.icon]
+      },
+      className () {
+        return this.iconClass
+      },
+      iconType () {
+        return undefined
+      }
+    },
+    methods: {
+      onClick () {
+        this.$emit('click')
       }
     }
   }
 </script>
 
 <style lang="postcss">
-  .mu-svg-icon {
+  .mu-icon > svg {
     vertical-align: -0.15em;
   }
 </style>
