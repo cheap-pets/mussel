@@ -27,7 +27,7 @@ function styleInject(css, ref) {
   }
 }
 
-var css = "* {\r\n  box-sizing: border-box;\r\n}\r\nhtml {\r\n  color: #1a1a1a;\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}";
+var css = "* {\n  box-sizing: border-box;\n}\nhtml {\n  color: #1a1a1a;\n  font-size: 14px;\n  font-weight: 400;\n}\nbody {\n  font-size: 100%;\n}\nbutton,\nhtml {\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\n}";
 styleInject(css);
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -1064,7 +1064,7 @@ var script$1 = {
   }
 };
 
-var css$1 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[itemspacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[itemspacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box[direction=column] > [size] {\r\n  height: 10px;\r\n}\r\n.mu-flex-box:not(direction=\"column\") > [size] {\r\n  width: 10px;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex-grow: 2;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex-grow: 3;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex-grow: 4;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex-grow: 5;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex-grow: 6;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex-grow: 7;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex-grow: 8;\r\n}";
+var css$1 = ".mu-flex-box {\n  position: relative;\n  display: flex;\n  align-items: stretch;\n}\n.mu-flex-box[direction=column] {\n  flex-direction: column;\n}\n.mu-flex-box[inline] {\n  display: inline-flex;\n}\n.mu-flex-box[flex-wrap] {\n  flex-wrap: wrap;\n  align-content: flex-start;\n}\n.mu-flex-box[justify-content=center] {\n  justify-content: center;\n}\n.mu-flex-box[align-items=flex-start] {\n  align-items: flex-start;\n}\n.mu-flex-box[align-items=center] {\n  align-items: center;\n}\n.mu-flex-box[align-items=stretch] {\n  align-items: stretch;\n}\n.mu-flex-box[flex-center] {\n  align-items: center;\n  justify-content: center;\n}\n.mu-flex-box[bordered] {\n  border: 1px solid #ddd;\n}\n.mu-flex-box[cellpadding],\n.mu-flex-box[itemspacing] {\n  padding: 8px;\n}\n.mu-flex-box [cellspacing],\n.mu-flex-box[itemspacing] > * {\n  margin: 8px;\n}\n.mu-flex-box > * {\n  position: relative;\n}\n.mu-flex-box > [flex-auto] {\n  flex: 1 1 auto!important;\n}\n.mu-flex-box > [flex-none] {\n  flex: 0 0 none!important;\n}\n.mu-flex-box[direction=column] > [size] {\n  height: 10px;\n}\n.mu-flex-box:not(direction=\"column\") > [size] {\n  width: 10px;\n}\n.mu-flex-box > [size=auto] {\n  flex-grow: 1;\n}\n.mu-flex-box > [size=\"1\"] {\n  flex-grow: 1;\n}\n.mu-flex-box > [size=\"2\"] {\n  flex-grow: 2;\n}\n.mu-flex-box > [size=\"3\"] {\n  flex-grow: 3;\n}\n.mu-flex-box > [size=\"4\"] {\n  flex-grow: 4;\n}\n.mu-flex-box > [size=\"5\"] {\n  flex-grow: 5;\n}\n.mu-flex-box > [size=\"6\"] {\n  flex-grow: 6;\n}\n.mu-flex-box > [size=\"7\"] {\n  flex-grow: 7;\n}\n.mu-flex-box > [size=\"8\"] {\n  flex-grow: 8;\n}";
 styleInject(css$1);
 
 /* script */
@@ -1795,7 +1795,7 @@ var script$2 = {
   }
 };
 
-var css$2 = ".mu-splitter {\r\n  background: rgba(0,0,0,.1);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter:hover {\r\n  background: rgba(0,0,0,.2);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n  cursor: row-resize;\r\n}";
+var css$2 = ".mu-splitter {\n  background: rgba(0,0,0,.1);\n  border-radius: 4px;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n}\n.mu-splitter:hover {\n  background: rgba(0,0,0,.2);\n}\n.mu-splitter:first-child,\n.mu-splitter:last-child {\n  display: none;\n}\n[cellpadding] > .mu-splitter,\n[item-spacing] > .mu-splitter {\n  margin: 8px;\n}\n[direction=row] > .mu-splitter {\n  width: 4px;\n  margin-left: 0;\n  margin-right: 0;\n  cursor: col-resize;\n}\n[direction=column] > .mu-splitter {\n  height: 4px;\n  margin-top: 0;\n  margin-bottom: 0;\n  cursor: row-resize;\n}";
 styleInject(css$2);
 
 /* script */
@@ -1885,7 +1885,7 @@ var script$3 = {
   }
 };
 
-var css$3 = ".mu-icon > svg {\r\n  vertical-align: -.15em;\r\n}";
+var css$3 = ".mu-icon > svg {\n  vertical-align: -.15em;\n}";
 styleInject(css$3);
 
 /* script */
@@ -1946,7 +1946,7 @@ var Icon = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$3
 }, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, undefined, undefined);
 
-var css$4 = ".mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n  background: #fff;\r\n  line-height: 20px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button:not([button-type]),\r\n.mu-button[button-type=normal] {\r\n  box-shadow: none;\r\n}\r\n.mu-button:not([button-type])[button-style=link]:hover,\r\n.mu-button[button-type=normal][button-style=link]:hover {\r\n  color: #8c8c8c;\r\n  fill: #8c8c8c;\r\n}\r\n.mu-button:not([button-type])[active],\r\n.mu-button[button-type=normal][active] {\r\n  background: #404040;\r\n}\r\n.mu-button:not([button-type]):hover,\r\n.mu-button[button-type=normal]:hover {\r\n  background: #8c8c8c;\r\n  border-color: #8c8c8c;\r\n  box-shadow: 0 0 0 .2rem #d9d9d9;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button:not([button-type])[disabled][button-style=link],\r\n.mu-button[button-type=normal][disabled][button-style=link] {\r\n  color: #bfbfbf;\r\n  fill: #bfbfbf;\r\n}\r\n.mu-button:not([button-type])[disabled]:not([button-style=link]),\r\n.mu-button[button-type=normal][disabled]:not([button-style=link]) {\r\n  background: #bfbfbf;\r\n  border-color: #bfbfbf;\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[disabled] {\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  border-color: #1890ff;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary][button-style=link] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover {\r\n  color: #40a9ff;\r\n  fill: #40a9ff;\r\n}\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  border-color: #096dd9;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  border-color: #40a9ff;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][disabled][button-style=link] {\r\n  color: #91d5ff;\r\n  fill: #91d5ff;\r\n}\r\n.mu-button[button-type=primary][disabled]:not([button-style=link]) {\r\n  background: #91d5ff;\r\n  border-color: #91d5ff;\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #52c41a;\r\n  border-color: #52c41a;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit][button-style=link] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover {\r\n  color: #73d13d;\r\n  fill: #73d13d;\r\n}\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  border-color: #389e0d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  border-color: #73d13d;\r\n  box-shadow: 0 0 0 .2rem #b7eb8f;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][disabled][button-style=link] {\r\n  color: #b7eb8f;\r\n  fill: #b7eb8f;\r\n}\r\n.mu-button[button-type=submit][disabled]:not([button-style=link]) {\r\n  background: #b7eb8f;\r\n  border-color: #b7eb8f;\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #fa541c;\r\n  border-color: #fa541c;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger][button-style=link] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover {\r\n  color: #ff7a45;\r\n  fill: #ff7a45;\r\n}\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #d4380d;\r\n  border-color: #d4380d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff7a45;\r\n  border-color: #ff7a45;\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][disabled][button-style=link] {\r\n  color: #ffbb96;\r\n  fill: #ffbb96;\r\n}\r\n.mu-button[button-type=danger][disabled]:not([button-style=link]) {\r\n  background: #ffbb96;\r\n  border-color: #ffbb96;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[button-style=link]:hover,\r\n.mu-button[button-style=link][active],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n  border-color: transparent;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=outline] {\r\n  background: #fff;\r\n}\r\n.mu-button[button-style=link]:not([disabled]):hover {\r\n  text-decoration: underline;\r\n}\r\n.mu-button[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[disabled] {\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  color: rgba(255,255,255,.7);\r\n  fill: rgba(255,255,255,.7);\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}";
+var css$4 = ".mu-button {\n  position: relative;\n  display: inline-block;\n  height: 32px;\n  padding: 5px 10px;\n  outline: 0;\n  border: 1px solid #666;\n  border-radius: 2px;\n  background: #fff;\n  line-height: 20px;\n  text-decoration: none;\n  text-align: center;\n  font-size: 1rem;\n  color: #666;\n  fill: #666;\n  cursor: pointer;\n}\n.mu-button::before {\n  display: inline-block;\n  width: 0;\n  content: '\\00a0';\n}\n.mu-button:not([button-type]),\n.mu-button[button-type=normal] {\n  box-shadow: none;\n}\n.mu-button:not([button-type])[button-style=link]:hover,\n.mu-button[button-type=normal][button-style=link]:hover {\n  color: #8c8c8c;\n  fill: #8c8c8c;\n}\n.mu-button:not([button-type])[active],\n.mu-button[button-type=normal][active] {\n  background: #404040;\n}\n.mu-button:not([button-type]):hover,\n.mu-button[button-type=normal]:hover {\n  background: #8c8c8c;\n  border-color: #8c8c8c;\n  box-shadow: 0 0 0 .2rem #d9d9d9;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button:not([button-type])[disabled][button-style=link],\n.mu-button[button-type=normal][disabled][button-style=link] {\n  color: #bfbfbf;\n  fill: #bfbfbf;\n}\n.mu-button:not([button-type])[disabled]:not([button-style=link]),\n.mu-button[button-type=normal][disabled]:not([button-style=link]) {\n  background: #bfbfbf;\n  border-color: #bfbfbf;\n}\n.mu-button[button-style=text] {\n  box-shadow: none;\n}\n.mu-button[button-style=link],\n.mu-button[disabled] {\n  box-shadow: none!important;\n}\n.mu-button[button-type=primary] {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n  border-color: #1890ff;\n  box-shadow: none;\n}\n.mu-button[button-type=primary][button-style=link] {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-type=primary][button-style=link]:hover {\n  color: #40a9ff;\n  fill: #40a9ff;\n}\n.mu-button[button-type=primary][button-style=outline],\n.mu-button[button-type=primary][button-style=text] {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-type=primary][active] {\n  background: #096dd9;\n  border-color: #096dd9;\n  box-shadow: none;\n}\n.mu-button[button-type=primary]:hover {\n  background: #40a9ff;\n  border-color: #40a9ff;\n  box-shadow: 0 0 0 .2rem #91d5ff;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=primary][disabled][button-style=link] {\n  color: #91d5ff;\n  fill: #91d5ff;\n}\n.mu-button[button-type=primary][disabled]:not([button-style=link]) {\n  background: #91d5ff;\n  border-color: #91d5ff;\n}\n.mu-button[button-type=submit] {\n  color: #fff;\n  fill: #fff;\n  background: #52c41a;\n  border-color: #52c41a;\n  box-shadow: none;\n}\n.mu-button[button-type=submit][button-style=link] {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-button[button-type=submit][button-style=link]:hover {\n  color: #73d13d;\n  fill: #73d13d;\n}\n.mu-button[button-type=submit][button-style=outline],\n.mu-button[button-type=submit][button-style=text] {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-button[button-type=submit][active] {\n  background: #389e0d;\n  border-color: #389e0d;\n  box-shadow: none;\n}\n.mu-button[button-type=submit]:hover {\n  background: #73d13d;\n  border-color: #73d13d;\n  box-shadow: 0 0 0 .2rem #b7eb8f;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=submit][disabled][button-style=link] {\n  color: #b7eb8f;\n  fill: #b7eb8f;\n}\n.mu-button[button-type=submit][disabled]:not([button-style=link]) {\n  background: #b7eb8f;\n  border-color: #b7eb8f;\n}\n.mu-button[button-type=danger] {\n  color: #fff;\n  fill: #fff;\n  background: #fa541c;\n  border-color: #fa541c;\n  box-shadow: none;\n}\n.mu-button[button-type=danger][button-style=link] {\n  color: #fa541c;\n  fill: #fa541c;\n}\n.mu-button[button-type=danger][button-style=link]:hover {\n  color: #ff7a45;\n  fill: #ff7a45;\n}\n.mu-button[button-type=danger][button-style=outline],\n.mu-button[button-type=danger][button-style=text] {\n  color: #fa541c;\n  fill: #fa541c;\n}\n.mu-button[button-type=danger][active] {\n  background: #d4380d;\n  border-color: #d4380d;\n  box-shadow: none;\n}\n.mu-button[button-type=danger]:hover {\n  background: #ff7a45;\n  border-color: #ff7a45;\n  box-shadow: 0 0 0 .2rem #ffbb96;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=danger][disabled][button-style=link] {\n  color: #ffbb96;\n  fill: #ffbb96;\n}\n.mu-button[button-type=danger][disabled]:not([button-style=link]) {\n  background: #ffbb96;\n  border-color: #ffbb96;\n}\n.mu-button[button-style=link],\n.mu-button[button-style=link]:hover,\n.mu-button[button-style=link][active],\n.mu-button[button-style=text] {\n  background: 0 0;\n  border-color: transparent;\n  box-shadow: none;\n}\n.mu-button[button-style=outline] {\n  background: #fff;\n}\n.mu-button[button-style=link]:not([disabled]):hover {\n  text-decoration: underline;\n}\n.mu-button[active] {\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[disabled] {\n  cursor: default;\n}\n.mu-button[disabled]:not([button-style=link]) {\n  color: rgba(255,255,255,.7);\n  fill: rgba(255,255,255,.7);\n}\n.mu-button:empty,\n.mu-button[icon-only] {\n  width: 32px;\n  padding-left: 0;\n  padding-right: 0;\n}";
 styleInject(css$4);
 
 var Button = {
@@ -2028,7 +2028,7 @@ var IconButton = {
 //
 var script$4 = {};
 
-var css$5 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  border-radius: 2px;\r\n}\r\n.mu-button-group > .mu-button {\r\n  float: left;\r\n  box-shadow: none;\r\n  z-index: 0;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child) {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}";
+var css$5 = ".mu-button-group {\n  position: relative;\n  display: inline-block;\n  border-radius: 2px;\n}\n.mu-button-group > .mu-button {\n  float: left;\n  box-shadow: none;\n  z-index: 0;\n}\n.mu-button-group > .mu-button:hover:not([disabled]) {\n  z-index: 1;\n}\n.mu-button-group > .mu-button:not(:first-child) {\n  border-top-left-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\n  border-left-color: rgba(255,255,255,.5);\n}\n.mu-button-group > .mu-button:not(:last-child) {\n  margin-right: -1px;\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 0;\n}\n[button-shape=round],\n[button-shape=round] > .mu-button {\n  border-radius: 16px;\n}";
 styleInject(css$5);
 
 /* script */
@@ -2070,7 +2070,7 @@ var ButtonGroup = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$4
 }, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, undefined, undefined);
 
-var css$6 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #8c8c8c;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
+var css$6 = ".mu-input {\n  position: relative;\n  z-index: 1;\n  width: 200px;\n  border: 1px solid #b2b2b2;\n  border-radius: 2px;\n  outline: 0;\n  background-color: #fff;\n  color: #404040;\n  line-height: 20px;\n  font-size: 1rem;\n}\n.mu-input:focus,\n.mu-input:hover,\n.mu-input[focus] {\n  border-color: #1890ff;\n}\n.mu-input:focus,\n.mu-input[focus] {\n  z-index: 2;\n  text-align: left!important;\n  box-shadow: 0 0 0 .2rem #91d5ff;\n}\n.mu-input[readonly] {\n  background-color: #feffe6;\n}\n.mu-input[disabled] {\n  background-color: #e6e6e6;\n  border-color: #b2b2b2;\n  color: #8c8c8c;\n  box-shadow: none;\n}\n.mu-input::-ms-clear {\n  display: none;\n}\n.mu-input[invalid],\n[invalid] .mu-input {\n  color: #fa541c;\n  border-color: #fa541c;\n}\n.mu-input[invalid]:focus,\n.mu-input[invalid][focus],\n[invalid] .mu-input:focus,\n[invalid] .mu-input[focus] {\n  box-shadow: 0 0 0 .2rem #ffbb96;\n}\ninput.mu-input {\n  height: 32px;\n  padding-left: 10px;\n  padding-right: 10px;\n}\ntextarea.mu-input {\n  padding: 5px 10px;\n  min-height: 80px;\n  resize: none;\n}\n.mu-input[input-shape=round],\n[input-shape=round] > .mu-input {\n  border-radius: 16px;\n}";
 styleInject(css$6);
 
 //
@@ -2159,7 +2159,7 @@ var Input = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$5
 }, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, undefined, undefined);
 
-var css$7 = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-box[fixed] > .mu-input-icon,\r\n.mu-input-box[fixed] > input {\r\n  cursor: pointer;\r\n}\r\n.mu-input-box[fixed] > .mu-input-icon[focus],\r\n.mu-input-box[fixed]:hover > .mu-input-icon {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-input-box[fixed]:hover > [icon=close] {\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-box > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon[type=button] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[type=button]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[type=button][icon=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [type=button]:hover,\r\n[invalid] .mu-input-box > [type=button]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
+var css$7 = ".mu-input-box {\n  position: relative;\n  display: inline-block;\n  width: 200px;\n}\n.mu-input-box:hover > .mu-input {\n  border-color: #1890ff;\n}\n.mu-input-box > .mu-input[disabled],\n.mu-input-box[disabled] > .mu-input {\n  border-color: #b2b2b2;\n}\n.mu-input-box > .mu-input {\n  width: 100%;\n  vertical-align: middle;\n  padding-right: 30px;\n}\n.mu-input-box[buttons=\"0\"] > .mu-input {\n  padding-right: 10px;\n}\n.mu-input-box[buttons=\"2\"] > input {\n  padding-right: 60px;\n}\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\n  right: 30px;\n}\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\n  left: 30px;\n  right: auto;\n}\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\n  padding-left: 60px;\n  padding-right: 10px;\n}\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\n  padding-left: 30px;\n  padding-right: 30px;\n}\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\n  right: 1px;\n}\n.mu-input-box[disabled] > .mu-input,\n.mu-input-box[readonly] > .mu-input {\n  padding-left: 10px;\n  padding-right: 10px;\n}\n.mu-input-box[disabled] > .mu-input-icon,\n.mu-input-box[readonly] > .mu-input-icon {\n  display: none;\n}\n.mu-input-box[fixed] > .mu-input-icon,\n.mu-input-box[fixed] > input {\n  cursor: pointer;\n}\n.mu-input-box[fixed] > .mu-input-icon[focus],\n.mu-input-box[fixed]:hover > .mu-input-icon {\n  fill: #40a9ff;\n  color: #40a9ff;\n}\n.mu-input-box[fixed]:hover > [icon=close] {\n  fill: rgba(0,0,0,.35);\n}\n.mu-input-box > .mu-dropdown {\n  min-width: 100%;\n}\n.mu-input-icon {\n  position: absolute;\n  z-index: 3;\n  top: 1px;\n  bottom: 1px;\n  right: 1px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 30px;\n  color: rgba(0,0,0,.35);\n  fill: rgba(0,0,0,.35);\n}\n.mu-input-icon:first-child {\n  left: 1px;\n  right: auto;\n}\n.mu-input-icon:first-child + input {\n  padding-left: 30px;\n  padding-right: 10px;\n}\n.mu-input-icon[type=button] {\n  cursor: pointer;\n}\n.mu-input-icon[type=button]:hover {\n  fill: #40a9ff;\n  color: #40a9ff;\n  background: rgba(0,0,0,.05);\n}\n.mu-input-icon[type=button][icon=close]:hover {\n  fill: #ff7a45;\n  color: #ff7a45;\n}\n.mu-input-box[invalid] > .mu-input,\n[invalid] .mu-input-box > .mu-input {\n  border-color: #fa541c;\n}\n.mu-input-box[invalid] > [type=button]:hover,\n[invalid] .mu-input-box > [type=button]:hover {\n  color: #fa541c;\n  fill: #fa541c;\n}";
 styleInject(css$7);
 
 var InputButton = {
@@ -2233,6 +2233,10 @@ var script$6 = {
     disabled: {
       type: Boolean,
       "default": false
+    },
+    editable: {
+      type: Boolean,
+      "default": true
     },
     icon: String,
     iconClass: String,
@@ -2781,153 +2785,16 @@ for (var COLLECTION_NAME$1 in domIterables) {
   }
 }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-/**
- * lodash (Custom Build) <https://lodash.com/>
- * Build: `lodash modularize exports="npm" -o ./`
- * Copyright jQuery Foundation and other contributors <https://jquery.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */
-
-/** `Object#toString` result references. */
-var objectTag = '[object Object]';
-/**
- * Checks if `value` is a host object in IE < 9.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a host object, else `false`.
- */
-
-function isHostObject(value) {
-  // Many host objects are `Object` objects that can coerce to strings
-  // despite having improperly defined `toString` methods.
-  var result = false;
-
-  if (value != null && typeof value.toString != 'function') {
-    try {
-      result = !!(value + '');
-    } catch (e) {}
-  }
-
-  return result;
-}
-/**
- * Creates a unary function that invokes `func` with its argument transformed.
- *
- * @private
- * @param {Function} func The function to wrap.
- * @param {Function} transform The argument transform.
- * @returns {Function} Returns the new function.
- */
-
-
-function overArg(func, transform) {
-  return function (arg) {
-    return func(transform(arg));
-  };
-}
 /** Used for built-in method references. */
 
 
-var funcProto = Function.prototype,
-    objectProto = Object.prototype;
+var funcProto = Function.prototype;
 /** Used to resolve the decompiled source of functions. */
 
 var funcToString = funcProto.toString;
-/** Used to check objects for own properties. */
-
-var hasOwnProperty$1 = objectProto.hasOwnProperty;
 /** Used to infer the `Object` constructor. */
 
 var objectCtorString = funcToString.call(Object);
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-
-var objectToString$1 = objectProto.toString;
-/** Built-in value references. */
-
-var getPrototype = overArg(Object.getPrototypeOf, Object);
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-
-function isObjectLike(value) {
-  return !!value && _typeof(value) == 'object';
-}
-/**
- * Checks if `value` is a plain object, that is, an object created by the
- * `Object` constructor or one with a `[[Prototype]]` of `null`.
- *
- * @static
- * @memberOf _
- * @since 0.8.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- * }
- *
- * _.isPlainObject(new Foo);
- * // => false
- *
- * _.isPlainObject([1, 2, 3]);
- * // => false
- *
- * _.isPlainObject({ 'x': 0, 'y': 0 });
- * // => true
- *
- * _.isPlainObject(Object.create(null));
- * // => true
- */
-
-
-function isPlainObject(value) {
-  if (!isObjectLike(value) || objectToString$1.call(value) != objectTag || isHostObject(value)) {
-    return false;
-  }
-
-  var proto = getPrototype(value);
-
-  if (proto === null) {
-    return true;
-  }
-
-  var Ctor = hasOwnProperty$1.call(proto, 'constructor') && proto.constructor;
-  return typeof Ctor == 'function' && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
-}
-
-var lodash_isplainobject = isPlainObject;
 
 var nativeAssign = Object.assign;
 
@@ -3142,7 +3009,7 @@ var script$7 = {
   }
 };
 
-var css$8 = ".mu-dropdown {\r\n  position: absolute;\r\n  z-index: 100;\r\n  display: none;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  box-shadow: none;\r\n  overflow: auto;\r\n  transition: opacity .2s ease-in-out;\r\n}\r\n.mu-dropdown[visible] {\r\n  display: block;\r\n}\r\nbody > .mu-dropdown {\r\n  position: fixed;\r\n}\r\n.mu-dropdown-list,\r\n.mu-dropdown-menu {\r\n  padding: 4px 0;\r\n}";
+var css$8 = ".mu-dropdown {\n  position: absolute;\n  z-index: 100;\n  display: none;\n  background: #fff;\n  border: 1px solid #ccc;\n  box-shadow: none;\n  overflow: auto;\n  transition: opacity .2s ease-in-out;\n}\n.mu-dropdown[visible] {\n  display: block;\n}\nbody > .mu-dropdown {\n  position: fixed;\n}\n.mu-dropdown-list,\n.mu-dropdown-menu {\n  padding: 4px 0;\n}";
 styleInject(css$8);
 
 /* script */
@@ -3220,7 +3087,7 @@ var script$8 = {
   }
 };
 
-var css$9 = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 10px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-list-item.active {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon:first-child {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}\r\n.mu-dropdown > .mu-list-item {\r\n  padding: 5px 10px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-menu > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}";
+var css$9 = ".mu-list-item {\n  position: relative;\n  line-height: 20px;\n  padding: 10px 10px;\n  overflow: hidden;\n}\n.mu-list-item:hover {\n  color: #1890ff;\n  fill: #1890ff;\n  background: rgba(0,0,0,.05);\n}\n.mu-list-item.active {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n}\n.mu-list-item > .mu-icon:first-child {\n  display: inline-block;\n  width: 20px;\n}\n.mu-list-item:not([multi-lines]) {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  cursor: default;\n}\n.mu-list-divider {\n  display: block;\n  margin-top: 4px;\n  margin-bottom: 4px;\n  height: 1px;\n  border-bottom: 1px solid rgba(0,0,0,.1);\n}\n.mu-list-divider:first-child,\n.mu-list-divider:last-child {\n  display: none;\n}\n.mu-dropdown > .mu-list-item {\n  padding: 5px 10px;\n  cursor: pointer;\n}\n.mu-dropdown-menu > .mu-list-item:hover {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n}";
 styleInject(css$9);
 
 /* script */
@@ -3281,11 +3148,24 @@ var Option = {
     }
   },
   props: {
-    value: String
+    value: String,
+    fields: Array,
+    option: [String, Number, Object]
   },
   computed: {
+    valueField: function valueField() {
+      return Object(this.fields).value || 'value';
+    },
+    labelField: function labelField() {
+      return Object(this.fields).label || 'label';
+    },
+    val: function val() {
+      var v = this.value === undefined ? Object(this.option)[this.valueField] : this.value;
+      return v === undefined ? this.option : v;
+    },
     caption: function caption() {
-      return this.label === undefined ? this.value : this.label;
+      var label = this.label === undefined ? Object(this.option)[this.labelField] : this.label;
+      return label || this.val;
     }
   },
   methods: {
@@ -3293,10 +3173,7 @@ var Option = {
       if (this.disabled) return;
 
       if (this.inputBox) {
-        this.inputBox.selectOption({
-          value: this.value,
-          label: this.label
-        });
+        this.inputBox.toggleOption(this.option || this.val);
       }
 
       this.$emit('click');
@@ -3305,44 +3182,45 @@ var Option = {
 };
 
 var script$9 = {
-  components: {
-    'mu-dropdown': Dropdown,
-    'mu-option': Option
-  },
+  popupComponent: Dropdown,
+  optionComponent: Option,
   "extends": InputBox,
   props: {
-    x: Object,
     value: [String, Number, Array],
     keepIconIndent: Boolean,
     dropdownHeight: String,
     dropdownWidth: String,
-    dropdownStyle: {
-      type: String,
-      "default": 'dropdownList',
-      validator: function validator(value) {
-        return ['none', 'dropdown', 'dropdownList', 'drawer', 'drawerList'].indexOf(value) !== -1;
-      }
-    },
     clearable: {
       type: Boolean,
       "default": true
     },
+    editable: {
+      type: Boolean,
+      "default": false
+    },
+    fields: Object,
+    options: Array,
     multiple: Boolean
   },
   data: function data() {
     return {
-      dropdownVisible: false
+      popupVisible: false
     };
   },
   computed: {
-    isListStyle: function isListStyle() {
-      return this.dropdownStyle.indexOf('List') > 0;
+    valueField: function valueField() {
+      return Object(this.fields).value;
+    },
+    popupProps: function popupProps() {
+      return {
+        keepIconIndent: this.keepIconIndent,
+        dropdownHeight: this.dropdownHeight,
+        dropdownWidth: this.dropdownWidth,
+        "class": 'mu-dropdown-list'
+      };
     },
     inputBtnType: function inputBtnType() {
-      return this.isListStyle ? 'icon' : this.dropdownStyle === 'none' ? false : 'button';
-    },
-    inputReadonly: function inputReadonly() {
-      return this.readonly || this.isListStyle;
+      return this.editable ? 'button' : 'icon';
     }
   },
   methods: {
@@ -3354,10 +3232,10 @@ var script$9 = {
       });
     },
     onInputClick: function onInputClick() {
-      if (this.isListStyle) this.dropdownVisible = !this.dropdownVisible;
+      if (!this.editable) this.popupVisible = !this.popupVisible;
     },
     onButtonClick: function onButtonClick() {
-      this.dropdownVisible = !this.dropdownVisible;
+      this.popupVisible = !this.popupVisible;
     },
     appendOption: function appendOption(option) {
       if (this.options) return;
@@ -3365,11 +3243,10 @@ var script$9 = {
     removeOption: function removeOption(option) {
       if (this.options) return;
     },
-    selectOption: function selectOption(option) {
+    Option: function Option(option) {
       this.inputValue = option.label || option.value;
-      this.dropdownVisible = false;
+      this.popupVisible = false;
       this.$emit('change', option);
-      console.log(lodash_isplainobject(this.x));
     }
   }
 };
@@ -3386,10 +3263,10 @@ var __vue_render__$9 = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _c("div", {
-    staticClass: "mu-input-box",
+    staticClass: "mu-input-box mu-combo-box",
     attrs: {
+      fixed: !_vm.editable,
       buttons: _vm.buttons,
-      fixed: _vm.isListStyle,
       disabled: _vm.disabled
     }
   }, [_c("mu-input", {
@@ -3397,8 +3274,8 @@ var __vue_render__$9 = function __vue_render__() {
       type: _vm.type,
       value: _vm.inputValue,
       disabled: _vm.disabled,
-      readonly: _vm.inputReadonly,
-      focus: _vm.dropdownVisible
+      readonly: _vm.readonly || !_vm.editable,
+      focus: _vm.popupVisible
     },
     on: {
       input: _vm.onInput,
@@ -3412,37 +3289,38 @@ var __vue_render__$9 = function __vue_render__() {
     on: {
       click: _vm.clear
     }
-  }) : _vm._e(), _vm._v(" "), _vm.inputBtnType ? _c("mu-input-button", {
+  }) : _vm._e(), _vm._v(" "), _c("mu-input-button", {
     staticClass: "mu-expand-trigger",
     attrs: {
       icon: "key-down",
-      "trigger-on": _vm.dropdownVisible,
-      "button-type": _vm.buttonType,
-      focus: _vm.dropdownVisible
+      "trigger-on": _vm.popupVisible,
+      "button-type": _vm.inputBtnType,
+      focus: _vm.popupVisible
     },
     on: {
       click: _vm.onButtonClick
     }
-  }) : _vm._e(), _vm._v(" "), _vm.inputBtnType ? _c("mu-dropdown", {
-    staticClass: "mu-dropdown-list",
-    attrs: {
-      width: _vm.dropdownWidth,
-      height: _vm.dropdownHeight,
-      "keep-icon-indent": _vm.multiple
-    },
+  }), _vm._v(" "), !_vm.disabled ? _c(_vm.$options.popupComponent, _vm._b({
+    tag: "component",
     model: {
-      value: _vm.dropdownVisible,
+      value: _vm.popupVisible,
       callback: function callback($$v) {
-        _vm.dropdownVisible = $$v;
+        _vm.popupVisible = $$v;
       },
-      expression: "dropdownVisible"
+      expression: "popupVisible"
     }
-  }, [!_vm.items ? _vm._t("default") : _vm._l(_vm.items, function (item) {
-    return _c("mu-option", {
-      key: item.value,
+  }, "component", _vm.popupProps, false), [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option) {
+    return _c(_vm.$options.optionComponent, {
+      key: Object(option)[_vm.valueField] || option,
+      tag: "component",
       attrs: {
-        value: item.value,
-        label: item.label
+        option: option,
+        fields: _vm.fields
+      },
+      on: {
+        click: function click($event) {
+          return _vm.toggleOption(option);
+        }
       }
     });
   })], 2) : _vm._e()], 1);
@@ -3509,7 +3387,7 @@ var ListDivider = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$a
 }, __vue_inject_styles__$a, {}, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, undefined, undefined);
 
-var css$a = ".mu-expand-trigger {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-expand-trigger[trigger-on] {\r\n  transform: rotate(-180deg);\r\n}";
+var css$a = ".mu-expand-trigger {\n  transition: transform .2s ease-in-out;\n}\n.mu-expand-trigger[trigger-on] {\n  transform: rotate(-180deg);\n}";
 styleInject(css$a);
 
 function hideDropdown() {

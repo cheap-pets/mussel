@@ -79,6 +79,10 @@
         type: Boolean,
         default: false
       },
+      editable: {
+        type: Boolean,
+        default: true
+      },
       icon: String,
       iconClass: String,
       readonly: Boolean,

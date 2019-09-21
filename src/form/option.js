@@ -8,21 +8,37 @@ export default {
     }
   },
   props: {
-    value: String
+    value: String,
+    fields: Array,
+    option: [String, Number, Object]
   },
   computed: {
+    valueField () {
+      return Object(this.fields).value || 'value'
+    },
+    labelField () {
+      return Object(this.fields).label || 'label'
+    },
+    val () {
+      const v =
+        this.value === undefined
+          ? Object(this.option)[this.valueField]
+          : this.value
+      return v === undefined ? this.option : v
+    },
     caption () {
-      return this.label === undefined ? this.value : this.label
+      const label =
+        this.label === undefined
+          ? Object(this.option)[this.labelField]
+          : this.label
+      return label || this.val
     }
   },
   methods: {
     onClick () {
       if (this.disabled) return
       if (this.inputBox) {
-        this.inputBox.selectOption({
-          value: this.value,
-          label: this.label
-        })
+        this.inputBox.toggleOption(this.option || this.val)
       }
       this.$emit('click')
     }

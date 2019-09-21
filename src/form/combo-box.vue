@@ -1,15 +1,15 @@
 <template>
   <div
-    class="mu-input-box"
+    class="mu-input-box mu-combo-box"
+    :fixed="!editable"
     :buttons="buttons"
-    :fixed="isListStyle"
     :disabled="disabled">
     <mu-input
       :type="type"
       :value="inputValue"
       :disabled="disabled"
-      :readonly="inputReadonly"
-      :focus="dropdownVisible"
+      :readonly="readonly || !editable"
+      :focus="popupVisible"
       @input="onInput"
       @click="onInputClick" />
     <mu-input-button
@@ -18,29 +18,28 @@
       icon="close"
       @click="clear" />
     <mu-input-button
-      v-if="inputBtnType"
       class="mu-expand-trigger"
       icon="key-down"
-      :trigger-on="dropdownVisible"
-      :button-type="buttonType"
-      :focus="dropdownVisible"
+      :trigger-on="popupVisible"
+      :button-type="inputBtnType"
+      :focus="popupVisible"
       @click="onButtonClick" />
-    <mu-dropdown
-      v-if="inputBtnType"
-      v-model="dropdownVisible"
-      class="mu-dropdown-list"
-      :width="dropdownWidth"
-      :height="dropdownHeight"
-      :keep-icon-indent="multiple">
-      <slot v-if="!items" />
+    <component
+      :is="$options.popupComponent"
+      v-if="!disabled"
+      v-model="popupVisible"
+      v-bind="popupProps">
+      <slot v-if="!options" />
       <template v-else>
-        <mu-option
-          v-for="item in items"
-          :key="item.value"
-          :value="item.value"
-          :label="item.label" />
+        <component
+          :is="$options.optionComponent"
+          v-for="option in options"
+          :key="Object(option)[valueField] || option"
+          :option="option"
+          :fields="fields"
+          @click="toggleOption(option)" />
       </template>
-    </mu-dropdown>
+    </component>
   </div>
 </template>
 
@@ -51,52 +50,45 @@
   import Option from './option.js'
 
   export default {
-    components: {
-      'mu-dropdown': Dropdown,
-      'mu-option': Option
-    },
+    popupComponent: Dropdown,
+    optionComponent: Option,
     extends: InputBox,
     props: {
-      x: Object,
       value: [String, Number, Array],
       keepIconIndent: Boolean,
       dropdownHeight: String,
       dropdownWidth: String,
-      dropdownStyle: {
-        type: String,
-        default: 'dropdownList',
-        validator (value) {
-          return [
-            'none',
-            'dropdown',
-            'dropdownList',
-            'drawer',
-            'drawerList'
-          ].indexOf(value) !== -1
-        }
-      },
       clearable: {
         type: Boolean,
         default: true
       },
+      editable: {
+        type: Boolean,
+        default: false
+      },
+      fields: Object,
+      options: Array,
       multiple: Boolean
     },
     data () {
       return {
-        dropdownVisible: false
+        popupVisible: false
       }
     },
     computed: {
-      isListStyle () {
-        return this.dropdownStyle.indexOf('List') > 0
+      valueField () {
+        return Object(this.fields).value
+      },
+      popupProps () {
+        return {
+          keepIconIndent: this.keepIconIndent,
+          dropdownHeight: this.dropdownHeight,
+          dropdownWidth: this.dropdownWidth,
+          class: 'mu-dropdown-list'
+        }
       },
       inputBtnType () {
-        return this.isListStyle
-          ? 'icon'
-          : (this.dropdownStyle === 'none' ? false : 'button')
-      },
-      inputReadonly () {
-        return this.readonly || this.isListStyle
+        return this.editable ? 'button' : 'icon'
       }
     },
     methods: {
@@ -106,10 +98,10 @@
         this.$emit('change', { value })
       },
       onInputClick () {
-        if (this.isListStyle) this.dropdownVisible = !this.dropdownVisible
+        if (!this.editable) this.popupVisible = !this.popupVisible
       },
       onButtonClick () {
-        this.dropdownVisible = !this.dropdownVisible
+        this.popupVisible = !this.popupVisible
       },
       appendOption (option) {
         if (this.options) return
@@ -117,12 +109,10 @@
       removeOption (option) {
         if (this.options) return
       },
-      selectOption (option) {
+      Option (option) {
         this.inputValue = option.label || option.value
-        this.dropdownVisible = false
+        this.popupVisible = false
         this.$emit('change', option)
-        
-        console.log(isPlainObject(this.x))
       }
     }
   }
