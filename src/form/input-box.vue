@@ -34,11 +34,6 @@
   import InputButton from './input-button.js'
 
   export default {
-    provide () {
-      return {
-        inputBox: this
-      }
-    },
     components: {
       'mu-input': Input,
       'mu-input-button': InputButton
@@ -110,15 +105,18 @@
     },
     watch: {
       value: {
-        handler (v) {
-          this.inputValue = v
+        handler (value) {
+          this.setInputValue(value)
         },
         immediate: true
       }
     },
     methods: {
-      onInput (value) {
+      setInputValue (value) {
         this.inputValue = value
+      },
+      onInput (value) {
+        this.setInputValue(value)
         this.$emit('change', value)
       },
       onButtonClick () {

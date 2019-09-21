@@ -1,11 +1,16 @@
 <template>
-  <div class="mu-list-item" @click="onClick">
+  <div
+    class="mu-list-item"
+    :class="className"
+    :active="_active"
+    :selected="_selected"
+    @click="onClick">
     <mu-icon
-      v-if="icon || iconClass || keepIconIndent"
-      :icon="icon"
-      :icon-class="iconClass"
+      v-if="_icon || _iconClass || keepIconIndent"
+      :icon="_icon"
+      :icon-class="_iconClass"
       @click="onButtonClick" />
-    <slot>{{ caption }}</slot>
+    <slot>{{ _label }}</slot>
   </div>
 </template>
 
@@ -22,15 +27,32 @@
       }
     },
     props: {
-      icon: String,
+      className: String,
       iconClass: String,
+      icon: String,
       label: String,
       active: Boolean,
-      disabled: Boolean
+      disabled: Boolean,
+      triggerIcon: String
     },
     computed: {
-      caption () {
+      _label () {
         return this.label
+      },
+      _icon () {
+        return this.icon
+      },
+      _iconClass () {
+        return this.iconClass
+      },
+      _active () {
+        return this.active
+      },
+      _selected () {
+        return this.selected
+      },
+      _triggerIcon () {
+        return this.triggerIcon
       }
     },
     methods: {
@@ -51,13 +73,19 @@
     padding: $(listItemYPaddingPx)px $(listItemXPaddingPx)px;
     overflow: hidden;
 
+    &[selected] {
+      color: $primaryColor;
+      fill: $primaryColor;
+      font-weight: 700;
+    }
+
     &:hover {
       color: $primaryColor;
       fill: $primaryColor;
       background: $listItemHoverBackground;
     }
 
-    &.active {
+    &[active] {
       color: #fff;
       fill: #fff;
       background: $primaryColor;

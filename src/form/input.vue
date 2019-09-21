@@ -22,10 +22,7 @@
         type: String,
         default: 'text'
       },
-      value: {
-        type: String,
-        value: ''
-      },
+      value: [String, Number],
       icon: {
         type: String,
         default: 'key-down'

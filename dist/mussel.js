@@ -33,7 +33,7 @@
     }
   }
 
-  var css = "* {\n  box-sizing: border-box;\n}\nhtml {\n  color: #1a1a1a;\n  font-size: 14px;\n  font-weight: 400;\n}\nbody {\n  font-size: 100%;\n}\nbutton,\nhtml {\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\n}";
+  var css = "* {\r\n  box-sizing: border-box;\r\n}\r\nhtml {\r\n  color: #1a1a1a;\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}";
   styleInject(css);
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -1070,7 +1070,7 @@
     }
   };
 
-  var css$1 = ".mu-flex-box {\n  position: relative;\n  display: flex;\n  align-items: stretch;\n}\n.mu-flex-box[direction=column] {\n  flex-direction: column;\n}\n.mu-flex-box[inline] {\n  display: inline-flex;\n}\n.mu-flex-box[flex-wrap] {\n  flex-wrap: wrap;\n  align-content: flex-start;\n}\n.mu-flex-box[justify-content=center] {\n  justify-content: center;\n}\n.mu-flex-box[align-items=flex-start] {\n  align-items: flex-start;\n}\n.mu-flex-box[align-items=center] {\n  align-items: center;\n}\n.mu-flex-box[align-items=stretch] {\n  align-items: stretch;\n}\n.mu-flex-box[flex-center] {\n  align-items: center;\n  justify-content: center;\n}\n.mu-flex-box[bordered] {\n  border: 1px solid #ddd;\n}\n.mu-flex-box[cellpadding],\n.mu-flex-box[itemspacing] {\n  padding: 8px;\n}\n.mu-flex-box [cellspacing],\n.mu-flex-box[itemspacing] > * {\n  margin: 8px;\n}\n.mu-flex-box > * {\n  position: relative;\n}\n.mu-flex-box > [flex-auto] {\n  flex: 1 1 auto!important;\n}\n.mu-flex-box > [flex-none] {\n  flex: 0 0 none!important;\n}\n.mu-flex-box[direction=column] > [size] {\n  height: 10px;\n}\n.mu-flex-box:not(direction=\"column\") > [size] {\n  width: 10px;\n}\n.mu-flex-box > [size=auto] {\n  flex-grow: 1;\n}\n.mu-flex-box > [size=\"1\"] {\n  flex-grow: 1;\n}\n.mu-flex-box > [size=\"2\"] {\n  flex-grow: 2;\n}\n.mu-flex-box > [size=\"3\"] {\n  flex-grow: 3;\n}\n.mu-flex-box > [size=\"4\"] {\n  flex-grow: 4;\n}\n.mu-flex-box > [size=\"5\"] {\n  flex-grow: 5;\n}\n.mu-flex-box > [size=\"6\"] {\n  flex-grow: 6;\n}\n.mu-flex-box > [size=\"7\"] {\n  flex-grow: 7;\n}\n.mu-flex-box > [size=\"8\"] {\n  flex-grow: 8;\n}";
+  var css$1 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[itemspacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[itemspacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box[direction=column] > [size] {\r\n  height: 10px;\r\n}\r\n.mu-flex-box:not(direction=\"column\") > [size] {\r\n  width: 10px;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex-grow: 2;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex-grow: 3;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex-grow: 4;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex-grow: 5;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex-grow: 6;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex-grow: 7;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex-grow: 8;\r\n}";
   styleInject(css$1);
 
   /* script */
@@ -1801,7 +1801,7 @@
     }
   };
 
-  var css$2 = ".mu-splitter {\n  background: rgba(0,0,0,.1);\n  border-radius: 4px;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n}\n.mu-splitter:hover {\n  background: rgba(0,0,0,.2);\n}\n.mu-splitter:first-child,\n.mu-splitter:last-child {\n  display: none;\n}\n[cellpadding] > .mu-splitter,\n[item-spacing] > .mu-splitter {\n  margin: 8px;\n}\n[direction=row] > .mu-splitter {\n  width: 4px;\n  margin-left: 0;\n  margin-right: 0;\n  cursor: col-resize;\n}\n[direction=column] > .mu-splitter {\n  height: 4px;\n  margin-top: 0;\n  margin-bottom: 0;\n  cursor: row-resize;\n}";
+  var css$2 = ".mu-splitter {\r\n  background: rgba(0,0,0,.1);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter:hover {\r\n  background: rgba(0,0,0,.2);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n  cursor: row-resize;\r\n}";
   styleInject(css$2);
 
   /* script */
@@ -1891,7 +1891,7 @@
     }
   };
 
-  var css$3 = ".mu-icon > svg {\n  vertical-align: -.15em;\n}";
+  var css$3 = ".mu-icon > svg {\r\n  vertical-align: -.15em;\r\n}";
   styleInject(css$3);
 
   /* script */
@@ -1952,7 +1952,7 @@
     staticRenderFns: __vue_staticRenderFns__$3
   }, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, undefined, undefined);
 
-  var css$4 = ".mu-button {\n  position: relative;\n  display: inline-block;\n  height: 32px;\n  padding: 5px 10px;\n  outline: 0;\n  border: 1px solid #666;\n  border-radius: 2px;\n  background: #fff;\n  line-height: 20px;\n  text-decoration: none;\n  text-align: center;\n  font-size: 1rem;\n  color: #666;\n  fill: #666;\n  cursor: pointer;\n}\n.mu-button::before {\n  display: inline-block;\n  width: 0;\n  content: '\\00a0';\n}\n.mu-button:not([button-type]),\n.mu-button[button-type=normal] {\n  box-shadow: none;\n}\n.mu-button:not([button-type])[button-style=link]:hover,\n.mu-button[button-type=normal][button-style=link]:hover {\n  color: #8c8c8c;\n  fill: #8c8c8c;\n}\n.mu-button:not([button-type])[active],\n.mu-button[button-type=normal][active] {\n  background: #404040;\n}\n.mu-button:not([button-type]):hover,\n.mu-button[button-type=normal]:hover {\n  background: #8c8c8c;\n  border-color: #8c8c8c;\n  box-shadow: 0 0 0 .2rem #d9d9d9;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button:not([button-type])[disabled][button-style=link],\n.mu-button[button-type=normal][disabled][button-style=link] {\n  color: #bfbfbf;\n  fill: #bfbfbf;\n}\n.mu-button:not([button-type])[disabled]:not([button-style=link]),\n.mu-button[button-type=normal][disabled]:not([button-style=link]) {\n  background: #bfbfbf;\n  border-color: #bfbfbf;\n}\n.mu-button[button-style=text] {\n  box-shadow: none;\n}\n.mu-button[button-style=link],\n.mu-button[disabled] {\n  box-shadow: none!important;\n}\n.mu-button[button-type=primary] {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n  border-color: #1890ff;\n  box-shadow: none;\n}\n.mu-button[button-type=primary][button-style=link] {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-type=primary][button-style=link]:hover {\n  color: #40a9ff;\n  fill: #40a9ff;\n}\n.mu-button[button-type=primary][button-style=outline],\n.mu-button[button-type=primary][button-style=text] {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-type=primary][active] {\n  background: #096dd9;\n  border-color: #096dd9;\n  box-shadow: none;\n}\n.mu-button[button-type=primary]:hover {\n  background: #40a9ff;\n  border-color: #40a9ff;\n  box-shadow: 0 0 0 .2rem #91d5ff;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=primary][disabled][button-style=link] {\n  color: #91d5ff;\n  fill: #91d5ff;\n}\n.mu-button[button-type=primary][disabled]:not([button-style=link]) {\n  background: #91d5ff;\n  border-color: #91d5ff;\n}\n.mu-button[button-type=submit] {\n  color: #fff;\n  fill: #fff;\n  background: #52c41a;\n  border-color: #52c41a;\n  box-shadow: none;\n}\n.mu-button[button-type=submit][button-style=link] {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-button[button-type=submit][button-style=link]:hover {\n  color: #73d13d;\n  fill: #73d13d;\n}\n.mu-button[button-type=submit][button-style=outline],\n.mu-button[button-type=submit][button-style=text] {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-button[button-type=submit][active] {\n  background: #389e0d;\n  border-color: #389e0d;\n  box-shadow: none;\n}\n.mu-button[button-type=submit]:hover {\n  background: #73d13d;\n  border-color: #73d13d;\n  box-shadow: 0 0 0 .2rem #b7eb8f;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=submit][disabled][button-style=link] {\n  color: #b7eb8f;\n  fill: #b7eb8f;\n}\n.mu-button[button-type=submit][disabled]:not([button-style=link]) {\n  background: #b7eb8f;\n  border-color: #b7eb8f;\n}\n.mu-button[button-type=danger] {\n  color: #fff;\n  fill: #fff;\n  background: #fa541c;\n  border-color: #fa541c;\n  box-shadow: none;\n}\n.mu-button[button-type=danger][button-style=link] {\n  color: #fa541c;\n  fill: #fa541c;\n}\n.mu-button[button-type=danger][button-style=link]:hover {\n  color: #ff7a45;\n  fill: #ff7a45;\n}\n.mu-button[button-type=danger][button-style=outline],\n.mu-button[button-type=danger][button-style=text] {\n  color: #fa541c;\n  fill: #fa541c;\n}\n.mu-button[button-type=danger][active] {\n  background: #d4380d;\n  border-color: #d4380d;\n  box-shadow: none;\n}\n.mu-button[button-type=danger]:hover {\n  background: #ff7a45;\n  border-color: #ff7a45;\n  box-shadow: 0 0 0 .2rem #ffbb96;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=danger][disabled][button-style=link] {\n  color: #ffbb96;\n  fill: #ffbb96;\n}\n.mu-button[button-type=danger][disabled]:not([button-style=link]) {\n  background: #ffbb96;\n  border-color: #ffbb96;\n}\n.mu-button[button-style=link],\n.mu-button[button-style=link]:hover,\n.mu-button[button-style=link][active],\n.mu-button[button-style=text] {\n  background: 0 0;\n  border-color: transparent;\n  box-shadow: none;\n}\n.mu-button[button-style=outline] {\n  background: #fff;\n}\n.mu-button[button-style=link]:not([disabled]):hover {\n  text-decoration: underline;\n}\n.mu-button[active] {\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[disabled] {\n  cursor: default;\n}\n.mu-button[disabled]:not([button-style=link]) {\n  color: rgba(255,255,255,.7);\n  fill: rgba(255,255,255,.7);\n}\n.mu-button:empty,\n.mu-button[icon-only] {\n  width: 32px;\n  padding-left: 0;\n  padding-right: 0;\n}";
+  var css$4 = ".mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n  background: #fff;\r\n  line-height: 20px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button:not([button-type]),\r\n.mu-button[button-type=normal] {\r\n  box-shadow: none;\r\n}\r\n.mu-button:not([button-type])[button-style=link]:hover,\r\n.mu-button[button-type=normal][button-style=link]:hover {\r\n  color: #8c8c8c;\r\n  fill: #8c8c8c;\r\n}\r\n.mu-button:not([button-type])[active],\r\n.mu-button[button-type=normal][active] {\r\n  background: #404040;\r\n}\r\n.mu-button:not([button-type]):hover,\r\n.mu-button[button-type=normal]:hover {\r\n  background: #8c8c8c;\r\n  border-color: #8c8c8c;\r\n  box-shadow: 0 0 0 .2rem #d9d9d9;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button:not([button-type])[disabled][button-style=link],\r\n.mu-button[button-type=normal][disabled][button-style=link] {\r\n  color: #bfbfbf;\r\n  fill: #bfbfbf;\r\n}\r\n.mu-button:not([button-type])[disabled]:not([button-style=link]),\r\n.mu-button[button-type=normal][disabled]:not([button-style=link]) {\r\n  background: #bfbfbf;\r\n  border-color: #bfbfbf;\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[disabled] {\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  border-color: #1890ff;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary][button-style=link] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover {\r\n  color: #40a9ff;\r\n  fill: #40a9ff;\r\n}\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  border-color: #096dd9;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  border-color: #40a9ff;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][disabled][button-style=link] {\r\n  color: #91d5ff;\r\n  fill: #91d5ff;\r\n}\r\n.mu-button[button-type=primary][disabled]:not([button-style=link]) {\r\n  background: #91d5ff;\r\n  border-color: #91d5ff;\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #52c41a;\r\n  border-color: #52c41a;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit][button-style=link] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover {\r\n  color: #73d13d;\r\n  fill: #73d13d;\r\n}\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  border-color: #389e0d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  border-color: #73d13d;\r\n  box-shadow: 0 0 0 .2rem #b7eb8f;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][disabled][button-style=link] {\r\n  color: #b7eb8f;\r\n  fill: #b7eb8f;\r\n}\r\n.mu-button[button-type=submit][disabled]:not([button-style=link]) {\r\n  background: #b7eb8f;\r\n  border-color: #b7eb8f;\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #fa541c;\r\n  border-color: #fa541c;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger][button-style=link] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover {\r\n  color: #ff7a45;\r\n  fill: #ff7a45;\r\n}\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #d4380d;\r\n  border-color: #d4380d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff7a45;\r\n  border-color: #ff7a45;\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][disabled][button-style=link] {\r\n  color: #ffbb96;\r\n  fill: #ffbb96;\r\n}\r\n.mu-button[button-type=danger][disabled]:not([button-style=link]) {\r\n  background: #ffbb96;\r\n  border-color: #ffbb96;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[button-style=link]:hover,\r\n.mu-button[button-style=link][active],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n  border-color: transparent;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=outline] {\r\n  background: #fff;\r\n}\r\n.mu-button[button-style=link]:not([disabled]):hover {\r\n  text-decoration: underline;\r\n}\r\n.mu-button[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[disabled] {\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  color: rgba(255,255,255,.7);\r\n  fill: rgba(255,255,255,.7);\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}";
   styleInject(css$4);
 
   var Button = {
@@ -2034,7 +2034,7 @@
   //
   var script$4 = {};
 
-  var css$5 = ".mu-button-group {\n  position: relative;\n  display: inline-block;\n  border-radius: 2px;\n}\n.mu-button-group > .mu-button {\n  float: left;\n  box-shadow: none;\n  z-index: 0;\n}\n.mu-button-group > .mu-button:hover:not([disabled]) {\n  z-index: 1;\n}\n.mu-button-group > .mu-button:not(:first-child) {\n  border-top-left-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\n  border-left-color: rgba(255,255,255,.5);\n}\n.mu-button-group > .mu-button:not(:last-child) {\n  margin-right: -1px;\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 0;\n}\n[button-shape=round],\n[button-shape=round] > .mu-button {\n  border-radius: 16px;\n}";
+  var css$5 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  border-radius: 2px;\r\n}\r\n.mu-button-group > .mu-button {\r\n  float: left;\r\n  box-shadow: none;\r\n  z-index: 0;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child) {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$5);
 
   /* script */
@@ -2076,10 +2076,9 @@
     staticRenderFns: __vue_staticRenderFns__$4
   }, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, undefined, undefined);
 
-  var css$6 = ".mu-input {\n  position: relative;\n  z-index: 1;\n  width: 200px;\n  border: 1px solid #b2b2b2;\n  border-radius: 2px;\n  outline: 0;\n  background-color: #fff;\n  color: #404040;\n  line-height: 20px;\n  font-size: 1rem;\n}\n.mu-input:focus,\n.mu-input:hover,\n.mu-input[focus] {\n  border-color: #1890ff;\n}\n.mu-input:focus,\n.mu-input[focus] {\n  z-index: 2;\n  text-align: left!important;\n  box-shadow: 0 0 0 .2rem #91d5ff;\n}\n.mu-input[readonly] {\n  background-color: #feffe6;\n}\n.mu-input[disabled] {\n  background-color: #e6e6e6;\n  border-color: #b2b2b2;\n  color: #8c8c8c;\n  box-shadow: none;\n}\n.mu-input::-ms-clear {\n  display: none;\n}\n.mu-input[invalid],\n[invalid] .mu-input {\n  color: #fa541c;\n  border-color: #fa541c;\n}\n.mu-input[invalid]:focus,\n.mu-input[invalid][focus],\n[invalid] .mu-input:focus,\n[invalid] .mu-input[focus] {\n  box-shadow: 0 0 0 .2rem #ffbb96;\n}\ninput.mu-input {\n  height: 32px;\n  padding-left: 10px;\n  padding-right: 10px;\n}\ntextarea.mu-input {\n  padding: 5px 10px;\n  min-height: 80px;\n  resize: none;\n}\n.mu-input[input-shape=round],\n[input-shape=round] > .mu-input {\n  border-radius: 16px;\n}";
+  var css$6 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #8c8c8c;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$6);
 
-  //
   var script$5 = {
     model: {
       prop: 'value',
@@ -2090,10 +2089,7 @@
         type: String,
         "default": 'text'
       },
-      value: {
-        type: String,
-        value: ''
-      },
+      value: [String, Number],
       icon: {
         type: String,
         "default": 'key-down'
@@ -2165,7 +2161,7 @@
     staticRenderFns: __vue_staticRenderFns__$5
   }, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, undefined, undefined);
 
-  var css$7 = ".mu-input-box {\n  position: relative;\n  display: inline-block;\n  width: 200px;\n}\n.mu-input-box:hover > .mu-input {\n  border-color: #1890ff;\n}\n.mu-input-box > .mu-input[disabled],\n.mu-input-box[disabled] > .mu-input {\n  border-color: #b2b2b2;\n}\n.mu-input-box > .mu-input {\n  width: 100%;\n  vertical-align: middle;\n  padding-right: 30px;\n}\n.mu-input-box[buttons=\"0\"] > .mu-input {\n  padding-right: 10px;\n}\n.mu-input-box[buttons=\"2\"] > input {\n  padding-right: 60px;\n}\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\n  right: 30px;\n}\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\n  left: 30px;\n  right: auto;\n}\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\n  padding-left: 60px;\n  padding-right: 10px;\n}\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\n  padding-left: 30px;\n  padding-right: 30px;\n}\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\n  right: 1px;\n}\n.mu-input-box[disabled] > .mu-input,\n.mu-input-box[readonly] > .mu-input {\n  padding-left: 10px;\n  padding-right: 10px;\n}\n.mu-input-box[disabled] > .mu-input-icon,\n.mu-input-box[readonly] > .mu-input-icon {\n  display: none;\n}\n.mu-input-box[fixed] > .mu-input-icon,\n.mu-input-box[fixed] > input {\n  cursor: pointer;\n}\n.mu-input-box[fixed] > .mu-input-icon[focus],\n.mu-input-box[fixed]:hover > .mu-input-icon {\n  fill: #40a9ff;\n  color: #40a9ff;\n}\n.mu-input-box[fixed]:hover > [icon=close] {\n  fill: rgba(0,0,0,.35);\n}\n.mu-input-box > .mu-dropdown {\n  min-width: 100%;\n}\n.mu-input-icon {\n  position: absolute;\n  z-index: 3;\n  top: 1px;\n  bottom: 1px;\n  right: 1px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 30px;\n  color: rgba(0,0,0,.35);\n  fill: rgba(0,0,0,.35);\n}\n.mu-input-icon:first-child {\n  left: 1px;\n  right: auto;\n}\n.mu-input-icon:first-child + input {\n  padding-left: 30px;\n  padding-right: 10px;\n}\n.mu-input-icon[type=button] {\n  cursor: pointer;\n}\n.mu-input-icon[type=button]:hover {\n  fill: #40a9ff;\n  color: #40a9ff;\n  background: rgba(0,0,0,.05);\n}\n.mu-input-icon[type=button][icon=close]:hover {\n  fill: #ff7a45;\n  color: #ff7a45;\n}\n.mu-input-box[invalid] > .mu-input,\n[invalid] .mu-input-box > .mu-input {\n  border-color: #fa541c;\n}\n.mu-input-box[invalid] > [type=button]:hover,\n[invalid] .mu-input-box > [type=button]:hover {\n  color: #fa541c;\n  fill: #fa541c;\n}";
+  var css$7 = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-box[fixed] > .mu-input-icon,\r\n.mu-input-box[fixed] > input {\r\n  cursor: pointer;\r\n}\r\n.mu-input-box[fixed] > .mu-input-icon[focus],\r\n.mu-input-box[fixed]:hover > .mu-input-icon {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-input-box[fixed]:hover > [icon=close] {\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-box > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon[type=button] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[type=button]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[type=button][icon=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [type=button]:hover,\r\n[invalid] .mu-input-box > [type=button]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
   styleInject(css$7);
 
   var InputButton = {
@@ -2195,11 +2191,6 @@
   };
 
   var script$6 = {
-    provide: function provide() {
-      return {
-        inputBox: this
-      };
-    },
     components: {
       'mu-input': Input,
       'mu-input-button': InputButton
@@ -2267,15 +2258,18 @@
     },
     watch: {
       value: {
-        handler: function handler(v) {
-          this.inputValue = v;
+        handler: function handler(value) {
+          this.setInputValue(value);
         },
         immediate: true
       }
     },
     methods: {
-      onInput: function onInput(value) {
+      setInputValue: function setInputValue(value) {
         this.inputValue = value;
+      },
+      onInput: function onInput(value) {
+        this.setInputValue(value);
         this.$emit('change', value);
       },
       onButtonClick: function onButtonClick() {
@@ -2434,6 +2428,185 @@
     ArrayPrototype[UNSCOPABLES][key] = true;
   };
 
+  var $find = arrayIteration.find;
+
+
+  var FIND = 'find';
+  var SKIPS_HOLES = true;
+
+  // Shouldn't skip holes
+  if (FIND in []) Array(1)[FIND](function () { SKIPS_HOLES = false; });
+
+  // `Array.prototype.find` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.find
+  _export({ target: 'Array', proto: true, forced: SKIPS_HOLES }, {
+    find: function find(callbackfn /* , that = undefined */) {
+      return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    }
+  });
+
+  // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+  addToUnscopables(FIND);
+
+  var $findIndex = arrayIteration.findIndex;
+
+
+  var FIND_INDEX = 'findIndex';
+  var SKIPS_HOLES$1 = true;
+
+  // Shouldn't skip holes
+  if (FIND_INDEX in []) Array(1)[FIND_INDEX](function () { SKIPS_HOLES$1 = false; });
+
+  // `Array.prototype.findIndex` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.findindex
+  _export({ target: 'Array', proto: true, forced: SKIPS_HOLES$1 }, {
+    findIndex: function findIndex(callbackfn /* , that = undefined */) {
+      return $findIndex(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    }
+  });
+
+  // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+  addToUnscopables(FIND_INDEX);
+
+  // call something on iterator step with safe closing on error
+  var callWithSafeIterationClosing = function (iterator, fn, value, ENTRIES) {
+    try {
+      return ENTRIES ? fn(anObject(value)[0], value[1]) : fn(value);
+    // 7.4.6 IteratorClose(iterator, completion)
+    } catch (error) {
+      var returnMethod = iterator['return'];
+      if (returnMethod !== undefined) anObject(returnMethod.call(iterator));
+      throw error;
+    }
+  };
+
+  var iterators = {};
+
+  var ITERATOR = wellKnownSymbol('iterator');
+  var ArrayPrototype$1 = Array.prototype;
+
+  // check on default Array iterator
+  var isArrayIteratorMethod = function (it) {
+    return it !== undefined && (iterators.Array === it || ArrayPrototype$1[ITERATOR] === it);
+  };
+
+  var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
+  // ES3 wrong here
+  var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
+
+  // fallback for IE11 Script Access Denied error
+  var tryGet = function (it, key) {
+    try {
+      return it[key];
+    } catch (error) { /* empty */ }
+  };
+
+  // getting tag from ES6+ `Object.prototype.toString`
+  var classof = function (it) {
+    var O, tag, result;
+    return it === undefined ? 'Undefined' : it === null ? 'Null'
+      // @@toStringTag case
+      : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$1)) == 'string' ? tag
+      // builtinTag case
+      : CORRECT_ARGUMENTS ? classofRaw(O)
+      // ES3 arguments fallback
+      : (result = classofRaw(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : result;
+  };
+
+  var ITERATOR$1 = wellKnownSymbol('iterator');
+
+  var getIteratorMethod = function (it) {
+    if (it != undefined) return it[ITERATOR$1]
+      || it['@@iterator']
+      || iterators[classof(it)];
+  };
+
+  // `Array.from` method implementation
+  // https://tc39.github.io/ecma262/#sec-array.from
+  var arrayFrom = function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
+    var O = toObject(arrayLike);
+    var C = typeof this == 'function' ? this : Array;
+    var argumentsLength = arguments.length;
+    var mapfn = argumentsLength > 1 ? arguments[1] : undefined;
+    var mapping = mapfn !== undefined;
+    var index = 0;
+    var iteratorMethod = getIteratorMethod(O);
+    var length, result, step, iterator;
+    if (mapping) mapfn = bindContext(mapfn, argumentsLength > 2 ? arguments[2] : undefined, 2);
+    // if the target is not iterable or it's an array with the default iterator - use a simple case
+    if (iteratorMethod != undefined && !(C == Array && isArrayIteratorMethod(iteratorMethod))) {
+      iterator = iteratorMethod.call(O);
+      result = new C();
+      for (;!(step = iterator.next()).done; index++) {
+        createProperty(result, index, mapping
+          ? callWithSafeIterationClosing(iterator, mapfn, [step.value, index], true)
+          : step.value
+        );
+      }
+    } else {
+      length = toLength(O.length);
+      result = new C(length);
+      for (;length > index; index++) {
+        createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
+      }
+    }
+    result.length = index;
+    return result;
+  };
+
+  var ITERATOR$2 = wellKnownSymbol('iterator');
+  var SAFE_CLOSING = false;
+
+  try {
+    var called = 0;
+    var iteratorWithReturn = {
+      next: function () {
+        return { done: !!called++ };
+      },
+      'return': function () {
+        SAFE_CLOSING = true;
+      }
+    };
+    iteratorWithReturn[ITERATOR$2] = function () {
+      return this;
+    };
+    // eslint-disable-next-line no-throw-literal
+    Array.from(iteratorWithReturn, function () { throw 2; });
+  } catch (error) { /* empty */ }
+
+  var checkCorrectnessOfIteration = function (exec, SKIP_CLOSING) {
+    if (!SKIP_CLOSING && !SAFE_CLOSING) return false;
+    var ITERATION_SUPPORT = false;
+    try {
+      var object = {};
+      object[ITERATOR$2] = function () {
+        return {
+          next: function () {
+            return { done: ITERATION_SUPPORT = true };
+          }
+        };
+      };
+      exec(object);
+    } catch (error) { /* empty */ }
+    return ITERATION_SUPPORT;
+  };
+
+  var INCORRECT_ITERATION = !checkCorrectnessOfIteration(function (iterable) {
+    Array.from(iterable);
+  });
+
+  // `Array.from` method
+  // https://tc39.github.io/ecma262/#sec-array.from
+  _export({ target: 'Array', stat: true, forced: INCORRECT_ITERATION }, {
+    from: arrayFrom
+  });
+
+  // `Array.isArray` method
+  // https://tc39.github.io/ecma262/#sec-array.isarray
+  _export({ target: 'Array', stat: true }, {
+    isArray: isArray
+  });
+
   var correctPrototypeGetter = !fails(function () {
     function F() { /* empty */ }
     F.prototype.constructor = null;
@@ -2453,7 +2626,7 @@
     } return O instanceof Object ? ObjectPrototype$1 : null;
   };
 
-  var ITERATOR = wellKnownSymbol('iterator');
+  var ITERATOR$3 = wellKnownSymbol('iterator');
   var BUGGY_SAFARI_ITERATORS = false;
 
   var returnThis = function () { return this; };
@@ -2475,7 +2648,7 @@
   if (IteratorPrototype == undefined) IteratorPrototype = {};
 
   // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-  if ( !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
+  if ( !has(IteratorPrototype, ITERATOR$3)) hide(IteratorPrototype, ITERATOR$3, returnThis);
 
   var iteratorsCore = {
     IteratorPrototype: IteratorPrototype,
@@ -2484,21 +2657,28 @@
 
   var IteratorPrototype$1 = iteratorsCore.IteratorPrototype;
 
+
+
+
+
+  var returnThis$1 = function () { return this; };
+
   var createIteratorConstructor = function (IteratorConstructor, NAME, next) {
     var TO_STRING_TAG = NAME + ' Iterator';
     IteratorConstructor.prototype = objectCreate(IteratorPrototype$1, { next: createPropertyDescriptor(1, next) });
     setToStringTag(IteratorConstructor, TO_STRING_TAG, false);
+    iterators[TO_STRING_TAG] = returnThis$1;
     return IteratorConstructor;
   };
 
   var IteratorPrototype$2 = iteratorsCore.IteratorPrototype;
   var BUGGY_SAFARI_ITERATORS$1 = iteratorsCore.BUGGY_SAFARI_ITERATORS;
-  var ITERATOR$1 = wellKnownSymbol('iterator');
+  var ITERATOR$4 = wellKnownSymbol('iterator');
   var KEYS = 'keys';
   var VALUES = 'values';
   var ENTRIES = 'entries';
 
-  var returnThis$1 = function () { return this; };
+  var returnThis$2 = function () { return this; };
 
   var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, IS_SET, FORCED) {
     createIteratorConstructor(IteratorConstructor, NAME, next);
@@ -2516,7 +2696,7 @@
     var TO_STRING_TAG = NAME + ' Iterator';
     var INCORRECT_VALUES_NAME = false;
     var IterablePrototype = Iterable.prototype;
-    var nativeIterator = IterablePrototype[ITERATOR$1]
+    var nativeIterator = IterablePrototype[ITERATOR$4]
       || IterablePrototype['@@iterator']
       || DEFAULT && IterablePrototype[DEFAULT];
     var defaultIterator = !BUGGY_SAFARI_ITERATORS$1 && nativeIterator || getIterationMethod(DEFAULT);
@@ -2530,8 +2710,8 @@
         if ( objectGetPrototypeOf(CurrentIteratorPrototype) !== IteratorPrototype$2) {
           if (objectSetPrototypeOf) {
             objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
-          } else if (typeof CurrentIteratorPrototype[ITERATOR$1] != 'function') {
-            hide(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
+          } else if (typeof CurrentIteratorPrototype[ITERATOR$4] != 'function') {
+            hide(CurrentIteratorPrototype, ITERATOR$4, returnThis$2);
           }
         }
         // Set @@toStringTag to native iterators
@@ -2546,9 +2726,10 @@
     }
 
     // define iterator
-    if ( IterablePrototype[ITERATOR$1] !== defaultIterator) {
-      hide(IterablePrototype, ITERATOR$1, defaultIterator);
+    if ( IterablePrototype[ITERATOR$4] !== defaultIterator) {
+      hide(IterablePrototype, ITERATOR$4, defaultIterator);
     }
+    iterators[NAME] = defaultIterator;
 
     // export additional methods
     if (DEFAULT) {
@@ -2604,10 +2785,97 @@
     return { value: [index, target[index]], done: false };
   }, 'values');
 
+  // argumentsList[@@iterator] is %ArrayProto_values%
+  // https://tc39.github.io/ecma262/#sec-createunmappedargumentsobject
+  // https://tc39.github.io/ecma262/#sec-createmappedargumentsobject
+  iterators.Arguments = iterators.Array;
+
   // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
   addToUnscopables('keys');
   addToUnscopables('values');
   addToUnscopables('entries');
+
+  var nativeJoin = [].join;
+
+  var ES3_STRINGS = indexedObject != Object;
+  var SLOPPY_METHOD$1 = sloppyArrayMethod('join', ',');
+
+  // `Array.prototype.join` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.join
+  _export({ target: 'Array', proto: true, forced: ES3_STRINGS || SLOPPY_METHOD$1 }, {
+    join: function join(separator) {
+      return nativeJoin.call(toIndexedObject(this), separator === undefined ? ',' : separator);
+    }
+  });
+
+  var $map = arrayIteration.map;
+
+
+  // `Array.prototype.map` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.map
+  // with adding support of @@species
+  _export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('map') }, {
+    map: function map(callbackfn /* , thisArg */) {
+      return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    }
+  });
+
+  var max$1 = Math.max;
+  var min$2 = Math.min;
+  var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
+  var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded';
+
+  // `Array.prototype.splice` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.splice
+  // with adding support of @@species
+  _export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('splice') }, {
+    splice: function splice(start, deleteCount /* , ...items */) {
+      var O = toObject(this);
+      var len = toLength(O.length);
+      var actualStart = toAbsoluteIndex(start, len);
+      var argumentsLength = arguments.length;
+      var insertCount, actualDeleteCount, A, k, from, to;
+      if (argumentsLength === 0) {
+        insertCount = actualDeleteCount = 0;
+      } else if (argumentsLength === 1) {
+        insertCount = 0;
+        actualDeleteCount = len - actualStart;
+      } else {
+        insertCount = argumentsLength - 2;
+        actualDeleteCount = min$2(max$1(toInteger(deleteCount), 0), len - actualStart);
+      }
+      if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER$1) {
+        throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
+      }
+      A = arraySpeciesCreate(O, actualDeleteCount);
+      for (k = 0; k < actualDeleteCount; k++) {
+        from = actualStart + k;
+        if (from in O) createProperty(A, k, O[from]);
+      }
+      A.length = actualDeleteCount;
+      if (insertCount < actualDeleteCount) {
+        for (k = actualStart; k < len - actualDeleteCount; k++) {
+          from = k + actualDeleteCount;
+          to = k + insertCount;
+          if (from in O) O[to] = O[from];
+          else delete O[to];
+        }
+        for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
+      } else if (insertCount > actualDeleteCount) {
+        for (k = len - actualDeleteCount; k > actualStart; k--) {
+          from = k + actualDeleteCount - 1;
+          to = k + insertCount - 1;
+          if (from in O) O[to] = O[from];
+          else delete O[to];
+        }
+      }
+      for (k = 0; k < insertCount; k++) {
+        O[k + actualStart] = arguments[k + 2];
+      }
+      O.length = len - actualDeleteCount + insertCount;
+      return A;
+    }
+  });
 
   var DatePrototype = Date.prototype;
   var INVALID_DATE = 'Invalid Date';
@@ -2624,39 +2892,6 @@
       return value === value ? nativeDateToString.call(this) : INVALID_DATE;
     });
   }
-
-  var FAILS_ON_PRIMITIVES$2 = fails(function () { objectGetPrototypeOf(1); });
-
-  // `Object.getPrototypeOf` method
-  // https://tc39.github.io/ecma262/#sec-object.getprototypeof
-  _export({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES$2, sham: !correctPrototypeGetter }, {
-    getPrototypeOf: function getPrototypeOf(it) {
-      return objectGetPrototypeOf(toObject(it));
-    }
-  });
-
-  var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
-  // ES3 wrong here
-  var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
-
-  // fallback for IE11 Script Access Denied error
-  var tryGet = function (it, key) {
-    try {
-      return it[key];
-    } catch (error) { /* empty */ }
-  };
-
-  // getting tag from ES6+ `Object.prototype.toString`
-  var classof = function (it) {
-    var O, tag, result;
-    return it === undefined ? 'Undefined' : it === null ? 'Null'
-      // @@toStringTag case
-      : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$1)) == 'string' ? tag
-      // builtinTag case
-      : CORRECT_ARGUMENTS ? classofRaw(O)
-      // ES3 arguments fallback
-      : (result = classofRaw(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : result;
-  };
 
   var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
   var test$1 = {};
@@ -2765,7 +3000,7 @@
     return { value: point, done: false };
   });
 
-  var ITERATOR$2 = wellKnownSymbol('iterator');
+  var ITERATOR$5 = wellKnownSymbol('iterator');
   var TO_STRING_TAG$3 = wellKnownSymbol('toStringTag');
   var ArrayValues = es_array_iterator.values;
 
@@ -2774,10 +3009,10 @@
     var CollectionPrototype$1 = Collection$1 && Collection$1.prototype;
     if (CollectionPrototype$1) {
       // some Chrome versions have non-configurable methods on DOMTokenList
-      if (CollectionPrototype$1[ITERATOR$2] !== ArrayValues) try {
-        hide(CollectionPrototype$1, ITERATOR$2, ArrayValues);
+      if (CollectionPrototype$1[ITERATOR$5] !== ArrayValues) try {
+        hide(CollectionPrototype$1, ITERATOR$5, ArrayValues);
       } catch (error) {
-        CollectionPrototype$1[ITERATOR$2] = ArrayValues;
+        CollectionPrototype$1[ITERATOR$5] = ArrayValues;
       }
       if (!CollectionPrototype$1[TO_STRING_TAG$3]) hide(CollectionPrototype$1, TO_STRING_TAG$3, COLLECTION_NAME$1);
       if (domIterables[COLLECTION_NAME$1]) for (var METHOD_NAME in es_array_iterator) {
@@ -2791,16 +3026,32 @@
     }
   }
 
-  /** Used for built-in method references. */
+  var userAgent = getBuiltIn('navigator', 'userAgent') || '';
 
+  var slice = [].slice;
+  var MSIE = /MSIE .\./.test(userAgent); // <- dirty ie9- check
 
-  var funcProto = Function.prototype;
-  /** Used to resolve the decompiled source of functions. */
+  var wrap$1 = function (scheduler) {
+    return function (handler, timeout /* , ...arguments */) {
+      var boundArgs = arguments.length > 2;
+      var args = boundArgs ? slice.call(arguments, 2) : undefined;
+      return scheduler(boundArgs ? function () {
+        // eslint-disable-next-line no-new-func
+        (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
+      } : handler, timeout);
+    };
+  };
 
-  var funcToString = funcProto.toString;
-  /** Used to infer the `Object` constructor. */
-
-  var objectCtorString = funcToString.call(Object);
+  // ie9- setTimeout & setInterval additional parameters fix
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
+  _export({ global: true, bind: true, forced: MSIE }, {
+    // `setTimeout` method
+    // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
+    setTimeout: wrap$1(global_1.setTimeout),
+    // `setInterval` method
+    // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
+    setInterval: wrap$1(global_1.setInterval)
+  });
 
   var nativeAssign = Object.assign;
 
@@ -3015,7 +3266,7 @@
     }
   };
 
-  var css$8 = ".mu-dropdown {\n  position: absolute;\n  z-index: 100;\n  display: none;\n  background: #fff;\n  border: 1px solid #ccc;\n  box-shadow: none;\n  overflow: auto;\n  transition: opacity .2s ease-in-out;\n}\n.mu-dropdown[visible] {\n  display: block;\n}\nbody > .mu-dropdown {\n  position: fixed;\n}\n.mu-dropdown-list,\n.mu-dropdown-menu {\n  padding: 4px 0;\n}";
+  var css$8 = ".mu-dropdown {\r\n  position: absolute;\r\n  z-index: 100;\r\n  display: none;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  box-shadow: none;\r\n  overflow: auto;\r\n  transition: opacity .2s ease-in-out;\r\n}\r\n.mu-dropdown[visible] {\r\n  display: block;\r\n}\r\nbody > .mu-dropdown {\r\n  position: fixed;\r\n}\r\n.mu-dropdown-list,\r\n.mu-dropdown-menu {\r\n  padding: 4px 0;\r\n}";
   styleInject(css$8);
 
   /* script */
@@ -3072,15 +3323,32 @@
       }
     },
     props: {
-      icon: String,
+      className: String,
       iconClass: String,
+      icon: String,
       label: String,
       active: Boolean,
-      disabled: Boolean
+      disabled: Boolean,
+      triggerIcon: String
     },
     computed: {
-      caption: function caption() {
+      _label: function _label() {
         return this.label;
+      },
+      _icon: function _icon() {
+        return this.icon;
+      },
+      _iconClass: function _iconClass() {
+        return this.iconClass;
+      },
+      _active: function _active() {
+        return this.active;
+      },
+      _selected: function _selected() {
+        return this.selected;
+      },
+      _triggerIcon: function _triggerIcon() {
+        return this.triggerIcon;
       }
     },
     methods: {
@@ -3093,7 +3361,7 @@
     }
   };
 
-  var css$9 = ".mu-list-item {\n  position: relative;\n  line-height: 20px;\n  padding: 10px 10px;\n  overflow: hidden;\n}\n.mu-list-item:hover {\n  color: #1890ff;\n  fill: #1890ff;\n  background: rgba(0,0,0,.05);\n}\n.mu-list-item.active {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n}\n.mu-list-item > .mu-icon:first-child {\n  display: inline-block;\n  width: 20px;\n}\n.mu-list-item:not([multi-lines]) {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  cursor: default;\n}\n.mu-list-divider {\n  display: block;\n  margin-top: 4px;\n  margin-bottom: 4px;\n  height: 1px;\n  border-bottom: 1px solid rgba(0,0,0,.1);\n}\n.mu-list-divider:first-child,\n.mu-list-divider:last-child {\n  display: none;\n}\n.mu-dropdown > .mu-list-item {\n  padding: 5px 10px;\n  cursor: pointer;\n}\n.mu-dropdown-menu > .mu-list-item:hover {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n}";
+  var css$9 = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 10px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  font-weight: 700;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon:first-child {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}\r\n.mu-dropdown > .mu-list-item {\r\n  padding: 5px 10px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-menu > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}";
   styleInject(css$9);
 
   /* script */
@@ -3109,18 +3377,23 @@
 
     return _c("div", {
       staticClass: "mu-list-item",
+      "class": _vm.className,
+      attrs: {
+        active: _vm._active,
+        selected: _vm._selected
+      },
       on: {
         click: _vm.onClick
       }
-    }, [_vm.icon || _vm.iconClass || _vm.keepIconIndent ? _c("mu-icon", {
+    }, [_vm._icon || _vm._iconClass || _vm.keepIconIndent ? _c("mu-icon", {
       attrs: {
-        icon: _vm.icon,
-        "icon-class": _vm.iconClass
+        icon: _vm._icon,
+        "icon-class": _vm._iconClass
       },
       on: {
         click: _vm.onButtonClick
       }
-    }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm.caption))])], 2);
+    }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm._label))])], 2);
   };
 
   var __vue_staticRenderFns__$8 = [];
@@ -3149,7 +3422,13 @@
   var Option = {
     "extends": ListItem,
     inject: {
-      inputBox: {
+      comboBox: {
+        "default": null
+      },
+      multiple: {
+        "default": false
+      },
+      comboValue: {
         "default": null
       }
     },
@@ -3165,21 +3444,43 @@
       labelField: function labelField() {
         return Object(this.fields).label || 'label';
       },
-      val: function val() {
+      _value: function _value() {
         var v = this.value === undefined ? Object(this.option)[this.valueField] : this.value;
         return v === undefined ? this.option : v;
       },
-      caption: function caption() {
+      _label: function _label() {
         var label = this.label === undefined ? Object(this.option)[this.labelField] : this.label;
-        return label || this.val;
+        return label || this._value;
+      },
+      _icon: function _icon() {
+        return this.multiple ? this._selected ? 'ok' : '_' : this.icon;
+      },
+      _selected: function _selected() {
+        var _this = this;
+
+        return this.multiple ? !!this.comboBox.internalValue.find(function (value) {
+          return value === _this._value;
+        }) : this.comboBox.internalValue === this._value;
       }
+    },
+    created: function created() {
+      this.comboBox.mountOption({
+        value: this._value,
+        label: this._label
+      });
+    },
+    beforeDestroy: function beforeDestroy() {
+      this.comboBox.unmountOption({
+        value: this._value,
+        label: this._label
+      });
     },
     methods: {
       onClick: function onClick() {
         if (this.disabled) return;
 
-        if (this.inputBox) {
-          this.inputBox.toggleOption(this.option || this.val);
+        if (this.comboBox) {
+          this.comboBox.toggleSelection(this._value);
         }
 
         this.$emit('click');
@@ -3187,10 +3488,24 @@
     }
   };
 
+  function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+  function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+  function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+  function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
   var script$9 = {
     popupComponent: Dropdown,
     optionComponent: Option,
     "extends": InputBox,
+    provide: function provide() {
+      return {
+        comboBox: this,
+        multiple: this.multiple,
+        comboValue: this.internalValue
+      };
+    },
     props: {
       value: [String, Number, Array],
       keepIconIndent: Boolean,
@@ -3210,12 +3525,14 @@
     },
     data: function data() {
       return {
-        popupVisible: false
+        internalValue: null,
+        popupVisible: false,
+        mountedOptions: []
       };
     },
     computed: {
       valueField: function valueField() {
-        return Object(this.fields).value;
+        return Object(this.fields).value || 'value';
       },
       popupProps: function popupProps() {
         return {
@@ -3229,7 +3546,38 @@
         return this.editable ? 'button' : 'icon';
       }
     },
+    watch: {
+      value: {
+        handler: function handler(value) {
+          this.internalValue = this.multiple ? Array.isArray(value) ? _toConsumableArray(value) : [] : value;
+          this.refreshInputValue();
+        },
+        immediate: true
+      }
+    },
     methods: {
+      setInputValue: function setInputValue(value) {
+        this.refreshInputValue();
+      },
+      refreshInputValue: function refreshInputValue() {
+        var _this = this;
+
+        if (this.rivTimer) {
+          clearTimeout(this.rivTimer);
+          this.rivTimer = null;
+        }
+
+        this.rivTimer = setTimeout(function () {
+          var internalValue = _this.internalValue,
+              multiple = _this.multiple,
+              options = _this.mountedOptions;
+          _this.inputValue = !internalValue && isNaN(internalValue) ? '' : (multiple ? internalValue : [internalValue]).map(function (value) {
+            return Object(options.find(function (item) {
+              return item.value === value;
+            })).label || '';
+          }).join(',');
+        }, 50);
+      },
       onInput: function onInput(value) {
         this.inputValue = value;
         this.$emit('input', value);
@@ -3243,16 +3591,54 @@
       onButtonClick: function onButtonClick() {
         this.popupVisible = !this.popupVisible;
       },
-      appendOption: function appendOption(option) {
-        if (this.options) return;
+      mountOption: function mountOption(option) {
+        var options = this.mountedOptions;
+
+        if (!options.find(function (item) {
+          return option.value === item.value;
+        })) {
+          options.push(option);
+          this.refreshInputValue();
+        }
       },
-      removeOption: function removeOption(option) {
-        if (this.options) return;
+      unmountOption: function unmountOption(option) {
+        var options = this.mountedOptions;
+        var idx = options.findIndex(function (item) {
+          return option.value === item.value;
+        });
+
+        if (idx !== -1) {
+          options.splice(idx, 1);
+          this.refreshInputValue();
+        }
       },
-      Option: function Option(option) {
-        this.inputValue = option.label || option.value;
-        this.popupVisible = false;
-        this.$emit('change', option);
+      toggleSelection: function toggleSelection(value) {
+        var hidePopup = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+        if (this.multiple) {
+          var values = this.internalValue;
+          var idx = values.indexOf(value);
+
+          if (idx !== -1) {
+            values.splice(idx, 1);
+          } else {
+            values.push(value);
+          }
+
+          this.$emit('change', values);
+        } else {
+          this.internalValue = value;
+          this.$emit('change', value);
+        }
+
+        this.refreshInputValue();
+        if (hidePopup) this.popupVisible = false;
+      },
+      clear: function clear() {
+        this.internalValue = this.multiple ? [] : null;
+        this.inputValue = '';
+        this.$emit('change', '');
+        this.$emit('clear', '');
       }
     }
   };
@@ -3322,11 +3708,6 @@
         attrs: {
           option: option,
           fields: _vm.fields
-        },
-        on: {
-          click: function click($event) {
-            return _vm.toggleOption(option);
-          }
         }
       });
     })], 2) : _vm._e()], 1);
@@ -3393,7 +3774,7 @@
     staticRenderFns: __vue_staticRenderFns__$a
   }, __vue_inject_styles__$a, {}, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, undefined, undefined);
 
-  var css$a = ".mu-expand-trigger {\n  transition: transform .2s ease-in-out;\n}\n.mu-expand-trigger[trigger-on] {\n  transform: rotate(-180deg);\n}";
+  var css$a = ".mu-expand-trigger {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-expand-trigger[trigger-on] {\r\n  transform: rotate(-180deg);\r\n}";
   styleInject(css$a);
 
   function hideDropdown() {
