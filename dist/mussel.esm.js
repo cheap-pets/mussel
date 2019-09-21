@@ -2363,6 +2363,572 @@ var InputBox = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$6
 }, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, undefined, undefined);
 
+var defineProperty$3 = objectDefineProperty.f;
+
+
+var NativeSymbol = global_1.Symbol;
+
+if (descriptors && typeof NativeSymbol == 'function' && (!('description' in NativeSymbol.prototype) ||
+  // Safari 12 bug
+  NativeSymbol().description !== undefined
+)) {
+  var EmptyStringDescriptionStore = {};
+  // wrap Symbol constructor for correct work with undefined description
+  var SymbolWrapper = function Symbol() {
+    var description = arguments.length < 1 || arguments[0] === undefined ? undefined : String(arguments[0]);
+    var result = this instanceof SymbolWrapper
+      ? new NativeSymbol(description)
+      // in Edge 13, String(Symbol(undefined)) === 'Symbol(undefined)'
+      : description === undefined ? NativeSymbol() : NativeSymbol(description);
+    if (description === '') EmptyStringDescriptionStore[result] = true;
+    return result;
+  };
+  copyConstructorProperties(SymbolWrapper, NativeSymbol);
+  var symbolPrototype = SymbolWrapper.prototype = NativeSymbol.prototype;
+  symbolPrototype.constructor = SymbolWrapper;
+
+  var symbolToString = symbolPrototype.toString;
+  var native = String(NativeSymbol('test')) == 'Symbol(test)';
+  var regexp = /^Symbol\((.*)\)[^)]+$/;
+  defineProperty$3(symbolPrototype, 'description', {
+    configurable: true,
+    get: function description() {
+      var symbol = isObject(this) ? this.valueOf() : this;
+      var string = symbolToString.call(symbol);
+      if (has(EmptyStringDescriptionStore, symbol)) return '';
+      var desc = native ? string.slice(7, -1) : string.replace(regexp, '$1');
+      return desc === '' ? undefined : desc;
+    }
+  });
+
+  _export({ global: true, forced: true }, {
+    Symbol: SymbolWrapper
+  });
+}
+
+// `Symbol.iterator` well-known symbol
+// https://tc39.github.io/ecma262/#sec-symbol.iterator
+defineWellKnownSymbol('iterator');
+
+var UNSCOPABLES = wellKnownSymbol('unscopables');
+var ArrayPrototype = Array.prototype;
+
+// Array.prototype[@@unscopables]
+// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+if (ArrayPrototype[UNSCOPABLES] == undefined) {
+  hide(ArrayPrototype, UNSCOPABLES, objectCreate(null));
+}
+
+// add a key to Array.prototype[@@unscopables]
+var addToUnscopables = function (key) {
+  ArrayPrototype[UNSCOPABLES][key] = true;
+};
+
+var correctPrototypeGetter = !fails(function () {
+  function F() { /* empty */ }
+  F.prototype.constructor = null;
+  return Object.getPrototypeOf(new F()) !== F.prototype;
+});
+
+var IE_PROTO$1 = sharedKey('IE_PROTO');
+var ObjectPrototype$1 = Object.prototype;
+
+// `Object.getPrototypeOf` method
+// https://tc39.github.io/ecma262/#sec-object.getprototypeof
+var objectGetPrototypeOf = correctPrototypeGetter ? Object.getPrototypeOf : function (O) {
+  O = toObject(O);
+  if (has(O, IE_PROTO$1)) return O[IE_PROTO$1];
+  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectPrototype$1 : null;
+};
+
+var ITERATOR = wellKnownSymbol('iterator');
+var BUGGY_SAFARI_ITERATORS = false;
+
+var returnThis = function () { return this; };
+
+// `%IteratorPrototype%` object
+// https://tc39.github.io/ecma262/#sec-%iteratorprototype%-object
+var IteratorPrototype, PrototypeOfArrayIteratorPrototype, arrayIterator;
+
+if ([].keys) {
+  arrayIterator = [].keys();
+  // Safari 8 has buggy iterators w/o `next`
+  if (!('next' in arrayIterator)) BUGGY_SAFARI_ITERATORS = true;
+  else {
+    PrototypeOfArrayIteratorPrototype = objectGetPrototypeOf(objectGetPrototypeOf(arrayIterator));
+    if (PrototypeOfArrayIteratorPrototype !== Object.prototype) IteratorPrototype = PrototypeOfArrayIteratorPrototype;
+  }
+}
+
+if (IteratorPrototype == undefined) IteratorPrototype = {};
+
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+if ( !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
+
+var iteratorsCore = {
+  IteratorPrototype: IteratorPrototype,
+  BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
+};
+
+var IteratorPrototype$1 = iteratorsCore.IteratorPrototype;
+
+var createIteratorConstructor = function (IteratorConstructor, NAME, next) {
+  var TO_STRING_TAG = NAME + ' Iterator';
+  IteratorConstructor.prototype = objectCreate(IteratorPrototype$1, { next: createPropertyDescriptor(1, next) });
+  setToStringTag(IteratorConstructor, TO_STRING_TAG, false);
+  return IteratorConstructor;
+};
+
+var IteratorPrototype$2 = iteratorsCore.IteratorPrototype;
+var BUGGY_SAFARI_ITERATORS$1 = iteratorsCore.BUGGY_SAFARI_ITERATORS;
+var ITERATOR$1 = wellKnownSymbol('iterator');
+var KEYS = 'keys';
+var VALUES = 'values';
+var ENTRIES = 'entries';
+
+var returnThis$1 = function () { return this; };
+
+var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, IS_SET, FORCED) {
+  createIteratorConstructor(IteratorConstructor, NAME, next);
+
+  var getIterationMethod = function (KIND) {
+    if (KIND === DEFAULT && defaultIterator) return defaultIterator;
+    if (!BUGGY_SAFARI_ITERATORS$1 && KIND in IterablePrototype) return IterablePrototype[KIND];
+    switch (KIND) {
+      case KEYS: return function keys() { return new IteratorConstructor(this, KIND); };
+      case VALUES: return function values() { return new IteratorConstructor(this, KIND); };
+      case ENTRIES: return function entries() { return new IteratorConstructor(this, KIND); };
+    } return function () { return new IteratorConstructor(this); };
+  };
+
+  var TO_STRING_TAG = NAME + ' Iterator';
+  var INCORRECT_VALUES_NAME = false;
+  var IterablePrototype = Iterable.prototype;
+  var nativeIterator = IterablePrototype[ITERATOR$1]
+    || IterablePrototype['@@iterator']
+    || DEFAULT && IterablePrototype[DEFAULT];
+  var defaultIterator = !BUGGY_SAFARI_ITERATORS$1 && nativeIterator || getIterationMethod(DEFAULT);
+  var anyNativeIterator = NAME == 'Array' ? IterablePrototype.entries || nativeIterator : nativeIterator;
+  var CurrentIteratorPrototype, methods, KEY;
+
+  // fix native
+  if (anyNativeIterator) {
+    CurrentIteratorPrototype = objectGetPrototypeOf(anyNativeIterator.call(new Iterable()));
+    if (IteratorPrototype$2 !== Object.prototype && CurrentIteratorPrototype.next) {
+      if ( objectGetPrototypeOf(CurrentIteratorPrototype) !== IteratorPrototype$2) {
+        if (objectSetPrototypeOf) {
+          objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
+        } else if (typeof CurrentIteratorPrototype[ITERATOR$1] != 'function') {
+          hide(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
+        }
+      }
+      // Set @@toStringTag to native iterators
+      setToStringTag(CurrentIteratorPrototype, TO_STRING_TAG, true);
+    }
+  }
+
+  // fix Array#{values, @@iterator}.name in V8 / FF
+  if (DEFAULT == VALUES && nativeIterator && nativeIterator.name !== VALUES) {
+    INCORRECT_VALUES_NAME = true;
+    defaultIterator = function values() { return nativeIterator.call(this); };
+  }
+
+  // define iterator
+  if ( IterablePrototype[ITERATOR$1] !== defaultIterator) {
+    hide(IterablePrototype, ITERATOR$1, defaultIterator);
+  }
+
+  // export additional methods
+  if (DEFAULT) {
+    methods = {
+      values: getIterationMethod(VALUES),
+      keys: IS_SET ? defaultIterator : getIterationMethod(KEYS),
+      entries: getIterationMethod(ENTRIES)
+    };
+    if (FORCED) for (KEY in methods) {
+      if (BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME || !(KEY in IterablePrototype)) {
+        redefine(IterablePrototype, KEY, methods[KEY]);
+      }
+    } else _export({ target: NAME, proto: true, forced: BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME }, methods);
+  }
+
+  return methods;
+};
+
+var ARRAY_ITERATOR = 'Array Iterator';
+var setInternalState$1 = internalState.set;
+var getInternalState$1 = internalState.getterFor(ARRAY_ITERATOR);
+
+// `Array.prototype.entries` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.entries
+// `Array.prototype.keys` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.keys
+// `Array.prototype.values` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.values
+// `Array.prototype[@@iterator]` method
+// https://tc39.github.io/ecma262/#sec-array.prototype-@@iterator
+// `CreateArrayIterator` internal method
+// https://tc39.github.io/ecma262/#sec-createarrayiterator
+var es_array_iterator = defineIterator(Array, 'Array', function (iterated, kind) {
+  setInternalState$1(this, {
+    type: ARRAY_ITERATOR,
+    target: toIndexedObject(iterated), // target
+    index: 0,                          // next index
+    kind: kind                         // kind
+  });
+// `%ArrayIteratorPrototype%.next` method
+// https://tc39.github.io/ecma262/#sec-%arrayiteratorprototype%.next
+}, function () {
+  var state = getInternalState$1(this);
+  var target = state.target;
+  var kind = state.kind;
+  var index = state.index++;
+  if (!target || index >= target.length) {
+    state.target = undefined;
+    return { value: undefined, done: true };
+  }
+  if (kind == 'keys') return { value: index, done: false };
+  if (kind == 'values') return { value: target[index], done: false };
+  return { value: [index, target[index]], done: false };
+}, 'values');
+
+// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+addToUnscopables('keys');
+addToUnscopables('values');
+addToUnscopables('entries');
+
+var DatePrototype = Date.prototype;
+var INVALID_DATE = 'Invalid Date';
+var TO_STRING = 'toString';
+var nativeDateToString = DatePrototype[TO_STRING];
+var getTime = DatePrototype.getTime;
+
+// `Date.prototype.toString` method
+// https://tc39.github.io/ecma262/#sec-date.prototype.tostring
+if (new Date(NaN) + '' != INVALID_DATE) {
+  redefine(DatePrototype, TO_STRING, function toString() {
+    var value = getTime.call(this);
+    // eslint-disable-next-line no-self-compare
+    return value === value ? nativeDateToString.call(this) : INVALID_DATE;
+  });
+}
+
+var FAILS_ON_PRIMITIVES$2 = fails(function () { objectGetPrototypeOf(1); });
+
+// `Object.getPrototypeOf` method
+// https://tc39.github.io/ecma262/#sec-object.getprototypeof
+_export({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES$2, sham: !correctPrototypeGetter }, {
+  getPrototypeOf: function getPrototypeOf(it) {
+    return objectGetPrototypeOf(toObject(it));
+  }
+});
+
+var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
+// ES3 wrong here
+var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
+
+// fallback for IE11 Script Access Denied error
+var tryGet = function (it, key) {
+  try {
+    return it[key];
+  } catch (error) { /* empty */ }
+};
+
+// getting tag from ES6+ `Object.prototype.toString`
+var classof = function (it) {
+  var O, tag, result;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$1)) == 'string' ? tag
+    // builtinTag case
+    : CORRECT_ARGUMENTS ? classofRaw(O)
+    // ES3 arguments fallback
+    : (result = classofRaw(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : result;
+};
+
+var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
+var test$1 = {};
+
+test$1[TO_STRING_TAG$2] = 'z';
+
+// `Object.prototype.toString` method implementation
+// https://tc39.github.io/ecma262/#sec-object.prototype.tostring
+var objectToString = String(test$1) !== '[object z]' ? function toString() {
+  return '[object ' + classof(this) + ']';
+} : test$1.toString;
+
+var ObjectPrototype$2 = Object.prototype;
+
+// `Object.prototype.toString` method
+// https://tc39.github.io/ecma262/#sec-object.prototype.tostring
+if (objectToString !== ObjectPrototype$2.toString) {
+  redefine(ObjectPrototype$2, 'toString', objectToString, { unsafe: true });
+}
+
+// `RegExp.prototype.flags` getter implementation
+// https://tc39.github.io/ecma262/#sec-get-regexp.prototype.flags
+var regexpFlags = function () {
+  var that = anObject(this);
+  var result = '';
+  if (that.global) result += 'g';
+  if (that.ignoreCase) result += 'i';
+  if (that.multiline) result += 'm';
+  if (that.dotAll) result += 's';
+  if (that.unicode) result += 'u';
+  if (that.sticky) result += 'y';
+  return result;
+};
+
+var TO_STRING$1 = 'toString';
+var RegExpPrototype = RegExp.prototype;
+var nativeToString = RegExpPrototype[TO_STRING$1];
+
+var NOT_GENERIC = fails(function () { return nativeToString.call({ source: 'a', flags: 'b' }) != '/a/b'; });
+// FF44- RegExp#toString has a wrong name
+var INCORRECT_NAME = nativeToString.name != TO_STRING$1;
+
+// `RegExp.prototype.toString` method
+// https://tc39.github.io/ecma262/#sec-regexp.prototype.tostring
+if (NOT_GENERIC || INCORRECT_NAME) {
+  redefine(RegExp.prototype, TO_STRING$1, function toString() {
+    var R = anObject(this);
+    var p = String(R.source);
+    var rf = R.flags;
+    var f = String(rf === undefined && R instanceof RegExp && !('flags' in RegExpPrototype) ? regexpFlags.call(R) : rf);
+    return '/' + p + '/' + f;
+  }, { unsafe: true });
+}
+
+// `String.prototype.{ codePointAt, at }` methods implementation
+var createMethod$3 = function (CONVERT_TO_STRING) {
+  return function ($this, pos) {
+    var S = String(requireObjectCoercible($this));
+    var position = toInteger(pos);
+    var size = S.length;
+    var first, second;
+    if (position < 0 || position >= size) return CONVERT_TO_STRING ? '' : undefined;
+    first = S.charCodeAt(position);
+    return first < 0xD800 || first > 0xDBFF || position + 1 === size
+      || (second = S.charCodeAt(position + 1)) < 0xDC00 || second > 0xDFFF
+        ? CONVERT_TO_STRING ? S.charAt(position) : first
+        : CONVERT_TO_STRING ? S.slice(position, position + 2) : (first - 0xD800 << 10) + (second - 0xDC00) + 0x10000;
+  };
+};
+
+var stringMultibyte = {
+  // `String.prototype.codePointAt` method
+  // https://tc39.github.io/ecma262/#sec-string.prototype.codepointat
+  codeAt: createMethod$3(false),
+  // `String.prototype.at` method
+  // https://github.com/mathiasbynens/String.prototype.at
+  charAt: createMethod$3(true)
+};
+
+var charAt = stringMultibyte.charAt;
+
+
+
+var STRING_ITERATOR = 'String Iterator';
+var setInternalState$2 = internalState.set;
+var getInternalState$2 = internalState.getterFor(STRING_ITERATOR);
+
+// `String.prototype[@@iterator]` method
+// https://tc39.github.io/ecma262/#sec-string.prototype-@@iterator
+defineIterator(String, 'String', function (iterated) {
+  setInternalState$2(this, {
+    type: STRING_ITERATOR,
+    string: String(iterated),
+    index: 0
+  });
+// `%StringIteratorPrototype%.next` method
+// https://tc39.github.io/ecma262/#sec-%stringiteratorprototype%.next
+}, function next() {
+  var state = getInternalState$2(this);
+  var string = state.string;
+  var index = state.index;
+  var point;
+  if (index >= string.length) return { value: undefined, done: true };
+  point = charAt(string, index);
+  state.index += point.length;
+  return { value: point, done: false };
+});
+
+var ITERATOR$2 = wellKnownSymbol('iterator');
+var TO_STRING_TAG$3 = wellKnownSymbol('toStringTag');
+var ArrayValues = es_array_iterator.values;
+
+for (var COLLECTION_NAME$1 in domIterables) {
+  var Collection$1 = global_1[COLLECTION_NAME$1];
+  var CollectionPrototype$1 = Collection$1 && Collection$1.prototype;
+  if (CollectionPrototype$1) {
+    // some Chrome versions have non-configurable methods on DOMTokenList
+    if (CollectionPrototype$1[ITERATOR$2] !== ArrayValues) try {
+      hide(CollectionPrototype$1, ITERATOR$2, ArrayValues);
+    } catch (error) {
+      CollectionPrototype$1[ITERATOR$2] = ArrayValues;
+    }
+    if (!CollectionPrototype$1[TO_STRING_TAG$3]) hide(CollectionPrototype$1, TO_STRING_TAG$3, COLLECTION_NAME$1);
+    if (domIterables[COLLECTION_NAME$1]) for (var METHOD_NAME in es_array_iterator) {
+      // some Chrome versions have non-configurable methods on DOMTokenList
+      if (CollectionPrototype$1[METHOD_NAME] !== es_array_iterator[METHOD_NAME]) try {
+        hide(CollectionPrototype$1, METHOD_NAME, es_array_iterator[METHOD_NAME]);
+      } catch (error) {
+        CollectionPrototype$1[METHOD_NAME] = es_array_iterator[METHOD_NAME];
+      }
+    }
+  }
+}
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** `Object#toString` result references. */
+var objectTag = '[object Object]';
+/**
+ * Checks if `value` is a host object in IE < 9.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a host object, else `false`.
+ */
+
+function isHostObject(value) {
+  // Many host objects are `Object` objects that can coerce to strings
+  // despite having improperly defined `toString` methods.
+  var result = false;
+
+  if (value != null && typeof value.toString != 'function') {
+    try {
+      result = !!(value + '');
+    } catch (e) {}
+  }
+
+  return result;
+}
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
+
+
+function overArg(func, transform) {
+  return function (arg) {
+    return func(transform(arg));
+  };
+}
+/** Used for built-in method references. */
+
+
+var funcProto = Function.prototype,
+    objectProto = Object.prototype;
+/** Used to resolve the decompiled source of functions. */
+
+var funcToString = funcProto.toString;
+/** Used to check objects for own properties. */
+
+var hasOwnProperty$1 = objectProto.hasOwnProperty;
+/** Used to infer the `Object` constructor. */
+
+var objectCtorString = funcToString.call(Object);
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+
+var objectToString$1 = objectProto.toString;
+/** Built-in value references. */
+
+var getPrototype = overArg(Object.getPrototypeOf, Object);
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+
+function isObjectLike(value) {
+  return !!value && _typeof(value) == 'object';
+}
+/**
+ * Checks if `value` is a plain object, that is, an object created by the
+ * `Object` constructor or one with a `[[Prototype]]` of `null`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.8.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ * }
+ *
+ * _.isPlainObject(new Foo);
+ * // => false
+ *
+ * _.isPlainObject([1, 2, 3]);
+ * // => false
+ *
+ * _.isPlainObject({ 'x': 0, 'y': 0 });
+ * // => true
+ *
+ * _.isPlainObject(Object.create(null));
+ * // => true
+ */
+
+
+function isPlainObject(value) {
+  if (!isObjectLike(value) || objectToString$1.call(value) != objectTag || isHostObject(value)) {
+    return false;
+  }
+
+  var proto = getPrototype(value);
+
+  if (proto === null) {
+    return true;
+  }
+
+  var Ctor = hasOwnProperty$1.call(proto, 'constructor') && proto.constructor;
+  return typeof Ctor == 'function' && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
+}
+
+var lodash_isplainobject = isPlainObject;
+
 var nativeAssign = Object.assign;
 
 // `Object.assign` method
@@ -2622,12 +3188,130 @@ var Dropdown = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$7
 }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, undefined, undefined);
 
+//
 var script$8 = {
   components: {
-    Dropdown: Dropdown
+    'mu-icon': Icon
+  },
+  inject: {
+    keepIconIndent: {
+      "default": false
+    }
+  },
+  props: {
+    icon: String,
+    iconClass: String,
+    label: String,
+    active: Boolean,
+    disabled: Boolean
+  },
+  computed: {
+    caption: function caption() {
+      return this.label;
+    }
+  },
+  methods: {
+    onClick: function onClick() {
+      if (!this.disabled) this.$emit('click');
+    },
+    onButtonClick: function onButtonClick() {
+      if (!this.disabled) this.$emit('buttonclick');
+    }
+  }
+};
+
+var css$9 = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 10px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-list-item.active {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon:first-child {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}\r\n.mu-dropdown > .mu-list-item {\r\n  padding: 5px 10px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-menu > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}";
+styleInject(css$9);
+
+/* script */
+var __vue_script__$8 = script$8;
+/* template */
+
+var __vue_render__$8 = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("div", {
+    staticClass: "mu-list-item",
+    on: {
+      click: _vm.onClick
+    }
+  }, [_vm.icon || _vm.iconClass || _vm.keepIconIndent ? _c("mu-icon", {
+    attrs: {
+      icon: _vm.icon,
+      "icon-class": _vm.iconClass
+    },
+    on: {
+      click: _vm.onButtonClick
+    }
+  }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm.caption))])], 2);
+};
+
+var __vue_staticRenderFns__$8 = [];
+__vue_render__$8._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$8 = undefined;
+/* scoped */
+
+var __vue_scope_id__$8 = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$8 = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$8 = false;
+/* style inject */
+
+/* style inject SSR */
+
+var ListItem = normalizeComponent_1({
+  render: __vue_render__$8,
+  staticRenderFns: __vue_staticRenderFns__$8
+}, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
+
+var Option = {
+  "extends": ListItem,
+  inject: {
+    inputBox: {
+      "default": null
+    }
+  },
+  props: {
+    value: String
+  },
+  computed: {
+    caption: function caption() {
+      return this.label === undefined ? this.value : this.label;
+    }
+  },
+  methods: {
+    onClick: function onClick() {
+      if (this.disabled) return;
+
+      if (this.inputBox) {
+        this.inputBox.selectOption({
+          value: this.value,
+          label: this.label
+        });
+      }
+
+      this.$emit('click');
+    }
+  }
+};
+
+var script$9 = {
+  components: {
+    'mu-dropdown': Dropdown,
+    'mu-option': Option
   },
   "extends": InputBox,
   props: {
+    x: Object,
     value: [String, Number, Array],
     keepIconIndent: Boolean,
     dropdownHeight: String,
@@ -2642,7 +3326,8 @@ var script$8 = {
     clearable: {
       type: Boolean,
       "default": true
-    }
+    },
+    multiple: Boolean
   },
   data: function data() {
     return {
@@ -2674,19 +3359,26 @@ var script$8 = {
     onButtonClick: function onButtonClick() {
       this.dropdownVisible = !this.dropdownVisible;
     },
+    appendOption: function appendOption(option) {
+      if (this.options) return;
+    },
+    removeOption: function removeOption(option) {
+      if (this.options) return;
+    },
     selectOption: function selectOption(option) {
       this.inputValue = option.label || option.value;
       this.dropdownVisible = false;
       this.$emit('change', option);
+      console.log(lodash_isplainobject(this.x));
     }
   }
 };
 
 /* script */
-var __vue_script__$8 = script$8;
+var __vue_script__$9 = script$9;
 /* template */
 
-var __vue_render__$8 = function __vue_render__() {
+var __vue_render__$9 = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -2731,12 +3423,12 @@ var __vue_render__$8 = function __vue_render__() {
     on: {
       click: _vm.onButtonClick
     }
-  }) : _vm._e(), _vm._v(" "), _vm.inputBtnType ? _c("dropdown", {
+  }) : _vm._e(), _vm._v(" "), _vm.inputBtnType ? _c("mu-dropdown", {
     staticClass: "mu-dropdown-list",
     attrs: {
       width: _vm.dropdownWidth,
       height: _vm.dropdownHeight,
-      "keep-icon-indent": _vm.keepIconIndent
+      "keep-icon-indent": _vm.multiple
     },
     model: {
       value: _vm.dropdownVisible,
@@ -2745,92 +3437,15 @@ var __vue_render__$8 = function __vue_render__() {
       },
       expression: "dropdownVisible"
     }
-  }, [_vm._t("default")], 2) : _vm._e()], 1);
-};
-
-var __vue_staticRenderFns__$8 = [];
-__vue_render__$8._withStripped = true;
-/* style */
-
-var __vue_inject_styles__$8 = undefined;
-/* scoped */
-
-var __vue_scope_id__$8 = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$8 = undefined;
-/* functional template */
-
-var __vue_is_functional_template__$8 = false;
-/* style inject */
-
-/* style inject SSR */
-
-var ComboBox = normalizeComponent_1({
-  render: __vue_render__$8,
-  staticRenderFns: __vue_staticRenderFns__$8
-}, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
-
-//
-var script$9 = {
-  components: {
-    'mu-icon': Icon
-  },
-  inject: {
-    keepIconIndent: {
-      "default": false
-    }
-  },
-  props: {
-    icon: String,
-    iconClass: String,
-    label: String,
-    active: Boolean,
-    disabled: Boolean
-  },
-  computed: {
-    caption: function caption() {
-      return this.label;
-    }
-  },
-  methods: {
-    onClick: function onClick() {
-      if (!this.disabled) this.$emit('click');
-    },
-    onButtonClick: function onButtonClick() {
-      if (!this.disabled) this.$emit('buttonclick');
-    }
-  }
-};
-
-var css$9 = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 10px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-list-item.active {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon:first-child {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}\r\n.mu-dropdown > .mu-list-item {\r\n  padding: 5px 10px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-menu > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}";
-styleInject(css$9);
-
-/* script */
-var __vue_script__$9 = script$9;
-/* template */
-
-var __vue_render__$9 = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c("div", {
-    staticClass: "mu-list-item",
-    on: {
-      click: _vm.onClick
-    }
-  }, [_vm.icon || _vm.iconClass || _vm.keepIconIndent ? _c("mu-icon", {
-    attrs: {
-      icon: _vm.icon,
-      "icon-class": _vm.iconClass
-    },
-    on: {
-      click: _vm.onButtonClick
-    }
-  }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm.caption))])], 2);
+  }, [!_vm.items ? _vm._t("default") : _vm._l(_vm.items, function (item) {
+    return _c("mu-option", {
+      key: item.value,
+      attrs: {
+        value: item.value,
+        label: item.label
+      }
+    });
+  })], 2) : _vm._e()], 1);
 };
 
 var __vue_staticRenderFns__$9 = [];
@@ -2851,41 +3466,10 @@ var __vue_is_functional_template__$9 = false;
 
 /* style inject SSR */
 
-var ListItem = normalizeComponent_1({
+var ComboBox = normalizeComponent_1({
   render: __vue_render__$9,
   staticRenderFns: __vue_staticRenderFns__$9
 }, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, undefined, undefined);
-
-var Option = {
-  "extends": ListItem,
-  inject: {
-    inputBox: {
-      "default": null
-    }
-  },
-  props: {
-    value: String
-  },
-  computed: {
-    caption: function caption() {
-      return this.label === undefined ? this.value : this.label;
-    }
-  },
-  methods: {
-    onClick: function onClick() {
-      if (this.disabled) return;
-
-      if (this.inputBox) {
-        this.inputBox.selectOption({
-          value: this.value,
-          label: this.label
-        });
-      }
-
-      this.$emit('click');
-    }
-  }
-};
 
 /* script */
 

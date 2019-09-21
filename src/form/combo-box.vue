@@ -25,28 +25,39 @@
       :button-type="buttonType"
       :focus="dropdownVisible"
       @click="onButtonClick" />
-    <dropdown
+    <mu-dropdown
       v-if="inputBtnType"
       v-model="dropdownVisible"
       class="mu-dropdown-list"
       :width="dropdownWidth"
       :height="dropdownHeight"
-      :keep-icon-indent="keepIconIndent">
-      <slot />
-    </dropdown>
+      :keep-icon-indent="multiple">
+      <slot v-if="!items" />
+      <template v-else>
+        <mu-option
+          v-for="item in items"
+          :key="item.value"
+          :value="item.value"
+          :label="item.label" />
+      </template>
+    </mu-dropdown>
   </div>
 </template>
 
 <script>
+  import isPlainObject from 'lodash.isplainobject'
   import InputBox from './input-box.vue'
   import Dropdown from '../layer/dropdown.vue'
+  import Option from './option.js'
 
   export default {
     components: {
-      Dropdown
+      'mu-dropdown': Dropdown,
+      'mu-option': Option
     },
     extends: InputBox,
     props: {
+      x: Object,
       value: [String, Number, Array],
       keepIconIndent: Boolean,
       dropdownHeight: String,
@@ -67,7 +78,8 @@
       clearable: {
         type: Boolean,
         default: true
-      }
+      },
+      multiple: Boolean
     },
     data () {
       return {
@@ -99,10 +111,18 @@
       onButtonClick () {
         this.dropdownVisible = !this.dropdownVisible
       },
+      appendOption (option) {
+        if (this.options) return
+      },
+      removeOption (option) {
+        if (this.options) return
+      },
       selectOption (option) {
         this.inputValue = option.label || option.value
         this.dropdownVisible = false
         this.$emit('change', option)
+        
+        console.log(isPlainObject(this.x))
       }
     }
   }

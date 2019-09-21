@@ -18,6 +18,7 @@
     "autoprefixer": "^9.6.1",
     "clean-css": "^4.2.1",
     "core-js": "^3.2.1",
+    "lodash.isplainobject": "^4.0.6",
     "postcss": "^7.0.18",
     "postcss-calc": "^7.0.1",
     "postcss-clean": "^1.1.0",
