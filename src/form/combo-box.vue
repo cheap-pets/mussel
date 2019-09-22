@@ -1,7 +1,7 @@
 <template>
   <div
     class="mu-input-box mu-combo-box"
-    :fixed="!editable"
+    :fixed="inputReadonly"
     :buttons="buttons"
     :disabled="disabled">
     <mu-input
@@ -9,7 +9,7 @@
       :title="inputValue"
       :value="inputValue"
       :disabled="disabled"
-      :readonly="readonly || !editable"
+      :readonly="readonly || inputReadonly"
       :focus="popupVisible"
       @input="onInput"
       @click="onInputClick" />
@@ -94,8 +94,11 @@
           class: 'mu-dropdown-list'
         }
       },
+      inputReadonly () {
+        return !this.editable || this.multiple
+      },
       inputBtnType () {
-        return this.editable ? 'button' : 'icon'
+        return this.inputReadonly ? 'icon' : 'button'
       }
     },
     watch: {
@@ -136,7 +139,9 @@
         this.$emit('change', value)
       },
       onInputClick () {
-        if (!this.editable) this.popupVisible = !this.popupVisible
+        if (!this.editable || this.multiple) {
+          this.popupVisible = !this.popupVisible
+        }
       },
       onButtonClick () {
         this.popupVisible = !this.popupVisible

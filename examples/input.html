@@ -64,7 +64,7 @@
         <mu-option value='好好学习4'></mu-option>
         <mu-option value='好好学习5'></mu-option>
       </mu-combo-box>
-      <mu-combo-box v-model="comboValue2" :options="comboOptions" multiple @optionclick="onOptionClick">
+      <mu-combo-box v-model="comboValue2" :options="comboOptions" multiple editable @optionclick="onOptionClick">
       </mu-combo-box>
     </div>
   </div>
@@ -101,7 +101,7 @@
             : null
         },
         onOptionClick: function (value, option) {
-          console.log(value, option.value)
+          console.log(value, option.value || option)
         }
       }
     })

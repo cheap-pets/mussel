@@ -3548,8 +3548,11 @@ var script$9 = {
         "class": 'mu-dropdown-list'
       };
     },
+    inputReadonly: function inputReadonly() {
+      return !this.editable || this.multiple;
+    },
     inputBtnType: function inputBtnType() {
-      return this.editable ? 'button' : 'icon';
+      return this.inputReadonly ? 'icon' : 'button';
     }
   },
   watch: {
@@ -3590,7 +3593,9 @@ var script$9 = {
       this.$emit('change', value);
     },
     onInputClick: function onInputClick() {
-      if (!this.editable) this.popupVisible = !this.popupVisible;
+      if (!this.editable || this.multiple) {
+        this.popupVisible = !this.popupVisible;
+      }
     },
     onButtonClick: function onButtonClick() {
       this.popupVisible = !this.popupVisible;
@@ -3662,7 +3667,7 @@ var __vue_render__$9 = function __vue_render__() {
   return _c("div", {
     staticClass: "mu-input-box mu-combo-box",
     attrs: {
-      fixed: !_vm.editable,
+      fixed: _vm.inputReadonly,
       buttons: _vm.buttons,
       disabled: _vm.disabled
     }
@@ -3672,7 +3677,7 @@ var __vue_render__$9 = function __vue_render__() {
       title: _vm.inputValue,
       value: _vm.inputValue,
       disabled: _vm.disabled,
-      readonly: _vm.readonly || !_vm.editable,
+      readonly: _vm.readonly || _vm.inputReadonly,
       focus: _vm.popupVisible
     },
     on: {
