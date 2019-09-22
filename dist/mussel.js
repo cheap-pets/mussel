@@ -3493,7 +3493,7 @@
         if (this.disabled) return;
 
         if (this.comboBox) {
-          this.comboBox.toggleSelection(this.actualValue);
+          this.comboBox.toggleSelection(this.actualValue, this.option);
         }
 
         this.$emit('click');
@@ -3622,8 +3622,8 @@
           this.refreshInputValue();
         }
       },
-      toggleSelection: function toggleSelection(value) {
-        var hidePopup = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      toggleSelection: function toggleSelection(value, option) {
+        var hidePopup = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
         if (this.multiple) {
           var values = this.internalValue;
@@ -3643,6 +3643,7 @@
 
         this.refreshInputValue();
         if (hidePopup) this.popupVisible = false;
+        this.$emit('optionclick', value, option);
       },
       clear: function clear() {
         this.internalValue = this.multiple ? [] : null;

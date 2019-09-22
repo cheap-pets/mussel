@@ -64,7 +64,7 @@ export default {
     onClick () {
       if (this.disabled) return
       if (this.comboBox) {
-        this.comboBox.toggleSelection(this.actualValue)
+        this.comboBox.toggleSelection(this.actualValue, this.option)
       }
       this.$emit('click')
     }

@@ -44,8 +44,8 @@
 </template>
 
 <script>
-  import InputBox from './input-box.vue'
   import Dropdown from '../layer/dropdown.vue'
+  import InputBox from './input-box.vue'
   import Option from './option.js'
 
   export default {
@@ -156,7 +156,7 @@
           this.refreshInputValue()
         }
       },
-      toggleSelection (value, hidePopup = true) {
+      toggleSelection (value, option, hidePopup = true) {
         if (this.multiple) {
           const { internalValue: values } = this
           const idx = values.indexOf(value)
@@ -172,6 +172,7 @@
         }
         this.refreshInputValue()
         if (hidePopup) this.popupVisible = false
+        this.$emit('optionclick', value, option)
       },
       clear () {
         this.internalValue = this.multiple ? [] : null
