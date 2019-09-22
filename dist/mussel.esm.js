@@ -3576,19 +3576,22 @@ var script$9 = {
         this.rivTimer = null;
       }
 
-      this.rivTimer = setTimeout(function () {
-        var internalValue = _this.internalValue,
-            multiple = _this.multiple,
-            options = _this.mountedOptions;
-        _this.inputValue = !internalValue && isNaN(internalValue) ? '' : (multiple ? internalValue : [internalValue]).map(function (value) {
-          return Object(options.find(function (item) {
-            return item.value === value;
-          })).label || '';
-        }).join(',');
-      }, 50);
+      var internalValue = this.internalValue,
+          multiple = this.multiple,
+          options = this.mountedOptions;
+      if (!this.inputReadonly) this.inputValue = internalValue;else {
+        this.rivTimer = setTimeout(function () {
+          _this.inputValue = !internalValue && isNaN(internalValue) ? '' : (multiple ? internalValue : [internalValue]).map(function (value) {
+            return Object(options.find(function (item) {
+              return item.value === value;
+            })).label || '';
+          }).join(',');
+        }, 50);
+      }
     },
     onInput: function onInput(value) {
       this.inputValue = value;
+      this.internalValue = value;
       this.$emit('input', value);
       this.$emit('change', value);
     },
@@ -3607,7 +3610,7 @@ var script$9 = {
         return option.value === item.value;
       })) {
         options.push(option);
-        this.refreshInputValue();
+        if (!this.inputReadonly) this.refreshInputValue();
       }
     },
     unmountOption: function unmountOption(option) {
@@ -3618,7 +3621,7 @@ var script$9 = {
 
       if (idx !== -1) {
         options.splice(idx, 1);
-        this.refreshInputValue();
+        if (!this.inputReadonly) this.refreshInputValue();
       }
     },
     toggleSelection: function toggleSelection(value, option) {

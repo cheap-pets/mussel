@@ -121,20 +121,23 @@
           clearTimeout(this.rivTimer)
           this.rivTimer = null
         }
-        this.rivTimer = setTimeout(() => {
-          const { internalValue, multiple, mountedOptions: options } = this
-          this.inputValue =
-            !internalValue && isNaN(internalValue)
+        const { internalValue, multiple, mountedOptions: options } = this
+        if (!this.inputReadonly) this.inputValue = internalValue
+        else {
+          this.rivTimer = setTimeout(() => {
+            this.inputValue = !internalValue && isNaN(internalValue)
               ? ''
               : (multiple ? internalValue : [internalValue])
                 .map(value =>
                   Object(options.find(item => item.value === value)).label || ''
                 )
                 .join(',')
-        }, 50)
+          }, 50)
+        }
       },
       onInput (value) {
         this.inputValue = value
+        this.internalValue = value
         this.$emit('input', value)
         this.$emit('change', value)
       },
@@ -150,7 +153,7 @@
         const { mountedOptions: options } = this
         if (!options.find(item => option.value === item.value)) {
           options.push(option)
-          this.refreshInputValue()
+          if (!this.inputReadonly) this.refreshInputValue()
         }
       },
       unmountOption (option) {
@@ -158,7 +161,7 @@
         const idx = options.findIndex(item => option.value === item.value)
         if (idx !== -1) {
           options.splice(idx, 1)
-          this.refreshInputValue()
+          if (!this.inputReadonly) this.refreshInputValue()
         }
       },
       toggleSelection (value, option, hidePopup = true) {
