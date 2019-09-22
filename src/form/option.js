@@ -42,7 +42,7 @@ export default {
         : this.icon
     },
     actualSelected () {
-      const { internalValue: selected } = this.comboBox
+      const { selectedValue: selected } = this.comboBox
       return this.multiple
         ? !!selected.find(value => value === this.actualValue)
         : selected === this.actualValue

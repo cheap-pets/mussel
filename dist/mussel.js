@@ -3470,7 +3470,7 @@
       actualSelected: function actualSelected() {
         var _this = this;
 
-        var selected = this.comboBox.internalValue;
+        var selected = this.comboBox.selectedValue;
         return this.multiple ? !!selected.find(function (value) {
           return value === _this.actualValue;
         }) : selected === this.actualValue;
@@ -3537,7 +3537,7 @@
     },
     data: function data() {
       return {
-        internalValue: null,
+        selectedValue: null,
         popupVisible: false,
         mountedOptions: []
       };
@@ -3564,7 +3564,7 @@
     watch: {
       value: {
         handler: function handler(value) {
-          this.internalValue = this.multiple ? Array.isArray(value) ? _toConsumableArray(value) : [] : value;
+          this.selectedValue = this.multiple ? Array.isArray(value) ? _toConsumableArray(value) : [] : value;
           this.refreshInputValue();
         },
         immediate: true
@@ -3582,12 +3582,12 @@
           this.rivTimer = null;
         }
 
-        var internalValue = this.internalValue,
+        var selectedValue = this.selectedValue,
             multiple = this.multiple,
             options = this.mountedOptions;
-        if (!this.inputReadonly) this.inputValue = internalValue;else {
+        if (!this.inputReadonly) this.inputValue = selectedValue;else {
           this.rivTimer = setTimeout(function () {
-            _this.inputValue = !internalValue && isNaN(internalValue) ? '' : (multiple ? internalValue : [internalValue]).map(function (value) {
+            _this.inputValue = !selectedValue && isNaN(selectedValue) ? '' : (multiple ? selectedValue : [selectedValue]).map(function (value) {
               return Object(options.find(function (item) {
                 return item.value === value;
               })).label || '';
@@ -3597,7 +3597,7 @@
       },
       onInput: function onInput(value) {
         this.inputValue = value;
-        this.internalValue = value;
+        this.selectedValue = value;
         this.$emit('input', value);
         this.$emit('change', value);
       },
@@ -3634,7 +3634,7 @@
         var hidePopup = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
         if (this.multiple) {
-          var values = this.internalValue;
+          var values = this.selectedValue;
           var idx = values.indexOf(value);
 
           if (idx !== -1) {
@@ -3645,7 +3645,7 @@
 
           this.$emit('change', values);
         } else {
-          this.internalValue = value;
+          this.selectedValue = value;
           this.$emit('change', value);
         }
 
@@ -3654,9 +3654,9 @@
         this.$emit('optionclick', value, option);
       },
       clear: function clear() {
-        this.internalValue = this.multiple ? [] : null;
+        this.selectedValue = this.multiple ? [] : null;
         this.inputValue = '';
-        this.$emit('change', this.internalValue);
+        this.$emit('change', this.selectedValue);
         this.$emit('clear', '');
       }
     }

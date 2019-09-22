@@ -77,7 +77,7 @@
     },
     data () {
       return {
-        internalValue: null,
+        selectedValue: null,
         popupVisible: false,
         mountedOptions: []
       }
@@ -104,7 +104,7 @@
     watch: {
       value: {
         handler (value) {
-          this.internalValue = this.multiple
+          this.selectedValue = this.multiple
             ? (Array.isArray(value) ? [...value] : [])
             : value
           this.refreshInputValue()
@@ -121,13 +121,13 @@
           clearTimeout(this.rivTimer)
           this.rivTimer = null
         }
-        const { internalValue, multiple, mountedOptions: options } = this
-        if (!this.inputReadonly) this.inputValue = internalValue
+        const { selectedValue, multiple, mountedOptions: options } = this
+        if (!this.inputReadonly) this.inputValue = selectedValue
         else {
           this.rivTimer = setTimeout(() => {
-            this.inputValue = !internalValue && isNaN(internalValue)
+            this.inputValue = !selectedValue && isNaN(selectedValue)
               ? ''
-              : (multiple ? internalValue : [internalValue])
+              : (multiple ? selectedValue : [selectedValue])
                 .map(value =>
                   Object(options.find(item => item.value === value)).label || ''
                 )
@@ -137,7 +137,7 @@
       },
       onInput (value) {
         this.inputValue = value
-        this.internalValue = value
+        this.selectedValue = value
         this.$emit('input', value)
         this.$emit('change', value)
       },
@@ -166,7 +166,7 @@
       },
       toggleSelection (value, option, hidePopup = true) {
         if (this.multiple) {
-          const { internalValue: values } = this
+          const { selectedValue: values } = this
           const idx = values.indexOf(value)
           if (idx !== -1) {
             values.splice(idx, 1)
@@ -175,7 +175,7 @@
           }
           this.$emit('change', values)
         } else {
-          this.internalValue = value
+          this.selectedValue = value
           this.$emit('change', value)
         }
         this.refreshInputValue()
@@ -183,9 +183,9 @@
         this.$emit('optionclick', value, option)
       },
       clear () {
-        this.internalValue = this.multiple ? [] : null
+        this.selectedValue = this.multiple ? [] : null
         this.inputValue = ''
-        this.$emit('change', this.internalValue)
+        this.$emit('change', this.selectedValue)
         this.$emit('clear', '')
       }
     }
