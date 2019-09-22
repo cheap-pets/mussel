@@ -56,7 +56,7 @@
       <mu-input-box invalid button-type="button" value="按钮在前" button-position="left">
       </mu-input-box>
       <h5>下拉框</h5>
-      <mu-combo-box v-model="comboValue1">
+      <mu-combo-box v-model="comboValue1" @change="onCombo1Change">
         <mu-option value='好好学习1'></mu-option>
         <mu-option value='好好学习2'></mu-option>
         <mu-option value='好好学习3'></mu-option>
@@ -64,7 +64,7 @@
         <mu-option value='好好学习4'></mu-option>
         <mu-option value='好好学习5'></mu-option>
       </mu-combo-box>
-      <mu-combo-box :options="comboOptions" multiple>
+      <mu-combo-box v-model="comboValue2" :options="comboOptions" multiple>
       </mu-combo-box>
     </div>
   </div>
@@ -81,11 +81,24 @@
           { value: 5 },
           { value: 6 }
         ],
-        comboValue1: '好好学习4'
+        comboValue1: '好好学习4',
+        comboValue2: null
       },
       methods: {
         onDropdownItemClick: function () {
           window.mussel.hideDropdown()
+        },
+        onCombo1Change: function (value) {
+          this.comboValue2 = null
+          this.comboOptions = value
+            ?  [
+              '1_' + value,
+              '2_' + value,
+              '3_' + value,
+              '4_' + value,
+              '5_' + value
+            ]
+            : null
         }
       }
     })

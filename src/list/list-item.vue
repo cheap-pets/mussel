@@ -2,15 +2,15 @@
   <div
     class="mu-list-item"
     :class="className"
-    :active="_active"
-    :selected="_selected"
+    :active="actualActive"
+    :selected="actualSelected"
     @click="onClick">
     <mu-icon
-      v-if="_icon || _iconClass || keepIconIndent"
-      :icon="_icon"
-      :icon-class="_iconClass"
+      v-if="actualIcon || actualIconClass || keepIconIndent"
+      :icon="actualIcon"
+      :icon-class="actualIconClass"
       @click="onButtonClick" />
-    <slot>{{ _label }}</slot>
+    <slot>{{ actualLabel }}</slot>
   </div>
 </template>
 
@@ -36,22 +36,22 @@
       triggerIcon: String
     },
     computed: {
-      _label () {
+      actualLabel () {
         return this.label
       },
-      _icon () {
+      actualIcon () {
         return this.icon
       },
-      _iconClass () {
+      actualIconClass () {
         return this.iconClass
       },
-      _active () {
+      actualActive () {
         return this.active
       },
-      _selected () {
+      actualSelected () {
         return this.selected
       },
-      _triggerIcon () {
+      actualTriggerIcon () {
         return this.triggerIcon
       }
     },

@@ -6,6 +6,7 @@
     :disabled="disabled">
     <mu-input
       :type="type"
+      :title="inputValue"
       :value="inputValue"
       :disabled="disabled"
       :readonly="readonly || !editable"
@@ -54,8 +55,7 @@
     provide () {
       return {
         comboBox: this,
-        multiple: this.multiple,
-        comboValue: this.internalValue
+        multiple: this.multiple
       }
     },
     props: {
@@ -133,7 +133,7 @@
       onInput (value) {
         this.inputValue = value
         this.$emit('input', value)
-        this.$emit('change', { value })
+        this.$emit('change', value)
       },
       onInputClick () {
         if (!this.editable) this.popupVisible = !this.popupVisible
@@ -176,7 +176,7 @@
       clear () {
         this.internalValue = this.multiple ? [] : null
         this.inputValue = ''
-        this.$emit('change', '')
+        this.$emit('change', this.internalValue)
         this.$emit('clear', '')
       }
     }

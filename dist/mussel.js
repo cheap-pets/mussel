@@ -3125,11 +3125,32 @@
   function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$1(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
   function _defineProperty$1(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-  document.addEventListener('mousedown', function (event) {
-    if (window.__mussel_dropdown) {
-      window.__mussel_dropdown.hideIf(event.target);
-    }
+
+  function callbackIf(handler) {
+    window.__mussel_dropdown && handler(window.__mussel_dropdown);
+  }
+
+  function hideIf() {
+    callbackIf(function (dropdown) {
+      return dropdown.hide();
+    });
+  }
+
+  function setPositionIf() {
+    callbackIf(function (dropdown) {
+      return dropdown.setPosition();
+    });
+  }
+
+  window.addEventListener('mousedown', function (event) {
+    callbackIf(function (dropdown) {
+      return dropdown.hideIf(event.target);
+    });
   });
+  window.addEventListener('blur', hideIf);
+  window.addEventListener('popstate', hideIf);
+  window.addEventListener('resize', setPositionIf);
+  window.addEventListener('scroll', setPositionIf);
 
   function popOnTop(parentRect, height) {
     return parentRect.bottom + 4 + height > window.innerHeight && parentRect.top - height - 4 >= 0;
@@ -3212,9 +3233,6 @@
       if (this.renderToBody) {
         document.body.appendChild(this.$el);
       }
-
-      window.addEventListener('resize', this.setPosition);
-      window.addEventListener('scroll', this.setPosition);
     },
     beforeDestroy: function beforeDestroy() {
       this.deactivate();
@@ -3222,9 +3240,6 @@
       if (this.$el.parentNode === document.body) {
         document.body.removeChild(this.$el);
       }
-
-      window.removeEventListener('resize', this.setPosition);
-      window.removeEventListener('scroll', this.setPosition);
     },
     methods: {
       deactivate: function deactivate() {
@@ -3332,22 +3347,22 @@
       triggerIcon: String
     },
     computed: {
-      _label: function _label() {
+      actualLabel: function actualLabel() {
         return this.label;
       },
-      _icon: function _icon() {
+      actualIcon: function actualIcon() {
         return this.icon;
       },
-      _iconClass: function _iconClass() {
+      actualIconClass: function actualIconClass() {
         return this.iconClass;
       },
-      _active: function _active() {
+      actualActive: function actualActive() {
         return this.active;
       },
-      _selected: function _selected() {
+      actualSelected: function actualSelected() {
         return this.selected;
       },
-      _triggerIcon: function _triggerIcon() {
+      actualTriggerIcon: function actualTriggerIcon() {
         return this.triggerIcon;
       }
     },
@@ -3379,21 +3394,21 @@
       staticClass: "mu-list-item",
       "class": _vm.className,
       attrs: {
-        active: _vm._active,
-        selected: _vm._selected
+        active: _vm.actualActive,
+        selected: _vm.actualSelected
       },
       on: {
         click: _vm.onClick
       }
-    }, [_vm._icon || _vm._iconClass || _vm.keepIconIndent ? _c("mu-icon", {
+    }, [_vm.actualIcon || _vm.actualIconClass || _vm.keepIconIndent ? _c("mu-icon", {
       attrs: {
-        icon: _vm._icon,
-        "icon-class": _vm._iconClass
+        icon: _vm.actualIcon,
+        "icon-class": _vm.actualIconClass
       },
       on: {
         click: _vm.onButtonClick
       }
-    }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm._label))])], 2);
+    }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm.actualLabel))])], 2);
   };
 
   var __vue_staticRenderFns__$8 = [];
@@ -3427,9 +3442,6 @@
       },
       multiple: {
         "default": false
-      },
-      comboValue: {
-        "default": null
       }
     },
     props: {
@@ -3444,35 +3456,36 @@
       labelField: function labelField() {
         return Object(this.fields).label || 'label';
       },
-      _value: function _value() {
+      actualValue: function actualValue() {
         var v = this.value === undefined ? Object(this.option)[this.valueField] : this.value;
         return v === undefined ? this.option : v;
       },
-      _label: function _label() {
+      actualLabel: function actualLabel() {
         var label = this.label === undefined ? Object(this.option)[this.labelField] : this.label;
-        return label || this._value;
+        return label || this.actualValue;
       },
-      _icon: function _icon() {
-        return this.multiple ? this._selected ? 'ok' : '_' : this.icon;
+      actualIcon: function actualIcon() {
+        return this.multiple ? this.actualSelected ? 'ok' : '_' : this.icon;
       },
-      _selected: function _selected() {
+      actualSelected: function actualSelected() {
         var _this = this;
 
-        return this.multiple ? !!this.comboBox.internalValue.find(function (value) {
-          return value === _this._value;
-        }) : this.comboBox.internalValue === this._value;
+        var selected = this.comboBox.internalValue;
+        return this.multiple ? !!selected.find(function (value) {
+          return value === _this.actualValue;
+        }) : selected === this.actualValue;
       }
     },
     created: function created() {
       this.comboBox.mountOption({
-        value: this._value,
-        label: this._label
+        value: this.actualValue,
+        label: this.actualLabel
       });
     },
     beforeDestroy: function beforeDestroy() {
       this.comboBox.unmountOption({
-        value: this._value,
-        label: this._label
+        value: this.actualValue,
+        label: this.actualLabel
       });
     },
     methods: {
@@ -3480,7 +3493,7 @@
         if (this.disabled) return;
 
         if (this.comboBox) {
-          this.comboBox.toggleSelection(this._value);
+          this.comboBox.toggleSelection(this.actualValue);
         }
 
         this.$emit('click');
@@ -3502,8 +3515,7 @@
     provide: function provide() {
       return {
         comboBox: this,
-        multiple: this.multiple,
-        comboValue: this.internalValue
+        multiple: this.multiple
       };
     },
     props: {
@@ -3581,9 +3593,7 @@
       onInput: function onInput(value) {
         this.inputValue = value;
         this.$emit('input', value);
-        this.$emit('change', {
-          value: value
-        });
+        this.$emit('change', value);
       },
       onInputClick: function onInputClick() {
         if (!this.editable) this.popupVisible = !this.popupVisible;
@@ -3637,7 +3647,7 @@
       clear: function clear() {
         this.internalValue = this.multiple ? [] : null;
         this.inputValue = '';
-        this.$emit('change', '');
+        this.$emit('change', this.internalValue);
         this.$emit('clear', '');
       }
     }
@@ -3664,6 +3674,7 @@
     }, [_c("mu-input", {
       attrs: {
         type: _vm.type,
+        title: _vm.inputValue,
         value: _vm.inputValue,
         disabled: _vm.disabled,
         readonly: _vm.readonly || !_vm.editable,

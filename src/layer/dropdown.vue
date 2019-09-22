@@ -8,11 +8,26 @@
   import getClientRect from '../utils/client-rect'
   import { isParentElement } from '../utils/dom'
 
-  document.addEventListener('mousedown', event => {
-    if (window.__mussel_dropdown) {
-      window.__mussel_dropdown.hideIf(event.target)
-    }
+  function callbackIf (handler) {
+    window.__mussel_dropdown && handler(window.__mussel_dropdown)
+  }
+
+  function hideIf () {
+    callbackIf(dropdown => dropdown.hide())
+  }
+
+  function setPositionIf () {
+    callbackIf(dropdown => dropdown.setPosition())
+  }
+
+  window.addEventListener('mousedown', event => {
+    callbackIf(dropdown => dropdown.hideIf(event.target))
   })
+
+  window.addEventListener('blur', hideIf)
+  window.addEventListener('popstate', hideIf)
+  window.addEventListener('resize', setPositionIf)
+  window.addEventListener('scroll', setPositionIf)
 
   function popOnTop (parentRect, height) {
     return parentRect.bottom + 4 + height > window.innerHeight &&
@@ -92,16 +107,12 @@
       if (this.renderToBody) {
         document.body.appendChild(this.$el)
       }
-      window.addEventListener('resize', this.setPosition)
-      window.addEventListener('scroll', this.setPosition)
     },
     beforeDestroy () {
       this.deactivate()
       if (this.$el.parentNode === document.body) {
         document.body.removeChild(this.$el)
       }
-      window.removeEventListener('resize', this.setPosition)
-      window.removeEventListener('scroll', this.setPosition)
     },
     methods: {
       deactivate () {

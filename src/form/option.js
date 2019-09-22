@@ -8,9 +8,6 @@ export default {
     },
     multiple: {
       default: false
-    },
-    comboValue: {
-      default: null
     }
   },
   props: {
@@ -25,42 +22,49 @@ export default {
     labelField () {
       return Object(this.fields).label || 'label'
     },
-    _value () {
+    actualValue () {
       const v =
         this.value === undefined
           ? Object(this.option)[this.valueField]
           : this.value
       return v === undefined ? this.option : v
     },
-    _label () {
+    actualLabel () {
       const label =
         this.label === undefined
           ? Object(this.option)[this.labelField]
           : this.label
-      return label || this._value
+      return label || this.actualValue
     },
-    _icon () {
+    actualIcon () {
       return this.multiple
-        ? (this._selected ? 'ok' : '_')
+        ? (this.actualSelected ? 'ok' : '_')
         : this.icon
     },
-    _selected () {
+    actualSelected () {
+      const { internalValue: selected } = this.comboBox
       return this.multiple
-        ? !!this.comboBox.internalValue.find(value => value === this._value)
-        : this.comboBox.internalValue === this._value
+        ? !!selected.find(value => value === this.actualValue)
+        : selected === this.actualValue
     }
   },
   created () {
-    this.comboBox.mountOption({ value: this._value, label: this._label })
+    this.comboBox.mountOption({
+      value: this.actualValue,
+      label: this.actualLabel
+    })
   },
   beforeDestroy () {
-    this.comboBox.unmountOption({ value: this._value, label: this._label })
+    this.comboBox.unmountOption({
+      value: this.actualValue,
+      label: this.actualLabel
+    })
   },
   methods: {
     onClick () {
       if (this.disabled) return
       if (this.comboBox) {
-        this.comboBox.toggleSelection(this._value)
+        this.comboBox.toggleSelection(this.actualValue)
       }
       this.$emit('click')
     }
