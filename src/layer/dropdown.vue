@@ -5,6 +5,7 @@
 </template>
 
 <script>
+  import RenderToBodyMixin from './mix-render-to-body'
   import getClientRect from '../utils/client-rect'
   import { isParentElement } from '../utils/dom'
 
@@ -56,6 +57,7 @@
   }
 
   export default {
+    mixins: [RenderToBodyMixin],
     provide () {
       return {
         keepIconIndent: this.keepIconIndent
@@ -69,11 +71,7 @@
       keepIconIndent: Boolean,
       visible: Boolean,
       height: String,
-      width: String,
-      renderToBody: {
-        type: Boolean,
-        default: false
-      }
+      width: String
     },
     data () {
       return {
@@ -103,17 +101,6 @@
         this.$nextTick(value ? this.show : this.hide)
       }
     },
-    mounted () {
-      if (this.renderToBody) {
-        document.body.appendChild(this.$el)
-      }
-    },
-    beforeDestroy () {
-      this.deactivate()
-      if (this.$el.parentNode === document.body) {
-        document.body.removeChild(this.$el)
-      }
-    },
     methods: {
       deactivate () {
         if (window.__mussel_dropdown === this) window.__mussel_dropdown = null
@@ -134,7 +121,12 @@
         this.$emit('change', false)
       },
       hideIf (triggerEl) {
-        if (!isParentElement(triggerEl, this.$parent.$el)) this.hide()
+        if (
+          !isParentElement(triggerEl, this.$parent.$el) &&
+          (!this.renderToBody || !isParentElement(triggerEl, this.$el))
+        ) {
+          this.hide()
+        }
       },
       setPosition () {
         if (!this.dropdownVisible) return

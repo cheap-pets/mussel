@@ -75,6 +75,9 @@ const variables = {
   /* margin, padding */
   marginUnitSize: 8,
 
+  /* layer */
+  modalMaskBackground: 'rgba(0, 0, 0, .17)',
+
   /* shadow */
   // level 1: button
   boxShadowLevel1: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
