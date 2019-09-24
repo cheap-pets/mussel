@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>浮动元素</h2>
+    <hr>
+    <div>
+      <h3>遮罩</h3>
+      <div>
+        <mu-button button-type="primary" @click="openModal1">打开遮罩 1</mu-button>
+      </div>
+      <mu-modal mask-action="close" class="mu-flex-box" flex-center v-model="model1Visible">点击遮罩或者 按 ESC, 可以关闭</mu-modal>
+
+      <h3>遮罩</h3>
+      <div>
+        <mu-button button-type="primary" @click="openModal2">打开遮罩 2</mu-button>
+      </div>
+      <mu-modal mask-action="none" class="mu-flex-box" flex-center v-model="model2Visible">点击遮罩或者 按 ESC, 不可以关闭</mu-modal>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        model1Visible: false,
+        model2Visible: false
+      },
+      methods: {
+        openModal1 () {
+          this.model1Visible = true
+        },
+        openModal2 () {
+          this.model2Visible = true
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,11 +1,13 @@
 <template>
-  <div class="mu-dropdown" :visible="dropdownVisible" :style="dropdownStyle">
+  <div class="mu-dropdown" :visible="actualVisible" :style="dropdownStyle">
     <slot />
   </div>
 </template>
 
 <script>
   import RenderToBodyMixin from './mix-render-to-body'
+  import VisibleModelMixin from './mix-visible-model'
+
   import getClientRect from '../utils/client-rect'
   import { isParentElement } from '../utils/dom'
 
@@ -20,10 +22,6 @@
   function setPositionIf () {
     callbackIf(dropdown => dropdown.setPosition())
   }
-
-  window.addEventListener('mousedown', event => {
-    callbackIf(dropdown => dropdown.hideIf(event.target))
-  })
 
   window.addEventListener('blur', hideIf)
   window.addEventListener('popstate', hideIf)
@@ -57,25 +55,19 @@
   }
 
   export default {
-    mixins: [RenderToBodyMixin],
+    mixins: [RenderToBodyMixin, VisibleModelMixin],
     provide () {
       return {
         keepIconIndent: this.keepIconIndent
       }
     },
-    model: {
-      prop: 'visible',
-      event: 'change'
-    },
     props: {
       keepIconIndent: Boolean,
-      visible: Boolean,
       height: String,
       width: String
     },
     data () {
       return {
-        dropdownVisible: false,
         style: {
           visibility: 'hidden',
           opacity: 0,
@@ -96,18 +88,13 @@
         return s
       }
     },
-    watch: {
-      visible (value) {
-        this.$nextTick(value ? this.show : this.hide)
-      }
-    },
     methods: {
       deactivate () {
         if (window.__mussel_dropdown === this) window.__mussel_dropdown = null
       },
       show () {
         window.__mussel_dropdown = this
-        this.dropdownVisible = true
+        this.actualVisible = true
         this.$nextTick(this.setPosition)
         this.$emit('show')
         this.$emit('change', true)
@@ -116,7 +103,7 @@
         this.deactivate()
         this.style.opacity = 0
         this.style.visibility = 'hidden'
-        this.dropdownVisible = false
+        this.actualVisible = false
         this.$emit('hide')
         this.$emit('change', false)
       },
@@ -129,7 +116,7 @@
         }
       },
       setPosition () {
-        if (!this.dropdownVisible) return
+        if (!this.actualVisible) return
         const { offsetHeight: height, offsetWidth: width } = this.$el
         const pRect = getClientRect(this.$parent.$el)
         const isOnTop = popOnTop(pRect, height)
@@ -154,7 +141,7 @@
 <style lang="postcss">
   .mu-dropdown {
     position: absolute;
-    z-index: 100;
+    z-index: 110;
     display: none;
     background: #fff;
     border: $dropdownBorder;

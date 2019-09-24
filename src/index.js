@@ -10,6 +10,7 @@ import Icon from './icon/index.vue'
 
 import Button from './button/button.jsx'
 import IconButton from './button/icon-button'
+import CloseButton from './button/close-button.vue'
 import ButtonGroup from './button/button-group.vue'
 
 import Input from './form/input.vue'
@@ -20,9 +21,10 @@ import Option from './form/option.js'
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
 
-import './transform'
+import './layer'
+import Modal from './layer/modal.vue'
 
-export * from './layer'
+import './transform'
 
 function install (Vue) {
   Vue.component('mu-flex-box', FlexBox)
@@ -35,6 +37,7 @@ function install (Vue) {
 
   Vue.component('mu-button', Button)
   Vue.component('mu-icon-button', IconButton)
+  Vue.component('mu-close-button', CloseButton)
   Vue.component('mu-button-group', ButtonGroup)
 
   Vue.component('mu-input', Input)
@@ -44,6 +47,8 @@ function install (Vue) {
 
   Vue.component('mu-list-item', ListItem)
   Vue.component('mu-list-divider', ListDivider)
+
+  Vue.component('mu-modal', Modal)
 }
 
 if (window.Vue) install(window.Vue)
@@ -61,6 +66,7 @@ export {
   // button
   Button,
   IconButton,
+  CloseButton,
   ButtonGroup,
   // form
   Input,
@@ -69,5 +75,7 @@ export {
   Option,
   // list
   ListItem,
-  ListDivider
+  ListDivider,
+  // layer
+  Modal
 }

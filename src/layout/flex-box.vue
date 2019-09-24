@@ -38,6 +38,10 @@
 
     &[direction="column"] {
       flex-direction: column;
+      & > .mu-input-box,
+      & > .mu-input {
+        width: auto;
+      }
     }
 
     &[inline] {

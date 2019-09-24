@@ -104,35 +104,42 @@
     watch: {
       value: {
         handler (value) {
-          this.selectedValue = this.multiple
-            ? (Array.isArray(value) ? [...value] : [])
-            : value
-          this.refreshInputValue()
+          if (value !== this.selectedValue) {
+            this.selectedValue = this.multiple
+              ? (Array.isArray(value) ? [...value] : [])
+              : value
+            this.refreshInputValue()
+          }
         },
         immediate: true
       }
     },
     methods: {
-      setInputValue (value) {
-        this.refreshInputValue()
+      setInputValue () {
+        // do nothing, juest overwrite InputBox's setInputValue()
       },
-      refreshInputValue () {
+      setInputValueImmediately () {
+        const { selectedValue, multiple, mountedOptions: options } = this
+        if (!this.inputReadonly) {
+          this.inputValue = selectedValue
+        }
+        this.inputValue = !selectedValue && isNaN(selectedValue)
+          ? ''
+          : (multiple ? selectedValue : [selectedValue])
+            .map(value =>
+              Object(options.find(item => item.value === value)).label || ''
+            )
+            .join(',')
+      },
+      refreshInputValue (immediate = false) {
         if (this.rivTimer) {
           clearTimeout(this.rivTimer)
           this.rivTimer = null
         }
-        const { selectedValue, multiple, mountedOptions: options } = this
-        if (!this.inputReadonly) this.inputValue = selectedValue
-        else {
-          this.rivTimer = setTimeout(() => {
-            this.inputValue = !selectedValue && isNaN(selectedValue)
-              ? ''
-              : (multiple ? selectedValue : [selectedValue])
-                .map(value =>
-                  Object(options.find(item => item.value === value)).label || ''
-                )
-                .join(',')
-          }, 50)
+        if (!this.inputReadonly || immediate) {
+          this.setInputValueImmediately()
+        } else {
+          this.rivTimer = setTimeout(this.setInputValueImmediately, 50)
         }
       },
       onInput (value) {
@@ -161,7 +168,7 @@
         const idx = options.findIndex(item => option.value === item.value)
         if (idx !== -1) {
           options.splice(idx, 1)
-          if (!this.inputReadonly) this.refreshInputValue()
+          // if (!this.inputReadonly) this.refreshInputValue()
         }
       },
       toggleSelection (value, option, hidePopup = true) {
@@ -178,7 +185,7 @@
           this.selectedValue = value
           this.$emit('change', value)
         }
-        this.refreshInputValue()
+        this.refreshInputValue(true)
         if (hidePopup) this.popupVisible = false
         this.$emit('optionclick', value, option)
       },

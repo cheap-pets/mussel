@@ -103,18 +103,6 @@
     }
   }
 
-  .mu-list-divider {
-    display: block;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    height: 1px;
-    border-bottom: 1px solid $(listDividerColor);
-
-    &:first-child, &:last-child {
-      display: none;
-    }
-  }
-
   .mu-dropdown > .mu-list-item {
     padding: $(dropdownItemYPaddingPx)px $(listItemXPaddingPx)px;
     cursor: pointer;

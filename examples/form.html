@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>表单</h2>
+    <hr>
+    <div>
+      <h3>表格布局</h3>
+      <mu-v-box bordered>
+        <mu-h-box cellpadding>
+          <mu-v-box>
+            <mu-input cellspacing placeholder="公式名称"></mu-input>
+            <textarea class="mu-input" cellspacing placeholder="说明"></textarea>
+          </mu-v-box>
+          <mu-h-box size="auto">
+            <textarea class="mu-input" size="auto" cellspacing placeholder="公式内容"></textarea>
+          </mu-h-box>
+          <mu-v-box>
+            <mu-v-box size="auto" flex-center>
+              <h1>计算结果</h1>
+              100
+            </mu-v-box>
+            <mu-combo-box cellspacing placeholder="保留小数"></mu-combo-box>
+          </mu-v-box>
+        </mu-h-box>
+        <mu-list-divider></mu-list-divider>
+        <mu-h-box cellpadding>
+          <mu-v-box>
+            <mu-input cellspacing placeholder="公式名称"></mu-input>
+            <textarea class="mu-input" cellspacing placeholder="说明"></textarea>
+          </mu-v-box>
+          <mu-h-box size="auto">
+            <textarea class="mu-input" size="auto" cellspacing placeholder="公式内容"></textarea>
+          </mu-h-box>
+          <mu-v-box>
+            <mu-v-box size="auto" flex-center>
+              <h1>计算结果</h1>
+              100
+            </mu-v-box>
+            <mu-combo-box cellspacing placeholder="保留小数"></mu-combo-box>
+          </mu-v-box>
+        </mu-h-box>
+      </mu-v-box>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        model1Visible: false,
+        model2Visible: false
+      },
+      methods: {
+        openModal1 () {
+          this.model1Visible = true
+        },
+        openModal2 () {
+          this.model2Visible = true
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
