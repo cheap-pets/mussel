@@ -13,6 +13,9 @@ let _buttonHoverShadow = '0 0 0 0.2rem $$shadowColor'
 let _buttonActiveShadow = 'none'
 
 const variables = {
+  /* margin, padding */
+  unitSpacingSizePx: 8,
+
   /* document */
   documentFontSizePx: 14,
 
@@ -72,12 +75,16 @@ const variables = {
   /* border colours */
   defaultBorderColor: grey[3],
 
-  /* margin, padding */
-  marginUnitSize: 8,
-
   /* layer */
   modalMaskBackground: 'rgba(0, 0, 0, .17)',
-  windowBackground: 'rgba(255, 255, 255, .95)',
+  dialogBackground: 'rgba(255, 255, 255, .95)',
+  dialogTitleFontSize: '1rem',
+  dialogHeaderHeightPx: 50,
+  dialogHeaderBorderBottom: '2px solid $primaryColor',
+  dialogHeaderBackground: 'transparent',
+  dialogFooterHeightPx: 50,
+  dialogFooterBackground: 'rgba(0, 0, 0, .05)',
+  dialogShadow: '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
 
   /* shadow */
   // level 1: button

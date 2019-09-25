@@ -30,11 +30,19 @@
     <div>
       <h3>窗口</h3>
       <div>
-        <mu-button button-type="primary" @click="openWindow1">打开窗口 1</mu-button>
+        <mu-button button-type="primary" @click="openDialog1">打开窗口 1</mu-button>
       </div>
-      <mu-window v-model="window1Visible" width="400px" height="300px" title="真的不是我干的">
-
-      </mu-window>
+      <mu-dialog
+        v-model="dialog1Visible"
+        width="400px"
+        height="300px"
+        title="真的不是我干的"
+        primary-button="确认"
+        danger
+        :buttons="['确认', '取消']"
+        @buttonclick="onButtonClick">
+        123
+      </mu-dialog>
     </div>
   </div>
 
@@ -44,7 +52,7 @@
       data: {
         model1Visible: false,
         model2Visible: false,
-        window1Visible: false
+        dialog1Visible: false
       },
       methods: {
         openModal1 () {
@@ -53,8 +61,13 @@
         openModal2 () {
           this.model2Visible = true
         },
-        openWindow1 () {
-          this.window1Visible = true
+        openDialog1 () {
+          this.dialog1Visible = true
+        },
+        onButtonClick (btn, win) {
+          if (btn === '取消') {
+            win.hide()
+          }
         }
       }
     });

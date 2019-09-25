@@ -4,6 +4,7 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   position: relative;
   display: inline-block;
   height: $(buttonHeightPx)px;
+  min-width: 65px;
   padding: $(buttonYPaddingPx)px $(buttonXPaddingPx)px;
   outline: none;
   border: 1px solid $buttonDefaultColor;
@@ -240,6 +241,7 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   &[icon-only],
   &:empty {
     width: $(buttonHeightPx)px;
+    min-width: 0;
     padding-left: 0;
     padding-right: 0;
   }
