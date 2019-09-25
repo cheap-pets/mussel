@@ -32,6 +32,10 @@
       <div>
         <mu-button button-type="primary" @click="openDialog1">打开窗口 1</mu-button>
       </div>
+      <br>
+      <div>
+        <mu-button button-type="primary" @click="openDialog2">打开窗口 2</mu-button>
+      </div>
       <mu-dialog
         v-model="dialog1Visible"
         width="400px"
@@ -47,6 +51,9 @@
   </div>
 
   <script type="text/javascript">
+    var dialog2 = new Vue({
+      extends: mussel.Dialog
+    })
     var app = new Vue({
       el: '#app',
       data: {
@@ -63,6 +70,9 @@
         },
         openDialog1 () {
           this.dialog1Visible = true
+        },
+        openDialog2 () {
+          dialog2.show()
         },
         onButtonClick (btn, win) {
           if (btn === '取消') {

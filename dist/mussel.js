@@ -4185,6 +4185,12 @@
 
         window.__mussel_modal = this;
         this.callbackOnce = callbackOnce;
+
+        if (!this.$el) {
+          this.$mount();
+          document.body.appendChild(this.$el);
+        }
+
         this.clearHideTimer();
         this.actualVisible = true;
         setTimeout(function () {
