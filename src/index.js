@@ -23,6 +23,7 @@ import ListDivider from './list/list-divider.vue'
 
 import './layer'
 import Modal from './layer/modal.vue'
+import Window from './layer/window.vue'
 
 import './transform'
 
@@ -49,6 +50,7 @@ function install (Vue) {
   Vue.component('mu-list-divider', ListDivider)
 
   Vue.component('mu-modal', Modal)
+  Vue.component('mu-window', Window)
 }
 
 if (window.Vue) install(window.Vue)
@@ -77,5 +79,6 @@ export {
   ListItem,
   ListDivider,
   // layer
-  Modal
+  Modal,
+  Window
 }

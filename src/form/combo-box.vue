@@ -61,6 +61,7 @@
     props: {
       value: [String, Number, Array],
       keepIconIndent: Boolean,
+      popupRenderToBody: Boolean,
       dropdownHeight: String,
       dropdownWidth: String,
       clearable: {
@@ -88,6 +89,7 @@
       },
       popupProps () {
         return {
+          renderToBody: this.popupRenderToBody,
           keepIconIndent: this.keepIconIndent,
           dropdownHeight: this.dropdownHeight,
           dropdownWidth: this.dropdownWidth,

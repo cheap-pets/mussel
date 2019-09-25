@@ -13,6 +13,11 @@
 
   export default {
     mixins: [FlexItem],
+    provide () {
+      return {
+        parentDirection: this.flexDirection
+      }
+    },
     props: {
       direction: {
         type: String,

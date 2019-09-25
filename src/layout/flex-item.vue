@@ -6,6 +6,11 @@
 
 <script>
   export default {
+    inject: {
+      parentDirection: {
+        default: 'row'
+      }
+    },
     props: {
       size: {
         type: [Number, String],
@@ -17,9 +22,15 @@
       overflow: String
     },
     computed: {
-      parentDirection () {
-        return this.$parent.flexDirection || 'row'
-      },
+      // parentDirection () {
+      //   let p = this.$parent
+      //   let v
+      //   while (p && !v) {
+      //     v = p.flexDirection
+      //     p = parent.$parent
+      //   }
+      //   return v || 'row'
+      // },
       sizeUnit () {
         const s = String(this.size)
         return s.indexOf('%') > -1

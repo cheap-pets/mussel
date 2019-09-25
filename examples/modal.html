@@ -21,12 +21,20 @@
         <mu-button button-type="primary" @click="openModal1">打开遮罩 1</mu-button>
       </div>
       <mu-modal mask-action="close" class="mu-flex-box" flex-center v-model="model1Visible">点击遮罩或者 按 ESC, 可以关闭</mu-modal>
-
-      <h3>遮罩</h3>
+      <br>
       <div>
         <mu-button button-type="primary" @click="openModal2">打开遮罩 2</mu-button>
       </div>
       <mu-modal mask-action="none" class="mu-flex-box" flex-center v-model="model2Visible">点击遮罩或者 按 ESC, 不可以关闭</mu-modal>
+    </div>
+    <div>
+      <h3>窗口</h3>
+      <div>
+        <mu-button button-type="primary" @click="openWindow1">打开窗口 1</mu-button>
+      </div>
+      <mu-window v-model="window1Visible" width="400px" height="300px" title="真的不是我干的">
+
+      </mu-window>
     </div>
   </div>
 
@@ -35,7 +43,8 @@
       el: '#app',
       data: {
         model1Visible: false,
-        model2Visible: false
+        model2Visible: false,
+        window1Visible: false
       },
       methods: {
         openModal1 () {
@@ -43,6 +52,9 @@
         },
         openModal2 () {
           this.model2Visible = true
+        },
+        openWindow1 () {
+          this.window1Visible = true
         }
       }
     });

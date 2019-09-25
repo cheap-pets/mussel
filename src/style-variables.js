@@ -77,6 +77,7 @@ const variables = {
 
   /* layer */
   modalMaskBackground: 'rgba(0, 0, 0, .17)',
+  windowBackground: 'rgba(255, 255, 255, .95)',
 
   /* shadow */
   // level 1: button

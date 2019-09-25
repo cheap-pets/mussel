@@ -782,6 +782,11 @@ if (isForced_1(NUMBER, !NativeNumber(' 0o1') || !NativeNumber('0b1') || NativeNu
 //
 //
 var script = {
+  inject: {
+    parentDirection: {
+      "default": 'row'
+    }
+  },
   props: {
     size: {
       type: [Number, String],
@@ -792,9 +797,15 @@ var script = {
     overflow: String
   },
   computed: {
-    parentDirection: function parentDirection() {
-      return this.$parent.flexDirection || 'row';
-    },
+    // parentDirection () {
+    //   let p = this.$parent
+    //   let v
+    //   while (p && !v) {
+    //     v = p.flexDirection
+    //     p = parent.$parent
+    //   }
+    //   return v || 'row'
+    // },
     sizeUnit: function sizeUnit() {
       var s = String(this.size);
       return s.indexOf('%') > -1 ? '%' : s.indexOf('px') > -1 ? 'px' : null;
@@ -1048,6 +1059,11 @@ var FlexItem = normalizeComponent_1({
 
 var script$1 = {
   mixins: [FlexItem],
+  provide: function provide() {
+    return {
+      parentDirection: this.flexDirection
+    };
+  },
   props: {
     direction: {
       type: String,
@@ -1847,6 +1863,8 @@ var keyLeft = 'M733.64730918 774.88842085L462.6342832 503.87539624 733.64730918 
 var keyRight = 'M290.35269082 765.33826345L561.3657168 500.21682544 290.35269082 229.20379943 372.8349169 146.72157474 726.3301676 500.21682544 372.8349169 853.71207613Z';
 var keyUp = 'M240.98697401 733.64730918L512 462.6342832 783.01302599 733.64730918 865.4952507 651.1650831 512 297.6698324 158.5047493 651.1650831Z';
 var search = 'M1021.184 925.696l-91.904 91.584-202.752-201.92c-75.904 56.64-169.216 91.392-271.424 91.392C203.712 906.688 0 703.744 0 453.376 0 202.944 203.712 0 455.168 0c251.328 0 455.04 202.944 455.04 453.376 0 101.76-34.88 194.752-91.712 270.336L1021.184 925.696 1021.184 925.696zM455.168 129.6c-179.584 0-325.056 144.96-325.056 323.84 0 178.816 145.472 323.84 325.056 323.84 179.456 0 325.056-145.024 325.056-323.84C780.224 274.496 634.624 129.6 455.168 129.6L455.168 129.6z';
+var expandAll = 'M768 341.333333H341.333333v426.666667H256V341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h426.666667v85.333333z m-170.666667-256H170.666667c-46.933333 0-85.333333 38.4-85.333334 85.333334v426.666666h85.333334V170.666667h426.666666V85.333333z m341.333334 426.666667v341.333333c0 46.933333-38.4 85.333333-85.333334 85.333334h-341.333333c-46.933333 0-85.333333-38.4-85.333333-85.333334v-341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h341.333333c46.933333 0 85.333333 38.4 85.333334 85.333333z m-85.333334 128h-128v-128h-85.333333v128h-128v85.333333h128v128h85.333333v-128h128v-85.333333z';
+var collapseAll = 'M597.333333 170.666667H170.666667v426.666666H85.333333V170.666667c0-46.933333 38.4-85.333333 85.333334-85.333334h426.666666v85.333334z m170.666667 85.333333H341.333333c-46.933333 0-85.333333 38.4-85.333333 85.333333v426.666667h85.333333V341.333333h426.666667V256z m170.666667 256v341.333333c0 46.933333-38.4 85.333333-85.333334 85.333334h-341.333333c-46.933333 0-85.333333-38.4-85.333333-85.333334v-341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h341.333333c46.933333 0 85.333333 38.4 85.333334 85.333333z m-85.333334 128h-341.333333v85.333333h341.333333v-85.333333z';
 var _d = {
   ok: ok,
   close: close,
@@ -1854,7 +1872,9 @@ var _d = {
   'key-down': keyDown,
   'key-left': keyLeft,
   'key-right': keyRight,
-  'key-up': keyUp
+  'key-up': keyUp,
+  'expand-all': expandAll,
+  'collapse-all': collapseAll
 };
 
 //
@@ -2043,7 +2063,7 @@ var script$4 = {
   }
 };
 
-var css$5 = ".mu-close-button {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n  cursor: pointer;\r\n}\r\n.mu-close-button.window-close-button {\r\n  position: absolute;\r\n  top: 8px;\r\n  right: 8px;\r\n}\r\n.mu-close-button:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n  transform: scale(1.25);\r\n}";
+var css$5 = ".mu-close-button {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n  cursor: pointer;\r\n}\r\n.mu-close-button.window-close-button {\r\n  position: absolute;\r\n  top: 8px;\r\n  right: 8px;\r\n  z-index: 1;\r\n}\r\n.mu-close-button:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n  transform: scale(1.25);\r\n}";
 styleInject(css$5);
 
 /* script */
@@ -3593,6 +3613,7 @@ var script$a = {
   props: {
     value: [String, Number, Array],
     keepIconIndent: Boolean,
+    popupRenderToBody: Boolean,
     dropdownHeight: String,
     dropdownWidth: String,
     clearable: {
@@ -3620,6 +3641,7 @@ var script$a = {
     },
     popupProps: function popupProps() {
       return {
+        renderToBody: this.popupRenderToBody,
         keepIconIndent: this.keepIconIndent,
         dropdownHeight: this.dropdownHeight,
         dropdownWidth: this.dropdownWidth,
@@ -3994,8 +4016,271 @@ var Modal = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$b
 }, __vue_inject_styles__$c, __vue_script__$b, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
 
-var css$d = ".mu-expand-trigger {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-expand-trigger[trigger-on] {\r\n  transform: rotate(-180deg);\r\n}";
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+/**
+ * lodash 4.0.1 (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <https://lodash.com/license>
+ */
+
+/** `Object#toString` result references. */
+var stringTag = '[object String]';
+/** Used for built-in method references. */
+
+var objectProto = Object.prototype;
+/**
+ * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+
+var objectToString$1 = objectProto.toString;
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @type Function
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+
+var isArray$1 = Array.isArray;
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+
+function isObjectLike(value) {
+  return !!value && _typeof(value) == 'object';
+}
+/**
+ * Checks if `value` is classified as a `String` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+ * @example
+ *
+ * _.isString('abc');
+ * // => true
+ *
+ * _.isString(1);
+ * // => false
+ */
+
+
+function isString(value) {
+  return typeof value == 'string' || !isArray$1(value) && isObjectLike(value) && objectToString$1.call(value) == stringTag;
+}
+
+var lodash_isstring = isString;
+
+function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var script$c = {
+  components: {
+    'mu-v-box': VBox,
+    'mu-close-button': CloseButton
+  },
+  "extends": Modal,
+  props: {
+    title: String,
+    width: String,
+    height: String,
+    buttons: Array,
+    parimaryButton: String
+  },
+  data: function data() {
+    return {
+      maskVisible: false,
+      windowVisible: false
+    };
+  },
+  computed: {
+    style: function style() {
+      return {
+        width: this.width,
+        height: this.height
+      };
+    },
+    bodyProps: function bodyProps() {
+      return {
+        size: this.height ? 'auto' : undefined
+      };
+    },
+    btns: function btns() {
+      var _this = this;
+
+      return this.buttons.map(function (button) {
+        var btn = lodash_isstring(button) ? {
+          caption: button
+        } : _objectSpread$2({}, button);
+        if (_this.parimaryButton === btn.caption) btn.buttonType = 'primary';
+      });
+    }
+  },
+  methods: {
+    clearHideTimer: function clearHideTimer() {
+      if (this.hideTimer) {
+        clearTimeout(this.hideTimer);
+        this.hideTimer = null;
+      }
+    },
+    show: function show() {
+      var _this2 = this;
+
+      window.__mussel_modal = this;
+      this.clearHideTimer();
+      this.actualVisible = true;
+      this.$nextTick(function () {
+        _this2.windowVisible = true;
+      });
+      this.$emit('show');
+      this.$emit('change', true);
+    },
+    hide: function hide() {
+      var _this3 = this;
+
+      this.deactivate();
+      this.windowVisible = false;
+      this.clearHideTimer();
+      this.$hideTimer = setTimeout(function () {
+        _this3.actualVisible = false;
+      }, 200);
+      this.$emit('hide');
+      this.$emit('change', false);
+    }
+  }
+};
+
+var css$d = ".mu-window {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  transform: translateY(300px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-window[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-window-header {\r\n  padding: 16px;\r\n}\r\n.mu-window-footer {\r\n  margin-top: auto;\r\n  padding: 16px;\r\n}\r\n.mu-window-body {\r\n  padding: 32px;\r\n}";
 styleInject(css$d);
+
+/* script */
+var __vue_script__$c = script$c;
+/* template */
+
+var __vue_render__$c = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("mu-v-box", {
+    staticClass: "mu-modal-mask",
+    attrs: {
+      "flex-center": "",
+      visible: _vm.actualVisible
+    },
+    nativeOn: {
+      click: function click($event) {
+        return _vm.onMaskClick($event);
+      }
+    }
+  }, [_c("mu-v-box", {
+    staticClass: "mu-window",
+    style: _vm.style,
+    attrs: {
+      visible: _vm.windowVisible
+    }
+  }, [_c("mu-close-button", {
+    staticClass: "window-close-button"
+  }), _vm._v(" "), _c("div", {
+    staticClass: "mu-window-header"
+  }, [_vm._v("\n      " + _vm._s(_vm.title) + "\n    ")]), _vm._v(" "), _c("mu-flex-item", {
+    staticClass: "mu-window-body",
+    attrs: {
+      size: _vm.height ? "auto" : undefined
+    }
+  }, [_vm._t("default")], 2), _vm._v(" "), _vm._t("footer", [_vm.buttons ? _c("mu-h-box", {
+    staticClass: "mu-window-footer",
+    attrs: {
+      "justify-content": "center"
+    }
+  }, [_c("div", {
+    staticStyle: {
+      "margin-right": "auto"
+    }
+  }), _vm._v(" "), _vm._l(_vm.btns, function (btn) {
+    return _c("mu-button", _vm._b({
+      key: btn.label || btn.icon || btn.iconClass,
+      on: {
+        click: function click($event) {
+          return _vm.onButtonClick(btn);
+        }
+      }
+    }, "mu-button", btn, false));
+  })], 2) : _vm._e()])], 2)], 1);
+};
+
+var __vue_staticRenderFns__$c = [];
+__vue_render__$c._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$d = undefined;
+/* scoped */
+
+var __vue_scope_id__$d = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$d = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$d = false;
+/* style inject */
+
+/* style inject SSR */
+
+var Window = normalizeComponent_1({
+  render: __vue_render__$c,
+  staticRenderFns: __vue_staticRenderFns__$c
+}, __vue_inject_styles__$d, __vue_script__$c, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
+
+var css$e = ".mu-expand-trigger {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-expand-trigger[trigger-on] {\r\n  transform: rotate(-180deg);\r\n}";
+styleInject(css$e);
 
 function install(Vue) {
   Vue.component('mu-flex-box', FlexBox);
@@ -4015,8 +4300,9 @@ function install(Vue) {
   Vue.component('mu-list-item', ListItem);
   Vue.component('mu-list-divider', ListDivider);
   Vue.component('mu-modal', Modal);
+  Vue.component('mu-window', Window);
 }
 
 if (window.Vue) install(window.Vue);
 
-export { Button, ButtonGroup, CloseButton, ComboBox, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, ListDivider, ListItem, Modal, Option, Splitter, VBox, install };
+export { Button, ButtonGroup, CloseButton, ComboBox, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, ListDivider, ListItem, Modal, Option, Splitter, VBox, Window, install };
