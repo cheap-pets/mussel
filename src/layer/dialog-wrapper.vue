@@ -5,6 +5,7 @@
     :visible="params.modalVisible"
     @click.native="onMaskClick">
     <mu-v-box
+      v-if="params.modalVisible"
       class="mu-dialog"
       :style="style"
       :danger="params.danger"
@@ -55,11 +56,6 @@
         return {
           width: this.params.width,
           height: this.params.height
-        }
-      },
-      bodyProps () {
-        return {
-          size: this.params.height ? 'auto' : undefined
         }
       }
     },

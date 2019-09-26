@@ -6,7 +6,8 @@ window.addEventListener('keyup', event => {
     if (dropdown) {
       dropdown.hide()
     } else if (modal) {
-      if (modal.maskAction === 'close') modal.hide()
+      const action = modal.$options.maskAction || modal.maskAction
+      if (action === 'close') modal.hide()
     }
   }
 })

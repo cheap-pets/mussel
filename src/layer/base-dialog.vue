@@ -158,7 +158,7 @@
     background: $dialogBackground;
     opacity: 0;
     box-shadow: $dialogShadow;
-    transform: translateY(300px);
+    transform: translateY(200px);
     transition: all .2s ease-in-out;
 
     &[visible]{

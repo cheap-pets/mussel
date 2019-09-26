@@ -58,8 +58,8 @@
   <div id="xxx"></div>
 
   <script type="text/javascript">
-    var Dialog2 = Vue.extend(mussel.BaseDialog)
-    var dialog2 = new Dialog2({
+    var dialog2 = new Vue({
+      extends: mussel.BaseDialog,
       title: '大吉大利，今晚吃鸡',
       width: '50%',
       height: '35%',

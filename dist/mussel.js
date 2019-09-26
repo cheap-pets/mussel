@@ -3944,7 +3944,8 @@
       if (dropdown) {
         dropdown.hide();
       } else if (modal) {
-        if (modal.maskAction === 'close') modal.hide();
+        var action = modal.$options.maskAction || modal.maskAction;
+        if (action === 'close') modal.hide();
       }
     }
   });
@@ -4142,11 +4143,6 @@
           width: this.params.width,
           height: this.params.height
         };
-      },
-      bodyProps: function bodyProps() {
-        return {
-          size: this.params.height ? 'auto' : undefined
-        };
       }
     },
     methods: {
@@ -4184,7 +4180,7 @@
           return _vm.onMaskClick($event);
         }
       }
-    }, [_c("mu-v-box", {
+    }, [_vm.params.modalVisible ? _c("mu-v-box", {
       staticClass: "mu-dialog",
       style: _vm.style,
       attrs: {
@@ -4225,7 +4221,7 @@
           }
         }
       }, "mu-button", btn, false));
-    })], 2) : _vm._e()])], 2)], 1);
+    })], 2) : _vm._e()])], 2) : _vm._e()], 1);
   };
 
   var __vue_staticRenderFns__$b = [];
@@ -4420,7 +4416,7 @@
     }
   };
 
-  var css$e = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(300px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
+  var css$e = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(200px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
   styleInject(css$e);
 
   /* script */
