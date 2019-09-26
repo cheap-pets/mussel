@@ -13,6 +13,7 @@
   import './input.pcss'
 
   export default {
+    name: 'MusselInput',
     model: {
       prop: 'value',
       event: 'input'

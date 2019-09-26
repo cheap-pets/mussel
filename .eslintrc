@@ -33,7 +33,7 @@
         "ignoreComments": true,
         "ignoreTrailingComments": true,
         "ignoreUrls": true,
-        "ignoreStrings": true,
+        /* "ignoreStrings": true, */
         "ignoreTemplateLiterals": true
       }
     ]

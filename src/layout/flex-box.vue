@@ -12,6 +12,7 @@
   import FlexItem from './flex-item.vue'
 
   export default {
+    name: 'MusselFlexBox',
     mixins: [FlexItem],
     provide () {
       return {

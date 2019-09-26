@@ -49,6 +49,7 @@
   import Option from './option.js'
 
   export default {
+    name: 'MusselComboBox',
     popupComponent: Dropdown,
     optionComponent: Option,
     extends: InputBox,

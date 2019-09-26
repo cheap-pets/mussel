@@ -18,6 +18,7 @@
   import d from './d'
 
   export default {
+    name: 'MusselIcon',
     props: {
       iconClass: String,
       icon: String,

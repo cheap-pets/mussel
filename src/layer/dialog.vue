@@ -1,54 +1,27 @@
 <template>
-  <mu-v-box
-    class="mu-modal-mask"
-    flex-center
-    :visible="actualVisible"
-    @click.native="onMaskClick">
-    <mu-v-box
-      class="mu-dialog"
-      :style="style"
-      :danger="danger"
-      :visible="dialogVisible"
-    >
-      <mu-h-box class="mu-dialog-header">
-        <mu-flex-item class="mu-dialog-title" size="auto">
-          {{ title }}
-        </mu-flex-item>
-        <mu-close-button @click="hide" />
-      </mu-h-box>
-      <mu-flex-item class="mu-dialog-body" :size="height ? 'auto' : undefined">
-        <slot />
-      </mu-flex-item>
-      <slot name="footer">
-        <mu-h-box
-          v-if="buttons"
-          class="mu-dialog-footer"
-          align-items="center">
-          <div style="margin-right: auto" />
-          <mu-button
-            v-for="btn in btns"
-            :key="btn.caption || btn.icon || btn.iconClass"
-            v-bind="btn"
-            @click="onButtonClick(btn)" />
-        </mu-h-box>
-      </slot>
-    </mu-v-box>
-  </mu-v-box>
+  <mu-dialog-wrapper>
+    <slot />
+  </mu-dialog-wrapper>
 </template>
 
 <script>
   import isString from 'lodash.isstring'
 
   import Modal from './modal.vue'
-  import VBox from '../layout/flex-v-box'
-  import CloseButton from '../button/close-button.vue'
+  import DialogWrapper from './dialog-wrapper.vue'
 
   export default {
+    name: 'MusselDialog',
     components: {
-      'mu-v-box': VBox,
-      'mu-close-button': CloseButton
+      'mu-dialog-wrapper': DialogWrapper
     },
     extends: Modal,
+    provide () {
+      return {
+        dialog: this,
+        params: this.params
+      }
+    },
     props: {
       title: String,
       width: String,
@@ -58,35 +31,80 @@
       primaryButton: String
     },
     data () {
+      const { title, width, height, danger, primaryButton } = this.$options
       return {
-        dialogVisible: false
+        params: {
+          modalVisible: false,
+          dialogVisible: false,
+          width: this.width || width,
+          height: this.height || height,
+          danger: this.danger || danger,
+          title: this.title || title,
+          primaryButton: this.primaryButton || primaryButton,
+          btns: this.btns
+        }
       }
     },
     computed: {
-      style () {
-        return {
-          width: this.width,
-          height: this.height
-        }
-      },
-      bodyProps () {
-        return {
-          size: this.height ? 'auto' : undefined
-        }
-      },
       btns () {
-        return this.buttons.map(button => {
-          const btn = isString(button)
-            ? { caption: button, _rawData: button }
-            : { ...button }
-          if (this.primaryButton === btn.caption) {
-            btn.buttonType = this.danger ? 'danger' : 'primary'
-          }
-          return btn
-        })
+        const buttons = this.buttons || this.$options.buttons
+        return Array.isArray(buttons)
+          ? buttons.map(button => {
+            const btn = isString(button)
+              ? { caption: button, _rawData: button }
+              : { ...button }
+            if (this.params.primaryButton === btn.caption) {
+              btn.buttonType = this.danger ? 'danger' : 'primary'
+            }
+            return btn
+          })
+          : null
+      }
+    },
+    watch: {
+      modalVisible (value) {
+        this.params.modalVisible = value
+      },
+      buttons: {
+        handler () {
+          this.params.buttons = this.btns
+        },
+        immediate: true
+      },
+      title (value) {
+        this.setTitle(value)
+      },
+      width (value) {
+        this.setWidth(value)
+      },
+      height (value) {
+        this.setHeight(value)
+      },
+      danger (value) {
+        this.setDanger(value)
+      },
+      primaryButton (value) {
+        this.setPrimaryButton(value)
       }
     },
     methods: {
+      setTitle (value) {
+        this.params.title = value
+      },
+      setWidth (value) {
+        this.params.width = value
+      },
+      setHeight (value) {
+        this.params.height = value
+      },
+      setDanger (value) {
+        this.params.danger = value
+        this.params.buttons = this.btns
+      },
+      setPrimaryButton (value) {
+        this.params.primaryButton = value
+        this.params.buttons = this.btns
+      },
       clearHideTimer () {
         if (this.hideTimer) {
           clearTimeout(this.hideTimer)
@@ -101,9 +119,9 @@
           document.body.appendChild(this.$el)
         }
         this.clearHideTimer()
-        this.actualVisible = true
+        this.modalVisible = true
         setTimeout(() => {
-          this.dialogVisible = true
+          this.params.dialogVisible = true
         }, 10)
         this.$emit('show')
         this.$emit('change', true)
@@ -111,23 +129,28 @@
       actualHide () {
         this.callbackOnce = null
         this.deactivate()
-        this.dialogVisible = false
+        this.params.dialogVisible = false
         this.clearHideTimer()
         this.$hideTimer = setTimeout(() => {
-          this.actualVisible = false
+          this.modalVisible = false
         }, 200)
         this.$emit('hide')
         this.$emit('change', false)
       },
-      hide () {
-        if (this.callbackOnce) {
-          this.callback(this.actualHide)
+      hide (force, button) {
+        if (!force && this.$options.beforeClose) {
+          this.$options.beforeClose(this.actualHide, button)
         } else {
           this.actualHide()
         }
       },
       onButtonClick (btn) {
-        this.$emit('buttonclick', btn._rawData || btn, this)
+        const { action, _rawData } = Object(btn)
+        const button = _rawData || btn
+        if (['hide', 'close'].indexOf(action) !== -1) {
+          this.hide(false, button)
+        }
+        this.$emit('buttonclick', button, this)
       }
     }
   }

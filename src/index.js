@@ -24,6 +24,9 @@ import ListDivider from './list/list-divider.vue'
 import './layer'
 import Modal from './layer/modal.vue'
 import Dialog from './layer/dialog.vue'
+import DialogWrapper from './layer/dialog-wrapper.vue'
+
+import Dialog2 from './layer/dialog2.vue'
 
 import './transform'
 
@@ -51,6 +54,7 @@ function install (Vue) {
 
   Vue.component('mu-modal', Modal)
   Vue.component('mu-dialog', Dialog)
+  Vue.component('mu-dialog-wrapper', DialogWrapper)
 }
 
 if (window.Vue) install(window.Vue)
@@ -80,5 +84,7 @@ export {
   ListDivider,
   // layer
   Modal,
-  Dialog
+  Dialog,
+  Dialog2,
+  DialogWrapper
 }

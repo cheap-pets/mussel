@@ -1,6 +1,7 @@
 import Icon from '../icon/index.vue'
 
 export default {
+  name: 'MusselInputButton',
   extends: Icon,
   props: {
     icon: {

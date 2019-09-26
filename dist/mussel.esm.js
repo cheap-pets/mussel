@@ -1058,6 +1058,7 @@ var FlexItem = normalizeComponent_1({
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, undefined, undefined);
 
 var script$1 = {
+  name: 'MusselFlexBox',
   mixins: [FlexItem],
   provide: function provide() {
     return {
@@ -1128,6 +1129,7 @@ var FlexBox = normalizeComponent_1({
 }, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, undefined, undefined);
 
 var HBox = {
+  name: 'MusselHBox',
   "extends": FlexBox,
   computed: {
     flexDirection: function flexDirection() {
@@ -1137,6 +1139,7 @@ var HBox = {
 };
 
 var VBox = {
+  name: 'MusselVBox',
   "extends": FlexBox,
   computed: {
     flexDirection: function flexDirection() {
@@ -1769,6 +1772,7 @@ function resizeElement(_ref) {
 }
 
 var script$2 = {
+  name: 'MusselSplitter',
   computed: {
     parentDirection: function parentDirection() {
       return this.$parent.flexDirection || 'row';
@@ -1879,6 +1883,7 @@ var _d = {
 
 //
 var script$3 = {
+  name: 'MusselIcon',
   props: {
     iconClass: String,
     icon: String,
@@ -1970,6 +1975,7 @@ var css$4 = ".mu-button {\r\n  position: relative;\r\n  display: inline-block;\r
 styleInject(css$4);
 
 var Button = {
+  name: 'MusselButton',
   components: {
     Icon: Icon
   },
@@ -2002,7 +2008,7 @@ var Button = {
   },
   computed: {
     isIconOnly: function isIconOnly() {
-      return this.iconOnly || !this.$slots["default"] && !this.caption && this.icon;
+      return this.iconOnly || !this.$slots["default"] && !this.caption && (this.icon || this.iconClass);
     }
   },
   methods: {
@@ -2022,7 +2028,7 @@ var Button = {
       "on": {
         "click": this.onClick
       }
-    }, [this.icon ? h("icon", {
+    }, [this.icon || this.iconClass ? h("icon", {
       "attrs": {
         "icon": this.icon,
         "icon-class": this.iconClass
@@ -2032,6 +2038,7 @@ var Button = {
 };
 
 var IconButton = {
+  name: 'MusselIconButton',
   "extends": Button,
   computed: {
     isIconOnly: function isIconOnly() {
@@ -2041,6 +2048,7 @@ var IconButton = {
 };
 
 var script$4 = {
+  name: 'MusselCloseButton',
   "extends": Icon,
   props: {
     icon: {
@@ -2094,7 +2102,9 @@ var CloseButton = normalizeComponent_1({}, __vue_inject_styles__$4, __vue_script
 //
 //
 //
-var script$5 = {};
+var script$5 = {
+  name: 'MusselButtonGroup'
+};
 
 var css$6 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  border-radius: 2px;\r\n}\r\n.mu-button-group > .mu-button {\r\n  float: left;\r\n  box-shadow: none;\r\n  z-index: 0;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child) {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}";
 styleInject(css$6);
@@ -2142,6 +2152,7 @@ var css$7 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 2
 styleInject(css$7);
 
 var script$6 = {
+  name: 'MusselInput',
   model: {
     prop: 'value',
     event: 'input'
@@ -2227,6 +2238,7 @@ var css$8 = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block
 styleInject(css$8);
 
 var InputButton = {
+  name: 'MusselInputButton',
   "extends": Icon,
   props: {
     icon: {
@@ -2253,6 +2265,7 @@ var InputButton = {
 };
 
 var script$7 = {
+  name: 'MusselInputBox',
   components: {
     'mu-input': Input,
     'mu-input-button': InputButton
@@ -3186,13 +3199,13 @@ var VisibleModelMixin = {
   },
   data: function data() {
     return {
-      actualVisible: false
+      modalVisible: false
     };
   },
   watch: {
     visible: {
       handler: function handler(value) {
-        if (value === !this.actualVisible) {
+        if (value === !this.modalVisible) {
           this.$nextTick(value ? this.show : this.hide);
         }
       },
@@ -3201,12 +3214,12 @@ var VisibleModelMixin = {
   },
   methods: {
     show: function show() {
-      this.actualVisible = true;
+      this.modalVisible = true;
       this.$emit('show');
       this.$emit('change', true);
     },
     hide: function hide() {
-      this.actualVisible = false;
+      this.modalVisible = false;
       this.$emit('hide');
       this.$emit('change', false);
     }
@@ -3297,6 +3310,7 @@ function getRelativePosition(isOnTop, isOnRight, parentRect, settingWidth) {
 }
 
 var script$8 = {
+  name: 'MusselDropdown',
   mixins: [RenderToBodyMixin, VisibleModelMixin],
   provide: function provide() {
     return {
@@ -3421,6 +3435,7 @@ var Dropdown = normalizeComponent_1({
 
 //
 var script$9 = {
+  name: 'MusselListItem',
   components: {
     'mu-icon': Icon
   },
@@ -3527,6 +3542,7 @@ var ListItem = normalizeComponent_1({
 }, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, undefined, undefined);
 
 var Option = {
+  name: 'MusselOption',
   "extends": ListItem,
   inject: {
     comboBox: {
@@ -3601,6 +3617,7 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 var script$a = {
+  name: 'MusselComboBox',
   popupComponent: Dropdown,
   optionComponent: Option,
   "extends": InputBox,
@@ -3858,10 +3875,19 @@ var ComboBox = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$9
 }, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, undefined, undefined);
 
+//
+//
+//
+//
+var script$b = {
+  name: 'MusselListDivider'
+};
+
 var css$b = ".mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
 styleInject(css$b);
 
 /* script */
+var __vue_script__$b = script$b;
 /* template */
 
 var __vue_render__$a = function __vue_render__() {
@@ -3897,7 +3923,7 @@ var __vue_is_functional_template__$b = false;
 var ListDivider = normalizeComponent_1({
   render: __vue_render__$a,
   staticRenderFns: __vue_staticRenderFns__$a
-}, __vue_inject_styles__$b, {}, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, undefined, undefined);
+}, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, undefined, undefined);
 
 window.addEventListener('keyup', function (event) {
   // const tag = String(event.target.tagName).toLowerCase()
@@ -3932,7 +3958,8 @@ function hideIf$1() {
 
 window.addEventListener('popstate', hideIf$1);
 
-var script$b = {
+var script$c = {
+  name: 'MusselModal',
   mixins: [RenderToBodyMixin, VisibleModelMixin],
   props: {
     maskAction: {
@@ -3949,19 +3976,20 @@ var script$b = {
     },
     onMaskClick: function onMaskClick(event) {
       if (event.target === this.$el) {
-        if (this.maskAction === 'close') this.hide();
+        var action = this.$options.maskAction || this.maskAction;
+        if (action === 'close') this.hide();
         this.$emit('maskclick');
       }
     },
     show: function show() {
       window.__mussel_modal = this;
-      this.actualVisible = true;
+      this.modalVisible = true;
       this.$emit('show');
       this.$emit('change', true);
     },
     hide: function hide() {
       this.deactivate();
-      this.actualVisible = false;
+      this.modalVisible = false;
       this.$emit('hide');
       this.$emit('change', false);
     }
@@ -3972,7 +4000,7 @@ var css$c = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  t
 styleInject(css$c);
 
 /* script */
-var __vue_script__$b = script$b;
+var __vue_script__$c = script$c;
 /* template */
 
 var __vue_render__$b = function __vue_render__() {
@@ -3985,7 +4013,7 @@ var __vue_render__$b = function __vue_render__() {
   return _c("div", {
     staticClass: "mu-modal-mask",
     attrs: {
-      visible: _vm.actualVisible
+      visible: _vm.modalVisible
     },
     on: {
       click: _vm.onMaskClick
@@ -4014,7 +4042,7 @@ var __vue_is_functional_template__$c = false;
 var Modal = normalizeComponent_1({
   render: __vue_render__$b,
   staticRenderFns: __vue_staticRenderFns__$b
-}, __vue_inject_styles__$c, __vue_script__$b, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
+}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -4114,116 +4142,42 @@ function isString(value) {
 
 var lodash_isstring = isString;
 
-function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-var script$c = {
+//
+var script$d = {
+  name: 'MusselDialogWrapper',
   components: {
     'mu-v-box': VBox,
     'mu-close-button': CloseButton
   },
-  "extends": Modal,
-  props: {
-    title: String,
-    width: String,
-    height: String,
-    buttons: Array,
-    danger: Boolean,
-    primaryButton: String
-  },
-  data: function data() {
-    return {
-      dialogVisible: false
-    };
-  },
+  inject: ['dialog', 'params'],
   computed: {
     style: function style() {
       return {
-        width: this.width,
-        height: this.height
+        width: this.params.width,
+        height: this.params.height
       };
     },
     bodyProps: function bodyProps() {
       return {
-        size: this.height ? 'auto' : undefined
+        size: this.params.height ? 'auto' : undefined
       };
-    },
-    btns: function btns() {
-      var _this = this;
-
-      return this.buttons.map(function (button) {
-        var btn = lodash_isstring(button) ? {
-          caption: button,
-          _rawData: button
-        } : _objectSpread$2({}, button);
-
-        if (_this.primaryButton === btn.caption) {
-          btn.buttonType = _this.danger ? 'danger' : 'primary';
-        }
-
-        return btn;
-      });
     }
   },
   methods: {
-    clearHideTimer: function clearHideTimer() {
-      if (this.hideTimer) {
-        clearTimeout(this.hideTimer);
-        this.hideTimer = null;
-      }
-    },
-    show: function show(callbackOnce) {
-      var _this2 = this;
-
-      window.__mussel_modal = this;
-      this.callbackOnce = callbackOnce;
-
-      if (!this.$el) {
-        this.$mount();
-        document.body.appendChild(this.$el);
-      }
-
-      this.clearHideTimer();
-      this.actualVisible = true;
-      setTimeout(function () {
-        _this2.dialogVisible = true;
-      }, 10);
-      this.$emit('show');
-      this.$emit('change', true);
-    },
-    actualHide: function actualHide() {
-      var _this3 = this;
-
-      this.callbackOnce = null;
-      this.deactivate();
-      this.dialogVisible = false;
-      this.clearHideTimer();
-      this.$hideTimer = setTimeout(function () {
-        _this3.actualVisible = false;
-      }, 200);
-      this.$emit('hide');
-      this.$emit('change', false);
+    onMaskClick: function onMaskClick(event) {
+      this.dialog.onMaskClick(event);
     },
     hide: function hide() {
-      if (this.callbackOnce) {
-        this.callback(this.actualHide);
-      } else {
-        this.actualHide();
-      }
+      this.dialog.hide();
     },
     onButtonClick: function onButtonClick(btn) {
-      this.$emit('buttonclick', btn._rawData || btn, this);
+      this.dialog.onButtonClick(btn);
     }
   }
 };
 
-var css$d = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(300px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
-styleInject(css$d);
-
 /* script */
-var __vue_script__$c = script$c;
+var __vue_script__$d = script$d;
 /* template */
 
 var __vue_render__$c = function __vue_render__() {
@@ -4237,7 +4191,7 @@ var __vue_render__$c = function __vue_render__() {
     staticClass: "mu-modal-mask",
     attrs: {
       "flex-center": "",
-      visible: _vm.actualVisible
+      visible: _vm.params.modalVisible
     },
     nativeOn: {
       click: function click($event) {
@@ -4248,8 +4202,8 @@ var __vue_render__$c = function __vue_render__() {
     staticClass: "mu-dialog",
     style: _vm.style,
     attrs: {
-      danger: _vm.danger,
-      visible: _vm.dialogVisible
+      danger: _vm.params.danger,
+      visible: _vm.params.dialogVisible
     }
   }, [_c("mu-h-box", {
     staticClass: "mu-dialog-header"
@@ -4258,16 +4212,16 @@ var __vue_render__$c = function __vue_render__() {
     attrs: {
       size: "auto"
     }
-  }, [_vm._v("\n        " + _vm._s(_vm.title) + "\n      ")]), _vm._v(" "), _c("mu-close-button", {
+  }, [_vm._v("\n        " + _vm._s(_vm.params.title) + "\n      ")]), _vm._v(" "), _c("mu-close-button", {
     on: {
       click: _vm.hide
     }
   })], 1), _vm._v(" "), _c("mu-flex-item", {
     staticClass: "mu-dialog-body",
     attrs: {
-      size: _vm.height ? "auto" : undefined
+      size: _vm.params.height ? "auto" : undefined
     }
-  }, [_vm._t("default")], 2), _vm._v(" "), _vm._t("footer", [_vm.buttons ? _c("mu-h-box", {
+  }, [_vm._t("default")], 2), _vm._v(" "), _vm._t("footer", [_vm.params.buttons ? _c("mu-h-box", {
     staticClass: "mu-dialog-footer",
     attrs: {
       "align-items": "center"
@@ -4276,7 +4230,7 @@ var __vue_render__$c = function __vue_render__() {
     staticStyle: {
       "margin-right": "auto"
     }
-  }), _vm._v(" "), _vm._l(_vm.btns, function (btn) {
+  }), _vm._v(" "), _vm._l(_vm.params.buttons, function (btn) {
     return _c("mu-button", _vm._b({
       key: btn.caption || btn.icon || btn.iconClass,
       on: {
@@ -4306,10 +4260,276 @@ var __vue_is_functional_template__$d = false;
 
 /* style inject SSR */
 
-var Dialog = normalizeComponent_1({
+var DialogWrapper = normalizeComponent_1({
   render: __vue_render__$c,
   staticRenderFns: __vue_staticRenderFns__$c
-}, __vue_inject_styles__$d, __vue_script__$c, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
+}, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
+
+function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var script$e = {
+  name: 'MusselDialog',
+  components: {
+    'mu-dialog-wrapper': DialogWrapper
+  },
+  "extends": Modal,
+  provide: function provide() {
+    return {
+      dialog: this,
+      params: this.params
+    };
+  },
+  props: {
+    title: String,
+    width: String,
+    height: String,
+    buttons: Array,
+    danger: Boolean,
+    primaryButton: String
+  },
+  data: function data() {
+    var _this$$options = this.$options,
+        title = _this$$options.title,
+        width = _this$$options.width,
+        height = _this$$options.height,
+        danger = _this$$options.danger,
+        primaryButton = _this$$options.primaryButton;
+    return {
+      params: {
+        modalVisible: false,
+        dialogVisible: false,
+        width: this.width || width,
+        height: this.height || height,
+        danger: this.danger || danger,
+        title: this.title || title,
+        primaryButton: this.primaryButton || primaryButton,
+        btns: this.btns
+      }
+    };
+  },
+  computed: {
+    btns: function btns() {
+      var _this = this;
+
+      var buttons = this.buttons || this.$options.buttons;
+      return Array.isArray(buttons) ? buttons.map(function (button) {
+        var btn = lodash_isstring(button) ? {
+          caption: button,
+          _rawData: button
+        } : _objectSpread$2({}, button);
+
+        if (_this.params.primaryButton === btn.caption) {
+          btn.buttonType = _this.danger ? 'danger' : 'primary';
+        }
+
+        return btn;
+      }) : null;
+    }
+  },
+  watch: {
+    modalVisible: function modalVisible(value) {
+      this.params.modalVisible = value;
+    },
+    buttons: {
+      handler: function handler() {
+        this.params.buttons = this.btns;
+      },
+      immediate: true
+    },
+    title: function title(value) {
+      this.setTitle(value);
+    },
+    width: function width(value) {
+      this.setWidth(value);
+    },
+    height: function height(value) {
+      this.setHeight(value);
+    },
+    danger: function danger(value) {
+      this.setDanger(value);
+    },
+    primaryButton: function primaryButton(value) {
+      this.setPrimaryButton(value);
+    }
+  },
+  methods: {
+    setTitle: function setTitle(value) {
+      this.params.title = value;
+    },
+    setWidth: function setWidth(value) {
+      this.params.width = value;
+    },
+    setHeight: function setHeight(value) {
+      this.params.height = value;
+    },
+    setDanger: function setDanger(value) {
+      this.params.danger = value;
+      this.params.buttons = this.btns;
+    },
+    setPrimaryButton: function setPrimaryButton(value) {
+      this.params.primaryButton = value;
+      this.params.buttons = this.btns;
+    },
+    clearHideTimer: function clearHideTimer() {
+      if (this.hideTimer) {
+        clearTimeout(this.hideTimer);
+        this.hideTimer = null;
+      }
+    },
+    show: function show(callbackOnce) {
+      var _this2 = this;
+
+      window.__mussel_modal = this;
+      this.callbackOnce = callbackOnce;
+
+      if (!this.$el) {
+        this.$mount();
+        document.body.appendChild(this.$el);
+      }
+
+      this.clearHideTimer();
+      this.modalVisible = true;
+      setTimeout(function () {
+        _this2.params.dialogVisible = true;
+      }, 10);
+      this.$emit('show');
+      this.$emit('change', true);
+    },
+    actualHide: function actualHide() {
+      var _this3 = this;
+
+      this.callbackOnce = null;
+      this.deactivate();
+      this.params.dialogVisible = false;
+      this.clearHideTimer();
+      this.$hideTimer = setTimeout(function () {
+        _this3.modalVisible = false;
+      }, 200);
+      this.$emit('hide');
+      this.$emit('change', false);
+    },
+    hide: function hide(force, button) {
+      if (!force && this.$options.beforeClose) {
+        this.$options.beforeClose(this.actualHide, button);
+      } else {
+        this.actualHide();
+      }
+    },
+    onButtonClick: function onButtonClick(btn) {
+      var _Object = Object(btn),
+          action = _Object.action,
+          _rawData = _Object._rawData;
+
+      var button = _rawData || btn;
+
+      if (['hide', 'close'].indexOf(action) !== -1) {
+        this.hide(false, button);
+      }
+
+      this.$emit('buttonclick', button, this);
+    }
+  }
+};
+
+var css$d = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(300px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
+styleInject(css$d);
+
+/* script */
+var __vue_script__$e = script$e;
+/* template */
+
+var __vue_render__$d = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
+};
+
+var __vue_staticRenderFns__$d = [];
+__vue_render__$d._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$e = undefined;
+/* scoped */
+
+var __vue_scope_id__$e = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$e = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$e = false;
+/* style inject */
+
+/* style inject SSR */
+
+var Dialog = normalizeComponent_1({
+  render: __vue_render__$d,
+  staticRenderFns: __vue_staticRenderFns__$d
+}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
+
+//
+var script$f = {
+  "extends": Dialog,
+  title: 'hello world',
+  width: '50%',
+  height: '35%',
+  danger: true,
+  maskAction: 'none',
+  buttons: [{
+    caption: '保存',
+    buttonType: 'submit'
+  }, {
+    caption: '取消',
+    action: 'close'
+  }],
+  beforeClose: function beforeClose(next, btn) {
+    if (btn && btn.caption === '取消') next();
+  }
+};
+
+/* script */
+var __vue_script__$f = script$f;
+/* template */
+
+var __vue_render__$e = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("mu-dialog-wrapper", [_vm._v("\n  123\n")]);
+};
+
+var __vue_staticRenderFns__$e = [];
+__vue_render__$e._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$f = undefined;
+/* scoped */
+
+var __vue_scope_id__$f = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$f = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$f = false;
+/* style inject */
+
+/* style inject SSR */
+
+var dialog2 = normalizeComponent_1({
+  render: __vue_render__$e,
+  staticRenderFns: __vue_staticRenderFns__$e
+}, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, undefined, undefined);
 
 var css$e = ".mu-expand-trigger {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-expand-trigger[trigger-on] {\r\n  transform: rotate(-180deg);\r\n}";
 styleInject(css$e);
@@ -4333,8 +4553,9 @@ function install(Vue) {
   Vue.component('mu-list-divider', ListDivider);
   Vue.component('mu-modal', Modal);
   Vue.component('mu-dialog', Dialog);
+  Vue.component('mu-dialog-wrapper', DialogWrapper);
 }
 
 if (window.Vue) install(window.Vue);
 
-export { Button, ButtonGroup, CloseButton, ComboBox, Dialog, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, ListDivider, ListItem, Modal, Option, Splitter, VBox, install };
+export { Button, ButtonGroup, CloseButton, ComboBox, Dialog, dialog2 as Dialog2, DialogWrapper, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, ListDivider, ListItem, Modal, Option, Splitter, VBox, install };

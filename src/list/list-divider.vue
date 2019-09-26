@@ -2,6 +2,12 @@
   <div class="mu-list-divider" />
 </template>
 
+<script>
+  export default {
+    name: 'MusselListDivider'
+  }
+</script>
+
 <style lang="postcss">
   .mu-list-divider {
     display: block;

@@ -2,6 +2,7 @@ import Icon from '../icon/index.vue'
 import './button.pcss'
 
 export default {
+  name: 'MusselButton',
   components: {
     Icon
   },
@@ -35,7 +36,7 @@ export default {
   computed: {
     isIconOnly () {
       return this.iconOnly ||
-        (!this.$slots.default && !this.caption && this.icon)
+        (!this.$slots.default && !this.caption && (this.icon || this.iconClass))
     }
   },
   methods: {
@@ -53,7 +54,7 @@ export default {
         button-shape={ this.buttonShape === 'normal' ? undefined : this.buttonShape }
         onClick={ this.onClick }>
         {
-          this.icon
+          this.icon || this.iconClass
             ? <icon icon={ this.icon } icon-class={ this.iconClass } />
             : undefined
         }

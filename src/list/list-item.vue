@@ -18,6 +18,7 @@
   import Icon from '../icon/index.vue'
 
   export default {
+    name: 'MusselListItem',
     components: {
       'mu-icon': Icon
     },

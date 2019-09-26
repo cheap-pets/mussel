@@ -1,6 +1,7 @@
 import ListItem from '../list/list-item.vue'
 
 export default {
+  name: 'MusselOption',
   extends: ListItem,
   inject: {
     comboBox: {

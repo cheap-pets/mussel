@@ -55,6 +55,7 @@
   }
 
   export default {
+    name: 'MusselDropdown',
     mixins: [RenderToBodyMixin, VisibleModelMixin],
     provide () {
       return {

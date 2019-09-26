@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-modal-mask" :visible="actualVisible" @click="onMaskClick">
+  <div class="mu-modal-mask" :visible="modalVisible" @click="onMaskClick">
     <slot />
   </div>
 </template>
@@ -9,6 +9,7 @@
   import VisibleModelMixin from './mix-visible-model'
 
   export default {
+    name: 'MusselModal',
     mixins: [RenderToBodyMixin, VisibleModelMixin],
     props: {
       maskAction: {
@@ -25,19 +26,20 @@
       },
       onMaskClick (event) {
         if (event.target === this.$el) {
-          if (this.maskAction === 'close') this.hide()
+          const action = this.$options.maskAction || this.maskAction
+          if (action === 'close') this.hide()
           this.$emit('maskclick')
         }
       },
       show () {
         window.__mussel_modal = this
-        this.actualVisible = true
+        this.modalVisible = true
         this.$emit('show')
         this.$emit('change', true)
       },
       hide () {
         this.deactivate()
-        this.actualVisible = false
+        this.modalVisible = false
         this.$emit('hide')
         this.$emit('change', false)
       }

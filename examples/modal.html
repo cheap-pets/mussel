@@ -20,7 +20,13 @@
       <div>
         <mu-button button-type="primary" @click="openModal1">打开遮罩 1</mu-button>
       </div>
-      <mu-modal mask-action="close" class="mu-flex-box" flex-center v-model="model1Visible">点击遮罩或者 按 ESC, 可以关闭</mu-modal>
+      <mu-modal
+        mask-action="close"
+        class="mu-flex-box"
+        flex-center
+        v-model="model1Visible">
+        点击遮罩或者 按 ESC, 可以关闭
+      </mu-modal>
       <br>
       <div>
         <mu-button button-type="primary" @click="openModal2">打开遮罩 2</mu-button>
@@ -40,20 +46,25 @@
         v-model="dialog1Visible"
         width="400px"
         height="300px"
-        title="真的不是我干的"
+        title="中华人民共和国成立70周年"
         primary-button="确认"
-        danger
         :buttons="['确认', '取消']"
         @buttonclick="onButtonClick">
         123
       </mu-dialog>
     </div>
   </div>
+  
+  <script type="text/x-template" id="dialog2Template">
+    <mu-dialog-wrapper>
+      123
+    </mu-dialog-wrapper>
+  </script>
+
+  <div id="xxx"></div>
 
   <script type="text/javascript">
-    var dialog2 = new Vue({
-      extends: mussel.Dialog
-    })
+    var dialog2 = new Vue(mussel.Dialog2)
     var app = new Vue({
       el: '#app',
       data: {

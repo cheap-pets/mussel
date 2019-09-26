@@ -65,6 +65,7 @@
   }
 
   export default {
+    name: 'MusselSplitter',
     computed: {
       parentDirection () {
         return this.$parent.flexDirection || 'row'

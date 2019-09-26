@@ -34,6 +34,7 @@
   import InputButton from './input-button.js'
 
   export default {
+    name: 'MusselInputBox',
     components: {
       'mu-input': Input,
       'mu-input-button': InputButton

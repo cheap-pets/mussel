@@ -2,6 +2,7 @@
   import Icon from '../icon/index.vue'
 
   export default {
+    name: 'MusselCloseButton',
     extends: Icon,
     props: {
       icon: {
