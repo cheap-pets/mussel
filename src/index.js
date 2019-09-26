@@ -1,4 +1,5 @@
 import './global.pcss'
+import './text/text.pcss'
 
 import FlexBox from './layout/flex-box.vue'
 import FlexItem from './layout/flex-item.vue'
