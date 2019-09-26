@@ -22,11 +22,11 @@ import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
 
 import './layer'
+import BaseModal from './layer/base-modal.vue'
+import BaseDialog from './layer/base-dialog.vue'
 import Modal from './layer/modal.vue'
 import Dialog from './layer/dialog.vue'
 import DialogWrapper from './layer/dialog-wrapper.vue'
-
-import Dialog2 from './layer/dialog2.vue'
 
 import './transform'
 
@@ -83,8 +83,9 @@ export {
   ListItem,
   ListDivider,
   // layer
+  BaseModal,
+  BaseDialog,
   Modal,
   Dialog,
-  Dialog2,
   DialogWrapper
 }

@@ -54,17 +54,27 @@
       </mu-dialog>
     </div>
   </div>
-  
-  <script type="text/x-template" id="dialog2Template">
-    <mu-dialog-wrapper>
-      123
-    </mu-dialog-wrapper>
-  </script>
 
   <div id="xxx"></div>
 
   <script type="text/javascript">
-    var dialog2 = new Vue(mussel.Dialog2)
+    var Dialog2 = Vue.extend(mussel.BaseDialog)
+    var dialog2 = new Dialog2({
+      title: '大吉大利，今晚吃鸡',
+      width: '50%',
+      height: '35%',
+      danger: true,
+      maskAction: 'none',
+      primaryButton: '确定',
+      buttons: [
+        '确定',
+        {
+          caption: '取消',
+          action: 'close'
+        }
+      ],
+      template: '<mu-dialog-wrapper>123</mu-dialog-wrapper>'
+    })
     var app = new Vue({
       el: '#app',
       data: {

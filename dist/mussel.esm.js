@@ -3959,7 +3959,7 @@ function hideIf$1() {
 window.addEventListener('popstate', hideIf$1);
 
 var script$c = {
-  name: 'MusselModal',
+  name: 'MusselBaseModal',
   mixins: [RenderToBodyMixin, VisibleModelMixin],
   props: {
     maskAction: {
@@ -4003,26 +4003,6 @@ styleInject(css$c);
 var __vue_script__$c = script$c;
 /* template */
 
-var __vue_render__$b = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c("div", {
-    staticClass: "mu-modal-mask",
-    attrs: {
-      visible: _vm.modalVisible
-    },
-    on: {
-      click: _vm.onMaskClick
-    }
-  }, [_vm._t("default")], 2);
-};
-
-var __vue_staticRenderFns__$b = [];
-__vue_render__$b._withStripped = true;
 /* style */
 
 var __vue_inject_styles__$c = undefined;
@@ -4034,15 +4014,12 @@ var __vue_scope_id__$c = undefined;
 var __vue_module_identifier__$c = undefined;
 /* functional template */
 
-var __vue_is_functional_template__$c = false;
+var __vue_is_functional_template__$c = undefined;
 /* style inject */
 
 /* style inject SSR */
 
-var Modal = normalizeComponent_1({
-  render: __vue_render__$b,
-  staticRenderFns: __vue_staticRenderFns__$b
-}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
+var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -4180,7 +4157,7 @@ var script$d = {
 var __vue_script__$d = script$d;
 /* template */
 
-var __vue_render__$c = function __vue_render__() {
+var __vue_render__$b = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -4242,8 +4219,8 @@ var __vue_render__$c = function __vue_render__() {
   })], 2) : _vm._e()])], 2)], 1);
 };
 
-var __vue_staticRenderFns__$c = [];
-__vue_render__$c._withStripped = true;
+var __vue_staticRenderFns__$b = [];
+__vue_render__$b._withStripped = true;
 /* style */
 
 var __vue_inject_styles__$d = undefined;
@@ -4261,8 +4238,8 @@ var __vue_is_functional_template__$d = false;
 /* style inject SSR */
 
 var DialogWrapper = normalizeComponent_1({
-  render: __vue_render__$c,
-  staticRenderFns: __vue_staticRenderFns__$c
+  render: __vue_render__$b,
+  staticRenderFns: __vue_staticRenderFns__$b
 }, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
 
 function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -4271,11 +4248,11 @@ function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { 
 
 function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 var script$e = {
-  name: 'MusselDialog',
+  name: 'MusselBaseDialog',
   components: {
     'mu-dialog-wrapper': DialogWrapper
   },
-  "extends": Modal,
+  "extends": BaseModal,
   provide: function provide() {
     return {
       dialog: this,
@@ -4322,7 +4299,7 @@ var script$e = {
         } : _objectSpread$2({}, button);
 
         if (_this.params.primaryButton === btn.caption) {
-          btn.buttonType = _this.danger ? 'danger' : 'primary';
+          btn.buttonType = _this.params.danger ? 'danger' : 'primary';
         }
 
         return btn;
@@ -4441,18 +4418,6 @@ styleInject(css$d);
 var __vue_script__$e = script$e;
 /* template */
 
-var __vue_render__$d = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
-};
-
-var __vue_staticRenderFns__$d = [];
-__vue_render__$d._withStripped = true;
 /* style */
 
 var __vue_inject_styles__$e = undefined;
@@ -4464,52 +4429,43 @@ var __vue_scope_id__$e = undefined;
 var __vue_module_identifier__$e = undefined;
 /* functional template */
 
-var __vue_is_functional_template__$e = false;
+var __vue_is_functional_template__$e = undefined;
 /* style inject */
 
 /* style inject SSR */
 
-var Dialog = normalizeComponent_1({
-  render: __vue_render__$d,
-  staticRenderFns: __vue_staticRenderFns__$d
-}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
+var BaseDialog = normalizeComponent_1({}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
 
 //
 var script$f = {
-  "extends": Dialog,
-  title: 'hello world',
-  width: '50%',
-  height: '35%',
-  danger: true,
-  maskAction: 'none',
-  buttons: [{
-    caption: '保存',
-    buttonType: 'submit'
-  }, {
-    caption: '取消',
-    action: 'close'
-  }],
-  beforeClose: function beforeClose(next, btn) {
-    if (btn && btn.caption === '取消') next();
-  }
+  name: 'MusselModal',
+  "extends": BaseModal
 };
 
 /* script */
 var __vue_script__$f = script$f;
 /* template */
 
-var __vue_render__$e = function __vue_render__() {
+var __vue_render__$c = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c("mu-dialog-wrapper", [_vm._v("\n  123\n")]);
+  return _c("div", {
+    staticClass: "mu-modal-mask",
+    attrs: {
+      visible: _vm.modalVisible
+    },
+    on: {
+      click: _vm.onMaskClick
+    }
+  }, [_vm._t("default")], 2);
 };
 
-var __vue_staticRenderFns__$e = [];
-__vue_render__$e._withStripped = true;
+var __vue_staticRenderFns__$c = [];
+__vue_render__$c._withStripped = true;
 /* style */
 
 var __vue_inject_styles__$f = undefined;
@@ -4526,10 +4482,53 @@ var __vue_is_functional_template__$f = false;
 
 /* style inject SSR */
 
-var dialog2 = normalizeComponent_1({
-  render: __vue_render__$e,
-  staticRenderFns: __vue_staticRenderFns__$e
+var Modal = normalizeComponent_1({
+  render: __vue_render__$c,
+  staticRenderFns: __vue_staticRenderFns__$c
 }, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, undefined, undefined);
+
+//
+var script$g = {
+  name: 'MusselDialog',
+  "extends": BaseDialog
+};
+
+/* script */
+var __vue_script__$g = script$g;
+/* template */
+
+var __vue_render__$d = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
+};
+
+var __vue_staticRenderFns__$d = [];
+__vue_render__$d._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$g = undefined;
+/* scoped */
+
+var __vue_scope_id__$g = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$g = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$g = false;
+/* style inject */
+
+/* style inject SSR */
+
+var Dialog = normalizeComponent_1({
+  render: __vue_render__$d,
+  staticRenderFns: __vue_staticRenderFns__$d
+}, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, undefined, undefined);
 
 var css$e = ".mu-expand-trigger {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-expand-trigger[trigger-on] {\r\n  transform: rotate(-180deg);\r\n}";
 styleInject(css$e);
@@ -4558,4 +4557,4 @@ function install(Vue) {
 
 if (window.Vue) install(window.Vue);
 
-export { Button, ButtonGroup, CloseButton, ComboBox, Dialog, dialog2 as Dialog2, DialogWrapper, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, ListDivider, ListItem, Modal, Option, Splitter, VBox, install };
+export { BaseDialog, BaseModal, Button, ButtonGroup, CloseButton, ComboBox, Dialog, DialogWrapper, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, ListDivider, ListItem, Modal, Option, Splitter, VBox, install };
