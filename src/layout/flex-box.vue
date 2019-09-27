@@ -9,11 +9,11 @@
 </template>
 
 <script>
-  import FlexItem from './flex-item.vue'
+  import BaseFlexItem from './base-flex-item'
 
   export default {
     name: 'MusselFlexBox',
-    mixins: [FlexItem],
+    mixins: [BaseFlexItem],
     provide () {
       return {
         parentDirection: this.flexDirection

@@ -1,9 +1,9 @@
 <template>
   <span
     class="mu-icon"
-    :class="className"
-    :type="iconType"
     :icon="icon"
+    :clickable="clickable"
+    :class="[iconClass, className]"
     @click="onClick">
     <svg v-if="icon" :icon="icon"
       viewBox="0 0 1024 1024"
@@ -20,8 +20,9 @@
   export default {
     name: 'MusselIcon',
     props: {
-      iconClass: String,
       icon: String,
+      iconClass: String,
+      clickable: Boolean,
       size: {
         type: String,
         default: '1em'
@@ -32,9 +33,6 @@
         return d[this.icon]
       },
       className () {
-        return this.iconClass
-      },
-      iconType () {
         return undefined
       }
     },

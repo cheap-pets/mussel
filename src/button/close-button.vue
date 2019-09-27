@@ -11,16 +11,8 @@
       }
     },
     computed: {
-      iconType () {
-        return 'button'
-      },
       className () {
         return 'mu-close-button'
-      }
-    },
-    methods: {
-      onClick () {
-        this.$emit('click')
       }
     }
   }

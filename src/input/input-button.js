@@ -4,25 +4,11 @@ export default {
   name: 'MusselInputButton',
   extends: Icon,
   props: {
-    icon: {
-      type: String,
-      default () {
-        return this.iconClass ? undefined : 'key-down'
-      }
-    },
-    buttonType: String
+    clickable: Boolean
   },
   computed: {
-    iconType () {
-      return this.buttonType || 'icon'
-    },
     className () {
-      return 'mu-input-icon' + (this.iconClass ? ` ${this.iconClass}` : '')
-    }
-  },
-  methods: {
-    onClick () {
-      this.$emit('click')
+      return 'mu-input-icon'
     }
   }
 }
