@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mu-input-box mu-combo-box"
+    class="mu-input-box"
     :fixed="inputReadonly"
     :buttons="buttons"
     :disabled="disabled">
@@ -25,21 +25,19 @@
       :button-type="inputBtnType"
       :focus="popupVisible"
       @click="onButtonClick" />
-    <component
-      :is="$options.popupComponent"
+    <mu-dropdown
       v-if="!disabled"
       v-model="popupVisible"
       v-bind="popupProps">
       <slot v-if="!options" />
       <template v-else>
-        <component
-          :is="$options.optionComponent"
+        <mu-option
           v-for="option in options"
           :key="Object(option)[valueField] || option"
           :option="option"
           :fields="fields" />
       </template>
-    </component>
+    </mu-dropdown>
   </div>
 </template>
 
@@ -50,8 +48,10 @@
 
   export default {
     name: 'MusselComboBox',
-    popupComponent: Dropdown,
-    optionComponent: Option,
+    components: {
+      'mu-dropdown': Dropdown,
+      'mu-option': Option
+    },
     extends: InputBox,
     provide () {
       return {

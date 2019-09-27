@@ -1,10 +1,10 @@
 <script>
   import RenderToBodyMixin from './mix-render-to-body'
-  import VisibleModelMixin from './mix-visible-model'
+  import PopupVisibleMixin from './mix-popup-visible'
 
   export default {
     name: 'MusselBaseModal',
-    mixins: [RenderToBodyMixin, VisibleModelMixin],
+    mixins: [RenderToBodyMixin, PopupVisibleMixin],
     props: {
       maskAction: {
         type: String,
@@ -27,13 +27,13 @@
       },
       show () {
         window.__mussel_modal = this
-        this.modalVisible = true
+        this.popupVisible = true
         this.$emit('show')
         this.$emit('change', true)
       },
       hide () {
         this.deactivate()
-        this.modalVisible = false
+        this.popupVisible = false
         this.$emit('hide')
         this.$emit('change', false)
       }

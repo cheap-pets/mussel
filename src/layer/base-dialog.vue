@@ -56,7 +56,7 @@
       }
     },
     watch: {
-      modalVisible (value) {
+      popupVisible (value) {
         this.params.modalVisible = value
       },
       buttons: {
@@ -113,7 +113,7 @@
           document.body.appendChild(this.$el)
         }
         this.clearHideTimer()
-        this.modalVisible = true
+        this.popupVisible = true
         setTimeout(() => {
           this.params.dialogVisible = true
         }, 10)
@@ -126,7 +126,7 @@
         this.params.dialogVisible = false
         this.clearHideTimer()
         this.$hideTimer = setTimeout(() => {
-          this.modalVisible = false
+          this.popupVisible = false
         }, 200)
         this.$emit('hide')
         this.$emit('change', false)

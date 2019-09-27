@@ -1,32 +1,15 @@
 <template>
-  <div class="mu-dropdown" :visible="actualVisible" :style="dropdownStyle">
+  <div class="mu-dropdown" :visible="popupVisible" :style="dropdownStyle">
     <slot />
   </div>
 </template>
 
 <script>
   import RenderToBodyMixin from './mix-render-to-body'
-  import VisibleModelMixin from './mix-visible-model'
+  import PopupVisibleMixin from './mix-popup-visible'
 
   import getClientRect from '../utils/client-rect'
   import { isParentElement } from '../utils/dom'
-
-  function callbackIf (handler) {
-    window.__mussel_dropdown && handler(window.__mussel_dropdown)
-  }
-
-  function hideIf () {
-    callbackIf(dropdown => dropdown.hide())
-  }
-
-  function setPositionIf () {
-    callbackIf(dropdown => dropdown.setPosition())
-  }
-
-  window.addEventListener('blur', hideIf)
-  window.addEventListener('popstate', hideIf)
-  window.addEventListener('resize', setPositionIf)
-  window.addEventListener('scroll', setPositionIf)
 
   function popOnTop (parentRect, height) {
     return parentRect.bottom + 4 + height > window.innerHeight &&
@@ -56,7 +39,7 @@
 
   export default {
     name: 'MusselDropdown',
-    mixins: [RenderToBodyMixin, VisibleModelMixin],
+    mixins: [RenderToBodyMixin, PopupVisibleMixin],
     provide () {
       return {
         keepIconIndent: this.keepIconIndent
@@ -95,7 +78,7 @@
       },
       show () {
         window.__mussel_dropdown = this
-        this.actualVisible = true
+        this.popupVisible = true
         this.$nextTick(this.setPosition)
         this.$emit('show')
         this.$emit('change', true)
@@ -104,7 +87,7 @@
         this.deactivate()
         this.style.opacity = 0
         this.style.visibility = 'hidden'
-        this.actualVisible = false
+        this.popupVisible = false
         this.$emit('hide')
         this.$emit('change', false)
       },
@@ -117,7 +100,7 @@
         }
       },
       setPosition () {
-        if (!this.actualVisible) return
+        if (!this.popupVisible) return
         const { offsetHeight: height, offsetWidth: width } = this.$el
         const pRect = getClientRect(this.$parent.$el)
         const isOnTop = popOnTop(pRect, height)

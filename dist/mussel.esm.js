@@ -3192,7 +3192,7 @@ var RenderToBodyMixin = {
   }
 };
 
-var VisibleModelMixin = {
+var PopupVisibleMixin = {
   model: {
     prop: 'visible',
     event: 'change'
@@ -3202,13 +3202,13 @@ var VisibleModelMixin = {
   },
   data: function data() {
     return {
-      modalVisible: false
+      popupVisible: false
     };
   },
   watch: {
     visible: {
       handler: function handler(value) {
-        if (value === !this.modalVisible) {
+        if (value === !this.popupVisible) {
           this.$nextTick(value ? this.show : this.hide);
         }
       },
@@ -3217,12 +3217,12 @@ var VisibleModelMixin = {
   },
   methods: {
     show: function show() {
-      this.modalVisible = true;
+      this.popupVisible = true;
       this.$emit('show');
       this.$emit('change', true);
     },
     hide: function hide() {
-      this.modalVisible = false;
+      this.popupVisible = false;
       this.$emit('hide');
       this.$emit('change', false);
     }
@@ -3263,27 +3263,6 @@ function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { 
 
 function _defineProperty$1(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function callbackIf(handler) {
-  window.__mussel_dropdown && handler(window.__mussel_dropdown);
-}
-
-function hideIf() {
-  callbackIf(function (dropdown) {
-    return dropdown.hide();
-  });
-}
-
-function setPositionIf() {
-  callbackIf(function (dropdown) {
-    return dropdown.setPosition();
-  });
-}
-
-window.addEventListener('blur', hideIf);
-window.addEventListener('popstate', hideIf);
-window.addEventListener('resize', setPositionIf);
-window.addEventListener('scroll', setPositionIf);
-
 function popOnTop(parentRect, height) {
   return parentRect.bottom + 4 + height > window.innerHeight && parentRect.top - height - 4 >= 0;
 }
@@ -3314,7 +3293,7 @@ function getRelativePosition(isOnTop, isOnRight, parentRect, settingWidth) {
 
 var script$8 = {
   name: 'MusselDropdown',
-  mixins: [RenderToBodyMixin, VisibleModelMixin],
+  mixins: [RenderToBodyMixin, PopupVisibleMixin],
   provide: function provide() {
     return {
       keepIconIndent: this.keepIconIndent
@@ -3354,7 +3333,7 @@ var script$8 = {
     },
     show: function show() {
       window.__mussel_dropdown = this;
-      this.actualVisible = true;
+      this.popupVisible = true;
       this.$nextTick(this.setPosition);
       this.$emit('show');
       this.$emit('change', true);
@@ -3363,7 +3342,7 @@ var script$8 = {
       this.deactivate();
       this.style.opacity = 0;
       this.style.visibility = 'hidden';
-      this.actualVisible = false;
+      this.popupVisible = false;
       this.$emit('hide');
       this.$emit('change', false);
     },
@@ -3373,7 +3352,7 @@ var script$8 = {
       }
     },
     setPosition: function setPosition() {
-      if (!this.actualVisible) return;
+      if (!this.popupVisible) return;
       var _this$$el = this.$el,
           height = _this$$el.offsetHeight,
           width = _this$$el.offsetWidth;
@@ -3408,7 +3387,7 @@ var __vue_render__$7 = function __vue_render__() {
     staticClass: "mu-dropdown",
     style: _vm.dropdownStyle,
     attrs: {
-      visible: _vm.actualVisible
+      visible: _vm.popupVisible
     }
   }, [_vm._t("default")], 2);
 };
@@ -3621,8 +3600,10 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 var script$a = {
   name: 'MusselComboBox',
-  popupComponent: Dropdown,
-  optionComponent: Option,
+  components: {
+    'mu-dropdown': Dropdown,
+    'mu-option': Option
+  },
   "extends": InputBox,
   provide: function provide() {
     return {
@@ -3651,7 +3632,7 @@ var script$a = {
   data: function data() {
     return {
       selectedValue: null,
-      popupVisible: false,
+      dropdownVisible: false,
       mountedOptions: []
     };
   },
@@ -3726,11 +3707,11 @@ var script$a = {
     },
     onInputClick: function onInputClick() {
       if (!this.editable || this.multiple) {
-        this.popupVisible = !this.popupVisible;
+        this.dropdownVisible = !this.dropdownVisible;
       }
     },
     onButtonClick: function onButtonClick() {
-      this.popupVisible = !this.popupVisible;
+      this.dropdownVisible = !this.dropdownVisible;
     },
     mountOption: function mountOption(option) {
       var options = this.mountedOptions;
@@ -3772,7 +3753,7 @@ var script$a = {
       }
 
       this.refreshInputValue(true);
-      if (hidePopup) this.popupVisible = false;
+      if (hidePopup) this.dropdownVisible = false;
       this.$emit('optionclick', value, option);
     },
     clear: function clear() {
@@ -3796,7 +3777,7 @@ var __vue_render__$9 = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _c("div", {
-    staticClass: "mu-input-box mu-combo-box",
+    staticClass: "mu-input-box",
     attrs: {
       fixed: _vm.inputReadonly,
       buttons: _vm.buttons,
@@ -3809,7 +3790,7 @@ var __vue_render__$9 = function __vue_render__() {
       value: _vm.inputValue,
       disabled: _vm.disabled,
       readonly: _vm.readonly || _vm.inputReadonly,
-      focus: _vm.popupVisible
+      focus: _vm.dropdownVisible
     },
     on: {
       input: _vm.onInput,
@@ -3827,26 +3808,24 @@ var __vue_render__$9 = function __vue_render__() {
     staticClass: "mu-expand-trigger",
     attrs: {
       icon: "key-down",
-      "trigger-on": _vm.popupVisible,
+      "trigger-on": _vm.dropdownVisible,
       "button-type": _vm.inputBtnType,
-      focus: _vm.popupVisible
+      focus: _vm.dropdownVisible
     },
     on: {
       click: _vm.onButtonClick
     }
-  }), _vm._v(" "), !_vm.disabled ? _c(_vm.$options.popupComponent, _vm._b({
-    tag: "component",
+  }), _vm._v(" "), !_vm.disabled ? _c("mu-dropdown", _vm._b({
     model: {
-      value: _vm.popupVisible,
+      value: _vm.dropdownVisible,
       callback: function callback($$v) {
-        _vm.popupVisible = $$v;
+        _vm.dropdownVisible = $$v;
       },
-      expression: "popupVisible"
+      expression: "dropdownVisible"
     }
-  }, "component", _vm.popupProps, false), [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option) {
-    return _c(_vm.$options.optionComponent, {
+  }, "mu-dropdown", _vm.popupProps, false), [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option) {
+    return _c("mu-option", {
       key: Object(option)[_vm.valueField] || option,
-      tag: "component",
       attrs: {
         option: option,
         fields: _vm.fields
@@ -3928,43 +3907,48 @@ var ListDivider = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$a
 }, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, undefined, undefined);
 
-window.addEventListener('keyup', function (event) {
-  // const tag = String(event.target.tagName).toLowerCase()
-  if (event.keyCode === 27) {
-    var _window = window,
-        dropdown = _window.__mussel_dropdown,
-        modal = _window.__mussel_modal;
-
-    if (dropdown) {
-      dropdown.hide();
-    } else if (modal) {
-      var action = modal.$options.maskAction || modal.maskAction;
-      if (action === 'close') modal.hide();
-    }
-  }
-});
-window.addEventListener('mousedown', function (event) {
-  var _window2 = window,
-      dropdown = _window2.__mussel_dropdown;
-
-  if (dropdown) {
-    dropdown.hideIf(event.target);
-  }
-});
-
-function hideIf$1() {
-  var _window3 = window,
-      dropdown = _window3.__mussel_dropdown,
-      modal = _window3.__mussel_modal;
-  if (dropdown) dropdown.hide();
-  if (modal) modal.hide();
+function callbackIf(name, handler) {
+  var popup = window['__mussel_' + name];
+  if (popup) handler(popup);
+  return popup;
 }
 
-window.addEventListener('popstate', hideIf$1);
+function hideIf(name, force) {
+  return name === 'dropdown' ? callbackIf('dropdown', function (dropdown) {
+    return dropdown.hide();
+  }) : name === 'modal' ? callbackIf('modal', function (modal) {
+    var action = modal.$options.maskAction || modal.maskAction;
+    if (action === 'close') modal.hide(force);
+  }) : undefined;
+}
+
+function setPositionIf() {
+  callbackIf('dropdown', function (dropdown) {
+    return dropdown.setPosition();
+  });
+}
+
+window.addEventListener('blur', function (event) {
+  return hideIf('dropdown');
+});
+window.addEventListener('keyup', function (event) {
+  return event.keyCode === 27 && (hideIf('dropdown') || hideIf('modal'));
+});
+window.addEventListener('mousedown', function (event) {
+  var _window = window,
+      dropdown = _window.__mussel_dropdown;
+  if (dropdown) dropdown.hideIf(event.target);
+});
+window.addEventListener('popstate', function () {
+  hideIf('dropdown');
+  hideIf('modal', true);
+});
+window.addEventListener('resize', setPositionIf);
+window.addEventListener('scroll', setPositionIf);
 
 var script$c = {
   name: 'MusselBaseModal',
-  mixins: [RenderToBodyMixin, VisibleModelMixin],
+  mixins: [RenderToBodyMixin, PopupVisibleMixin],
   props: {
     maskAction: {
       type: String,
@@ -3987,13 +3971,13 @@ var script$c = {
     },
     show: function show() {
       window.__mussel_modal = this;
-      this.modalVisible = true;
+      this.popupVisible = true;
       this.$emit('show');
       this.$emit('change', true);
     },
     hide: function hide() {
       this.deactivate();
-      this.modalVisible = false;
+      this.popupVisible = false;
       this.$emit('hide');
       this.$emit('change', false);
     }
@@ -4306,7 +4290,7 @@ var script$e = {
     }
   },
   watch: {
-    modalVisible: function modalVisible(value) {
+    popupVisible: function popupVisible(value) {
       this.params.modalVisible = value;
     },
     buttons: {
@@ -4367,7 +4351,7 @@ var script$e = {
       }
 
       this.clearHideTimer();
-      this.modalVisible = true;
+      this.popupVisible = true;
       setTimeout(function () {
         _this2.params.dialogVisible = true;
       }, 10);
@@ -4382,7 +4366,7 @@ var script$e = {
       this.params.dialogVisible = false;
       this.clearHideTimer();
       this.$hideTimer = setTimeout(function () {
-        _this3.modalVisible = false;
+        _this3.popupVisible = false;
       }, 200);
       this.$emit('hide');
       this.$emit('change', false);
@@ -4455,7 +4439,7 @@ var __vue_render__$c = function __vue_render__() {
   return _c("div", {
     staticClass: "mu-modal-mask",
     attrs: {
-      visible: _vm.modalVisible
+      visible: _vm.popupVisible
     },
     on: {
       click: _vm.onMaskClick

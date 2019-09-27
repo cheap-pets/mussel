@@ -1,29 +1,43 @@
-window.addEventListener('keyup', event => {
-  // const tag = String(event.target.tagName).toLowerCase()
-  if (event.keyCode === 27) {
-    const { __mussel_dropdown: dropdown, __mussel_modal: modal } = window
+function callbackIf (name, handler) {
+  const popup = window['__mussel_' + name]
+  if (popup) handler(popup)
+  return popup
+}
 
-    if (dropdown) {
-      dropdown.hide()
-    } else if (modal) {
-      const action = modal.$options.maskAction || modal.maskAction
-      if (action === 'close') modal.hide()
-    }
-  }
-})
+function hideIf (name, force) {
+  return name === 'dropdown'
+    ? callbackIf('dropdown', dropdown => dropdown.hide())
+    : (
+      name === 'modal'
+        ? callbackIf('modal', modal => {
+          const action = modal.$options.maskAction || modal.maskAction
+          if (action === 'close') modal.hide(force)
+        })
+        : undefined
+    )
+}
+
+function setPositionIf () {
+  callbackIf('dropdown', dropdown => dropdown.setPosition())
+}
+
+window.addEventListener('blur', event => hideIf('dropdown'))
+
+window.addEventListener(
+  'keyup',
+  event => event.keyCode === 27 &&
+    (hideIf('dropdown') || hideIf('modal'))
+)
 
 window.addEventListener('mousedown', event => {
   const { __mussel_dropdown: dropdown } = window
-  if (dropdown) {
-    dropdown.hideIf(event.target)
-  }
+  if (dropdown) dropdown.hideIf(event.target)
 })
 
-function hideIf () {
-  const { __mussel_dropdown: dropdown, __mussel_modal: modal } = window
+window.addEventListener('popstate', function () {
+  hideIf('dropdown')
+  hideIf('modal', true)
+})
 
-  if (dropdown) dropdown.hide()
-  if (modal) modal.hide()
-}
-
-window.addEventListener('popstate', hideIf)
+window.addEventListener('resize', setPositionIf)
+window.addEventListener('scroll', setPositionIf)

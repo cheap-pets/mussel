@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-modal-mask" :visible="modalVisible" @click="onMaskClick">
+  <div class="mu-modal-mask" :visible="popupVisible" @click="onMaskClick">
     <slot />
   </div>
 </template>

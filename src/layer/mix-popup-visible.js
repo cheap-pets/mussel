@@ -8,13 +8,13 @@ export default {
   },
   data () {
     return {
-      modalVisible: false
+      popupVisible: false
     }
   },
   watch: {
     visible: {
       handler (value) {
-        if (value === !this.modalVisible) {
+        if (value === !this.popupVisible) {
           this.$nextTick(value ? this.show : this.hide)
         }
       },
@@ -23,12 +23,12 @@ export default {
   },
   methods: {
     show () {
-      this.modalVisible = true
+      this.popupVisible = true
       this.$emit('show')
       this.$emit('change', true)
     },
     hide () {
-      this.modalVisible = false
+      this.popupVisible = false
       this.$emit('hide')
       this.$emit('change', false)
     }
