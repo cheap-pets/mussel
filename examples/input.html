@@ -28,32 +28,32 @@
     <div>
       <h3>输入框组</h3>
       <h5>带图标的输入框</h5>
-      <mu-input-box icon="search" :clearable="false" v-model="iconInput1Value"></mu-input-box>
-      <mu-input-box icon="search" :clearable="false" value="图标在前" button-position="left">
+      <mu-input-box icon="search" placeholder="请输入文字" :clearable="false" v-model="iconInput1Value"></mu-input-box>
+      <mu-input-box icon="search" placeholder="请输入文字" :clearable="false" value="图标在前" icon-align="left">
       </mu-input-box>
       <h5>带按钮的输入框</h5>
       <mu-input-box icon="search" :clearable="false" icon-clickable value="按钮在后">
       </mu-input-box>
-      <mu-input-box icon="search" :clearable="false" icon-clickable value="按钮在前" button-position="left">
+      <mu-input-box icon="search" :clearable="false" icon-clickable value="按钮在前" icon-align="left">
       </mu-input-box>
       <h5>带清空按钮的输入框</h5>
       <mu-input-box value="没有图标">
       </mu-input-box>
       <mu-input-box icon="search" value="图标在后">
       </mu-input-box>
-      <mu-input-box icon="search" value="图标在前" button-position="left">
+      <mu-input-box icon="search" value="图标在前" icon-align="left">
       </mu-input-box>
       <h5>圆形的输入框</h5>
       <mu-input input-shape="round" value="没有图标">
       </mu-input>
       <mu-input-box icon="search" :clearable="false" input-shape="round" value="图标在后">
       </mu-input-box>
-      <mu-input-box icon="search" :clearable="false" input-shape="round" value="图标在前" button-position="left">
+      <mu-input-box icon="search" :clearable="false" input-shape="round" value="图标在前" icon-align="left">
       </mu-input-box>
       <h5>无效状态</h5>
-      <mu-input-box invalid button-type="button" value="按钮在后">
+      <mu-input-box invalid icon="search" icon-clickable value="按钮在后">
       </mu-input-box>
-      <mu-input-box invalid button-type="button" value="按钮在前" button-position="left">
+      <mu-input-box invalid icon="search" icon-clickable value="按钮在前" icon-align="left">
       </mu-input-box>
       <h5>下拉框</h5>
       <!-- <mu-combo-box v-model="comboValue1" @change="onCombo1Change">

@@ -10,6 +10,7 @@
       @click="onButtonClick" />
     <mu-input
       v-bind="inputParams"
+      :placeholder="params.placeholder"
       @input="onInput"
       @click="onInputClick"
       @keypress.native="onKeyPress" />

@@ -2332,6 +2332,9 @@
         click: _vm.onButtonClick
       }
     }, "mu-input-button", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _c("mu-input", _vm._b({
+      attrs: {
+        placeholder: _vm.params.placeholder
+      },
       on: {
         input: _vm.onInput,
         click: _vm.onInputClick
@@ -2399,7 +2402,8 @@
           iconClass = this.iconClass,
           iconAlign = this.iconAlign,
           iconClickable = this.iconClickable,
-          clearable = this.clearable;
+          clearable = this.clearable,
+          placeholder = this.placeholder;
       return {
         params: {
           readonly: readonly,
@@ -2410,7 +2414,8 @@
           iconClass: iconClass,
           iconAlign: iconAlign,
           iconClickable: iconClickable,
-          clearable: clearable
+          clearable: clearable,
+          placeholder: placeholder
         }
       };
     },
@@ -2419,6 +2424,7 @@
       event: 'change'
     },
     props: {
+      placeholder: String,
       readonly: Boolean,
       disabled: Boolean,
       type: {
@@ -2447,6 +2453,33 @@
           this.setInputValue(value);
         },
         immediate: true
+      },
+      readonly: function readonly(value) {
+        this.params.readonly = value;
+      },
+      disabled: function disabled(value) {
+        this.params.disabled = value;
+      },
+      type: function type(value) {
+        this.params.type = value;
+      },
+      icon: function icon(value) {
+        this.params.icon = value;
+      },
+      iconClass: function iconClass(value) {
+        this.params.iconClass = value;
+      },
+      iconAlign: function iconAlign(value) {
+        this.params.iconAlign = value;
+      },
+      iconClickable: function iconClickable(value) {
+        this.params.iconClickable = value;
+      },
+      clearable: function clearable(value) {
+        this.params.clearable = value;
+      },
+      placeholder: function placeholder(value) {
+        this.params.placeholder = value;
       }
     },
     methods: {
@@ -2467,7 +2500,7 @@
       },
       onButtonClick: function onButtonClick() {
         this.$el.querySelector('.mu-input').focus();
-        this.$emit('buttonclick');
+        if (this.iconClickable) this.$emit('buttonclick');
       },
       onKeyPress: function onKeyPress(event) {
         this.$emit('keypress', event);
@@ -2518,52 +2551,48 @@
     staticRenderFns: __vue_staticRenderFns__$7
   }, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
 
-  var defineProperty$3 = objectDefineProperty.f;
+  //
+  var script$9 = {
+    name: 'MusselComboBox',
+    "extends": BaseInputBox
+  };
 
+  /* script */
+  var __vue_script__$9 = script$9;
+  /* template */
 
-  var NativeSymbol = global_1.Symbol;
+  var __vue_render__$8 = function __vue_render__() {
+    var _vm = this;
 
-  if (descriptors && typeof NativeSymbol == 'function' && (!('description' in NativeSymbol.prototype) ||
-    // Safari 12 bug
-    NativeSymbol().description !== undefined
-  )) {
-    var EmptyStringDescriptionStore = {};
-    // wrap Symbol constructor for correct work with undefined description
-    var SymbolWrapper = function Symbol() {
-      var description = arguments.length < 1 || arguments[0] === undefined ? undefined : String(arguments[0]);
-      var result = this instanceof SymbolWrapper
-        ? new NativeSymbol(description)
-        // in Edge 13, String(Symbol(undefined)) === 'Symbol(undefined)'
-        : description === undefined ? NativeSymbol() : NativeSymbol(description);
-      if (description === '') EmptyStringDescriptionStore[result] = true;
-      return result;
-    };
-    copyConstructorProperties(SymbolWrapper, NativeSymbol);
-    var symbolPrototype = SymbolWrapper.prototype = NativeSymbol.prototype;
-    symbolPrototype.constructor = SymbolWrapper;
+    var _h = _vm.$createElement;
 
-    var symbolToString = symbolPrototype.toString;
-    var native = String(NativeSymbol('test')) == 'Symbol(test)';
-    var regexp = /^Symbol\((.*)\)[^)]+$/;
-    defineProperty$3(symbolPrototype, 'description', {
-      configurable: true,
-      get: function description() {
-        var symbol = isObject(this) ? this.valueOf() : this;
-        var string = symbolToString.call(symbol);
-        if (has(EmptyStringDescriptionStore, symbol)) return '';
-        var desc = native ? string.slice(7, -1) : string.replace(regexp, '$1');
-        return desc === '' ? undefined : desc;
-      }
-    });
+    var _c = _vm._self._c || _h;
 
-    _export({ global: true, forced: true }, {
-      Symbol: SymbolWrapper
-    });
-  }
+    return _c("mu-input-box-wrapper");
+  };
 
-  // `Symbol.iterator` well-known symbol
-  // https://tc39.github.io/ecma262/#sec-symbol.iterator
-  defineWellKnownSymbol('iterator');
+  var __vue_staticRenderFns__$8 = [];
+  __vue_render__$8._withStripped = true;
+  /* style */
+
+  var __vue_inject_styles__$9 = undefined;
+  /* scoped */
+
+  var __vue_scope_id__$9 = undefined;
+  /* module identifier */
+
+  var __vue_module_identifier__$9 = undefined;
+  /* functional template */
+
+  var __vue_is_functional_template__$9 = false;
+  /* style inject */
+
+  /* style inject SSR */
+
+  var ComboBox = normalizeComponent_1({
+    render: __vue_render__$8,
+    staticRenderFns: __vue_staticRenderFns__$8
+  }, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, undefined, undefined);
 
   var UNSCOPABLES = wellKnownSymbol('unscopables');
   var ArrayPrototype = Array.prototype;
@@ -2598,895 +2627,6 @@
 
   // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
   addToUnscopables(FIND);
-
-  var $findIndex = arrayIteration.findIndex;
-
-
-  var FIND_INDEX = 'findIndex';
-  var SKIPS_HOLES$1 = true;
-
-  // Shouldn't skip holes
-  if (FIND_INDEX in []) Array(1)[FIND_INDEX](function () { SKIPS_HOLES$1 = false; });
-
-  // `Array.prototype.findIndex` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.findindex
-  _export({ target: 'Array', proto: true, forced: SKIPS_HOLES$1 }, {
-    findIndex: function findIndex(callbackfn /* , that = undefined */) {
-      return $findIndex(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-    }
-  });
-
-  // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
-  addToUnscopables(FIND_INDEX);
-
-  // call something on iterator step with safe closing on error
-  var callWithSafeIterationClosing = function (iterator, fn, value, ENTRIES) {
-    try {
-      return ENTRIES ? fn(anObject(value)[0], value[1]) : fn(value);
-    // 7.4.6 IteratorClose(iterator, completion)
-    } catch (error) {
-      var returnMethod = iterator['return'];
-      if (returnMethod !== undefined) anObject(returnMethod.call(iterator));
-      throw error;
-    }
-  };
-
-  var iterators = {};
-
-  var ITERATOR = wellKnownSymbol('iterator');
-  var ArrayPrototype$1 = Array.prototype;
-
-  // check on default Array iterator
-  var isArrayIteratorMethod = function (it) {
-    return it !== undefined && (iterators.Array === it || ArrayPrototype$1[ITERATOR] === it);
-  };
-
-  var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
-  // ES3 wrong here
-  var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
-
-  // fallback for IE11 Script Access Denied error
-  var tryGet = function (it, key) {
-    try {
-      return it[key];
-    } catch (error) { /* empty */ }
-  };
-
-  // getting tag from ES6+ `Object.prototype.toString`
-  var classof = function (it) {
-    var O, tag, result;
-    return it === undefined ? 'Undefined' : it === null ? 'Null'
-      // @@toStringTag case
-      : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$1)) == 'string' ? tag
-      // builtinTag case
-      : CORRECT_ARGUMENTS ? classofRaw(O)
-      // ES3 arguments fallback
-      : (result = classofRaw(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : result;
-  };
-
-  var ITERATOR$1 = wellKnownSymbol('iterator');
-
-  var getIteratorMethod = function (it) {
-    if (it != undefined) return it[ITERATOR$1]
-      || it['@@iterator']
-      || iterators[classof(it)];
-  };
-
-  // `Array.from` method implementation
-  // https://tc39.github.io/ecma262/#sec-array.from
-  var arrayFrom = function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
-    var O = toObject(arrayLike);
-    var C = typeof this == 'function' ? this : Array;
-    var argumentsLength = arguments.length;
-    var mapfn = argumentsLength > 1 ? arguments[1] : undefined;
-    var mapping = mapfn !== undefined;
-    var index = 0;
-    var iteratorMethod = getIteratorMethod(O);
-    var length, result, step, iterator;
-    if (mapping) mapfn = bindContext(mapfn, argumentsLength > 2 ? arguments[2] : undefined, 2);
-    // if the target is not iterable or it's an array with the default iterator - use a simple case
-    if (iteratorMethod != undefined && !(C == Array && isArrayIteratorMethod(iteratorMethod))) {
-      iterator = iteratorMethod.call(O);
-      result = new C();
-      for (;!(step = iterator.next()).done; index++) {
-        createProperty(result, index, mapping
-          ? callWithSafeIterationClosing(iterator, mapfn, [step.value, index], true)
-          : step.value
-        );
-      }
-    } else {
-      length = toLength(O.length);
-      result = new C(length);
-      for (;length > index; index++) {
-        createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
-      }
-    }
-    result.length = index;
-    return result;
-  };
-
-  var ITERATOR$2 = wellKnownSymbol('iterator');
-  var SAFE_CLOSING = false;
-
-  try {
-    var called = 0;
-    var iteratorWithReturn = {
-      next: function () {
-        return { done: !!called++ };
-      },
-      'return': function () {
-        SAFE_CLOSING = true;
-      }
-    };
-    iteratorWithReturn[ITERATOR$2] = function () {
-      return this;
-    };
-    // eslint-disable-next-line no-throw-literal
-    Array.from(iteratorWithReturn, function () { throw 2; });
-  } catch (error) { /* empty */ }
-
-  var checkCorrectnessOfIteration = function (exec, SKIP_CLOSING) {
-    if (!SKIP_CLOSING && !SAFE_CLOSING) return false;
-    var ITERATION_SUPPORT = false;
-    try {
-      var object = {};
-      object[ITERATOR$2] = function () {
-        return {
-          next: function () {
-            return { done: ITERATION_SUPPORT = true };
-          }
-        };
-      };
-      exec(object);
-    } catch (error) { /* empty */ }
-    return ITERATION_SUPPORT;
-  };
-
-  var INCORRECT_ITERATION = !checkCorrectnessOfIteration(function (iterable) {
-    Array.from(iterable);
-  });
-
-  // `Array.from` method
-  // https://tc39.github.io/ecma262/#sec-array.from
-  _export({ target: 'Array', stat: true, forced: INCORRECT_ITERATION }, {
-    from: arrayFrom
-  });
-
-  // `Array.isArray` method
-  // https://tc39.github.io/ecma262/#sec-array.isarray
-  _export({ target: 'Array', stat: true }, {
-    isArray: isArray
-  });
-
-  var correctPrototypeGetter = !fails(function () {
-    function F() { /* empty */ }
-    F.prototype.constructor = null;
-    return Object.getPrototypeOf(new F()) !== F.prototype;
-  });
-
-  var IE_PROTO$1 = sharedKey('IE_PROTO');
-  var ObjectPrototype$1 = Object.prototype;
-
-  // `Object.getPrototypeOf` method
-  // https://tc39.github.io/ecma262/#sec-object.getprototypeof
-  var objectGetPrototypeOf = correctPrototypeGetter ? Object.getPrototypeOf : function (O) {
-    O = toObject(O);
-    if (has(O, IE_PROTO$1)) return O[IE_PROTO$1];
-    if (typeof O.constructor == 'function' && O instanceof O.constructor) {
-      return O.constructor.prototype;
-    } return O instanceof Object ? ObjectPrototype$1 : null;
-  };
-
-  var ITERATOR$3 = wellKnownSymbol('iterator');
-  var BUGGY_SAFARI_ITERATORS = false;
-
-  var returnThis = function () { return this; };
-
-  // `%IteratorPrototype%` object
-  // https://tc39.github.io/ecma262/#sec-%iteratorprototype%-object
-  var IteratorPrototype, PrototypeOfArrayIteratorPrototype, arrayIterator;
-
-  if ([].keys) {
-    arrayIterator = [].keys();
-    // Safari 8 has buggy iterators w/o `next`
-    if (!('next' in arrayIterator)) BUGGY_SAFARI_ITERATORS = true;
-    else {
-      PrototypeOfArrayIteratorPrototype = objectGetPrototypeOf(objectGetPrototypeOf(arrayIterator));
-      if (PrototypeOfArrayIteratorPrototype !== Object.prototype) IteratorPrototype = PrototypeOfArrayIteratorPrototype;
-    }
-  }
-
-  if (IteratorPrototype == undefined) IteratorPrototype = {};
-
-  // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-  if ( !has(IteratorPrototype, ITERATOR$3)) hide(IteratorPrototype, ITERATOR$3, returnThis);
-
-  var iteratorsCore = {
-    IteratorPrototype: IteratorPrototype,
-    BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
-  };
-
-  var IteratorPrototype$1 = iteratorsCore.IteratorPrototype;
-
-
-
-
-
-  var returnThis$1 = function () { return this; };
-
-  var createIteratorConstructor = function (IteratorConstructor, NAME, next) {
-    var TO_STRING_TAG = NAME + ' Iterator';
-    IteratorConstructor.prototype = objectCreate(IteratorPrototype$1, { next: createPropertyDescriptor(1, next) });
-    setToStringTag(IteratorConstructor, TO_STRING_TAG, false);
-    iterators[TO_STRING_TAG] = returnThis$1;
-    return IteratorConstructor;
-  };
-
-  var IteratorPrototype$2 = iteratorsCore.IteratorPrototype;
-  var BUGGY_SAFARI_ITERATORS$1 = iteratorsCore.BUGGY_SAFARI_ITERATORS;
-  var ITERATOR$4 = wellKnownSymbol('iterator');
-  var KEYS = 'keys';
-  var VALUES = 'values';
-  var ENTRIES = 'entries';
-
-  var returnThis$2 = function () { return this; };
-
-  var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, IS_SET, FORCED) {
-    createIteratorConstructor(IteratorConstructor, NAME, next);
-
-    var getIterationMethod = function (KIND) {
-      if (KIND === DEFAULT && defaultIterator) return defaultIterator;
-      if (!BUGGY_SAFARI_ITERATORS$1 && KIND in IterablePrototype) return IterablePrototype[KIND];
-      switch (KIND) {
-        case KEYS: return function keys() { return new IteratorConstructor(this, KIND); };
-        case VALUES: return function values() { return new IteratorConstructor(this, KIND); };
-        case ENTRIES: return function entries() { return new IteratorConstructor(this, KIND); };
-      } return function () { return new IteratorConstructor(this); };
-    };
-
-    var TO_STRING_TAG = NAME + ' Iterator';
-    var INCORRECT_VALUES_NAME = false;
-    var IterablePrototype = Iterable.prototype;
-    var nativeIterator = IterablePrototype[ITERATOR$4]
-      || IterablePrototype['@@iterator']
-      || DEFAULT && IterablePrototype[DEFAULT];
-    var defaultIterator = !BUGGY_SAFARI_ITERATORS$1 && nativeIterator || getIterationMethod(DEFAULT);
-    var anyNativeIterator = NAME == 'Array' ? IterablePrototype.entries || nativeIterator : nativeIterator;
-    var CurrentIteratorPrototype, methods, KEY;
-
-    // fix native
-    if (anyNativeIterator) {
-      CurrentIteratorPrototype = objectGetPrototypeOf(anyNativeIterator.call(new Iterable()));
-      if (IteratorPrototype$2 !== Object.prototype && CurrentIteratorPrototype.next) {
-        if ( objectGetPrototypeOf(CurrentIteratorPrototype) !== IteratorPrototype$2) {
-          if (objectSetPrototypeOf) {
-            objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
-          } else if (typeof CurrentIteratorPrototype[ITERATOR$4] != 'function') {
-            hide(CurrentIteratorPrototype, ITERATOR$4, returnThis$2);
-          }
-        }
-        // Set @@toStringTag to native iterators
-        setToStringTag(CurrentIteratorPrototype, TO_STRING_TAG, true);
-      }
-    }
-
-    // fix Array#{values, @@iterator}.name in V8 / FF
-    if (DEFAULT == VALUES && nativeIterator && nativeIterator.name !== VALUES) {
-      INCORRECT_VALUES_NAME = true;
-      defaultIterator = function values() { return nativeIterator.call(this); };
-    }
-
-    // define iterator
-    if ( IterablePrototype[ITERATOR$4] !== defaultIterator) {
-      hide(IterablePrototype, ITERATOR$4, defaultIterator);
-    }
-    iterators[NAME] = defaultIterator;
-
-    // export additional methods
-    if (DEFAULT) {
-      methods = {
-        values: getIterationMethod(VALUES),
-        keys: IS_SET ? defaultIterator : getIterationMethod(KEYS),
-        entries: getIterationMethod(ENTRIES)
-      };
-      if (FORCED) for (KEY in methods) {
-        if (BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME || !(KEY in IterablePrototype)) {
-          redefine(IterablePrototype, KEY, methods[KEY]);
-        }
-      } else _export({ target: NAME, proto: true, forced: BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME }, methods);
-    }
-
-    return methods;
-  };
-
-  var ARRAY_ITERATOR = 'Array Iterator';
-  var setInternalState$1 = internalState.set;
-  var getInternalState$1 = internalState.getterFor(ARRAY_ITERATOR);
-
-  // `Array.prototype.entries` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.entries
-  // `Array.prototype.keys` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.keys
-  // `Array.prototype.values` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.values
-  // `Array.prototype[@@iterator]` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype-@@iterator
-  // `CreateArrayIterator` internal method
-  // https://tc39.github.io/ecma262/#sec-createarrayiterator
-  var es_array_iterator = defineIterator(Array, 'Array', function (iterated, kind) {
-    setInternalState$1(this, {
-      type: ARRAY_ITERATOR,
-      target: toIndexedObject(iterated), // target
-      index: 0,                          // next index
-      kind: kind                         // kind
-    });
-  // `%ArrayIteratorPrototype%.next` method
-  // https://tc39.github.io/ecma262/#sec-%arrayiteratorprototype%.next
-  }, function () {
-    var state = getInternalState$1(this);
-    var target = state.target;
-    var kind = state.kind;
-    var index = state.index++;
-    if (!target || index >= target.length) {
-      state.target = undefined;
-      return { value: undefined, done: true };
-    }
-    if (kind == 'keys') return { value: index, done: false };
-    if (kind == 'values') return { value: target[index], done: false };
-    return { value: [index, target[index]], done: false };
-  }, 'values');
-
-  // argumentsList[@@iterator] is %ArrayProto_values%
-  // https://tc39.github.io/ecma262/#sec-createunmappedargumentsobject
-  // https://tc39.github.io/ecma262/#sec-createmappedargumentsobject
-  iterators.Arguments = iterators.Array;
-
-  // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
-  addToUnscopables('keys');
-  addToUnscopables('values');
-  addToUnscopables('entries');
-
-  var nativeJoin = [].join;
-
-  var ES3_STRINGS = indexedObject != Object;
-  var SLOPPY_METHOD$1 = sloppyArrayMethod('join', ',');
-
-  // `Array.prototype.join` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.join
-  _export({ target: 'Array', proto: true, forced: ES3_STRINGS || SLOPPY_METHOD$1 }, {
-    join: function join(separator) {
-      return nativeJoin.call(toIndexedObject(this), separator === undefined ? ',' : separator);
-    }
-  });
-
-  var $map = arrayIteration.map;
-
-
-  // `Array.prototype.map` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.map
-  // with adding support of @@species
-  _export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('map') }, {
-    map: function map(callbackfn /* , thisArg */) {
-      return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-    }
-  });
-
-  var max$1 = Math.max;
-  var min$2 = Math.min;
-  var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
-  var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded';
-
-  // `Array.prototype.splice` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.splice
-  // with adding support of @@species
-  _export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('splice') }, {
-    splice: function splice(start, deleteCount /* , ...items */) {
-      var O = toObject(this);
-      var len = toLength(O.length);
-      var actualStart = toAbsoluteIndex(start, len);
-      var argumentsLength = arguments.length;
-      var insertCount, actualDeleteCount, A, k, from, to;
-      if (argumentsLength === 0) {
-        insertCount = actualDeleteCount = 0;
-      } else if (argumentsLength === 1) {
-        insertCount = 0;
-        actualDeleteCount = len - actualStart;
-      } else {
-        insertCount = argumentsLength - 2;
-        actualDeleteCount = min$2(max$1(toInteger(deleteCount), 0), len - actualStart);
-      }
-      if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER$1) {
-        throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
-      }
-      A = arraySpeciesCreate(O, actualDeleteCount);
-      for (k = 0; k < actualDeleteCount; k++) {
-        from = actualStart + k;
-        if (from in O) createProperty(A, k, O[from]);
-      }
-      A.length = actualDeleteCount;
-      if (insertCount < actualDeleteCount) {
-        for (k = actualStart; k < len - actualDeleteCount; k++) {
-          from = k + actualDeleteCount;
-          to = k + insertCount;
-          if (from in O) O[to] = O[from];
-          else delete O[to];
-        }
-        for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
-      } else if (insertCount > actualDeleteCount) {
-        for (k = len - actualDeleteCount; k > actualStart; k--) {
-          from = k + actualDeleteCount - 1;
-          to = k + insertCount - 1;
-          if (from in O) O[to] = O[from];
-          else delete O[to];
-        }
-      }
-      for (k = 0; k < insertCount; k++) {
-        O[k + actualStart] = arguments[k + 2];
-      }
-      O.length = len - actualDeleteCount + insertCount;
-      return A;
-    }
-  });
-
-  var DatePrototype = Date.prototype;
-  var INVALID_DATE = 'Invalid Date';
-  var TO_STRING = 'toString';
-  var nativeDateToString = DatePrototype[TO_STRING];
-  var getTime = DatePrototype.getTime;
-
-  // `Date.prototype.toString` method
-  // https://tc39.github.io/ecma262/#sec-date.prototype.tostring
-  if (new Date(NaN) + '' != INVALID_DATE) {
-    redefine(DatePrototype, TO_STRING, function toString() {
-      var value = getTime.call(this);
-      // eslint-disable-next-line no-self-compare
-      return value === value ? nativeDateToString.call(this) : INVALID_DATE;
-    });
-  }
-
-  var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
-  var test$1 = {};
-
-  test$1[TO_STRING_TAG$2] = 'z';
-
-  // `Object.prototype.toString` method implementation
-  // https://tc39.github.io/ecma262/#sec-object.prototype.tostring
-  var objectToString = String(test$1) !== '[object z]' ? function toString() {
-    return '[object ' + classof(this) + ']';
-  } : test$1.toString;
-
-  var ObjectPrototype$2 = Object.prototype;
-
-  // `Object.prototype.toString` method
-  // https://tc39.github.io/ecma262/#sec-object.prototype.tostring
-  if (objectToString !== ObjectPrototype$2.toString) {
-    redefine(ObjectPrototype$2, 'toString', objectToString, { unsafe: true });
-  }
-
-  // `RegExp.prototype.flags` getter implementation
-  // https://tc39.github.io/ecma262/#sec-get-regexp.prototype.flags
-  var regexpFlags = function () {
-    var that = anObject(this);
-    var result = '';
-    if (that.global) result += 'g';
-    if (that.ignoreCase) result += 'i';
-    if (that.multiline) result += 'm';
-    if (that.dotAll) result += 's';
-    if (that.unicode) result += 'u';
-    if (that.sticky) result += 'y';
-    return result;
-  };
-
-  var TO_STRING$1 = 'toString';
-  var RegExpPrototype = RegExp.prototype;
-  var nativeToString = RegExpPrototype[TO_STRING$1];
-
-  var NOT_GENERIC = fails(function () { return nativeToString.call({ source: 'a', flags: 'b' }) != '/a/b'; });
-  // FF44- RegExp#toString has a wrong name
-  var INCORRECT_NAME = nativeToString.name != TO_STRING$1;
-
-  // `RegExp.prototype.toString` method
-  // https://tc39.github.io/ecma262/#sec-regexp.prototype.tostring
-  if (NOT_GENERIC || INCORRECT_NAME) {
-    redefine(RegExp.prototype, TO_STRING$1, function toString() {
-      var R = anObject(this);
-      var p = String(R.source);
-      var rf = R.flags;
-      var f = String(rf === undefined && R instanceof RegExp && !('flags' in RegExpPrototype) ? regexpFlags.call(R) : rf);
-      return '/' + p + '/' + f;
-    }, { unsafe: true });
-  }
-
-  // `String.prototype.{ codePointAt, at }` methods implementation
-  var createMethod$3 = function (CONVERT_TO_STRING) {
-    return function ($this, pos) {
-      var S = String(requireObjectCoercible($this));
-      var position = toInteger(pos);
-      var size = S.length;
-      var first, second;
-      if (position < 0 || position >= size) return CONVERT_TO_STRING ? '' : undefined;
-      first = S.charCodeAt(position);
-      return first < 0xD800 || first > 0xDBFF || position + 1 === size
-        || (second = S.charCodeAt(position + 1)) < 0xDC00 || second > 0xDFFF
-          ? CONVERT_TO_STRING ? S.charAt(position) : first
-          : CONVERT_TO_STRING ? S.slice(position, position + 2) : (first - 0xD800 << 10) + (second - 0xDC00) + 0x10000;
-    };
-  };
-
-  var stringMultibyte = {
-    // `String.prototype.codePointAt` method
-    // https://tc39.github.io/ecma262/#sec-string.prototype.codepointat
-    codeAt: createMethod$3(false),
-    // `String.prototype.at` method
-    // https://github.com/mathiasbynens/String.prototype.at
-    charAt: createMethod$3(true)
-  };
-
-  var charAt = stringMultibyte.charAt;
-
-
-
-  var STRING_ITERATOR = 'String Iterator';
-  var setInternalState$2 = internalState.set;
-  var getInternalState$2 = internalState.getterFor(STRING_ITERATOR);
-
-  // `String.prototype[@@iterator]` method
-  // https://tc39.github.io/ecma262/#sec-string.prototype-@@iterator
-  defineIterator(String, 'String', function (iterated) {
-    setInternalState$2(this, {
-      type: STRING_ITERATOR,
-      string: String(iterated),
-      index: 0
-    });
-  // `%StringIteratorPrototype%.next` method
-  // https://tc39.github.io/ecma262/#sec-%stringiteratorprototype%.next
-  }, function next() {
-    var state = getInternalState$2(this);
-    var string = state.string;
-    var index = state.index;
-    var point;
-    if (index >= string.length) return { value: undefined, done: true };
-    point = charAt(string, index);
-    state.index += point.length;
-    return { value: point, done: false };
-  });
-
-  var ITERATOR$5 = wellKnownSymbol('iterator');
-  var TO_STRING_TAG$3 = wellKnownSymbol('toStringTag');
-  var ArrayValues = es_array_iterator.values;
-
-  for (var COLLECTION_NAME$1 in domIterables) {
-    var Collection$1 = global_1[COLLECTION_NAME$1];
-    var CollectionPrototype$1 = Collection$1 && Collection$1.prototype;
-    if (CollectionPrototype$1) {
-      // some Chrome versions have non-configurable methods on DOMTokenList
-      if (CollectionPrototype$1[ITERATOR$5] !== ArrayValues) try {
-        hide(CollectionPrototype$1, ITERATOR$5, ArrayValues);
-      } catch (error) {
-        CollectionPrototype$1[ITERATOR$5] = ArrayValues;
-      }
-      if (!CollectionPrototype$1[TO_STRING_TAG$3]) hide(CollectionPrototype$1, TO_STRING_TAG$3, COLLECTION_NAME$1);
-      if (domIterables[COLLECTION_NAME$1]) for (var METHOD_NAME in es_array_iterator) {
-        // some Chrome versions have non-configurable methods on DOMTokenList
-        if (CollectionPrototype$1[METHOD_NAME] !== es_array_iterator[METHOD_NAME]) try {
-          hide(CollectionPrototype$1, METHOD_NAME, es_array_iterator[METHOD_NAME]);
-        } catch (error) {
-          CollectionPrototype$1[METHOD_NAME] = es_array_iterator[METHOD_NAME];
-        }
-      }
-    }
-  }
-
-  var userAgent = getBuiltIn('navigator', 'userAgent') || '';
-
-  var slice = [].slice;
-  var MSIE = /MSIE .\./.test(userAgent); // <- dirty ie9- check
-
-  var wrap$1 = function (scheduler) {
-    return function (handler, timeout /* , ...arguments */) {
-      var boundArgs = arguments.length > 2;
-      var args = boundArgs ? slice.call(arguments, 2) : undefined;
-      return scheduler(boundArgs ? function () {
-        // eslint-disable-next-line no-new-func
-        (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
-      } : handler, timeout);
-    };
-  };
-
-  // ie9- setTimeout & setInterval additional parameters fix
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
-  _export({ global: true, bind: true, forced: MSIE }, {
-    // `setTimeout` method
-    // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
-    setTimeout: wrap$1(global_1.setTimeout),
-    // `setInterval` method
-    // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
-    setInterval: wrap$1(global_1.setInterval)
-  });
-
-  var nativeAssign = Object.assign;
-
-  // `Object.assign` method
-  // https://tc39.github.io/ecma262/#sec-object.assign
-  // should work with symbols and should have deterministic property order (V8 bug)
-  var objectAssign = !nativeAssign || fails(function () {
-    var A = {};
-    var B = {};
-    // eslint-disable-next-line no-undef
-    var symbol = Symbol();
-    var alphabet = 'abcdefghijklmnopqrst';
-    A[symbol] = 7;
-    alphabet.split('').forEach(function (chr) { B[chr] = chr; });
-    return nativeAssign({}, A)[symbol] != 7 || objectKeys(nativeAssign({}, B)).join('') != alphabet;
-  }) ? function assign(target, source) { // eslint-disable-line no-unused-vars
-    var T = toObject(target);
-    var argumentsLength = arguments.length;
-    var index = 1;
-    var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
-    var propertyIsEnumerable = objectPropertyIsEnumerable.f;
-    while (argumentsLength > index) {
-      var S = indexedObject(arguments[index++]);
-      var keys = getOwnPropertySymbols ? objectKeys(S).concat(getOwnPropertySymbols(S)) : objectKeys(S);
-      var length = keys.length;
-      var j = 0;
-      var key;
-      while (length > j) {
-        key = keys[j++];
-        if (!descriptors || propertyIsEnumerable.call(S, key)) T[key] = S[key];
-      }
-    } return T;
-  } : nativeAssign;
-
-  // `Object.assign` method
-  // https://tc39.github.io/ecma262/#sec-object.assign
-  _export({ target: 'Object', stat: true, forced: Object.assign !== objectAssign }, {
-    assign: objectAssign
-  });
-
-  var RenderToBodyMixin = {
-    props: {
-      renderToBody: {
-        type: Boolean,
-        "default": true
-      }
-    },
-    mounted: function mounted() {
-      if (this.renderToBody) {
-        document.body.appendChild(this.$el);
-      }
-    },
-    beforeDestroy: function beforeDestroy() {
-      this.deactivate();
-      var pEl = this.$el.parentNode;
-
-      if (this.$el && pEl && pEl !== Object(this.$parent).$el) {
-        pEl.removeChild(this.$el);
-      }
-    }
-  };
-
-  var PopupVisibleMixin = {
-    model: {
-      prop: 'visible',
-      event: 'change'
-    },
-    props: {
-      visible: Boolean
-    },
-    data: function data() {
-      return {
-        popupVisible: false
-      };
-    },
-    watch: {
-      visible: {
-        handler: function handler(value) {
-          if (value === !this.popupVisible) {
-            this.$nextTick(value ? this.show : this.hide);
-          }
-        },
-        immediate: true
-      }
-    },
-    methods: {
-      show: function show() {
-        this.popupVisible = true;
-        this.$emit('show');
-        this.$emit('change', true);
-      },
-      hide: function hide() {
-        this.popupVisible = false;
-        this.$emit('hide');
-        this.$emit('change', false);
-      }
-    }
-  };
-
-  function getClientRect(el) {
-    var _el$getBoundingClient = el.getBoundingClientRect(),
-        top = _el$getBoundingClient.top,
-        bottom = _el$getBoundingClient.bottom,
-        left = _el$getBoundingClient.left,
-        right = _el$getBoundingClient.right,
-        w = _el$getBoundingClient.width,
-        h = _el$getBoundingClient.height;
-
-    return {
-      top: top,
-      bottom: bottom,
-      left: left,
-      right: right,
-      width: w || right - left,
-      height: h || bottom - top
-    };
-  }
-
-  function isParentElement(element, parentElement) {
-    while (Object(element.parentNode).nodeType === 1) {
-      element = element.parentNode;
-      if (element === parentElement) return true;
-    }
-
-    return false;
-  }
-
-  function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-  function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$1(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-  function _defineProperty$1(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-  function popOnTop(parentRect, height) {
-    return parentRect.bottom + 4 + height > window.innerHeight && parentRect.top - height - 4 >= 0;
-  }
-
-  function popOnRight(parentRect, width) {
-    return parentRect.right + width > window.innerWidth && parentRect.left - width >= 0;
-  }
-
-  function getAbsolutePosition(isOnTop, isOnRight, parentRect, height, width) {
-    var top = parentRect.top,
-        bottom = parentRect.bottom,
-        left = parentRect.left,
-        right = parentRect.right;
-    return {
-      top: "".concat(isOnTop ? top - height - 4 : bottom + 4, "px"),
-      left: "".concat(isOnRight ? right - width : left, "px")
-    };
-  }
-
-  function getRelativePosition(isOnTop, isOnRight, parentRect, settingWidth) {
-    return {
-      top: isOnTop ? undefined : "".concat(parentRect.height + 4, "px"),
-      bottom: isOnTop ? "".concat(parentRect.height + 4, "px") : undefined,
-      left: isOnRight ? undefined : '0',
-      right: isOnRight || !settingWidth ? '0' : undefined
-    };
-  }
-
-  var script$9 = {
-    name: 'MusselDropdown',
-    mixins: [RenderToBodyMixin, PopupVisibleMixin],
-    provide: function provide() {
-      return {
-        keepIconIndent: this.keepIconIndent
-      };
-    },
-    props: {
-      keepIconIndent: Boolean,
-      height: String,
-      width: String
-    },
-    data: function data() {
-      return {
-        style: {
-          visibility: 'hidden',
-          opacity: 0,
-          top: undefined,
-          left: undefined,
-          right: undefined,
-          bottom: undefined,
-          width: undefined,
-          height: undefined
-        }
-      };
-    },
-    computed: {
-      dropdownStyle: function dropdownStyle() {
-        var s = _objectSpread$1({}, this.style);
-
-        if (this.width) s.width = this.width;
-        if (this.height) s.height = this.height;
-        return s;
-      }
-    },
-    methods: {
-      deactivate: function deactivate() {
-        if (window.__mussel_dropdown === this) window.__mussel_dropdown = null;
-      },
-      show: function show() {
-        window.__mussel_dropdown = this;
-        this.popupVisible = true;
-        this.$nextTick(this.setPosition);
-        this.$emit('show');
-        this.$emit('change', true);
-      },
-      hide: function hide() {
-        this.deactivate();
-        this.style.opacity = 0;
-        this.style.visibility = 'hidden';
-        this.popupVisible = false;
-        this.$emit('hide');
-        this.$emit('change', false);
-      },
-      hideIf: function hideIf(triggerEl) {
-        if (!isParentElement(triggerEl, this.$parent.$el) && (!this.renderToBody || !isParentElement(triggerEl, this.$el))) {
-          this.hide();
-        }
-      },
-      setPosition: function setPosition() {
-        if (!this.popupVisible) return;
-        var _this$$el = this.$el,
-            height = _this$$el.offsetHeight,
-            width = _this$$el.offsetWidth;
-        var pRect = getClientRect(this.$parent.$el);
-        var isOnTop = popOnTop(pRect, height);
-        var isOnRight = !!this.width && popOnRight(pRect, width);
-        Object.assign(this.style, this.renderToBody && !this.width ? {
-          width: "".concat(pRect.width, "px")
-        } : {}, this.renderToBody ? getAbsolutePosition(isOnTop, isOnRight, pRect, height, width) : getRelativePosition(isOnTop, isOnRight, pRect, this.width), {
-          visibility: 'visible',
-          opacity: 1
-        });
-      }
-    }
-  };
-
-  var css$a = ".mu-dropdown {\r\n  position: absolute;\r\n  z-index: 110;\r\n  display: none;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  box-shadow: none;\r\n  overflow: auto;\r\n  transition: opacity .2s ease-in-out;\r\n}\r\n.mu-dropdown[visible] {\r\n  display: block;\r\n}\r\nbody > .mu-dropdown {\r\n  position: fixed;\r\n}\r\n.mu-dropdown-list,\r\n.mu-dropdown-menu {\r\n  padding: 4px 0;\r\n}";
-  styleInject(css$a);
-
-  /* script */
-  var __vue_script__$9 = script$9;
-  /* template */
-
-  var __vue_render__$8 = function __vue_render__() {
-    var _vm = this;
-
-    var _h = _vm.$createElement;
-
-    var _c = _vm._self._c || _h;
-
-    return _c("div", {
-      staticClass: "mu-dropdown",
-      style: _vm.dropdownStyle,
-      attrs: {
-        visible: _vm.popupVisible
-      }
-    }, [_vm._t("default")], 2);
-  };
-
-  var __vue_staticRenderFns__$8 = [];
-  __vue_render__$8._withStripped = true;
-  /* style */
-
-  var __vue_inject_styles__$9 = undefined;
-  /* scoped */
-
-  var __vue_scope_id__$9 = undefined;
-  /* module identifier */
-
-  var __vue_module_identifier__$9 = undefined;
-  /* functional template */
-
-  var __vue_is_functional_template__$9 = false;
-  /* style inject */
-
-  /* style inject SSR */
-
-  var Dropdown = normalizeComponent_1({
-    render: __vue_render__$8,
-    staticRenderFns: __vue_staticRenderFns__$8
-  }, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, undefined, undefined);
 
   //
   var script$a = {
@@ -3538,8 +2678,8 @@
     }
   };
 
-  var css$b = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 10px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  font-weight: 700;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon:first-child {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-dropdown > .mu-list-item {\r\n  padding: 5px 10px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-menu > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}";
-  styleInject(css$b);
+  var css$a = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 10px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  font-weight: 700;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon:first-child {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-dropdown > .mu-list-item {\r\n  padding: 5px 10px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-menu > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}";
+  styleInject(css$a);
 
   /* script */
   var __vue_script__$a = script$a;
@@ -3664,179 +2804,16 @@
     }
   };
 
-  function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-  function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-  function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-  function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+  //
+  //
+  //
+  //
   var script$b = {
-    name: 'MusselComboBox',
-    components: {
-      'mu-dropdown': Dropdown,
-      'mu-option': Option
-    },
-    "extends": InputBox,
-    provide: function provide() {
-      return {
-        comboBox: this,
-        multiple: this.multiple
-      };
-    },
-    props: {
-      value: [String, Number, Array],
-      keepIconIndent: Boolean,
-      popupRenderToBody: Boolean,
-      dropdownHeight: String,
-      dropdownWidth: String,
-      clearable: {
-        type: Boolean,
-        "default": true
-      },
-      editable: {
-        type: Boolean,
-        "default": false
-      },
-      fields: Object,
-      options: Array,
-      multiple: Boolean
-    },
-    data: function data() {
-      return {
-        selectedValue: null,
-        dropdownVisible: false,
-        mountedOptions: []
-      };
-    },
-    computed: {
-      valueField: function valueField() {
-        return Object(this.fields).value || 'value';
-      },
-      popupProps: function popupProps() {
-        return {
-          renderToBody: this.popupRenderToBody,
-          keepIconIndent: this.keepIconIndent,
-          dropdownHeight: this.dropdownHeight,
-          dropdownWidth: this.dropdownWidth,
-          "class": 'mu-dropdown-list'
-        };
-      },
-      inputReadonly: function inputReadonly() {
-        return !this.editable || this.multiple;
-      },
-      inputBtnType: function inputBtnType() {
-        return this.inputReadonly ? 'icon' : 'button';
-      }
-    },
-    watch: {
-      value: {
-        handler: function handler(value) {
-          if (value !== this.selectedValue) {
-            this.selectedValue = this.multiple ? Array.isArray(value) ? _toConsumableArray(value) : [] : value;
-            this.refreshInputValue();
-          }
-        },
-        immediate: true
-      }
-    },
-    methods: {
-      setInputValue: function setInputValue() {// do nothing, juest overwrite InputBox's setInputValue()
-      },
-      setInputValueImmediately: function setInputValueImmediately() {
-        var selectedValue = this.selectedValue,
-            multiple = this.multiple,
-            options = this.mountedOptions;
-
-        if (!this.inputReadonly) {
-          this.inputValue = selectedValue;
-        }
-
-        this.inputValue = !selectedValue && isNaN(selectedValue) ? '' : (multiple ? selectedValue : [selectedValue]).map(function (value) {
-          return Object(options.find(function (item) {
-            return item.value === value;
-          })).label || '';
-        }).join(',');
-      },
-      refreshInputValue: function refreshInputValue() {
-        var immediate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-        if (this.rivTimer) {
-          clearTimeout(this.rivTimer);
-          this.rivTimer = null;
-        }
-
-        if (!this.inputReadonly || immediate) {
-          this.setInputValueImmediately();
-        } else {
-          this.rivTimer = setTimeout(this.setInputValueImmediately, 50);
-        }
-      },
-      onInput: function onInput(value) {
-        this.inputValue = value;
-        this.selectedValue = value;
-        this.$emit('input', value);
-        this.$emit('change', value);
-      },
-      onInputClick: function onInputClick() {
-        if (!this.editable || this.multiple) {
-          this.dropdownVisible = !this.dropdownVisible;
-        }
-      },
-      onButtonClick: function onButtonClick() {
-        this.dropdownVisible = !this.dropdownVisible;
-      },
-      mountOption: function mountOption(option) {
-        var options = this.mountedOptions;
-
-        if (!options.find(function (item) {
-          return option.value === item.value;
-        })) {
-          options.push(option);
-          if (!this.inputReadonly) this.refreshInputValue();
-        }
-      },
-      unmountOption: function unmountOption(option) {
-        var options = this.mountedOptions;
-        var idx = options.findIndex(function (item) {
-          return option.value === item.value;
-        });
-
-        if (idx !== -1) {
-          options.splice(idx, 1); // if (!this.inputReadonly) this.refreshInputValue()
-        }
-      },
-      toggleSelection: function toggleSelection(value, option) {
-        var hidePopup = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-        if (this.multiple) {
-          var values = this.selectedValue;
-          var idx = values.indexOf(value);
-
-          if (idx !== -1) {
-            values.splice(idx, 1);
-          } else {
-            values.push(value);
-          }
-
-          this.$emit('change', values);
-        } else {
-          this.selectedValue = value;
-          this.$emit('change', value);
-        }
-
-        this.refreshInputValue(true);
-        if (hidePopup) this.dropdownVisible = false;
-        this.$emit('optionclick', value, option);
-      },
-      clear: function clear() {
-        this.selectedValue = this.multiple ? [] : null;
-        this.inputValue = '';
-        this.$emit('change', this.selectedValue);
-        this.$emit('clear', '');
-      }
-    }
+    name: 'MusselListDivider'
   };
+
+  var css$b = ".mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
+  styleInject(css$b);
 
   /* script */
   var __vue_script__$b = script$b;
@@ -3850,61 +2827,8 @@
     var _c = _vm._self._c || _h;
 
     return _c("div", {
-      staticClass: "mu-input-box",
-      attrs: {
-        fixed: _vm.inputReadonly,
-        buttons: _vm.buttons,
-        disabled: _vm.disabled
-      }
-    }, [_c("mu-input", {
-      attrs: {
-        type: _vm.type,
-        title: _vm.inputValue,
-        value: _vm.inputValue,
-        disabled: _vm.disabled,
-        readonly: _vm.readonly || _vm.inputReadonly,
-        focus: _vm.dropdownVisible
-      },
-      on: {
-        input: _vm.onInput,
-        click: _vm.onInputClick
-      }
-    }), _vm._v(" "), _vm.clearBtnVisible ? _c("mu-input-button", {
-      attrs: {
-        "button-type": "button",
-        icon: "close"
-      },
-      on: {
-        click: _vm.clear
-      }
-    }) : _vm._e(), _vm._v(" "), _c("mu-input-button", {
-      staticClass: "mu-expand-trigger",
-      attrs: {
-        icon: "key-down",
-        "trigger-on": _vm.dropdownVisible,
-        "button-type": _vm.inputBtnType,
-        focus: _vm.dropdownVisible
-      },
-      on: {
-        click: _vm.onButtonClick
-      }
-    }), _vm._v(" "), !_vm.disabled ? _c("mu-dropdown", _vm._b({
-      model: {
-        value: _vm.dropdownVisible,
-        callback: function callback($$v) {
-          _vm.dropdownVisible = $$v;
-        },
-        expression: "dropdownVisible"
-      }
-    }, "mu-dropdown", _vm.popupProps, false), [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option) {
-      return _c("mu-option", {
-        key: Object(option)[_vm.valueField] || option,
-        attrs: {
-          option: option,
-          fields: _vm.fields
-        }
-      });
-    })], 2) : _vm._e()], 1);
+      staticClass: "mu-list-divider"
+    });
   };
 
   var __vue_staticRenderFns__$a = [];
@@ -3925,60 +2849,10 @@
 
   /* style inject SSR */
 
-  var ComboBox = normalizeComponent_1({
+  var ListDivider = normalizeComponent_1({
     render: __vue_render__$a,
     staticRenderFns: __vue_staticRenderFns__$a
   }, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, undefined, undefined);
-
-  //
-  //
-  //
-  //
-  var script$c = {
-    name: 'MusselListDivider'
-  };
-
-  var css$c = ".mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
-  styleInject(css$c);
-
-  /* script */
-  var __vue_script__$c = script$c;
-  /* template */
-
-  var __vue_render__$b = function __vue_render__() {
-    var _vm = this;
-
-    var _h = _vm.$createElement;
-
-    var _c = _vm._self._c || _h;
-
-    return _c("div", {
-      staticClass: "mu-list-divider"
-    });
-  };
-
-  var __vue_staticRenderFns__$b = [];
-  __vue_render__$b._withStripped = true;
-  /* style */
-
-  var __vue_inject_styles__$c = undefined;
-  /* scoped */
-
-  var __vue_scope_id__$c = undefined;
-  /* module identifier */
-
-  var __vue_module_identifier__$c = undefined;
-  /* functional template */
-
-  var __vue_is_functional_template__$c = false;
-  /* style inject */
-
-  /* style inject SSR */
-
-  var ListDivider = normalizeComponent_1({
-    render: __vue_render__$b,
-    staticRenderFns: __vue_staticRenderFns__$b
-  }, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
 
   function callbackIf(name, handler) {
     var popup = window['__mussel_' + name];
@@ -4018,7 +2892,66 @@
   window.addEventListener('resize', setPositionIf);
   window.addEventListener('scroll', setPositionIf);
 
-  var script$d = {
+  var RenderToBodyMixin = {
+    props: {
+      renderToBody: {
+        type: Boolean,
+        "default": true
+      }
+    },
+    mounted: function mounted() {
+      if (this.renderToBody) {
+        document.body.appendChild(this.$el);
+      }
+    },
+    beforeDestroy: function beforeDestroy() {
+      this.deactivate();
+      var pEl = this.$el.parentNode;
+
+      if (this.$el && pEl && pEl !== Object(this.$parent).$el) {
+        pEl.removeChild(this.$el);
+      }
+    }
+  };
+
+  var PopupVisibleMixin = {
+    model: {
+      prop: 'visible',
+      event: 'change'
+    },
+    props: {
+      visible: Boolean
+    },
+    data: function data() {
+      return {
+        popupVisible: false
+      };
+    },
+    watch: {
+      visible: {
+        handler: function handler(value) {
+          if (value === !this.popupVisible) {
+            this.$nextTick(value ? this.show : this.hide);
+          }
+        },
+        immediate: true
+      }
+    },
+    methods: {
+      show: function show() {
+        this.popupVisible = true;
+        this.$emit('show');
+        this.$emit('change', true);
+      },
+      hide: function hide() {
+        this.popupVisible = false;
+        this.$emit('hide');
+        this.$emit('change', false);
+      }
+    }
+  };
+
+  var script$c = {
     name: 'MusselBaseModal',
     mixins: [RenderToBodyMixin, PopupVisibleMixin],
     props: {
@@ -4056,30 +2989,469 @@
     }
   };
 
-  var css$d = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
-  styleInject(css$d);
+  var css$c = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
+  styleInject(css$c);
 
   /* script */
-  var __vue_script__$d = script$d;
+  var __vue_script__$c = script$c;
   /* template */
 
   /* style */
 
-  var __vue_inject_styles__$d = undefined;
+  var __vue_inject_styles__$c = undefined;
   /* scoped */
 
-  var __vue_scope_id__$d = undefined;
+  var __vue_scope_id__$c = undefined;
   /* module identifier */
 
-  var __vue_module_identifier__$d = undefined;
+  var __vue_module_identifier__$c = undefined;
   /* functional template */
 
-  var __vue_is_functional_template__$d = undefined;
+  var __vue_is_functional_template__$c = undefined;
   /* style inject */
 
   /* style inject SSR */
 
-  var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
+  var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
+
+  // `Array.isArray` method
+  // https://tc39.github.io/ecma262/#sec-array.isarray
+  _export({ target: 'Array', stat: true }, {
+    isArray: isArray
+  });
+
+  var $map = arrayIteration.map;
+
+
+  // `Array.prototype.map` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.map
+  // with adding support of @@species
+  _export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('map') }, {
+    map: function map(callbackfn /* , thisArg */) {
+      return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    }
+  });
+
+  var userAgent = getBuiltIn('navigator', 'userAgent') || '';
+
+  var slice = [].slice;
+  var MSIE = /MSIE .\./.test(userAgent); // <- dirty ie9- check
+
+  var wrap$1 = function (scheduler) {
+    return function (handler, timeout /* , ...arguments */) {
+      var boundArgs = arguments.length > 2;
+      var args = boundArgs ? slice.call(arguments, 2) : undefined;
+      return scheduler(boundArgs ? function () {
+        // eslint-disable-next-line no-new-func
+        (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
+      } : handler, timeout);
+    };
+  };
+
+  // ie9- setTimeout & setInterval additional parameters fix
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
+  _export({ global: true, bind: true, forced: MSIE }, {
+    // `setTimeout` method
+    // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
+    setTimeout: wrap$1(global_1.setTimeout),
+    // `setInterval` method
+    // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
+    setInterval: wrap$1(global_1.setInterval)
+  });
+
+  var defineProperty$3 = objectDefineProperty.f;
+
+
+  var NativeSymbol = global_1.Symbol;
+
+  if (descriptors && typeof NativeSymbol == 'function' && (!('description' in NativeSymbol.prototype) ||
+    // Safari 12 bug
+    NativeSymbol().description !== undefined
+  )) {
+    var EmptyStringDescriptionStore = {};
+    // wrap Symbol constructor for correct work with undefined description
+    var SymbolWrapper = function Symbol() {
+      var description = arguments.length < 1 || arguments[0] === undefined ? undefined : String(arguments[0]);
+      var result = this instanceof SymbolWrapper
+        ? new NativeSymbol(description)
+        // in Edge 13, String(Symbol(undefined)) === 'Symbol(undefined)'
+        : description === undefined ? NativeSymbol() : NativeSymbol(description);
+      if (description === '') EmptyStringDescriptionStore[result] = true;
+      return result;
+    };
+    copyConstructorProperties(SymbolWrapper, NativeSymbol);
+    var symbolPrototype = SymbolWrapper.prototype = NativeSymbol.prototype;
+    symbolPrototype.constructor = SymbolWrapper;
+
+    var symbolToString = symbolPrototype.toString;
+    var native = String(NativeSymbol('test')) == 'Symbol(test)';
+    var regexp = /^Symbol\((.*)\)[^)]+$/;
+    defineProperty$3(symbolPrototype, 'description', {
+      configurable: true,
+      get: function description() {
+        var symbol = isObject(this) ? this.valueOf() : this;
+        var string = symbolToString.call(symbol);
+        if (has(EmptyStringDescriptionStore, symbol)) return '';
+        var desc = native ? string.slice(7, -1) : string.replace(regexp, '$1');
+        return desc === '' ? undefined : desc;
+      }
+    });
+
+    _export({ global: true, forced: true }, {
+      Symbol: SymbolWrapper
+    });
+  }
+
+  // `Symbol.iterator` well-known symbol
+  // https://tc39.github.io/ecma262/#sec-symbol.iterator
+  defineWellKnownSymbol('iterator');
+
+  var correctPrototypeGetter = !fails(function () {
+    function F() { /* empty */ }
+    F.prototype.constructor = null;
+    return Object.getPrototypeOf(new F()) !== F.prototype;
+  });
+
+  var IE_PROTO$1 = sharedKey('IE_PROTO');
+  var ObjectPrototype$1 = Object.prototype;
+
+  // `Object.getPrototypeOf` method
+  // https://tc39.github.io/ecma262/#sec-object.getprototypeof
+  var objectGetPrototypeOf = correctPrototypeGetter ? Object.getPrototypeOf : function (O) {
+    O = toObject(O);
+    if (has(O, IE_PROTO$1)) return O[IE_PROTO$1];
+    if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+      return O.constructor.prototype;
+    } return O instanceof Object ? ObjectPrototype$1 : null;
+  };
+
+  var ITERATOR = wellKnownSymbol('iterator');
+  var BUGGY_SAFARI_ITERATORS = false;
+
+  var returnThis = function () { return this; };
+
+  // `%IteratorPrototype%` object
+  // https://tc39.github.io/ecma262/#sec-%iteratorprototype%-object
+  var IteratorPrototype, PrototypeOfArrayIteratorPrototype, arrayIterator;
+
+  if ([].keys) {
+    arrayIterator = [].keys();
+    // Safari 8 has buggy iterators w/o `next`
+    if (!('next' in arrayIterator)) BUGGY_SAFARI_ITERATORS = true;
+    else {
+      PrototypeOfArrayIteratorPrototype = objectGetPrototypeOf(objectGetPrototypeOf(arrayIterator));
+      if (PrototypeOfArrayIteratorPrototype !== Object.prototype) IteratorPrototype = PrototypeOfArrayIteratorPrototype;
+    }
+  }
+
+  if (IteratorPrototype == undefined) IteratorPrototype = {};
+
+  // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+  if ( !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
+
+  var iteratorsCore = {
+    IteratorPrototype: IteratorPrototype,
+    BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
+  };
+
+  var IteratorPrototype$1 = iteratorsCore.IteratorPrototype;
+
+  var createIteratorConstructor = function (IteratorConstructor, NAME, next) {
+    var TO_STRING_TAG = NAME + ' Iterator';
+    IteratorConstructor.prototype = objectCreate(IteratorPrototype$1, { next: createPropertyDescriptor(1, next) });
+    setToStringTag(IteratorConstructor, TO_STRING_TAG, false);
+    return IteratorConstructor;
+  };
+
+  var IteratorPrototype$2 = iteratorsCore.IteratorPrototype;
+  var BUGGY_SAFARI_ITERATORS$1 = iteratorsCore.BUGGY_SAFARI_ITERATORS;
+  var ITERATOR$1 = wellKnownSymbol('iterator');
+  var KEYS = 'keys';
+  var VALUES = 'values';
+  var ENTRIES = 'entries';
+
+  var returnThis$1 = function () { return this; };
+
+  var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, IS_SET, FORCED) {
+    createIteratorConstructor(IteratorConstructor, NAME, next);
+
+    var getIterationMethod = function (KIND) {
+      if (KIND === DEFAULT && defaultIterator) return defaultIterator;
+      if (!BUGGY_SAFARI_ITERATORS$1 && KIND in IterablePrototype) return IterablePrototype[KIND];
+      switch (KIND) {
+        case KEYS: return function keys() { return new IteratorConstructor(this, KIND); };
+        case VALUES: return function values() { return new IteratorConstructor(this, KIND); };
+        case ENTRIES: return function entries() { return new IteratorConstructor(this, KIND); };
+      } return function () { return new IteratorConstructor(this); };
+    };
+
+    var TO_STRING_TAG = NAME + ' Iterator';
+    var INCORRECT_VALUES_NAME = false;
+    var IterablePrototype = Iterable.prototype;
+    var nativeIterator = IterablePrototype[ITERATOR$1]
+      || IterablePrototype['@@iterator']
+      || DEFAULT && IterablePrototype[DEFAULT];
+    var defaultIterator = !BUGGY_SAFARI_ITERATORS$1 && nativeIterator || getIterationMethod(DEFAULT);
+    var anyNativeIterator = NAME == 'Array' ? IterablePrototype.entries || nativeIterator : nativeIterator;
+    var CurrentIteratorPrototype, methods, KEY;
+
+    // fix native
+    if (anyNativeIterator) {
+      CurrentIteratorPrototype = objectGetPrototypeOf(anyNativeIterator.call(new Iterable()));
+      if (IteratorPrototype$2 !== Object.prototype && CurrentIteratorPrototype.next) {
+        if ( objectGetPrototypeOf(CurrentIteratorPrototype) !== IteratorPrototype$2) {
+          if (objectSetPrototypeOf) {
+            objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
+          } else if (typeof CurrentIteratorPrototype[ITERATOR$1] != 'function') {
+            hide(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
+          }
+        }
+        // Set @@toStringTag to native iterators
+        setToStringTag(CurrentIteratorPrototype, TO_STRING_TAG, true);
+      }
+    }
+
+    // fix Array#{values, @@iterator}.name in V8 / FF
+    if (DEFAULT == VALUES && nativeIterator && nativeIterator.name !== VALUES) {
+      INCORRECT_VALUES_NAME = true;
+      defaultIterator = function values() { return nativeIterator.call(this); };
+    }
+
+    // define iterator
+    if ( IterablePrototype[ITERATOR$1] !== defaultIterator) {
+      hide(IterablePrototype, ITERATOR$1, defaultIterator);
+    }
+
+    // export additional methods
+    if (DEFAULT) {
+      methods = {
+        values: getIterationMethod(VALUES),
+        keys: IS_SET ? defaultIterator : getIterationMethod(KEYS),
+        entries: getIterationMethod(ENTRIES)
+      };
+      if (FORCED) for (KEY in methods) {
+        if (BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME || !(KEY in IterablePrototype)) {
+          redefine(IterablePrototype, KEY, methods[KEY]);
+        }
+      } else _export({ target: NAME, proto: true, forced: BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME }, methods);
+    }
+
+    return methods;
+  };
+
+  var ARRAY_ITERATOR = 'Array Iterator';
+  var setInternalState$1 = internalState.set;
+  var getInternalState$1 = internalState.getterFor(ARRAY_ITERATOR);
+
+  // `Array.prototype.entries` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.entries
+  // `Array.prototype.keys` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.keys
+  // `Array.prototype.values` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.values
+  // `Array.prototype[@@iterator]` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype-@@iterator
+  // `CreateArrayIterator` internal method
+  // https://tc39.github.io/ecma262/#sec-createarrayiterator
+  var es_array_iterator = defineIterator(Array, 'Array', function (iterated, kind) {
+    setInternalState$1(this, {
+      type: ARRAY_ITERATOR,
+      target: toIndexedObject(iterated), // target
+      index: 0,                          // next index
+      kind: kind                         // kind
+    });
+  // `%ArrayIteratorPrototype%.next` method
+  // https://tc39.github.io/ecma262/#sec-%arrayiteratorprototype%.next
+  }, function () {
+    var state = getInternalState$1(this);
+    var target = state.target;
+    var kind = state.kind;
+    var index = state.index++;
+    if (!target || index >= target.length) {
+      state.target = undefined;
+      return { value: undefined, done: true };
+    }
+    if (kind == 'keys') return { value: index, done: false };
+    if (kind == 'values') return { value: target[index], done: false };
+    return { value: [index, target[index]], done: false };
+  }, 'values');
+
+  // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+  addToUnscopables('keys');
+  addToUnscopables('values');
+  addToUnscopables('entries');
+
+  var DatePrototype = Date.prototype;
+  var INVALID_DATE = 'Invalid Date';
+  var TO_STRING = 'toString';
+  var nativeDateToString = DatePrototype[TO_STRING];
+  var getTime = DatePrototype.getTime;
+
+  // `Date.prototype.toString` method
+  // https://tc39.github.io/ecma262/#sec-date.prototype.tostring
+  if (new Date(NaN) + '' != INVALID_DATE) {
+    redefine(DatePrototype, TO_STRING, function toString() {
+      var value = getTime.call(this);
+      // eslint-disable-next-line no-self-compare
+      return value === value ? nativeDateToString.call(this) : INVALID_DATE;
+    });
+  }
+
+  var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
+  // ES3 wrong here
+  var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
+
+  // fallback for IE11 Script Access Denied error
+  var tryGet = function (it, key) {
+    try {
+      return it[key];
+    } catch (error) { /* empty */ }
+  };
+
+  // getting tag from ES6+ `Object.prototype.toString`
+  var classof = function (it) {
+    var O, tag, result;
+    return it === undefined ? 'Undefined' : it === null ? 'Null'
+      // @@toStringTag case
+      : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$1)) == 'string' ? tag
+      // builtinTag case
+      : CORRECT_ARGUMENTS ? classofRaw(O)
+      // ES3 arguments fallback
+      : (result = classofRaw(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : result;
+  };
+
+  var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
+  var test$1 = {};
+
+  test$1[TO_STRING_TAG$2] = 'z';
+
+  // `Object.prototype.toString` method implementation
+  // https://tc39.github.io/ecma262/#sec-object.prototype.tostring
+  var objectToString = String(test$1) !== '[object z]' ? function toString() {
+    return '[object ' + classof(this) + ']';
+  } : test$1.toString;
+
+  var ObjectPrototype$2 = Object.prototype;
+
+  // `Object.prototype.toString` method
+  // https://tc39.github.io/ecma262/#sec-object.prototype.tostring
+  if (objectToString !== ObjectPrototype$2.toString) {
+    redefine(ObjectPrototype$2, 'toString', objectToString, { unsafe: true });
+  }
+
+  // `RegExp.prototype.flags` getter implementation
+  // https://tc39.github.io/ecma262/#sec-get-regexp.prototype.flags
+  var regexpFlags = function () {
+    var that = anObject(this);
+    var result = '';
+    if (that.global) result += 'g';
+    if (that.ignoreCase) result += 'i';
+    if (that.multiline) result += 'm';
+    if (that.dotAll) result += 's';
+    if (that.unicode) result += 'u';
+    if (that.sticky) result += 'y';
+    return result;
+  };
+
+  var TO_STRING$1 = 'toString';
+  var RegExpPrototype = RegExp.prototype;
+  var nativeToString = RegExpPrototype[TO_STRING$1];
+
+  var NOT_GENERIC = fails(function () { return nativeToString.call({ source: 'a', flags: 'b' }) != '/a/b'; });
+  // FF44- RegExp#toString has a wrong name
+  var INCORRECT_NAME = nativeToString.name != TO_STRING$1;
+
+  // `RegExp.prototype.toString` method
+  // https://tc39.github.io/ecma262/#sec-regexp.prototype.tostring
+  if (NOT_GENERIC || INCORRECT_NAME) {
+    redefine(RegExp.prototype, TO_STRING$1, function toString() {
+      var R = anObject(this);
+      var p = String(R.source);
+      var rf = R.flags;
+      var f = String(rf === undefined && R instanceof RegExp && !('flags' in RegExpPrototype) ? regexpFlags.call(R) : rf);
+      return '/' + p + '/' + f;
+    }, { unsafe: true });
+  }
+
+  // `String.prototype.{ codePointAt, at }` methods implementation
+  var createMethod$3 = function (CONVERT_TO_STRING) {
+    return function ($this, pos) {
+      var S = String(requireObjectCoercible($this));
+      var position = toInteger(pos);
+      var size = S.length;
+      var first, second;
+      if (position < 0 || position >= size) return CONVERT_TO_STRING ? '' : undefined;
+      first = S.charCodeAt(position);
+      return first < 0xD800 || first > 0xDBFF || position + 1 === size
+        || (second = S.charCodeAt(position + 1)) < 0xDC00 || second > 0xDFFF
+          ? CONVERT_TO_STRING ? S.charAt(position) : first
+          : CONVERT_TO_STRING ? S.slice(position, position + 2) : (first - 0xD800 << 10) + (second - 0xDC00) + 0x10000;
+    };
+  };
+
+  var stringMultibyte = {
+    // `String.prototype.codePointAt` method
+    // https://tc39.github.io/ecma262/#sec-string.prototype.codepointat
+    codeAt: createMethod$3(false),
+    // `String.prototype.at` method
+    // https://github.com/mathiasbynens/String.prototype.at
+    charAt: createMethod$3(true)
+  };
+
+  var charAt = stringMultibyte.charAt;
+
+
+
+  var STRING_ITERATOR = 'String Iterator';
+  var setInternalState$2 = internalState.set;
+  var getInternalState$2 = internalState.getterFor(STRING_ITERATOR);
+
+  // `String.prototype[@@iterator]` method
+  // https://tc39.github.io/ecma262/#sec-string.prototype-@@iterator
+  defineIterator(String, 'String', function (iterated) {
+    setInternalState$2(this, {
+      type: STRING_ITERATOR,
+      string: String(iterated),
+      index: 0
+    });
+  // `%StringIteratorPrototype%.next` method
+  // https://tc39.github.io/ecma262/#sec-%stringiteratorprototype%.next
+  }, function next() {
+    var state = getInternalState$2(this);
+    var string = state.string;
+    var index = state.index;
+    var point;
+    if (index >= string.length) return { value: undefined, done: true };
+    point = charAt(string, index);
+    state.index += point.length;
+    return { value: point, done: false };
+  });
+
+  var ITERATOR$2 = wellKnownSymbol('iterator');
+  var TO_STRING_TAG$3 = wellKnownSymbol('toStringTag');
+  var ArrayValues = es_array_iterator.values;
+
+  for (var COLLECTION_NAME$1 in domIterables) {
+    var Collection$1 = global_1[COLLECTION_NAME$1];
+    var CollectionPrototype$1 = Collection$1 && Collection$1.prototype;
+    if (CollectionPrototype$1) {
+      // some Chrome versions have non-configurable methods on DOMTokenList
+      if (CollectionPrototype$1[ITERATOR$2] !== ArrayValues) try {
+        hide(CollectionPrototype$1, ITERATOR$2, ArrayValues);
+      } catch (error) {
+        CollectionPrototype$1[ITERATOR$2] = ArrayValues;
+      }
+      if (!CollectionPrototype$1[TO_STRING_TAG$3]) hide(CollectionPrototype$1, TO_STRING_TAG$3, COLLECTION_NAME$1);
+      if (domIterables[COLLECTION_NAME$1]) for (var METHOD_NAME in es_array_iterator) {
+        // some Chrome versions have non-configurable methods on DOMTokenList
+        if (CollectionPrototype$1[METHOD_NAME] !== es_array_iterator[METHOD_NAME]) try {
+          hide(CollectionPrototype$1, METHOD_NAME, es_array_iterator[METHOD_NAME]);
+        } catch (error) {
+          CollectionPrototype$1[METHOD_NAME] = es_array_iterator[METHOD_NAME];
+        }
+      }
+    }
+  }
 
   function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -4180,7 +3552,7 @@
   var lodash_isstring = isString;
 
   //
-  var script$e = {
+  var script$d = {
     name: 'MusselDialogWrapper',
     components: {
       'mu-v-box': VBox,
@@ -4208,14 +3580,14 @@
     }
   };
 
-  var css$e = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(200px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
-  styleInject(css$e);
+  var css$d = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(200px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
+  styleInject(css$d);
 
   /* script */
-  var __vue_script__$e = script$e;
+  var __vue_script__$d = script$d;
   /* template */
 
-  var __vue_render__$c = function __vue_render__() {
+  var __vue_render__$b = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -4277,35 +3649,35 @@
     })], 2) : _vm._e()])], 2) : _vm._e()], 1);
   };
 
-  var __vue_staticRenderFns__$c = [];
-  __vue_render__$c._withStripped = true;
+  var __vue_staticRenderFns__$b = [];
+  __vue_render__$b._withStripped = true;
   /* style */
 
-  var __vue_inject_styles__$e = undefined;
+  var __vue_inject_styles__$d = undefined;
   /* scoped */
 
-  var __vue_scope_id__$e = undefined;
+  var __vue_scope_id__$d = undefined;
   /* module identifier */
 
-  var __vue_module_identifier__$e = undefined;
+  var __vue_module_identifier__$d = undefined;
   /* functional template */
 
-  var __vue_is_functional_template__$e = false;
+  var __vue_is_functional_template__$d = false;
   /* style inject */
 
   /* style inject SSR */
 
   var DialogWrapper = normalizeComponent_1({
-    render: __vue_render__$c,
-    staticRenderFns: __vue_staticRenderFns__$c
-  }, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
+    render: __vue_render__$b,
+    staticRenderFns: __vue_staticRenderFns__$b
+  }, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
 
-  function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+  function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-  function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+  function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$1(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-  function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-  var script$f = {
+  function _defineProperty$1(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+  var script$e = {
     name: 'MusselBaseDialog',
     components: {
       'mu-dialog-wrapper': DialogWrapper
@@ -4354,7 +3726,7 @@
           var btn = lodash_isstring(button) ? {
             caption: button,
             _rawData: button
-          } : _objectSpread$2({}, button);
+          } : _objectSpread$1({}, button);
 
           if (_this.params.primaryButton === btn.caption) {
             btn.buttonType = _this.params.danger ? 'danger' : 'primary';
@@ -4470,38 +3842,38 @@
   };
 
   /* script */
-  var __vue_script__$f = script$f;
+  var __vue_script__$e = script$e;
   /* template */
 
   /* style */
 
-  var __vue_inject_styles__$f = undefined;
+  var __vue_inject_styles__$e = undefined;
   /* scoped */
 
-  var __vue_scope_id__$f = undefined;
+  var __vue_scope_id__$e = undefined;
   /* module identifier */
 
-  var __vue_module_identifier__$f = undefined;
+  var __vue_module_identifier__$e = undefined;
   /* functional template */
 
-  var __vue_is_functional_template__$f = undefined;
+  var __vue_is_functional_template__$e = undefined;
   /* style inject */
 
   /* style inject SSR */
 
-  var BaseDialog = normalizeComponent_1({}, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, undefined, undefined);
+  var BaseDialog = normalizeComponent_1({}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
 
   //
-  var script$g = {
+  var script$f = {
     name: 'MusselModal',
     "extends": BaseModal
   };
 
   /* script */
-  var __vue_script__$g = script$g;
+  var __vue_script__$f = script$f;
   /* template */
 
-  var __vue_render__$d = function __vue_render__() {
+  var __vue_render__$c = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -4517,6 +3889,49 @@
         click: _vm.onMaskClick
       }
     }, [_vm._t("default")], 2);
+  };
+
+  var __vue_staticRenderFns__$c = [];
+  __vue_render__$c._withStripped = true;
+  /* style */
+
+  var __vue_inject_styles__$f = undefined;
+  /* scoped */
+
+  var __vue_scope_id__$f = undefined;
+  /* module identifier */
+
+  var __vue_module_identifier__$f = undefined;
+  /* functional template */
+
+  var __vue_is_functional_template__$f = false;
+  /* style inject */
+
+  /* style inject SSR */
+
+  var Modal = normalizeComponent_1({
+    render: __vue_render__$c,
+    staticRenderFns: __vue_staticRenderFns__$c
+  }, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, undefined, undefined);
+
+  //
+  var script$g = {
+    name: 'MusselDialog',
+    "extends": BaseDialog
+  };
+
+  /* script */
+  var __vue_script__$g = script$g;
+  /* template */
+
+  var __vue_render__$d = function __vue_render__() {
+    var _vm = this;
+
+    var _h = _vm.$createElement;
+
+    var _c = _vm._self._c || _h;
+
+    return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
   };
 
   var __vue_staticRenderFns__$d = [];
@@ -4537,56 +3952,13 @@
 
   /* style inject SSR */
 
-  var Modal = normalizeComponent_1({
+  var Dialog = normalizeComponent_1({
     render: __vue_render__$d,
     staticRenderFns: __vue_staticRenderFns__$d
   }, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, undefined, undefined);
 
-  //
-  var script$h = {
-    name: 'MusselDialog',
-    "extends": BaseDialog
-  };
-
-  /* script */
-  var __vue_script__$h = script$h;
-  /* template */
-
-  var __vue_render__$e = function __vue_render__() {
-    var _vm = this;
-
-    var _h = _vm.$createElement;
-
-    var _c = _vm._self._c || _h;
-
-    return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
-  };
-
-  var __vue_staticRenderFns__$e = [];
-  __vue_render__$e._withStripped = true;
-  /* style */
-
-  var __vue_inject_styles__$h = undefined;
-  /* scoped */
-
-  var __vue_scope_id__$h = undefined;
-  /* module identifier */
-
-  var __vue_module_identifier__$h = undefined;
-  /* functional template */
-
-  var __vue_is_functional_template__$h = false;
-  /* style inject */
-
-  /* style inject SSR */
-
-  var Dialog = normalizeComponent_1({
-    render: __vue_render__$e,
-    staticRenderFns: __vue_staticRenderFns__$e
-  }, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, undefined, undefined);
-
-  var css$f = ".mu-expand-trigger {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-expand-trigger[trigger-on] {\r\n  transform: rotate(-180deg);\r\n}";
-  styleInject(css$f);
+  var css$e = ".mu-expand-trigger {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-expand-trigger[trigger-on] {\r\n  transform: rotate(-180deg);\r\n}";
+  styleInject(css$e);
 
   function install(Vue) {
     Vue.component('mu-flex-box', FlexBox);

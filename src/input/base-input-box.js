@@ -21,7 +21,8 @@ export default {
       iconClass,
       iconAlign,
       iconClickable,
-      clearable
+      clearable,
+      placeholder
     } = this
     return {
       params: {
@@ -33,7 +34,8 @@ export default {
         iconClass,
         iconAlign,
         iconClickable,
-        clearable
+        clearable,
+        placeholder
       }
     }
   },
@@ -42,6 +44,7 @@ export default {
     event: 'change'
   },
   props: {
+    placeholder: String,
     readonly: Boolean,
     disabled: Boolean,
     type: {
@@ -70,6 +73,33 @@ export default {
         this.setInputValue(value)
       },
       immediate: true
+    },
+    readonly (value) {
+      this.params.readonly = value
+    },
+    disabled (value) {
+      this.params.disabled = value
+    },
+    type (value) {
+      this.params.type = value
+    },
+    icon (value) {
+      this.params.icon = value
+    },
+    iconClass (value) {
+      this.params.iconClass = value
+    },
+    iconAlign (value) {
+      this.params.iconAlign = value
+    },
+    iconClickable (value) {
+      this.params.iconClickable = value
+    },
+    clearable (value) {
+      this.params.clearable = value
+    },
+    placeholder (value) {
+      this.params.placeholder = value
     }
   },
   methods: {
@@ -90,7 +120,7 @@ export default {
     },
     onButtonClick () {
       this.$el.querySelector('.mu-input').focus()
-      this.$emit('buttonclick')
+      if (this.iconClickable) this.$emit('buttonclick')
     },
     onKeyPress (event) {
       this.$emit('keypress', event)
