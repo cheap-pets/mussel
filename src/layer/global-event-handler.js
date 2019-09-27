@@ -9,10 +9,15 @@ function hideIf (name, force) {
     ? callbackIf('dropdown', dropdown => dropdown.hide())
     : (
       name === 'modal'
-        ? callbackIf('modal', modal => {
-          const action = modal.$options.maskAction || modal.maskAction
-          if (action === 'close') modal.hide(force)
-        })
+        ? callbackIf(
+          'modal',
+          modal =>
+            (
+              modal.$options.maskAction ||
+              modal.maskAction
+            ) === 'close' &&
+            modal.hide(force)
+        )
         : undefined
     )
 }
@@ -21,20 +26,25 @@ function setPositionIf () {
   callbackIf('dropdown', dropdown => dropdown.setPosition())
 }
 
-window.addEventListener('blur', event => hideIf('dropdown'))
+window.addEventListener('blur', () => hideIf('dropdown'))
 
 window.addEventListener(
   'keyup',
-  event => event.keyCode === 27 &&
-    (hideIf('dropdown') || hideIf('modal'))
+  event => event.keyCode === 27 && (
+    hideIf('dropdown') ||
+    hideIf('modal')
+  )
 )
 
-window.addEventListener('mousedown', event => {
-  const { __mussel_dropdown: dropdown } = window
-  if (dropdown) dropdown.hideIf(event.target)
-})
+window.addEventListener(
+  'mousedown',
+  event => callbackIf(
+    'dropdown',
+    dropdown => dropdown.hideIf(event.target)
+  )
+)
 
-window.addEventListener('popstate', function () {
+window.addEventListener('popstate', () => {
   hideIf('dropdown')
   hideIf('modal', true)
 })

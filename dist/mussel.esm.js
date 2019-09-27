@@ -3917,8 +3917,7 @@ function hideIf(name, force) {
   return name === 'dropdown' ? callbackIf('dropdown', function (dropdown) {
     return dropdown.hide();
   }) : name === 'modal' ? callbackIf('modal', function (modal) {
-    var action = modal.$options.maskAction || modal.maskAction;
-    if (action === 'close') modal.hide(force);
+    return (modal.$options.maskAction || modal.maskAction) === 'close' && modal.hide(force);
   }) : undefined;
 }
 
@@ -3928,16 +3927,16 @@ function setPositionIf() {
   });
 }
 
-window.addEventListener('blur', function (event) {
+window.addEventListener('blur', function () {
   return hideIf('dropdown');
 });
 window.addEventListener('keyup', function (event) {
   return event.keyCode === 27 && (hideIf('dropdown') || hideIf('modal'));
 });
 window.addEventListener('mousedown', function (event) {
-  var _window = window,
-      dropdown = _window.__mussel_dropdown;
-  if (dropdown) dropdown.hideIf(event.target);
+  return callbackIf('dropdown', function (dropdown) {
+    return dropdown.hideIf(event.target);
+  });
 });
 window.addEventListener('popstate', function () {
   hideIf('dropdown');
