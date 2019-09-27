@@ -2545,10 +2545,43 @@ var InputBox = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$7
 }, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
 
-//
 var script$9 = {
   name: 'MusselComboBox',
-  "extends": BaseInputBox
+  "extends": BaseInputBox,
+  props: {
+    value: [String, Number, Array],
+    popupRenderToBody: Boolean,
+    keepIconIndent: Boolean,
+    dropdownHeight: String,
+    dropdownWidth: String,
+    editable: {
+      type: Boolean,
+      "default": false
+    },
+    fields: Object,
+    options: Array,
+    multiple: Boolean
+  },
+  computed: {
+    valueField: function valueField() {
+      return Object(this.fields).value || 'value';
+    },
+    popupProps: function popupProps() {
+      return {
+        renderToBody: this.popupRenderToBody,
+        keepIconIndent: this.keepIconIndent,
+        dropdownHeight: this.dropdownHeight,
+        dropdownWidth: this.dropdownWidth,
+        "class": 'mu-dropdown-list'
+      };
+    },
+    inputReadonly: function inputReadonly() {
+      return !this.editable || this.multiple;
+    },
+    inputBtnType: function inputBtnType() {
+      return this.inputReadonly ? 'icon' : 'button';
+    }
+  }
 };
 
 /* script */
@@ -2562,7 +2595,23 @@ var __vue_render__$8 = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c("mu-input-box-wrapper");
+  return _c("mu-input-box-wrapper", [!_vm.disabled ? _c("mu-dropdown", _vm._b({
+    model: {
+      value: _vm.dropdownVisible,
+      callback: function callback($$v) {
+        _vm.dropdownVisible = $$v;
+      },
+      expression: "dropdownVisible"
+    }
+  }, "mu-dropdown", _vm.popupProps, false), [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option) {
+    return _c("mu-option", {
+      key: Object(option)[_vm.valueField] || option,
+      attrs: {
+        option: option,
+        fields: _vm.fields
+      }
+    });
+  })], 2) : _vm._e()], 1);
 };
 
 var __vue_staticRenderFns__$8 = [];
