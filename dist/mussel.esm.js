@@ -2603,8 +2603,6 @@ var RenderToBodyMixin = {
     }
   },
   mounted: function mounted() {
-    console.log(1);
-
     if (this.renderToBody) {
       document.body.appendChild(this.$el);
     }
