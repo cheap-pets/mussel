@@ -1,0 +1,23 @@
+.mu-icon[trigger-type] {
+  color: $textHalfDark;
+  fill: $textHalfDark;
+  cursor: pointer;
+
+  &:hover {
+    fill: $buttonPrimaryHoverColor;
+    color: $buttonPrimaryHoverColor;
+  }
+}
+
+.mu-icon[trigger-type="expander"] {
+  transition: transform .2s ease-in-out;
+
+  &[trigger-on] {
+    transform: rotate(-180deg);
+  }
+}
+
+.mu-icon[trigger-type="close"]:hover {
+  fill: $buttonDangerHoverColor;
+  color: $buttonDangerHoverColor;
+}

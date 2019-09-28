@@ -3,9 +3,11 @@
     class="mu-icon"
     :icon="icon"
     :clickable="clickable"
-    :class="[iconClass, className]"
+    :class="[className, iconClass]"
+    :trigger-type="triggerType"
+    :trigger-on="triggerOn"
     @click="onClick">
-    <svg v-if="icon" :icon="icon"
+    <svg v-if="iconName" :icon="icon"
       viewBox="0 0 1024 1024"
       :width="size"
       :height="size">
@@ -16,12 +18,20 @@
 
 <script>
   import d from './d'
+  import './trigger.pcss'
+
+  const triggerIcons = {
+    close: 'close',
+    expander: 'key-down'
+  }
 
   export default {
     name: 'MusselIcon',
     props: {
       icon: String,
       iconClass: String,
+      triggerType: String,
+      triggerOn: Boolean,
       clickable: Boolean,
       size: {
         type: String,
@@ -29,11 +39,20 @@
       }
     },
     computed: {
-      d () {
-        return d[this.icon]
-      },
       className () {
         return undefined
+      },
+      iconName () {
+        const { icon, iconClass, triggerType } = this
+        return icon ||
+          (
+            (iconClass || !triggerType)
+              ? undefined
+              : triggerIcons[triggerType]
+          )
+      },
+      d () {
+        return d[this.iconName]
       }
     },
     methods: {

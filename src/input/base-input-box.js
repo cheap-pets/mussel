@@ -12,30 +12,22 @@ export default {
     }
   },
   data () {
-    const {
-      readonly,
-      disabled,
-      type,
-      value,
-      icon,
-      iconClass,
-      iconAlign,
-      iconClickable,
-      clearable,
-      placeholder
-    } = this
+    const p = this
     return {
       params: {
-        readonly,
-        disabled,
-        type,
-        value,
-        icon,
-        iconClass,
-        iconAlign,
-        iconClickable,
-        clearable,
-        placeholder
+        type: p.type,
+        value: p.value,
+        icon: p.icon,
+        iconClass: p.iconClass,
+        iconAlign: p.iconAlign,
+        iconClickable: p.iconClickable,
+        triggerType: p.triggerType,
+        triggerOn: p.triggerOn,
+        readonly: p.readonly,
+        disabled: p.disabled,
+        editable: p.editable,
+        clearable: p.clearable,
+        placeholder: p.placeholder
       }
     }
   },
@@ -62,10 +54,16 @@ export default {
       }
     },
     iconClickable: Boolean,
+    editable: {
+      type: Boolean,
+      default: true
+    },
     clearable: {
       type: Boolean,
       default: true
-    }
+    },
+    triggerType: String,
+    triggerOn: Boolean
   },
   watch: {
     value: {
@@ -92,8 +90,17 @@ export default {
     iconAlign (value) {
       this.params.iconAlign = value
     },
+    triggerType (value) {
+      this.params.triggerType = value
+    },
+    triggerOn (value) {
+      this.params.triggerOn = value
+    },
     iconClickable (value) {
-      this.params.iconClickable = value
+      this.params.iconClickable = value || !!this.triggerType
+    },
+    editable (value) {
+      this.editable = value
     },
     clearable (value) {
       this.params.clearable = value

@@ -5,14 +5,9 @@
     name: 'MusselCloseButton',
     extends: Icon,
     props: {
-      icon: {
+      triggerType: {
         type: String,
         default: 'close'
-      }
-    },
-    computed: {
-      className () {
-        return 'mu-close-button'
       }
     }
   }
@@ -20,8 +15,6 @@
 
 <style lang="postcss">
   .mu-close-button {
-    color: $textHalfDark;
-    fill: $textHalfDark;
     cursor: pointer;
 
     &.window-close-button {
@@ -29,12 +22,6 @@
       top: 8px;
       right: 8px;
       z-index: 1;
-    }
-
-    &:hover {
-      fill: $buttonDangerHoverColor;
-      color: $buttonDangerHoverColor;
-      transform: scale(1.25);
     }
   }
 </style>

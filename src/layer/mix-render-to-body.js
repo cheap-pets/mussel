@@ -6,6 +6,7 @@ export default {
     }
   },
   mounted () {
+    console.log(1)
     if (this.renderToBody) {
       document.body.appendChild(this.$el)
     }

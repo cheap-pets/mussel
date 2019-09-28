@@ -1,1 +1,1 @@
-import './trigger.pcss'
+

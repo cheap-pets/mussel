@@ -39,7 +39,7 @@
       <h5>带清空按钮的输入框</h5>
       <mu-input-box value="没有图标">
       </mu-input-box>
-      <mu-input-box icon="search" value="图标在后">
+      <mu-input-box trigger-type="expander" value="图标在后">
       </mu-input-box>
       <mu-input-box icon="search" value="图标在前" icon-align="left">
       </mu-input-box>
@@ -50,12 +50,23 @@
       </mu-input-box>
       <mu-input-box icon="search" :clearable="false" input-shape="round" value="图标在前" icon-align="left">
       </mu-input-box>
+      <h5>只读与禁用</h5>
+      <mu-input-box :editable="false" trigger-type="expander" placeholder="输入框只读">
+      </mu-input-box>
+      <mu-input-box readonly trigger-type="expander" placeholder="完全只读">
+      </mu-input-box>
+      <mu-input-box disabled trigger-type="expander" placeholder="禁用">
+      </mu-input-box>
       <h5>无效状态</h5>
       <mu-input-box invalid icon="search" icon-clickable value="按钮在后">
       </mu-input-box>
       <mu-input-box invalid icon="search" icon-clickable value="按钮在前" icon-align="left">
       </mu-input-box>
       <h5>下拉框</h5>
+      <mu-popup-box>
+        123
+      </mu-popup-box>
+      <h5>下拉选择框</h5>
       <!-- <mu-combo-box v-model="comboValue1" @change="onCombo1Change">
         <mu-option value='好好学习1'></mu-option>
         <mu-option value='好好学习2'></mu-option>
@@ -67,7 +78,7 @@
       <mu-combo-box v-model="comboValue2" :options="comboOptions" editable @optionclick="onOptionClick">
       </mu-combo-box> -->
     </div>
-    <mu-close-button class="window-close-button"></mu-close-button>
+    <mu-icon trigger-type="close" class="window-close-button"></mu-icon>
   </div>
   <script type="text/javascript">
     var view = new Vue({

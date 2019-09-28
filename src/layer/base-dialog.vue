@@ -25,16 +25,16 @@
       primaryButton: String
     },
     data () {
-      const { title, width, height, danger, primaryButton } = this.$options
+      const o = this.$options
       return {
         params: {
           modalVisible: false,
           dialogVisible: false,
-          width: this.width || width,
-          height: this.height || height,
-          danger: this.danger || danger,
-          title: this.title || title,
-          primaryButton: this.primaryButton || primaryButton,
+          width: this.width || o.width,
+          height: this.height || o.height,
+          danger: this.danger || o.danger,
+          title: this.title || o.title,
+          primaryButton: this.primaryButton || o.primaryButton,
           btns: this.btns
         }
       }

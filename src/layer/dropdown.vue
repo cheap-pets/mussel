@@ -1,5 +1,8 @@
 <template>
-  <div class="mu-dropdown" :visible="popupVisible" :style="dropdownStyle">
+  <div
+    class="mu-dropdown"
+    :style="dropdownStyle"
+    :visible="popupVisible">
     <slot />
   </div>
 </template>

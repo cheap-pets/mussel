@@ -55,6 +55,6 @@
       inputBtnType () {
         return this.inputReadonly ? 'icon' : 'button'
       }
-    },
+    }
   }
 </script>

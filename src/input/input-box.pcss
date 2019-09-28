@@ -111,10 +111,6 @@ $inputIconSize: calc($inputHeightPx - 2);
       color: $buttonPrimaryHoverColor;
       background: rgba(0, 0, 0, .05);
     }
-    &[icon="close"]:hover {
-      fill: $buttonDangerHoverColor;
-      color: $buttonDangerHoverColor;
-    }
   }
 }
 
@@ -123,7 +119,7 @@ $inputIconSize: calc($inputHeightPx - 2);
   & > .mu-input {
     border-color: $inputInvalidBorderColor;
   }
-  & > [type="button"]:hover {
+  & > [clickable]:hover {
     color: $inputInvalidBorderColor;
     fill: $inputInvalidBorderColor;
   }

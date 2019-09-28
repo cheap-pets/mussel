@@ -1,27 +1,29 @@
+/* GLOBAL STYLE */
 import './global.pcss'
 import './text/text.pcss'
-
+/* LAYOUT */
 import FlexBox from './layout/flex-box.vue'
 import FlexItem from './layout/flex-item.vue'
 import HBox from './layout/flex-h-box'
 import VBox from './layout/flex-v-box'
 import Splitter from './layout/splitter.vue'
-
+/* ICON */
 import Icon from './icon/index.vue'
-
+/* BUTTON */
 import Button from './button/button.jsx'
 import IconButton from './button/icon-button'
 import CloseButton from './button/close-button.vue'
 import ButtonGroup from './button/button-group.vue'
-
+/* INPUT */
 import Input from './input/input.vue'
 import InputBox from './input/input-box.vue'
+import PopupBox from './input/popup-box.vue'
 import ComboBox from './input/combo-box.vue'
 import Option from './input/option.js'
-
+/* LIST */
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
-
+/* LAYER */
 import './layer'
 import BaseModal from './layer/base-modal.vue'
 import BaseDialog from './layer/base-dialog.vue'
@@ -29,7 +31,7 @@ import Modal from './layer/modal.vue'
 import Dialog from './layer/dialog.vue'
 import DialogWrapper from './layer/dialog-wrapper.vue'
 
-import './transform'
+// import './transform'
 
 function install (Vue) {
   Vue.component('mu-flex-box', FlexBox)
@@ -47,6 +49,7 @@ function install (Vue) {
 
   Vue.component('mu-input', Input)
   Vue.component('mu-input-box', InputBox)
+  Vue.component('mu-popup-box', PopupBox)
   Vue.component('mu-combo-box', ComboBox)
   Vue.component('mu-option', Option)
 
@@ -75,9 +78,10 @@ export {
   IconButton,
   CloseButton,
   ButtonGroup,
-  // form
+  // input
   Input,
   InputBox,
+  PopupBox,
   ComboBox,
   Option,
   // list

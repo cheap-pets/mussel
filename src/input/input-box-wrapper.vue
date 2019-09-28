@@ -2,22 +2,21 @@
   <div
     class="mu-input-box"
     :buttons="buttons"
-    :disabled="params.disabled"
-  >
+    :readonly="params.readonly"
+    :disabled="params.disabled">
     <mu-input-button
       v-if="iconAlign === 'left'"
       v-bind="iconParams"
       @click="onButtonClick" />
     <mu-input
       v-bind="inputParams"
-      :placeholder="params.placeholder"
       @input="onInput"
       @click="onInputClick"
       @keypress.native="onKeyPress" />
     <mu-input-button
       v-if="clearable"
-      icon="close"
       clickable
+      trigger-type="close"
       @click="onClearClick" />
     <mu-input-button
       v-if="iconAlign === 'right'"
@@ -42,31 +41,40 @@
     inject: ['inputBox', 'params'],
     computed: {
       clearable () {
-        const { clearable, value } = this.params
-        return clearable && String(value).length
+        const p = this.params
+        return p.clearable && (!!p.value || p.value === 0)
       },
       iconAlign () {
-        const { icon, iconClass, iconAlign } = this.params
-        return (icon || iconClass)
-          ? iconAlign || 'right'
+        const p = this.params
+        return (p.icon || p.iconClass || p.triggerType)
+          ? p.iconAlign || 'right'
           : null
       },
+      buttons () {
+        return 0 + (this.clearable ? 1 : 0) + (this.iconAlign ? 1 : 0)
+      },
       iconParams () {
-        const { icon, iconClass, iconClickable } = this.params
+        const p = this.params
         return this.iconAlign
           ? {
-            icon,
-            iconClass,
-            clickable: iconClickable
+            icon: p.icon,
+            iconClass: p.iconClass,
+            clickable: p.iconClickable || !!p.triggerType,
+            triggerType: p.triggerType,
+            triggerOn: p.triggerOn
           }
           : null
       },
       inputParams () {
-        const { type, value, readonly, disabled } = this.params
-        return { type, value, readonly, disabled }
-      },
-      buttons () {
-        return 0 + (this.clearable ? 1 : 0) + (this.iconAlign ? 1 : 0)
+        const p = this.params
+        return {
+          type: p.type,
+          value: p.value,
+          focus: p.focus,
+          readonly: p.readonly || !p.editable,
+          disabled: p.disabled,
+          placeholder: p.placeholder
+        }
       }
     },
     methods: {
