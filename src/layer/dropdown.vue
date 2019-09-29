@@ -99,7 +99,7 @@
       hideIf (triggerEl) {
         if (
           !isParentElement(triggerEl, this.$parent.$el) &&
-          (!this.renderToBody || !isParentElement(triggerEl, this.$el))
+          (!this.renderToBody || !isParentElement(triggerEl, this.$el, true))
         ) {
           this.hide()
         }
