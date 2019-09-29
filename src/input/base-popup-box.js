@@ -27,6 +27,7 @@ export default {
         popupVisible: false,
         popupWidth: p.popupWidth,
         popupHeight: p.popupHeight,
+        popupClassName: p.popupClassName,
         popupRenderToBody: p.popupRenderToBody,
         popupKeepIconIndent: p.popupKeepIconIndent,
         focus: false
@@ -40,6 +41,7 @@ export default {
     },
     popupWidth: String,
     popupHeight: String,
+    popupClassName: String,
     popupRenderToBody: Boolean,
     popupKeepIconIndent: Boolean
   },
@@ -70,7 +72,7 @@ export default {
       this.$emit('change', value)
     },
     onInputClick () {
-      if (!this.readonly && !this.editable) {
+      if (!this.readonly && !this.params.editable) {
         this.togglePopupVisible()
       }
       this.$emit('inputclick')

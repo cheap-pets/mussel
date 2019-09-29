@@ -27,6 +27,7 @@
           width: p.popupWidth,
           height: p.popupHeight,
           visible: p.popupVisible,
+          className: p.popupClassName,
           renderToBody: p.popupRenderToBody,
           keepIconIndent: p.popupKeepIconIndent
         }

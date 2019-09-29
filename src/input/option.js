@@ -4,7 +4,7 @@ export default {
   name: 'MusselOption',
   extends: ListItem,
   inject: {
-    comboBox: {
+    inputBox: {
       default: null
     },
     multiple: {
@@ -43,20 +43,20 @@ export default {
         : this.icon
     },
     actualSelected () {
-      const { selectedValue: selected } = this.comboBox
+      const { selectedValue: selected } = this.inputBox
       return this.multiple
         ? !!selected.find(value => value === this.actualValue)
         : selected === this.actualValue
     }
   },
   created () {
-    this.comboBox.mountOption({
+    this.inputBox.mountOption({
       value: this.actualValue,
       label: this.actualLabel
     })
   },
   beforeDestroy () {
-    this.comboBox.unmountOption({
+    this.inputBox.unmountOption({
       value: this.actualValue,
       label: this.actualLabel
     })
@@ -64,8 +64,8 @@ export default {
   methods: {
     onClick () {
       if (this.disabled) return
-      if (this.comboBox) {
-        this.comboBox.toggleSelection(this.actualValue, this.option)
+      if (this.inputBox) {
+        this.inputBox.toggleSelection(this.actualValue, this.option)
       }
       this.$emit('click')
     }

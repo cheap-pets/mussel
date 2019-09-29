@@ -61,21 +61,6 @@ $inputIconSize: calc($inputHeightPx - 2);
     }
   }
 
-  &[fixed] {
-    & > input,
-    & > .mu-input-icon {
-      cursor: pointer;
-    }
-    & > .mu-input-icon[focus],
-    &:hover > .mu-input-icon {
-      fill: $buttonPrimaryHoverColor;
-      color: $buttonPrimaryHoverColor;
-    }
-    &:hover > [icon="close"] {
-      fill: $textHalfDark;
-    }
-  }
-
   & > .mu-dropdown {
     min-width: 100%;
   }
@@ -111,6 +96,10 @@ $inputIconSize: calc($inputHeightPx - 2);
       color: $buttonPrimaryHoverColor;
       background: rgba(0, 0, 0, .05);
     }
+  }
+  &[trigger-type="close"]:hover {
+    color: $inputInvalidBorderColor;
+    fill: $inputInvalidBorderColor;
   }
 }
 

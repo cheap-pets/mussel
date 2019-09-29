@@ -2231,7 +2231,7 @@ var Input = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$5
 }, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, undefined, undefined);
 
-var css$a = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-box[fixed] > .mu-input-icon,\r\n.mu-input-box[fixed] > input {\r\n  cursor: pointer;\r\n}\r\n.mu-input-box[fixed] > .mu-input-icon[focus],\r\n.mu-input-box[fixed]:hover > .mu-input-icon {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-input-box[fixed]:hover > [icon=close] {\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-box > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [clickable]:hover,\r\n[invalid] .mu-input-box > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
+var css$a = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-box > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[trigger-type=close]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [clickable]:hover,\r\n[invalid] .mu-input-box > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
 styleInject(css$a);
 
 var InputButton = {
@@ -2725,9 +2725,10 @@ var script$9 = {
     };
   },
   props: {
-    keepIconIndent: Boolean,
+    width: String,
     height: String,
-    width: String
+    className: String,
+    keepIconIndent: Boolean
   },
   data: function data() {
     return {
@@ -2810,6 +2811,7 @@ var __vue_render__$8 = function __vue_render__() {
 
   return _c("div", {
     staticClass: "mu-dropdown",
+    "class": _vm.className,
     style: _vm.dropdownStyle,
     attrs: {
       visible: _vm.popupVisible
@@ -2855,6 +2857,7 @@ var script$a = {
         width: p.popupWidth,
         height: p.popupHeight,
         visible: p.popupVisible,
+        className: p.popupClassName,
         renderToBody: p.popupRenderToBody,
         keepIconIndent: p.popupKeepIconIndent
       };
@@ -2934,6 +2937,7 @@ var BasePopupBox = {
         popupVisible: false,
         popupWidth: p.popupWidth,
         popupHeight: p.popupHeight,
+        popupClassName: p.popupClassName,
         popupRenderToBody: p.popupRenderToBody,
         popupKeepIconIndent: p.popupKeepIconIndent,
         focus: false
@@ -2947,6 +2951,7 @@ var BasePopupBox = {
     },
     popupWidth: String,
     popupHeight: String,
+    popupClassName: String,
     popupRenderToBody: Boolean,
     popupKeepIconIndent: Boolean
   },
@@ -2977,7 +2982,7 @@ var BasePopupBox = {
       this.$emit('change', value);
     },
     onInputClick: function onInputClick() {
-      if (!this.readonly && !this.editable) {
+      if (!this.readonly && !this.params.editable) {
         this.togglePopupVisible();
       }
 
@@ -3040,98 +3045,6 @@ var PopupBox = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$a
 }, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, undefined, undefined);
 
-var script$c = {
-  name: 'MusselComboBox',
-  "extends": BaseInputBox,
-  props: {
-    value: [String, Number, Array],
-    popupRenderToBody: Boolean,
-    keepIconIndent: Boolean,
-    dropdownHeight: String,
-    dropdownWidth: String,
-    editable: {
-      type: Boolean,
-      "default": false
-    },
-    fields: Object,
-    options: Array,
-    multiple: Boolean
-  },
-  computed: {
-    valueField: function valueField() {
-      return Object(this.fields).value || 'value';
-    },
-    popupProps: function popupProps() {
-      return {
-        renderToBody: this.popupRenderToBody,
-        keepIconIndent: this.keepIconIndent,
-        dropdownHeight: this.dropdownHeight,
-        dropdownWidth: this.dropdownWidth,
-        "class": 'mu-dropdown-list'
-      };
-    },
-    inputReadonly: function inputReadonly() {
-      return !this.editable || this.multiple;
-    },
-    inputBtnType: function inputBtnType() {
-      return this.inputReadonly ? 'icon' : 'button';
-    }
-  }
-};
-
-/* script */
-var __vue_script__$c = script$c;
-/* template */
-
-var __vue_render__$b = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c("mu-input-box-wrapper", [!_vm.disabled ? _c("mu-dropdown", _vm._b({
-    model: {
-      value: _vm.dropdownVisible,
-      callback: function callback($$v) {
-        _vm.dropdownVisible = $$v;
-      },
-      expression: "dropdownVisible"
-    }
-  }, "mu-dropdown", _vm.popupProps, false), [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option) {
-    return _c("mu-option", {
-      key: Object(option)[_vm.valueField] || option,
-      attrs: {
-        option: option,
-        fields: _vm.fields
-      }
-    });
-  })], 2) : _vm._e()], 1);
-};
-
-var __vue_staticRenderFns__$b = [];
-__vue_render__$b._withStripped = true;
-/* style */
-
-var __vue_inject_styles__$c = undefined;
-/* scoped */
-
-var __vue_scope_id__$c = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$c = undefined;
-/* functional template */
-
-var __vue_is_functional_template__$c = false;
-/* style inject */
-
-/* style inject SSR */
-
-var ComboBox = normalizeComponent_1({
-  render: __vue_render__$b,
-  staticRenderFns: __vue_staticRenderFns__$b
-}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
-
 var UNSCOPABLES = wellKnownSymbol('unscopables');
 var ArrayPrototype = Array.prototype;
 
@@ -3166,8 +3079,137 @@ _export({ target: 'Array', proto: true, forced: SKIPS_HOLES }, {
 // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
 addToUnscopables(FIND);
 
+var $findIndex = arrayIteration.findIndex;
+
+
+var FIND_INDEX = 'findIndex';
+var SKIPS_HOLES$1 = true;
+
+// Shouldn't skip holes
+if (FIND_INDEX in []) Array(1)[FIND_INDEX](function () { SKIPS_HOLES$1 = false; });
+
+// `Array.prototype.findIndex` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.findindex
+_export({ target: 'Array', proto: true, forced: SKIPS_HOLES$1 }, {
+  findIndex: function findIndex(callbackfn /* , that = undefined */) {
+    return $findIndex(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+addToUnscopables(FIND_INDEX);
+
+var nativeJoin = [].join;
+
+var ES3_STRINGS = indexedObject != Object;
+var SLOPPY_METHOD$1 = sloppyArrayMethod('join', ',');
+
+// `Array.prototype.join` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.join
+_export({ target: 'Array', proto: true, forced: ES3_STRINGS || SLOPPY_METHOD$1 }, {
+  join: function join(separator) {
+    return nativeJoin.call(toIndexedObject(this), separator === undefined ? ',' : separator);
+  }
+});
+
+var $map = arrayIteration.map;
+
+
+// `Array.prototype.map` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.map
+// with adding support of @@species
+_export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('map') }, {
+  map: function map(callbackfn /* , thisArg */) {
+    return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+var max$1 = Math.max;
+var min$2 = Math.min;
+var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
+var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded';
+
+// `Array.prototype.splice` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.splice
+// with adding support of @@species
+_export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('splice') }, {
+  splice: function splice(start, deleteCount /* , ...items */) {
+    var O = toObject(this);
+    var len = toLength(O.length);
+    var actualStart = toAbsoluteIndex(start, len);
+    var argumentsLength = arguments.length;
+    var insertCount, actualDeleteCount, A, k, from, to;
+    if (argumentsLength === 0) {
+      insertCount = actualDeleteCount = 0;
+    } else if (argumentsLength === 1) {
+      insertCount = 0;
+      actualDeleteCount = len - actualStart;
+    } else {
+      insertCount = argumentsLength - 2;
+      actualDeleteCount = min$2(max$1(toInteger(deleteCount), 0), len - actualStart);
+    }
+    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER$1) {
+      throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
+    }
+    A = arraySpeciesCreate(O, actualDeleteCount);
+    for (k = 0; k < actualDeleteCount; k++) {
+      from = actualStart + k;
+      if (from in O) createProperty(A, k, O[from]);
+    }
+    A.length = actualDeleteCount;
+    if (insertCount < actualDeleteCount) {
+      for (k = actualStart; k < len - actualDeleteCount; k++) {
+        from = k + actualDeleteCount;
+        to = k + insertCount;
+        if (from in O) O[to] = O[from];
+        else delete O[to];
+      }
+      for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
+    } else if (insertCount > actualDeleteCount) {
+      for (k = len - actualDeleteCount; k > actualStart; k--) {
+        from = k + actualDeleteCount - 1;
+        to = k + insertCount - 1;
+        if (from in O) O[to] = O[from];
+        else delete O[to];
+      }
+    }
+    for (k = 0; k < insertCount; k++) {
+      O[k + actualStart] = arguments[k + 2];
+    }
+    O.length = len - actualDeleteCount + insertCount;
+    return A;
+  }
+});
+
+var userAgent = getBuiltIn('navigator', 'userAgent') || '';
+
+var slice = [].slice;
+var MSIE = /MSIE .\./.test(userAgent); // <- dirty ie9- check
+
+var wrap$1 = function (scheduler) {
+  return function (handler, timeout /* , ...arguments */) {
+    var boundArgs = arguments.length > 2;
+    var args = boundArgs ? slice.call(arguments, 2) : undefined;
+    return scheduler(boundArgs ? function () {
+      // eslint-disable-next-line no-new-func
+      (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
+    } : handler, timeout);
+  };
+};
+
+// ie9- setTimeout & setInterval additional parameters fix
+// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
+_export({ global: true, bind: true, forced: MSIE }, {
+  // `setTimeout` method
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
+  setTimeout: wrap$1(global_1.setTimeout),
+  // `setInterval` method
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
+  setInterval: wrap$1(global_1.setInterval)
+});
+
 //
-var script$d = {
+var script$c = {
   name: 'MusselListItem',
   components: {
     'mu-icon': Icon
@@ -3220,10 +3262,10 @@ var css$c = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\
 styleInject(css$c);
 
 /* script */
-var __vue_script__$d = script$d;
+var __vue_script__$c = script$c;
 /* template */
 
-var __vue_render__$c = function __vue_render__() {
+var __vue_render__$b = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -3251,34 +3293,34 @@ var __vue_render__$c = function __vue_render__() {
   }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm.actualLabel))])], 2);
 };
 
-var __vue_staticRenderFns__$c = [];
-__vue_render__$c._withStripped = true;
+var __vue_staticRenderFns__$b = [];
+__vue_render__$b._withStripped = true;
 /* style */
 
-var __vue_inject_styles__$d = undefined;
+var __vue_inject_styles__$c = undefined;
 /* scoped */
 
-var __vue_scope_id__$d = undefined;
+var __vue_scope_id__$c = undefined;
 /* module identifier */
 
-var __vue_module_identifier__$d = undefined;
+var __vue_module_identifier__$c = undefined;
 /* functional template */
 
-var __vue_is_functional_template__$d = false;
+var __vue_is_functional_template__$c = false;
 /* style inject */
 
 /* style inject SSR */
 
 var ListItem = normalizeComponent_1({
-  render: __vue_render__$c,
-  staticRenderFns: __vue_staticRenderFns__$c
-}, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
+  render: __vue_render__$b,
+  staticRenderFns: __vue_staticRenderFns__$b
+}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
 
 var Option = {
   name: 'MusselOption',
   "extends": ListItem,
   inject: {
-    comboBox: {
+    inputBox: {
       "default": null
     },
     multiple: {
@@ -3311,20 +3353,20 @@ var Option = {
     actualSelected: function actualSelected() {
       var _this = this;
 
-      var selected = this.comboBox.selectedValue;
+      var selected = this.inputBox.selectedValue;
       return this.multiple ? !!selected.find(function (value) {
         return value === _this.actualValue;
       }) : selected === this.actualValue;
     }
   },
   created: function created() {
-    this.comboBox.mountOption({
+    this.inputBox.mountOption({
       value: this.actualValue,
       label: this.actualLabel
     });
   },
   beforeDestroy: function beforeDestroy() {
-    this.comboBox.unmountOption({
+    this.inputBox.unmountOption({
       value: this.actualValue,
       label: this.actualLabel
     });
@@ -3333,14 +3375,189 @@ var Option = {
     onClick: function onClick() {
       if (this.disabled) return;
 
-      if (this.comboBox) {
-        this.comboBox.toggleSelection(this.actualValue, this.option);
+      if (this.inputBox) {
+        this.inputBox.toggleSelection(this.actualValue, this.option);
       }
 
       this.$emit('click');
     }
   }
 };
+
+var script$d = {
+  name: 'MusselComboBox',
+  components: {
+    'mu-option': Option
+  },
+  "extends": BasePopupBox,
+  provide: function provide() {
+    return {
+      multiple: this.multiple
+    };
+  },
+  props: {
+    fields: Object,
+    options: Array,
+    multiple: Boolean,
+    popupClassName: {
+      type: String,
+      "default": 'mu-dropdown-list'
+    },
+    value: [String, Number, Array]
+  },
+  data: function data() {
+    return {
+      selectedValue: null,
+      mountedOptions: []
+    };
+  },
+  computed: {
+    valueField: function valueField() {
+      return Object(this.fields).value || 'value';
+    }
+  },
+  watch: {
+    multiple: {
+      handler: function handler(value) {
+        this.params.editable = this.editable && !value;
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    setInputValue: function setInputValue() {// do nothing, juest overwrite InputBox's setInputValue()
+    },
+    setInputValueImmediately: function setInputValueImmediately() {
+      var selectedValue = this.selectedValue,
+          multiple = this.multiple,
+          options = this.mountedOptions;
+
+      if (!this.params.editable) {
+        this.params.value = selectedValue;
+      }
+
+      this.params.value = !selectedValue && selectedValue !== 0 ? '' : this.params.editable ? selectedValue : (multiple ? selectedValue : [selectedValue]).map(function (value) {
+        return Object(options.find(function (item) {
+          return item.value === value;
+        })).label || '';
+      }).join(',');
+    },
+    refreshInputValue: function refreshInputValue() {
+      var immediate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      if (this.rivTimer) {
+        clearTimeout(this.rivTimer);
+        this.rivTimer = null;
+      }
+
+      if (this.params.editable || immediate) {
+        this.setInputValueImmediately();
+      } else {
+        this.rivTimer = setTimeout(this.setInputValueImmediately, 50);
+      }
+    },
+    onInput: function onInput(value) {
+      this.params.value = value;
+      this.selectedValue = value;
+      this.$emit('input', value);
+      this.$emit('change', value);
+    },
+    mountOption: function mountOption(option) {
+      var options = this.mountedOptions;
+
+      if (!options.find(function (item) {
+        return option.value === item.value;
+      })) {
+        options.push(option);
+        if (!this.params.editable) this.refreshInputValue();
+      }
+    },
+    unmountOption: function unmountOption(option) {
+      var options = this.mountedOptions;
+      var idx = options.findIndex(function (item) {
+        return option.value === item.value;
+      });
+
+      if (idx !== -1) {
+        options.splice(idx, 1); // if (!this.inputReadonly) this.refreshInputValue()
+      }
+    },
+    toggleSelection: function toggleSelection(value, option) {
+      var hidePopup = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+      if (this.multiple) {
+        var values = this.selectedValue;
+        var idx = values.indexOf(value);
+
+        if (idx !== -1) {
+          values.splice(idx, 1);
+        } else {
+          values.push(value);
+        }
+
+        this.$emit('change', values);
+      } else {
+        this.selectedValue = value;
+        this.$emit('change', value);
+      }
+
+      this.refreshInputValue(true);
+      if (hidePopup) this.params.popupVisible = false;
+      this.$emit('optionclick', value, option);
+    },
+    onClearClick: function onClearClick() {
+      this.selectedValue = this.multiple ? [] : null;
+      this.params.value = '';
+      this.$emit('change', this.selectedValue);
+      this.$emit('clear', '');
+    }
+  }
+};
+
+/* script */
+var __vue_script__$d = script$d;
+/* template */
+
+var __vue_render__$c = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("mu-popup-box-wrapper", [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option) {
+    return _c("mu-option", {
+      key: Object(option)[_vm.valueField] || option,
+      attrs: {
+        option: option,
+        fields: _vm.fields
+      }
+    });
+  })], 2);
+};
+
+var __vue_staticRenderFns__$c = [];
+__vue_render__$c._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$d = undefined;
+/* scoped */
+
+var __vue_scope_id__$d = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$d = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$d = false;
+/* style inject */
+
+/* style inject SSR */
+
+var ComboBox = normalizeComponent_1({
+  render: __vue_render__$c,
+  staticRenderFns: __vue_staticRenderFns__$c
+}, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
 
 //
 //
@@ -3497,45 +3714,6 @@ var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$f, __vue_script__
 // https://tc39.github.io/ecma262/#sec-array.isarray
 _export({ target: 'Array', stat: true }, {
   isArray: isArray
-});
-
-var $map = arrayIteration.map;
-
-
-// `Array.prototype.map` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.map
-// with adding support of @@species
-_export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('map') }, {
-  map: function map(callbackfn /* , thisArg */) {
-    return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-  }
-});
-
-var userAgent = getBuiltIn('navigator', 'userAgent') || '';
-
-var slice = [].slice;
-var MSIE = /MSIE .\./.test(userAgent); // <- dirty ie9- check
-
-var wrap$1 = function (scheduler) {
-  return function (handler, timeout /* , ...arguments */) {
-    var boundArgs = arguments.length > 2;
-    var args = boundArgs ? slice.call(arguments, 2) : undefined;
-    return scheduler(boundArgs ? function () {
-      // eslint-disable-next-line no-new-func
-      (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
-    } : handler, timeout);
-  };
-};
-
-// ie9- setTimeout & setInterval additional parameters fix
-// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
-_export({ global: true, bind: true, forced: MSIE }, {
-  // `setTimeout` method
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
-  setTimeout: wrap$1(global_1.setTimeout),
-  // `setInterval` method
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
-  setInterval: wrap$1(global_1.setInterval)
 });
 
 var defineProperty$3 = objectDefineProperty.f;

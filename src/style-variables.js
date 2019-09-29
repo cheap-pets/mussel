@@ -49,8 +49,8 @@ const variables = {
   /* dropdown */
   dropdownShadow: 'none',
   dropdownBorder: `1px solid ${grey[3]}`,
+  dropdownListYPaddingPx: 4,
   dropdownItemYPaddingPx: 5,
-  dropdownListPadding: '4px 0',
 
   /* list */
   listItemXPaddingPx: 10,

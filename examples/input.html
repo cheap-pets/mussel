@@ -63,11 +63,11 @@
       <mu-input-box invalid icon="search" icon-clickable value="按钮在前" icon-align="left">
       </mu-input-box>
       <h5>下拉框</h5>
-      <mu-popup-box>
+      <mu-popup-box :editable="false" value="xxx" popup-render-to-body>
         123
       </mu-popup-box>
       <h5>下拉选择框</h5>
-      <!-- <mu-combo-box v-model="comboValue1" @change="onCombo1Change">
+      <mu-combo-box v-model="comboValue1" @change="onCombo1Change">
         <mu-option value='好好学习1'></mu-option>
         <mu-option value='好好学习2'></mu-option>
         <mu-option value='好好学习3'></mu-option>
@@ -76,7 +76,7 @@
         <mu-option value='好好学习5'></mu-option>
       </mu-combo-box>
       <mu-combo-box v-model="comboValue2" :options="comboOptions" editable @optionclick="onOptionClick">
-      </mu-combo-box> -->
+      </mu-combo-box>
     </div>
     <mu-icon trigger-type="close" class="window-close-button"></mu-icon>
   </div>

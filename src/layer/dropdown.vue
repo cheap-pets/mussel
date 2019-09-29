@@ -1,6 +1,7 @@
 <template>
   <div
     class="mu-dropdown"
+    :class="className"
     :style="dropdownStyle"
     :visible="popupVisible">
     <slot />
@@ -49,9 +50,10 @@
       }
     },
     props: {
-      keepIconIndent: Boolean,
+      width: String,
       height: String,
-      width: String
+      className: String,
+      keepIconIndent: Boolean
     },
     data () {
       return {
@@ -144,6 +146,6 @@
     position: fixed;
   }
   .mu-dropdown-list, .mu-dropdown-menu {
-    padding: $(dropdownListPadding);
+    padding: $(dropdownListYPaddingPx)px 0;
   }
 </style>
