@@ -2151,7 +2151,7 @@
     staticRenderFns: __vue_staticRenderFns__$4
   }, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, undefined, undefined);
 
-  var css$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #8c8c8c;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
+  var css$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #b2b2b2;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$9);
 
   var script$6 = {
@@ -2679,7 +2679,9 @@
     };
   }
 
-  function isParentElement(element, parentElement) {
+  function isParentElement(element, parentElement, includeSelf) {
+    if (includeSelf && element === parentElement) return true;
+
     while (Object(element.parentNode).nodeType === 1) {
       element = element.parentNode;
       if (element === parentElement) return true;
@@ -2779,7 +2781,7 @@
         this.$emit('change', false);
       },
       hideIf: function hideIf(triggerEl) {
-        if (!isParentElement(triggerEl, this.$parent.$el) && (!this.renderToBody || !isParentElement(triggerEl, this.$el))) {
+        if (!isParentElement(triggerEl, this.$parent.$el) && (!this.renderToBody || !isParentElement(triggerEl, this.$el, true))) {
           this.hide();
         }
       },
@@ -4615,6 +4617,697 @@
     staticRenderFns: __vue_staticRenderFns__$g
   }, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, undefined, undefined);
 
+  var ceil$1 = Math.ceil;
+  var floor$1 = Math.floor;
+
+  // `Math.trunc` method
+  // https://tc39.github.io/ecma262/#sec-math.trunc
+  _export({ target: 'Math', stat: true }, {
+    trunc: function trunc(it) {
+      return (it > 0 ? floor$1 : ceil$1)(it);
+    }
+  });
+
+  var css$g = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 240px;\r\n  min-width: 300px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: .5px solid rgba(0,0,0,.35);\r\n  overflow: hidden;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  padding: 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.428rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #666;\r\n  border-top: 2px solid #1890ff;\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 2px solid #1890ff;\r\n  overflow: hidden;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row + .mu-calendar-row {\r\n  border-top: .5px solid rgba(0,0,0,.35);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell + .mu-calendar-cell {\r\n  border-left: .5px solid rgba(0,0,0,.35);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  border-bottom: 8px solid #fa541c;\r\n  border-right: 8px solid transparent;\r\n  content: '';\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #b2b2b2;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.025);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[this-year],\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[today] {\r\n  font-weight: 600;\r\n  color: #fa8c16;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[out-of-range] {\r\n  color: #b2b2b2;\r\n  background: rgba(0,0,0,.05);\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n}";
+  styleInject(css$g);
+
+  function _typeof$1(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$1 = function _typeof(obj) { return typeof obj; }; } else { _typeof$1 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$1(obj); }
+  var lodash_isdate = createCommonjsModule(function (module, exports) {
+    /**
+     * lodash (Custom Build) <https://lodash.com/>
+     * Build: `lodash modularize exports="npm" -o ./`
+     * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+     * Released under MIT license <https://lodash.com/license>
+     * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+     * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+     */
+
+    /** `Object#toString` result references. */
+    var dateTag = '[object Date]';
+    /** Detect free variable `global` from Node.js. */
+
+    var freeGlobal = _typeof$1(commonjsGlobal) == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+    /** Detect free variable `exports`. */
+
+    var freeExports =  exports && !exports.nodeType && exports;
+    /** Detect free variable `module`. */
+
+    var freeModule = freeExports && 'object' == 'object' && module && !module.nodeType && module;
+    /** Detect the popular CommonJS extension `module.exports`. */
+
+    var moduleExports = freeModule && freeModule.exports === freeExports;
+    /** Detect free variable `process` from Node.js. */
+
+    var freeProcess = moduleExports && freeGlobal.process;
+    /** Used to access faster Node.js helpers. */
+
+    var nodeUtil = function () {
+      try {
+        return freeProcess && freeProcess.binding('util');
+      } catch (e) {}
+    }();
+    /* Node.js helper references. */
+
+
+    var nodeIsDate = nodeUtil && nodeUtil.isDate;
+    /**
+     * The base implementation of `_.unary` without support for storing metadata.
+     *
+     * @private
+     * @param {Function} func The function to cap arguments for.
+     * @returns {Function} Returns the new capped function.
+     */
+
+    function baseUnary(func) {
+      return function (value) {
+        return func(value);
+      };
+    }
+    /** Used for built-in method references. */
+
+
+    var objectProto = Object.prototype;
+    /**
+     * Used to resolve the
+     * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+     * of values.
+     */
+
+    var objectToString = objectProto.toString;
+    /**
+     * The base implementation of `_.isDate` without Node.js optimizations.
+     *
+     * @private
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a date object, else `false`.
+     */
+
+    function baseIsDate(value) {
+      return isObjectLike(value) && objectToString.call(value) == dateTag;
+    }
+    /**
+     * Checks if `value` is classified as a `Date` object.
+     *
+     * @static
+     * @memberOf _
+     * @since 0.1.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a date object, else `false`.
+     * @example
+     *
+     * _.isDate(new Date);
+     * // => true
+     *
+     * _.isDate('Mon April 23 2012');
+     * // => false
+     */
+
+
+    var isDate = nodeIsDate ? baseUnary(nodeIsDate) : baseIsDate;
+    /**
+     * Checks if `value` is object-like. A value is object-like if it's not `null`
+     * and has a `typeof` result of "object".
+     *
+     * @static
+     * @memberOf _
+     * @since 4.0.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+     * @example
+     *
+     * _.isObjectLike({});
+     * // => true
+     *
+     * _.isObjectLike([1, 2, 3]);
+     * // => true
+     *
+     * _.isObjectLike(_.noop);
+     * // => false
+     *
+     * _.isObjectLike(null);
+     * // => false
+     */
+
+    function isObjectLike(value) {
+      return !!value && _typeof$1(value) == 'object';
+    }
+
+    module.exports = isDate;
+  });
+
+  function getFirstDay(_ref) {
+    var year = _ref.year,
+        month = _ref.month;
+    return new Date(year, month, 1).getDay();
+  }
+
+  function getMaxDays(_ref2) {
+    var year = _ref2.year,
+        month = _ref2.month;
+    return month === 1 && (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) ? 29 : [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+  }
+
+  function getSiblingMonth(_ref3) {
+    var year = _ref3.year,
+        month = _ref3.month,
+        step = _ref3.step;
+    month += step;
+
+    if (month < 0) {
+      month = 11;
+      year--;
+    } else if (month > 11) {
+      month = 0;
+      year++;
+    }
+
+    return {
+      year: year,
+      month: month
+    };
+  }
+
+  function parseDate(v) {
+    v = v || new Date();
+    return {
+      year: v.getFullYear(),
+      month: v.getMonth(),
+      date: v.getDate()
+    };
+  }
+
+  function isSameDate(a, b) {
+    return a.year === b.year && a.month === b.month && (!a.date || !b.date || a.date === b.date);
+  }
+
+  var script$k = {
+    components: {
+      IconButton: IconButton
+    },
+    model: {
+      prop: 'value',
+      event: 'change'
+    },
+    props: {
+      value: Date,
+      rangeStart: Date,
+      rangeEnd: Date,
+      language: {
+        type: String,
+        validator: function validator(v) {
+          return ['zh', 'en'].indexOf(v) !== -1;
+        }
+      },
+      selectMode: {
+        type: String,
+        "default": 'date',
+        validator: function validator(v) {
+          return ['year', 'month', 'date'].indexOf(v) !== -1;
+        }
+      },
+      markedDates: {
+        type: Array,
+        "default": function _default() {
+          return [];
+        }
+      }
+    },
+    data: function data() {
+      var _parseDate = parseDate(),
+          year = _parseDate.year,
+          month = _parseDate.month,
+          date = _parseDate.date;
+
+      return {
+        year: year,
+        month: month,
+        date: date,
+        thisYear: year,
+        thisMonth: month,
+        naviStartYear: null,
+        naviYear: null,
+        naviMonth: null,
+        naviDate: null,
+        naviDateYear: year,
+        naviDateMonth: month,
+        monthlyMarkedDates: [],
+        dateRows: [],
+        yearRows: [],
+        tab: 'date'
+      };
+    },
+    computed: {
+      isZh: function isZh() {
+        return (this.language || navigator.language || navigator.userLanguage).indexOf('zh') === 0;
+      },
+      months: function months() {
+        return this.isZh ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      },
+      weekDays: function weekDays() {
+        return this.isZh ? ['日', '一', '二', '三', '四', '五', '六'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+      },
+      yearLabel: function yearLabel() {
+        return this.isZh ? '年' : '';
+      },
+      monthLabel: function monthLabel() {
+        return this.isZh ? '月' : '';
+      },
+      title: function title() {
+        var months = this.months,
+            year = this.naviDateYear,
+            month = this.naviDateMonth,
+            yearLabel = this.yearLabel,
+            monthLabel = this.monthLabel,
+            naviStartYear = this.naviStartYear;
+        return this.tab === 'date' ? "".concat(year, " ").concat(yearLabel, " ").concat(months[month], " ").concat(monthLabel) : "".concat(naviStartYear, " ~ ").concat(naviStartYear + 9);
+      },
+      monthRows: function monthRows() {
+        var rows = [];
+        var n = 0;
+
+        for (var i = 0; i < 3; i++) {
+          var row = [];
+
+          for (var j = 0; j < 4; j++) {
+            row.push({
+              month: n,
+              monthName: this.months[n] + this.monthLabel
+            });
+            n++;
+          }
+
+          rows.push(row);
+        }
+
+        return rows;
+      }
+    },
+    watch: {
+      value: function value(v) {
+        this.resetDate(v);
+      },
+      rangeStart: function rangeStart() {
+        this.updateDateCells();
+      },
+      rangeEnd: function rangeEnd() {
+        this.updateDateCells();
+      },
+      markedDates: function markedDates() {
+        this.updateDateCells();
+      }
+    },
+    mounted: function mounted() {
+      this.setTab(this.selectMode === 'year' || this.selectMode === 'month' ? 'year' : 'date');
+      this.resetDate(this.value);
+    },
+    methods: {
+      setTab: function setTab(v) {
+        this.tab = ['year', 'month'].indexOf(v) >= 0 ? 'year' : 'date';
+      },
+      setDateCellStatus: function setDateCellStatus(cell) {
+        var date = new Date(cell.year, cell.month, cell.date);
+        var str = "".concat(cell.year, "-").concat(cell.month + 1, "-").concat(cell.date);
+        var start = this.rangeStart,
+            end = this.rangeEnd;
+        if (isSameDate(cell, this)) cell.active = true;
+        if (isSameDate(cell, parseDate())) cell.today = true;
+        if (this.monthlyMarkedDates.indexOf(str) >= 0) cell.marked = true;
+
+        if (start && date < start || end && date > end) {
+          cell.outOfRange = true;
+        }
+      },
+      updateDateCells: function updateDateCells() {
+        this.filterMarkedDates();
+        var year = this.naviDateYear;
+        var month = this.naviDateMonth;
+        var firstDay = getFirstDay({
+          year: year,
+          month: month
+        });
+        var maxDays = getMaxDays({
+          year: year,
+          month: month
+        });
+        var prev = getSiblingMonth({
+          year: year,
+          month: month,
+          step: -1
+        });
+        var prevMaxDays = getMaxDays(prev);
+        var next = getSiblingMonth({
+          year: year,
+          month: month,
+          step: 1
+        });
+        var rows = [];
+        var n = 1;
+
+        for (var i = 0; i < 7; i++) {
+          var row = [];
+          var cell = void 0;
+
+          for (var j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDay) {
+              cell = {
+                year: prev.year,
+                month: prev.month,
+                date: prevMaxDays - firstDay + j + 1,
+                adjacent: true
+              };
+            } else if (i > 0 && n > maxDays) {
+              cell = {
+                year: next.year,
+                month: next.month,
+                date: n - maxDays,
+                adjacent: true
+              };
+              n++;
+            } else {
+              cell = {
+                year: year,
+                month: month,
+                date: n
+              };
+              n++;
+            }
+
+            this.setDateCellStatus(cell);
+            row.push(cell);
+          }
+
+          rows.push(row);
+        }
+
+        this.dateRows = rows;
+        this.$emit('navigate', {
+          year: year,
+          month: month
+        });
+      },
+      filterMarkedDates: function filterMarkedDates() {
+        var arr = [];
+        var current = {
+          year: this.naviDateYear,
+          month: this.naviDateMonth
+        };
+        this.markedDates.forEach(function (date) {
+          var p = parseDate(date);
+
+          if (isSameDate(p, current)) {
+            arr.push(p.year + '-' + (p.month + 1) + '-' + p.date);
+          }
+        });
+        this.monthlyMarkedDates = arr;
+      },
+      updateYearCells: function updateYearCells() {
+        var rows = [];
+        var n = this.naviStartYear - 1;
+
+        for (var i = 0; i < 3; i++) {
+          var row = [];
+
+          for (var j = 0; j < 4; j++) {
+            var cell = {
+              year: n
+            };
+
+            if (n < this.naviStartYear || n > this.naviStartYear + 9) {
+              cell.adjacent = true;
+            }
+
+            row.push(cell);
+            n++;
+          }
+
+          rows.push(row);
+        }
+
+        this.yearRows = rows;
+      },
+      resetDate: function resetDate(value) {
+        var v;
+
+        try {
+          v = value ? lodash_isdate(value) ? value : lodash_isstring(value) ? new Date(Date.parse(value)) : null : null;
+        } catch (e) {}
+
+        var _parseDate2 = parseDate(v),
+            year = _parseDate2.year,
+            month = _parseDate2.month,
+            date = _parseDate2.date;
+
+        this.year = year;
+        this.month = month;
+        this.date = date;
+        this.naviStartYear = Math.trunc(year / 10) * 10;
+        this.naviYear = year;
+        this.naviMonth = month;
+        this.naviDateYear = year;
+        this.naviDateMonth = month;
+        this.naviDate = date;
+        this.updateYearCells();
+        this.updateDateCells();
+      },
+      goMonth: function goMonth(step) {
+        var _getSiblingMonth = getSiblingMonth({
+          year: this.naviDateYear,
+          month: this.naviDateMonth,
+          step: step
+        }),
+            year = _getSiblingMonth.year,
+            month = _getSiblingMonth.month;
+
+        this.naviDateYear = year;
+        this.naviDateMonth = month;
+        this.updateDateCells();
+      },
+      goNow: function goNow() {
+        return this.tab === 'date' ? this.goThisMonth() : this.goThisYear();
+      },
+      goPrev: function goPrev() {
+        return this.tab === 'date' ? this.goMonth(-1) : this.goPrevYears();
+      },
+      goNext: function goNext() {
+        return this.tab === 'date' ? this.goMonth(1) : this.goNextYears();
+      },
+      goThisMonth: function goThisMonth() {
+        var _parseDate3 = parseDate(),
+            year = _parseDate3.year,
+            month = _parseDate3.month;
+
+        this.naviDateYear = year;
+        this.naviDateMonth = month;
+        this.updateDateCells();
+      },
+      goPrevYears: function goPrevYears() {
+        this.naviStartYear -= 10;
+        this.updateYearCells();
+      },
+      goNextYears: function goNextYears() {
+        this.naviStartYear += 10;
+        this.updateYearCells();
+      },
+      goThisYear: function goThisYear() {
+        this.naviStartYear = Math.trunc(new Date().getFullYear() / 10) * 10;
+        this.updateYearCells();
+      },
+      onTitleClick: function onTitleClick() {
+        if (this.tab === 'date') {
+          this.naviMonth = this.naviDateMonth;
+          this.naviYear = this.naviDateYear;
+          this.naviStartYear = Math.trunc(this.naviYear / 10) * 10;
+          this.updateYearCells();
+          this.tab = 'year';
+        }
+      },
+      onYearCellClick: function onYearCellClick(cell) {
+        this.naviYear = cell.year;
+
+        if (this.selectMode === 'year') {
+          this.$emit('change', new Date(this.naviYear, 1, 1), this.naviYear);
+        }
+      },
+      onMonthCellClick: function onMonthCellClick(cell) {
+        this.naviMonth = cell.month;
+
+        if (this.naviYear >= this.naviStartYear - 1 && this.naviYear < this.naviStartYear + 11) {
+          if (this.selectMode !== 'year' && this.selectMode !== 'month') {
+            this.naviDateYear = this.naviYear;
+            this.naviDateMonth = this.naviMonth;
+            this.updateDateCells();
+            this.tab = 'date';
+          } else {
+            this.$emit('change', new Date(this.naviYear, this.naviMonth, 1), this.naviYear, this.naviMonth);
+          }
+        }
+      },
+      onDateCellClick: function onDateCellClick(cell) {
+        if (cell.outOfRange) return;
+        this.naviDate = cell.date;
+
+        if (!this.value || !isSameDate(cell, this)) {
+          this.$emit('change', new Date(cell.year, cell.month, cell.date), cell.year, cell.month, cell.date);
+        }
+      }
+    }
+  };
+
+  /* script */
+  var __vue_script__$k = script$k;
+  /* template */
+
+  var __vue_render__$h = function __vue_render__() {
+    var _vm = this;
+
+    var _h = _vm.$createElement;
+
+    var _c = _vm._self._c || _h;
+
+    return _c("div", {
+      staticClass: "mu-calendar"
+    }, [_c("div", {
+      staticClass: "mu-calendar-header"
+    }, [_c("div", {
+      staticClass: "mu-calendar-title",
+      on: {
+        click: _vm.onTitleClick
+      }
+    }, [_vm._v("\n      " + _vm._s(_vm.title) + "\n    ")]), _vm._v(" "), _c("icon-button", {
+      attrs: {
+        "button-type": "primary",
+        "button-style": "text",
+        icon: "key-left"
+      },
+      on: {
+        click: _vm.goPrev
+      }
+    }), _vm._v(" "), _c("icon-button", {
+      attrs: {
+        "button-type": "primary",
+        "button-style": "text",
+        icon: "calendar"
+      },
+      on: {
+        click: _vm.goNow
+      }
+    }), _vm._v(" "), _c("icon-button", {
+      attrs: {
+        "button-type": "primary",
+        "button-style": "text",
+        icon: "key-right"
+      },
+      on: {
+        click: _vm.goNext
+      }
+    })], 1), _vm._v(" "), _vm.tab === "date" ? [_c("div", {
+      staticClass: "mu-week-header"
+    }, _vm._l(_vm.weekDays, function (name) {
+      return _c("div", {
+        key: name,
+        staticClass: "mu-week-cell"
+      }, [_vm._v("\n        " + _vm._s(name) + "\n      ")]);
+    }), 0), _vm._v(" "), _c("div", {
+      staticClass: "mu-calendar-grid"
+    }, _vm._l(_vm.dateRows, function (row, rowIdx) {
+      return _c("div", {
+        key: rowIdx,
+        staticClass: "mu-calendar-row",
+        attrs: {
+          size: "auto"
+        }
+      }, _vm._l(row, function (cell, cellIdx) {
+        return _c("div", {
+          key: cellIdx,
+          staticClass: "mu-calendar-cell",
+          attrs: {
+            today: cell.today,
+            active: cell.active,
+            marked: cell.marked,
+            adjacent: cell.adjacent,
+            "out-of-range": cell.outOfRange
+          },
+          on: {
+            click: function click($event) {
+              return _vm.onDateCellClick(cell);
+            }
+          }
+        }, [_vm._v("\n          " + _vm._s(cell.date) + "\n        ")]);
+      }), 0);
+    }), 0)] : [_c("div", {
+      staticClass: "mu-calendar-grid"
+    }, _vm._l(_vm.yearRows, function (row, rowIdx) {
+      return _c("div", {
+        key: rowIdx,
+        staticClass: "mu-calendar-row"
+      }, _vm._l(row, function (cell, cellIdx) {
+        return _c("div", {
+          key: cellIdx,
+          staticClass: "mu-calendar-cell",
+          "class": {
+            active: cell.year === _vm.naviYear
+          },
+          attrs: {
+            active: cell.year === _vm.naviYear,
+            adjacent: cell.adjacent,
+            "this-year": cell.year === _vm.thisYear,
+            "out-of-range": cell.outOfRange
+          },
+          on: {
+            click: function click($event) {
+              return _vm.onYearCellClick(cell);
+            }
+          }
+        }, [_vm._v("\n          " + _vm._s(cell.year) + "\n        ")]);
+      }), 0);
+    }), 0), _vm._v(" "), _vm.selectMode !== "year" ? _c("div", {
+      staticClass: "mu-calendar-grid"
+    }, _vm._l(_vm.monthRows, function (row, rowIdx) {
+      return _c("div", {
+        key: rowIdx,
+        staticClass: "mu-calendar-row"
+      }, _vm._l(row, function (cell, cellIdx) {
+        return _c("div", {
+          key: cellIdx,
+          staticClass: "mu-calendar-cell",
+          attrs: {
+            active: cell.month === _vm.naviMonth
+          },
+          on: {
+            click: function click($event) {
+              return _vm.onMonthCellClick(cell);
+            }
+          }
+        }, [_vm._v("\n          " + _vm._s(cell.monthName) + "\n        ")]);
+      }), 0);
+    }), 0) : _vm._e()]], 2);
+  };
+
+  var __vue_staticRenderFns__$h = [];
+  __vue_render__$h._withStripped = true;
+  /* style */
+
+  var __vue_inject_styles__$k = undefined;
+  /* scoped */
+
+  var __vue_scope_id__$k = undefined;
+  /* module identifier */
+
+  var __vue_module_identifier__$k = undefined;
+  /* functional template */
+
+  var __vue_is_functional_template__$k = false;
+  /* style inject */
+
+  /* style inject SSR */
+
+  var Calendar = normalizeComponent_1({
+    render: __vue_render__$h,
+    staticRenderFns: __vue_staticRenderFns__$h
+  }, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, undefined, undefined);
+
   /* GLOBAL STYLE */
 
   function install(Vue) {
@@ -4638,6 +5331,7 @@
     Vue.component('mu-modal', Modal);
     Vue.component('mu-dialog', Dialog);
     Vue.component('mu-dialog-wrapper', DialogWrapper);
+    Vue.component('mu-calendar', Calendar);
   }
 
   if (window.Vue) install(window.Vue);
@@ -4646,6 +5340,7 @@
   exports.BaseModal = BaseModal;
   exports.Button = Button;
   exports.ButtonGroup = ButtonGroup;
+  exports.Calendar = Calendar;
   exports.CloseButton = CloseButton;
   exports.ComboBox = ComboBox;
   exports.Dialog = Dialog;

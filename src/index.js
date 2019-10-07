@@ -30,6 +30,8 @@ import BaseDialog from './layer/base-dialog.vue'
 import Modal from './layer/modal.vue'
 import Dialog from './layer/dialog.vue'
 import DialogWrapper from './layer/dialog-wrapper.vue'
+/* CALENDAR */
+import Calendar from './calendar/calendar.vue'
 
 // import './transform'
 
@@ -59,6 +61,8 @@ function install (Vue) {
   Vue.component('mu-modal', Modal)
   Vue.component('mu-dialog', Dialog)
   Vue.component('mu-dialog-wrapper', DialogWrapper)
+
+  Vue.component('mu-calendar', Calendar)
 }
 
 if (window.Vue) install(window.Vue)
@@ -92,5 +96,7 @@ export {
   BaseDialog,
   Modal,
   Dialog,
-  DialogWrapper
+  DialogWrapper,
+  // Calendar
+  Calendar
 }

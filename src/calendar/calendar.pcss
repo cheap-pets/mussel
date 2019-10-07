@@ -1,0 +1,108 @@
+.mu-calendar {
+  flex-direction: column;
+  min-height: 240px;
+  min-width: 300px;
+  font-size: 0.857rem;
+  background: #fff;
+  border: 0.5px solid $defaultBorderColor;
+  overflow: hidden;
+
+  &,
+  & > .mu-calendar-header,
+  & > .mu-calendar-grid,
+  & > .mu-week-header,
+  & .mu-calendar-row,
+  & .mu-calendar-cell {
+    display: flex;
+    align-items: stretch;
+  }
+
+  & > .mu-calendar-header {
+    align-items: center;
+    padding: 8px;
+    & > .mu-calendar-title {
+      margin-right: auto;
+      font-size: 1.428rem;
+      font-weight: 600;
+      color: $primaryColor;
+      cursor: pointer;
+    }
+  }
+
+  & > .mu-week-header {
+    align-items: center;
+    height: 32px;
+    font-weight: 600;
+    color: $textGrey;
+    border-top: 2px solid $primaryColor;
+    & > * {
+      flex-grow: 1;
+      width: 1px;
+      text-align: center;
+    }
+  }
+
+  & > .mu-calendar-grid {
+    flex-direction: column;
+    flex-grow: 1;
+    height: 1px;
+    border-top: 2px solid $primaryColor;
+    overflow: hidden;
+
+    & > .mu-calendar-row {
+      height: 1px;
+      flex-grow: 1;
+
+      & + .mu-calendar-row {
+        border-top: 0.5px solid $defaultBorderColor;
+      }
+    }
+    & .mu-calendar-cell {
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      width: 1px;
+      color: $primaryColor;
+      cursor: pointer;
+
+      & + .mu-calendar-cell {
+        border-left: 0.5px solid $defaultBorderColor;
+      }
+
+      &[marked]:after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-bottom: 8px solid $dangerColor;
+        border-right: 8px solid transparent;
+        content: '';
+      }
+      &[adjacent] {
+        color: $textLightGrey;
+      }
+      &:hover {
+        color: $buttonPrimaryHoverColor;
+        background: rgba(0, 0, 0, .025);
+      }
+      &[this-year],
+      &[today] {
+        font-weight: 600;
+        color: $warningColor;
+      }
+      &[out-of-range] {
+        color: $textLightGrey;
+        background: rgba(0, 0, 0, .05);
+        cursor: default;
+      }
+      &[active] {
+        z-index: 1;
+        font-weight: 600;
+        color: #fff;
+        background: $primaryColor;
+      }
+    }
+  }
+}

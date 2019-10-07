@@ -17,7 +17,7 @@ const variables = {
   unitSpacingSizePx: 8,
 
   /* document */
-  documentFontSizePx: 14,
+  documentFontSize: '14px',
 
   /* button */
   buttonHeightPx: 32,
@@ -29,9 +29,12 @@ const variables = {
   buttonDefaultHoverColor: grey[6],
   buttonDefaultActiveColor: grey[8],
   buttonDefaultDisabledColor: grey[4],
-  buttonDefaultShadow: _buttonShadow.replace('$$shadowColor', grey[2]),
-  buttonDefaultHoverShadow: _buttonHoverShadow.replace('$$shadowColor', grey[2]),
-  buttonDefaultActiveShadow: _buttonActiveShadow.replace('$$shadowColor', grey[4]),
+  buttonDefaultShadow:
+    _buttonShadow.replace('$$shadowColor', grey[2]),
+  buttonDefaultHoverShadow:
+    _buttonHoverShadow.replace('$$shadowColor', grey[2]),
+  buttonDefaultActiveShadow:
+    _buttonActiveShadow.replace('$$shadowColor', grey[4]),
 
   /* input */
   inputHeightPx: 32,
@@ -48,7 +51,7 @@ const variables = {
 
   /* dropdown */
   dropdownShadow: 'none',
-  dropdownBorder: `1px solid ${grey[3]}`,
+  dropdownBorder: `0.5px solid ${grey[3]}`,
   dropdownListYPaddingPx: 4,
   dropdownItemYPaddingPx: 5,
 
@@ -64,7 +67,7 @@ const variables = {
   textBlack: grey[9],
   textGrey: grey[7],
   textDarkGrey: grey[8],
-  textLightGrey: grey[6],
+  textLightGrey: grey[5],
   textDark: 'rgba(0, 0, 0, .7)',
   textHalfDark: 'rgba(0, 0, 0, .35)',
   textQuarterDark: 'rgba(0, 0, 0, .17)',
@@ -73,7 +76,7 @@ const variables = {
   textQuarterLight: 'rgba(255, 255, 25, .17)',
 
   /* border colours */
-  defaultBorderColor: grey[3],
+  defaultBorderColor: 'rgba(0, 0, 0, .35)',
 
   /* layer */
   modalMaskBackground: 'rgba(0, 0, 0, .17)',
@@ -84,17 +87,23 @@ const variables = {
   dialogHeaderBackground: 'transparent',
   dialogFooterHeightPx: 50,
   dialogFooterBackground: 'rgba(0, 0, 0, .05)',
-  dialogShadow: '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
+  dialogShadow:
+    '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
 
   /* shadow */
   // level 1: button
-  boxShadowLevel1: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
+  boxShadowLevel1:
+    '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
   // level 2: button:hover, dropdown
-  boxShadowLevel2: '0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)',
+  boxShadowLevel2:
+    '0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)',
   // level 3: drawer, window, dialog
-  boxShadowLevel3: '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
-  boxshadowLevel4: '0 10px 20px rgba(0, 0, 0, 0.22), 0 14px 56px rgba(0, 0, 0, 0.25)',
-  boxshadowLevel5: '0 15px 24px rgba(0, 0, 0, 0.22), 0 19px 76px rgba(0, 0, 0, 0.3)'
+  boxShadowLevel3:
+    '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
+  boxshadowLevel4:
+    '0 10px 20px rgba(0, 0, 0, 0.22), 0 14px 56px rgba(0, 0, 0, 0.25)',
+  boxshadowLevel5:
+    '0 15px 24px rgba(0, 0, 0, 0.22), 0 19px 76px rgba(0, 0, 0, 0.3)'
 
 }
 
