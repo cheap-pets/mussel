@@ -4622,7 +4622,7 @@ _export({ target: 'Math', stat: true }, {
   }
 });
 
-var css$g = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 240px;\r\n  min-width: 300px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: .5px solid rgba(0,0,0,.35);\r\n  overflow: hidden;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  padding: 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.428rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #666;\r\n  border-top: 2px solid #1890ff;\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 2px solid #1890ff;\r\n  overflow: hidden;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row + .mu-calendar-row {\r\n  border-top: .5px solid rgba(0,0,0,.35);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell + .mu-calendar-cell {\r\n  border-left: .5px solid rgba(0,0,0,.35);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  border-bottom: 8px solid #fa541c;\r\n  border-right: 8px solid transparent;\r\n  content: '';\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #b2b2b2;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.025);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[this-year],\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[today] {\r\n  font-weight: 600;\r\n  color: #fa8c16;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[out-of-range] {\r\n  color: #b2b2b2;\r\n  background: rgba(0,0,0,.05);\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n}";
+var css$g = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 240px;\r\n  min-width: 280px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  overflow: visible;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  height: 40px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.29rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #666;\r\n  border-top: 1px solid #1890ff;\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid #1890ff;\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row + .mu-calendar-row {\r\n  border-top: 1px solid rgba(0,0,0,.07);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell + .mu-calendar-cell {\r\n  border-left: 1px solid rgba(0,0,0,.07);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  border-bottom: 8px solid #fa541c;\r\n  border-right: 8px solid transparent;\r\n  content: '';\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #b2b2b2;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.03);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #fa8c16;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: #b2b2b2;\r\n  background: rgba(0,0,0,.03);\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}";
 styleInject(css$g);
 
 function _typeof$1(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$1 = function _typeof(obj) { return typeof obj; }; } else { _typeof$1 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$1(obj); }
@@ -4751,18 +4751,95 @@ var lodash_isdate = createCommonjsModule(function (module, exports) {
   module.exports = isDate;
 });
 
-function getFirstDay(_ref) {
+// `Array.prototype.{ reduce, reduceRight }` methods implementation
+var createMethod$4 = function (IS_RIGHT) {
+  return function (that, callbackfn, argumentsLength, memo) {
+    aFunction$1(callbackfn);
+    var O = toObject(that);
+    var self = indexedObject(O);
+    var length = toLength(O.length);
+    var index = IS_RIGHT ? length - 1 : 0;
+    var i = IS_RIGHT ? -1 : 1;
+    if (argumentsLength < 2) while (true) {
+      if (index in self) {
+        memo = self[index];
+        index += i;
+        break;
+      }
+      index += i;
+      if (IS_RIGHT ? index < 0 : length <= index) {
+        throw TypeError('Reduce of empty array with no initial value');
+      }
+    }
+    for (;IS_RIGHT ? index >= 0 : length > index; index += i) if (index in self) {
+      memo = callbackfn(memo, self[index], index, O);
+    }
+    return memo;
+  };
+};
+
+var arrayReduce = {
+  // `Array.prototype.reduce` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.reduce
+  left: createMethod$4(false),
+  // `Array.prototype.reduceRight` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.reduceright
+  right: createMethod$4(true)
+};
+
+var $reduce = arrayReduce.left;
+
+
+// `Array.prototype.reduce` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.reduce
+_export({ target: 'Array', proto: true, forced: sloppyArrayMethod('reduce') }, {
+  reduce: function reduce(callbackfn /* , initialValue */) {
+    return $reduce(this, callbackfn, arguments.length, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+function fillGrid(rowCount, colCount, callbackFn) {
+  var rows = [];
+
+  for (var i = 0; i < rowCount; i++) {
+    var row = [];
+
+    for (var j = 0; j < colCount; j++) {
+      callbackFn(row, i, j);
+    }
+
+    rows.push(row);
+  }
+
+  return rows;
+}
+function parseDate(v) {
+  v = v || new Date();
+  return {
+    year: v.getFullYear(),
+    month: v.getMonth(),
+    date: v.getDate()
+  };
+}
+function getMaxDays(_ref) {
   var year = _ref.year,
       month = _ref.month;
-  return new Date(year, month, 1).getDay();
-}
-
-function getMaxDays(_ref2) {
-  var year = _ref2.year,
-      month = _ref2.month;
   return month === 1 && (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) ? 29 : [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
 }
-
+function getFirstDay(_ref2) {
+  var year = _ref2.year,
+      month = _ref2.month;
+  return new Date(year, month, 1).getDay();
+}
+function getMonthName(month, isZh) {
+  var months = isZh ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return months[month] + (isZh ? ' 月' : '');
+}
+function compare(a, b) {
+  a = lodash_isdate(a) ? parseDate(a) : Object(a);
+  b = lodash_isdate(b) ? parseDate(b) : Object(b);
+  return a.year === b.year && a.month === b.month && a.date === b.date;
+}
 function getSiblingMonth(_ref3) {
   var year = _ref3.year,
       month = _ref3.month,
@@ -4782,18 +4859,16 @@ function getSiblingMonth(_ref3) {
     month: month
   };
 }
+function getFilteredMarks(markedDates, year, month) {
+  return markedDates.reduce(function (items, date) {
+    var p = parseDate(date);
 
-function parseDate(v) {
-  v = v || new Date();
-  return {
-    year: v.getFullYear(),
-    month: v.getMonth(),
-    date: v.getDate()
-  };
-}
+    if (p.year === year && p.month === month) {
+      items.push("".concat(p.year, "-").concat(p.month + 1, "-").concat(p.date));
+    }
 
-function isSameDate(a, b) {
-  return a.year === b.year && a.month === b.month && (!a.date || !b.date || a.date === b.date);
+    return items;
+  }, []);
 }
 
 var script$k = {
@@ -4829,78 +4904,46 @@ var script$k = {
     }
   },
   data: function data() {
-    var _parseDate = parseDate(),
-        year = _parseDate.year,
-        month = _parseDate.month,
-        date = _parseDate.date;
-
     return {
-      year: year,
-      month: month,
-      date: date,
-      thisYear: year,
-      thisMonth: month,
-      naviStartYear: null,
-      naviYear: null,
-      naviMonth: null,
-      naviDate: null,
-      naviDateYear: year,
-      naviDateMonth: month,
-      monthlyMarkedDates: [],
+      tab: 'date',
+      dateText: '',
       dateRows: [],
       yearRows: [],
-      tab: 'date'
+      startYear: null,
+      naviYear: null,
+      naviMonth: null
     };
   },
   computed: {
     isZh: function isZh() {
       return (this.language || navigator.language || navigator.userLanguage).indexOf('zh') === 0;
     },
-    months: function months() {
-      return this.isZh ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    },
     weekDays: function weekDays() {
       return this.isZh ? ['日', '一', '二', '三', '四', '五', '六'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
     },
-    yearLabel: function yearLabel() {
-      return this.isZh ? '年' : '';
-    },
-    monthLabel: function monthLabel() {
-      return this.isZh ? '月' : '';
-    },
     title: function title() {
-      var months = this.months,
-          year = this.naviDateYear,
-          month = this.naviDateMonth,
-          yearLabel = this.yearLabel,
-          monthLabel = this.monthLabel,
-          naviStartYear = this.naviStartYear;
-      return this.tab === 'date' ? "".concat(year, " ").concat(yearLabel, " ").concat(months[month], " ").concat(monthLabel) : "".concat(naviStartYear, " ~ ").concat(naviStartYear + 9);
+      var isZh = this.isZh,
+          startYear = this.startYear,
+          year = this.naviYear,
+          month = this.naviMonth;
+      return this.tab === 'date' ? "".concat(year, " ").concat(isZh ? '年' : '', " ").concat(getMonthName(month, isZh)) : "".concat(startYear, " ~ ").concat(startYear + 9);
     },
     monthRows: function monthRows() {
-      var rows = [];
+      var _this = this;
+
       var n = 0;
-
-      for (var i = 0; i < 3; i++) {
-        var row = [];
-
-        for (var j = 0; j < 4; j++) {
-          row.push({
-            month: n,
-            monthName: this.months[n] + this.monthLabel
-          });
-          n++;
-        }
-
-        rows.push(row);
-      }
-
-      return rows;
+      return fillGrid(3, 4, function (row) {
+        row.push({
+          month: n,
+          monthName: getMonthName(n, _this.isZh)
+        });
+        n++;
+      });
     }
   },
   watch: {
     value: function value(v) {
-      this.resetDate(v);
+      this.update(v);
     },
     rangeStart: function rangeStart() {
       this.updateDateCells();
@@ -4913,30 +4956,28 @@ var script$k = {
     }
   },
   mounted: function mounted() {
-    this.setTab(this.selectMode === 'year' || this.selectMode === 'month' ? 'year' : 'date');
-    this.resetDate(this.value);
+    this.tab = this.selectMode === 'date' ? 'date' : 'year';
+    this.update(this.value);
   },
   methods: {
-    setTab: function setTab(v) {
-      this.tab = ['year', 'month'].indexOf(v) >= 0 ? 'year' : 'date';
-    },
-    setDateCellStatus: function setDateCellStatus(cell) {
+    setDateCellStatus: function setDateCellStatus(cell, marks, today) {
       var date = new Date(cell.year, cell.month, cell.date);
-      var str = "".concat(cell.year, "-").concat(cell.month + 1, "-").concat(cell.date);
       var start = this.rangeStart,
           end = this.rangeEnd;
-      if (isSameDate(cell, this)) cell.active = true;
-      if (isSameDate(cell, parseDate())) cell.today = true;
-      if (this.monthlyMarkedDates.indexOf(str) >= 0) cell.marked = true;
+      if (compare(cell, today)) cell.today = true;
+      if (marks.indexOf(cell.text) !== -1) cell.marked = true;
 
       if (start && date < start || end && date > end) {
-        cell.outOfRange = true;
+        cell.invalid = true;
       }
     },
     updateDateCells: function updateDateCells() {
-      this.filterMarkedDates();
-      var year = this.naviDateYear;
-      var month = this.naviDateMonth;
+      var _this2 = this;
+
+      var year = this.naviYear,
+          month = this.naviMonth,
+          markedDates = this.markedDates;
+      var today = parseDate();
       var firstDay = getFirstDay({
         year: year,
         month: month
@@ -4956,126 +4997,92 @@ var script$k = {
         month: month,
         step: 1
       });
-      var rows = [];
+      var marks = getFilteredMarks(markedDates, year, month);
       var n = 1;
+      this.dateRows = fillGrid(7, 7, function (row, i, j) {
+        var isPrevMonth = i === 0 && j < firstDay;
+        var isNextMonth = n > maxDays;
+        var cell = isPrevMonth ? {
+          year: prev.year,
+          month: prev.month,
+          date: prevMaxDays - firstDay + j + 1,
+          adjacent: true
+        } : isNextMonth ? {
+          year: next.year,
+          month: next.month,
+          date: n - maxDays,
+          adjacent: true
+        } : {
+          year: year,
+          month: month,
+          date: n
+        };
+        cell.text = "".concat(cell.year, "-").concat(cell.month + 1, "-").concat(cell.date);
+        if (!isPrevMonth) n++;
 
-      for (var i = 0; i < 7; i++) {
-        var row = [];
-        var cell = void 0;
+        _this2.setDateCellStatus(cell, marks, today);
 
-        for (var j = 0; j < 7; j++) {
-          if (i === 0 && j < firstDay) {
-            cell = {
-              year: prev.year,
-              month: prev.month,
-              date: prevMaxDays - firstDay + j + 1,
-              adjacent: true
-            };
-          } else if (i > 0 && n > maxDays) {
-            cell = {
-              year: next.year,
-              month: next.month,
-              date: n - maxDays,
-              adjacent: true
-            };
-            n++;
-          } else {
-            cell = {
-              year: year,
-              month: month,
-              date: n
-            };
-            n++;
-          }
-
-          this.setDateCellStatus(cell);
-          row.push(cell);
-        }
-
-        rows.push(row);
-      }
-
-      this.dateRows = rows;
+        row.push(cell);
+      });
+      this.$emit('updatecells', {
+        year: year,
+        month: month
+      });
       this.$emit('navigate', {
         year: year,
         month: month
       });
     },
-    filterMarkedDates: function filterMarkedDates() {
-      var arr = [];
-      var current = {
-        year: this.naviDateYear,
-        month: this.naviDateMonth
-      };
-      this.markedDates.forEach(function (date) {
-        var p = parseDate(date);
-
-        if (isSameDate(p, current)) {
-          arr.push(p.year + '-' + (p.month + 1) + '-' + p.date);
-        }
-      });
-      this.monthlyMarkedDates = arr;
-    },
     updateYearCells: function updateYearCells() {
-      var rows = [];
-      var n = this.naviStartYear - 1;
+      var _this3 = this;
 
-      for (var i = 0; i < 3; i++) {
-        var row = [];
+      var n = this.startYear - 1;
+      this.yearRows = fillGrid(3, 4, function (row) {
+        var cell = {
+          year: n
+        };
 
-        for (var j = 0; j < 4; j++) {
-          var cell = {
-            year: n
-          };
-
-          if (n < this.naviStartYear || n > this.naviStartYear + 9) {
-            cell.adjacent = true;
-          }
-
-          row.push(cell);
-          n++;
+        if (n < _this3.startYear || n > _this3.startYear + 9) {
+          cell.adjacent = true;
         }
 
-        rows.push(row);
-      }
-
-      this.yearRows = rows;
+        if (n === parseDate().year) cell.present = true;
+        row.push(cell);
+        n++;
+      });
     },
-    resetDate: function resetDate(value) {
+    update: function update(value) {
       var v;
 
       try {
         v = value ? lodash_isdate(value) ? value : lodash_isstring(value) ? new Date(Date.parse(value)) : null : null;
       } catch (e) {}
 
-      var _parseDate2 = parseDate(v),
-          year = _parseDate2.year,
-          month = _parseDate2.month,
-          date = _parseDate2.date;
+      var _parseDate = parseDate(v),
+          year = _parseDate.year,
+          month = _parseDate.month,
+          date = _parseDate.date;
 
-      this.year = year;
-      this.month = month;
-      this.date = date;
-      this.naviStartYear = Math.trunc(year / 10) * 10;
-      this.naviYear = year;
-      this.naviMonth = month;
-      this.naviDateYear = year;
-      this.naviDateMonth = month;
-      this.naviDate = date;
-      this.updateYearCells();
-      this.updateDateCells();
+      this.dateText = v ? "".concat(year, "-").concat(month + 1, "-").concat(date) : '';
+      this.startYear = Math.trunc(year / 10) * 10;
+
+      if (this.naviYear !== year || this.naviMonth !== month) {
+        this.naviYear = year;
+        this.naviMonth = month;
+        return this.tab === 'year' ? this.updateYearCells() : this.updateDateCells();
+      }
     },
     goMonth: function goMonth(step) {
       var _getSiblingMonth = getSiblingMonth({
-        year: this.naviDateYear,
-        month: this.naviDateMonth,
+        year: this.naviYear,
+        month: this.naviMonth,
         step: step
       }),
           year = _getSiblingMonth.year,
           month = _getSiblingMonth.month;
 
-      this.naviDateYear = year;
-      this.naviDateMonth = month;
+      this.naviYear = year;
+      this.naviMonth = month;
       this.updateDateCells();
     },
     goNow: function goNow() {
@@ -5088,31 +5095,29 @@ var script$k = {
       return this.tab === 'date' ? this.goMonth(1) : this.goNextYears();
     },
     goThisMonth: function goThisMonth() {
-      var _parseDate3 = parseDate(),
-          year = _parseDate3.year,
-          month = _parseDate3.month;
+      var _parseDate2 = parseDate(),
+          year = _parseDate2.year,
+          month = _parseDate2.month;
 
-      this.naviDateYear = year;
-      this.naviDateMonth = month;
+      this.naviYear = year;
+      this.naviMonth = month;
       this.updateDateCells();
     },
     goPrevYears: function goPrevYears() {
-      this.naviStartYear -= 10;
+      this.startYear -= 10;
       this.updateYearCells();
     },
     goNextYears: function goNextYears() {
-      this.naviStartYear += 10;
+      this.startYear += 10;
       this.updateYearCells();
     },
     goThisYear: function goThisYear() {
-      this.naviStartYear = Math.trunc(new Date().getFullYear() / 10) * 10;
+      this.startYear = Math.trunc(new Date().getFullYear() / 10) * 10;
       this.updateYearCells();
     },
     onTitleClick: function onTitleClick() {
       if (this.tab === 'date') {
-        this.naviMonth = this.naviDateMonth;
-        this.naviYear = this.naviDateYear;
-        this.naviStartYear = Math.trunc(this.naviYear / 10) * 10;
+        this.startYear = Math.trunc(this.naviYear / 10) * 10;
         this.updateYearCells();
         this.tab = 'year';
       }
@@ -5125,25 +5130,33 @@ var script$k = {
       }
     },
     onMonthCellClick: function onMonthCellClick(cell) {
+      var naviYear = this.naviYear,
+          naviMonth = this.naviMonth,
+          startYear = this.startYear,
+          selectMode = this.selectMode;
       this.naviMonth = cell.month;
 
-      if (this.naviYear >= this.naviStartYear - 1 && this.naviYear < this.naviStartYear + 11) {
-        if (this.selectMode !== 'year' && this.selectMode !== 'month') {
-          this.naviDateYear = this.naviYear;
-          this.naviDateMonth = this.naviMonth;
+      if (naviYear >= startYear - 1 && naviYear < startYear + 11) {
+        if (selectMode === 'date') {
           this.updateDateCells();
           this.tab = 'date';
         } else {
-          this.$emit('change', new Date(this.naviYear, this.naviMonth, 1), this.naviYear, this.naviMonth);
+          var value = new Date(naviYear, naviMonth, 1);
+          this.$emit('change', value, naviYear, naviMonth);
         }
       }
     },
     onDateCellClick: function onDateCellClick(cell) {
-      if (cell.outOfRange) return;
-      this.naviDate = cell.date;
+      var year = cell.year,
+          month = cell.month,
+          date = cell.date,
+          invalid = cell.invalid;
+      var value = new Date(year, month, date);
+      if (invalid) return;
 
-      if (!this.value || !isSameDate(cell, this)) {
-        this.$emit('change', new Date(cell.year, cell.month, cell.date), cell.year, cell.month, cell.date);
+      if (!this.value || !compare(cell, this.value)) {
+        this.dateText = "".concat(year, "-").concat(month + 1, "-").concat(date);
+        this.$emit('change', value, year, month, date);
       }
     }
   }
@@ -5217,11 +5230,11 @@ var __vue_render__$h = function __vue_render__() {
         key: cellIdx,
         staticClass: "mu-calendar-cell",
         attrs: {
-          today: cell.today,
-          active: cell.active,
+          present: cell.today,
+          active: cell.text === _vm.dateText,
           marked: cell.marked,
-          adjacent: cell.adjacent,
-          "out-of-range": cell.outOfRange
+          invalid: cell.invalid,
+          adjacent: cell.adjacent
         },
         on: {
           click: function click($event) {
@@ -5245,9 +5258,9 @@ var __vue_render__$h = function __vue_render__() {
         },
         attrs: {
           active: cell.year === _vm.naviYear,
+          present: cell.present,
           adjacent: cell.adjacent,
-          "this-year": cell.year === _vm.thisYear,
-          "out-of-range": cell.outOfRange
+          invalid: cell.invalid
         },
         on: {
           click: function click($event) {

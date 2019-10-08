@@ -1,11 +1,12 @@
 .mu-calendar {
   flex-direction: column;
   min-height: 240px;
-  min-width: 300px;
+  min-width: 280px;
   font-size: 0.857rem;
   background: #fff;
-  border: 0.5px solid $defaultBorderColor;
-  overflow: hidden;
+  border: $defaultBoxBorder;
+  overflow: visible;
+  user-select: none;
 
   &,
   & > .mu-calendar-header,
@@ -19,10 +20,11 @@
 
   & > .mu-calendar-header {
     align-items: center;
-    padding: 8px;
+    height: 40px;
+    padding: 0 8px;
     & > .mu-calendar-title {
       margin-right: auto;
-      font-size: 1.428rem;
+      font-size: 1.29rem;
       font-weight: 600;
       color: $primaryColor;
       cursor: pointer;
@@ -34,7 +36,7 @@
     height: 32px;
     font-weight: 600;
     color: $textGrey;
-    border-top: 2px solid $primaryColor;
+    border-top: 1px solid $primaryColor;
     & > * {
       flex-grow: 1;
       width: 1px;
@@ -46,15 +48,15 @@
     flex-direction: column;
     flex-grow: 1;
     height: 1px;
-    border-top: 2px solid $primaryColor;
-    overflow: hidden;
+    border-top: 1px solid $primaryColor;
+    overflow: visible;
 
     & > .mu-calendar-row {
       height: 1px;
       flex-grow: 1;
 
       & + .mu-calendar-row {
-        border-top: 0.5px solid $defaultBorderColor;
+        border-top: 1px solid $gridLineColor;
       }
     }
     & .mu-calendar-cell {
@@ -67,7 +69,7 @@
       cursor: pointer;
 
       & + .mu-calendar-cell {
-        border-left: 0.5px solid $defaultBorderColor;
+        border-left: 1px solid $gridLineColor;
       }
 
       &[marked]:after {
@@ -85,16 +87,15 @@
       }
       &:hover {
         color: $buttonPrimaryHoverColor;
-        background: rgba(0, 0, 0, .025);
+        background: rgba(0, 0, 0, .03);
       }
-      &[this-year],
-      &[today] {
+      &[present] {
         font-weight: 600;
         color: $warningColor;
       }
-      &[out-of-range] {
+      &[invalid] {
         color: $textLightGrey;
-        background: rgba(0, 0, 0, .05);
+        background: rgba(0, 0, 0, .03);
         cursor: default;
       }
       &[active] {
@@ -102,6 +103,7 @@
         font-weight: 600;
         color: #fff;
         background: $primaryColor;
+        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.17), 0px 0px 4px rgba(0, 0, 0, 0.35);
       }
     }
   }

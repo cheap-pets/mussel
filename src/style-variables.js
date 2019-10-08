@@ -51,7 +51,7 @@ const variables = {
 
   /* dropdown */
   dropdownShadow: 'none',
-  dropdownBorder: `0.5px solid ${grey[3]}`,
+  dropdownBorder: `1px solid ${grey[3]}`,
   dropdownListYPaddingPx: 4,
   dropdownItemYPaddingPx: 5,
 
@@ -76,7 +76,10 @@ const variables = {
   textQuarterLight: 'rgba(255, 255, 25, .17)',
 
   /* border colours */
-  defaultBorderColor: 'rgba(0, 0, 0, .35)',
+  defaultBoxBorder: `1px solid ${grey[3]}`,
+
+  /* grid */
+  gridLineColor: 'rgba(0, 0, 0, .07)',
 
   /* layer */
   modalMaskBackground: 'rgba(0, 0, 0, .17)',
