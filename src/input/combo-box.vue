@@ -48,12 +48,17 @@
       }
     },
     watch: {
-      multiple: {
-        handler (value) {
-          this.params.editable = this.editable && !value
-        },
-        immediate: true
+      multiple (value) {
+        this.params.editable = this.editable && !value
       }
+    },
+    created () {
+      this.params.value = null
+    },
+    mounted () {
+      this.params.editable = this.editable && !this.multiple
+      this.selectedValue = this.value || (this.multiple ? [] : null)
+      this.setInputValueImmediately()
     },
     methods: {
       setInputValue () {
@@ -134,7 +139,7 @@
         this.selectedValue = this.multiple ? [] : null
         this.params.value = ''
         this.$emit('change', this.selectedValue)
-        this.$emit('clear', '')
+        this.$emit('clear')
       }
     }
   }

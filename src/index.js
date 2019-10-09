@@ -20,6 +20,7 @@ import InputBox from './input/input-box.vue'
 import PopupBox from './input/popup-box.vue'
 import ComboBox from './input/combo-box.vue'
 import Option from './input/option.js'
+import DateBox from './input/date-box.vue'
 /* LIST */
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
@@ -54,6 +55,7 @@ function install (Vue) {
   Vue.component('mu-popup-box', PopupBox)
   Vue.component('mu-combo-box', ComboBox)
   Vue.component('mu-option', Option)
+  Vue.component('mu-date-box', DateBox)
 
   Vue.component('mu-list-item', ListItem)
   Vue.component('mu-list-divider', ListDivider)
@@ -88,6 +90,7 @@ export {
   PopupBox,
   ComboBox,
   Option,
+  DateBox,
   // list
   ListItem,
   ListDivider,

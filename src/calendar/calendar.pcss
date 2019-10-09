@@ -5,7 +5,7 @@
   font-size: 0.857rem;
   background: #fff;
   border: $defaultBoxBorder;
-  overflow: visible;
+  overflow: hidden;
   user-select: none;
 
   &,
@@ -20,11 +20,11 @@
 
   & > .mu-calendar-header {
     align-items: center;
-    height: 40px;
+    height: 32px;
     padding: 0 8px;
     & > .mu-calendar-title {
       margin-right: auto;
-      font-size: 1.29rem;
+      font-size: 1.14rem;
       font-weight: 600;
       color: $primaryColor;
       cursor: pointer;
@@ -107,4 +107,9 @@
       }
     }
   }
+}
+
+.mu-dropdown > .mu-calendar {
+  height: 100%;
+  border: 0;
 }

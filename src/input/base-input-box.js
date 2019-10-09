@@ -43,7 +43,9 @@ export default {
       type: String,
       default: 'text'
     },
-    value: [String, Number],
+    value: {
+      type: [String, Number]
+    },
     icon: String,
     iconClass: String,
     iconAlign: {
@@ -123,7 +125,7 @@ export default {
     onClearClick () {
       this.params.value = ''
       this.$emit('change', '')
-      this.$emit('clear', '')
+      this.$emit('clear')
     },
     onButtonClick () {
       this.$el.querySelector('.mu-input').focus()

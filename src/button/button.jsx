@@ -49,9 +49,21 @@ export default {
       <button
         class="mu-button"
         icon-only={ this.isIconOnly }
-        button-type={ this.buttonType === 'normal' ? undefined : this.buttonType }
-        button-style={ this.buttonStyle === 'normal' ? undefined : this.buttonStyle }
-        button-shape={ this.buttonShape === 'normal' ? undefined : this.buttonShape }
+        button-type={
+          this.buttonType === 'normal'
+            ? undefined
+            : this.buttonType
+        }
+        button-style={
+          this.buttonStyle === 'normal'
+            ? undefined
+            : this.buttonStyle
+        }
+        button-shape={
+          this.buttonShape === 'normal'
+            ? undefined
+            : this.buttonShape
+        }
         onClick={ this.onClick }>
         {
           this.icon || this.iconClass

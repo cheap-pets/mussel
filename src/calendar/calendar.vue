@@ -5,19 +5,16 @@
         {{ title }}
       </div>
       <icon-button
-        button-type="primary"
-        button-style="text"
-        icon="key-left"
+        button-style="link"
+        icon="key-up"
         @click="goPrev" />
       <icon-button
-        button-type="primary"
-        button-style="text"
+        button-style="link"
         icon="calendar"
         @click="goNow" />
       <icon-button
-        button-type="primary"
-        button-style="text"
-        icon="key-right"
+        button-style="link"
+        icon="key-down"
         @click="goNext" />
     </div>
     <template v-if="tab === 'date'">
@@ -37,10 +34,10 @@
             :key="cellIdx"
             class="mu-calendar-cell"
             :present="cell.today"
-            :active="cell.text === dateText"
             :marked="cell.marked"
             :invalid="cell.invalid"
             :adjacent="cell.adjacent"
+            :active="cell.text === dateText"
             @click="onDateCellClick(cell)">
             {{ cell.date }}
           </div>
@@ -58,10 +55,10 @@
             :key="cellIdx"
             class="mu-calendar-cell"
             :class="{ active: cell.year === naviYear }"
-            :active="cell.year === naviYear"
             :present="cell.present"
-            :adjacent="cell.adjacent"
             :invalid="cell.invalid"
+            :adjacent="cell.adjacent"
+            :active="cell.year === naviYear"
             @click="onYearCellClick(cell)">
             {{ cell.year }}
           </div>
@@ -113,7 +110,7 @@
       event: 'change'
     },
     props: {
-      value: Date,
+      value: [String, Date],
       rangeStart: Date,
       rangeEnd: Date,
       language: {
@@ -348,15 +345,15 @@
         }
       },
       onMonthCellClick (cell) {
-        const { naviYear, naviMonth, startYear, selectMode } = this
+        const { naviYear, startYear, selectMode } = this
         this.naviMonth = cell.month
         if (naviYear >= startYear - 1 && naviYear < startYear + 11) {
           if (selectMode === 'date') {
             this.updateDateCells()
             this.tab = 'date'
           } else {
-            const value = new Date(naviYear, naviMonth, 1)
-            this.$emit('change', value, naviYear, naviMonth)
+            const value = new Date(naviYear, this.naviMonth, 1)
+            this.$emit('change', value, naviYear, this.naviMonth)
           }
         }
       },

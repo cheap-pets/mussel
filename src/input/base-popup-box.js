@@ -39,6 +39,10 @@ export default {
       type: String,
       default: 'expander'
     },
+    editable: {
+      type: Boolean,
+      default: false
+    },
     popupWidth: String,
     popupHeight: String,
     popupClassName: String,
@@ -86,7 +90,7 @@ export default {
       this.params.value = ''
       this.setPopupVisible(false)
       this.$emit('change', '')
-      this.$emit('clear', '')
+      this.$emit('clear')
     }
   }
 }

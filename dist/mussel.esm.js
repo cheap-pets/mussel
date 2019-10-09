@@ -1864,10 +1864,12 @@ var keyUp = 'M240.98697401 733.64730918L512 462.6342832 783.01302599 733.6473091
 var search = 'M1021.184 925.696l-91.904 91.584-202.752-201.92c-75.904 56.64-169.216 91.392-271.424 91.392C203.712 906.688 0 703.744 0 453.376 0 202.944 203.712 0 455.168 0c251.328 0 455.04 202.944 455.04 453.376 0 101.76-34.88 194.752-91.712 270.336L1021.184 925.696 1021.184 925.696zM455.168 129.6c-179.584 0-325.056 144.96-325.056 323.84 0 178.816 145.472 323.84 325.056 323.84 179.456 0 325.056-145.024 325.056-323.84C780.224 274.496 634.624 129.6 455.168 129.6L455.168 129.6z';
 var expandAll = 'M768 341.333333H341.333333v426.666667H256V341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h426.666667v85.333333z m-170.666667-256H170.666667c-46.933333 0-85.333333 38.4-85.333334 85.333334v426.666666h85.333334V170.666667h426.666666V85.333333z m341.333334 426.666667v341.333333c0 46.933333-38.4 85.333333-85.333334 85.333334h-341.333333c-46.933333 0-85.333333-38.4-85.333333-85.333334v-341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h341.333333c46.933333 0 85.333333 38.4 85.333334 85.333333z m-85.333334 128h-128v-128h-85.333333v128h-128v85.333333h128v128h85.333333v-128h128v-85.333333z';
 var collapseAll = 'M597.333333 170.666667H170.666667v426.666666H85.333333V170.666667c0-46.933333 38.4-85.333333 85.333334-85.333334h426.666666v85.333334z m170.666667 85.333333H341.333333c-46.933333 0-85.333333 38.4-85.333333 85.333333v426.666667h85.333333V341.333333h426.666667V256z m170.666667 256v341.333333c0 46.933333-38.4 85.333333-85.333334 85.333334h-341.333333c-46.933333 0-85.333333-38.4-85.333333-85.333334v-341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h341.333333c46.933333 0 85.333333 38.4 85.333334 85.333333z m-85.333334 128h-341.333333v85.333333h341.333333v-85.333333z';
+var calendar = 'M770.90765392 557.5111111l-258.90765392 0 0 258.90765392 258.90765392 0L770.90765392 557.5111111zM719.12612386-12.085728l0 103.56306132L304.87387614 91.47733332 304.87387614-12.085728 201.31081482-12.085728l0 103.56306132L149.52928355 91.47733332C92.5696 91.47733332 45.96622222 138.0807111 45.96622222 195.04039466l0 724.94143169c0 56.95968355 46.60337778 103.56306132 103.56306133 103.56306132l724.94143169 0c56.95968355 0 103.56306132-46.60337778 103.56306133-103.56306132L978.03377778 195.04039466c0-56.95968355-46.60337778-103.56306132-103.56306133-103.56306134l-51.78153127 0L822.68918518-12.085728 719.12612386-12.085728zM874.47071645 919.98182755L149.52928355 919.98182755 149.52928355 350.38498724l724.94143169 0L874.47071645 919.98182755z';
 var _d = {
   ok: ok,
   close: close,
   search: search,
+  calendar: calendar,
   'key-down': keyDown,
   'key-left': keyLeft,
   'key-right': keyRight,
@@ -1888,6 +1890,7 @@ var script$3 = {
   name: 'MusselIcon',
   props: {
     icon: String,
+    svgData: String,
     iconClass: String,
     triggerType: String,
     triggerOn: Boolean,
@@ -1908,7 +1911,7 @@ var script$3 = {
       return icon || (iconClass || !triggerType ? undefined : triggerIcons[triggerType]);
     },
     d: function d() {
-      return _d[this.iconName];
+      return this.svgData || this.iconName ? _d[this.iconName] : null;
     }
   },
   methods: {
@@ -1944,7 +1947,7 @@ var __vue_render__$3 = function __vue_render__() {
     on: {
       click: _vm.onClick
     }
-  }, [_vm.iconName ? _c("svg", {
+  }, [_vm.d ? _c("svg", {
     attrs: {
       icon: _vm.icon,
       viewBox: "0 0 1024 1024",
@@ -1981,7 +1984,7 @@ var Icon = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$3
 }, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, undefined, undefined);
 
-var css$6 = ".mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  min-width: 65px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n  background: #fff;\r\n  line-height: 20px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button:not([button-type]),\r\n.mu-button[button-type=normal] {\r\n  box-shadow: none;\r\n}\r\n.mu-button:not([button-type])[button-style=link]:hover,\r\n.mu-button[button-type=normal][button-style=link]:hover {\r\n  color: #8c8c8c;\r\n  fill: #8c8c8c;\r\n}\r\n.mu-button:not([button-type])[active],\r\n.mu-button[button-type=normal][active] {\r\n  background: #404040;\r\n}\r\n.mu-button:not([button-type]):hover,\r\n.mu-button[button-type=normal]:hover {\r\n  background: #8c8c8c;\r\n  border-color: #8c8c8c;\r\n  box-shadow: 0 0 0 .2rem #d9d9d9;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button:not([button-type])[disabled][button-style=link],\r\n.mu-button[button-type=normal][disabled][button-style=link] {\r\n  color: #bfbfbf;\r\n  fill: #bfbfbf;\r\n}\r\n.mu-button:not([button-type])[disabled]:not([button-style=link]),\r\n.mu-button[button-type=normal][disabled]:not([button-style=link]) {\r\n  background: #bfbfbf;\r\n  border-color: #bfbfbf;\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[disabled] {\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  border-color: #1890ff;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary][button-style=link] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover {\r\n  color: #40a9ff;\r\n  fill: #40a9ff;\r\n}\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  border-color: #096dd9;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  border-color: #40a9ff;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][disabled][button-style=link] {\r\n  color: #91d5ff;\r\n  fill: #91d5ff;\r\n}\r\n.mu-button[button-type=primary][disabled]:not([button-style=link]) {\r\n  background: #91d5ff;\r\n  border-color: #91d5ff;\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #52c41a;\r\n  border-color: #52c41a;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit][button-style=link] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover {\r\n  color: #73d13d;\r\n  fill: #73d13d;\r\n}\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  border-color: #389e0d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  border-color: #73d13d;\r\n  box-shadow: 0 0 0 .2rem #b7eb8f;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][disabled][button-style=link] {\r\n  color: #b7eb8f;\r\n  fill: #b7eb8f;\r\n}\r\n.mu-button[button-type=submit][disabled]:not([button-style=link]) {\r\n  background: #b7eb8f;\r\n  border-color: #b7eb8f;\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #fa541c;\r\n  border-color: #fa541c;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger][button-style=link] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover {\r\n  color: #ff7a45;\r\n  fill: #ff7a45;\r\n}\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #d4380d;\r\n  border-color: #d4380d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff7a45;\r\n  border-color: #ff7a45;\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][disabled][button-style=link] {\r\n  color: #ffbb96;\r\n  fill: #ffbb96;\r\n}\r\n.mu-button[button-type=danger][disabled]:not([button-style=link]) {\r\n  background: #ffbb96;\r\n  border-color: #ffbb96;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[button-style=link]:hover,\r\n.mu-button[button-style=link][active],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n  border-color: transparent;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=outline] {\r\n  background: #fff;\r\n}\r\n.mu-button[button-style=link]:not([disabled]):hover {\r\n  text-decoration: underline;\r\n}\r\n.mu-button[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[disabled] {\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  color: rgba(255,255,255,.7);\r\n  fill: rgba(255,255,255,.7);\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  min-width: 0;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}";
+var css$6 = ".mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  min-width: 65px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n  background: #fff;\r\n  line-height: 20px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button:not([button-type]),\r\n.mu-button[button-type=normal] {\r\n  box-shadow: none;\r\n}\r\n.mu-button:not([button-type])[button-style=link]:hover,\r\n.mu-button[button-type=normal][button-style=link]:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button:not([button-type])[active],\r\n.mu-button[button-type=normal][active] {\r\n  background: #404040;\r\n}\r\n.mu-button:not([button-type]):hover,\r\n.mu-button[button-type=normal]:hover {\r\n  background: #8c8c8c;\r\n  border-color: #8c8c8c;\r\n  box-shadow: 0 0 0 .2rem #d9d9d9;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button:not([button-type])[disabled][button-style=link],\r\n.mu-button[button-type=normal][disabled][button-style=link] {\r\n  color: #bfbfbf;\r\n  fill: #bfbfbf;\r\n}\r\n.mu-button:not([button-type])[disabled]:not([button-style=link]),\r\n.mu-button[button-type=normal][disabled]:not([button-style=link]) {\r\n  background: #bfbfbf;\r\n  border-color: #bfbfbf;\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[disabled] {\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  border-color: #1890ff;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary][button-style=link] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover {\r\n  color: #40a9ff;\r\n  fill: #40a9ff;\r\n}\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  border-color: #096dd9;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  border-color: #40a9ff;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][disabled][button-style=link] {\r\n  color: #91d5ff;\r\n  fill: #91d5ff;\r\n}\r\n.mu-button[button-type=primary][disabled]:not([button-style=link]) {\r\n  background: #91d5ff;\r\n  border-color: #91d5ff;\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #52c41a;\r\n  border-color: #52c41a;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit][button-style=link] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover {\r\n  color: #73d13d;\r\n  fill: #73d13d;\r\n}\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  border-color: #389e0d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  border-color: #73d13d;\r\n  box-shadow: 0 0 0 .2rem #b7eb8f;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][disabled][button-style=link] {\r\n  color: #b7eb8f;\r\n  fill: #b7eb8f;\r\n}\r\n.mu-button[button-type=submit][disabled]:not([button-style=link]) {\r\n  background: #b7eb8f;\r\n  border-color: #b7eb8f;\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #fa541c;\r\n  border-color: #fa541c;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger][button-style=link] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover {\r\n  color: #ff7a45;\r\n  fill: #ff7a45;\r\n}\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #d4380d;\r\n  border-color: #d4380d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff7a45;\r\n  border-color: #ff7a45;\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][disabled][button-style=link] {\r\n  color: #ffbb96;\r\n  fill: #ffbb96;\r\n}\r\n.mu-button[button-type=danger][disabled]:not([button-style=link]) {\r\n  background: #ffbb96;\r\n  border-color: #ffbb96;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[button-style=link]:hover,\r\n.mu-button[button-style=link][active],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n  border-color: transparent;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=outline] {\r\n  background: #fff;\r\n}\r\n.mu-button[button-style=link]:not([disabled]):hover {\r\n  text-decoration: underline;\r\n}\r\n.mu-button[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[disabled] {\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  color: rgba(255,255,255,.7);\r\n  fill: rgba(255,255,255,.7);\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  min-width: 0;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}";
 styleInject(css$6);
 
 var Button = {
@@ -2421,7 +2424,9 @@ var BaseInputBox = {
       type: String,
       "default": 'text'
     },
-    value: [String, Number],
+    value: {
+      type: [String, Number]
+    },
     icon: String,
     iconClass: String,
     iconAlign: {
@@ -2501,7 +2506,7 @@ var BaseInputBox = {
     onClearClick: function onClearClick() {
       this.params.value = '';
       this.$emit('change', '');
-      this.$emit('clear', '');
+      this.$emit('clear');
     },
     onButtonClick: function onButtonClick() {
       this.$el.querySelector('.mu-input').focus();
@@ -2951,6 +2956,10 @@ var BasePopupBox = {
       type: String,
       "default": 'expander'
     },
+    editable: {
+      type: Boolean,
+      "default": false
+    },
     popupWidth: String,
     popupHeight: String,
     popupClassName: String,
@@ -2999,7 +3008,7 @@ var BasePopupBox = {
       this.params.value = '';
       this.setPopupVisible(false);
       this.$emit('change', '');
-      this.$emit('clear', '');
+      this.$emit('clear');
     }
   }
 };
@@ -3356,7 +3365,7 @@ var Option = {
       var _this = this;
 
       var selected = this.inputBox.selectedValue;
-      return this.multiple ? !!selected.find(function (value) {
+      return this.multiple ? selected && selected.find(function (value) {
         return value === _this.actualValue;
       }) : selected === this.actualValue;
     }
@@ -3419,12 +3428,17 @@ var script$d = {
     }
   },
   watch: {
-    multiple: {
-      handler: function handler(value) {
-        this.params.editable = this.editable && !value;
-      },
-      immediate: true
+    multiple: function multiple(value) {
+      this.params.editable = this.editable && !value;
     }
+  },
+  created: function created() {
+    this.params.value = null;
+  },
+  mounted: function mounted() {
+    this.params.editable = this.editable && !this.multiple;
+    this.selectedValue = this.value || (this.multiple ? [] : null);
+    this.setInputValueImmediately();
   },
   methods: {
     setInputValue: function setInputValue() {// do nothing, juest overwrite InputBox's setInputValue()
@@ -3511,7 +3525,7 @@ var script$d = {
       this.selectedValue = this.multiple ? [] : null;
       this.params.value = '';
       this.$emit('change', this.selectedValue);
-      this.$emit('clear', '');
+      this.$emit('clear');
     }
   }
 };
@@ -3561,162 +3575,35 @@ var ComboBox = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$c
 }, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
 
-//
-//
-//
-//
-var script$e = {
-  name: 'MusselListDivider'
-};
+var DatePrototype = Date.prototype;
+var INVALID_DATE = 'Invalid Date';
+var TO_STRING = 'toString';
+var nativeDateToString = DatePrototype[TO_STRING];
+var getTime = DatePrototype.getTime;
 
-var css$d = ".mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
-styleInject(css$d);
-
-/* script */
-var __vue_script__$e = script$e;
-/* template */
-
-var __vue_render__$d = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c("div", {
-    staticClass: "mu-list-divider"
-  });
-};
-
-var __vue_staticRenderFns__$d = [];
-__vue_render__$d._withStripped = true;
-/* style */
-
-var __vue_inject_styles__$e = undefined;
-/* scoped */
-
-var __vue_scope_id__$e = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$e = undefined;
-/* functional template */
-
-var __vue_is_functional_template__$e = false;
-/* style inject */
-
-/* style inject SSR */
-
-var ListDivider = normalizeComponent_1({
-  render: __vue_render__$d,
-  staticRenderFns: __vue_staticRenderFns__$d
-}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
-
-function callbackIf(name, handler) {
-  var popup = window['__mussel_' + name];
-  if (popup) handler(popup);
-  return popup;
-}
-
-function hideIf(name, force) {
-  return name === 'dropdown' ? callbackIf('dropdown', function (dropdown) {
-    return dropdown.hide();
-  }) : name === 'modal' ? callbackIf('modal', function (modal) {
-    return (modal.$options.maskAction || modal.maskAction) === 'close' && modal.hide(force);
-  }) : undefined;
-}
-
-function setPositionIf() {
-  callbackIf('dropdown', function (dropdown) {
-    return dropdown.setPosition();
+// `Date.prototype.toString` method
+// https://tc39.github.io/ecma262/#sec-date.prototype.tostring
+if (new Date(NaN) + '' != INVALID_DATE) {
+  redefine(DatePrototype, TO_STRING, function toString() {
+    var value = getTime.call(this);
+    // eslint-disable-next-line no-self-compare
+    return value === value ? nativeDateToString.call(this) : INVALID_DATE;
   });
 }
 
-window.addEventListener('blur', function () {
-  return hideIf('dropdown');
-});
-window.addEventListener('keyup', function (event) {
-  return event.keyCode === 27 && (hideIf('dropdown') || hideIf('modal'));
-});
-window.addEventListener('mousedown', function (event) {
-  return callbackIf('dropdown', function (dropdown) {
-    return dropdown.hideIf(event.target);
-  });
-});
-window.addEventListener('popstate', function () {
-  hideIf('dropdown');
-  hideIf('modal', true);
-});
-window.addEventListener('resize', setPositionIf);
-window.addEventListener('scroll', setPositionIf);
+var ceil$1 = Math.ceil;
+var floor$1 = Math.floor;
 
-var script$f = {
-  name: 'MusselBaseModal',
-  mixins: [RenderToBodyMixin, PopupVisibleMixin],
-  props: {
-    maskAction: {
-      type: String,
-      "default": 'close',
-      validator: function validator(value) {
-        return ['none', 'close'].indexOf(value) !== -1;
-      }
-    }
-  },
-  methods: {
-    deactivate: function deactivate() {
-      if (window.__mussel_modal === this) window.__mussel_modal = null;
-    },
-    onMaskClick: function onMaskClick(event) {
-      if (event.target === this.$el) {
-        var action = this.$options.maskAction || this.maskAction;
-        if (action === 'close') this.hide();
-        this.$emit('maskclick');
-      }
-    },
-    show: function show() {
-      window.__mussel_modal = this;
-      this.popupVisible = true;
-      this.$emit('show');
-      this.$emit('change', true);
-    },
-    hide: function hide() {
-      this.deactivate();
-      this.popupVisible = false;
-      this.$emit('hide');
-      this.$emit('change', false);
-    }
+// `Math.trunc` method
+// https://tc39.github.io/ecma262/#sec-math.trunc
+_export({ target: 'Math', stat: true }, {
+  trunc: function trunc(it) {
+    return (it > 0 ? floor$1 : ceil$1)(it);
   }
-};
-
-var css$e = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
-styleInject(css$e);
-
-/* script */
-var __vue_script__$f = script$f;
-/* template */
-
-/* style */
-
-var __vue_inject_styles__$f = undefined;
-/* scoped */
-
-var __vue_scope_id__$f = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$f = undefined;
-/* functional template */
-
-var __vue_is_functional_template__$f = undefined;
-/* style inject */
-
-/* style inject SSR */
-
-var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, undefined, undefined);
-
-// `Array.isArray` method
-// https://tc39.github.io/ecma262/#sec-array.isarray
-_export({ target: 'Array', stat: true }, {
-  isArray: isArray
 });
+
+var css$d = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 240px;\r\n  min-width: 280px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  overflow: hidden;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.14rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #666;\r\n  border-top: 1px solid #1890ff;\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid #1890ff;\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row + .mu-calendar-row {\r\n  border-top: 1px solid rgba(0,0,0,.07);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell + .mu-calendar-cell {\r\n  border-left: 1px solid rgba(0,0,0,.07);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  border-bottom: 8px solid #fa541c;\r\n  border-right: 8px solid transparent;\r\n  content: '';\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #b2b2b2;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.03);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #fa8c16;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: #b2b2b2;\r\n  background: rgba(0,0,0,.03);\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}\r\n.mu-dropdown > .mu-calendar {\r\n  height: 100%;\r\n  border: 0;\r\n}";
+styleInject(css$d);
 
 var defineProperty$3 = objectDefineProperty.f;
 
@@ -3940,22 +3827,6 @@ addToUnscopables('keys');
 addToUnscopables('values');
 addToUnscopables('entries');
 
-var DatePrototype = Date.prototype;
-var INVALID_DATE = 'Invalid Date';
-var TO_STRING = 'toString';
-var nativeDateToString = DatePrototype[TO_STRING];
-var getTime = DatePrototype.getTime;
-
-// `Date.prototype.toString` method
-// https://tc39.github.io/ecma262/#sec-date.prototype.tostring
-if (new Date(NaN) + '' != INVALID_DATE) {
-  redefine(DatePrototype, TO_STRING, function toString() {
-    var value = getTime.call(this);
-    // eslint-disable-next-line no-self-compare
-    return value === value ? nativeDateToString.call(this) : INVALID_DATE;
-  });
-}
-
 var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
 // ES3 wrong here
 var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
@@ -4113,519 +3984,6 @@ for (var COLLECTION_NAME$1 in domIterables) {
 }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-/**
- * lodash 4.0.1 (Custom Build) <https://lodash.com/>
- * Build: `lodash modularize exports="npm" -o ./`
- * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <https://lodash.com/license>
- */
-
-/** `Object#toString` result references. */
-var stringTag = '[object String]';
-/** Used for built-in method references. */
-
-var objectProto = Object.prototype;
-/**
- * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
- * of values.
- */
-
-var objectToString$1 = objectProto.toString;
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @type Function
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-
-var isArray$1 = Array.isArray;
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-
-function isObjectLike(value) {
-  return !!value && _typeof(value) == 'object';
-}
-/**
- * Checks if `value` is classified as a `String` primitive or object.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
- * @example
- *
- * _.isString('abc');
- * // => true
- *
- * _.isString(1);
- * // => false
- */
-
-
-function isString(value) {
-  return typeof value == 'string' || !isArray$1(value) && isObjectLike(value) && objectToString$1.call(value) == stringTag;
-}
-
-var lodash_isstring = isString;
-
-//
-var script$g = {
-  name: 'MusselDialogWrapper',
-  components: {
-    'mu-v-box': VBox,
-    'mu-close-button': CloseButton
-  },
-  inject: ['dialog', 'params'],
-  computed: {
-    style: function style() {
-      return {
-        width: this.params.width,
-        height: this.params.height
-      };
-    }
-  },
-  methods: {
-    onMaskClick: function onMaskClick(event) {
-      this.dialog.onMaskClick(event);
-    },
-    hide: function hide() {
-      this.dialog.hide();
-    },
-    onButtonClick: function onButtonClick(btn) {
-      this.dialog.onButtonClick(btn);
-    }
-  }
-};
-
-var css$f = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(200px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
-styleInject(css$f);
-
-/* script */
-var __vue_script__$g = script$g;
-/* template */
-
-var __vue_render__$e = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c("mu-v-box", {
-    staticClass: "mu-modal-mask",
-    attrs: {
-      "flex-center": "",
-      visible: _vm.params.modalVisible
-    },
-    nativeOn: {
-      click: function click($event) {
-        return _vm.onMaskClick($event);
-      }
-    }
-  }, [_vm.params.modalVisible ? _c("mu-v-box", {
-    staticClass: "mu-dialog",
-    style: _vm.style,
-    attrs: {
-      danger: _vm.params.danger,
-      visible: _vm.params.dialogVisible
-    }
-  }, [_c("mu-h-box", {
-    staticClass: "mu-dialog-header"
-  }, [_c("mu-flex-item", {
-    staticClass: "mu-dialog-title mu-text-ellipsis",
-    attrs: {
-      size: "auto"
-    }
-  }, [_vm._v("\n        " + _vm._s(_vm.params.title) + "\n      ")]), _vm._v(" "), _c("mu-close-button", {
-    on: {
-      click: _vm.hide
-    }
-  })], 1), _vm._v(" "), _c("mu-flex-item", {
-    staticClass: "mu-dialog-body",
-    attrs: {
-      size: _vm.params.height ? "auto" : undefined
-    }
-  }, [_vm._t("default")], 2), _vm._v(" "), _vm._t("footer", [_vm.params.buttons ? _c("mu-h-box", {
-    staticClass: "mu-dialog-footer",
-    attrs: {
-      "align-items": "center"
-    }
-  }, [_c("div", {
-    staticStyle: {
-      "margin-right": "auto"
-    }
-  }), _vm._v(" "), _vm._l(_vm.params.buttons, function (btn) {
-    return _c("mu-button", _vm._b({
-      key: btn.caption || btn.icon || btn.iconClass,
-      on: {
-        click: function click($event) {
-          return _vm.onButtonClick(btn);
-        }
-      }
-    }, "mu-button", btn, false));
-  })], 2) : _vm._e()])], 2) : _vm._e()], 1);
-};
-
-var __vue_staticRenderFns__$e = [];
-__vue_render__$e._withStripped = true;
-/* style */
-
-var __vue_inject_styles__$g = undefined;
-/* scoped */
-
-var __vue_scope_id__$g = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$g = undefined;
-/* functional template */
-
-var __vue_is_functional_template__$g = false;
-/* style inject */
-
-/* style inject SSR */
-
-var DialogWrapper = normalizeComponent_1({
-  render: __vue_render__$e,
-  staticRenderFns: __vue_staticRenderFns__$e
-}, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, undefined, undefined);
-
-function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-var script$h = {
-  name: 'MusselBaseDialog',
-  components: {
-    'mu-dialog-wrapper': DialogWrapper
-  },
-  "extends": BaseModal,
-  provide: function provide() {
-    return {
-      dialog: this,
-      params: this.params
-    };
-  },
-  props: {
-    title: String,
-    width: String,
-    height: String,
-    buttons: Array,
-    danger: Boolean,
-    primaryButton: String
-  },
-  data: function data() {
-    var o = this.$options;
-    return {
-      params: {
-        modalVisible: false,
-        dialogVisible: false,
-        width: this.width || o.width,
-        height: this.height || o.height,
-        danger: this.danger || o.danger,
-        title: this.title || o.title,
-        primaryButton: this.primaryButton || o.primaryButton,
-        btns: this.btns
-      }
-    };
-  },
-  computed: {
-    btns: function btns() {
-      var _this = this;
-
-      var buttons = this.buttons || this.$options.buttons;
-      return Array.isArray(buttons) ? buttons.map(function (button) {
-        var btn = lodash_isstring(button) ? {
-          caption: button,
-          _rawData: button
-        } : _objectSpread$2({}, button);
-
-        if (_this.params.primaryButton === btn.caption) {
-          btn.buttonType = _this.params.danger ? 'danger' : 'primary';
-        }
-
-        return btn;
-      }) : null;
-    }
-  },
-  watch: {
-    popupVisible: function popupVisible(value) {
-      this.params.modalVisible = value;
-    },
-    buttons: {
-      handler: function handler() {
-        this.params.buttons = this.btns;
-      },
-      immediate: true
-    },
-    title: function title(value) {
-      this.setTitle(value);
-    },
-    width: function width(value) {
-      this.setWidth(value);
-    },
-    height: function height(value) {
-      this.setHeight(value);
-    },
-    danger: function danger(value) {
-      this.setDanger(value);
-    },
-    primaryButton: function primaryButton(value) {
-      this.setPrimaryButton(value);
-    }
-  },
-  methods: {
-    setTitle: function setTitle(value) {
-      this.params.title = value;
-    },
-    setWidth: function setWidth(value) {
-      this.params.width = value;
-    },
-    setHeight: function setHeight(value) {
-      this.params.height = value;
-    },
-    setDanger: function setDanger(value) {
-      this.params.danger = value;
-      this.params.buttons = this.btns;
-    },
-    setPrimaryButton: function setPrimaryButton(value) {
-      this.params.primaryButton = value;
-      this.params.buttons = this.btns;
-    },
-    clearHideTimer: function clearHideTimer() {
-      if (this.hideTimer) {
-        clearTimeout(this.hideTimer);
-        this.hideTimer = null;
-      }
-    },
-    show: function show(callbackOnce) {
-      var _this2 = this;
-
-      window.__mussel_modal = this;
-      this.callbackOnce = callbackOnce;
-
-      if (!this.$el) {
-        this.$mount();
-        document.body.appendChild(this.$el);
-      }
-
-      this.clearHideTimer();
-      this.popupVisible = true;
-      setTimeout(function () {
-        _this2.params.dialogVisible = true;
-      }, 10);
-      this.$emit('show');
-      this.$emit('change', true);
-    },
-    actualHide: function actualHide() {
-      var _this3 = this;
-
-      this.callbackOnce = null;
-      this.deactivate();
-      this.params.dialogVisible = false;
-      this.clearHideTimer();
-      this.$hideTimer = setTimeout(function () {
-        _this3.popupVisible = false;
-      }, 200);
-      this.$emit('hide');
-      this.$emit('change', false);
-    },
-    hide: function hide(force, button) {
-      if (!force && this.$options.beforeClose) {
-        this.$options.beforeClose(this.actualHide, button);
-      } else {
-        this.actualHide();
-      }
-    },
-    onButtonClick: function onButtonClick(btn) {
-      var _Object = Object(btn),
-          action = _Object.action,
-          _rawData = _Object._rawData;
-
-      var button = _rawData || btn;
-
-      if (['hide', 'close'].indexOf(action) !== -1) {
-        this.hide(false, button);
-      }
-
-      this.$emit('buttonclick', button, this);
-    }
-  }
-};
-
-/* script */
-var __vue_script__$h = script$h;
-/* template */
-
-/* style */
-
-var __vue_inject_styles__$h = undefined;
-/* scoped */
-
-var __vue_scope_id__$h = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$h = undefined;
-/* functional template */
-
-var __vue_is_functional_template__$h = undefined;
-/* style inject */
-
-/* style inject SSR */
-
-var BaseDialog = normalizeComponent_1({}, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, undefined, undefined);
-
-//
-var script$i = {
-  name: 'MusselModal',
-  "extends": BaseModal
-};
-
-/* script */
-var __vue_script__$i = script$i;
-/* template */
-
-var __vue_render__$f = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c("div", {
-    staticClass: "mu-modal-mask",
-    attrs: {
-      visible: _vm.popupVisible
-    },
-    on: {
-      click: _vm.onMaskClick
-    }
-  }, [_vm._t("default")], 2);
-};
-
-var __vue_staticRenderFns__$f = [];
-__vue_render__$f._withStripped = true;
-/* style */
-
-var __vue_inject_styles__$i = undefined;
-/* scoped */
-
-var __vue_scope_id__$i = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$i = undefined;
-/* functional template */
-
-var __vue_is_functional_template__$i = false;
-/* style inject */
-
-/* style inject SSR */
-
-var Modal = normalizeComponent_1({
-  render: __vue_render__$f,
-  staticRenderFns: __vue_staticRenderFns__$f
-}, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, undefined, undefined);
-
-//
-var script$j = {
-  name: 'MusselDialog',
-  "extends": BaseDialog
-};
-
-/* script */
-var __vue_script__$j = script$j;
-/* template */
-
-var __vue_render__$g = function __vue_render__() {
-  var _vm = this;
-
-  var _h = _vm.$createElement;
-
-  var _c = _vm._self._c || _h;
-
-  return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
-};
-
-var __vue_staticRenderFns__$g = [];
-__vue_render__$g._withStripped = true;
-/* style */
-
-var __vue_inject_styles__$j = undefined;
-/* scoped */
-
-var __vue_scope_id__$j = undefined;
-/* module identifier */
-
-var __vue_module_identifier__$j = undefined;
-/* functional template */
-
-var __vue_is_functional_template__$j = false;
-/* style inject */
-
-/* style inject SSR */
-
-var Dialog = normalizeComponent_1({
-  render: __vue_render__$g,
-  staticRenderFns: __vue_staticRenderFns__$g
-}, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, undefined, undefined);
-
-var ceil$1 = Math.ceil;
-var floor$1 = Math.floor;
-
-// `Math.trunc` method
-// https://tc39.github.io/ecma262/#sec-math.trunc
-_export({ target: 'Math', stat: true }, {
-  trunc: function trunc(it) {
-    return (it > 0 ? floor$1 : ceil$1)(it);
-  }
-});
-
-var css$g = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 240px;\r\n  min-width: 280px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  overflow: visible;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  height: 40px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.29rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #666;\r\n  border-top: 1px solid #1890ff;\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid #1890ff;\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row + .mu-calendar-row {\r\n  border-top: 1px solid rgba(0,0,0,.07);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell + .mu-calendar-cell {\r\n  border-left: 1px solid rgba(0,0,0,.07);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  border-bottom: 8px solid #fa541c;\r\n  border-right: 8px solid transparent;\r\n  content: '';\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #b2b2b2;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.03);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #fa8c16;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: #b2b2b2;\r\n  background: rgba(0,0,0,.03);\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}";
-styleInject(css$g);
-
-function _typeof$1(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$1 = function _typeof(obj) { return typeof obj; }; } else { _typeof$1 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$1(obj); }
 var lodash_isdate = createCommonjsModule(function (module, exports) {
   /**
    * lodash (Custom Build) <https://lodash.com/>
@@ -4640,7 +3998,7 @@ var lodash_isdate = createCommonjsModule(function (module, exports) {
   var dateTag = '[object Date]';
   /** Detect free variable `global` from Node.js. */
 
-  var freeGlobal = _typeof$1(commonjsGlobal) == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+  var freeGlobal = _typeof(commonjsGlobal) == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
   /** Detect free variable `exports`. */
 
   var freeExports =  exports && !exports.nodeType && exports;
@@ -4745,11 +4103,115 @@ var lodash_isdate = createCommonjsModule(function (module, exports) {
    */
 
   function isObjectLike(value) {
-    return !!value && _typeof$1(value) == 'object';
+    return !!value && _typeof(value) == 'object';
   }
 
   module.exports = isDate;
 });
+
+// `Array.isArray` method
+// https://tc39.github.io/ecma262/#sec-array.isarray
+_export({ target: 'Array', stat: true }, {
+  isArray: isArray
+});
+
+function _typeof$1(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$1 = function _typeof(obj) { return typeof obj; }; } else { _typeof$1 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$1(obj); }
+
+/**
+ * lodash 4.0.1 (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <https://lodash.com/license>
+ */
+
+/** `Object#toString` result references. */
+var stringTag = '[object String]';
+/** Used for built-in method references. */
+
+var objectProto = Object.prototype;
+/**
+ * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+
+var objectToString$1 = objectProto.toString;
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @type Function
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+
+var isArray$1 = Array.isArray;
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+
+function isObjectLike(value) {
+  return !!value && _typeof$1(value) == 'object';
+}
+/**
+ * Checks if `value` is classified as a `String` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+ * @example
+ *
+ * _.isString('abc');
+ * // => true
+ *
+ * _.isString(1);
+ * // => false
+ */
+
+
+function isString(value) {
+  return typeof value == 'string' || !isArray$1(value) && isObjectLike(value) && objectToString$1.call(value) == stringTag;
+}
+
+var lodash_isstring = isString;
 
 // `Array.prototype.{ reduce, reduceRight }` methods implementation
 var createMethod$4 = function (IS_RIGHT) {
@@ -4871,7 +4333,7 @@ function getFilteredMarks(markedDates, year, month) {
   }, []);
 }
 
-var script$k = {
+var script$e = {
   components: {
     IconButton: IconButton
   },
@@ -4880,7 +4342,7 @@ var script$k = {
     event: 'change'
   },
   props: {
-    value: Date,
+    value: [String, Date],
     rangeStart: Date,
     rangeEnd: Date,
     language: {
@@ -5131,7 +4593,6 @@ var script$k = {
     },
     onMonthCellClick: function onMonthCellClick(cell) {
       var naviYear = this.naviYear,
-          naviMonth = this.naviMonth,
           startYear = this.startYear,
           selectMode = this.selectMode;
       this.naviMonth = cell.month;
@@ -5141,8 +4602,8 @@ var script$k = {
           this.updateDateCells();
           this.tab = 'date';
         } else {
-          var value = new Date(naviYear, naviMonth, 1);
-          this.$emit('change', value, naviYear, naviMonth);
+          var value = new Date(naviYear, this.naviMonth, 1);
+          this.$emit('change', value, naviYear, this.naviMonth);
         }
       }
     },
@@ -5163,10 +4624,10 @@ var script$k = {
 };
 
 /* script */
-var __vue_script__$k = script$k;
+var __vue_script__$e = script$e;
 /* template */
 
-var __vue_render__$h = function __vue_render__() {
+var __vue_render__$d = function __vue_render__() {
   var _vm = this;
 
   var _h = _vm.$createElement;
@@ -5184,17 +4645,15 @@ var __vue_render__$h = function __vue_render__() {
     }
   }, [_vm._v("\n      " + _vm._s(_vm.title) + "\n    ")]), _vm._v(" "), _c("icon-button", {
     attrs: {
-      "button-type": "primary",
-      "button-style": "text",
-      icon: "key-left"
+      "button-style": "link",
+      icon: "key-up"
     },
     on: {
       click: _vm.goPrev
     }
   }), _vm._v(" "), _c("icon-button", {
     attrs: {
-      "button-type": "primary",
-      "button-style": "text",
+      "button-style": "link",
       icon: "calendar"
     },
     on: {
@@ -5202,9 +4661,8 @@ var __vue_render__$h = function __vue_render__() {
     }
   }), _vm._v(" "), _c("icon-button", {
     attrs: {
-      "button-type": "primary",
-      "button-style": "text",
-      icon: "key-right"
+      "button-style": "link",
+      icon: "key-down"
     },
     on: {
       click: _vm.goNext
@@ -5231,10 +4689,10 @@ var __vue_render__$h = function __vue_render__() {
         staticClass: "mu-calendar-cell",
         attrs: {
           present: cell.today,
-          active: cell.text === _vm.dateText,
           marked: cell.marked,
           invalid: cell.invalid,
-          adjacent: cell.adjacent
+          adjacent: cell.adjacent,
+          active: cell.text === _vm.dateText
         },
         on: {
           click: function click($event) {
@@ -5257,10 +4715,10 @@ var __vue_render__$h = function __vue_render__() {
           active: cell.year === _vm.naviYear
         },
         attrs: {
-          active: cell.year === _vm.naviYear,
           present: cell.present,
+          invalid: cell.invalid,
           adjacent: cell.adjacent,
-          invalid: cell.invalid
+          active: cell.year === _vm.naviYear
         },
         on: {
           click: function click($event) {
@@ -5292,6 +4750,1020 @@ var __vue_render__$h = function __vue_render__() {
   }), 0) : _vm._e()]], 2);
 };
 
+var __vue_staticRenderFns__$d = [];
+__vue_render__$d._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$e = undefined;
+/* scoped */
+
+var __vue_scope_id__$e = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$e = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$e = false;
+/* style inject */
+
+/* style inject SSR */
+
+var Calendar = normalizeComponent_1({
+  render: __vue_render__$d,
+  staticRenderFns: __vue_staticRenderFns__$d
+}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
+
+var MATCH = wellKnownSymbol('match');
+
+// `IsRegExp` abstract operation
+// https://tc39.github.io/ecma262/#sec-isregexp
+var isRegexp = function (it) {
+  var isRegExp;
+  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : classofRaw(it) == 'RegExp');
+};
+
+var SPECIES$2 = wellKnownSymbol('species');
+
+var setSpecies = function (CONSTRUCTOR_NAME) {
+  var Constructor = getBuiltIn(CONSTRUCTOR_NAME);
+  var defineProperty = objectDefineProperty.f;
+
+  if (descriptors && Constructor && !Constructor[SPECIES$2]) {
+    defineProperty(Constructor, SPECIES$2, {
+      configurable: true,
+      get: function () { return this; }
+    });
+  }
+};
+
+var defineProperty$4 = objectDefineProperty.f;
+var getOwnPropertyNames$1 = objectGetOwnPropertyNames.f;
+
+
+
+
+
+
+
+var MATCH$1 = wellKnownSymbol('match');
+var NativeRegExp = global_1.RegExp;
+var RegExpPrototype$1 = NativeRegExp.prototype;
+var re1 = /a/g;
+var re2 = /a/g;
+
+// "new" should create a new object, old webkit bug
+var CORRECT_NEW = new NativeRegExp(re1) !== re1;
+
+var FORCED$2 = descriptors && isForced_1('RegExp', (!CORRECT_NEW || fails(function () {
+  re2[MATCH$1] = false;
+  // RegExp constructor can alter flags and IsRegExp works correct with @@match
+  return NativeRegExp(re1) != re1 || NativeRegExp(re2) == re2 || NativeRegExp(re1, 'i') != '/a/i';
+})));
+
+// `RegExp` constructor
+// https://tc39.github.io/ecma262/#sec-regexp-constructor
+if (FORCED$2) {
+  var RegExpWrapper = function RegExp(pattern, flags) {
+    var thisIsRegExp = this instanceof RegExpWrapper;
+    var patternIsRegExp = isRegexp(pattern);
+    var flagsAreUndefined = flags === undefined;
+    return !thisIsRegExp && patternIsRegExp && pattern.constructor === RegExpWrapper && flagsAreUndefined ? pattern
+      : inheritIfRequired(CORRECT_NEW
+        ? new NativeRegExp(patternIsRegExp && !flagsAreUndefined ? pattern.source : pattern, flags)
+        : NativeRegExp((patternIsRegExp = pattern instanceof RegExpWrapper)
+          ? pattern.source
+          : pattern, patternIsRegExp && flagsAreUndefined ? regexpFlags.call(pattern) : flags)
+      , thisIsRegExp ? this : RegExpPrototype$1, RegExpWrapper);
+  };
+  var proxy = function (key) {
+    key in RegExpWrapper || defineProperty$4(RegExpWrapper, key, {
+      configurable: true,
+      get: function () { return NativeRegExp[key]; },
+      set: function (it) { NativeRegExp[key] = it; }
+    });
+  };
+  var keys$2 = getOwnPropertyNames$1(NativeRegExp);
+  var index = 0;
+  while (keys$2.length > index) proxy(keys$2[index++]);
+  RegExpPrototype$1.constructor = RegExpWrapper;
+  RegExpWrapper.prototype = RegExpPrototype$1;
+  redefine(global_1, 'RegExp', RegExpWrapper);
+}
+
+// https://tc39.github.io/ecma262/#sec-get-regexp-@@species
+setSpecies('RegExp');
+
+var nativeExec = RegExp.prototype.exec;
+// This always refers to the native implementation, because the
+// String#replace polyfill uses ./fix-regexp-well-known-symbol-logic.js,
+// which loads this file before patching the method.
+var nativeReplace = String.prototype.replace;
+
+var patchedExec = nativeExec;
+
+var UPDATES_LAST_INDEX_WRONG = (function () {
+  var re1 = /a/;
+  var re2 = /b*/g;
+  nativeExec.call(re1, 'a');
+  nativeExec.call(re2, 'a');
+  return re1.lastIndex !== 0 || re2.lastIndex !== 0;
+})();
+
+// nonparticipating capturing group, copied from es5-shim's String#split patch.
+var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
+
+var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED;
+
+if (PATCH) {
+  patchedExec = function exec(str) {
+    var re = this;
+    var lastIndex, reCopy, match, i;
+
+    if (NPCG_INCLUDED) {
+      reCopy = new RegExp('^' + re.source + '$(?!\\s)', regexpFlags.call(re));
+    }
+    if (UPDATES_LAST_INDEX_WRONG) lastIndex = re.lastIndex;
+
+    match = nativeExec.call(re, str);
+
+    if (UPDATES_LAST_INDEX_WRONG && match) {
+      re.lastIndex = re.global ? match.index + match[0].length : lastIndex;
+    }
+    if (NPCG_INCLUDED && match && match.length > 1) {
+      // Fix browsers whose `exec` methods don't consistently return `undefined`
+      // for NPCG, like IE8. NOTE: This doesn' work for /(.?)?/
+      nativeReplace.call(match[0], reCopy, function () {
+        for (i = 1; i < arguments.length - 2; i++) {
+          if (arguments[i] === undefined) match[i] = undefined;
+        }
+      });
+    }
+
+    return match;
+  };
+}
+
+var regexpExec = patchedExec;
+
+_export({ target: 'RegExp', proto: true, forced: /./.exec !== regexpExec }, {
+  exec: regexpExec
+});
+
+var SPECIES$3 = wellKnownSymbol('species');
+
+var REPLACE_SUPPORTS_NAMED_GROUPS = !fails(function () {
+  // #replace needs built-in support for named groups.
+  // #match works fine because it just return the exec results, even if it has
+  // a "grops" property.
+  var re = /./;
+  re.exec = function () {
+    var result = [];
+    result.groups = { a: '7' };
+    return result;
+  };
+  return ''.replace(re, '$<a>') !== '7';
+});
+
+// Chrome 51 has a buggy "split" implementation when RegExp#exec !== nativeExec
+// Weex JS has frozen built-in prototypes, so use try / catch wrapper
+var SPLIT_WORKS_WITH_OVERWRITTEN_EXEC = !fails(function () {
+  var re = /(?:)/;
+  var originalExec = re.exec;
+  re.exec = function () { return originalExec.apply(this, arguments); };
+  var result = 'ab'.split(re);
+  return result.length !== 2 || result[0] !== 'a' || result[1] !== 'b';
+});
+
+var fixRegexpWellKnownSymbolLogic = function (KEY, length, exec, sham) {
+  var SYMBOL = wellKnownSymbol(KEY);
+
+  var DELEGATES_TO_SYMBOL = !fails(function () {
+    // String methods call symbol-named RegEp methods
+    var O = {};
+    O[SYMBOL] = function () { return 7; };
+    return ''[KEY](O) != 7;
+  });
+
+  var DELEGATES_TO_EXEC = DELEGATES_TO_SYMBOL && !fails(function () {
+    // Symbol-named RegExp methods call .exec
+    var execCalled = false;
+    var re = /a/;
+    re.exec = function () { execCalled = true; return null; };
+
+    if (KEY === 'split') {
+      // RegExp[@@split] doesn't call the regex's exec method, but first creates
+      // a new one. We need to return the patched regex when creating the new one.
+      re.constructor = {};
+      re.constructor[SPECIES$3] = function () { return re; };
+    }
+
+    re[SYMBOL]('');
+    return !execCalled;
+  });
+
+  if (
+    !DELEGATES_TO_SYMBOL ||
+    !DELEGATES_TO_EXEC ||
+    (KEY === 'replace' && !REPLACE_SUPPORTS_NAMED_GROUPS) ||
+    (KEY === 'split' && !SPLIT_WORKS_WITH_OVERWRITTEN_EXEC)
+  ) {
+    var nativeRegExpMethod = /./[SYMBOL];
+    var methods = exec(SYMBOL, ''[KEY], function (nativeMethod, regexp, str, arg2, forceStringMethod) {
+      if (regexp.exec === regexpExec) {
+        if (DELEGATES_TO_SYMBOL && !forceStringMethod) {
+          // The native String method already delegates to @@method (this
+          // polyfilled function), leasing to infinite recursion.
+          // We avoid it by directly calling the native @@method method.
+          return { done: true, value: nativeRegExpMethod.call(regexp, str, arg2) };
+        }
+        return { done: true, value: nativeMethod.call(str, regexp, arg2) };
+      }
+      return { done: false };
+    });
+    var stringMethod = methods[0];
+    var regexMethod = methods[1];
+
+    redefine(String.prototype, KEY, stringMethod);
+    redefine(RegExp.prototype, SYMBOL, length == 2
+      // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
+      // 21.2.5.11 RegExp.prototype[@@split](string, limit)
+      ? function (string, arg) { return regexMethod.call(string, this, arg); }
+      // 21.2.5.6 RegExp.prototype[@@match](string)
+      // 21.2.5.9 RegExp.prototype[@@search](string)
+      : function (string) { return regexMethod.call(string, this); }
+    );
+    if (sham) hide(RegExp.prototype[SYMBOL], 'sham', true);
+  }
+};
+
+var charAt$1 = stringMultibyte.charAt;
+
+// `AdvanceStringIndex` abstract operation
+// https://tc39.github.io/ecma262/#sec-advancestringindex
+var advanceStringIndex = function (S, index, unicode) {
+  return index + (unicode ? charAt$1(S, index).length : 1);
+};
+
+// `RegExpExec` abstract operation
+// https://tc39.github.io/ecma262/#sec-regexpexec
+var regexpExecAbstract = function (R, S) {
+  var exec = R.exec;
+  if (typeof exec === 'function') {
+    var result = exec.call(R, S);
+    if (typeof result !== 'object') {
+      throw TypeError('RegExp exec method returned something other than an Object or null');
+    }
+    return result;
+  }
+
+  if (classofRaw(R) !== 'RegExp') {
+    throw TypeError('RegExp#exec called on incompatible receiver');
+  }
+
+  return regexpExec.call(R, S);
+};
+
+var max$2 = Math.max;
+var min$3 = Math.min;
+var floor$2 = Math.floor;
+var SUBSTITUTION_SYMBOLS = /\$([$&'`]|\d\d?|<[^>]*>)/g;
+var SUBSTITUTION_SYMBOLS_NO_NAMED = /\$([$&'`]|\d\d?)/g;
+
+var maybeToString = function (it) {
+  return it === undefined ? it : String(it);
+};
+
+// @@replace logic
+fixRegexpWellKnownSymbolLogic('replace', 2, function (REPLACE, nativeReplace, maybeCallNative) {
+  return [
+    // `String.prototype.replace` method
+    // https://tc39.github.io/ecma262/#sec-string.prototype.replace
+    function replace(searchValue, replaceValue) {
+      var O = requireObjectCoercible(this);
+      var replacer = searchValue == undefined ? undefined : searchValue[REPLACE];
+      return replacer !== undefined
+        ? replacer.call(searchValue, O, replaceValue)
+        : nativeReplace.call(String(O), searchValue, replaceValue);
+    },
+    // `RegExp.prototype[@@replace]` method
+    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@replace
+    function (regexp, replaceValue) {
+      var res = maybeCallNative(nativeReplace, regexp, this, replaceValue);
+      if (res.done) return res.value;
+
+      var rx = anObject(regexp);
+      var S = String(this);
+
+      var functionalReplace = typeof replaceValue === 'function';
+      if (!functionalReplace) replaceValue = String(replaceValue);
+
+      var global = rx.global;
+      if (global) {
+        var fullUnicode = rx.unicode;
+        rx.lastIndex = 0;
+      }
+      var results = [];
+      while (true) {
+        var result = regexpExecAbstract(rx, S);
+        if (result === null) break;
+
+        results.push(result);
+        if (!global) break;
+
+        var matchStr = String(result[0]);
+        if (matchStr === '') rx.lastIndex = advanceStringIndex(S, toLength(rx.lastIndex), fullUnicode);
+      }
+
+      var accumulatedResult = '';
+      var nextSourcePosition = 0;
+      for (var i = 0; i < results.length; i++) {
+        result = results[i];
+
+        var matched = String(result[0]);
+        var position = max$2(min$3(toInteger(result.index), S.length), 0);
+        var captures = [];
+        // NOTE: This is equivalent to
+        //   captures = result.slice(1).map(maybeToString)
+        // but for some reason `nativeSlice.call(result, 1, result.length)` (called in
+        // the slice polyfill when slicing native arrays) "doesn't work" in safari 9 and
+        // causes a crash (https://pastebin.com/N21QzeQA) when trying to debug it.
+        for (var j = 1; j < result.length; j++) captures.push(maybeToString(result[j]));
+        var namedCaptures = result.groups;
+        if (functionalReplace) {
+          var replacerArgs = [matched].concat(captures, position, S);
+          if (namedCaptures !== undefined) replacerArgs.push(namedCaptures);
+          var replacement = String(replaceValue.apply(undefined, replacerArgs));
+        } else {
+          replacement = getSubstitution(matched, S, position, captures, namedCaptures, replaceValue);
+        }
+        if (position >= nextSourcePosition) {
+          accumulatedResult += S.slice(nextSourcePosition, position) + replacement;
+          nextSourcePosition = position + matched.length;
+        }
+      }
+      return accumulatedResult + S.slice(nextSourcePosition);
+    }
+  ];
+
+  // https://tc39.github.io/ecma262/#sec-getsubstitution
+  function getSubstitution(matched, str, position, captures, namedCaptures, replacement) {
+    var tailPos = position + matched.length;
+    var m = captures.length;
+    var symbols = SUBSTITUTION_SYMBOLS_NO_NAMED;
+    if (namedCaptures !== undefined) {
+      namedCaptures = toObject(namedCaptures);
+      symbols = SUBSTITUTION_SYMBOLS;
+    }
+    return nativeReplace.call(replacement, symbols, function (match, ch) {
+      var capture;
+      switch (ch.charAt(0)) {
+        case '$': return '$';
+        case '&': return matched;
+        case '`': return str.slice(0, position);
+        case "'": return str.slice(tailPos);
+        case '<':
+          capture = namedCaptures[ch.slice(1, -1)];
+          break;
+        default: // \d\d?
+          var n = +ch;
+          if (n === 0) return match;
+          if (n > m) {
+            var f = floor$2(n / 10);
+            if (f === 0) return match;
+            if (f <= m) return captures[f - 1] === undefined ? ch.charAt(1) : captures[f - 1] + ch.charAt(1);
+            return match;
+          }
+          capture = captures[n - 1];
+      }
+      return capture === undefined ? '' : capture;
+    });
+  }
+});
+
+function formatDate(date) {
+  var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'yyyy-MM-dd';
+  var result = new RegExp('(y+)', 'i').test(format) ? format.replace(RegExp.$1, ('' + date.getFullYear()).substr(4 - RegExp.$1.length)) : format;
+  var patterns = {
+    '(M+)': date.getMonth() + 1,
+    '(d+)': date.getDate(),
+    '(h+)': date.getHours(),
+    '(m+)': date.getMinutes(),
+    '(s+)': date.getSeconds(),
+    '(S+)': date.getMilliseconds()
+  };
+  Object.keys(patterns).forEach(function (pattern) {
+    var re = new RegExp(pattern, pattern === '(d+)' || pattern === '(h+)' ? 'i' : undefined);
+
+    if (re.test(result)) {
+      var len = RegExp.$1.length;
+      var v = '' + patterns[pattern];
+      var start = v.length;
+      result = result.replace(RegExp.$1, len === 2 ? ('00' + v).substr(start) : len === 3 ? ('000' + v).substr(start) : v);
+    }
+  });
+  return result;
+}
+
+var script$f = {
+  name: 'MusselDateBox',
+  components: {
+    Calendar: Calendar
+  },
+  "extends": BasePopupBox,
+  props: {
+    popupWidth: {
+      type: String,
+      "default": '300px'
+    },
+    value: [String, Date],
+    format: String,
+    rangeStart: Date,
+    rangeEnd: Date,
+    language: String,
+    selectMode: String,
+    markedDates: Array
+  },
+  data: function data() {
+    var p = this;
+    return {
+      calendarParams: {
+        value: this.value,
+        rangeStart: p.rangeStart,
+        rangeEnd: p.rangeEnd,
+        language: p.language,
+        selectMode: p.selectMode,
+        markedDates: p.markedDates
+      }
+    };
+  },
+  computed: {
+    dateFormat: function dateFormat() {
+      var mode = this.selectMode;
+      return this.format || (mode === 'year' ? 'yyyy' : mode === 'month' ? 'yyyy-MM' : 'yyyy-MM-dd');
+    }
+  },
+  watch: {
+    value: {
+      handler: function handler(value) {
+        this.calendarParams.value = value;
+        this.setInputValue(value);
+      },
+      immediate: true
+    },
+    rangeStart: function rangeStart(value) {
+      this.calendarParams.rangeStart = value;
+    },
+    rangeEnd: function rangeEnd(value) {
+      this.calendarParams.rangeEnd = value;
+    },
+    markedDates: function markedDates(value) {
+      this.calendarParams.markedDates = value;
+    }
+  },
+  methods: {
+    setInputValue: function setInputValue(value) {
+      this.params.value = value ? formatDate(value, this.dateFormat) : '';
+    },
+    onSelect: function onSelect(value, year, month, date) {
+      this.setInputValue(value);
+      this.params.popupVisible = false;
+      this.$emit('change', value, year, month, date);
+    },
+    onClearClick: function onClearClick() {
+      this.params.value = '';
+      this.$emit('change');
+      this.$emit('clear');
+    }
+  }
+};
+
+/* script */
+var __vue_script__$f = script$f;
+/* template */
+
+var __vue_render__$e = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("mu-popup-box-wrapper", [_c("calendar", _vm._b({
+    on: {
+      change: _vm.onSelect
+    }
+  }, "calendar", _vm.calendarParams, false))], 1);
+};
+
+var __vue_staticRenderFns__$e = [];
+__vue_render__$e._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$f = undefined;
+/* scoped */
+
+var __vue_scope_id__$f = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$f = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$f = false;
+/* style inject */
+
+/* style inject SSR */
+
+var DateBox = normalizeComponent_1({
+  render: __vue_render__$e,
+  staticRenderFns: __vue_staticRenderFns__$e
+}, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, undefined, undefined);
+
+//
+//
+//
+//
+var script$g = {
+  name: 'MusselListDivider'
+};
+
+var css$e = ".mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
+styleInject(css$e);
+
+/* script */
+var __vue_script__$g = script$g;
+/* template */
+
+var __vue_render__$f = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("div", {
+    staticClass: "mu-list-divider"
+  });
+};
+
+var __vue_staticRenderFns__$f = [];
+__vue_render__$f._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$g = undefined;
+/* scoped */
+
+var __vue_scope_id__$g = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$g = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$g = false;
+/* style inject */
+
+/* style inject SSR */
+
+var ListDivider = normalizeComponent_1({
+  render: __vue_render__$f,
+  staticRenderFns: __vue_staticRenderFns__$f
+}, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, undefined, undefined);
+
+function callbackIf(name, handler) {
+  var popup = window['__mussel_' + name];
+  if (popup) handler(popup);
+  return popup;
+}
+
+function hideIf(name, force) {
+  return name === 'dropdown' ? callbackIf('dropdown', function (dropdown) {
+    return dropdown.hide();
+  }) : name === 'modal' ? callbackIf('modal', function (modal) {
+    return (modal.$options.maskAction || modal.maskAction) === 'close' && modal.hide(force);
+  }) : undefined;
+}
+
+function setPositionIf() {
+  callbackIf('dropdown', function (dropdown) {
+    return dropdown.setPosition();
+  });
+}
+
+window.addEventListener('blur', function () {
+  return hideIf('dropdown');
+});
+window.addEventListener('keyup', function (event) {
+  return event.keyCode === 27 && (hideIf('dropdown') || hideIf('modal'));
+});
+window.addEventListener('mousedown', function (event) {
+  return callbackIf('dropdown', function (dropdown) {
+    return dropdown.hideIf(event.target);
+  });
+});
+window.addEventListener('popstate', function () {
+  hideIf('dropdown');
+  hideIf('modal', true);
+});
+window.addEventListener('resize', setPositionIf);
+window.addEventListener('scroll', setPositionIf);
+
+var script$h = {
+  name: 'MusselBaseModal',
+  mixins: [RenderToBodyMixin, PopupVisibleMixin],
+  props: {
+    maskAction: {
+      type: String,
+      "default": 'close',
+      validator: function validator(value) {
+        return ['none', 'close'].indexOf(value) !== -1;
+      }
+    }
+  },
+  methods: {
+    deactivate: function deactivate() {
+      if (window.__mussel_modal === this) window.__mussel_modal = null;
+    },
+    onMaskClick: function onMaskClick(event) {
+      if (event.target === this.$el) {
+        var action = this.$options.maskAction || this.maskAction;
+        if (action === 'close') this.hide();
+        this.$emit('maskclick');
+      }
+    },
+    show: function show() {
+      window.__mussel_modal = this;
+      this.popupVisible = true;
+      this.$emit('show');
+      this.$emit('change', true);
+    },
+    hide: function hide() {
+      this.deactivate();
+      this.popupVisible = false;
+      this.$emit('hide');
+      this.$emit('change', false);
+    }
+  }
+};
+
+var css$f = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
+styleInject(css$f);
+
+/* script */
+var __vue_script__$h = script$h;
+/* template */
+
+/* style */
+
+var __vue_inject_styles__$h = undefined;
+/* scoped */
+
+var __vue_scope_id__$h = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$h = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$h = undefined;
+/* style inject */
+
+/* style inject SSR */
+
+var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, undefined, undefined);
+
+//
+var script$i = {
+  name: 'MusselDialogWrapper',
+  components: {
+    'mu-v-box': VBox,
+    'mu-close-button': CloseButton
+  },
+  inject: ['dialog', 'params'],
+  computed: {
+    style: function style() {
+      return {
+        width: this.params.width,
+        height: this.params.height
+      };
+    }
+  },
+  methods: {
+    onMaskClick: function onMaskClick(event) {
+      this.dialog.onMaskClick(event);
+    },
+    hide: function hide() {
+      this.dialog.hide();
+    },
+    onButtonClick: function onButtonClick(btn) {
+      this.dialog.onButtonClick(btn);
+    }
+  }
+};
+
+var css$g = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(200px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
+styleInject(css$g);
+
+/* script */
+var __vue_script__$i = script$i;
+/* template */
+
+var __vue_render__$g = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("mu-v-box", {
+    staticClass: "mu-modal-mask",
+    attrs: {
+      "flex-center": "",
+      visible: _vm.params.modalVisible
+    },
+    nativeOn: {
+      click: function click($event) {
+        return _vm.onMaskClick($event);
+      }
+    }
+  }, [_vm.params.modalVisible ? _c("mu-v-box", {
+    staticClass: "mu-dialog",
+    style: _vm.style,
+    attrs: {
+      danger: _vm.params.danger,
+      visible: _vm.params.dialogVisible
+    }
+  }, [_c("mu-h-box", {
+    staticClass: "mu-dialog-header"
+  }, [_c("mu-flex-item", {
+    staticClass: "mu-dialog-title mu-text-ellipsis",
+    attrs: {
+      size: "auto"
+    }
+  }, [_vm._v("\n        " + _vm._s(_vm.params.title) + "\n      ")]), _vm._v(" "), _c("mu-close-button", {
+    on: {
+      click: _vm.hide
+    }
+  })], 1), _vm._v(" "), _c("mu-flex-item", {
+    staticClass: "mu-dialog-body",
+    attrs: {
+      size: _vm.params.height ? "auto" : undefined
+    }
+  }, [_vm._t("default")], 2), _vm._v(" "), _vm._t("footer", [_vm.params.buttons ? _c("mu-h-box", {
+    staticClass: "mu-dialog-footer",
+    attrs: {
+      "align-items": "center"
+    }
+  }, [_c("div", {
+    staticStyle: {
+      "margin-right": "auto"
+    }
+  }), _vm._v(" "), _vm._l(_vm.params.buttons, function (btn) {
+    return _c("mu-button", _vm._b({
+      key: btn.caption || btn.icon || btn.iconClass,
+      on: {
+        click: function click($event) {
+          return _vm.onButtonClick(btn);
+        }
+      }
+    }, "mu-button", btn, false));
+  })], 2) : _vm._e()])], 2) : _vm._e()], 1);
+};
+
+var __vue_staticRenderFns__$g = [];
+__vue_render__$g._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$i = undefined;
+/* scoped */
+
+var __vue_scope_id__$i = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$i = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$i = false;
+/* style inject */
+
+/* style inject SSR */
+
+var DialogWrapper = normalizeComponent_1({
+  render: __vue_render__$g,
+  staticRenderFns: __vue_staticRenderFns__$g
+}, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, undefined, undefined);
+
+function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var script$j = {
+  name: 'MusselBaseDialog',
+  components: {
+    'mu-dialog-wrapper': DialogWrapper
+  },
+  "extends": BaseModal,
+  provide: function provide() {
+    return {
+      dialog: this,
+      params: this.params
+    };
+  },
+  props: {
+    title: String,
+    width: String,
+    height: String,
+    buttons: Array,
+    danger: Boolean,
+    primaryButton: String
+  },
+  data: function data() {
+    var o = this.$options;
+    return {
+      params: {
+        modalVisible: false,
+        dialogVisible: false,
+        width: this.width || o.width,
+        height: this.height || o.height,
+        danger: this.danger || o.danger,
+        title: this.title || o.title,
+        primaryButton: this.primaryButton || o.primaryButton,
+        btns: this.btns
+      }
+    };
+  },
+  computed: {
+    btns: function btns() {
+      var _this = this;
+
+      var buttons = this.buttons || this.$options.buttons;
+      return Array.isArray(buttons) ? buttons.map(function (button) {
+        var btn = lodash_isstring(button) ? {
+          caption: button,
+          _rawData: button
+        } : _objectSpread$2({}, button);
+
+        if (_this.params.primaryButton === btn.caption) {
+          btn.buttonType = _this.params.danger ? 'danger' : 'primary';
+        }
+
+        return btn;
+      }) : null;
+    }
+  },
+  watch: {
+    popupVisible: function popupVisible(value) {
+      this.params.modalVisible = value;
+    },
+    buttons: {
+      handler: function handler() {
+        this.params.buttons = this.btns;
+      },
+      immediate: true
+    },
+    title: function title(value) {
+      this.setTitle(value);
+    },
+    width: function width(value) {
+      this.setWidth(value);
+    },
+    height: function height(value) {
+      this.setHeight(value);
+    },
+    danger: function danger(value) {
+      this.setDanger(value);
+    },
+    primaryButton: function primaryButton(value) {
+      this.setPrimaryButton(value);
+    }
+  },
+  methods: {
+    setTitle: function setTitle(value) {
+      this.params.title = value;
+    },
+    setWidth: function setWidth(value) {
+      this.params.width = value;
+    },
+    setHeight: function setHeight(value) {
+      this.params.height = value;
+    },
+    setDanger: function setDanger(value) {
+      this.params.danger = value;
+      this.params.buttons = this.btns;
+    },
+    setPrimaryButton: function setPrimaryButton(value) {
+      this.params.primaryButton = value;
+      this.params.buttons = this.btns;
+    },
+    clearHideTimer: function clearHideTimer() {
+      if (this.hideTimer) {
+        clearTimeout(this.hideTimer);
+        this.hideTimer = null;
+      }
+    },
+    show: function show(callbackOnce) {
+      var _this2 = this;
+
+      window.__mussel_modal = this;
+      this.callbackOnce = callbackOnce;
+
+      if (!this.$el) {
+        this.$mount();
+        document.body.appendChild(this.$el);
+      }
+
+      this.clearHideTimer();
+      this.popupVisible = true;
+      setTimeout(function () {
+        _this2.params.dialogVisible = true;
+      }, 10);
+      this.$emit('show');
+      this.$emit('change', true);
+    },
+    actualHide: function actualHide() {
+      var _this3 = this;
+
+      this.callbackOnce = null;
+      this.deactivate();
+      this.params.dialogVisible = false;
+      this.clearHideTimer();
+      this.$hideTimer = setTimeout(function () {
+        _this3.popupVisible = false;
+      }, 200);
+      this.$emit('hide');
+      this.$emit('change', false);
+    },
+    hide: function hide(force, button) {
+      if (!force && this.$options.beforeClose) {
+        this.$options.beforeClose(this.actualHide, button);
+      } else {
+        this.actualHide();
+      }
+    },
+    onButtonClick: function onButtonClick(btn) {
+      var _Object = Object(btn),
+          action = _Object.action,
+          _rawData = _Object._rawData;
+
+      var button = _rawData || btn;
+
+      if (['hide', 'close'].indexOf(action) !== -1) {
+        this.hide(false, button);
+      }
+
+      this.$emit('buttonclick', button, this);
+    }
+  }
+};
+
+/* script */
+var __vue_script__$j = script$j;
+/* template */
+
+/* style */
+
+var __vue_inject_styles__$j = undefined;
+/* scoped */
+
+var __vue_scope_id__$j = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$j = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$j = undefined;
+/* style inject */
+
+/* style inject SSR */
+
+var BaseDialog = normalizeComponent_1({}, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, undefined, undefined);
+
+//
+var script$k = {
+  name: 'MusselModal',
+  "extends": BaseModal
+};
+
+/* script */
+var __vue_script__$k = script$k;
+/* template */
+
+var __vue_render__$h = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("div", {
+    staticClass: "mu-modal-mask",
+    attrs: {
+      visible: _vm.popupVisible
+    },
+    on: {
+      click: _vm.onMaskClick
+    }
+  }, [_vm._t("default")], 2);
+};
+
 var __vue_staticRenderFns__$h = [];
 __vue_render__$h._withStripped = true;
 /* style */
@@ -5310,10 +5782,53 @@ var __vue_is_functional_template__$k = false;
 
 /* style inject SSR */
 
-var Calendar = normalizeComponent_1({
+var Modal = normalizeComponent_1({
   render: __vue_render__$h,
   staticRenderFns: __vue_staticRenderFns__$h
 }, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, undefined, undefined);
+
+//
+var script$l = {
+  name: 'MusselDialog',
+  "extends": BaseDialog
+};
+
+/* script */
+var __vue_script__$l = script$l;
+/* template */
+
+var __vue_render__$i = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
+};
+
+var __vue_staticRenderFns__$i = [];
+__vue_render__$i._withStripped = true;
+/* style */
+
+var __vue_inject_styles__$l = undefined;
+/* scoped */
+
+var __vue_scope_id__$l = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$l = undefined;
+/* functional template */
+
+var __vue_is_functional_template__$l = false;
+/* style inject */
+
+/* style inject SSR */
+
+var Dialog = normalizeComponent_1({
+  render: __vue_render__$i,
+  staticRenderFns: __vue_staticRenderFns__$i
+}, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, undefined, undefined);
 
 /* GLOBAL STYLE */
 
@@ -5333,6 +5848,7 @@ function install(Vue) {
   Vue.component('mu-popup-box', PopupBox);
   Vue.component('mu-combo-box', ComboBox);
   Vue.component('mu-option', Option);
+  Vue.component('mu-date-box', DateBox);
   Vue.component('mu-list-item', ListItem);
   Vue.component('mu-list-divider', ListDivider);
   Vue.component('mu-modal', Modal);
@@ -5343,4 +5859,4 @@ function install(Vue) {
 
 if (window.Vue) install(window.Vue);
 
-export { BaseDialog, BaseModal, Button, ButtonGroup, Calendar, CloseButton, ComboBox, Dialog, DialogWrapper, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, ListDivider, ListItem, Modal, Option, PopupBox, Splitter, VBox, install };
+export { BaseDialog, BaseModal, Button, ButtonGroup, Calendar, CloseButton, ComboBox, DateBox, Dialog, DialogWrapper, FlexBox, FlexItem, HBox, Icon, IconButton, Input, InputBox, ListDivider, ListItem, Modal, Option, PopupBox, Splitter, VBox, install };

@@ -15,6 +15,7 @@
   <div id="app">
     <h2>日历</h2>
     <hr>
+    <h3>日历面板</h3>
     <mu-calendar
       language="en"
       v-model="date1"
@@ -25,6 +26,8 @@
       style="height: 400px;"
     >
     </mu-calendar>
+    <h3>日期选择框</h3>
+    <mu-date-box v-model="date2" select-mode="month" popup-render-to-body></mu-date-box>
     </div>
   </div>
 
@@ -32,7 +35,8 @@
     var app = new Vue({
       el: '#app',
       data: {
-        date1: null,
+        date1: '2019-7-2',
+        date2: new Date(),
         rangeStart: new Date(2019, 3, 5),
         rangeEnd: new Date(2019, 11, 15),
         startDate: new Date(2019, 2, 20),

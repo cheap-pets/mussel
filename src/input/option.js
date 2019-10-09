@@ -45,7 +45,7 @@ export default {
     actualSelected () {
       const { selectedValue: selected } = this.inputBox
       return this.multiple
-        ? !!selected.find(value => value === this.actualValue)
+        ? selected && selected.find(value => value === this.actualValue)
         : selected === this.actualValue
     }
   },

@@ -75,10 +75,9 @@
         <mu-option value='好好学习4'></mu-option>
         <mu-option value='好好学习5'></mu-option>
       </mu-combo-box>
-      <mu-combo-box v-model="comboValue2" :options="comboOptions" editable @optionclick="onOptionClick">
+      <mu-combo-box v-model="comboValue2" multiple :options="comboOptions" editable @optionclick="onOptionClick">
       </mu-combo-box>
     </div>
-    <mu-icon trigger-type="close" class="window-close-button"></mu-icon>
   </div>
   <script type="text/javascript">
     var view = new Vue({
@@ -95,7 +94,7 @@
           { value: 6 }
         ],
         comboValue1: '好好学习4',
-        comboValue2: null
+        comboValue2: [1, 2]
       },
       methods: {
         onDropdownItemClick: function () {

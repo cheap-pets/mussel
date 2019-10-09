@@ -7,7 +7,7 @@
     :trigger-type="triggerType"
     :trigger-on="triggerOn"
     @click="onClick">
-    <svg v-if="iconName" :icon="icon"
+    <svg v-if="d" :icon="icon"
       viewBox="0 0 1024 1024"
       :width="size"
       :height="size">
@@ -29,6 +29,7 @@
     name: 'MusselIcon',
     props: {
       icon: String,
+      svgData: String,
       iconClass: String,
       triggerType: String,
       triggerOn: Boolean,
@@ -52,7 +53,7 @@
           )
       },
       d () {
-        return d[this.iconName]
+        return this.svgData || this.iconName ? d[this.iconName] : null
       }
     },
     methods: {
