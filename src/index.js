@@ -25,7 +25,6 @@ import DateBox from './input/date-box.vue'
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
 /* LAYER */
-import './layer'
 import BaseModal from './layer/base-modal.vue'
 import BaseDialog from './layer/base-dialog.vue'
 import Modal from './layer/modal.vue'

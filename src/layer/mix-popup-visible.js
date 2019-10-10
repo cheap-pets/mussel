@@ -1,3 +1,5 @@
+import './global-event-handler'
+
 export default {
   model: {
     prop: 'visible',

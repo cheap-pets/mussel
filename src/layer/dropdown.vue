@@ -132,7 +132,7 @@
     position: absolute;
     z-index: 110;
     display: none;
-    background: #fff;
+    background: $dropdownBackground;
     border: $dropdownBorder;
     box-shadow: $dropdownShadow;
     overflow: auto;

@@ -43,6 +43,8 @@ const variables = {
   inputBorderRadiusPx: 2,
   inputFontSize: '1rem',
   inputTextColor: grey[8],
+  inputIconColor: 'rgba(0, 0, 0, .35)',
+  inputBackground: '#fff',
   inputBorderColor: grey[5],
   inputReadonlyBackground: '#feffe6',
   inputDisabledBackground: grey[1],
@@ -51,6 +53,7 @@ const variables = {
 
   /* dropdown */
   dropdownShadow: 'none',
+  dropdownBackground: '#fff',
   dropdownBorder: `1px solid ${grey[3]}`,
   dropdownListYPaddingPx: 4,
   dropdownItemYPaddingPx: 5,
@@ -80,6 +83,10 @@ const variables = {
 
   /* grid */
   gridLineColor: 'rgba(0, 0, 0, .07)',
+
+  /* calendar */
+  calendarBackground: '#fff',
+  calendarCellHoverBackground: 'rgba(0, 0, 0, .03)',
 
   /* layer */
   modalMaskBackground: 'rgba(0, 0, 0, .17)',
