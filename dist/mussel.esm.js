@@ -1878,7 +1878,7 @@ var _d = {
   'collapse-all': collapseAll
 };
 
-var css$4 = ".mu-icon[trigger-type] {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n  cursor: pointer;\r\n}\r\n.mu-icon[trigger-type]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-icon[trigger-type=expander] {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}";
+var css$4 = ".mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon[trigger-type=expander] {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}";
 styleInject(css$4);
 
 //
@@ -2621,6 +2621,44 @@ var RenderToBodyMixin = {
     }
   }
 };
+
+function callbackIf(name, handler) {
+  var popup = window['__mussel_' + name];
+  if (popup) handler(popup);
+  return popup;
+}
+
+function hideIf(name, force) {
+  return name === 'dropdown' ? callbackIf('dropdown', function (dropdown) {
+    return dropdown.hide();
+  }) : name === 'modal' ? callbackIf('modal', function (modal) {
+    return (modal.$options.maskAction || modal.maskAction) === 'close' && modal.hide(force);
+  }) : undefined;
+}
+
+function setPositionIf() {
+  callbackIf('dropdown', function (dropdown) {
+    return dropdown.setPosition();
+  });
+}
+
+window.addEventListener('blur', function () {
+  return hideIf('dropdown');
+});
+window.addEventListener('keyup', function (event) {
+  return event.keyCode === 27 && (hideIf('dropdown') || hideIf('modal'));
+});
+window.addEventListener('mousedown', function (event) {
+  return callbackIf('dropdown', function (dropdown) {
+    return dropdown.hideIf(event.target);
+  });
+});
+window.addEventListener('popstate', function () {
+  hideIf('dropdown');
+  hideIf('modal', true);
+});
+window.addEventListener('resize', setPositionIf);
+window.addEventListener('scroll', setPositionIf);
 
 var PopupVisibleMixin = {
   model: {
@@ -5327,44 +5365,6 @@ var ListDivider = normalizeComponent_1({
   render: __vue_render__$f,
   staticRenderFns: __vue_staticRenderFns__$f
 }, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, undefined, undefined);
-
-function callbackIf(name, handler) {
-  var popup = window['__mussel_' + name];
-  if (popup) handler(popup);
-  return popup;
-}
-
-function hideIf(name, force) {
-  return name === 'dropdown' ? callbackIf('dropdown', function (dropdown) {
-    return dropdown.hide();
-  }) : name === 'modal' ? callbackIf('modal', function (modal) {
-    return (modal.$options.maskAction || modal.maskAction) === 'close' && modal.hide(force);
-  }) : undefined;
-}
-
-function setPositionIf() {
-  callbackIf('dropdown', function (dropdown) {
-    return dropdown.setPosition();
-  });
-}
-
-window.addEventListener('blur', function () {
-  return hideIf('dropdown');
-});
-window.addEventListener('keyup', function (event) {
-  return event.keyCode === 27 && (hideIf('dropdown') || hideIf('modal'));
-});
-window.addEventListener('mousedown', function (event) {
-  return callbackIf('dropdown', function (dropdown) {
-    return dropdown.hideIf(event.target);
-  });
-});
-window.addEventListener('popstate', function () {
-  hideIf('dropdown');
-  hideIf('modal', true);
-});
-window.addEventListener('resize', setPositionIf);
-window.addEventListener('scroll', setPositionIf);
 
 var script$h = {
   name: 'MusselBaseModal',
