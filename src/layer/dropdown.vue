@@ -44,16 +44,10 @@
   export default {
     name: 'MusselDropdown',
     mixins: [RenderToBodyMixin, PopupVisibleMixin],
-    provide () {
-      return {
-        keepIconIndent: this.keepIconIndent
-      }
-    },
     props: {
       width: String,
       height: String,
-      className: String,
-      keepIconIndent: Boolean
+      className: String
     },
     data () {
       return {

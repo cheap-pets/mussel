@@ -2402,6 +2402,7 @@
       var p = this;
       return {
         params: {
+          focus: false,
           type: p.type,
           value: p.value,
           icon: p.icon,
@@ -2510,16 +2511,23 @@
         this.$emit('inputclick');
       },
       onClearClick: function onClearClick() {
-        this.params.value = '';
+        this.clear();
         this.$emit('change', '');
-        this.$emit('clear');
       },
       onButtonClick: function onButtonClick() {
-        this.$el.querySelector('.mu-input').focus();
+        this.focus();
         if (this.iconClickable) this.$emit('buttonclick');
       },
       onKeyPress: function onKeyPress(event) {
         this.$emit('keypress', event);
+      },
+      clear: function clear() {
+        this.params.value = '';
+        this.focus();
+        this.$emit('clear');
+      },
+      focus: function focus() {
+        this.$el.querySelector('.mu-input').focus();
       }
     }
   };
@@ -2566,6 +2574,63 @@
     render: __vue_render__$7,
     staticRenderFns: __vue_staticRenderFns__$7
   }, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
+
+  var PopupGroupMixin = {
+    data: function data() {
+      return {
+        popupParams: {
+          popupVisible: false,
+          popupWidth: this.popupWidth,
+          popupHeight: this.popupHeight,
+          popupClassName: this.popupClassName,
+          popupRenderToBody: this.popupRenderToBody
+        }
+      };
+    },
+    provide: function provide() {
+      return {
+        popupParams: this.popupParams
+      };
+    },
+    props: {
+      triggerMode: {
+        type: String,
+        "default": 'tap',
+        validator: function validator(v) {
+          return ['tap', 'hover'].indexOf(v) !== -1;
+        }
+      },
+      popupWidth: String,
+      popupHeight: String,
+      popupClassName: String,
+      popupRenderToBody: Boolean
+    },
+    watch: {
+      popupWidth: function popupWidth(value) {
+        this.popupParams.popupWidth = value;
+      },
+      popupHeight: function popupHeight(value) {
+        this.popupParams.popupHeight = value;
+      },
+      popupRenderToBody: function popupRenderToBody(value) {
+        this.popupParams.popupRenderToBody = value;
+      }
+    },
+    methods: {
+      setPopupVisible: function setPopupVisible(value) {
+        this.popupParams.popupVisible = value;
+      },
+      togglePopup: function togglePopup() {
+        this.setPopupVisible(!this.popupParams.popupVisible);
+      },
+      showPopup: function showPopup() {
+        this.setPopupVisible(true);
+      },
+      hidePopup: function hidePopup() {
+        this.setPopupVisible(false);
+      }
+    }
+  };
 
   var nativeAssign = Object.assign;
 
@@ -2770,16 +2835,10 @@
   var script$9 = {
     name: 'MusselDropdown',
     mixins: [RenderToBodyMixin, PopupVisibleMixin],
-    provide: function provide() {
-      return {
-        keepIconIndent: this.keepIconIndent
-      };
-    },
     props: {
       width: String,
       height: String,
-      className: String,
-      keepIconIndent: Boolean
+      className: String
     },
     data: function data() {
       return {
@@ -2896,27 +2955,27 @@
   //
   var script$a = {
     name: 'MusselPopupBoxWrapper',
-    inject: ['inputBox', 'params'],
+    inject: ['inputBox', 'params', 'popupParams'],
     components: {
       'mu-input-box-wrapper': InputBoxWrapper,
       'mu-dropdown': Dropdown
     },
     computed: {
       dropdownParams: function dropdownParams() {
-        var p = this.params;
+        var p = this.popupParams;
         return {
           width: p.popupWidth,
           height: p.popupHeight,
           visible: p.popupVisible,
           className: p.popupClassName,
-          renderToBody: p.popupRenderToBody,
-          keepIconIndent: p.popupKeepIconIndent
+          renderToBody: p.popupRenderToBody
         };
       }
     },
     methods: {
       setPopupVisible: function setPopupVisible(value) {
         this.inputBox.setPopupVisible(value);
+        this.params.focus = value;
       }
     }
   };
@@ -2968,33 +3027,7 @@
       'mu-popup-box-wrapper': PopupBoxWrapper
     },
     "extends": BaseInputBox,
-    data: function data() {
-      var p = this;
-      return {
-        params: {
-          type: p.type,
-          value: p.value,
-          icon: p.icon,
-          iconClass: p.iconClass,
-          iconAlign: p.iconAlign,
-          iconClickable: p.iconClickable,
-          triggerType: p.triggerType,
-          triggerOn: p.triggerOn,
-          readonly: p.readonly,
-          disabled: p.disabled,
-          editable: p.editable,
-          clearable: p.clearable,
-          placeholder: p.placeholder,
-          popupVisible: false,
-          popupWidth: p.popupWidth,
-          popupHeight: p.popupHeight,
-          popupClassName: p.popupClassName,
-          popupRenderToBody: p.popupRenderToBody,
-          popupKeepIconIndent: p.popupKeepIconIndent,
-          focus: false
-        }
-      };
-    },
+    mixins: [PopupGroupMixin],
     props: {
       triggerType: {
         type: String,
@@ -3003,56 +3036,29 @@
       editable: {
         type: Boolean,
         "default": false
-      },
-      popupWidth: String,
-      popupHeight: String,
-      popupClassName: String,
-      popupRenderToBody: Boolean,
-      popupKeepIconIndent: Boolean
-    },
-    watch: {
-      popupWidth: function popupWidth(value) {
-        this.params.popupWidth = value;
-      },
-      popupHeight: function popupHeight(value) {
-        this.params.popupHeight = value;
-      },
-      popupRenderToBody: function popupRenderToBody(value) {
-        this.params.popupRenderToBody = value;
-      },
-      popupKeepIconIndent: function popupKeepIconIndent(value) {
-        this.params.popupKeepIconIndent = value;
       }
     },
     methods: {
-      setPopupVisible: function setPopupVisible(value) {
-        this.params.popupVisible = value;
-        this.params.focus = value;
-      },
-      togglePopupVisible: function togglePopupVisible() {
-        this.setPopupVisible(!this.params.popupVisible);
-      },
       onInput: function onInput(value) {
         this.setInputValue(value);
         this.$emit('change', value);
       },
       onInputClick: function onInputClick() {
-        if (!this.readonly && !this.params.editable) {
-          this.togglePopupVisible();
+        if (!this.readonly && !this.popupParams.editable) {
+          this.togglePopup();
         }
 
         this.$emit('inputclick');
       },
       onButtonClick: function onButtonClick() {
-        this.$el.querySelector('.mu-input').focus();
-        this.togglePopupVisible();
+        this.focus();
+        this.togglePopup();
         if (this.iconClickable) this.$emit('buttonclick');
       },
       onClearClick: function onClearClick() {
-        this.params.value = '';
-        this.setPopupVisible(false);
+        this.hidePopup();
+        this.clear();
         this.$emit('change', '');
-        this.$emit('clear');
       }
     }
   };
@@ -3269,11 +3275,6 @@
     components: {
       'mu-icon': Icon
     },
-    inject: {
-      keepIconIndent: {
-        "default": false
-      }
-    },
     props: {
       className: String,
       iconClass: String,
@@ -3281,7 +3282,8 @@
       label: String,
       active: Boolean,
       disabled: Boolean,
-      triggerIcon: String
+      triggerIcon: String,
+      keepIconIndent: Boolean
     },
     computed: {
       actualLabel: function actualLabel() {
@@ -3454,6 +3456,7 @@
       fields: Object,
       options: Array,
       multiple: Boolean,
+      keepIconIndent: Boolean,
       popupClassName: {
         type: String,
         "default": 'mu-dropdown-list'
@@ -3562,14 +3565,19 @@
         }
 
         this.refreshInputValue(true);
-        if (hidePopup) this.params.popupVisible = false;
+
+        if (hidePopup) {
+          this.popupParams.popupVisible = false;
+          this.focus();
+        }
+
         this.$emit('optionclick', value, option);
       },
       onClearClick: function onClearClick() {
         this.selectedValue = this.multiple ? [] : null;
-        this.params.value = '';
+        this.hidePopup();
+        this.clear();
         this.$emit('change', this.selectedValue);
-        this.$emit('clear');
       }
     }
   };
@@ -3589,6 +3597,7 @@
       return _c("mu-option", {
         key: Object(option)[_vm.valueField] || option,
         attrs: {
+          "keep-icon-indent": _vm.keepIconIndent,
           option: option,
           fields: _vm.fields
         }
@@ -5270,13 +5279,9 @@
       },
       onSelect: function onSelect(value, year, month, date) {
         this.setInputValue(value);
-        this.params.popupVisible = false;
+        this.hidePopup();
+        this.focus();
         this.$emit('change', value, year, month, date);
-      },
-      onClearClick: function onClearClick() {
-        this.params.value = '';
-        this.$emit('change');
-        this.$emit('clear');
       }
     }
   };

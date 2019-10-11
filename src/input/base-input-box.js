@@ -15,6 +15,7 @@ export default {
     const p = this
     return {
       params: {
+        focus: false,
         type: p.type,
         value: p.value,
         icon: p.icon,
@@ -123,16 +124,23 @@ export default {
       this.$emit('inputclick')
     },
     onClearClick () {
-      this.params.value = ''
+      this.clear()
       this.$emit('change', '')
-      this.$emit('clear')
     },
     onButtonClick () {
-      this.$el.querySelector('.mu-input').focus()
+      this.focus()
       if (this.iconClickable) this.$emit('buttonclick')
     },
     onKeyPress (event) {
       this.$emit('keypress', event)
+    },
+    clear () {
+      this.params.value = ''
+      this.focus()
+      this.$emit('clear')
+    },
+    focus () {
+      this.$el.querySelector('.mu-input').focus()
     }
   }
 }

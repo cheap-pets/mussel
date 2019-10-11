@@ -22,11 +22,6 @@
     components: {
       'mu-icon': Icon
     },
-    inject: {
-      keepIconIndent: {
-        default: false
-      }
-    },
     props: {
       className: String,
       iconClass: String,
@@ -34,7 +29,8 @@
       label: String,
       active: Boolean,
       disabled: Boolean,
-      triggerIcon: String
+      triggerIcon: String,
+      keepIconIndent: Boolean
     },
     computed: {
       actualLabel () {

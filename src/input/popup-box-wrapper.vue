@@ -15,27 +15,27 @@
 
   export default {
     name: 'MusselPopupBoxWrapper',
-    inject: ['inputBox', 'params'],
+    inject: ['inputBox', 'params', 'popupParams'],
     components: {
       'mu-input-box-wrapper': InputBoxWrapper,
       'mu-dropdown': Dropdown
     },
     computed: {
       dropdownParams () {
-        const p = this.params
+        const p = this.popupParams
         return {
           width: p.popupWidth,
           height: p.popupHeight,
           visible: p.popupVisible,
           className: p.popupClassName,
-          renderToBody: p.popupRenderToBody,
-          keepIconIndent: p.popupKeepIconIndent
+          renderToBody: p.popupRenderToBody
         }
       }
     },
     methods: {
       setPopupVisible (value) {
         this.inputBox.setPopupVisible(value)
+        this.params.focus = value
       }
     }
   }

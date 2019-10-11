@@ -76,13 +76,9 @@
       },
       onSelect (value, year, month, date) {
         this.setInputValue(value)
-        this.params.popupVisible = false
+        this.hidePopup()
+        this.focus()
         this.$emit('change', value, year, month, date)
-      },
-      onClearClick () {
-        this.params.value = ''
-        this.$emit('change')
-        this.$emit('clear')
       }
     }
   }

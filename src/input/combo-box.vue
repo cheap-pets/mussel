@@ -5,6 +5,7 @@
       <mu-option
         v-for="option in options"
         :key="Object(option)[valueField] || option"
+        :keep-icon-indent="keepIconIndent"
         :option="option"
         :fields="fields" />
     </template>
@@ -30,6 +31,7 @@
       fields: Object,
       options: Array,
       multiple: Boolean,
+      keepIconIndent: Boolean,
       popupClassName: {
         type: String,
         default: 'mu-dropdown-list'
@@ -132,14 +134,17 @@
           this.$emit('change', value)
         }
         this.refreshInputValue(true)
-        if (hidePopup) this.params.popupVisible = false
+        if (hidePopup) {
+          this.popupParams.popupVisible = false
+          this.focus()
+        }
         this.$emit('optionclick', value, option)
       },
       onClearClick () {
         this.selectedValue = this.multiple ? [] : null
-        this.params.value = ''
+        this.hidePopup()
+        this.clear()
         this.$emit('change', this.selectedValue)
-        this.$emit('clear')
       }
     }
   }
