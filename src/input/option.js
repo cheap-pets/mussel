@@ -24,9 +24,14 @@ export default {
       return Object(this.fields).label || 'label'
     },
     actualValue () {
+      const option = Object(this.option)
       const v =
         this.value === undefined
-          ? Object(this.option)[this.valueField]
+          ? (
+            (this.valueField in option)
+              ? option[this.valueField]
+              : option.key
+          )
           : this.value
       return v === undefined ? this.option : v
     },

@@ -3391,7 +3391,8 @@ var Option = {
       return Object(this.fields).label || 'label';
     },
     actualValue: function actualValue() {
-      var v = this.value === undefined ? Object(this.option)[this.valueField] : this.value;
+      var option = Object(this.option);
+      var v = this.value === undefined ? this.valueField in option ? option[this.valueField] : option.key : this.value;
       return v === undefined ? this.option : v;
     },
     actualLabel: function actualLabel() {
