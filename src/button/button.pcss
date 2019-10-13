@@ -24,6 +24,11 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
     content: '\00a0';
   }
 
+  &[button-style="link"] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
   &:not([button-type]),
   &[button-type="normal"] {
     box-shadow: $buttonDefaultShadow;
@@ -223,8 +228,13 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   &[button-style="outline"] {
     background: #fff;
   }
-  &[button-style="link"]:not([disabled]):hover {
-    text-decoration: underline;
+  &[button-style="link"] {
+    &:hover {
+      text-decoration: underline;
+    }
+    &[disabled] {
+      text-decoration: none;
+    }
   }
   &[active] {
     color: #fff;
