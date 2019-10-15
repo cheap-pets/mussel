@@ -80,7 +80,7 @@
       justify-content: center;
     }
 
-    &[bordered] {
+    &[bordered], & > [bordered] {
       border: 1px solid #ddd;
     }
 

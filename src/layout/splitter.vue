@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-splitter" @mousedown="onDragStart" />
+  <div class="mu-splitter" :dragable="dragable" @mousedown="onDragStart" />
 </template>
 
 <script>
@@ -66,6 +66,12 @@
 
   export default {
     name: 'MusselSplitter',
+    props: {
+      dragable: {
+        type: Boolean,
+        default: true
+      }
+    },
     computed: {
       parentDirection () {
         return this.$parent.flexDirection || 'row'
@@ -78,6 +84,7 @@
     },
     methods: {
       onDragStart (event) {
+        if (!this.dragable) return
         const state = getInitialState(
           this.$el.previousElementSibling,
           this.$el.nextElementSibling
@@ -94,6 +101,7 @@
         if (this.initialState.resized) this.$emit('resizestart')
       },
       onDragMove (event) {
+        if (!this.dragable) return
         if (resizeElement({
           ...this.initialState,
           x: event.pageX,
@@ -104,6 +112,7 @@
         }
       },
       onDragEnd (event) {
+        if (!this.dragable) return
         window.removeEventListener('mousemove', this.onDragMove)
         window.removeEventListener('mouseup', this.onDragEnd)
         if (this.initialState.resized) this.$emit('resizeend')
@@ -118,7 +127,7 @@
     border-radius: 4px;
     user-select: none;
 
-    &:hover {
+    &[dragable]:hover {
       background: rgba(0, 0, 0, 0.2);
     }
 
@@ -136,12 +145,16 @@
     width: 4px;
     margin-left: 0;
     margin-right: 0;
-    cursor: 'col-resize';
+    &[dragable] {
+      cursor: 'col-resize';
+    }
   }
-  [direction="column"] > .mu-splitter {
+  [direction="column"] > .mu-splitter[dragable] {
     height: 4px;
     margin-top: 0;
     margin-bottom: 0;
-    cursor: 'row-resize';
+    &[dragable] {
+      cursor: 'row-resize';
+    }
   }
 </style>
