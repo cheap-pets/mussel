@@ -39,7 +39,9 @@ export default {
     resolve({
       mainFields: ['module', 'main', 'browser']
     }),
-    commonjs(),
+    commonjs({
+      include: 'node_modules/**'
+    }),
     babel({
       exclude: [/\/core-js\//],
       externalHelpers: true,

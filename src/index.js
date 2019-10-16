@@ -9,6 +9,7 @@ import VBox from './layout/flex-v-box'
 import Splitter from './layout/splitter.vue'
 /* ICON */
 import Icon from './icon/index.vue'
+import registerIcons from './icon/register'
 /* BUTTON */
 import Button from './button/button.jsx'
 import IconButton from './button/icon-button'
@@ -78,6 +79,7 @@ export {
   VBox,
   // icon
   Icon,
+  registerIcons,
   // button
   Button,
   IconButton,
