@@ -8,6 +8,7 @@
     "plugin:vue/recommended"
   ],
   "plugins": [
+    "babel",
     "vue"
   ],
   "env": {
@@ -16,6 +17,8 @@
   },
   "rules": {
     "prefer-const": 2,
+    "no-unused-expressions": "off",
+    "babel/no-unused-expressions": "error",
     "vue/html-indent": [1, 2, {
       "alignAttributesVertically": false
     }],

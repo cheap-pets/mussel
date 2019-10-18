@@ -45,7 +45,6 @@
   	return module = { exports: {} }, fn(module, module.exports), module.exports;
   }
 
-  var O = 'object';
   var check = function (it) {
     return it && it.Math == Math && it;
   };
@@ -53,10 +52,10 @@
   // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
   var global_1 =
     // eslint-disable-next-line no-undef
-    check(typeof globalThis == O && globalThis) ||
-    check(typeof window == O && window) ||
-    check(typeof self == O && self) ||
-    check(typeof commonjsGlobal == O && commonjsGlobal) ||
+    check(typeof globalThis == 'object' && globalThis) ||
+    check(typeof window == 'object' && window) ||
+    check(typeof self == 'object' && self) ||
+    check(typeof commonjsGlobal == 'object' && commonjsGlobal) ||
     // eslint-disable-next-line no-new-func
     Function('return this')();
 
@@ -212,7 +211,7 @@
   	f: f$2
   };
 
-  var hide = descriptors ? function (object, key, value) {
+  var createNonEnumerableProperty = descriptors ? function (object, key, value) {
     return objectDefineProperty.f(object, key, createPropertyDescriptor(1, value));
   } : function (object, key, value) {
     object[key] = value;
@@ -221,20 +220,22 @@
 
   var setGlobal = function (key, value) {
     try {
-      hide(global_1, key, value);
+      createNonEnumerableProperty(global_1, key, value);
     } catch (error) {
       global_1[key] = value;
     } return value;
   };
 
-  var shared = createCommonjsModule(function (module) {
   var SHARED = '__core-js_shared__';
   var store = global_1[SHARED] || setGlobal(SHARED, {});
 
+  var sharedStore = store;
+
+  var shared = createCommonjsModule(function (module) {
   (module.exports = function (key, value) {
-    return store[key] || (store[key] = value !== undefined ? value : {});
+    return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
   })('versions', []).push({
-    version: '3.2.1',
+    version: '3.3.2',
     mode:  'global',
     copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
   });
@@ -278,25 +279,25 @@
   };
 
   if (nativeWeakMap) {
-    var store = new WeakMap$1();
-    var wmget = store.get;
-    var wmhas = store.has;
-    var wmset = store.set;
+    var store$1 = new WeakMap$1();
+    var wmget = store$1.get;
+    var wmhas = store$1.has;
+    var wmset = store$1.set;
     set = function (it, metadata) {
-      wmset.call(store, it, metadata);
+      wmset.call(store$1, it, metadata);
       return metadata;
     };
     get = function (it) {
-      return wmget.call(store, it) || {};
+      return wmget.call(store$1, it) || {};
     };
     has$1 = function (it) {
-      return wmhas.call(store, it);
+      return wmhas.call(store$1, it);
     };
   } else {
     var STATE = sharedKey('state');
     hiddenKeys[STATE] = true;
     set = function (it, metadata) {
-      hide(it, STATE, metadata);
+      createNonEnumerableProperty(it, STATE, metadata);
       return metadata;
     };
     get = function (it) {
@@ -329,7 +330,7 @@
     var simple = options ? !!options.enumerable : false;
     var noTargetGet = options ? !!options.noTargetGet : false;
     if (typeof value == 'function') {
-      if (typeof key == 'string' && !has(value, 'name')) hide(value, 'name', key);
+      if (typeof key == 'string' && !has(value, 'name')) createNonEnumerableProperty(value, 'name', key);
       enforceInternalState(value).source = TEMPLATE.join(typeof key == 'string' ? key : '');
     }
     if (O === global_1) {
@@ -342,7 +343,7 @@
       simple = true;
     }
     if (simple) O[key] = value;
-    else hide(O, key, value);
+    else createNonEnumerableProperty(O, key, value);
   // add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
   })(Function.prototype, 'toString', function toString() {
     return typeof this == 'function' && getInternalState(this).source || functionToString.call(this);
@@ -546,7 +547,7 @@
       }
       // add a flag to not completely full polyfills
       if (options.sham || (targetProperty && targetProperty.sham)) {
-        hide(sourceProperty, 'sham', true);
+        createNonEnumerableProperty(sourceProperty, 'sham', true);
       }
       // extend global
       redefine(target, key, sourceProperty, options);
@@ -784,8 +785,67 @@
     redefine(global_1, NUMBER, NumberWrapper);
   }
 
-  var BaseFlexItem = {
-    name: 'MusselBaseFlexItem',
+  // `ToObject` abstract operation
+  // https://tc39.github.io/ecma262/#sec-toobject
+  var toObject = function (argument) {
+    return Object(requireObjectCoercible(argument));
+  };
+
+  var nativeAssign = Object.assign;
+
+  // `Object.assign` method
+  // https://tc39.github.io/ecma262/#sec-object.assign
+  // should work with symbols and should have deterministic property order (V8 bug)
+  var objectAssign = !nativeAssign || fails(function () {
+    var A = {};
+    var B = {};
+    // eslint-disable-next-line no-undef
+    var symbol = Symbol();
+    var alphabet = 'abcdefghijklmnopqrst';
+    A[symbol] = 7;
+    alphabet.split('').forEach(function (chr) { B[chr] = chr; });
+    return nativeAssign({}, A)[symbol] != 7 || objectKeys(nativeAssign({}, B)).join('') != alphabet;
+  }) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+    var T = toObject(target);
+    var argumentsLength = arguments.length;
+    var index = 1;
+    var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
+    var propertyIsEnumerable = objectPropertyIsEnumerable.f;
+    while (argumentsLength > index) {
+      var S = indexedObject(arguments[index++]);
+      var keys = getOwnPropertySymbols ? objectKeys(S).concat(getOwnPropertySymbols(S)) : objectKeys(S);
+      var length = keys.length;
+      var j = 0;
+      var key;
+      while (length > j) {
+        key = keys[j++];
+        if (!descriptors || propertyIsEnumerable.call(S, key)) T[key] = S[key];
+      }
+    } return T;
+  } : nativeAssign;
+
+  // `Object.assign` method
+  // https://tc39.github.io/ecma262/#sec-object.assign
+  _export({ target: 'Object', stat: true, forced: Object.assign !== objectAssign }, {
+    assign: objectAssign
+  });
+
+  // `Object.defineProperty` method
+  // https://tc39.github.io/ecma262/#sec-object.defineproperty
+  _export({ target: 'Object', stat: true, forced: !descriptors, sham: !descriptors }, {
+    defineProperty: objectDefineProperty.f
+  });
+
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  var script = {
+    name: 'MusselFlexItem',
     inject: {
       parentDirection: {
         "default": 'row'
@@ -797,64 +857,54 @@
         validator: function validator(value) {
           return value === undefined || /^([1-8]|auto|([1-9]\d*(px|%)))$/.test(value);
         }
-      },
-      overflow: String
+      }
     },
     computed: {
+      sizeValue: function sizeValue() {
+        var _this$$el;
+
+        return this.size || ((_this$$el = this.$el) === null || _this$$el === void 0 ? void 0 : _this$$el.getAttribute('size'));
+      },
       sizeUnit: function sizeUnit() {
-        var s = String(this.size);
+        var s = String(this.sizeValue);
         return s.indexOf('%') > -1 ? '%' : s.indexOf('px') > -1 ? 'px' : null;
-      },
-      sizeAttr: function sizeAttr() {
-        return this.sizeUnit ? undefined : this.size;
-      },
-      style: function style() {
-        return this.sizeUnit ? this.parentDirection === 'row' ? {
-          width: this.size
-        } : {
-          height: this.size
-        } : undefined;
       }
-    }
-  };
+    },
+    watch: {
+      size: function size() {
+        this.setAttributes();
+      },
+      parentDirection: function parentDirection() {
+        this.setAttributes();
+      }
+    },
+    mounted: function mounted() {
+      var _Object = Object(this.$el.style),
+          width = _Object.width,
+          height = _Object.height;
 
-  var script = {
-    name: 'MusselFlexBox',
-    mixins: [BaseFlexItem],
-    provide: function provide() {
-      return {
-        parentDirection: this.flexDirection
+      this.flexItemOriginStyles = {
+        width: width,
+        height: height
       };
+      this.setAttributes();
     },
-    props: {
-      direction: {
-        type: String,
-        "default": 'row',
-        validator: function validator(value) {
-          return ['row', 'column'].indexOf(value) !== -1;
-        }
-      }
-    },
-    computed: {
-      flexDirection: function flexDirection() {
-        return this.direction;
+    methods: {
+      setAttributes: function setAttributes() {
+        var $el = this.$el,
+            sizeValue = this.sizeValue,
+            sizeUnit = this.sizeUnit;
+        if (!$el) return;
+        if (!sizeValue || sizeUnit) $el.removeAttribute('size');else if (sizeValue) $el.setAttribute('size', sizeValue);
+        Object.assign($el.style, this.flexItemOriginStyles, sizeUnit ? _defineProperty({}, this.parentDirection === 'row' ? 'width' : 'height', sizeValue) : undefined);
       }
     }
   };
-
-  var css$2 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=column] > .mu-input,\r\n.mu-flex-box[direction=column] > .mu-input-box {\r\n  width: auto;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[itemspacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[itemspacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box[direction=column] > [size] {\r\n  height: 10px;\r\n}\r\n.mu-flex-box:not(direction=\"column\") > [size] {\r\n  width: 10px;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex-grow: 2;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex-grow: 3;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex-grow: 4;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex-grow: 5;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex-grow: 6;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex-grow: 7;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex-grow: 8;\r\n}";
-  styleInject(css$2);
 
   // `IsArray` abstract operation
   // https://tc39.github.io/ecma262/#sec-isarray
   var isArray = Array.isArray || function isArray(arg) {
     return classofRaw(arg) == 'Array';
-  };
-
-  // `ToObject` abstract operation
-  // https://tc39.github.io/ecma262/#sec-toobject
-  var toObject = function (argument) {
-    return Object(requireObjectCoercible(argument));
   };
 
   var createProperty = function (object, key, value) {
@@ -870,10 +920,10 @@
   });
 
   var Symbol$1 = global_1.Symbol;
-  var store$1 = shared('wks');
+  var store$2 = shared('wks');
 
   var wellKnownSymbol = function (name) {
-    return store$1[name] || (store$1[name] = nativeSymbol && Symbol$1[name]
+    return store$2[name] || (store$2[name] = nativeSymbol && Symbol$1[name]
       || (nativeSymbol ? Symbol$1 : uid)('Symbol.' + name));
   };
 
@@ -1048,14 +1098,7 @@
 
     var _c = _vm._self._c || _h;
 
-    return _c("div", {
-      staticClass: "mu-flex-box",
-      style: _vm.style,
-      attrs: {
-        direction: _vm.flexDirection,
-        size: _vm.sizeAttr
-      }
-    }, [_vm._t("default")], 2);
+    return _c("div", [_vm._t("default")], 2);
   };
 
   var __vue_staticRenderFns__ = [];
@@ -1076,38 +1119,58 @@
 
   /* style inject SSR */
 
-  var FlexBox = normalizeComponent_1({
+  var FlexItem = normalizeComponent_1({
     render: __vue_render__,
     staticRenderFns: __vue_staticRenderFns__
   }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, undefined, undefined);
 
-  //
   var script$1 = {
-    name: 'MusselFlexItem',
-    "extends": BaseFlexItem
+    name: 'MusselFlexBox',
+    "extends": FlexItem,
+    provide: function provide() {
+      return {
+        parentDirection: this.flexDirection
+      };
+    },
+    props: {
+      direction: {
+        type: String,
+        "default": 'row',
+        validator: function validator(value) {
+          return ['row', 'column'].indexOf(value) !== -1;
+        }
+      }
+    },
+    computed: {
+      flexDirection: function flexDirection() {
+        return this.direction;
+      }
+    },
+    watch: {
+      direction: function direction(v) {
+        this.setDirection();
+      }
+    },
+    mounted: function mounted() {
+      this.$el.classList.add('mu-flex-box');
+      this.setDirection();
+    },
+    methods: {
+      setDirection: function setDirection() {
+        var _this$$el;
+
+        (_this$$el = this.$el) === null || _this$$el === void 0 ? void 0 : _this$$el.setAttribute('direction', this.flexDirection);
+      }
+    }
   };
+
+  var css$2 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=column] > .mu-input,\r\n.mu-flex-box[direction=column] > .mu-input-box {\r\n  width: auto;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[itemspacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[itemspacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box[direction=column] > [size] {\r\n  height: 10px;\r\n}\r\n.mu-flex-box:not(direction=\"column\") > [size] {\r\n  width: 10px;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex-grow: 2;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex-grow: 3;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex-grow: 4;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex-grow: 5;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex-grow: 6;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex-grow: 7;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex-grow: 8;\r\n}";
+  styleInject(css$2);
 
   /* script */
   var __vue_script__$1 = script$1;
   /* template */
 
-  var __vue_render__$1 = function __vue_render__() {
-    var _vm = this;
-
-    var _h = _vm.$createElement;
-
-    var _c = _vm._self._c || _h;
-
-    return _c("div", {
-      style: _vm.style,
-      attrs: {
-        size: _vm.sizeAttr
-      }
-    }, [_vm._t("default")], 2);
-  };
-
-  var __vue_staticRenderFns__$1 = [];
-  __vue_render__$1._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$1 = undefined;
@@ -1119,15 +1182,12 @@
   var __vue_module_identifier__$1 = undefined;
   /* functional template */
 
-  var __vue_is_functional_template__$1 = false;
+  var __vue_is_functional_template__$1 = undefined;
   /* style inject */
 
   /* style inject SSR */
 
-  var FlexItem = normalizeComponent_1({
-    render: __vue_render__$1,
-    staticRenderFns: __vue_staticRenderFns__$1
-  }, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, undefined, undefined);
+  var FlexBox = normalizeComponent_1({}, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, undefined, undefined);
 
   var HBox = {
     name: 'MusselHBox',
@@ -1550,7 +1610,9 @@
 
   // `Symbol.prototype[@@toPrimitive]` method
   // https://tc39.github.io/ecma262/#sec-symbol.prototype-@@toprimitive
-  if (!$Symbol[PROTOTYPE$1][TO_PRIMITIVE]) hide($Symbol[PROTOTYPE$1], TO_PRIMITIVE, $Symbol[PROTOTYPE$1].valueOf);
+  if (!$Symbol[PROTOTYPE$1][TO_PRIMITIVE]) {
+    createNonEnumerableProperty($Symbol[PROTOTYPE$1], TO_PRIMITIVE, $Symbol[PROTOTYPE$1].valueOf);
+  }
   // `Symbol.prototype[@@toStringTag]` property
   // https://tc39.github.io/ecma262/#sec-symbol.prototype-@@tostringtag
   setToStringTag($Symbol, SYMBOL);
@@ -1602,12 +1664,6 @@
   // https://tc39.github.io/ecma262/#sec-object.defineproperties
   _export({ target: 'Object', stat: true, forced: !descriptors, sham: !descriptors }, {
     defineProperties: objectDefineProperties
-  });
-
-  // `Object.defineProperty` method
-  // https://tc39.github.io/ecma262/#sec-object.defineproperty
-  _export({ target: 'Object', stat: true, forced: !descriptors, sham: !descriptors }, {
-    defineProperty: objectDefineProperty.f
   });
 
   var nativeGetOwnPropertyDescriptor$2 = objectGetOwnPropertyDescriptor.f;
@@ -1693,7 +1749,7 @@
     var CollectionPrototype = Collection && Collection.prototype;
     // some Chrome versions have non-configurable methods on DOMTokenList
     if (CollectionPrototype && CollectionPrototype.forEach !== arrayForEach) try {
-      hide(CollectionPrototype, 'forEach', arrayForEach);
+      createNonEnumerableProperty(CollectionPrototype, 'forEach', arrayForEach);
     } catch (error) {
       CollectionPrototype.forEach = arrayForEach;
     }
@@ -1701,9 +1757,9 @@
 
   function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$1(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$1(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$1(source, true).forEach(function (key) { _defineProperty$1(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$1(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+  function _defineProperty$1(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
   //
   //
@@ -1774,6 +1830,12 @@
 
   var script$2 = {
     name: 'MusselSplitter',
+    props: {
+      dragable: {
+        type: Boolean,
+        "default": true
+      }
+    },
     computed: {
       parentDirection: function parentDirection() {
         return this.$parent.flexDirection || 'row';
@@ -1788,6 +1850,7 @@
     },
     methods: {
       onDragStart: function onDragStart(event) {
+        if (!this.dragable) return;
         var state = getInitialState(this.$el.previousElementSibling, this.$el.nextElementSibling);
         if (!state) return;
         this.initialState = _objectSpread({
@@ -1800,6 +1863,8 @@
         if (this.initialState.resized) this.$emit('resizestart');
       },
       onDragMove: function onDragMove(event) {
+        if (!this.dragable) return;
+
         if (resizeElement(_objectSpread({}, this.initialState, {
           x: event.pageX,
           y: event.pageY
@@ -1809,6 +1874,7 @@
         }
       },
       onDragEnd: function onDragEnd(event) {
+        if (!this.dragable) return;
         window.removeEventListener('mousemove', this.onDragMove);
         window.removeEventListener('mouseup', this.onDragEnd);
         if (this.initialState.resized) this.$emit('resizeend');
@@ -1816,14 +1882,14 @@
     }
   };
 
-  var css$3 = ".mu-splitter {\r\n  background: rgba(0,0,0,.1);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter:hover {\r\n  background: rgba(0,0,0,.2);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n  cursor: row-resize;\r\n}";
+  var css$3 = ".mu-splitter {\r\n  background: rgba(0,0,0,.1);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter[dragable]:hover {\r\n  background: rgba(0,0,0,.2);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n}\r\n[direction=row] > .mu-splitter[dragable] {\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter[dragable] {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n}\r\n[direction=column] > .mu-splitter[dragable][dragable] {\r\n  cursor: row-resize;\r\n}";
   styleInject(css$3);
 
   /* script */
   var __vue_script__$2 = script$2;
   /* template */
 
-  var __vue_render__$2 = function __vue_render__() {
+  var __vue_render__$1 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -1832,14 +1898,17 @@
 
     return _c("div", {
       staticClass: "mu-splitter",
+      attrs: {
+        dragable: _vm.dragable
+      },
       on: {
         mousedown: _vm.onDragStart
       }
     });
   };
 
-  var __vue_staticRenderFns__$2 = [];
-  __vue_render__$2._withStripped = true;
+  var __vue_staticRenderFns__$1 = [];
+  __vue_render__$1._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$2 = undefined;
@@ -1857,8 +1926,8 @@
   /* style inject SSR */
 
   var Splitter = normalizeComponent_1({
-    render: __vue_render__$2,
-    staticRenderFns: __vue_staticRenderFns__$2
+    render: __vue_render__$1,
+    staticRenderFns: __vue_staticRenderFns__$1
   }, __vue_inject_styles__$2, __vue_script__$2, __vue_scope_id__$2, __vue_is_functional_template__$2, __vue_module_identifier__$2, undefined, undefined);
 
   var ok = 'M351.81165742 729.48242963L134.32922778 512 61.83508498 584.49414281 351.81165742 874.47071645 973.19002778 253.09234608 900.69588498 180.59820206Z';
@@ -1871,7 +1940,7 @@
   var expandAll = 'M768 341.333333H341.333333v426.666667H256V341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h426.666667v85.333333z m-170.666667-256H170.666667c-46.933333 0-85.333333 38.4-85.333334 85.333334v426.666666h85.333334V170.666667h426.666666V85.333333z m341.333334 426.666667v341.333333c0 46.933333-38.4 85.333333-85.333334 85.333334h-341.333333c-46.933333 0-85.333333-38.4-85.333333-85.333334v-341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h341.333333c46.933333 0 85.333333 38.4 85.333334 85.333333z m-85.333334 128h-128v-128h-85.333333v128h-128v85.333333h128v128h85.333333v-128h128v-85.333333z';
   var collapseAll = 'M597.333333 170.666667H170.666667v426.666666H85.333333V170.666667c0-46.933333 38.4-85.333333 85.333334-85.333334h426.666666v85.333334z m170.666667 85.333333H341.333333c-46.933333 0-85.333333 38.4-85.333333 85.333333v426.666667h85.333333V341.333333h426.666667V256z m170.666667 256v341.333333c0 46.933333-38.4 85.333333-85.333334 85.333334h-341.333333c-46.933333 0-85.333333-38.4-85.333333-85.333334v-341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h341.333333c46.933333 0 85.333333 38.4 85.333334 85.333333z m-85.333334 128h-341.333333v85.333333h341.333333v-85.333333z';
   var calendar = 'M770.90765392 557.5111111l-258.90765392 0 0 258.90765392 258.90765392 0L770.90765392 557.5111111zM719.12612386-12.085728l0 103.56306132L304.87387614 91.47733332 304.87387614-12.085728 201.31081482-12.085728l0 103.56306132L149.52928355 91.47733332C92.5696 91.47733332 45.96622222 138.0807111 45.96622222 195.04039466l0 724.94143169c0 56.95968355 46.60337778 103.56306132 103.56306133 103.56306132l724.94143169 0c56.95968355 0 103.56306132-46.60337778 103.56306133-103.56306132L978.03377778 195.04039466c0-56.95968355-46.60337778-103.56306132-103.56306133-103.56306134l-51.78153127 0L822.68918518-12.085728 719.12612386-12.085728zM874.47071645 919.98182755L149.52928355 919.98182755 149.52928355 350.38498724l724.94143169 0L874.47071645 919.98182755z';
-  var _d = {
+  var data$1 = {
     ok: ok,
     close: close,
     search: search,
@@ -1917,7 +1986,7 @@
         return icon || (iconClass || !triggerType ? undefined : triggerIcons[triggerType]);
       },
       d: function d() {
-        return this.svgData || this.iconName ? _d[this.iconName] : null;
+        return this.svgData || this.iconName ? data$1[this.iconName] : null;
       }
     },
     methods: {
@@ -1934,7 +2003,7 @@
   var __vue_script__$3 = script$3;
   /* template */
 
-  var __vue_render__$3 = function __vue_render__() {
+  var __vue_render__$2 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -1967,8 +2036,8 @@
     })]) : _vm._e()]);
   };
 
-  var __vue_staticRenderFns__$3 = [];
-  __vue_render__$3._withStripped = true;
+  var __vue_staticRenderFns__$2 = [];
+  __vue_render__$2._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$3 = undefined;
@@ -1986,9 +2055,13 @@
   /* style inject SSR */
 
   var Icon = normalizeComponent_1({
-    render: __vue_render__$3,
-    staticRenderFns: __vue_staticRenderFns__$3
+    render: __vue_render__$2,
+    staticRenderFns: __vue_staticRenderFns__$2
   }, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, undefined, undefined);
+
+  function register(icons) {
+    Object.assign(data$1, icons);
+  }
 
   var css$6 = ".mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  min-width: 65px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n  background: #fff;\r\n  line-height: 20px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button[button-style=link] {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n.mu-button:not([button-type]),\r\n.mu-button[button-type=normal] {\r\n  box-shadow: none;\r\n}\r\n.mu-button:not([button-type])[button-style=link]:hover,\r\n.mu-button[button-type=normal][button-style=link]:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button:not([button-type])[active],\r\n.mu-button[button-type=normal][active] {\r\n  background: #404040;\r\n}\r\n.mu-button:not([button-type]):hover,\r\n.mu-button[button-type=normal]:hover {\r\n  background: #8c8c8c;\r\n  border-color: #8c8c8c;\r\n  box-shadow: 0 0 0 .2rem #d9d9d9;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button:not([button-type])[disabled][button-style=link],\r\n.mu-button[button-type=normal][disabled][button-style=link] {\r\n  color: #bfbfbf;\r\n  fill: #bfbfbf;\r\n}\r\n.mu-button:not([button-type])[disabled]:not([button-style=link]),\r\n.mu-button[button-type=normal][disabled]:not([button-style=link]) {\r\n  background: #bfbfbf;\r\n  border-color: #bfbfbf;\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[disabled] {\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  border-color: #1890ff;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary][button-style=link] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover {\r\n  color: #40a9ff;\r\n  fill: #40a9ff;\r\n}\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  border-color: #096dd9;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  border-color: #40a9ff;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][disabled][button-style=link] {\r\n  color: #91d5ff;\r\n  fill: #91d5ff;\r\n}\r\n.mu-button[button-type=primary][disabled]:not([button-style=link]) {\r\n  background: #91d5ff;\r\n  border-color: #91d5ff;\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #52c41a;\r\n  border-color: #52c41a;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit][button-style=link] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover {\r\n  color: #73d13d;\r\n  fill: #73d13d;\r\n}\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  border-color: #389e0d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  border-color: #73d13d;\r\n  box-shadow: 0 0 0 .2rem #b7eb8f;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][disabled][button-style=link] {\r\n  color: #b7eb8f;\r\n  fill: #b7eb8f;\r\n}\r\n.mu-button[button-type=submit][disabled]:not([button-style=link]) {\r\n  background: #b7eb8f;\r\n  border-color: #b7eb8f;\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #fa541c;\r\n  border-color: #fa541c;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger][button-style=link] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover {\r\n  color: #ff7a45;\r\n  fill: #ff7a45;\r\n}\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #d4380d;\r\n  border-color: #d4380d;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff7a45;\r\n  border-color: #ff7a45;\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][disabled][button-style=link] {\r\n  color: #ffbb96;\r\n  fill: #ffbb96;\r\n}\r\n.mu-button[button-type=danger][disabled]:not([button-style=link]) {\r\n  background: #ffbb96;\r\n  border-color: #ffbb96;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[button-style=link]:hover,\r\n.mu-button[button-style=link][active],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n  border-color: transparent;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=outline] {\r\n  background: #fff;\r\n}\r\n.mu-button[button-style=link]:hover {\r\n  text-decoration: underline;\r\n}\r\n.mu-button[button-style=link][disabled] {\r\n  text-decoration: none;\r\n}\r\n.mu-button[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[disabled] {\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  color: rgba(255,255,255,.7);\r\n  fill: rgba(255,255,255,.7);\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  min-width: 0;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}";
   styleInject(css$6);
@@ -2119,7 +2192,7 @@
   var __vue_script__$5 = script$5;
   /* template */
 
-  var __vue_render__$4 = function __vue_render__() {
+  var __vue_render__$3 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -2131,8 +2204,8 @@
     }, [_vm._t("default")], 2);
   };
 
-  var __vue_staticRenderFns__$4 = [];
-  __vue_render__$4._withStripped = true;
+  var __vue_staticRenderFns__$3 = [];
+  __vue_render__$3._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$5 = undefined;
@@ -2150,8 +2223,8 @@
   /* style inject SSR */
 
   var ButtonGroup = normalizeComponent_1({
-    render: __vue_render__$4,
-    staticRenderFns: __vue_staticRenderFns__$4
+    render: __vue_render__$3,
+    staticRenderFns: __vue_staticRenderFns__$3
   }, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, undefined, undefined);
 
   var css$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #b2b2b2;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
@@ -2194,7 +2267,7 @@
   var __vue_script__$6 = script$6;
   /* template */
 
-  var __vue_render__$5 = function __vue_render__() {
+  var __vue_render__$4 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -2217,8 +2290,8 @@
     });
   };
 
-  var __vue_staticRenderFns__$5 = [];
-  __vue_render__$5._withStripped = true;
+  var __vue_staticRenderFns__$4 = [];
+  __vue_render__$4._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$6 = undefined;
@@ -2236,8 +2309,8 @@
   /* style inject SSR */
 
   var Input = normalizeComponent_1({
-    render: __vue_render__$5,
-    staticRenderFns: __vue_staticRenderFns__$5
+    render: __vue_render__$4,
+    staticRenderFns: __vue_staticRenderFns__$4
   }, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, undefined, undefined);
 
   var css$a = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-box > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[trigger-type=close]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [clickable]:hover,\r\n[invalid] .mu-input-box > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
@@ -2321,7 +2394,7 @@
   var __vue_script__$7 = script$7;
   /* template */
 
-  var __vue_render__$6 = function __vue_render__() {
+  var __vue_render__$5 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -2364,8 +2437,8 @@
     }, "mu-input-button", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _vm._t("default")], 2);
   };
 
-  var __vue_staticRenderFns__$6 = [];
-  __vue_render__$6._withStripped = true;
+  var __vue_staticRenderFns__$5 = [];
+  __vue_render__$5._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$7 = undefined;
@@ -2383,8 +2456,8 @@
   /* style inject SSR */
 
   var InputBoxWrapper = normalizeComponent_1({
-    render: __vue_render__$6,
-    staticRenderFns: __vue_staticRenderFns__$6
+    render: __vue_render__$5,
+    staticRenderFns: __vue_staticRenderFns__$5
   }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, undefined, undefined);
 
   var BaseInputBox = {
@@ -2542,7 +2615,7 @@
   var __vue_script__$8 = script$8;
   /* template */
 
-  var __vue_render__$7 = function __vue_render__() {
+  var __vue_render__$6 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -2552,8 +2625,8 @@
     return _c("mu-input-box-wrapper");
   };
 
-  var __vue_staticRenderFns__$7 = [];
-  __vue_render__$7._withStripped = true;
+  var __vue_staticRenderFns__$6 = [];
+  __vue_render__$6._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$8 = undefined;
@@ -2571,8 +2644,8 @@
   /* style inject SSR */
 
   var InputBox = normalizeComponent_1({
-    render: __vue_render__$7,
-    staticRenderFns: __vue_staticRenderFns__$7
+    render: __vue_render__$6,
+    staticRenderFns: __vue_staticRenderFns__$6
   }, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
 
   var PopupGroupMixin = {
@@ -2631,45 +2704,6 @@
       }
     }
   };
-
-  var nativeAssign = Object.assign;
-
-  // `Object.assign` method
-  // https://tc39.github.io/ecma262/#sec-object.assign
-  // should work with symbols and should have deterministic property order (V8 bug)
-  var objectAssign = !nativeAssign || fails(function () {
-    var A = {};
-    var B = {};
-    // eslint-disable-next-line no-undef
-    var symbol = Symbol();
-    var alphabet = 'abcdefghijklmnopqrst';
-    A[symbol] = 7;
-    alphabet.split('').forEach(function (chr) { B[chr] = chr; });
-    return nativeAssign({}, A)[symbol] != 7 || objectKeys(nativeAssign({}, B)).join('') != alphabet;
-  }) ? function assign(target, source) { // eslint-disable-line no-unused-vars
-    var T = toObject(target);
-    var argumentsLength = arguments.length;
-    var index = 1;
-    var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
-    var propertyIsEnumerable = objectPropertyIsEnumerable.f;
-    while (argumentsLength > index) {
-      var S = indexedObject(arguments[index++]);
-      var keys = getOwnPropertySymbols ? objectKeys(S).concat(getOwnPropertySymbols(S)) : objectKeys(S);
-      var length = keys.length;
-      var j = 0;
-      var key;
-      while (length > j) {
-        key = keys[j++];
-        if (!descriptors || propertyIsEnumerable.call(S, key)) T[key] = S[key];
-      }
-    } return T;
-  } : nativeAssign;
-
-  // `Object.assign` method
-  // https://tc39.github.io/ecma262/#sec-object.assign
-  _export({ target: 'Object', stat: true, forced: Object.assign !== objectAssign }, {
-    assign: objectAssign
-  });
 
   var RenderToBodyMixin = {
     props: {
@@ -2800,9 +2834,9 @@
 
   function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-  function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$1(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+  function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-  function _defineProperty$1(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+  function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
   function popOnTop(parentRect, height) {
     return parentRect.bottom + 4 + height > window.innerHeight && parentRect.top - height - 4 >= 0;
@@ -2912,7 +2946,7 @@
   var __vue_script__$9 = script$9;
   /* template */
 
-  var __vue_render__$8 = function __vue_render__() {
+  var __vue_render__$7 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -2929,8 +2963,8 @@
     }, [_vm._t("default")], 2);
   };
 
-  var __vue_staticRenderFns__$8 = [];
-  __vue_render__$8._withStripped = true;
+  var __vue_staticRenderFns__$7 = [];
+  __vue_render__$7._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$9 = undefined;
@@ -2948,8 +2982,8 @@
   /* style inject SSR */
 
   var Dropdown = normalizeComponent_1({
-    render: __vue_render__$8,
-    staticRenderFns: __vue_staticRenderFns__$8
+    render: __vue_render__$7,
+    staticRenderFns: __vue_staticRenderFns__$7
   }, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, undefined, undefined);
 
   //
@@ -2984,7 +3018,7 @@
   var __vue_script__$a = script$a;
   /* template */
 
-  var __vue_render__$9 = function __vue_render__() {
+  var __vue_render__$8 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -2998,8 +3032,8 @@
     }, "mu-dropdown", _vm.dropdownParams, false), [_vm._t("default")], 2) : _vm._e()], 1);
   };
 
-  var __vue_staticRenderFns__$9 = [];
-  __vue_render__$9._withStripped = true;
+  var __vue_staticRenderFns__$8 = [];
+  __vue_render__$8._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$a = undefined;
@@ -3017,8 +3051,8 @@
   /* style inject SSR */
 
   var PopupBoxWrapper = normalizeComponent_1({
-    render: __vue_render__$9,
-    staticRenderFns: __vue_staticRenderFns__$9
+    render: __vue_render__$8,
+    staticRenderFns: __vue_staticRenderFns__$8
   }, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, undefined, undefined);
 
   var BasePopupBox = {
@@ -3073,7 +3107,7 @@
   var __vue_script__$b = script$b;
   /* template */
 
-  var __vue_render__$a = function __vue_render__() {
+  var __vue_render__$9 = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -3083,8 +3117,8 @@
     return _c("mu-popup-box-wrapper", [_vm._t("default")], 2);
   };
 
-  var __vue_staticRenderFns__$a = [];
-  __vue_render__$a._withStripped = true;
+  var __vue_staticRenderFns__$9 = [];
+  __vue_render__$9._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$b = undefined;
@@ -3102,9 +3136,25 @@
   /* style inject SSR */
 
   var PopupBox = normalizeComponent_1({
-    render: __vue_render__$a,
-    staticRenderFns: __vue_staticRenderFns__$a
+    render: __vue_render__$9,
+    staticRenderFns: __vue_staticRenderFns__$9
   }, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, undefined, undefined);
+
+  var DatePrototype = Date.prototype;
+  var INVALID_DATE = 'Invalid Date';
+  var TO_STRING = 'toString';
+  var nativeDateToString = DatePrototype[TO_STRING];
+  var getTime = DatePrototype.getTime;
+
+  // `Date.prototype.toString` method
+  // https://tc39.github.io/ecma262/#sec-date.prototype.tostring
+  if (new Date(NaN) + '' != INVALID_DATE) {
+    redefine(DatePrototype, TO_STRING, function toString() {
+      var value = getTime.call(this);
+      // eslint-disable-next-line no-self-compare
+      return value === value ? nativeDateToString.call(this) : INVALID_DATE;
+    });
+  }
 
   var UNSCOPABLES = wellKnownSymbol('unscopables');
   var ArrayPrototype = Array.prototype;
@@ -3112,7 +3162,7 @@
   // Array.prototype[@@unscopables]
   // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
   if (ArrayPrototype[UNSCOPABLES] == undefined) {
-    hide(ArrayPrototype, UNSCOPABLES, objectCreate(null));
+    createNonEnumerableProperty(ArrayPrototype, UNSCOPABLES, objectCreate(null));
   }
 
   // add a key to Array.prototype[@@unscopables]
@@ -3322,7 +3372,7 @@
   var __vue_script__$c = script$c;
   /* template */
 
-  var __vue_render__$b = function __vue_render__() {
+  var __vue_render__$a = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -3350,8 +3400,8 @@
     }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm.actualLabel))])], 2);
   };
 
-  var __vue_staticRenderFns__$b = [];
-  __vue_render__$b._withStripped = true;
+  var __vue_staticRenderFns__$a = [];
+  __vue_render__$a._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$c = undefined;
@@ -3369,8 +3419,8 @@
   /* style inject SSR */
 
   var ListItem = normalizeComponent_1({
-    render: __vue_render__$b,
-    staticRenderFns: __vue_staticRenderFns__$b
+    render: __vue_render__$a,
+    staticRenderFns: __vue_staticRenderFns__$a
   }, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
 
   var Option = {
@@ -3385,7 +3435,7 @@
       }
     },
     props: {
-      value: String,
+      value: undefined,
       fields: Array,
       option: [String, Number, Object]
     },
@@ -3418,16 +3468,14 @@
       }
     },
     created: function created() {
-      this.inputBox.mountOption({
+      this.storedOption = {
         value: this.actualValue,
         label: this.actualLabel
-      });
+      };
+      this.inputBox.mountOption(this.storedOption);
     },
     beforeDestroy: function beforeDestroy() {
-      this.inputBox.unmountOption({
-        value: this.actualValue,
-        label: this.actualLabel
-      });
+      this.inputBox.unmountOption(this.storedOption);
     },
     methods: {
       onClick: function onClick() {
@@ -3462,7 +3510,7 @@
         type: String,
         "default": 'mu-dropdown-list'
       },
-      value: [String, Number, Array]
+      value: undefined
     },
     data: function data() {
       return {
@@ -3478,6 +3526,9 @@
     watch: {
       multiple: function multiple(value) {
         this.params.editable = this.editable && !value;
+      },
+      options: function options() {
+        this.mountedOptions = [];
       }
     },
     created: function created() {
@@ -3492,18 +3543,20 @@
       setInputValue: function setInputValue() {// do nothing, juest overwrite InputBox's setInputValue()
       },
       setInputValueImmediately: function setInputValueImmediately() {
-        var selectedValue = this.selectedValue,
+        var v = this.selectedValue,
             multiple = this.multiple,
             options = this.mountedOptions;
 
         if (!this.params.editable) {
-          this.params.value = selectedValue;
+          this.params.value = v;
         }
 
-        this.params.value = !selectedValue && selectedValue !== 0 ? '' : this.params.editable ? selectedValue : (multiple ? selectedValue : [selectedValue]).map(function (value) {
-          return Object(options.find(function (item) {
+        this.params.value = v === null || v === undefined || v === '' ? '' : this.params.editable ? v : (multiple ? v : [v]).map(function (value) {
+          var _options$find;
+
+          return ((_options$find = options.find(function (item) {
             return item.value === value;
-          })).label || '';
+          })) === null || _options$find === void 0 ? void 0 : _options$find.label) || '';
         }).join(',');
       },
       refreshInputValue: function refreshInputValue() {
@@ -3530,7 +3583,7 @@
         var options = this.mountedOptions;
 
         if (!options.find(function (item) {
-          return option.value === item.value;
+          return option === item;
         })) {
           options.push(option);
           if (!this.params.editable) this.refreshInputValue();
@@ -3539,7 +3592,7 @@
       unmountOption: function unmountOption(option) {
         var options = this.mountedOptions;
         var idx = options.findIndex(function (item) {
-          return option.value === item.value;
+          return option === item;
         });
 
         if (idx !== -1) {
@@ -3583,20 +3636,19 @@
     }
   };
 
-  /* script */
   var __vue_script__$d = script$d;
   /* template */
 
-  var __vue_render__$c = function __vue_render__() {
+  var __vue_render__$b = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
 
     var _c = _vm._self._c || _h;
 
-    return _c("mu-popup-box-wrapper", [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option) {
+    return _c("mu-popup-box-wrapper", [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option, index) {
       return _c("mu-option", {
-        key: Object(option)[_vm.valueField] || option,
+        key: +new Date() + index,
         attrs: {
           "keep-icon-indent": _vm.keepIconIndent,
           option: option,
@@ -3606,8 +3658,8 @@
     })], 2);
   };
 
-  var __vue_staticRenderFns__$c = [];
-  __vue_render__$c._withStripped = true;
+  var __vue_staticRenderFns__$b = [];
+  __vue_render__$b._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$d = undefined;
@@ -3625,25 +3677,9 @@
   /* style inject SSR */
 
   var ComboBox = normalizeComponent_1({
-    render: __vue_render__$c,
-    staticRenderFns: __vue_staticRenderFns__$c
+    render: __vue_render__$b,
+    staticRenderFns: __vue_staticRenderFns__$b
   }, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
-
-  var DatePrototype = Date.prototype;
-  var INVALID_DATE = 'Invalid Date';
-  var TO_STRING = 'toString';
-  var nativeDateToString = DatePrototype[TO_STRING];
-  var getTime = DatePrototype.getTime;
-
-  // `Date.prototype.toString` method
-  // https://tc39.github.io/ecma262/#sec-date.prototype.tostring
-  if (new Date(NaN) + '' != INVALID_DATE) {
-    redefine(DatePrototype, TO_STRING, function toString() {
-      var value = getTime.call(this);
-      // eslint-disable-next-line no-self-compare
-      return value === value ? nativeDateToString.call(this) : INVALID_DATE;
-    });
-  }
 
   var ceil$1 = Math.ceil;
   var floor$1 = Math.floor;
@@ -3747,7 +3783,9 @@
   if (IteratorPrototype == undefined) IteratorPrototype = {};
 
   // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-  if ( !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
+  if ( !has(IteratorPrototype, ITERATOR)) {
+    createNonEnumerableProperty(IteratorPrototype, ITERATOR, returnThis);
+  }
 
   var iteratorsCore = {
     IteratorPrototype: IteratorPrototype,
@@ -3803,7 +3841,7 @@
           if (objectSetPrototypeOf) {
             objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
           } else if (typeof CurrentIteratorPrototype[ITERATOR$1] != 'function') {
-            hide(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
+            createNonEnumerableProperty(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
           }
         }
         // Set @@toStringTag to native iterators
@@ -3819,7 +3857,7 @@
 
     // define iterator
     if ( IterablePrototype[ITERATOR$1] !== defaultIterator) {
-      hide(IterablePrototype, ITERATOR$1, defaultIterator);
+      createNonEnumerableProperty(IterablePrototype, ITERATOR$1, defaultIterator);
     }
 
     // export additional methods
@@ -4021,15 +4059,17 @@
     if (CollectionPrototype$1) {
       // some Chrome versions have non-configurable methods on DOMTokenList
       if (CollectionPrototype$1[ITERATOR$2] !== ArrayValues) try {
-        hide(CollectionPrototype$1, ITERATOR$2, ArrayValues);
+        createNonEnumerableProperty(CollectionPrototype$1, ITERATOR$2, ArrayValues);
       } catch (error) {
         CollectionPrototype$1[ITERATOR$2] = ArrayValues;
       }
-      if (!CollectionPrototype$1[TO_STRING_TAG$3]) hide(CollectionPrototype$1, TO_STRING_TAG$3, COLLECTION_NAME$1);
+      if (!CollectionPrototype$1[TO_STRING_TAG$3]) {
+        createNonEnumerableProperty(CollectionPrototype$1, TO_STRING_TAG$3, COLLECTION_NAME$1);
+      }
       if (domIterables[COLLECTION_NAME$1]) for (var METHOD_NAME in es_array_iterator) {
         // some Chrome versions have non-configurable methods on DOMTokenList
         if (CollectionPrototype$1[METHOD_NAME] !== es_array_iterator[METHOD_NAME]) try {
-          hide(CollectionPrototype$1, METHOD_NAME, es_array_iterator[METHOD_NAME]);
+          createNonEnumerableProperty(CollectionPrototype$1, METHOD_NAME, es_array_iterator[METHOD_NAME]);
         } catch (error) {
           CollectionPrototype$1[METHOD_NAME] = es_array_iterator[METHOD_NAME];
         }
@@ -4681,7 +4721,7 @@
   var __vue_script__$e = script$e;
   /* template */
 
-  var __vue_render__$d = function __vue_render__() {
+  var __vue_render__$c = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -4804,8 +4844,8 @@
     }), 0) : _vm._e()]], 2);
   };
 
-  var __vue_staticRenderFns__$d = [];
-  __vue_render__$d._withStripped = true;
+  var __vue_staticRenderFns__$c = [];
+  __vue_render__$c._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$e = undefined;
@@ -4823,8 +4863,8 @@
   /* style inject SSR */
 
   var Calendar = normalizeComponent_1({
-    render: __vue_render__$d,
-    staticRenderFns: __vue_staticRenderFns__$d
+    render: __vue_render__$c,
+    staticRenderFns: __vue_staticRenderFns__$c
   }, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
 
   var MATCH = wellKnownSymbol('match');
@@ -5046,7 +5086,7 @@
         // 21.2.5.9 RegExp.prototype[@@search](string)
         : function (string) { return regexMethod.call(string, this); }
       );
-      if (sham) hide(RegExp.prototype[SYMBOL], 'sham', true);
+      if (sham) createNonEnumerableProperty(RegExp.prototype[SYMBOL], 'sham', true);
     }
   };
 
@@ -5291,7 +5331,7 @@
   var __vue_script__$f = script$f;
   /* template */
 
-  var __vue_render__$e = function __vue_render__() {
+  var __vue_render__$d = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -5305,8 +5345,8 @@
     }, "calendar", _vm.calendarParams, false))], 1);
   };
 
-  var __vue_staticRenderFns__$e = [];
-  __vue_render__$e._withStripped = true;
+  var __vue_staticRenderFns__$d = [];
+  __vue_render__$d._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$f = undefined;
@@ -5324,8 +5364,8 @@
   /* style inject SSR */
 
   var DateBox = normalizeComponent_1({
-    render: __vue_render__$e,
-    staticRenderFns: __vue_staticRenderFns__$e
+    render: __vue_render__$d,
+    staticRenderFns: __vue_staticRenderFns__$d
   }, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, undefined, undefined);
 
   //
@@ -5343,7 +5383,7 @@
   var __vue_script__$g = script$g;
   /* template */
 
-  var __vue_render__$f = function __vue_render__() {
+  var __vue_render__$e = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -5355,8 +5395,8 @@
     });
   };
 
-  var __vue_staticRenderFns__$f = [];
-  __vue_render__$f._withStripped = true;
+  var __vue_staticRenderFns__$e = [];
+  __vue_render__$e._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$g = undefined;
@@ -5374,8 +5414,8 @@
   /* style inject SSR */
 
   var ListDivider = normalizeComponent_1({
-    render: __vue_render__$f,
-    staticRenderFns: __vue_staticRenderFns__$f
+    render: __vue_render__$e,
+    staticRenderFns: __vue_staticRenderFns__$e
   }, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, undefined, undefined);
 
   var script$h = {
@@ -5477,7 +5517,7 @@
   var __vue_script__$i = script$i;
   /* template */
 
-  var __vue_render__$g = function __vue_render__() {
+  var __vue_render__$f = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -5539,8 +5579,8 @@
     })], 2) : _vm._e()])], 2) : _vm._e()], 1);
   };
 
-  var __vue_staticRenderFns__$g = [];
-  __vue_render__$g._withStripped = true;
+  var __vue_staticRenderFns__$f = [];
+  __vue_render__$f._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$i = undefined;
@@ -5558,15 +5598,15 @@
   /* style inject SSR */
 
   var DialogWrapper = normalizeComponent_1({
-    render: __vue_render__$g,
-    staticRenderFns: __vue_staticRenderFns__$g
+    render: __vue_render__$f,
+    staticRenderFns: __vue_staticRenderFns__$f
   }, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, undefined, undefined);
 
   function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-  function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+  function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$3(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-  function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+  function _defineProperty$3(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
   var script$j = {
     name: 'MusselBaseDialog',
     components: {
@@ -5758,7 +5798,7 @@
   var __vue_script__$k = script$k;
   /* template */
 
-  var __vue_render__$h = function __vue_render__() {
+  var __vue_render__$g = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -5776,8 +5816,8 @@
     }, [_vm._t("default")], 2);
   };
 
-  var __vue_staticRenderFns__$h = [];
-  __vue_render__$h._withStripped = true;
+  var __vue_staticRenderFns__$g = [];
+  __vue_render__$g._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$k = undefined;
@@ -5795,8 +5835,8 @@
   /* style inject SSR */
 
   var Modal = normalizeComponent_1({
-    render: __vue_render__$h,
-    staticRenderFns: __vue_staticRenderFns__$h
+    render: __vue_render__$g,
+    staticRenderFns: __vue_staticRenderFns__$g
   }, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, undefined, undefined);
 
   //
@@ -5809,7 +5849,7 @@
   var __vue_script__$l = script$l;
   /* template */
 
-  var __vue_render__$i = function __vue_render__() {
+  var __vue_render__$h = function __vue_render__() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -5819,8 +5859,8 @@
     return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
   };
 
-  var __vue_staticRenderFns__$i = [];
-  __vue_render__$i._withStripped = true;
+  var __vue_staticRenderFns__$h = [];
+  __vue_render__$h._withStripped = true;
   /* style */
 
   var __vue_inject_styles__$l = undefined;
@@ -5838,8 +5878,8 @@
   /* style inject SSR */
 
   var Dialog = normalizeComponent_1({
-    render: __vue_render__$i,
-    staticRenderFns: __vue_staticRenderFns__$i
+    render: __vue_render__$h,
+    staticRenderFns: __vue_staticRenderFns__$h
   }, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, undefined, undefined);
 
   /* GLOBAL STYLE */
@@ -5896,6 +5936,7 @@
   exports.Splitter = Splitter;
   exports.VBox = VBox;
   exports.install = install;
+  exports.registerIcons = register;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

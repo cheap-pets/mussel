@@ -1,19 +1,9 @@
-<template>
-  <div
-    class="mu-flex-box"
-    :direction="flexDirection"
-    :size="sizeAttr"
-    :style="style">
-    <slot />
-  </div>
-</template>
-
 <script>
-  import BaseFlexItem from './base-flex-item'
+  import FlexItem from './flex-item.vue'
 
   export default {
     name: 'MusselFlexBox',
-    mixins: [BaseFlexItem],
+    extends: FlexItem,
     provide () {
       return {
         parentDirection: this.flexDirection
@@ -31,6 +21,20 @@
     computed: {
       flexDirection () {
         return this.direction
+      }
+    },
+    watch: {
+      direction (v) {
+        this.setDirection()
+      }
+    },
+    mounted () {
+      this.$el.classList.add('mu-flex-box')
+      this.setDirection()
+    },
+    methods: {
+      setDirection () {
+        this.$el?.setAttribute('direction', this.flexDirection)
       }
     }
   }

@@ -9,5 +9,8 @@ module.exports = {
       }
     ]
   ],
-  plugins: ['@vue/babel-plugin-transform-vue-jsx']
+  plugins: [
+    '@vue/babel-plugin-transform-vue-jsx',
+    '@babel/plugin-proposal-optional-chaining'
+  ]
 }

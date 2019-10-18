@@ -3,8 +3,8 @@
     <slot v-if="!options" />
     <template v-else>
       <mu-option
-        v-for="option in options"
-        :key="Object(option)[valueField] || option"
+        v-for="(option, index) in options"
+        :key="+new Date() + index"
         :keep-icon-indent="keepIconIndent"
         :option="option"
         :fields="fields" />
@@ -36,7 +36,7 @@
         type: String,
         default: 'mu-dropdown-list'
       },
-      value: [String, Number, Array]
+      value: undefined
     },
     data () {
       return {
@@ -52,6 +52,9 @@
     watch: {
       multiple (value) {
         this.params.editable = this.editable && !value
+      },
+      options () {
+        this.mountedOptions = []
       }
     },
     created () {
@@ -67,24 +70,25 @@
         // do nothing, juest overwrite InputBox's setInputValue()
       },
       setInputValueImmediately () {
-        const { selectedValue, multiple, mountedOptions: options } = this
+        const { selectedValue: v, multiple, mountedOptions: options } = this
         if (!this.params.editable) {
-          this.params.value = selectedValue
+          this.params.value = v
         }
-        this.params.value = (!selectedValue && selectedValue !== 0)
-          ? ''
-          : (
-            this.params.editable
-              ? selectedValue
-              : (
-                (multiple ? selectedValue : [selectedValue])
-                  .map(value =>
-                    Object(options.find(item => item.value === value)).label ||
-                    ''
-                  )
-                  .join(',')
-              )
-          )
+        this.params.value =
+          (v === null || v === undefined || v === '')
+            ? ''
+            : (
+              this.params.editable
+                ? v
+                : (
+                  (multiple ? v : [v])
+                    .map(value =>
+                      (options.find(item => item.value === value))?.label ||
+                      ''
+                    )
+                    .join(',')
+                )
+            )
       },
       refreshInputValue (immediate = false) {
         if (this.rivTimer) {
@@ -105,15 +109,14 @@
       },
       mountOption (option) {
         const { mountedOptions: options } = this
-        if (!options.find(item => option.value === item.value)) {
+        if (!options.find(item => option === item)) {
           options.push(option)
           if (!this.params.editable) this.refreshInputValue()
         }
       },
       unmountOption (option) {
         const { mountedOptions: options } = this
-        const idx =
-          options.findIndex(item => option.value === item.value)
+        const idx = options.findIndex(item => option === item)
         if (idx !== -1) {
           options.splice(idx, 1)
           // if (!this.inputReadonly) this.refreshInputValue()

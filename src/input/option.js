@@ -12,7 +12,7 @@ export default {
     }
   },
   props: {
-    value: String,
+    value: undefined,
     fields: Array,
     option: [String, Number, Object]
   },
@@ -55,16 +55,14 @@ export default {
     }
   },
   created () {
-    this.inputBox.mountOption({
+    this.storedOption = {
       value: this.actualValue,
       label: this.actualLabel
-    })
+    }
+    this.inputBox.mountOption(this.storedOption)
   },
   beforeDestroy () {
-    this.inputBox.unmountOption({
-      value: this.actualValue,
-      label: this.actualLabel
-    })
+    this.inputBox.unmountOption(this.storedOption)
   },
   methods: {
     onClick () {

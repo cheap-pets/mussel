@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "another vue components library",
   "main": "dist/mussel.esm.js",
   "files": [
@@ -13,12 +13,13 @@
   },
   "devDependencies": {
     "@ant-design/colors": "^3.2.2",
-    "@babel/core": "^7.6.3",
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
     "@babel/preset-env": "^7.6.3",
     "@vue/babel-plugin-transform-vue-jsx": "^1.0.0",
-    "autoprefixer": "^9.6.4",
+    "autoprefixer": "^9.6.5",
     "clean-css": "^4.2.1",
-    "core-js": "^3.2.1",
+    "core-js": "^3.3.2",
     "lodash.isdate": "^4.0.1",
     "lodash.isstring": "^4.0.1",
     "postcss": "^7.0.18",
@@ -30,7 +31,7 @@
     "postcss-nested": "^4.1.2",
     "postcss-simple-vars": "^5.0.2",
     "postcss-unprefix": "^2.1.4",
-    "rollup": "^1.23.1",
+    "rollup": "^1.24.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",

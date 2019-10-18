@@ -50,7 +50,8 @@
         primary-button="确认"
         :buttons="['确认', '取消']"
         @buttonclick="onButtonClick">
-        123
+        <mu-combo-box :options="options">
+        </mu-combo-box>
       </mu-dialog>
     </div>
   </div>
@@ -80,7 +81,14 @@
       data: {
         model1Visible: false,
         model2Visible: false,
-        dialog1Visible: false
+        dialog1Visible: false,
+        options: [
+          { value: '1' },
+          { value: '2' },
+          { value: '3' },
+          { value: '4' },
+          { value: '5' }
+        ]
       },
       methods: {
         openModal1 () {

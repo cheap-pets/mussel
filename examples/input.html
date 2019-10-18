@@ -77,6 +77,10 @@
       </mu-combo-box>
       <mu-combo-box v-model="comboValue2" multiple :options="comboOptions" editable @optionclick="onOptionClick">
       </mu-combo-box>
+      <mu-combo-box v-model="comboValue3">
+        <mu-option :value='true' label="是"></mu-option>
+        <mu-option :value='false' label="否"></mu-option>
+      </mu-combo-box>
     </div>
   </div>
   <script type="text/javascript">
@@ -86,15 +90,16 @@
         inputValue: '',
         iconInput1Value: '图标在后',
         comboOptions: [
-          { key: 1 },
-          { value: 2 },
-          { key: 3 },
-          { value: 4 },
-          { key: 5 },
-          { value: 6 }
+          { value: 1, label: '1' },
+          { value: 2, label: '2' },
+          { value: 3, label: '3' },
+          { value: 4, label: '4' },
+          { value: 5, label: '5' },
+          { value: 6, label: '6' }
         ],
         comboValue1: '好好学习4',
-        comboValue2: [1, 2]
+        comboValue2: [1, 2],
+        comboValue3: true
       },
       methods: {
         onDropdownItemClick: function () {
@@ -113,7 +118,7 @@
             : null
         },
         onOptionClick: function (value, option) {
-          console.log(value, option.value || option)
+          
         }
       }
     })
