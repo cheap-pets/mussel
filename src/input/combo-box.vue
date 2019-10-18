@@ -58,8 +58,12 @@
       },
       value: {
         handler (value) {
-          this.selectedValue = this.value || (this.multiple ? [] : null)
-          this.refreshInputValue()
+          if (this.selectedValue !== value) {
+            this.selectedValue = (value === undefined || value === null)
+              ? (this.multiple ? [] : null)
+              : value
+            this.refreshInputValue()
+          }
         },
         immediate: true
       }
@@ -69,7 +73,7 @@
     },
     mounted () {
       this.params.editable = this.editable && !this.multiple
-      this.setInputValueImmediately()
+      this.refreshInputValue()
     },
     methods: {
       setInputValue () {
