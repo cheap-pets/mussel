@@ -75,7 +75,7 @@
         <mu-option value='好好学习4'></mu-option>
         <mu-option value='好好学习5'></mu-option>
       </mu-combo-box>
-      <mu-combo-box v-model="comboValue2" multiple :options="comboOptions" editable @optionclick="onOptionClick">
+      <mu-combo-box v-model="comboValue2" multiple :options="comboOptions" @optionclick="onOptionClick">
       </mu-combo-box>
       <mu-combo-box v-model="comboValue3">
         <mu-option :value='true' label="是"></mu-option>
@@ -106,6 +106,7 @@
           window.mussel.hideDropdown()
         },
         onCombo1Change: function (value) {
+          console.log(value)
           this.comboValue2 = null
           this.comboOptions = value
             ?  [

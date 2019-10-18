@@ -55,6 +55,13 @@
       },
       options () {
         this.mountedOptions = []
+      },
+      value: {
+        handler (value) {
+          this.selectedValue = this.value || (this.multiple ? [] : null)
+          this.refreshInputValue()
+        },
+        immediate: true
       }
     },
     created () {
@@ -62,7 +69,6 @@
     },
     mounted () {
       this.params.editable = this.editable && !this.multiple
-      this.selectedValue = this.value || (this.multiple ? [] : null)
       this.setInputValueImmediately()
     },
     methods: {
@@ -119,7 +125,7 @@
         const idx = options.findIndex(item => option === item)
         if (idx !== -1) {
           options.splice(idx, 1)
-          // if (!this.inputReadonly) this.refreshInputValue()
+          // if (!this.params.editable) this.refreshInputValue()
         }
       },
       toggleSelection (value, option, hidePopup = true) {

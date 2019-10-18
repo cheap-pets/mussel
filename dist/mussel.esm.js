@@ -3523,6 +3523,13 @@ var script$d = {
     },
     options: function options() {
       this.mountedOptions = [];
+    },
+    value: {
+      handler: function handler(value) {
+        this.selectedValue = this.value || (this.multiple ? [] : null);
+        this.refreshInputValue();
+      },
+      immediate: true
     }
   },
   created: function created() {
@@ -3530,7 +3537,6 @@ var script$d = {
   },
   mounted: function mounted() {
     this.params.editable = this.editable && !this.multiple;
-    this.selectedValue = this.value || (this.multiple ? [] : null);
     this.setInputValueImmediately();
   },
   methods: {
@@ -3590,7 +3596,7 @@ var script$d = {
       });
 
       if (idx !== -1) {
-        options.splice(idx, 1); // if (!this.inputReadonly) this.refreshInputValue()
+        options.splice(idx, 1); // if (!this.params.editable) this.refreshInputValue()
       }
     },
     toggleSelection: function toggleSelection(value, option) {
