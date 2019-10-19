@@ -1932,6 +1932,7 @@
 
   var ok = 'M351.81165742 729.48242963L134.32922778 512 61.83508498 584.49414281 351.81165742 874.47071645 973.19002778 253.09234608 900.69588498 180.59820206Z';
   var close = 'M951.90520135 160.07583979L863.92416021 72.09479865 512 424.01896032 160.07583979 72.09479865 72.09479865 160.07583979 424.01896032 512 72.09479865 863.92416021 160.07583979 951.90520135 512 599.98103968 863.92416021 951.90520135 951.90520135 863.92416021 599.98103968 512Z';
+  var cancel = 'M513.024 1024C230.254592 1024 1.024 794.769408 1.024 512S230.254592 0 513.024 0s512 229.230592 512 512-229.230592 512-512 512z m0-589.579264l-168.0896-168.0896-77.579264 77.579264L435.444736 512l-168.0896 168.0896 77.579264 77.579264L513.024 589.579264l168.0896 168.0896 77.579264-77.579264L590.603264 512l168.0896-168.0896-77.579264-77.579264L513.024 434.420736z';
   var keyDown = 'M240.98697401 294.01126208L512 565.02428806 783.01302599 294.01126208 865.4952507 376.49348677 512 729.98873747 158.5047493 376.49348677Z';
   var keyLeft = 'M733.64730918 774.88842085L462.6342832 503.87539624 733.64730918 232.86237024 651.1650831 150.38014552 297.6698324 503.87539624 651.1650831 857.37064693Z';
   var keyRight = 'M290.35269082 765.33826345L561.3657168 500.21682544 290.35269082 229.20379943 372.8349169 146.72157474 726.3301676 500.21682544 372.8349169 853.71207613Z';
@@ -1943,6 +1944,7 @@
   var data$1 = {
     ok: ok,
     close: close,
+    cancel: cancel,
     search: search,
     calendar: calendar,
     'key-down': keyDown,
@@ -1959,6 +1961,7 @@
   //
   var triggerIcons = {
     close: 'close',
+    cancel: 'cancel',
     expander: 'key-down'
   };
   var script$3 = {
@@ -2313,7 +2316,7 @@
     staticRenderFns: __vue_staticRenderFns__$4
   }, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, undefined, undefined);
 
-  var css$a = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-box > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-input-icon[trigger-type=close]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [clickable]:hover,\r\n[invalid] .mu-input-box > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
+  var css$a = ".mu-input-box {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-input-box:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input-box > .mu-input[disabled],\r\n.mu-input-box[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-input-box > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > input + .mu-input-icon {\r\n  right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + .mu-input-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-input-box[buttons=\"2\"] > .mu-input-icon:first-child + input + .mu-input-icon {\r\n  right: 1px;\r\n}\r\n.mu-input-box[disabled] > .mu-input,\r\n.mu-input-box[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-box[disabled] > .mu-input-icon,\r\n.mu-input-box[readonly] > .mu-input-icon {\r\n  display: none;\r\n}\r\n.mu-input-box > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-input-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-input-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-input-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-input-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-input-icon[trigger-type=cancel] {\r\n  color: rgba(0,0,0,.17);\r\n  fill: rgba(0,0,0,.17);\r\n}\r\n.mu-input-icon[trigger-type=cancel]:hover {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-input-box[invalid] > .mu-input,\r\n[invalid] .mu-input-box > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-input-box[invalid] > [clickable]:hover,\r\n[invalid] .mu-input-box > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
   styleInject(css$a);
 
   var InputButton = {
@@ -2425,7 +2428,7 @@
     }, "mu-input", _vm.inputParams, false)), _vm._v(" "), _vm.clearable ? _c("mu-input-button", {
       attrs: {
         clickable: "",
-        "trigger-type": "close"
+        "trigger-type": "cancel"
       },
       on: {
         click: _vm.onClearClick
@@ -2578,6 +2581,7 @@
       },
       onInput: function onInput(value) {
         this.setInputValue(value);
+        this.$emit('input', value);
         this.$emit('change', value);
       },
       onInputClick: function onInputClick() {
@@ -3073,10 +3077,6 @@
       }
     },
     methods: {
-      onInput: function onInput(value) {
-        this.setInputValue(value);
-        this.$emit('change', value);
-      },
       onInputClick: function onInputClick() {
         if (!this.readonly && !this.popupParams.editable) {
           this.togglePopup();
@@ -3441,10 +3441,14 @@
     },
     computed: {
       valueField: function valueField() {
-        return Object(this.fields).value || 'value';
+        var _this$fields;
+
+        return ((_this$fields = this.fields) === null || _this$fields === void 0 ? void 0 : _this$fields.value) || 'value';
       },
       labelField: function labelField() {
-        return Object(this.fields).label || 'label';
+        var _this$fields2;
+
+        return ((_this$fields2 = this.fields) === null || _this$fields2 === void 0 ? void 0 : _this$fields2.label) || 'label';
       },
       actualValue: function actualValue() {
         var option = Object(this.option);
@@ -3452,7 +3456,10 @@
         return v === undefined ? this.option : v;
       },
       actualLabel: function actualLabel() {
-        var label = this.label === undefined ? Object(this.option)[this.labelField] : this.label;
+        var _this$option;
+
+        var editable = this.inputBox.params.editable;
+        var label = editable ? null : this.label === undefined ? (_this$option = this.option) === null || _this$option === void 0 ? void 0 : _this$option[this.labelField] : this.label;
         return label || this.actualValue;
       },
       actualIcon: function actualIcon() {
@@ -3461,34 +3468,36 @@
       actualSelected: function actualSelected() {
         var _this = this;
 
-        var selected = this.inputBox.selectedValue;
-        return this.multiple ? selected && selected.find(function (value) {
+        var comboValue = this.inputBox.comboValue;
+        return this.multiple ? comboValue === null || comboValue === void 0 ? void 0 : comboValue.find(function (value) {
           return value === _this.actualValue;
-        }) : selected === this.actualValue;
+        }) : comboValue === this.actualValue;
       }
     },
     created: function created() {
-      this.storedOption = {
+      this.mountedOption = {
         value: this.actualValue,
         label: this.actualLabel
       };
-      this.inputBox.mountOption(this.storedOption);
+      this.inputBox.mountOption(this.mountedOption);
     },
     beforeDestroy: function beforeDestroy() {
-      this.inputBox.unmountOption(this.storedOption);
+      this.inputBox.unmountOption(this.mountedOption);
     },
     methods: {
       onClick: function onClick() {
+        var _this$inputBox;
+
         if (this.disabled) return;
-
-        if (this.inputBox) {
-          this.inputBox.toggleSelection(this.actualValue, this.option);
-        }
-
+        (_this$inputBox = this.inputBox) === null || _this$inputBox === void 0 ? void 0 : _this$inputBox.toggleSelection(this.actualValue, this.option);
         this.$emit('click');
       }
     }
   };
+
+  function isEmptyValue(v) {
+    return v === undefined || v === null || v === '';
+  }
 
   var script$d = {
     name: 'MusselComboBox',
@@ -3514,13 +3523,15 @@
     },
     data: function data() {
       return {
-        selectedValue: null,
+        comboValue: null,
         mountedOptions: []
       };
     },
     computed: {
       valueField: function valueField() {
-        return Object(this.fields).value || 'value';
+        var _this$fields;
+
+        return ((_this$fields = this.fields) === null || _this$fields === void 0 ? void 0 : _this$fields.value) || 'value';
       }
     },
     watch: {
@@ -3529,15 +3540,6 @@
       },
       options: function options() {
         this.mountedOptions = [];
-      },
-      value: {
-        handler: function handler(value) {
-          if (this.selectedValue !== value) {
-            this.selectedValue = value === undefined || value === null ? this.multiple ? [] : null : value;
-            this.refreshInputValue();
-          }
-        },
-        immediate: true
       }
     },
     created: function created() {
@@ -3548,18 +3550,18 @@
       this.refreshInputValue();
     },
     methods: {
-      setInputValue: function setInputValue() {// do nothing, juest overwrite InputBox's setInputValue()
+      setInputValue: function setInputValue(value) {
+        if (this.comboValue !== value) {
+          this.comboValue = isEmptyValue(value) ? this.multiple ? [] : null : value;
+          this.refreshInputValue();
+        }
       },
       setInputValueImmediately: function setInputValueImmediately() {
-        var v = this.selectedValue,
+        var options = this.mountedOptions,
+            v = this.comboValue,
             multiple = this.multiple,
-            options = this.mountedOptions;
-
-        if (!this.params.editable) {
-          this.params.value = v;
-        }
-
-        this.params.value = v === null || v === undefined || v === '' ? '' : this.params.editable ? v : (multiple ? v : [v]).map(function (value) {
+            params = this.params;
+        params.value = isEmptyValue(v) ? '' : params.editable ? v : (multiple ? v : [v]).map(function (value) {
           var _options$find;
 
           return ((_options$find = options.find(function (item) {
@@ -3581,12 +3583,6 @@
           this.rivTimer = setTimeout(this.setInputValueImmediately, 50);
         }
       },
-      onInput: function onInput(value) {
-        this.params.value = value;
-        this.selectedValue = value;
-        this.$emit('input', value);
-        this.$emit('change', value);
-      },
       mountOption: function mountOption(option) {
         var options = this.mountedOptions;
 
@@ -3602,16 +3598,13 @@
         var idx = options.findIndex(function (item) {
           return option === item;
         });
-
-        if (idx !== -1) {
-          options.splice(idx, 1); // if (!this.params.editable) this.refreshInputValue()
-        }
+        if (idx !== -1) options.splice(idx, 1);
       },
       toggleSelection: function toggleSelection(value, option) {
         var hidePopup = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
         if (this.multiple) {
-          var values = this.selectedValue;
+          var values = this.comboValue;
           var idx = values.indexOf(value);
 
           if (idx !== -1) {
@@ -3622,7 +3615,7 @@
 
           this.$emit('change', values);
         } else {
-          this.selectedValue = value;
+          this.comboValue = value;
           this.$emit('change', value);
         }
 
@@ -3636,10 +3629,10 @@
         this.$emit('optionclick', value, option);
       },
       onClearClick: function onClearClick() {
-        this.selectedValue = this.multiple ? [] : null;
+        this.comboValue = this.multiple ? [] : null;
         this.hidePopup();
         this.clear();
-        this.$emit('change', this.selectedValue);
+        this.$emit('change', this.comboValue);
       }
     }
   };
@@ -3656,7 +3649,7 @@
 
     return _c("mu-popup-box-wrapper", [!_vm.options ? _vm._t("default") : _vm._l(_vm.options, function (option, index) {
       return _c("mu-option", {
-        key: +new Date() + index,
+        key: +new Date() + "_" + index,
         attrs: {
           "keep-icon-indent": _vm.keepIconIndent,
           option: option,

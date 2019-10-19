@@ -4,7 +4,7 @@
     <template v-else>
       <mu-option
         v-for="(option, index) in options"
-        :key="+new Date() + index"
+        :key="+new Date() + '_' + index"
         :keep-icon-indent="keepIconIndent"
         :option="option"
         :fields="fields" />
@@ -15,6 +15,10 @@
 <script>
   import BasePopupBox from './base-popup-box'
   import Option from './option.js'
+  
+  function isEmptyValue (v) {
+    return v === undefined || v === null || v === ''
+  }
 
   export default {
     name: 'MusselComboBox',
@@ -40,13 +44,13 @@
     },
     data () {
       return {
-        selectedValue: null,
+        comboValue: null,
         mountedOptions: []
       }
     },
     computed: {
       valueField () {
-        return Object(this.fields).value || 'value'
+        return this.fields?.value || 'value'
       }
     },
     watch: {
@@ -55,17 +59,6 @@
       },
       options () {
         this.mountedOptions = []
-      },
-      value: {
-        handler (value) {
-          if (this.selectedValue !== value) {
-            this.selectedValue = (value === undefined || value === null)
-              ? (this.multiple ? [] : null)
-              : value
-            this.refreshInputValue()
-          }
-        },
-        immediate: true
       }
     },
     created () {
@@ -76,29 +69,34 @@
       this.refreshInputValue()
     },
     methods: {
-      setInputValue () {
-        // do nothing, juest overwrite InputBox's setInputValue()
+      setInputValue (value) {
+        if (this.comboValue !== value) {
+          this.comboValue = isEmptyValue(value)
+            ? (this.multiple ? [] : null)
+            : value
+          this.refreshInputValue()
+        }
       },
       setInputValueImmediately () {
-        const { selectedValue: v, multiple, mountedOptions: options } = this
-        if (!this.params.editable) {
-          this.params.value = v
-        }
-        this.params.value =
-          (v === null || v === undefined || v === '')
-            ? ''
-            : (
-              this.params.editable
-                ? v
-                : (
-                  (multiple ? v : [v])
-                    .map(value =>
-                      (options.find(item => item.value === value))?.label ||
-                      ''
-                    )
-                    .join(',')
-                )
-            )
+        const {
+          mountedOptions: options,
+          comboValue: v,
+          multiple,
+          params
+        } = this
+        params.value = isEmptyValue(v)
+          ? ''
+          : (
+            params.editable
+              ? v
+              : (
+                (multiple ? v : [v])
+                  .map(value =>
+                    options.find(item => item.value === value)?.label || ''
+                  )
+                  .join(',')
+              )
+          )
       },
       refreshInputValue (immediate = false) {
         if (this.rivTimer) {
@@ -108,14 +106,11 @@
         if (this.params.editable || immediate) {
           this.setInputValueImmediately()
         } else {
-          this.rivTimer = setTimeout(this.setInputValueImmediately, 50)
+          this.rivTimer = setTimeout(
+            this.setInputValueImmediately,
+            50
+          )
         }
-      },
-      onInput (value) {
-        this.params.value = value
-        this.selectedValue = value
-        this.$emit('input', value)
-        this.$emit('change', value)
       },
       mountOption (option) {
         const { mountedOptions: options } = this
@@ -127,14 +122,11 @@
       unmountOption (option) {
         const { mountedOptions: options } = this
         const idx = options.findIndex(item => option === item)
-        if (idx !== -1) {
-          options.splice(idx, 1)
-          // if (!this.params.editable) this.refreshInputValue()
-        }
+        if (idx !== -1) options.splice(idx, 1)
       },
       toggleSelection (value, option, hidePopup = true) {
         if (this.multiple) {
-          const { selectedValue: values } = this
+          const { comboValue: values } = this
           const idx = values.indexOf(value)
           if (idx !== -1) {
             values.splice(idx, 1)
@@ -143,7 +135,7 @@
           }
           this.$emit('change', values)
         } else {
-          this.selectedValue = value
+          this.comboValue = value
           this.$emit('change', value)
         }
         this.refreshInputValue(true)
@@ -154,10 +146,10 @@
         this.$emit('optionclick', value, option)
       },
       onClearClick () {
-        this.selectedValue = this.multiple ? [] : null
+        this.comboValue = this.multiple ? [] : null
         this.hidePopup()
         this.clear()
-        this.$emit('change', this.selectedValue)
+        this.$emit('change', this.comboValue)
       }
     }
   }

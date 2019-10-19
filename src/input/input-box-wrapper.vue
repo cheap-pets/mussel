@@ -16,7 +16,7 @@
     <mu-input-button
       v-if="clearable"
       clickable
-      trigger-type="close"
+      trigger-type="cancel"
       @click="onClearClick" />
     <mu-input-button
       v-if="iconAlign === 'right'"

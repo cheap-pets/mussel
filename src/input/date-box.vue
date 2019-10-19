@@ -72,7 +72,9 @@
     },
     methods: {
       setInputValue (value) {
-        this.params.value = value ? formatDate(value, this.dateFormat) : ''
+        this.params.value = value
+          ? formatDate(value, this.dateFormat)
+          : ''
       },
       onSelect (value, year, month, date) {
         this.setInputValue(value)

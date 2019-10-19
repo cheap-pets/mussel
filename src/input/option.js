@@ -18,10 +18,10 @@ export default {
   },
   computed: {
     valueField () {
-      return Object(this.fields).value || 'value'
+      return this.fields?.value || 'value'
     },
     labelField () {
-      return Object(this.fields).label || 'label'
+      return this.fields?.label || 'label'
     },
     actualValue () {
       const option = Object(this.option)
@@ -36,10 +36,14 @@ export default {
       return v === undefined ? this.option : v
     },
     actualLabel () {
-      const label =
-        this.label === undefined
-          ? Object(this.option)[this.labelField]
-          : this.label
+      const { params: { editable } } = this.inputBox
+      const label = editable
+        ? null
+        : (
+          this.label === undefined
+            ? this.option?.[this.labelField]
+            : this.label
+        )
       return label || this.actualValue
     },
     actualIcon () {
@@ -48,28 +52,26 @@ export default {
         : this.icon
     },
     actualSelected () {
-      const { selectedValue: selected } = this.inputBox
+      const { comboValue } = this.inputBox
       return this.multiple
-        ? selected && selected.find(value => value === this.actualValue)
-        : selected === this.actualValue
+        ? comboValue?.find(value => value === this.actualValue)
+        : comboValue === this.actualValue
     }
   },
   created () {
-    this.storedOption = {
+    this.mountedOption = {
       value: this.actualValue,
       label: this.actualLabel
     }
-    this.inputBox.mountOption(this.storedOption)
+    this.inputBox.mountOption(this.mountedOption)
   },
   beforeDestroy () {
-    this.inputBox.unmountOption(this.storedOption)
+    this.inputBox.unmountOption(this.mountedOption)
   },
   methods: {
     onClick () {
       if (this.disabled) return
-      if (this.inputBox) {
-        this.inputBox.toggleSelection(this.actualValue, this.option)
-      }
+      this.inputBox?.toggleSelection(this.actualValue, this.option)
       this.$emit('click')
     }
   }

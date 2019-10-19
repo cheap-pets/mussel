@@ -95,12 +95,15 @@ $inputIconSize: calc($inputHeightPx - 2);
     &:hover {
       fill: $buttonPrimaryHoverColor;
       color: $buttonPrimaryHoverColor;
-      background: rgba(0, 0, 0, .05);
     }
   }
-  &[trigger-type="close"]:hover {
-    color: $inputInvalidBorderColor;
-    fill: $inputInvalidBorderColor;
+  &[trigger-type="cancel"] {
+    color: $textQuarterDark;
+    fill: $textQuarterDark;
+    &:hover {
+      color: $textHalfDark;
+      fill: $textHalfDark;
+    }
   }
 }
 

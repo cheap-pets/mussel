@@ -20,10 +20,6 @@ export default {
     }
   },
   methods: {
-    onInput (value) {
-      this.setInputValue(value)
-      this.$emit('change', value)
-    },
     onInputClick () {
       if (!this.readonly && !this.popupParams.editable) {
         this.togglePopup()

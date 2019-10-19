@@ -118,6 +118,7 @@ export default {
     },
     onInput (value) {
       this.setInputValue(value)
+      this.$emit('input', value)
       this.$emit('change', value)
     },
     onInputClick () {
