@@ -6,6 +6,7 @@ import FlexBox from './layout/flex-box.vue'
 import FlexItem from './layout/flex-item.vue'
 import HBox from './layout/flex-h-box'
 import VBox from './layout/flex-v-box'
+import Space from './layout/space.vue'
 import Splitter from './layout/splitter.vue'
 /* ICON */
 import Icon from './icon/index.vue'
@@ -25,6 +26,8 @@ import DateBox from './input/date-box.vue'
 /* LIST */
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
+/* BAR */
+import  Bar from './bar/bar.vue'
 /* LAYER */
 import BaseModal from './layer/base-modal.vue'
 import BaseDialog from './layer/base-dialog.vue'
@@ -41,6 +44,7 @@ function install (Vue) {
   Vue.component('mu-flex-item', FlexItem)
   Vue.component('mu-h-box', HBox)
   Vue.component('mu-v-box', VBox)
+  Vue.component('mu-space', Space)
   Vue.component('mu-splitter', Splitter)
 
   Vue.component('mu-icon', Icon)
@@ -60,6 +64,8 @@ function install (Vue) {
   Vue.component('mu-list-item', ListItem)
   Vue.component('mu-list-divider', ListDivider)
 
+  Vue.component('mu-bar', Bar)
+
   Vue.component('mu-modal', Modal)
   Vue.component('mu-dialog', Dialog)
   Vue.component('mu-dialog-wrapper', DialogWrapper)
@@ -75,6 +81,7 @@ export {
   FlexBox,
   FlexItem,
   Splitter,
+  Space,
   HBox,
   VBox,
   // icon
@@ -95,6 +102,8 @@ export {
   // list
   ListItem,
   ListDivider,
+  // Bar
+  Bar,
   // layer
   BaseModal,
   BaseDialog,

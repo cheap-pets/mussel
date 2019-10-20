@@ -90,12 +90,12 @@
 
     &[itemspacing],
     &[cellpadding] {
-      padding: 8px;
+      padding: $(unitSpacingSizePx)px;
     }
 
     &[itemspacing] > *,
     & [cellspacing] {
-      margin: 8px;
+      margin: $(unitSpacingSizePx)px;
     }
 
     & > * {

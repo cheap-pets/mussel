@@ -66,6 +66,9 @@ const variables = {
   listItemBackground: '#fff',
   listItemHoverBackground: 'rgba(0, 0, 0, .05)',
 
+  /* bar */
+  barHeightPx: 40,
+
   /* text colours */
   textBlack: grey[9],
   textGrey: grey[7],
