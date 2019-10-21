@@ -17,36 +17,44 @@
     <hr>
     <div>
       <h3>表单布局</h3>
-      <mu-form layout="flow" bordered>
-        <mu-form-field label="输入框框" size="100%">
-          <mu-input></mu-input>
-        </mu-form-field>
-        <mu-form-field label="输入框2" size="50%">
-          <mu-input></mu-input>
-        </mu-form-field>
-        <mu-space></mu-space>
-        <mu-form-field label="输入框3" size="25%">
-          <mu-input></mu-input>
-        </mu-form-field>
-        <mu-form-field label="输入框4" size="25%">
-          <mu-input></mu-input>
-        </mu-form-field>
-        <mu-space></mu-space>
-        <mu-form-field label="输入框5" size="25%">
-          <mu-input></mu-input>
-        </mu-form-field>
-        <mu-space size="25%"></mu-space>
-        <mu-form-field label="输入框6" size="50%">
-          <mu-input></mu-input>
-        </mu-form-field>
-        <mu-space></mu-space>
-        <mu-form-field label="输入框7" size="50%">
-          <textarea class="mu-input"></textarea>
-        </mu-form-field>
-        <mu-form-field label="输入框8">
-          <mu-input></mu-input>
-        </mu-form-field>
-      </mu-form>
+      <mu-v-box bordered itemspacing>
+        <mu-bar>
+          <mu-button button-type="primary">create</mu-button>
+          <mu-button button-type="normal">modify</mu-button>
+          <mu-space></mu-space>
+          <mu-combo-box editable :options="[1,2,3]"></mu-combo-box>
+        </mu-bar>
+        <mu-form layout="flow" bordered>
+          <mu-form-field label="输入框框" size="100%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-form-field label="输入框2" size="50%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-space></mu-space>
+          <mu-form-field label="输入框3" size="25%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-form-field label="输入框4" size="25%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-space></mu-space>
+          <mu-form-field label="输入框5" size="25%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-space size="25%"></mu-space>
+          <mu-form-field label="输入框6" size="50%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-space></mu-space>
+          <mu-form-field label="输入框7" size="50%">
+            <textarea class="mu-input"></textarea>
+          </mu-form-field>
+          <mu-form-field label="输入框8">
+            <mu-input></mu-input>
+          </mu-form-field>
+        </mu-form>
+      </mu-v-box>
     </div>
   </div>
 
