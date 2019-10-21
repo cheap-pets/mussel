@@ -1,13 +1,13 @@
+import BaseButtonEditor from './base-button-editor'
 import PopupGroupMixin from '../layer/mix-popup-group'
-import PopupBoxWrapper from './popup-box-wrapper.vue'
-import BaseInputBox from './base-input-box'
+import PopupEditorWrapper from './popup-editor-wrapper.vue'
 
 export default {
-  name: 'MusselBasePopupBox',
+  name: 'MusselBasePopupEditor',
   components: {
-    'mu-popup-box-wrapper': PopupBoxWrapper
+    'mu-popup-editor-wrapper': PopupEditorWrapper
   },
-  extends: BaseInputBox,
+  extends: BaseButtonEditor,
   mixins: [PopupGroupMixin],
   props: {
     triggerType: {

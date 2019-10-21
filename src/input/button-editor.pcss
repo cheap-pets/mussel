@@ -1,6 +1,6 @@
 $inputIconSize: calc($inputHeightPx - 2);
 
-.mu-input-box {
+.mu-button-editor {
   position: relative;
   display: inline-block;
   width: 200px;
@@ -27,12 +27,12 @@ $inputIconSize: calc($inputHeightPx - 2);
   &[buttons="2"] {
     & > input {
       padding-right: calc($inputIconSize * 2)px;
-      & + .mu-input-icon {
+      & + .mu-editor-button {
         right: $(inputIconSize)px;
       }
     }
-    & > .mu-input-icon:first-child {
-      & + .mu-input-icon {
+    & > .mu-editor-button:first-child {
+      & + .mu-editor-button {
         left: $(inputIconSize)px;
         right: auto;
       }
@@ -43,7 +43,7 @@ $inputIconSize: calc($inputHeightPx - 2);
       & + input {
         padding-left: $(inputIconSize)px;
         padding-right: $(inputIconSize)px;
-        & + .mu-input-icon {
+        & + .mu-editor-button {
           right: 1px;
         }
       }
@@ -56,7 +56,7 @@ $inputIconSize: calc($inputHeightPx - 2);
       padding-left: $(inputXPaddingPx)px;
       padding-right: $(inputXPaddingPx)px;
     }
-    & > .mu-input-icon {
+    & > .mu-editor-button {
       display: none;
     }
   }
@@ -66,7 +66,7 @@ $inputIconSize: calc($inputHeightPx - 2);
   }
 }
 
-.mu-input-icon {
+.mu-editor-button {
   position: absolute;
   z-index: 3;
   top: 1px;
@@ -107,8 +107,8 @@ $inputIconSize: calc($inputHeightPx - 2);
   }
 }
 
-.mu-input-box[invalid],
-[invalid] .mu-input-box {
+.mu-button-editor[invalid],
+[invalid] .mu-button-editor {
   & > .mu-input {
     border-color: $inputInvalidBorderColor;
   }

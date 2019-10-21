@@ -18,11 +18,11 @@ import CloseButton from './button/close-button.vue'
 import ButtonGroup from './button/button-group.vue'
 /* INPUT */
 import Input from './input/input.vue'
-import InputBox from './input/input-box.vue'
-import PopupBox from './input/popup-box.vue'
+import ButtonEditor from './input/button-editor.vue'
+import PopupEditor from './input/popup-editor.vue'
+import DateEditor from './input/date-editor.vue'
 import ComboBox from './input/combo-box.vue'
 import Option from './input/option.js'
-import DateBox from './input/date-box.vue'
 /* LIST */
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
@@ -55,11 +55,11 @@ function install (Vue) {
   Vue.component('mu-button-group', ButtonGroup)
 
   Vue.component('mu-input', Input)
-  Vue.component('mu-input-box', InputBox)
-  Vue.component('mu-popup-box', PopupBox)
+  Vue.component('mu-button-editor', ButtonEditor)
+  Vue.component('mu-popup-editor', PopupEditor)
+  Vue.component('mu-date-editor', DateEditor)
   Vue.component('mu-combo-box', ComboBox)
   Vue.component('mu-option', Option)
-  Vue.component('mu-date-box', DateBox)
 
   Vue.component('mu-list-item', ListItem)
   Vue.component('mu-list-divider', ListDivider)
@@ -94,11 +94,11 @@ export {
   ButtonGroup,
   // input
   Input,
-  InputBox,
-  PopupBox,
+  ButtonEditor,
+  PopupEditor,
+  DateEditor,
   ComboBox,
   Option,
-  DateBox,
   // list
   ListItem,
   ListDivider,

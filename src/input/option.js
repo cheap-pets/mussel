@@ -4,7 +4,7 @@ export default {
   name: 'MusselOption',
   extends: ListItem,
   inject: {
-    inputBox: {
+    editor: {
       default: null
     },
     multiple: {
@@ -36,7 +36,7 @@ export default {
       return v === undefined ? this.option : v
     },
     actualLabel () {
-      const { params: { editable } } = this.inputBox
+      const { params: { editable } } = this.editor
       const label = editable
         ? null
         : (
@@ -52,7 +52,7 @@ export default {
         : this.icon
     },
     actualSelected () {
-      const { comboValue } = this.inputBox
+      const { comboValue } = this.editor
       return this.multiple
         ? comboValue?.find(value => value === this.actualValue)
         : comboValue === this.actualValue
@@ -63,15 +63,15 @@ export default {
       value: this.actualValue,
       label: this.actualLabel
     }
-    this.inputBox.mountOption(this.mountedOption)
+    this.editor.mountOption(this.mountedOption)
   },
   beforeDestroy () {
-    this.inputBox.unmountOption(this.mountedOption)
+    this.editor.unmountOption(this.mountedOption)
   },
   methods: {
     onClick () {
       if (this.disabled) return
-      this.inputBox?.toggleSelection(this.actualValue, this.option)
+      this.editor.toggleSelection(this.actualValue, this.option)
       this.$emit('click')
     }
   }

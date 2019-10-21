@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "another vue components library",
   "main": "dist/mussel.esm.js",
   "files": [
@@ -31,7 +31,7 @@
     "postcss-nested": "^4.1.2",
     "postcss-simple-vars": "^5.0.2",
     "postcss-unprefix": "^2.1.4",
-    "rollup": "^1.24.0",
+    "rollup": "^1.25.1",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",

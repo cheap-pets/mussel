@@ -1,10 +1,10 @@
 <template>
   <div
-    class="mu-input-box"
+    class="mu-button-editor"
     :buttons="buttons"
     :readonly="params.readonly"
     :disabled="params.disabled">
-    <mu-input-button
+    <mu-editor-button
       v-if="iconAlign === 'left'"
       v-bind="iconParams"
       @click="onButtonClick" />
@@ -13,12 +13,12 @@
       @input="onInput"
       @click="onInputClick"
       @keypress.native="onKeyPress" />
-    <mu-input-button
+    <mu-editor-button
       v-if="clearable"
       clickable
       trigger-type="cancel"
       @click="onClearClick" />
-    <mu-input-button
+    <mu-editor-button
       v-if="iconAlign === 'right'"
       v-bind="iconParams"
       @click="onButtonClick" />
@@ -27,18 +27,18 @@
 </template>
 
 <script>
-  import './input-box.pcss'
+  import './button-editor.pcss'
 
   import Input from './input.vue'
-  import InputButton from './input-button'
+  import EditorButton from './editor-button'
 
   export default {
-    name: 'MusselInputBoxWrapper',
+    name: 'MusselButtonEditorWrapper',
     components: {
       'mu-input': Input,
-      'mu-input-button': InputButton
+      'mu-editor-button': EditorButton
     },
-    inject: ['inputBox', 'params'],
+    inject: ['editor', 'params'],
     computed: {
       clearable () {
         const p = this.params
@@ -79,19 +79,19 @@
     },
     methods: {
       onInput (value) {
-        this.inputBox.onInput(value)
+        this.editor.onInput(value)
       },
       onInputClick () {
-        this.inputBox.onInputClick()
+        this.editor.onInputClick()
       },
       onClearClick () {
-        this.inputBox.onClearClick()
+        this.editor.onClearClick()
       },
       onButtonClick () {
-        this.inputBox.onButtonClick()
+        this.editor.onButtonClick()
       },
       onKeyPress (event) {
-        this.inputBox.onKeyPress(event)
+        this.editor.onKeyPress(event)
       }
     }
   }

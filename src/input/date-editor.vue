@@ -1,21 +1,21 @@
 <template>
-  <mu-popup-box-wrapper>
+  <mu-popup-editor-wrapper>
     <calendar v-bind="calendarParams" @change="onSelect" />
-  </mu-popup-box-wrapper>
+  </mu-popup-editor-wrapper>
 </template>
 
 <script>
-  import BasePopupBox from './base-popup-box'
+  import BasePopupEditor from './base-popup-editor'
   import Calendar from '../calendar/calendar.vue'
 
   import formatDate from '../utils/format-date'
 
   export default {
-    name: 'MusselDateBox',
+    name: 'MusselDateEditor',
     components: {
       Calendar
     },
-    extends: BasePopupBox,
+    extends: BasePopupEditor,
     props: {
       popupWidth: {
         type: String,

@@ -1,23 +1,23 @@
 <template>
-  <mu-input-box-wrapper>
+  <mu-button-editor-wrapper>
     <mu-dropdown
       v-if="!params.disabled"
       v-bind="dropdownParams"
       @change="setPopupVisible">
       <slot />
     </mu-dropdown>
-  </mu-input-box-wrapper>
+  </mu-button-editor-wrapper>
 </template>
 
 <script>
   import Dropdown from '../layer/dropdown.vue'
-  import InputBoxWrapper from './input-box-wrapper.vue'
+  import ButtonEditorWrapper from './button-editor-wrapper.vue'
 
   export default {
     name: 'MusselPopupBoxWrapper',
-    inject: ['inputBox', 'params', 'popupParams'],
+    inject: ['editor', 'params', 'popupParams'],
     components: {
-      'mu-input-box-wrapper': InputBoxWrapper,
+      'mu-button-editor-wrapper': ButtonEditorWrapper,
       'mu-dropdown': Dropdown
     },
     computed: {
@@ -34,7 +34,7 @@
     },
     methods: {
       setPopupVisible (value) {
-        this.inputBox.setPopupVisible(value)
+        this.editor.setPopupVisible(value)
         this.params.focus = value
       }
     }

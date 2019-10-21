@@ -1,14 +1,14 @@
 import Icon from '../icon/index.vue'
 
 export default {
-  name: 'MusselInputButton',
+  name: 'MusselEditorButton',
   extends: Icon,
   props: {
     clickable: Boolean
   },
   computed: {
     className () {
-      return 'mu-input-icon'
+      return 'mu-editor-button'
     }
   }
 }

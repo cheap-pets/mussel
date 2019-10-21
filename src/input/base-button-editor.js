@@ -1,13 +1,13 @@
-import InputBoxWrapper from './input-box-wrapper.vue'
+import ButtonEditorWrapper from './button-editor-wrapper.vue'
 
 export default {
-  name: 'MusselBaseInputBox',
+  name: 'MusselBaseButtonEditor',
   components: {
-    'mu-input-box-wrapper': InputBoxWrapper
+    'mu-button-editor-wrapper': ButtonEditorWrapper
   },
   provide () {
     return {
-      inputBox: this,
+      editor: this,
       params: this.params
     }
   },

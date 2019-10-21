@@ -1,5 +1,5 @@
 <template>
-  <mu-popup-box-wrapper>
+  <mu-popup-editor-wrapper>
     <slot v-if="!options" />
     <template v-else>
       <mu-option
@@ -9,13 +9,13 @@
         :option="option"
         :fields="fields" />
     </template>
-  </mu-popup-box-wrapper>
+  </mu-popup-editor-wrapper>
 </template>
 
 <script>
-  import BasePopupBox from './base-popup-box'
+  import BasePopupEditor from './base-popup-editor'
   import Option from './option.js'
-  
+
   function isEmptyValue (v) {
     return v === undefined || v === null || v === ''
   }
@@ -25,7 +25,7 @@
     components: {
       'mu-option': Option
     },
-    extends: BasePopupBox,
+    extends: BasePopupEditor,
     provide () {
       return {
         multiple: this.multiple
