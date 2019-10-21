@@ -1,7 +1,7 @@
 <template>
   <mu-button-editor-wrapper>
     <mu-dropdown
-      v-if="!params.disabled"
+      v-show="!params.disabled"
       v-bind="dropdownParams"
       @change="setPopupVisible">
       <slot />
