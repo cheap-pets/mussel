@@ -5,10 +5,16 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Example</title>
+  <style type="text/css">
+    .window-close-button {
+      position: absolute !important;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+    }
+  </style>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
-  <style>
-  </style>
 </head>
 
 <body>
@@ -19,6 +25,7 @@
       <h3>表格布局</h3>
       <mu-v-box bordered>
         <mu-h-box cellpadding>
+          <mu-close-button class="window-close-button"></mu-close-button>
           <mu-v-box>
             <mu-input cellspacing placeholder="公式名称"></mu-input>
             <textarea class="mu-input" cellspacing placeholder="说明"></textarea>

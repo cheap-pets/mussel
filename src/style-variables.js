@@ -92,7 +92,7 @@ const variables = {
   calendarCellHoverBackground: 'rgba(0, 0, 0, .03)',
 
   /* form */
-  $formLabelSize: '0.857rem',
+  $formLabelSize: '1rem',
 
   /* layer */
   modalMaskBackground: 'rgba(0, 0, 0, .17)',

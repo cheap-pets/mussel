@@ -34,14 +34,21 @@
     },
     computed: {
       sizeValue () {
-        console.log(this.size)
+        const layout = this.form?.layout || 'flow'
+        const direction = this.parentDirection
         return this.size ||
           this.$el?.getAttribute('size') ||
-          ((this.parentDirection === 'row') ? 'auto' : undefined)
+          (
+            layout === 'flow'
+              ? '100%'
+              : ((direction === 'row') ? 'auto' : undefined)
+          )
       },
       labelStyle () {
+        const w = this.labelWidth || this.form.labelWidth
         return {
-          width: this.labelWidth || this.form.labelWidth,
+          width: w,
+          minWidth: w,
           textAlign: this.labelAlign || this.form.labelAlign || 'right'
         }
       }
@@ -56,19 +63,18 @@
     & > label {
       display: inline-block;
       line-height: $(inputHeightPx)px;
-      padding-right: 10px;
+      padding-right: 12px;
       font-size: $formLabelSize;
 
       &:before {
         position: absolute;
         right: 0;
         top: -3px;
-        width: 8px;
-        text-align: left;
-        font-family: Arial;
-        font-weight: 500;
         display: inline-block;
         visibility: hidden;
+        width: 10px;
+        text-align: left;
+        font-weight: 500;
         color: $dangerColor;
         content: "*";
       }
@@ -85,6 +91,7 @@
     & > .mu-editor,
     & > .mu-input {
       flex: 1 1 10px;
+      width: 10px;
     }
   }
 </style>

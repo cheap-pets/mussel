@@ -47,7 +47,7 @@ export default {
   render (h) {
     return (
       <button
-        class="mu-button"
+        class="mu-button mu-text-ellipsis"
         icon-only={ this.isIconOnly }
         button-type={
           this.buttonType === 'normal'

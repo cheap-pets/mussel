@@ -1,5 +1,8 @@
 <template>
-  <div class="mu-flex-box mu-form" :cellpadding="cellpadding">
+  <div
+    class="mu-flex-box mu-form"
+    :flex-wrap="flexWrap"
+    :cellpadding="cellpadding">
     <slot />
   </div>
 </template>
@@ -16,20 +19,34 @@
       }
     },
     props: {
+      layout: {
+        type: String,
+        default: 'flow',
+        validator (value) {
+          return ['flow', 'column', 'row'].indexOf(value) !== -1
+        }
+      },
       cellpadding: {
         type: Boolean,
         default: true
       },
       labelWidth: {
         type: String,
-        default: '65px'
+        default: '75px'
       },
       labelAlign: String
     },
     computed: {
+      flexWrap () {
+        return this.layout === 'flow'
+      },
       flexDirection () {
-        return 'column'
+        return this.layout === 'column' ? 'column' : 'row'
       }
     }
   }
 </script>
+
+<style lang="postcss">
+
+</style>

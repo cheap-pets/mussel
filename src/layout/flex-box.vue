@@ -114,14 +114,12 @@
     & > [flex-none] {
       flex: 0 0 none !important;
     }
-    /*
     &[direction="column"] > [size] {
-      height: 10px;
+      height: 1px;
     }
     &:not([direction="column"]) > [size] {
-      width: 10px;
+      width: 1px;
     }
-    */
     & > [size="auto"] {
       flex: 1 1 1px;
     }

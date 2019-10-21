@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>表单</h2>
+    <hr>
+    <div>
+      <h3>表单布局</h3>
+      <mu-form layout="flow" bordered>
+        <mu-form-field label="输入框框" size="100%">
+          <mu-input></mu-input>
+        </mu-form-field>
+        <mu-form-field label="输入框2" size="50%">
+          <mu-input></mu-input>
+        </mu-form-field>
+        <mu-space></mu-space>
+        <mu-form-field label="输入框3" size="25%">
+          <mu-input></mu-input>
+        </mu-form-field>
+        <mu-form-field label="输入框4" size="25%">
+          <mu-input></mu-input>
+        </mu-form-field>
+        <mu-space></mu-space>
+        <mu-form-field label="输入框5" size="25%">
+          <mu-input></mu-input>
+        </mu-form-field>
+        <mu-space size="25%"></mu-space>
+        <mu-form-field label="输入框5" size="50%">
+          <mu-input></mu-input>
+        </mu-form-field>
+        <mu-space></mu-space>
+        <mu-form-field label="输入框6" size="50%">
+          <textarea class="mu-input"></textarea>
+        </mu-form-field>
+        <mu-form-field label="输入框7">
+          <mu-input></mu-input>
+        </mu-form-field>
+      </mu-form>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+      },
+      methods: {
+      }
+    });
+  </script>
+</body>
+
+</html>

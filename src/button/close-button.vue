@@ -12,16 +12,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-close-button {
-    cursor: pointer;
-
-    &.window-close-button {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      z-index: 1;
-    }
-  }
-</style>
