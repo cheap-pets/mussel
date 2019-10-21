@@ -5548,7 +5548,7 @@ var script$i = {
   }
 };
 
-var css$e = ".mu-form-field {\r\n  min-width: 80px;\r\n}\r\n.mu-form-field label {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n  margin-right: 8px;\r\n  font-size: .857rem;\r\n}\r\n.mu-form-field > .mu-editor,\r\n.mu-form-field > .mu-input {\r\n  flex: 1 1 auto;\r\n  width: 10px;\r\n}";
+var css$e = ".mu-form-field {\r\n  min-width: 80px;\r\n}\r\n.mu-form-field > label {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n  padding-right: 10px;\r\n  font-size: .857rem;\r\n}\r\n.mu-form-field > label:before {\r\n  position: absolute;\r\n  right: 0;\r\n  top: -3px;\r\n  width: 8px;\r\n  text-align: left;\r\n  font-family: Arial;\r\n  font-weight: 500;\r\n  display: inline-block;\r\n  visibility: hidden;\r\n  color: #fa541c;\r\n  content: \"*\";\r\n}\r\n.mu-form-field[required] > label:before {\r\n  visibility: visible;\r\n}\r\n.mu-form-field[invalid] > label {\r\n  color: #fa541c;\r\n}\r\n.mu-form-field > .mu-editor,\r\n.mu-form-field > .mu-input {\r\n  flex: 1 1 10px;\r\n}";
 styleInject(css$e);
 
 /* script */

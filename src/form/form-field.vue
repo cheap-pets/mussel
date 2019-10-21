@@ -53,16 +53,38 @@
   .mu-form-field {
     min-width: 80px;
 
-    & label {
+    & > label {
       display: inline-block;
       line-height: $(inputHeightPx)px;
-      margin-right: $(unitSpacingSizePx)px;
+      padding-right: 10px;
       font-size: $formLabelSize;
+
+      &:before {
+        position: absolute;
+        right: 0;
+        top: -3px;
+        width: 8px;
+        text-align: left;
+        font-family: Arial;
+        font-weight: 500;
+        display: inline-block;
+        visibility: hidden;
+        color: $dangerColor;
+        content: "*";
+      }
     }
+
+    &[required] > label:before {
+      visibility: visible;
+    }
+
+    &[invalid] > label {
+      color: $dangerColor;
+    }
+
     & > .mu-editor,
     & > .mu-input {
-      flex: 1 1 auto;
-      width: 10px;
+      flex: 1 1 10px;
     }
   }
 </style>
