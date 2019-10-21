@@ -1164,7 +1164,7 @@
     }
   };
 
-  var css$2 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=column] > .mu-button-editor,\r\n.mu-flex-box[direction=column] > .mu-input {\r\n  width: auto;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[itemspacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[itemspacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box[direction=column] > [size] {\r\n  height: 10px;\r\n}\r\n.mu-flex-box:not(direction=\"column\") > [size] {\r\n  width: 10px;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex-grow: 2;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex-grow: 3;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex-grow: 4;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex-grow: 5;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex-grow: 6;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex-grow: 7;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex-grow: 8;\r\n}";
+  var css$2 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=column] > .mu-editor,\r\n.mu-flex-box[direction=column] > .mu-input {\r\n  width: auto;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[itemspacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[itemspacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box[direction=column] > [size] {\r\n  height: 10px;\r\n}\r\n.mu-flex-box:not(direction=\"column\") > [size] {\r\n  width: 10px;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex-grow: 1;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex-grow: 2;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex-grow: 3;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex-grow: 4;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex-grow: 5;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex-grow: 6;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex-grow: 7;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex-grow: 8;\r\n}";
   styleInject(css$2);
 
   /* script */
@@ -2001,12 +2001,14 @@
   var search = 'M1021.184 925.696l-91.904 91.584-202.752-201.92c-75.904 56.64-169.216 91.392-271.424 91.392C203.712 906.688 0 703.744 0 453.376 0 202.944 203.712 0 455.168 0c251.328 0 455.04 202.944 455.04 453.376 0 101.76-34.88 194.752-91.712 270.336L1021.184 925.696 1021.184 925.696zM455.168 129.6c-179.584 0-325.056 144.96-325.056 323.84 0 178.816 145.472 323.84 325.056 323.84 179.456 0 325.056-145.024 325.056-323.84C780.224 274.496 634.624 129.6 455.168 129.6L455.168 129.6z';
   var expandAll = 'M768 341.333333H341.333333v426.666667H256V341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h426.666667v85.333333z m-170.666667-256H170.666667c-46.933333 0-85.333333 38.4-85.333334 85.333334v426.666666h85.333334V170.666667h426.666666V85.333333z m341.333334 426.666667v341.333333c0 46.933333-38.4 85.333333-85.333334 85.333334h-341.333333c-46.933333 0-85.333333-38.4-85.333333-85.333334v-341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h341.333333c46.933333 0 85.333333 38.4 85.333334 85.333333z m-85.333334 128h-128v-128h-85.333333v128h-128v85.333333h128v128h85.333333v-128h128v-85.333333z';
   var collapseAll = 'M597.333333 170.666667H170.666667v426.666666H85.333333V170.666667c0-46.933333 38.4-85.333333 85.333334-85.333334h426.666666v85.333334z m170.666667 85.333333H341.333333c-46.933333 0-85.333333 38.4-85.333333 85.333333v426.666667h85.333333V341.333333h426.666667V256z m170.666667 256v341.333333c0 46.933333-38.4 85.333333-85.333334 85.333334h-341.333333c-46.933333 0-85.333333-38.4-85.333333-85.333334v-341.333333c0-46.933333 38.4-85.333333 85.333333-85.333333h341.333333c46.933333 0 85.333333 38.4 85.333334 85.333333z m-85.333334 128h-341.333333v85.333333h341.333333v-85.333333z';
+  var ellipsis = 'M180.59820247 401.53273459c-60.75699579 0-110.46726541 49.71026963-110.46726541 110.46726541s49.71026963 110.46726541 110.46726541 110.46726541c60.75699579 0 110.46726541-49.71026963 110.46726541-110.46726541S241.35519825 401.53273459 180.59820247 401.53273459zM843.40179753 401.53273459c-60.75699579 0-110.46726541 49.71026963-110.46726541 110.46726541s49.71026963 110.46726541 110.46726541 110.46726541c60.75699579 0 110.46726541-49.71026963 110.46726541-110.46726541S904.15879331 401.53273459 843.40179753 401.53273459zM512 401.53273459c-60.75699579 0-110.46726541 49.71026963-110.46726541 110.46726541s49.71026963 110.46726541 110.46726541 110.46726541c60.75699579 0 110.46726541-49.71026963 110.46726541-110.46726541S572.75699579 401.53273459 512 401.53273459z';
   var calendar = 'M770.90765392 557.5111111l-258.90765392 0 0 258.90765392 258.90765392 0L770.90765392 557.5111111zM719.12612386-12.085728l0 103.56306132L304.87387614 91.47733332 304.87387614-12.085728 201.31081482-12.085728l0 103.56306132L149.52928355 91.47733332C92.5696 91.47733332 45.96622222 138.0807111 45.96622222 195.04039466l0 724.94143169c0 56.95968355 46.60337778 103.56306132 103.56306133 103.56306132l724.94143169 0c56.95968355 0 103.56306132-46.60337778 103.56306133-103.56306132L978.03377778 195.04039466c0-56.95968355-46.60337778-103.56306132-103.56306133-103.56306134l-51.78153127 0L822.68918518-12.085728 719.12612386-12.085728zM874.47071645 919.98182755L149.52928355 919.98182755 149.52928355 350.38498724l724.94143169 0L874.47071645 919.98182755z';
   var data$1 = {
     ok: ok,
     close: close,
     cancel: cancel,
     search: search,
+    ellipsis: ellipsis,
     calendar: calendar,
     'key-down': keyDown,
     'key-left': keyLeft,
@@ -2377,18 +2379,18 @@
     staticRenderFns: __vue_staticRenderFns__$5
   }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, undefined, undefined);
 
-  var css$a = ".mu-button-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-button-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-button-editor > .mu-input[disabled],\r\n.mu-button-editor[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-button-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-button-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-button-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-button-editor[buttons=\"2\"] > input + .mu-editor-button {\r\n  right: 30px;\r\n}\r\n.mu-button-editor[buttons=\"2\"] > .mu-editor-button:first-child + .mu-editor-button {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-button-editor[buttons=\"2\"] > .mu-editor-button:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-button-editor[buttons=\"2\"] > .mu-editor-button:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-button-editor[buttons=\"2\"] > .mu-editor-button:first-child + input + .mu-editor-button {\r\n  right: 1px;\r\n}\r\n.mu-button-editor[disabled] > .mu-input,\r\n.mu-button-editor[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-button-editor[disabled] > .mu-editor-button,\r\n.mu-button-editor[readonly] > .mu-editor-button {\r\n  display: none;\r\n}\r\n.mu-button-editor > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-editor-button {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-editor-button:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-editor-button:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor-button[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-editor-button[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-editor-button[trigger-type=cancel] {\r\n  color: rgba(0,0,0,.17);\r\n  fill: rgba(0,0,0,.17);\r\n}\r\n.mu-editor-button[trigger-type=cancel]:hover {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-button-editor[invalid] > .mu-input,\r\n[invalid] .mu-button-editor > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-button-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-button-editor > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
+  var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[disabled] > .mu-input,\r\n.mu-editor[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-editor > .mu-dropdown {\r\n  min-width: 100%;\r\n}\r\n.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-editor-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-editor-icon[trigger-type=cancel] {\r\n  color: rgba(0,0,0,.17);\r\n  fill: rgba(0,0,0,.17);\r\n}\r\n.mu-editor-icon[trigger-type=cancel]:hover {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
   styleInject(css$a);
 
-  var EditorButton = {
-    name: 'MusselEditorButton',
+  var EditorIcon = {
+    name: 'MusselEditorIcon',
     "extends": Icon,
     props: {
       clickable: Boolean
     },
     computed: {
       className: function className() {
-        return 'mu-editor-button';
+        return 'mu-editor-icon';
       }
     }
   };
@@ -2398,7 +2400,7 @@
     name: 'MusselButtonEditorWrapper',
     components: {
       'mu-input': Input,
-      'mu-editor-button': EditorButton
+      'mu-editor-icon': EditorIcon
     },
     inject: ['editor', 'params'],
     computed: {
@@ -2418,7 +2420,7 @@
         return this.iconAlign ? {
           icon: p.icon,
           iconClass: p.iconClass,
-          clickable: p.iconClickable || !!p.triggerType,
+          clickable: p.iconClickable,
           triggerType: p.triggerType,
           triggerOn: p.triggerOn
         } : null;
@@ -2466,17 +2468,17 @@
     var _c = _vm._self._c || _h;
 
     return _c("div", {
-      staticClass: "mu-button-editor",
+      staticClass: "mu-editor",
       attrs: {
         buttons: _vm.buttons,
         readonly: _vm.params.readonly,
         disabled: _vm.params.disabled
       }
-    }, [_vm.iconAlign === "left" ? _c("mu-editor-button", _vm._b({
+    }, [_vm.iconAlign === "left" ? _c("mu-editor-icon", _vm._b({
       on: {
         click: _vm.onButtonClick
       }
-    }, "mu-editor-button", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _c("mu-input", _vm._b({
+    }, "mu-editor-icon", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _c("mu-input", _vm._b({
       on: {
         input: _vm.onInput,
         click: _vm.onInputClick
@@ -2486,7 +2488,7 @@
           return _vm.onKeyPress($event);
         }
       }
-    }, "mu-input", _vm.inputParams, false)), _vm._v(" "), _vm.clearable ? _c("mu-editor-button", {
+    }, "mu-input", _vm.inputParams, false)), _vm._v(" "), _vm.clearable ? _c("mu-editor-icon", {
       attrs: {
         clickable: "",
         "trigger-type": "cancel"
@@ -2494,11 +2496,11 @@
       on: {
         click: _vm.onClearClick
       }
-    }) : _vm._e(), _vm._v(" "), _vm.iconAlign === "right" ? _c("mu-editor-button", _vm._b({
+    }) : _vm._e(), _vm._v(" "), _vm.iconAlign === "right" ? _c("mu-editor-icon", _vm._b({
       on: {
         click: _vm.onButtonClick
       }
-    }, "mu-editor-button", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _vm._t("default")], 2);
+    }, "mu-editor-icon", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _vm._t("default")], 2);
   };
 
   var __vue_staticRenderFns__$6 = [];
@@ -2543,11 +2545,11 @@
           type: p.type,
           value: p.value,
           icon: p.icon,
+          iconClickable: p.iconClickable !== false,
           iconClass: p.iconClass,
           iconAlign: p.iconAlign,
-          iconClickable: p.iconClickable,
           triggerType: p.triggerType,
-          triggerOn: p.triggerOn,
+          triggerOn: false,
           readonly: p.readonly,
           disabled: p.disabled,
           editable: p.editable,
@@ -2580,7 +2582,7 @@
           return ['left', 'right'].indexOf(value) !== -1;
         }
       },
-      iconClickable: Boolean,
+      iconClickable: undefined,
       editable: {
         type: Boolean,
         "default": true
@@ -2589,8 +2591,7 @@
         type: Boolean,
         "default": true
       },
-      triggerType: String,
-      triggerOn: Boolean
+      triggerType: String
     },
     watch: {
       value: {
@@ -2620,12 +2621,6 @@
       triggerType: function triggerType(value) {
         this.params.triggerType = value;
       },
-      triggerOn: function triggerOn(value) {
-        this.params.triggerOn = value;
-      },
-      iconClickable: function iconClickable(value) {
-        this.params.iconClickable = value || !!this.triggerType;
-      },
       editable: function editable(value) {
         this.editable = value;
       },
@@ -2654,7 +2649,7 @@
       },
       onButtonClick: function onButtonClick() {
         this.focus();
-        if (this.iconClickable) this.$emit('buttonclick');
+        if (this.params.iconClickable) this.$emit('buttonclick');
       },
       onKeyPress: function onKeyPress(event) {
         this.$emit('keypress', event);
@@ -2673,7 +2668,13 @@
   //
   var script$9 = {
     name: 'MusselButtonEditor',
-    "extends": BaseButtonEditor
+    "extends": BaseButtonEditor,
+    props: {
+      icon: {
+        type: String,
+        "default": 'ellipsis'
+      }
+    }
   };
 
   /* script */
@@ -3074,6 +3075,7 @@
     methods: {
       setPopupVisible: function setPopupVisible(value) {
         this.editor.setPopupVisible(value);
+        this.params.triggerOn = value;
         this.params.focus = value;
       }
     }
@@ -3128,10 +3130,6 @@
     "extends": BaseButtonEditor,
     mixins: [PopupGroupMixin],
     props: {
-      triggerType: {
-        type: String,
-        "default": 'expander'
-      },
       editable: {
         type: Boolean,
         "default": false
@@ -3148,12 +3146,17 @@
       onButtonClick: function onButtonClick() {
         this.focus();
         this.togglePopup();
-        if (this.iconClickable) this.$emit('buttonclick');
+        this.$emit('buttonclick');
       },
       onClearClick: function onClearClick() {
         this.hidePopup();
         this.clear();
         this.$emit('change', '');
+      }
+    },
+    created: function created() {
+      if (!this.icon && !this.iconClass && !this.triggerType) {
+        this.params.triggerType = 'expander';
       }
     }
   };

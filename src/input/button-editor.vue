@@ -7,6 +7,12 @@
 
   export default {
     name: 'MusselButtonEditor',
-    extends: BaseButtonEditor
+    extends: BaseButtonEditor,
+    props: {
+      icon: {
+        type: String,
+        default: 'ellipsis'
+      }
+    }
   }
 </script>

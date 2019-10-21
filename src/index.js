@@ -27,7 +27,7 @@ import Option from './input/option.js'
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
 /* BAR */
-import  Bar from './bar/bar.vue'
+import Bar from './bar/bar.vue'
 /* LAYER */
 import BaseModal from './layer/base-modal.vue'
 import BaseDialog from './layer/base-dialog.vue'

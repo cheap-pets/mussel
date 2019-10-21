@@ -19,11 +19,11 @@ export default {
         type: p.type,
         value: p.value,
         icon: p.icon,
+        iconClickable: p.iconClickable !== false,
         iconClass: p.iconClass,
         iconAlign: p.iconAlign,
-        iconClickable: p.iconClickable,
         triggerType: p.triggerType,
-        triggerOn: p.triggerOn,
+        triggerOn: false,
         readonly: p.readonly,
         disabled: p.disabled,
         editable: p.editable,
@@ -56,7 +56,7 @@ export default {
         return ['left', 'right'].indexOf(value) !== -1
       }
     },
-    iconClickable: Boolean,
+    iconClickable: undefined,
     editable: {
       type: Boolean,
       default: true
@@ -65,8 +65,7 @@ export default {
       type: Boolean,
       default: true
     },
-    triggerType: String,
-    triggerOn: Boolean
+    triggerType: String
   },
   watch: {
     value: {
@@ -96,12 +95,6 @@ export default {
     triggerType (value) {
       this.params.triggerType = value
     },
-    triggerOn (value) {
-      this.params.triggerOn = value
-    },
-    iconClickable (value) {
-      this.params.iconClickable = value || !!this.triggerType
-    },
     editable (value) {
       this.editable = value
     },
@@ -130,7 +123,7 @@ export default {
     },
     onButtonClick () {
       this.focus()
-      if (this.iconClickable) this.$emit('buttonclick')
+      if (this.params.iconClickable) this.$emit('buttonclick')
     },
     onKeyPress (event) {
       this.$emit('keypress', event)

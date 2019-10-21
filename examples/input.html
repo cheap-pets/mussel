@@ -28,13 +28,13 @@
     <div>
       <h3>输入框组</h3>
       <h5>带图标的输入框</h5>
-      <mu-button-editor icon="search" placeholder="请输入文字" :clearable="false" v-model="iconInput1Value"></mu-button-editor>
-      <mu-button-editor icon="search" placeholder="请输入文字" :clearable="false" value="图标在前" icon-align="left">
+      <mu-button-editor icon="search" :icon-clickable="false" placeholder="请输入文字" :clearable="false" v-model="iconInput1Value"></mu-button-editor>
+      <mu-button-editor icon="search" :icon-clickable="false" placeholder="请输入文字" :clearable="false" value="图标在前" icon-align="left">
       </mu-button-editor>
       <h5>带按钮的输入框</h5>
-      <mu-button-editor icon="search" :clearable="false" icon-clickable value="按钮在后">
+      <mu-button-editor :clearable="false" icon-clickable value="按钮在后">
       </mu-button-editor>
-      <mu-button-editor icon="search" :clearable="false" icon-clickable value="按钮在前" icon-align="left">
+      <mu-button-editor :clearable="false" icon-clickable value="按钮在前" icon-align="left">
       </mu-button-editor>
       <h5>带清空按钮的输入框</h5>
       <mu-button-editor value="没有图标">
@@ -51,11 +51,11 @@
       <mu-button-editor icon="search" :clearable="false" input-shape="round" value="图标在前" icon-align="left">
       </mu-button-editor>
       <h5>只读与禁用</h5>
-      <mu-button-editor :editable="false" trigger-type="expander" placeholder="输入框只读">
+      <mu-button-editor :editable="false" placeholder="输入框只读">
       </mu-button-editor>
-      <mu-button-editor readonly trigger-type="expander" placeholder="完全只读">
+      <mu-button-editor readonly placeholder="完全只读">
       </mu-button-editor>
-      <mu-button-editor disabled trigger-type="expander" placeholder="禁用">
+      <mu-button-editor disabled placeholder="禁用">
       </mu-button-editor>
       <h5>无效状态</h5>
       <mu-button-editor invalid icon="search" icon-clickable value="按钮在后">
@@ -63,9 +63,9 @@
       <mu-button-editor invalid icon="search" icon-clickable value="按钮在前" icon-align="left">
       </mu-button-editor>
       <h5>下拉框</h5>
-      <mu-popup-box :editable="false" value="xxx" popup-render-to-body>
+      <mu-popup-editor icon="close" :editable="false" value="xxx" popup-render-to-body>
         123
-      </mu-popup-box>
+      </mu-popup-editor>
       <h5>下拉选择框</h5>
       <mu-combo-box v-model="comboValue1" @change="onCombo1Change">
         <mu-option value='好好学习1'></mu-option>

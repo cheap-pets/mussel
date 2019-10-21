@@ -35,6 +35,7 @@
     methods: {
       setPopupVisible (value) {
         this.editor.setPopupVisible(value)
+        this.params.triggerOn = value
         this.params.focus = value
       }
     }

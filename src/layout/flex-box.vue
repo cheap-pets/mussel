@@ -48,7 +48,7 @@
 
     &[direction="column"] {
       flex-direction: column;
-      & > .mu-button-editor,
+      & > .mu-editor,
       & > .mu-input {
         width: auto;
       }

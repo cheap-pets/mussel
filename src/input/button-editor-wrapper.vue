@@ -1,10 +1,10 @@
 <template>
   <div
-    class="mu-button-editor"
+    class="mu-editor"
     :buttons="buttons"
     :readonly="params.readonly"
     :disabled="params.disabled">
-    <mu-editor-button
+    <mu-editor-icon
       v-if="iconAlign === 'left'"
       v-bind="iconParams"
       @click="onButtonClick" />
@@ -13,12 +13,12 @@
       @input="onInput"
       @click="onInputClick"
       @keypress.native="onKeyPress" />
-    <mu-editor-button
+    <mu-editor-icon
       v-if="clearable"
       clickable
       trigger-type="cancel"
       @click="onClearClick" />
-    <mu-editor-button
+    <mu-editor-icon
       v-if="iconAlign === 'right'"
       v-bind="iconParams"
       @click="onButtonClick" />
@@ -27,16 +27,16 @@
 </template>
 
 <script>
-  import './button-editor.pcss'
+  import './editor.pcss'
 
   import Input from './input.vue'
-  import EditorButton from './editor-button'
+  import EditorIcon from './editor-icon'
 
   export default {
     name: 'MusselButtonEditorWrapper',
     components: {
       'mu-input': Input,
-      'mu-editor-button': EditorButton
+      'mu-editor-icon': EditorIcon
     },
     inject: ['editor', 'params'],
     computed: {
@@ -59,7 +59,7 @@
           ? {
             icon: p.icon,
             iconClass: p.iconClass,
-            clickable: p.iconClickable || !!p.triggerType,
+            clickable: p.iconClickable,
             triggerType: p.triggerType,
             triggerOn: p.triggerOn
           }

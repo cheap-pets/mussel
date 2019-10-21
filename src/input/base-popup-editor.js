@@ -10,10 +10,6 @@ export default {
   extends: BaseButtonEditor,
   mixins: [PopupGroupMixin],
   props: {
-    triggerType: {
-      type: String,
-      default: 'expander'
-    },
     editable: {
       type: Boolean,
       default: false
@@ -29,12 +25,17 @@ export default {
     onButtonClick () {
       this.focus()
       this.togglePopup()
-      if (this.iconClickable) this.$emit('buttonclick')
+      this.$emit('buttonclick')
     },
     onClearClick () {
       this.hidePopup()
       this.clear()
       this.$emit('change', '')
+    }
+  },
+  created () {
+    if (!this.icon && !this.iconClass && !this.triggerType) {
+      this.params.triggerType = 'expander'
     }
   }
 }
