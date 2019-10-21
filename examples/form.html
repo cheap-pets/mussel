@@ -16,42 +16,42 @@
     <h2>表单</h2>
     <hr>
     <div>
-      <h3>表格布局</h3>
-      <mu-v-box bordered>
-        <mu-h-box cellpadding>
-          <mu-v-box>
-            <mu-input cellspacing placeholder="公式名称"></mu-input>
-            <textarea class="mu-input" cellspacing placeholder="说明"></textarea>
-          </mu-v-box>
-          <mu-h-box size="auto">
-            <textarea class="mu-input" size="auto" cellspacing placeholder="公式内容"></textarea>
-          </mu-h-box>
-          <mu-v-box>
-            <mu-v-box size="auto" flex-center>
-              <h1>计算结果</h1>
-              100
-            </mu-v-box>
-            <mu-combo-box cellspacing placeholder="保留小数"></mu-combo-box>
-          </mu-v-box>
+      <h3>表单布局</h3>
+      <mu-form bordered>
+        <mu-form-field label="输入框1">
+          <mu-input></mu-input>
+        </mu-form-field>
+        <mu-h-box>
+          <mu-form-field label="输入框2">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-form-field label="输入框3">
+            <mu-input></mu-input>
+          </mu-form-field>
         </mu-h-box>
-        <mu-list-divider></mu-list-divider>
-        <mu-h-box cellpadding>
-          <mu-v-box>
-            <mu-input cellspacing placeholder="公式名称"></mu-input>
-            <textarea class="mu-input" cellspacing placeholder="说明"></textarea>
-          </mu-v-box>
-          <mu-h-box size="auto">
-            <textarea class="mu-input" size="auto" cellspacing placeholder="公式内容"></textarea>
-          </mu-h-box>
-          <mu-v-box>
-            <mu-v-box size="auto" flex-center>
-              <h1>计算结果</h1>
-              100
-            </mu-v-box>
-            <mu-combo-box cellspacing placeholder="保留小数"></mu-combo-box>
-          </mu-v-box>
+        <mu-h-box>
+          <mu-form-field label="输入框4">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-form-field label="输入框5">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-form-field label="输入框6">
+            <mu-button-editor></mu-button-editor>
+          </mu-form-field>
         </mu-h-box>
-      </mu-v-box>
+        <mu-h-box>
+          <mu-form-field label="输入框4" size="50%">
+            <mu-date-editor></mu-date-editor>
+          </mu-form-field>
+          <mu-form-field label="输入框5" size="25%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-form-field label="输入框6" size="25%">
+            <mu-button-editor></mu-button-editor>
+          </mu-form-field>
+        </mu-h-box>
+      </mu-form>
     </div>
   </div>
 

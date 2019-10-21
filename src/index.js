@@ -23,6 +23,9 @@ import PopupEditor from './input/popup-editor.vue'
 import DateEditor from './input/date-editor.vue'
 import ComboBox from './input/combo-box.vue'
 import Option from './input/option.js'
+/* FORM */
+import Form from './form/form.vue'
+import FormField from './form/form-field.vue'
 /* LIST */
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
@@ -60,6 +63,9 @@ function install (Vue) {
   Vue.component('mu-date-editor', DateEditor)
   Vue.component('mu-combo-box', ComboBox)
   Vue.component('mu-option', Option)
+
+  Vue.component('mu-form', Form)
+  Vue.component('mu-form-field', FormField)
 
   Vue.component('mu-list-item', ListItem)
   Vue.component('mu-list-divider', ListDivider)
@@ -99,6 +105,9 @@ export {
   DateEditor,
   ComboBox,
   Option,
+  // form
+  Form,
+  FormField,
   // list
   ListItem,
   ListDivider,

@@ -91,6 +91,9 @@ const variables = {
   calendarBackground: '#fff',
   calendarCellHoverBackground: 'rgba(0, 0, 0, .03)',
 
+  /* form */
+  $formLabelSize: '0.857rem',
+
   /* layer */
   modalMaskBackground: 'rgba(0, 0, 0, .17)',
   dialogBackground: 'rgba(255, 255, 255, .95)',

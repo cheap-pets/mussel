@@ -1,3 +1,9 @@
+<template>
+  <div class="mu-flex-box">
+    <slot />
+  </div>
+</template>
+
 <script>
   import FlexItem from './flex-item.vue'
 
@@ -29,7 +35,6 @@
       }
     },
     mounted () {
-      this.$el.classList.add('mu-flex-box')
       this.setDirection()
     },
     methods: {
@@ -109,19 +114,20 @@
     & > [flex-none] {
       flex: 0 0 none !important;
     }
-
+    /*
     &[direction="column"] > [size] {
       height: 10px;
     }
-    &:not(direction="column") > [size] {
+    &:not([direction="column"]) > [size] {
       width: 10px;
     }
+    */
     & > [size="auto"] {
-      flex-grow: 1;
+      flex: 1 1 1px;
     }
     @for $i from 1 to 8 {
       & > [size="$i"] {
-        flex-grow: $i;
+        flex: $i $i $(i)px;
       }
     }
   }
