@@ -9,38 +9,36 @@ export default {
   props: {
     buttonType: {
       type: String,
-      default: 'normal',
       validator (value) {
         return ['normal', 'primary', 'submit', 'danger'].indexOf(value) !== -1
       }
     },
     buttonStyle: {
       type: String,
-      default: 'normal',
       validator (value) {
         return ['normal', 'outline', 'text', 'link'].indexOf(value) !== -1
       }
     },
     buttonShape: {
       type: String,
-      default: 'normal',
       validator (value) {
         return ['normal', 'round'].indexOf(value) !== -1
       }
     },
-    stopPropagation: {
-      type: Boolean,
-      default: true
-    },
     icon: String,
     iconClass: String,
+    triggerType: String,
     iconOnly: Boolean,
-    caption: String
+    caption: String,
+    stopPropagation: Boolean
   },
   computed: {
     isIconOnly () {
       return this.iconOnly ||
-        (!this.$slots.default && !this.caption && (this.icon || this.iconClass))
+        (
+          !this.$slots.default &&
+          !this.caption &&
+          (this.icon || this.iconClass || this.triggerType))
     }
   },
   methods: {
@@ -54,31 +52,22 @@ export default {
       <button
         class="mu-button mu-text-ellipsis"
         icon-only={ this.isIconOnly }
-        button-type={
-          this.buttonType === 'normal'
-            ? undefined
-            : this.buttonType
-        }
-        button-style={
-          this.buttonStyle === 'normal'
-            ? undefined
-            : this.buttonStyle
-        }
-        button-shape={
-          this.buttonShape === 'normal'
-            ? undefined
-            : this.buttonShape
-        }
+        button-type={ this.buttonType }
+        button-style={ this.buttonStyle }
+        button-shape={ this.buttonShape }
         onClick={ this.onClick }>
         {
-          this.icon || this.iconClass
-            ? <icon icon={ this.icon } icon-class={ this.iconClass } />
+          this.icon || this.iconClass || this.triggerType
+            ? <icon
+              icon={ this.icon }
+              icon-class={ this.iconClass }
+              trigger-type={ this.triggerType } />
             : undefined
         }
         {
           this.$slots.default
             ? (
-              this.icon || this.iconClass
+              this.icon || this.iconClass || this.triggerType
                 ? <span>{ this.$slots.default }</span>
                 : this.$slots.default
             )

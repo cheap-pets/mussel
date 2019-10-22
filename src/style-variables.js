@@ -54,6 +54,7 @@ const variables = {
   /* dropdown */
   dropdownShadow: 'none',
   dropdownBackground: '#fff',
+  dropdownBorderRadiusPx: 0,
   dropdownBorder: `1px solid ${grey[3]}`,
   dropdownListYPaddingPx: 4,
   dropdownItemYPaddingPx: 5,
@@ -64,7 +65,7 @@ const variables = {
   listItemLineHeightPx: 20,
   listDividerColor: 'rgba(0, 0, 0, .1)',
   listItemBackground: '#fff',
-  listItemHoverBackground: 'rgba(0, 0, 0, .05)',
+  listItemHoverBackground: 'rgba(0, 0, 0, .04)',
 
   /* bar */
   barHeightPx: 40,

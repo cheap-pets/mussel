@@ -74,10 +74,6 @@
 
     &[direction="column"] {
       flex-direction: column;
-      & > .mu-editor,
-      & > .mu-input {
-        width: auto;
-      }
     }
 
     &[inline] {
@@ -126,6 +122,7 @@
 
     & > * {
       position: relative;
+      box-sizing: border-box;
     }
 
     & > [flex-auto] {
@@ -142,7 +139,7 @@
       width: 1px;
     }
     & > [size="auto"] {
-      flex: 1 1 1px;
+      flex: 1 1 auto;
     }
     @for $i from 1 to 8 {
       & > [size="$i"] {

@@ -31,6 +31,8 @@ import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
 /* BAR */
 import Bar from './bar/bar.vue'
+/* Dropdown */
+import Dropdown from './dropdown/dropdown.vue'
 /* LAYER */
 import BaseModal from './layer/base-modal.vue'
 import BaseDialog from './layer/base-dialog.vue'
@@ -71,6 +73,8 @@ function install (Vue) {
   Vue.component('mu-list-divider', ListDivider)
 
   Vue.component('mu-bar', Bar)
+
+  Vue.component('mu-dropdown', Dropdown)
 
   Vue.component('mu-modal', Modal)
   Vue.component('mu-dialog', Dialog)
@@ -113,6 +117,8 @@ export {
   ListDivider,
   // Bar
   Bar,
+  // Dropdown
+  Dropdown,
   // layer
   BaseModal,
   BaseDialog,

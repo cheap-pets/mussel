@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mu-dropdown"
+    class="mu-dropdown-panel"
     :class="className"
     :style="dropdownStyle"
     :visible="popupVisible">
@@ -9,11 +9,12 @@
 </template>
 
 <script>
-  import RenderToBodyMixin from './mix-render-to-body'
-  import PopupVisibleMixin from './mix-popup-visible'
+  import RenderToBodyMixin from '../layer/mix-render-to-body'
+  import PopupVisibleMixin from '../layer/mix-popup-visible'
 
-  import getClientRect from '../utils/client-rect'
+  import { hideIf } from '../layer/global-event-handler'
   import { isParentElement } from '../utils/dom'
+  import getClientRect from '../utils/client-rect'
 
   function popOnTop (parentRect, height) {
     return parentRect.bottom + 4 + height > window.innerHeight &&
@@ -76,6 +77,8 @@
         if (window.__mussel_dropdown === this) window.__mussel_dropdown = null
       },
       show () {
+        const dd = window.__mussel_dropdown
+        if (dd !== this) hideIf('dropdown', dd)
         window.__mussel_dropdown = this
         this.popupVisible = true
         this.$nextTick(this.setPosition)
@@ -122,21 +125,22 @@
 </script>
 
 <style lang="postcss">
-  .mu-dropdown {
+  .mu-dropdown-panel {
     position: absolute;
     z-index: 110;
     display: none;
+    overflow: auto;
     background: $dropdownBackground;
     border: $dropdownBorder;
+    border-radius: $(dropdownBorderRadiusPx)px;
     box-shadow: $dropdownShadow;
-    overflow: auto;
     transition: opacity .2s ease-in-out;
 
     &[visible] {
       display: block;
     }
   }
-  body > .mu-dropdown {
+  body > .mu-dropdown-panel {
     position: fixed;
   }
   .mu-dropdown-list, .mu-dropdown-menu {

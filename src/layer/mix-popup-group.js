@@ -2,11 +2,11 @@ export default {
   data () {
     return {
       popupParams: {
-        popupVisible: false,
-        popupWidth: this.popupWidth,
-        popupHeight: this.popupHeight,
-        popupClassName: this.popupClassName,
-        popupRenderToBody: this.popupRenderToBody
+        visible: false,
+        width: this.popupWidth,
+        height: this.popupHeight,
+        className: this.popupClass,
+        renderToBody: this.popupRenderToBody
       }
     }
   },
@@ -23,28 +23,31 @@ export default {
         return ['tap', 'hover'].indexOf(v) !== -1
       }
     },
+    popupClass: String,
     popupWidth: String,
     popupHeight: String,
-    popupClassName: String,
-    popupRenderToBody: Boolean
+    popupRenderToBody: {
+      type: Boolean,
+      default: true
+    }
   },
   watch: {
     popupWidth (value) {
-      this.popupParams.popupWidth = value
+      this.popupParams.width = value
     },
     popupHeight (value) {
-      this.popupParams.popupHeight = value
+      this.popupParams.height = value
     },
     popupRenderToBody (value) {
-      this.popupParams.popupRenderToBody = value
+      this.popupParams.renderToBody = value
     }
   },
   methods: {
     setPopupVisible (value) {
-      this.popupParams.popupVisible = value
+      this.popupParams.visible = value
     },
     togglePopup () {
-      this.setPopupVisible(!this.popupParams.popupVisible)
+      this.setPopupVisible(!this.popupParams.visible)
     },
     showPopup () {
       this.setPopupVisible(true)

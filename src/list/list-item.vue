@@ -100,7 +100,7 @@
     }
   }
 
-  .mu-dropdown > .mu-list-item {
+  .mu-dropdown-panel > .mu-list-item {
     padding: $(dropdownItemYPaddingPx)px $(listItemXPaddingPx)px;
     cursor: pointer;
   }

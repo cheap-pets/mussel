@@ -56,7 +56,7 @@ export default {
         return ['left', 'right'].indexOf(value) !== -1
       }
     },
-    iconClickable: undefined,
+    iconClickable: null,
     editable: {
       type: Boolean,
       default: true

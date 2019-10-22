@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+    .client-area {
+      background: rgba(0, 0, 0, .05);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>下拉</h2>
+    <hr>
+    <div>
+      <h3>下拉按钮</h3>
+      <mu-dropdown popup-class="mu-dropdown-menu">
+        <mu-button>
+          悬停下拉
+          <mu-icon trigger-type="expander"></mu-icon>
+        </mu-button>
+        <template #dropdown>
+          <mu-list-item label='好好学习1'></mu-list-item>
+          <mu-list-item label='好好学习2'></mu-list-item>
+          <mu-list-item label='好好学习3'></mu-list-item>
+        </template>
+      </mu-dropdown>
+      <mu-dropdown popup-class="mu-dropdown-menu" trigger="click">
+        <mu-button button-type="primary">
+          点击下拉
+          <mu-icon trigger-type="expander"></mu-icon>
+        </mu-button>
+        <template #dropdown>
+          <mu-list-item label='好好学习1'></mu-list-item>
+          <mu-list-item label='好好学习2'></mu-list-item>
+          <mu-list-item label='好好学习3'></mu-list-item>
+        </template>
+      </mu-dropdown>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+      },
+      methods: {
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -32,15 +32,15 @@
       }
     },
     props: {
+      value: null,
       fields: Object,
       options: Array,
       multiple: Boolean,
       keepIconIndent: Boolean,
-      popupClassName: {
+      popupClass: {
         type: String,
         default: 'mu-dropdown-list'
-      },
-      value: undefined
+      }
     },
     data () {
       return {
@@ -140,7 +140,7 @@
         }
         this.refreshInputValue(true)
         if (hidePopup) {
-          this.popupParams.popupVisible = false
+          this.popupParams.visible = false
           this.focus()
         }
         this.$emit('optionclick', value, option)

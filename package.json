@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "another vue components library",
   "main": "dist/mussel.esm.js",
   "files": [
@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "rollup -c && rollup --c rollup.dev.js",
-    "builddev": "rollup --c rollup.dev.js --watch"
+    "builddev": "rollup --c rollup.dev.js --watch",
+    "pub": "npm run build && npm publish"
   },
   "devDependencies": {
     "@ant-design/colors": "^3.2.2",

@@ -12,7 +12,7 @@ export default {
     }
   },
   props: {
-    value: undefined,
+    value: null,
     fields: Array,
     option: [String, Number, Object]
   },

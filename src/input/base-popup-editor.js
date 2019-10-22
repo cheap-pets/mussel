@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     onInputClick () {
-      if (!this.readonly && !this.popupParams.editable) {
+      if (!this.readonly && !this.params.editable) {
         this.togglePopup()
       }
       this.$emit('inputclick')
