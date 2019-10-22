@@ -34,14 +34,13 @@
     },
     computed: {
       sizeValue () {
-        const layout = this.form?.layout || 'flow'
-        const direction = this.parentDirection
+        const layout = this.parentLayout || 'flow'
         return this.size ||
           this.$el?.getAttribute('size') ||
           (
             layout === 'flow'
               ? '100%'
-              : ((direction === 'row') ? 'auto' : undefined)
+              : ((layout === 'column') ? undefined : 'auto')
           )
       },
       labelStyle () {
@@ -90,8 +89,8 @@
 
     & > .mu-editor,
     & > .mu-input {
-      flex: 1 1 10px;
-      width: 10px;
+      flex: 1 1 1px;
+      width: 1px;
     }
   }
 </style>

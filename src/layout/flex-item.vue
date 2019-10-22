@@ -8,7 +8,7 @@
   export default {
     name: 'MusselFlexItem',
     inject: {
-      parentDirection: {
+      parentLayout: {
         default: 'row'
       }
     },
@@ -38,10 +38,10 @@
     },
     watch: {
       size () {
-        this.setAttributes()
+        this.setItemAttributes()
       },
-      parentDirection () {
-        this.setAttributes()
+      parentLayout () {
+        this.setItemAttributes()
       }
     },
     mounted () {
@@ -50,10 +50,10 @@
         width,
         height
       }
-      this.setAttributes()
+      this.setItemAttributes()
     },
     methods: {
-      setAttributes () {
+      setItemAttributes () {
         const { $el, sizeValue, sizeUnit } = this
         if (!$el) return
         if (!sizeValue || sizeUnit) $el.removeAttribute('size')
@@ -63,7 +63,7 @@
           this.flexItemOriginStyles,
           sizeUnit
             ? {
-              [this.parentDirection === 'row' ? 'width' : 'height']: sizeValue
+              [this.parentLayout === 'column' ? 'height' : 'width']: sizeValue
             }
             : undefined
         )

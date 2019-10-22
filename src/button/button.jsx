@@ -28,6 +28,10 @@ export default {
         return ['normal', 'round'].indexOf(value) !== -1
       }
     },
+    stopPropagation: {
+      type: Boolean,
+      default: true
+    },
     icon: String,
     iconClass: String,
     iconOnly: Boolean,
@@ -40,7 +44,8 @@ export default {
     }
   },
   methods: {
-    onClick () {
+    onClick (event) {
+      if (this.stopPropagation) event.stopPropagation()
       this.$emit('click')
     }
   },

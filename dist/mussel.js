@@ -847,7 +847,7 @@
   var script = {
     name: 'MusselFlexItem',
     inject: {
-      parentDirection: {
+      parentLayout: {
         "default": 'row'
       }
     },
@@ -872,10 +872,10 @@
     },
     watch: {
       size: function size() {
-        this.setAttributes();
+        this.setItemAttributes();
       },
-      parentDirection: function parentDirection() {
-        this.setAttributes();
+      parentLayout: function parentLayout() {
+        this.setItemAttributes();
       }
     },
     mounted: function mounted() {
@@ -887,16 +887,16 @@
         width: width,
         height: height
       };
-      this.setAttributes();
+      this.setItemAttributes();
     },
     methods: {
-      setAttributes: function setAttributes() {
+      setItemAttributes: function setItemAttributes() {
         var $el = this.$el,
             sizeValue = this.sizeValue,
             sizeUnit = this.sizeUnit;
         if (!$el) return;
         if (!sizeValue || sizeUnit) $el.removeAttribute('size');else if (sizeValue) $el.setAttribute('size', sizeValue);
-        Object.assign($el.style, this.flexItemOriginStyles, sizeUnit ? _defineProperty({}, this.parentDirection === 'row' ? 'width' : 'height', sizeValue) : undefined);
+        Object.assign($el.style, this.flexItemOriginStyles, sizeUnit ? _defineProperty({}, this.parentLayout === 'column' ? 'height' : 'width', sizeValue) : undefined);
       }
     }
   };
@@ -1129,10 +1129,17 @@
     "extends": FlexItem,
     provide: function provide() {
       return {
-        parentDirection: this.flexDirection
+        parentLayout: this.flexLayout
       };
     },
     props: {
+      flexWrap: Boolean,
+      layout: {
+        type: String,
+        validator: function validator(value) {
+          return ['flow', 'column', 'row'].indexOf(value) !== -1;
+        }
+      },
       direction: {
         type: String,
         "default": 'row',
@@ -1142,23 +1149,38 @@
       }
     },
     computed: {
+      flexLayout: function flexLayout() {
+        var _this$$el, _this$$el2;
+
+        var v = this.layout || ((_this$$el = this.$el) === null || _this$$el === void 0 ? void 0 : _this$$el.getAttribute('layout')) || this.direction || ((_this$$el2 = this.$el) === null || _this$$el2 === void 0 ? void 0 : _this$$el2.getAttribute('direction')) || 'row';
+        return ['flow', 'column', 'row'].indexOf(v) !== -1 ? v : 'row';
+      },
       flexDirection: function flexDirection() {
-        return this.direction;
+        return this.flexLayout === 'column' ? 'column' : 'row';
       }
     },
     watch: {
-      direction: function direction(v) {
-        this.setDirection();
+      layout: function layout(v) {
+        this.setBoxAttributes();
       }
     },
     mounted: function mounted() {
-      this.setDirection();
+      this.setBoxAttributes();
     },
     methods: {
-      setDirection: function setDirection() {
-        var _this$$el;
+      setBoxAttributes: function setBoxAttributes() {
+        var $el = this.$el,
+            flexLayout = this.flexLayout,
+            flexDirection = this.flexDirection,
+            flexWrap = this.flexWrap;
 
-        (_this$$el = this.$el) === null || _this$$el === void 0 ? void 0 : _this$$el.setAttribute('direction', this.flexDirection);
+        if ($el) {
+          $el.setAttribute('direction', flexDirection);
+
+          if (flexLayout === 'flow' || flexWrap) {
+            $el.setAttribute('flex-wrap', '');
+          }
+        }
       }
     }
   };
@@ -1208,8 +1230,9 @@
   var HBox = {
     name: 'MusselHBox',
     "extends": FlexBox,
+    props: ['layout', 'direction'],
     computed: {
-      flexDirection: function flexDirection() {
+      flexLayout: function flexLayout() {
         return 'row';
       }
     }
@@ -1218,8 +1241,9 @@
   var VBox = {
     name: 'MusselVBox',
     "extends": FlexBox,
+    props: ['layout', 'direction'],
     computed: {
-      flexDirection: function flexDirection() {
+      flexLayout: function flexLayout() {
         return 'column';
       }
     }
@@ -1236,7 +1260,7 @@
     }
   };
 
-  var css$3 = ".mu-space {\r\n  flex: 1 1 0%;\r\n}\r\n[direction=row][flex-wrap] > .mu-space {\r\n  flex: 1 1 100%;\r\n}";
+  var css$3 = ".mu-space {\r\n  flex: 1 1 0%;\r\n}\r\n[direction=row][flex-wrap] > .mu-space {\r\n  flex: none;\r\n  width: 100%;\r\n}";
   styleInject(css$3);
 
   /* script */
@@ -2170,6 +2194,10 @@
           return ['normal', 'round'].indexOf(value) !== -1;
         }
       },
+      stopPropagation: {
+        type: Boolean,
+        "default": true
+      },
       icon: String,
       iconClass: String,
       iconOnly: Boolean,
@@ -2181,7 +2209,8 @@
       }
     },
     methods: {
-      onClick: function onClick() {
+      onClick: function onClick(event) {
+        if (this.stopPropagation) event.stopPropagation();
         this.$emit('click');
       }
     },
@@ -5445,6 +5474,7 @@
     staticRenderFns: __vue_staticRenderFns__$f
   }, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, undefined, undefined);
 
+  //
   var script$h = {
     name: 'MusselForm',
     "extends": FlexBox,
@@ -5454,13 +5484,6 @@
       };
     },
     props: {
-      layout: {
-        type: String,
-        "default": 'flow',
-        validator: function validator(value) {
-          return ['flow', 'column', 'row'].indexOf(value) !== -1;
-        }
-      },
       cellpadding: {
         type: Boolean,
         "default": true
@@ -5470,19 +5493,8 @@
         "default": '75px'
       },
       labelAlign: String
-    },
-    computed: {
-      flexWrap: function flexWrap() {
-        return this.layout === 'flow';
-      },
-      flexDirection: function flexDirection() {
-        return this.layout === 'column' ? 'column' : 'row';
-      }
     }
   };
-
-  var css$e = "";
-  styleInject(css$e);
 
   /* script */
   var __vue_script__$h = script$h;
@@ -5498,7 +5510,6 @@
     return _c("div", {
       staticClass: "mu-flex-box mu-form",
       attrs: {
-        "flex-wrap": _vm.flexWrap,
         cellpadding: _vm.cellpadding
       }
     }, [_vm._t("default")], 2);
@@ -5551,11 +5562,10 @@
     },
     computed: {
       sizeValue: function sizeValue() {
-        var _this$form, _this$$el;
+        var _this$$el;
 
-        var layout = ((_this$form = this.form) === null || _this$form === void 0 ? void 0 : _this$form.layout) || 'flow';
-        var direction = this.parentDirection;
-        return this.size || ((_this$$el = this.$el) === null || _this$$el === void 0 ? void 0 : _this$$el.getAttribute('size')) || (layout === 'flow' ? '100%' : direction === 'row' ? 'auto' : undefined);
+        var layout = this.parentLayout || 'flow';
+        return this.size || ((_this$$el = this.$el) === null || _this$$el === void 0 ? void 0 : _this$$el.getAttribute('size')) || (layout === 'flow' ? '100%' : layout === 'column' ? undefined : 'auto');
       },
       labelStyle: function labelStyle() {
         var w = this.labelWidth || this.form.labelWidth;
@@ -5568,8 +5578,8 @@
     }
   };
 
-  var css$f = ".mu-form-field {\r\n  min-width: 80px;\r\n}\r\n.mu-form-field > label {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n  padding-right: 12px;\r\n  font-size: 1rem;\r\n}\r\n.mu-form-field > label:before {\r\n  position: absolute;\r\n  right: 0;\r\n  top: -3px;\r\n  display: inline-block;\r\n  visibility: hidden;\r\n  width: 10px;\r\n  text-align: left;\r\n  font-weight: 500;\r\n  color: #fa541c;\r\n  content: \"*\";\r\n}\r\n.mu-form-field[required] > label:before {\r\n  visibility: visible;\r\n}\r\n.mu-form-field[invalid] > label {\r\n  color: #fa541c;\r\n}\r\n.mu-form-field > .mu-editor,\r\n.mu-form-field > .mu-input {\r\n  flex: 1 1 10px;\r\n  width: 10px;\r\n}";
-  styleInject(css$f);
+  var css$e = ".mu-form-field {\r\n  min-width: 80px;\r\n}\r\n.mu-form-field > label {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n  padding-right: 12px;\r\n  font-size: 1rem;\r\n}\r\n.mu-form-field > label:before {\r\n  position: absolute;\r\n  right: 0;\r\n  top: -3px;\r\n  display: inline-block;\r\n  visibility: hidden;\r\n  width: 10px;\r\n  text-align: left;\r\n  font-weight: 500;\r\n  color: #fa541c;\r\n  content: \"*\";\r\n}\r\n.mu-form-field[required] > label:before {\r\n  visibility: visible;\r\n}\r\n.mu-form-field[invalid] > label {\r\n  color: #fa541c;\r\n}\r\n.mu-form-field > .mu-editor,\r\n.mu-form-field > .mu-input {\r\n  flex: 1 1 1px;\r\n  width: 1px;\r\n}";
+  styleInject(css$e);
 
   /* script */
   var __vue_script__$i = script$i;
@@ -5624,8 +5634,8 @@
     name: 'MusselListDivider'
   };
 
-  var css$g = ".mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
-  styleInject(css$g);
+  var css$f = ".mu-list-divider {\r\n  display: block;\r\n  margin-top: 4px;\r\n  margin-bottom: 4px;\r\n  height: 1px;\r\n  border-bottom: 1px solid rgba(0,0,0,.1);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
+  styleInject(css$f);
 
   /* script */
   var __vue_script__$j = script$j;
@@ -5674,8 +5684,8 @@
     }
   };
 
-  var css$h = ".mu-bar > * {\r\n  margin-right: 8px;\r\n}\r\n.mu-bar > :last-child {\r\n  margin-right: 0;\r\n}";
-  styleInject(css$h);
+  var css$g = ".mu-bar > * {\r\n  margin-right: 8px;\r\n}\r\n.mu-bar > :last-child {\r\n  margin-right: 0;\r\n}";
+  styleInject(css$g);
 
   /* script */
   var __vue_script__$k = script$k;
@@ -5757,8 +5767,8 @@
     }
   };
 
-  var css$i = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
-  styleInject(css$i);
+  var css$h = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
+  styleInject(css$h);
 
   /* script */
   var __vue_script__$l = script$l;
@@ -5811,8 +5821,8 @@
     }
   };
 
-  var css$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(200px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
-  styleInject(css$j);
+  var css$i = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(255,255,255,.95);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transform: translateY(200px);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #fa541c;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 16px;\r\n  background: 0 0;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(0,0,0,.05);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
+  styleInject(css$i);
 
   /* script */
   var __vue_script__$m = script$m;
