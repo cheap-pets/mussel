@@ -9,7 +9,7 @@
       v-if="actualIcon || actualIconClass || keepIconIndent"
       :icon="actualIcon"
       :icon-class="actualIconClass"
-      @click="onButtonClick" />
+      @click="onIconClick" />
     <slot>{{ actualLabel }}</slot>
   </div>
 </template>
@@ -23,6 +23,7 @@
       'mu-icon': Icon
     },
     props: {
+      value: null,
       className: String,
       iconClass: String,
       icon: String,
@@ -56,8 +57,8 @@
       onClick () {
         if (!this.disabled) this.$emit('click')
       },
-      onButtonClick () {
-        if (!this.disabled) this.$emit('buttonclick')
+      onIconClick () {
+        if (!this.disabled) this.$emit('iconclick')
       }
     }
   }

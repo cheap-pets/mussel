@@ -12,7 +12,6 @@ export default {
     }
   },
   props: {
-    value: null,
     fields: Array,
     option: [String, Number, Object]
   },

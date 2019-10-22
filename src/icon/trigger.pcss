@@ -1,4 +1,5 @@
 .mu-icon[trigger-type] {
+  display: inline-block;
   cursor: pointer;
 }
 
@@ -8,6 +9,10 @@
   &[trigger-on] {
     transform: rotate(-180deg);
   }
+}
+
+.mu-dropdown[expanded] [trigger-type="expander"] {
+  transform: rotate(-180deg);
 }
 
 .mu-icon[trigger-type="close"]:hover {

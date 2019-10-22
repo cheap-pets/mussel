@@ -14,6 +14,7 @@
   .mu-button-group {
     position: relative;
     display: inline-block;
+    vertical-align: top;
     border-radius: $(buttonBorderRadiusPx)px;
 
     @if $buttonShadow == 1 {

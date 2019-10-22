@@ -1,6 +1,7 @@
 <template>
   <div
     class="mu-dropdown"
+    :expanded="popupParams.visible"
     @click="onClick"
     @mouseover="onMouseOver"
     @mouseleave="onMouseLeave">
@@ -21,7 +22,10 @@
   import PopupGroupMixin from '../layer/mix-popup-group'
   import DropdownPanel from './dropdown-panel.vue'
 
+  import { isParentElement } from '../utils/dom'
+
   export default {
+    name: 'MusselDropdown',
     components: {
       'mu-dropdown-panel': DropdownPanel
     },
@@ -33,7 +37,7 @@
     mixins: [PopupGroupMixin],
     props: {
       disabled: Boolean,
-      trigger: {
+      triggerAction: {
         type: String,
         default: 'hover',
         validator (value) {
@@ -53,6 +57,12 @@
         }
       }
     },
+    mounted () {
+      this.triggerElements = Array.prototype.slice.call(
+        this.$el.querySelectorAll('[dropdown-trigger]'),
+        0
+      )
+    },
     methods: {
       clearHoverTimer () {
         if (this.hoverTimer) {
@@ -60,18 +70,29 @@
           delete this.hoverTimer
         }
       },
-      onClick () {
-        this.clearHoverTimer()
-        this.togglePopup()
+      findTrigger (target) {
+        return !this.triggerElements.length || this.triggerElements.reduce(
+          (result, el) => result || isParentElement(target, el, true),
+          false
+        )
       },
-      onMouseOver () {
-        if (this.trigger === 'hover') {
+      onClick (event) {
+        if (this.findTrigger(event.target)) {
+          this.clearHoverTimer()
+          this.togglePopup()
+        }
+      },
+      onMouseOver (event) {
+        if (
+          this.triggerAction === 'hover' &&
+          this.findTrigger(event.target)
+        ) {
           this.clearHoverTimer()
           this.setPopupVisible(true)
         }
       },
-      onMouseLeave () {
-        if (this.trigger === 'hover') {
+      onMouseLeave (event) {
+        if (this.triggerAction === 'hover') {
           this.hoverTimer = setTimeout(() => {
             this.setPopupVisible(false)
           }, 200)
@@ -79,6 +100,10 @@
       },
       onDropdownClick () {
 
+      },
+      onItemClick (item) {
+        this.hidePopup()
+        this.$emit('itemclick', item)
       }
     }
   }
@@ -88,5 +113,6 @@
   .mu-dropdown {
     position: relative;
     display: inline-block;
+    vertical-align: top;
   }
 </style>

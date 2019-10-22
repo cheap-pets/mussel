@@ -235,7 +235,7 @@
   (module.exports = function (key, value) {
     return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
   })('versions', []).push({
-    version: '3.3.2',
+    version: '3.3.3',
     mode:  'global',
     copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
   });
@@ -2053,7 +2053,7 @@
     'collapse-all': collapseAll
   };
 
-  var css$5 = ".mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon[trigger-type=expander] {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}";
+  var css$5 = ".mu-icon[trigger-type] {\r\n  display: inline-block;\r\n  cursor: pointer;\r\n}\r\n.mu-icon[trigger-type=expander] {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-dropdown[expanded] [trigger-type=expander] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}";
   styleInject(css$5);
 
   //
@@ -2284,7 +2284,7 @@
     name: 'MusselButtonGroup'
   };
 
-  var css$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  border-radius: 2px;\r\n}\r\n.mu-button-group > .mu-button {\r\n  float: left;\r\n  box-shadow: none;\r\n  z-index: 0;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child) {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}";
+  var css$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n  border-radius: 2px;\r\n}\r\n.mu-button-group > .mu-button {\r\n  float: left;\r\n  box-shadow: none;\r\n  z-index: 0;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child) {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button:not(:first-child)[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$8);
 
   /* script */
@@ -5103,6 +5103,7 @@
       'mu-icon': Icon
     },
     props: {
+      value: null,
       className: String,
       iconClass: String,
       icon: String,
@@ -5136,8 +5137,8 @@
       onClick: function onClick() {
         if (!this.disabled) this.$emit('click');
       },
-      onButtonClick: function onButtonClick() {
-        if (!this.disabled) this.$emit('buttonclick');
+      onIconClick: function onIconClick() {
+        if (!this.disabled) this.$emit('iconclick');
       }
     }
   };
@@ -5172,7 +5173,7 @@
         "icon-class": _vm.actualIconClass
       },
       on: {
-        click: _vm.onButtonClick
+        click: _vm.onIconClick
       }
     }) : _vm._e(), _vm._v(" "), _vm._t("default", [_vm._v(_vm._s(_vm.actualLabel))])], 2);
   };
@@ -5212,7 +5213,6 @@
       }
     },
     props: {
-      value: null,
       fields: Array,
       option: [String, Number, Object]
     },
@@ -5712,7 +5712,43 @@
     staticRenderFns: __vue_staticRenderFns__$j
   }, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, undefined, undefined);
 
+  var SPECIES$4 = wellKnownSymbol('species');
+  var nativeSlice = [].slice;
+  var max$3 = Math.max;
+
+  // `Array.prototype.slice` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.slice
+  // fallback for not array-like ES3 strings and DOM objects
+  _export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('slice') }, {
+    slice: function slice(start, end) {
+      var O = toIndexedObject(this);
+      var length = toLength(O.length);
+      var k = toAbsoluteIndex(start, length);
+      var fin = toAbsoluteIndex(end === undefined ? length : end, length);
+      // inline `ArraySpeciesCreate` for usage native `Array#slice` where it's possible
+      var Constructor, result, n;
+      if (isArray(O)) {
+        Constructor = O.constructor;
+        // cross-realm fallback
+        if (typeof Constructor == 'function' && (Constructor === Array || isArray(Constructor.prototype))) {
+          Constructor = undefined;
+        } else if (isObject(Constructor)) {
+          Constructor = Constructor[SPECIES$4];
+          if (Constructor === null) Constructor = undefined;
+        }
+        if (Constructor === Array || Constructor === undefined) {
+          return nativeSlice.call(O, k, fin);
+        }
+      }
+      result = new (Constructor === undefined ? Array : Constructor)(max$3(fin - k, 0));
+      for (n = 0; k < fin; k++, n++) if (k in O) createProperty(result, n, O[k]);
+      result.length = n;
+      return result;
+    }
+  });
+
   var script$l = {
+    name: 'MusselDropdown',
     components: {
       'mu-dropdown-panel': DropdownPanel
     },
@@ -5724,7 +5760,7 @@
     mixins: [PopupGroupMixin],
     props: {
       disabled: Boolean,
-      trigger: {
+      triggerAction: {
         type: String,
         "default": 'hover',
         validator: function validator(value) {
@@ -5744,6 +5780,9 @@
         };
       }
     },
+    mounted: function mounted() {
+      this.triggerElements = Array.prototype.slice.call(this.$el.querySelectorAll('[dropdown-trigger]'), 0);
+    },
     methods: {
       clearHoverTimer: function clearHoverTimer() {
         if (this.hoverTimer) {
@@ -5751,30 +5790,41 @@
           delete this.hoverTimer;
         }
       },
-      onClick: function onClick() {
-        this.clearHoverTimer();
-        this.togglePopup();
+      findTrigger: function findTrigger(target) {
+        return !this.triggerElements.length || this.triggerElements.reduce(function (result, el) {
+          return result || isParentElement(target, el, true);
+        }, false);
       },
-      onMouseOver: function onMouseOver() {
-        if (this.trigger === 'hover') {
+      onClick: function onClick(event) {
+        if (this.findTrigger(event.target)) {
+          this.clearHoverTimer();
+          this.togglePopup();
+        }
+      },
+      onMouseOver: function onMouseOver(event) {
+        if (this.triggerAction === 'hover' && this.findTrigger(event.target)) {
           this.clearHoverTimer();
           this.setPopupVisible(true);
         }
       },
-      onMouseLeave: function onMouseLeave() {
+      onMouseLeave: function onMouseLeave(event) {
         var _this = this;
 
-        if (this.trigger === 'hover') {
+        if (this.triggerAction === 'hover') {
           this.hoverTimer = setTimeout(function () {
             _this.setPopupVisible(false);
           }, 200);
         }
       },
-      onDropdownClick: function onDropdownClick() {}
+      onDropdownClick: function onDropdownClick() {},
+      onItemClick: function onItemClick(item) {
+        this.hidePopup();
+        this.$emit('itemclick', item);
+      }
     }
   };
 
-  var css$h = ".mu-dropdown {\r\n  position: relative;\r\n  display: inline-block;\r\n}";
+  var css$h = ".mu-dropdown {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n}";
   styleInject(css$h);
 
   /* script */
@@ -5790,6 +5840,9 @@
 
     return _c("div", {
       staticClass: "mu-dropdown",
+      attrs: {
+        expanded: _vm.popupParams.visible
+      },
       on: {
         click: _vm.onClick,
         mouseover: _vm.onMouseOver,
@@ -5836,6 +5889,27 @@
     render: __vue_render__$k,
     staticRenderFns: __vue_staticRenderFns__$k
   }, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, undefined, undefined);
+
+  var DropdownItem = {
+    name: 'MusselDropdownItem',
+    "extends": ListItem,
+    inject: {
+      dropdown: {
+        "default": null
+      }
+    },
+    methods: {
+      onClick: function onClick() {
+        var _this$dropdown;
+
+        (_this$dropdown = this.dropdown) === null || _this$dropdown === void 0 ? void 0 : _this$dropdown.onItemClick({
+          value: this.value,
+          label: this.label
+        });
+        this.$emit('click');
+      }
+    }
+  };
 
   var script$m = {
     name: 'MusselBaseModal',
@@ -6327,6 +6401,7 @@
     Vue.component('mu-list-divider', ListDivider);
     Vue.component('mu-bar', Bar);
     Vue.component('mu-dropdown', Dropdown);
+    Vue.component('mu-dropdown-item', DropdownItem);
     Vue.component('mu-modal', Modal);
     Vue.component('mu-dialog', Dialog);
     Vue.component('mu-dialog-wrapper', DialogWrapper);
@@ -6348,6 +6423,7 @@
   exports.Dialog = Dialog;
   exports.DialogWrapper = DialogWrapper;
   exports.Dropdown = Dropdown;
+  exports.DropdownItem = DropdownItem;
   exports.FlexBox = FlexBox;
   exports.FlexItem = FlexItem;
   exports.Form = Form;
