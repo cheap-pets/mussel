@@ -2907,7 +2907,6 @@
           height: p.height,
           visible: p.visible,
           className: p.className,
-          iconIndent: p.iconIndent,
           renderToBody: p.renderToBody
         };
       }
