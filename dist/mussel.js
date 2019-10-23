@@ -2053,7 +2053,7 @@
     'collapse-all': collapseAll
   };
 
-  var css$5 = ".mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon[trigger-type=dropdown],\r\n.mu-icon[trigger-type=expander] {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=dropdown][trigger-on],\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-dropdown[expanded] [trigger-type=dropdown] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}";
+  var css$5 = ".mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon[trigger-type=dropdown],\r\n.mu-icon[trigger-type=expander] {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=dropdown][trigger-on],\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-dropdown[expanded] [trigger-type=dropdown],\r\n.mu-popup-editor[expanded] > [trigger-type=dropdown] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}";
   styleInject(css$5);
 
   //
@@ -2070,8 +2070,6 @@
       svgData: String,
       iconClass: String,
       triggerType: String,
-      triggerOn: Boolean,
-      clickable: Boolean,
       size: {
         type: String,
         "default": '1em'
@@ -2117,9 +2115,7 @@
       "class": [_vm.className, _vm.iconClass],
       attrs: {
         icon: _vm.icon,
-        clickable: _vm.clickable,
-        "trigger-type": _vm.triggerType,
-        "trigger-on": _vm.triggerOn
+        "trigger-type": _vm.triggerType
       },
       on: {
         click: _vm.onClick
@@ -2730,21 +2726,21 @@
     return (width < parentRect.width || parentRect.left + width > window.innerWidth) && parentRect.right - width >= 0;
   }
 
-  function getAbsolutePosition(isOnTop, isOnRight, parentRect, height, width) {
-    var top = parentRect.top,
-        bottom = parentRect.bottom,
-        left = parentRect.left,
-        right = parentRect.right;
+  function getAbsolutePosition(isOnTop, isOnRight, pRect, height, width) {
+    var top = pRect.top,
+        bottom = pRect.bottom,
+        left = pRect.left,
+        right = pRect.right;
     return {
       top: "".concat(isOnTop ? top - height - 4 : bottom + 4, "px"),
       left: "".concat(isOnRight ? right - width : left, "px")
     };
   }
 
-  function getRelativePosition(isOnTop, isOnRight, parentRect) {
+  function getRelativePosition(isOnTop, isOnRight, pRect) {
     return {
-      top: isOnTop ? undefined : "".concat(parentRect.height + 4, "px"),
-      bottom: isOnTop ? "".concat(parentRect.height + 4, "px") : undefined,
+      top: isOnTop ? undefined : "".concat(pRect.height + 4, "px"),
+      bottom: isOnTop ? "".concat(pRect.height + 4, "px") : undefined,
       left: isOnRight ? undefined : '0',
       right: isOnRight ? '0' : undefined
     };
@@ -3123,7 +3119,7 @@
     staticRenderFns: __vue_staticRenderFns__$9
   }, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, undefined, undefined);
 
-  var css$b = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #feffe6;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #666;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
+  var css$b = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  border: 1px solid #b2b2b2;\r\n  border-radius: 2px;\r\n  outline: 0;\r\n  background-color: #fff;\r\n  color: #404040;\r\n  line-height: 20px;\r\n  font-size: 1rem;\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 .2rem #91d5ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #fffffa;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #b2b2b2;\r\n  color: #666;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #fa541c;\r\n  border-color: #fa541c;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 .2rem #ffbb96;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\ntextarea.mu-input {\r\n  padding: 5px 10px;\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$b);
 
   var script$b = {
@@ -3215,9 +3211,6 @@
   var EditorIcon = {
     name: 'MusselEditorIcon',
     "extends": Icon,
-    props: {
-      clickable: Boolean
-    },
     computed: {
       className: function className() {
         return 'mu-editor-icon';
@@ -3251,8 +3244,7 @@
           icon: p.icon,
           iconClass: p.iconClass,
           clickable: p.iconClickable,
-          triggerType: p.triggerType,
-          triggerOn: p.triggerOn
+          triggerType: p.triggerType
         } : null;
       },
       inputParams: function inputParams() {
@@ -3379,7 +3371,6 @@
           iconClass: p.iconClass,
           iconAlign: p.iconAlign,
           triggerType: p.triggerType,
-          triggerOn: false,
           readonly: p.readonly,
           disabled: p.disabled,
           editable: p.editable,
@@ -3555,7 +3546,6 @@
     methods: {
       setPopupVisible: function setPopupVisible(value) {
         this.popupParams.visible = value;
-        this.params.triggerOn = value;
         this.params.focus = value;
       }
     }
@@ -3572,7 +3562,12 @@
 
     var _c = _vm._self._c || _h;
 
-    return _c("mu-button-editor-wrapper", [_c("mu-dropdown-panel", _vm._b({
+    return _c("mu-button-editor-wrapper", {
+      staticClass: "mu-popup-editor",
+      attrs: {
+        expanded: _vm.popupParams.visible
+      }
+    }, [_c("mu-dropdown-panel", _vm._b({
       on: {
         change: _vm.setPopupVisible
       }
@@ -5492,7 +5487,6 @@
     },
     props: {
       value: null,
-      className: String,
       icon: String,
       iconClass: String,
       iconIndent: null,
@@ -5551,7 +5545,6 @@
 
     return _c("div", {
       staticClass: "mu-list-item",
-      "class": _vm.className,
       attrs: {
         active: _vm.actualActive,
         selected: _vm.actualSelected,

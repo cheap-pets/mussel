@@ -23,7 +23,6 @@ export default {
         iconClass: p.iconClass,
         iconAlign: p.iconAlign,
         triggerType: p.triggerType,
-        triggerOn: false,
         readonly: p.readonly,
         disabled: p.disabled,
         editable: p.editable,

@@ -60,8 +60,7 @@
             icon: p.icon,
             iconClass: p.iconClass,
             clickable: p.iconClickable,
-            triggerType: p.triggerType,
-            triggerOn: p.triggerOn
+            triggerType: p.triggerType
           }
           : null
       },

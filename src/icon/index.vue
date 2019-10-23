@@ -2,10 +2,8 @@
   <span
     class="mu-icon"
     :icon="icon"
-    :clickable="clickable"
     :class="[className, iconClass]"
     :trigger-type="triggerType"
-    :trigger-on="triggerOn"
     @click="onClick">
     <svg v-if="d" :icon="icon"
       viewBox="0 0 1024 1024"
@@ -34,8 +32,6 @@
       svgData: String,
       iconClass: String,
       triggerType: String,
-      triggerOn: Boolean,
-      clickable: Boolean,
       size: {
         type: String,
         default: '1em'

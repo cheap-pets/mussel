@@ -46,7 +46,7 @@ const variables = {
   inputIconColor: 'rgba(0, 0, 0, .35)',
   inputBackground: '#fff',
   inputBorderColor: grey[5],
-  inputReadonlyBackground: '#feffe6',
+  inputReadonlyBackground: '#fffffa',
   inputDisabledBackground: grey[1],
   inputShadow: '0 0 0 0.2rem $inputShadowColor',
   inputInvalidShadow: '0 0 0 0.2rem $inputInvalidShadowColor',

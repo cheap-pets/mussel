@@ -28,17 +28,17 @@
     ) && parentRect.right - width >= 0
   }
 
-  function getAbsolutePosition (isOnTop, isOnRight, parentRect, height, width) {
-    const { top, bottom, left, right } = parentRect
+  function getAbsolutePosition (isOnTop, isOnRight, pRect, height, width) {
+    const { top, bottom, left, right } = pRect
     return {
       top: `${isOnTop ? top - height - 4 : bottom + 4}px`,
       left: `${isOnRight ? right - width : left}px`
     }
   }
-  function getRelativePosition (isOnTop, isOnRight, parentRect) {
+  function getRelativePosition (isOnTop, isOnRight, pRect) {
     return {
-      top: isOnTop ? undefined : `${parentRect.height + 4}px`,
-      bottom: isOnTop ? `${parentRect.height + 4}px` : undefined,
+      top: isOnTop ? undefined : `${pRect.height + 4}px`,
+      bottom: isOnTop ? `${pRect.height + 4}px` : undefined,
       left: isOnRight ? undefined : '0',
       right: isOnRight ? '0' : undefined
     }
@@ -174,7 +174,7 @@
       cursor: pointer;
     }
   }
-  
+
   [popup-style=dropdown-menu] > .mu-list-item {
     &:hover {
       color: #fff;

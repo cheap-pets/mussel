@@ -1,5 +1,7 @@
 <template>
-  <mu-button-editor-wrapper>
+  <mu-button-editor-wrapper
+    class="mu-popup-editor"
+    :expanded="popupParams.visible">
     <mu-dropdown-panel
       v-bind="popupParams"
       @change="setPopupVisible">
@@ -22,7 +24,6 @@
     methods: {
       setPopupVisible (value) {
         this.popupParams.visible = value
-        this.params.triggerOn = value
         this.params.focus = value
       }
     }
