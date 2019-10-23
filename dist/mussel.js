@@ -2334,6 +2334,7 @@
       'mu-button': Button
     },
     props: {
+      disabled: Boolean,
       buttonType: String,
       buttonStyle: String,
       buttonShape: String,
@@ -2348,6 +2349,7 @@
       buttonParams: function buttonParams() {
         return {
           caption: this.caption,
+          disabled: this.disabled,
           buttonType: this.buttonType,
           buttonStyle: this.buttonStyle,
           stopPropagation: this.stopPropagation
@@ -2357,6 +2359,7 @@
         return {
           icon: this.splitIcon,
           iconClass: this.splitIconClass,
+          disabled: this.disabled,
           triggerType: this.splitIcon || this.splitIconClass || this.splitTriggerType || this.splitSvgData ? this.splitTriggerType : 'dropdown',
           svgData: this.splitSvgData,
           buttonType: this.buttonType,
@@ -2934,26 +2937,28 @@
         }, false);
       },
       onClick: function onClick(event) {
-        if (!this.triggerElements.length || this.findTrigger(event.target)) {
+        if (this.disabled) return;
+
+        if (this.triggerAction === 'click' && (!this.triggerElements.length || this.findTrigger(event.target))) {
           this.clearHoverTimer();
           this.togglePopup();
         }
       },
       onMouseOver: function onMouseOver(event) {
+        if (this.disabled) return;
         this.clearHoverTimer();
+        var target = event.target;
+        var triggerCount = this.triggerElements.length;
 
-        if (this.triggerAction === 'hover') {
-          if (!this.triggerElements.length || this.findTrigger(event.target)) {
-            this.showPopup();
-          } else {
-            this.delayHidePopup();
-          }
+        if (this.triggerAction === 'hover' && (!triggerCount || this.findTrigger(target))) {
+          this.showPopup();
+        } else if (triggerCount && !this.findTrigger(target)) {
+          this.delayHidePopup();
         }
       },
       onMouseLeave: function onMouseLeave(event) {
-        if (this.triggerAction === 'hover') {
-          this.delayHidePopup();
-        }
+        this.clearHoverTimer();
+        this.delayHidePopup();
       },
       onDropdownClick: function onDropdownClick() {},
       onItemClick: function onItemClick(item) {

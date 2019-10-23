@@ -20,6 +20,7 @@
       'mu-button': Button
     },
     props: {
+      disabled: Boolean,
       buttonType: String,
       buttonStyle: String,
       buttonShape: String,
@@ -34,6 +35,7 @@
       buttonParams () {
         return {
           caption: this.caption,
+          disabled: this.disabled,
           buttonType: this.buttonType,
           buttonStyle: this.buttonStyle,
           stopPropagation: this.stopPropagation
@@ -43,6 +45,7 @@
         return {
           icon: this.splitIcon,
           iconClass: this.splitIconClass,
+          disabled: this.disabled,
           triggerType:
             (this.splitIcon ||
               this.splitIconClass ||

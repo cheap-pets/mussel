@@ -86,25 +86,28 @@
         )
       },
       onClick (event) {
-        if (!this.triggerElements.length || this.findTrigger(event.target)) {
+        if (this.disabled) return
+        if (this.triggerAction === 'click' &&
+          (!this.triggerElements.length || this.findTrigger(event.target))) {
           this.clearHoverTimer()
           this.togglePopup()
         }
       },
       onMouseOver (event) {
+        if (this.disabled) return
         this.clearHoverTimer()
-        if (this.triggerAction === 'hover') {
-          if (!this.triggerElements.length || this.findTrigger(event.target)) {
-            this.showPopup()
-          } else {
-            this.delayHidePopup()
-          }
+        const { target } = event
+        const triggerCount = this.triggerElements.length
+        if (this.triggerAction === 'hover' &&
+          (!triggerCount || this.findTrigger(target))) {
+          this.showPopup()
+        } else if (triggerCount && !this.findTrigger(target)) {
+          this.delayHidePopup()
         }
       },
       onMouseLeave (event) {
-        if (this.triggerAction === 'hover') {
-          this.delayHidePopup()
-        }
+        this.clearHoverTimer()
+        this.delayHidePopup()
       },
       onDropdownClick () {
       },
