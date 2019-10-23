@@ -1,7 +1,7 @@
 <template>
   <div
     class="mu-dropdown-panel"
-    :class="className"
+    :popup-style="popupStyle"
     :style="style"
     :visible="popupVisible">
     <slot />
@@ -50,7 +50,7 @@
     props: {
       width: String,
       height: String,
-      className: String
+      popupStyle: String
     },
     data () {
       return {
@@ -163,11 +163,27 @@
     &[visible] {
       display: block;
     }
+
+    &[popup-style=dropdown-list],
+    &[popup-style=dropdown-menu] {
+      padding: $(dropdownListYPaddingPx)px 0;
+    }
+
+    & > .mu-list-item {
+      padding: $(dropdownItemYPaddingPx)px $(listItemXPaddingPx)px;
+      cursor: pointer;
+    }
   }
+  
+  [popup-style=dropdown-menu] > .mu-list-item {
+    &:hover {
+      color: #fff;
+      fill: #fff;
+      background: $primaryColor;
+    }
+  }
+
   body > .mu-dropdown-panel {
     position: fixed;
-  }
-  .mu-dropdown-list, .mu-dropdown-menu {
-    padding: $(dropdownListYPaddingPx)px 0;
   }
 </style>

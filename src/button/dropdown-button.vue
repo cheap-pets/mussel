@@ -31,7 +31,7 @@
     </mu-button>
     <mu-dropdown-panel
       v-if="!disabled && popupParams.visible"
-      v-bind="dropdownParams"
+      v-bind="popupParams"
       @change="setPopupVisible"
       @mouseover.native.stop="clearHoverTimer"
       @mouseleave.native.stop="onMouseLeave"

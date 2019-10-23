@@ -5,7 +5,7 @@ export default {
         visible: false,
         width: this.popupWidth,
         height: this.popupHeight,
-        className: this.popupClass,
+        popupStyle: this.popupStyle,
         iconIndent: this.popupIconIndent,
         renderToBody: this.popupRenderToBody
       }
@@ -17,14 +17,7 @@ export default {
     }
   },
   props: {
-    triggerMode: {
-      type: String,
-      default: 'tap',
-      validator (v) {
-        return ['tap', 'hover'].indexOf(v) !== -1
-      }
-    },
-    popupClass: String,
+    popupStyle: String,
     popupWidth: {
       type: String,
       default: 'auto'

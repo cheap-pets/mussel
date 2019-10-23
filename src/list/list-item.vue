@@ -107,16 +107,4 @@
       cursor: default;
     }
   }
-
-  .mu-dropdown-panel > .mu-list-item {
-    padding: $(dropdownItemYPaddingPx)px $(listItemXPaddingPx)px;
-    cursor: pointer;
-  }
-  .mu-dropdown-menu > .mu-list-item {
-    &:hover {
-      color: #fff;
-      fill: #fff;
-      background: $primaryColor;
-    }
-  }
 </style>

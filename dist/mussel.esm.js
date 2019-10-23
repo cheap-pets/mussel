@@ -229,7 +229,7 @@ var shared = createCommonjsModule(function (module) {
 (module.exports = function (key, value) {
   return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.3.2',
+  version: '3.3.3',
   mode:  'global',
   copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
@@ -2538,7 +2538,7 @@ var PopupGroupMixin = {
         visible: false,
         width: this.popupWidth,
         height: this.popupHeight,
-        className: this.popupClass,
+        popupStyle: this.popupStyle,
         iconIndent: this.popupIconIndent,
         renderToBody: this.popupRenderToBody
       }
@@ -2550,14 +2550,7 @@ var PopupGroupMixin = {
     };
   },
   props: {
-    triggerMode: {
-      type: String,
-      "default": 'tap',
-      validator: function validator(v) {
-        return ['tap', 'hover'].indexOf(v) !== -1;
-      }
-    },
-    popupClass: String,
+    popupStyle: String,
     popupWidth: {
       type: String,
       "default": 'auto'
@@ -2757,7 +2750,7 @@ var script$8 = {
   props: {
     width: String,
     height: String,
-    className: String
+    popupStyle: String
   },
   data: function data() {
     return {
@@ -2824,7 +2817,7 @@ var script$8 = {
   }
 };
 
-var css$9 = ".mu-dropdown-panel {\r\n  position: absolute;\r\n  z-index: 110;\r\n  display: none;\r\n  overflow: auto;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  border-radius: 0;\r\n  box-shadow: none;\r\n  transition: opacity .2s ease-in-out;\r\n}\r\n.mu-dropdown-panel[visible] {\r\n  display: block;\r\n}\r\nbody > .mu-dropdown-panel {\r\n  position: fixed;\r\n}\r\n.mu-dropdown-list,\r\n.mu-dropdown-menu {\r\n  padding: 4px 0;\r\n}";
+var css$9 = ".mu-dropdown-panel {\r\n  position: absolute;\r\n  z-index: 110;\r\n  display: none;\r\n  overflow: auto;\r\n  background: #fff;\r\n  border: 1px solid #ccc;\r\n  border-radius: 0;\r\n  box-shadow: none;\r\n  transition: opacity .2s ease-in-out;\r\n}\r\n.mu-dropdown-panel[visible] {\r\n  display: block;\r\n}\r\n.mu-dropdown-panel[popup-style=dropdown-list],\r\n.mu-dropdown-panel[popup-style=dropdown-menu] {\r\n  padding: 4px 0;\r\n}\r\n.mu-dropdown-panel > .mu-list-item {\r\n  padding: 5px 16px;\r\n  cursor: pointer;\r\n}\r\n[popup-style=dropdown-menu] > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\nbody > .mu-dropdown-panel {\r\n  position: fixed;\r\n}";
 styleInject(css$9);
 
 /* script */
@@ -2840,9 +2833,9 @@ var __vue_render__$7 = function __vue_render__() {
 
   return _c("div", {
     staticClass: "mu-dropdown-panel",
-    "class": _vm.className,
     style: _vm.style,
     attrs: {
+      "popup-style": _vm.popupStyle,
       visible: _vm.popupVisible
     }
   }, [_vm._t("default")], 2);
@@ -2891,21 +2884,9 @@ var script$9 = {
         return ['hover', 'click'].indexOf(value) !== -1;
       }
     },
-    popupClass: {
+    popupStyle: {
       type: String,
-      "default": 'mu-dropdown-list'
-    }
-  },
-  computed: {
-    dropdownParams: function dropdownParams() {
-      var p = this.popupParams;
-      return {
-        width: p.width,
-        height: p.height,
-        visible: p.visible,
-        className: p.className,
-        renderToBody: p.renderToBody
-      };
+      "default": 'dropdown-list'
     }
   },
   mounted: function mounted() {
@@ -3004,7 +2985,7 @@ var __vue_render__$8 = function __vue_render__() {
         return _vm.onDropdownClick($event);
       }
     }
-  }, "mu-dropdown-panel", _vm.dropdownParams, false), [_vm._t("dropdown")], 2) : _vm._e()], 2);
+  }, "mu-dropdown-panel", _vm.popupParams, false), [_vm._t("dropdown")], 2) : _vm._e()], 2);
 };
 
 var __vue_staticRenderFns__$8 = [];
@@ -3110,7 +3091,7 @@ var __vue_render__$9 = function __vue_render__() {
         return _vm.onDropdownClick($event);
       }
     }
-  }, "mu-dropdown-panel", _vm.dropdownParams, false), [_vm._t("dropdown")], 2) : _vm._e()], 1);
+  }, "mu-dropdown-panel", _vm.popupParams, false), [_vm._t("dropdown")], 2) : _vm._e()], 1);
 };
 
 var __vue_staticRenderFns__$9 = [];
@@ -5548,7 +5529,7 @@ var script$i = {
   }
 };
 
-var css$e = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 8px 16px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  font-weight: 600;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.04);\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-dropdown-panel > .mu-list-item {\r\n  padding: 5px 16px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-menu > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}";
+var css$e = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 8px 16px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  font-weight: 600;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.04);\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}";
 styleInject(css$e);
 
 /* script */
@@ -5719,7 +5700,7 @@ var script$j = {
     fields: Object,
     options: Array,
     multiple: Boolean,
-    popupClass: {
+    popupStyle: {
       type: String,
       "default": 'mu-dropdown-list'
     }

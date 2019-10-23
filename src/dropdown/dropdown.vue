@@ -8,7 +8,7 @@
     <slot />
     <mu-dropdown-panel
       v-if="!disabled && popupParams.visible"
-      v-bind="dropdownParams"
+      v-bind="popupParams"
       @change="setPopupVisible"
       @mouseover.native.stop="clearHoverTimer"
       @mouseleave.native.stop="onMouseLeave"
@@ -44,21 +44,9 @@
           return ['hover', 'click'].indexOf(value) !== -1
         }
       },
-      popupClass: {
+      popupStyle: {
         type: String,
-        default: 'mu-dropdown-list'
-      }
-    },
-    computed: {
-      dropdownParams () {
-        const p = this.popupParams
-        return {
-          width: p.width,
-          height: p.height,
-          visible: p.visible,
-          className: p.className,
-          renderToBody: p.renderToBody
-        }
+        default: 'dropdown-list'
       }
     },
     mounted () {

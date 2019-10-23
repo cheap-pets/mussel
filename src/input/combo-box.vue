@@ -36,7 +36,7 @@
       fields: Object,
       options: Array,
       multiple: Boolean,
-      popupClass: {
+      popupStyle: {
         type: String,
         default: 'mu-dropdown-list'
       }
