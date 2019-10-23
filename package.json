@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "another vue components library",
   "main": "dist/mussel.esm.js",
   "files": [

@@ -30,7 +30,7 @@
         z-index : 1;
       }
 
-      &:not(:first-child) {
+      & + .mu-button {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         &[button-type]:not([button-type="normal"]):not(:hover):not([active]) {

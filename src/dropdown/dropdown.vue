@@ -10,8 +10,8 @@
       v-if="!disabled && popupParams.visible"
       v-bind="dropdownParams"
       @change="setPopupVisible"
-      @mouseover.native="onMouseOver"
-      @mouseleave.native="onMouseLeave"
+      @mouseover.native.stop="clearHoverTimer"
+      @mouseleave.native.stop="onMouseLeave"
       @click.native.stop="onDropdownClick">
       <slot name="dropdown" />
     </mu-dropdown-panel>
@@ -75,36 +75,39 @@
           delete this.hoverTimer
         }
       },
+      delayHidePopup () {
+        this.hoverTimer = setTimeout(() => {
+          this.setPopupVisible(false)
+        }, 200)
+      },
       findTrigger (target) {
-        return !this.triggerElements.length || this.triggerElements.reduce(
+        return this.triggerElements.reduce(
           (result, el) => result || isParentElement(target, el, true),
           false
         )
       },
       onClick (event) {
-        if (this.findTrigger(event.target)) {
+        if (!this.triggerElements.length || this.findTrigger(event.target)) {
           this.clearHoverTimer()
           this.togglePopup()
         }
       },
       onMouseOver (event) {
-        if (
-          this.triggerAction === 'hover' &&
-          this.findTrigger(event.target)
-        ) {
-          this.clearHoverTimer()
-          this.setPopupVisible(true)
+        this.clearHoverTimer()
+        if (this.triggerAction === 'hover') {
+          if (!this.triggerElements.length || this.findTrigger(event.target)) {
+            this.showPopup()
+          } else {
+            this.delayHidePopup()
+          }
         }
       },
       onMouseLeave (event) {
         if (this.triggerAction === 'hover') {
-          this.hoverTimer = setTimeout(() => {
-            this.setPopupVisible(false)
-          }, 200)
+          this.delayHidePopup()
         }
       },
       onDropdownClick () {
-
       },
       onItemClick (item) {
         this.hidePopup()

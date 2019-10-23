@@ -60,8 +60,8 @@ const variables = {
   dropdownItemYPaddingPx: 5,
 
   /* list */
-  listItemXPaddingPx: 10,
-  listItemYPaddingPx: 10,
+  listItemXPaddingPx: 16,
+  listItemYPaddingPx: 8,
   listItemLineHeightPx: 20,
   listDividerColor: 'rgba(0, 0, 0, .1)',
   listItemBackground: '#fff',

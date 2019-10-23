@@ -19,7 +19,7 @@
     <h2>下拉</h2>
     <hr>
     <div>
-      <h3>下拉按钮</h3>
+      <h3>下拉列表 / 菜单</h3>
       <mu-bar style="height: 40px; background: rgba(155, 147, 147, 0.05)">
         <mu-dropdown popup-width="auto">
           <mu-button>
@@ -32,7 +32,15 @@
             <mu-list-item label='好好学习3'></mu-list-item>
           </template>
         </mu-dropdown>
-        <mu-dropdown popup-class="mu-dropdown-menu" trigger-action="click" popup-width="300px">
+        <mu-dropdown-button caption="下拉按钮" button-style="text">
+          <template #dropdown>
+            <mu-dropdown-item>好好学习1</mu-dropdown-item>
+            <mu-dropdown-item selected>好好学习2</mu-dropdown-item>
+            <mu-list-divider></mu-list-divider>
+            <mu-dropdown-item>好好学习3</mu-dropdown-item>
+          </template>
+        </mu-dropdown-button>
+        <mu-dropdown popup-class="mu-dropdown-menu" popup-width="300px">
           <mu-button-group>
             <mu-button button-type="primary" style="width:200px;">点击下拉</mu-button>
             <mu-button button-type="primary" trigger-type="dropdown" dropdown-trigger></mu-button>

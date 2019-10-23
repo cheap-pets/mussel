@@ -4,6 +4,7 @@
     :class="className"
     :active="actualActive"
     :selected="actualSelected"
+    :icon-indent="actualIconIndent"
     @click="onClick">
     <mu-icon
       v-if="actualIcon || actualIconClass || actualIconIndent"

@@ -16,6 +16,8 @@ import Button from './button/button.jsx'
 import IconButton from './button/icon-button'
 import CloseButton from './button/close-button.vue'
 import ButtonGroup from './button/button-group.vue'
+import SplitButton from './button/split-button.vue'
+import DropdownButton from './button/dropdown-button.vue'
 /* INPUT */
 import Input from './input/input.vue'
 import ButtonEditor from './input/button-editor.vue'
@@ -59,6 +61,8 @@ function install (Vue) {
   Vue.component('mu-icon-button', IconButton)
   Vue.component('mu-close-button', CloseButton)
   Vue.component('mu-button-group', ButtonGroup)
+  Vue.component('mu-split-button', SplitButton)
+  Vue.component('mu-dropdown-button', DropdownButton)
 
   Vue.component('mu-input', Input)
   Vue.component('mu-button-editor', ButtonEditor)
@@ -104,6 +108,8 @@ export {
   IconButton,
   CloseButton,
   ButtonGroup,
+  SplitButton,
+  DropdownButton,
   // input
   Input,
   ButtonEditor,
