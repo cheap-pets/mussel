@@ -13,6 +13,10 @@ export default {
     editable: {
       type: Boolean,
       default: false
+    },
+    popupWidth: {
+      type: String,
+      default: 'inherit'
     }
   },
   methods: {

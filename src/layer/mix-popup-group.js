@@ -25,7 +25,10 @@ export default {
       }
     },
     popupClass: String,
-    popupWidth: String,
+    popupWidth: {
+      type: String,
+      default: 'auto'
+    },
     popupHeight: String,
     popupIconIndent: null,
     popupRenderToBody: {

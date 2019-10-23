@@ -35,7 +35,11 @@
       value: null,
       fields: Object,
       options: Array,
-      multiple: Boolean
+      multiple: Boolean,
+      popupClass: {
+        type: String,
+        default: 'mu-dropdown-list'
+      }
     },
     data () {
       return {

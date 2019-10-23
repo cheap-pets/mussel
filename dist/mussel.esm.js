@@ -2407,7 +2407,7 @@ var Input = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$6
 }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, undefined, undefined);
 
-var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[disabled] > .mu-input,\r\n.mu-editor[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-editor > .mu-dropdown-panel {\r\n  min-width: 100%;\r\n}\r\n.mu-icon.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-icon.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-icon.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-icon.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon.mu-editor-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=cancel] {\r\n  color: rgba(0,0,0,.17);\r\n  fill: rgba(0,0,0,.17);\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=cancel]:hover {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
+var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[disabled] > .mu-input,\r\n.mu-editor[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-icon.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-icon.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-icon.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-icon.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon.mu-editor-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=cancel] {\r\n  color: rgba(0,0,0,.17);\r\n  fill: rgba(0,0,0,.17);\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=cancel]:hover {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
 styleInject(css$a);
 
 var EditorIcon = {
@@ -2769,7 +2769,10 @@ var PopupGroupMixin = {
       }
     },
     popupClass: String,
-    popupWidth: String,
+    popupWidth: {
+      type: String,
+      "default": 'auto'
+    },
     popupHeight: String,
     popupIconIndent: null,
     popupRenderToBody: {
@@ -2931,18 +2934,12 @@ function getClientRect(el) {
   };
 }
 
-function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function popOnTop(parentRect, height) {
   return parentRect.bottom + 4 + height > window.innerHeight && parentRect.top - height - 4 >= 0;
 }
 
 function popOnRight(parentRect, width) {
-  return parentRect.right + width > window.innerWidth && parentRect.left - width >= 0;
+  return (width < parentRect.width || parentRect.left + width > window.innerWidth) && parentRect.right - width >= 0;
 }
 
 function getAbsolutePosition(isOnTop, isOnRight, parentRect, height, width) {
@@ -2956,17 +2953,17 @@ function getAbsolutePosition(isOnTop, isOnRight, parentRect, height, width) {
   };
 }
 
-function getRelativePosition(isOnTop, isOnRight, parentRect, settingWidth) {
+function getRelativePosition(isOnTop, isOnRight, parentRect) {
   return {
     top: isOnTop ? undefined : "".concat(parentRect.height + 4, "px"),
     bottom: isOnTop ? "".concat(parentRect.height + 4, "px") : undefined,
     left: isOnRight ? undefined : '0',
-    right: isOnRight || !settingWidth ? '0' : undefined
+    right: isOnRight ? '0' : undefined
   };
 }
 
 var script$a = {
-  name: 'MusselDropdown',
+  name: 'MusselDropdownPanel',
   mixins: [RenderToBodyMixin, PopupVisibleMixin],
   props: {
     width: String,
@@ -2988,15 +2985,6 @@ var script$a = {
       }
     };
   },
-  computed: {
-    dropdownStyle: function dropdownStyle() {
-      var s = _objectSpread$1({}, this.style);
-
-      if (this.width) s.width = this.width;
-      if (this.height) s.height = this.height;
-      return s;
-    }
-  },
   methods: {
     deactivate: function deactivate() {
       if (window.__mussel_dropdown === this) window.__mussel_dropdown = null;
@@ -3006,6 +2994,11 @@ var script$a = {
       if (dd !== this) hideIf('dropdown', dd);
       window.__mussel_dropdown = this;
       this.popupVisible = true;
+      var w = this.width;
+      Object.assign(this.style, {
+        width: w && w !== 'auto' && w !== 'inherit' && w !== 'fit-content' ? w : undefined,
+        height: this.height
+      });
       this.$nextTick(this.setStyle);
       this.$emit('show');
       this.$emit('change', true);
@@ -3026,14 +3019,15 @@ var script$a = {
     setStyle: function setStyle() {
       if (!this.popupVisible) return;
       var _this$$el = this.$el,
-          height = _this$$el.offsetHeight,
-          width = _this$$el.offsetWidth;
+          offsetWidth = _this$$el.offsetWidth,
+          offsetHeight = _this$$el.offsetHeight;
       var pRect = getClientRect(this.$parent.$el);
-      var isOnTop = popOnTop(pRect, height);
-      var isOnRight = !!this.width && popOnRight(pRect, width);
-      Object.assign(this.style, this.renderToBody && !this.width ? {
-        width: "".concat(pRect.width, "px")
-      } : {}, this.renderToBody ? getAbsolutePosition(isOnTop, isOnRight, pRect, height, width) : getRelativePosition(isOnTop, isOnRight, pRect, this.width), {
+      var width = !this.width || this.width === 'inherit' ? pRect.width : this.width === 'auto' && offsetWidth < pRect.width ? pRect.width : null;
+      var isOnTop = popOnTop(pRect, offsetHeight);
+      var isOnRight = popOnRight(pRect, width || offsetWidth);
+      Object.assign(this.style, width ? {
+        width: width + 'px'
+      } : {}, this.renderToBody ? getAbsolutePosition(isOnTop, isOnRight, pRect, offsetHeight, width || offsetWidth) : getRelativePosition(isOnTop, isOnRight, pRect), {
         visibility: 'visible',
         opacity: 1
       });
@@ -3058,7 +3052,7 @@ var __vue_render__$9 = function __vue_render__() {
   return _c("div", {
     staticClass: "mu-dropdown-panel",
     "class": _vm.className,
-    style: _vm.dropdownStyle,
+    style: _vm.style,
     attrs: {
       visible: _vm.popupVisible
     }
@@ -3157,6 +3151,10 @@ var BasePopupEditor = {
     editable: {
       type: Boolean,
       "default": false
+    },
+    popupWidth: {
+      type: String,
+      "default": 'inherit'
     }
   },
   methods: {
@@ -4844,7 +4842,7 @@ var script$e = {
   props: {
     popupWidth: {
       type: String,
-      "default": '300px'
+      "default": 'auto'
     },
     value: [String, Date],
     format: String,
@@ -5318,7 +5316,11 @@ var script$g = {
     value: null,
     fields: Object,
     options: Array,
-    multiple: Boolean
+    multiple: Boolean,
+    popupClass: {
+      type: String,
+      "default": 'mu-dropdown-list'
+    }
   },
   data: function data() {
     return {
@@ -5790,6 +5792,10 @@ var script$l = {
       validator: function validator(value) {
         return ['hover', 'click'].indexOf(value) !== -1;
       }
+    },
+    popupClass: {
+      type: String,
+      "default": 'mu-dropdown-list'
     }
   },
   computed: {
@@ -5873,7 +5879,7 @@ var __vue_render__$k = function __vue_render__() {
       mouseover: _vm.onMouseOver,
       mouseleave: _vm.onMouseLeave
     }
-  }, [_vm._t("default"), _vm._v(" "), !_vm.disabled ? _c("mu-dropdown-panel", _vm._b({
+  }, [_vm._t("default"), _vm._v(" "), !_vm.disabled && _vm.popupParams.visible ? _c("mu-dropdown-panel", _vm._b({
     on: {
       change: _vm.setPopupVisible
     },
@@ -6148,11 +6154,11 @@ var DialogWrapper = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$l
 }, __vue_inject_styles__$n, __vue_script__$n, __vue_scope_id__$n, __vue_is_functional_template__$n, __vue_module_identifier__$n, undefined, undefined);
 
-function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(source, true).forEach(function (key) { _defineProperty$3(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-function _defineProperty$3(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 var script$o = {
   name: 'MusselBaseDialog',
   components: {
@@ -6197,7 +6203,7 @@ var script$o = {
         var btn = lodash_isstring(button) ? {
           caption: button,
           _rawData: button
-        } : _objectSpread$2({}, button);
+        } : _objectSpread$1({}, button);
 
         if (_this.params.primaryButton === btn.caption) {
           btn.buttonType = _this.params.danger ? 'danger' : 'primary';

@@ -2,7 +2,7 @@
   <div
     class="mu-dropdown-panel"
     :class="className"
-    :style="dropdownStyle"
+    :style="style"
     :visible="popupVisible">
     <slot />
   </div>
@@ -22,8 +22,10 @@
   }
 
   function popOnRight (parentRect, width) {
-    return parentRect.right + width > window.innerWidth &&
-      parentRect.left - width >= 0
+    return (
+      width < parentRect.width ||
+      parentRect.left + width > window.innerWidth
+    ) && parentRect.right - width >= 0
   }
 
   function getAbsolutePosition (isOnTop, isOnRight, parentRect, height, width) {
@@ -33,17 +35,17 @@
       left: `${isOnRight ? right - width : left}px`
     }
   }
-  function getRelativePosition (isOnTop, isOnRight, parentRect, settingWidth) {
+  function getRelativePosition (isOnTop, isOnRight, parentRect) {
     return {
       top: isOnTop ? undefined : `${parentRect.height + 4}px`,
       bottom: isOnTop ? `${parentRect.height + 4}px` : undefined,
       left: isOnRight ? undefined : '0',
-      right: isOnRight || !settingWidth ? '0' : undefined
+      right: isOnRight ? '0' : undefined
     }
   }
 
   export default {
-    name: 'MusselDropdown',
+    name: 'MusselDropdownPanel',
     mixins: [RenderToBodyMixin, PopupVisibleMixin],
     props: {
       width: String,
@@ -65,14 +67,6 @@
         }
       }
     },
-    computed: {
-      dropdownStyle () {
-        const s = { ...this.style }
-        if (this.width) s.width = this.width
-        if (this.height) s.height = this.height
-        return s
-      }
-    },
     methods: {
       deactivate () {
         if (window.__mussel_dropdown === this) window.__mussel_dropdown = null
@@ -82,6 +76,16 @@
         if (dd !== this) hideIf('dropdown', dd)
         window.__mussel_dropdown = this
         this.popupVisible = true
+        const w = this.width
+        Object.assign(
+          this.style,
+          {
+            width: w && w !== 'auto' && w !== 'inherit' && w !== 'fit-content'
+              ? w
+              : undefined,
+            height: this.height
+          }
+        )
         this.$nextTick(this.setStyle)
         this.$emit('show')
         this.$emit('change', true)
@@ -104,17 +108,36 @@
       },
       setStyle () {
         if (!this.popupVisible) return
-        const { offsetHeight: height, offsetWidth: width } = this.$el
+
+        const { offsetWidth, offsetHeight } = this.$el
         const pRect = getClientRect(this.$parent.$el)
-        const isOnTop = popOnTop(pRect, height)
-        const isOnRight = !!this.width && popOnRight(pRect, width)
+
+        const width = !this.width || this.width === 'inherit'
+          ? pRect.width
+          : (
+            this.width === 'auto' && offsetWidth < pRect.width
+              ? pRect.width
+              : null
+          )
+        const isOnTop = popOnTop(pRect, offsetHeight)
+        const isOnRight = popOnRight(pRect, width || offsetWidth)
 
         Object.assign(
           this.style,
-          this.renderToBody && !this.width ? { width: `${pRect.width}px` } : {},
+          width ? { width: width + 'px' } : {},
           this.renderToBody
-            ? getAbsolutePosition(isOnTop, isOnRight, pRect, height, width)
-            : getRelativePosition(isOnTop, isOnRight, pRect, this.width),
+            ? getAbsolutePosition(
+              isOnTop,
+              isOnRight,
+              pRect,
+              offsetHeight,
+              width || offsetWidth
+            )
+            : getRelativePosition(
+              isOnTop,
+              isOnRight,
+              pRect
+            ),
           {
             visibility: 'visible',
             opacity: 1

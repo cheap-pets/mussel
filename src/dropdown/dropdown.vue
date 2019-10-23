@@ -7,7 +7,7 @@
     @mouseleave="onMouseLeave">
     <slot />
     <mu-dropdown-panel
-      v-if="!disabled "
+      v-if="!disabled && popupParams.visible"
       v-bind="dropdownParams"
       @change="setPopupVisible"
       @mouseover.native="onMouseOver"
@@ -43,6 +43,10 @@
         validator (value) {
           return ['hover', 'click'].indexOf(value) !== -1
         }
+      },
+      popupClass: {
+        type: String,
+        default: 'mu-dropdown-list'
       }
     },
     computed: {

@@ -20,21 +20,21 @@
     <hr>
     <div>
       <h3>下拉按钮</h3>
-      <mu-bar style="height: 40px; background: rgba(0, 0, 0, .05)">
-        <mu-dropdown popup-width="150px" popup-icon-indent>
+      <mu-bar style="height: 40px; background: rgba(155, 147, 147, 0.05)">
+        <mu-dropdown popup-width="auto">
           <mu-button>
             悬停下拉
             <mu-icon trigger-type="dropdown"></mu-icon>
           </mu-button>
           <template #dropdown>
             <mu-list-item label='好好学习1'></mu-list-item>
-            <mu-list-item label='好好学习2'></mu-list-item>
+            <mu-list-item label='好好学习天天向上2'></mu-list-item>
             <mu-list-item label='好好学习3'></mu-list-item>
           </template>
         </mu-dropdown>
-        <mu-dropdown popup-class="mu-dropdown-menu" trigger-action="click">
+        <mu-dropdown popup-class="mu-dropdown-menu" trigger-action="click" popup-width="300px">
           <mu-button-group>
-            <mu-button button-type="primary">点击下拉</mu-button>
+            <mu-button button-type="primary" style="width:200px;">点击下拉</mu-button>
             <mu-button button-type="primary" trigger-type="dropdown" dropdown-trigger></mu-button>
           </mu-button-group>
           <template #dropdown>

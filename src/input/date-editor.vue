@@ -19,7 +19,7 @@
     props: {
       popupWidth: {
         type: String,
-        default: '300px'
+        default: 'auto'
       },
       value: [String, Date],
       format: String,
