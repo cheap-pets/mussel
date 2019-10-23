@@ -1,17 +1,19 @@
 .mu-icon[trigger-type] {
-  display: inline-block;
   cursor: pointer;
 }
 
-.mu-icon[trigger-type="expander"] {
-  transition: transform .2s ease-in-out;
+.mu-icon {
+  &[trigger-type="dropdown"],
+  &[trigger-type="expander"] {
+    transition: transform .2s ease-in-out;
 
-  &[trigger-on] {
-    transform: rotate(-180deg);
+    &[trigger-on] {
+      transform: rotate(-180deg);
+    }
   }
 }
 
-.mu-dropdown[expanded] [trigger-type="expander"] {
+.mu-dropdown[expanded] [trigger-type="dropdown"] {
   transform: rotate(-180deg);
 }
 

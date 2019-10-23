@@ -6,7 +6,7 @@
     :selected="actualSelected"
     @click="onClick">
     <mu-icon
-      v-if="actualIcon || actualIconClass || keepIconIndent"
+      v-if="actualIcon || actualIconClass || actualIconIndent"
       :icon="actualIcon"
       :icon-class="actualIconClass"
       @click="onIconClick" />
@@ -17,6 +17,8 @@
 <script>
   import Icon from '../icon/index.vue'
 
+  import { equalFalse } from '../utils/prop'
+
   export default {
     name: 'MusselListItem',
     components: {
@@ -25,13 +27,14 @@
     props: {
       value: null,
       className: String,
-      iconClass: String,
       icon: String,
+      iconClass: String,
+      iconIndent: null,
       label: String,
+      selected: null,
       active: Boolean,
       disabled: Boolean,
-      triggerIcon: String,
-      keepIconIndent: Boolean
+      triggerIcon: String
     },
     computed: {
       actualLabel () {
@@ -43,11 +46,14 @@
       actualIconClass () {
         return this.iconClass
       },
+      actualIconIndent () {
+        return !equalFalse(this.iconIndent)
+      },
       actualActive () {
         return this.active
       },
       actualSelected () {
-        return this.selected
+        return !equalFalse(this.selected)
       },
       actualTriggerIcon () {
         return this.triggerIcon

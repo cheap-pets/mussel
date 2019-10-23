@@ -5,7 +5,7 @@
       <mu-option
         v-for="(option, index) in options"
         :key="+new Date() + '_' + index"
-        :keep-icon-indent="keepIconIndent"
+        :icon-indent="popupIconIndent"
         :option="option"
         :fields="fields" />
     </template>
@@ -35,12 +35,7 @@
       value: null,
       fields: Object,
       options: Array,
-      multiple: Boolean,
-      keepIconIndent: Boolean,
-      popupClass: {
-        type: String,
-        default: 'mu-dropdown-list'
-      }
+      multiple: Boolean
     },
     data () {
       return {

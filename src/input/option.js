@@ -1,5 +1,7 @@
 import ListItem from '../list/list-item.vue'
 
+import { equalFalse } from '../utils/prop'
+
 export default {
   name: 'MusselOption',
   extends: ListItem,
@@ -9,6 +11,9 @@ export default {
     },
     multiple: {
       default: false
+    },
+    popupParams: {
+      default: null
     }
   },
   props: {
@@ -50,6 +55,12 @@ export default {
         ? (this.actualSelected ? 'ok' : '_')
         : this.icon
     },
+    actualIconIndent () {
+      return (
+        !equalFalse(this.iconIndent) ||
+        !equalFalse(this.popupParams?.iconIndent)
+      )
+    },
     actualSelected () {
       const { comboValue } = this.editor
       return this.multiple
@@ -66,6 +77,18 @@ export default {
   },
   beforeDestroy () {
     this.editor.unmountOption(this.mountedOption)
+  },
+  watch: {
+    actualIcon: {
+      handler (value) {
+        const params = this.popupParams || { iconIndent: true }
+        const indent = params.iconIndent
+        if (value && !indent && indent !== false && indent !== 'false') {
+          params.iconIndent = true
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     onClick () {

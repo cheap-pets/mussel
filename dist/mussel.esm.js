@@ -229,7 +229,7 @@ var shared = createCommonjsModule(function (module) {
 (module.exports = function (key, value) {
   return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.3.3',
+  version: '3.3.2',
   mode:  'global',
   copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
@@ -2047,14 +2047,15 @@ var data$1 = {
   'collapse-all': collapseAll
 };
 
-var css$5 = ".mu-icon[trigger-type] {\r\n  display: inline-block;\r\n  cursor: pointer;\r\n}\r\n.mu-icon[trigger-type=expander] {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-dropdown[expanded] [trigger-type=expander] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}";
+var css$5 = ".mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon[trigger-type=dropdown],\r\n.mu-icon[trigger-type=expander] {\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=dropdown][trigger-on],\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-dropdown[expanded] [trigger-type=dropdown] {\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #ff7a45;\r\n  color: #ff7a45;\r\n}";
 styleInject(css$5);
 
 //
 var triggerIcons = {
   close: 'close',
   cancel: 'cancel',
-  expander: 'key-down'
+  expander: 'key-down',
+  dropdown: 'key-down'
 };
 var script$4 = {
   name: 'MusselIcon',
@@ -2091,7 +2092,7 @@ var script$4 = {
   }
 };
 
-var css$6 = ".mu-icon > svg {\r\n  vertical-align: -.15em;\r\n}";
+var css$6 = ".mu-icon {\r\n  display: inline-block;\r\n}\r\n.mu-icon > svg {\r\n  vertical-align: -.15em;\r\n}";
 styleInject(css$6);
 
 /* script */
@@ -2406,7 +2407,7 @@ var Input = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$6
 }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, undefined, undefined);
 
-var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[disabled] > .mu-input,\r\n.mu-editor[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-editor > .mu-dropdown-panel {\r\n  min-width: 100%;\r\n}\r\n.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-editor-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-editor-icon[trigger-type=cancel] {\r\n  color: rgba(0,0,0,.17);\r\n  fill: rgba(0,0,0,.17);\r\n}\r\n.mu-editor-icon[trigger-type=cancel]:hover {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
+var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: #b2b2b2;\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[disabled] > .mu-input,\r\n.mu-editor[readonly] > .mu-input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-editor > .mu-dropdown-panel {\r\n  min-width: 100%;\r\n}\r\n.mu-icon.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-icon.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-icon.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-icon.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon.mu-editor-icon[clickable]:hover {\r\n  fill: #40a9ff;\r\n  color: #40a9ff;\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=cancel] {\r\n  color: rgba(0,0,0,.17);\r\n  fill: rgba(0,0,0,.17);\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=cancel]:hover {\r\n  color: rgba(0,0,0,.35);\r\n  fill: rgba(0,0,0,.35);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #fa541c;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #fa541c;\r\n  fill: #fa541c;\r\n}";
 styleInject(css$a);
 
 var EditorIcon = {
@@ -2749,6 +2750,7 @@ var PopupGroupMixin = {
         width: this.popupWidth,
         height: this.popupHeight,
         className: this.popupClass,
+        iconIndent: this.popupIconIndent,
         renderToBody: this.popupRenderToBody
       }
     };
@@ -2769,6 +2771,7 @@ var PopupGroupMixin = {
     popupClass: String,
     popupWidth: String,
     popupHeight: String,
+    popupIconIndent: null,
     popupRenderToBody: {
       type: Boolean,
       "default": true
@@ -2979,8 +2982,9 @@ var script$a = {
         left: undefined,
         right: undefined,
         bottom: undefined,
+        height: undefined,
         width: undefined,
-        height: undefined
+        minWidth: undefined
       }
     };
   },
@@ -3002,7 +3006,7 @@ var script$a = {
       if (dd !== this) hideIf('dropdown', dd);
       window.__mussel_dropdown = this;
       this.popupVisible = true;
-      this.$nextTick(this.setPosition);
+      this.$nextTick(this.setStyle);
       this.$emit('show');
       this.$emit('change', true);
     },
@@ -3019,7 +3023,7 @@ var script$a = {
         this.hide();
       }
     },
-    setPosition: function setPosition() {
+    setStyle: function setStyle() {
       if (!this.popupVisible) return;
       var _this$$el = this.$el,
           height = _this$$el.offsetHeight,
@@ -3176,7 +3180,7 @@ var BasePopupEditor = {
   },
   created: function created() {
     if (!this.icon && !this.iconClass && !this.triggerType) {
-      this.params.triggerType = 'expander';
+      this.params.triggerType = 'dropdown';
     }
   }
 };
@@ -5090,6 +5094,10 @@ _export({ global: true, bind: true, forced: MSIE }, {
   setInterval: wrap$1(global_1.setInterval)
 });
 
+function equalFalse(value) {
+  return value === undefined || value === null || value === false || value === 'false';
+}
+
 //
 var script$f = {
   name: 'MusselListItem',
@@ -5099,13 +5107,14 @@ var script$f = {
   props: {
     value: null,
     className: String,
-    iconClass: String,
     icon: String,
+    iconClass: String,
+    iconIndent: null,
     label: String,
+    selected: null,
     active: Boolean,
     disabled: Boolean,
-    triggerIcon: String,
-    keepIconIndent: Boolean
+    triggerIcon: String
   },
   computed: {
     actualLabel: function actualLabel() {
@@ -5117,11 +5126,14 @@ var script$f = {
     actualIconClass: function actualIconClass() {
       return this.iconClass;
     },
+    actualIconIndent: function actualIconIndent() {
+      return !equalFalse(this.iconIndent);
+    },
     actualActive: function actualActive() {
       return this.active;
     },
     actualSelected: function actualSelected() {
-      return this.selected;
+      return !equalFalse(this.selected);
     },
     actualTriggerIcon: function actualTriggerIcon() {
       return this.triggerIcon;
@@ -5161,7 +5173,7 @@ var __vue_render__$e = function __vue_render__() {
     on: {
       click: _vm.onClick
     }
-  }, [_vm.actualIcon || _vm.actualIconClass || _vm.keepIconIndent ? _c("mu-icon", {
+  }, [_vm.actualIcon || _vm.actualIconClass || _vm.actualIconIndent ? _c("mu-icon", {
     attrs: {
       icon: _vm.actualIcon,
       "icon-class": _vm.actualIconClass
@@ -5204,6 +5216,9 @@ var Option = {
     },
     multiple: {
       "default": false
+    },
+    popupParams: {
+      "default": null
     }
   },
   props: {
@@ -5236,6 +5251,11 @@ var Option = {
     actualIcon: function actualIcon() {
       return this.multiple ? this.actualSelected ? 'ok' : '_' : this.icon;
     },
+    actualIconIndent: function actualIconIndent() {
+      var _this$popupParams;
+
+      return !equalFalse(this.iconIndent) || !equalFalse((_this$popupParams = this.popupParams) === null || _this$popupParams === void 0 ? void 0 : _this$popupParams.iconIndent);
+    },
     actualSelected: function actualSelected() {
       var _this = this;
 
@@ -5254,6 +5274,21 @@ var Option = {
   },
   beforeDestroy: function beforeDestroy() {
     this.editor.unmountOption(this.mountedOption);
+  },
+  watch: {
+    actualIcon: {
+      handler: function handler(value) {
+        var params = this.popupParams || {
+          iconIndent: true
+        };
+        var indent = params.iconIndent;
+
+        if (value && !indent && indent !== false && indent !== 'false') {
+          params.iconIndent = true;
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     onClick: function onClick() {
@@ -5283,12 +5318,7 @@ var script$g = {
     value: null,
     fields: Object,
     options: Array,
-    multiple: Boolean,
-    keepIconIndent: Boolean,
-    popupClass: {
-      type: String,
-      "default": 'mu-dropdown-list'
-    }
+    multiple: Boolean
   },
   data: function data() {
     return {
@@ -5420,7 +5450,7 @@ var __vue_render__$f = function __vue_render__() {
     return _c("mu-option", {
       key: +new Date() + "_" + index,
       attrs: {
-        "keep-icon-indent": _vm.keepIconIndent,
+        "icon-indent": _vm.popupIconIndent,
         option: option,
         fields: _vm.fields
       }
@@ -5770,6 +5800,7 @@ var script$l = {
         height: p.height,
         visible: p.visible,
         className: p.className,
+        iconIndent: p.iconIndent,
         renderToBody: p.renderToBody
       };
     }
@@ -5842,7 +5873,7 @@ var __vue_render__$k = function __vue_render__() {
       mouseover: _vm.onMouseOver,
       mouseleave: _vm.onMouseLeave
     }
-  }, [_vm._t("default"), _vm._v(" "), !_vm.disabled && _vm.popupParams.visible ? _c("mu-dropdown-panel", _vm._b({
+  }, [_vm._t("default"), _vm._v(" "), !_vm.disabled ? _c("mu-dropdown-panel", _vm._b({
     on: {
       change: _vm.setPopupVisible
     },
@@ -5890,6 +5921,34 @@ var DropdownItem = {
   inject: {
     dropdown: {
       "default": null
+    },
+    popupParams: {
+      "default": null
+    }
+  },
+  computed: {
+    actualIcon: function actualIcon() {
+      return this.icon || (this.actualSelected ? 'ok' : undefined);
+    },
+    actualIconIndent: function actualIconIndent() {
+      var _this$popupParams;
+
+      return !equalFalse(this.iconIndent) || !equalFalse((_this$popupParams = this.popupParams) === null || _this$popupParams === void 0 ? void 0 : _this$popupParams.iconIndent);
+    }
+  },
+  watch: {
+    actualIcon: {
+      handler: function handler(value) {
+        var params = this.popupParams || {
+          iconIndent: true
+        };
+        var indent = params.iconIndent;
+
+        if (value && !indent && indent !== false && indent !== 'false') {
+          params.iconIndent = true;
+        }
+      },
+      immediate: true
     }
   },
   methods: {

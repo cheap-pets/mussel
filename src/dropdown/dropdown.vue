@@ -7,7 +7,7 @@
     @mouseleave="onMouseLeave">
     <slot />
     <mu-dropdown-panel
-      v-if="!disabled && popupParams.visible"
+      v-if="!disabled "
       v-bind="dropdownParams"
       @change="setPopupVisible"
       @mouseover.native="onMouseOver"
@@ -53,6 +53,7 @@
           height: p.height,
           visible: p.visible,
           className: p.className,
+          iconIndent: p.iconIndent,
           renderToBody: p.renderToBody
         }
       }

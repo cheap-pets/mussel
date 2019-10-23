@@ -6,6 +6,7 @@ export default {
         width: this.popupWidth,
         height: this.popupHeight,
         className: this.popupClass,
+        iconIndent: this.popupIconIndent,
         renderToBody: this.popupRenderToBody
       }
     }
@@ -26,6 +27,7 @@ export default {
     popupClass: String,
     popupWidth: String,
     popupHeight: String,
+    popupIconIndent: null,
     popupRenderToBody: {
       type: Boolean,
       default: true

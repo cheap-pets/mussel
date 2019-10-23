@@ -59,8 +59,9 @@
           left: undefined,
           right: undefined,
           bottom: undefined,
+          height: undefined,
           width: undefined,
-          height: undefined
+          minWidth: undefined
         }
       }
     },
@@ -81,7 +82,7 @@
         if (dd !== this) hideIf('dropdown', dd)
         window.__mussel_dropdown = this
         this.popupVisible = true
-        this.$nextTick(this.setPosition)
+        this.$nextTick(this.setStyle)
         this.$emit('show')
         this.$emit('change', true)
       },
@@ -101,7 +102,7 @@
           this.hide()
         }
       },
-      setPosition () {
+      setStyle () {
         if (!this.popupVisible) return
         const { offsetHeight: height, offsetWidth: width } = this.$el
         const pRect = getClientRect(this.$parent.$el)

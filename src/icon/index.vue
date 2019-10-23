@@ -23,7 +23,8 @@
   const triggerIcons = {
     close: 'close',
     cancel: 'cancel',
-    expander: 'key-down'
+    expander: 'key-down',
+    dropdown: 'key-down'
   }
 
   export default {
@@ -66,7 +67,11 @@
 </script>
 
 <style lang="postcss">
-  .mu-icon > svg {
-    vertical-align: -0.15em;
+  .mu-icon {
+    display: inline-block;
+
+    & > svg {
+      vertical-align: -0.15em;
+    }
   }
 </style>
