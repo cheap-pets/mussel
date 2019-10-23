@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-button-group" :button-shape="buttonStyle">
+  <div class="mu-button-group" :button-shape="buttonShape">
     <mu-button
       v-bind="buttonParams"
       @click="onButtonClick">

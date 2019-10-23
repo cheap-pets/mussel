@@ -32,27 +32,36 @@
             <mu-list-item label='好好学习3'></mu-list-item>
           </template>
         </mu-dropdown>
-        <mu-dropdown-button caption="下拉按钮" button-style="text">
-          <template #dropdown>
-            <mu-dropdown-item>好好学习1</mu-dropdown-item>
-            <mu-dropdown-item selected>好好学习2</mu-dropdown-item>
-            <mu-list-divider></mu-list-divider>
-            <mu-dropdown-item>好好学习3</mu-dropdown-item>
-          </template>
-        </mu-dropdown-button>
-        <mu-dropdown popup-class="mu-dropdown-menu" popup-width="300px">
+        <mu-dropdown popup-class="mu-dropdown-menu" trigger-action="click" >
           <mu-button-group>
-            <mu-button button-type="primary" style="width:200px;">点击下拉</mu-button>
+            <mu-button button-type="primary">点击下拉</mu-button>
             <mu-button button-type="primary" trigger-type="dropdown" dropdown-trigger></mu-button>
           </mu-button-group>
           <template #dropdown>
             <mu-dropdown-item>好好学习1</mu-dropdown-item>
-            <mu-dropdown-item selected>好好学习2</mu-dropdown-item>
+            <mu-dropdown-item>好好学习2</mu-dropdown-item>
             <mu-list-divider></mu-list-divider>
             <mu-dropdown-item>好好学习3</mu-dropdown-item>
           </template>
         </mu-dropdown>
       </mu-bar>
+      <h3>下拉按钮</h3>
+      <mu-dropdown-button caption="下拉按钮" button-shape="round" @click="alert('xxx')">
+        <template #dropdown>
+          <mu-dropdown-item>好好学习1</mu-dropdown-item>
+          <mu-dropdown-item selected>好好学习2</mu-dropdown-item>
+          <mu-list-divider></mu-list-divider>
+          <mu-dropdown-item>好好学习3</mu-dropdown-item>
+        </template>
+      </mu-dropdown-button>
+      <mu-dropdown-button caption="分裂下拉按钮" split-button button-type="danger" @click="alert('yyy')">
+        <template #dropdown>
+          <mu-dropdown-item>好好学习1</mu-dropdown-item>
+          <mu-dropdown-item selected>好好学习2</mu-dropdown-item>
+          <mu-list-divider></mu-list-divider>
+          <mu-dropdown-item>好好学习3</mu-dropdown-item>
+        </template>
+      </mu-dropdown-button>
     </div>
   </div>
 
@@ -62,6 +71,9 @@
       data: {
       },
       methods: {
+        alert (v) {
+          alert(v)
+        }
       }
     });
   </script>

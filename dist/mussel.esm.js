@@ -2383,7 +2383,7 @@ var __vue_render__$6 = function __vue_render__() {
   return _c("div", {
     staticClass: "mu-button-group",
     attrs: {
-      "button-shape": _vm.buttonStyle
+      "button-shape": _vm.buttonShape
     }
   }, [_c("mu-button", _vm._b({
     on: {
@@ -3037,11 +3037,6 @@ var script$a = {
   mixins: [SplitButton],
   props: {
     splitButton: Boolean
-  },
-  computed: {
-    buttonTriggerType: function buttonTriggerType() {
-      return this.splitButton ? undefined : this.icon || this.iconClass || this.triggerType || this.svgData ? this.triggerType : 'dropdown';
-    }
   }
 };
 
@@ -3069,7 +3064,7 @@ var __vue_render__$9 = function __vue_render__() {
   }, [_vm.splitButton ? _c("div", {
     staticClass: "mu-button-group",
     attrs: {
-      "button-shape": _vm.buttonStyle
+      "button-shape": _vm.buttonShape
     }
   }, [_c("mu-button", _vm._b({
     on: {
@@ -3083,6 +3078,9 @@ var __vue_render__$9 = function __vue_render__() {
       click: _vm.onSplitButtonClick
     }
   }, "mu-button", _vm.splitParams, false))], 1) : _c("mu-button", _vm._b({
+    attrs: {
+      "button-shape": _vm.buttonShape
+    },
     on: {
       click: _vm.onButtonClick
     }

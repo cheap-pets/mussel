@@ -8,7 +8,7 @@
     <div
       v-if="splitButton"
       class="mu-button-group"
-      :button-shape="buttonStyle">
+      :button-shape="buttonShape">
       <mu-button
         v-bind="buttonParams"
         @click="onButtonClick">
@@ -22,6 +22,7 @@
     <mu-button
       v-else
       v-bind="buttonParams"
+      :button-shape="buttonShape"
       @click="onButtonClick">
       <slot>
         <span>{{ caption }}</span>
@@ -56,17 +57,6 @@
     mixins: [SplitButton],
     props: {
       splitButton: Boolean
-    },
-    computed: {
-      buttonTriggerType () {
-        return this.splitButton
-          ? undefined
-          : (
-            this.icon || this.iconClass || this.triggerType || this.svgData
-              ? this.triggerType
-              : 'dropdown'
-          )
-      }
     }
   }
 </script>
