@@ -1,7 +1,6 @@
 <template>
   <div
     class="mu-list-item"
-    :class="className"
     :active="actualActive"
     :selected="actualSelected"
     :icon-indent="actualIconIndent"
@@ -27,7 +26,6 @@
     },
     props: {
       value: null,
-      className: String,
       icon: String,
       iconClass: String,
       iconIndent: null,
