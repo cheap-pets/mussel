@@ -81,7 +81,7 @@
     &[selected] {
       color: $primaryColor;
       fill: $primaryColor;
-      font-weight: 700;
+      font-weight: 600;
     }
 
     &:hover {
@@ -96,7 +96,7 @@
       background: $primaryColor;
     }
 
-    & > .mu-icon:first-child {
+    & > .mu-icon {
       display: inline-block;
       width: 20px;
     }
