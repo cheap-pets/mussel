@@ -12,6 +12,8 @@
       v-bind="inputParams"
       @input="onInput"
       @click="onInputClick"
+      @esckey="onEscKey"
+      @enterkey="onEnterKey"
       @keypress.native="onKeyPress" />
     <mu-editor-icon
       v-if="clearable"
@@ -91,6 +93,12 @@
       },
       onKeyPress (event) {
         this.editor.onKeyPress(event)
+      },
+      onEscKey () {
+        this.editor.onEscKey()
+      },
+      onEnterKey () {
+        this.editor.onEnterKey()
       }
     }
   }

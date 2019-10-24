@@ -20,6 +20,7 @@ import SplitButton from './button/split-button.vue'
 import DropdownButton from './button/dropdown-button.vue'
 /* INPUT */
 import Input from './input/input.vue'
+import Editor from './input/editor.vue'
 import ButtonEditor from './input/button-editor.vue'
 import PopupEditor from './input/popup-editor.vue'
 import DateEditor from './input/date-editor.vue'
@@ -65,6 +66,7 @@ function install (Vue) {
   Vue.component('mu-dropdown-button', DropdownButton)
 
   Vue.component('mu-input', Input)
+  Vue.component('mu-editor', Editor)
   Vue.component('mu-button-editor', ButtonEditor)
   Vue.component('mu-popup-editor', PopupEditor)
   Vue.component('mu-date-editor', DateEditor)
@@ -112,6 +114,7 @@ export {
   DropdownButton,
   // input
   Input,
+  Editor,
   ButtonEditor,
   PopupEditor,
   DateEditor,

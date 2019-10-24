@@ -127,6 +127,12 @@ export default {
     onKeyPress (event) {
       this.$emit('keypress', event)
     },
+    onEscKey () {
+      this.$emit('esckey', this)
+    },
+    onEnterKey () {
+      this.$emit('enterkey', this)
+    },
     clear () {
       this.params.value = ''
       this.focus()

@@ -6,6 +6,7 @@
     :disabled="disabled"
     @input="onInput"
     @click="onClick"
+    @keydown="onKeyDown"
   >
 </template>
 
@@ -31,17 +32,18 @@
       disabled: {
         type: Boolean,
         default: false
-      },
-      validator: Function
+      }
     },
     methods: {
       onInput (event) {
         this.$emit('input', event.target.value)
       },
+      onKeyDown () {
+        if (event.keyCode === 13) this.$emit('enterkey', this)
+        else if (event.keyCode === 27) this.$emit('esckey', this)
+      },
       onClick () {
         if (!this.disabled) this.$emit('click')
-      },
-      validate () {
       }
     }
   }
