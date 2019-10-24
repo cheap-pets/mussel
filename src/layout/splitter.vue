@@ -77,11 +77,6 @@
         return this.$parent.flexDirection || 'row'
       }
     },
-    created () {
-      window.addEventListener('mouseup', () => {
-        delete this.startPosition
-      })
-    },
     methods: {
       onDragStart (event) {
         if (!this.dragable) return

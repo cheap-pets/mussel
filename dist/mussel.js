@@ -1937,13 +1937,6 @@
         return this.$parent.flexDirection || 'row';
       }
     },
-    created: function created() {
-      var _this = this;
-
-      window.addEventListener('mouseup', function () {
-        delete _this.startPosition;
-      });
-    },
     methods: {
       onDragStart: function onDragStart(event) {
         if (!this.dragable) return;
