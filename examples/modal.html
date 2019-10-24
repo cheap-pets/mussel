@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Example</title>
+  <title>Modal Example</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
   <style>
@@ -13,42 +13,44 @@
 
 <body>
   <div id="app">
-    <h2>浮动元素</h2>
+    <h2>Modal & Window</h2>
     <hr>
     <div>
-      <h3>遮罩</h3>
+      <h3>Modal Mask</h3>
       <div>
-        <mu-button button-type="primary" @click="openModal1">打开遮罩 1</mu-button>
+        <mu-button button-type="primary" @click="openModal1">Open Modal Mask 1</mu-button>
       </div>
       <mu-modal
         mask-action="close"
         class="mu-flex-box"
         flex-center
         v-model="model1Visible">
-        点击遮罩或者 按 ESC, 可以关闭
+        Click mask or press 'ESC' to hide mask
       </mu-modal>
       <br>
       <div>
-        <mu-button button-type="primary" @click="openModal2">打开遮罩 2</mu-button>
+        <mu-button button-type="primary" @click="openModal2">Open Modal Mask 2</mu-button>
       </div>
-      <mu-modal mask-action="none" class="mu-flex-box" flex-center v-model="model2Visible">点击遮罩或者 按 ESC, 不可以关闭</mu-modal>
+      <mu-modal mask-action="none" class="mu-flex-box" flex-center v-model="model2Visible">
+        Click mask or press 'ESC' have no effect
+      </mu-modal>
     </div>
     <div>
-      <h3>窗口</h3>
+      <h3>Window</h3>
       <div>
-        <mu-button button-type="primary" @click="openDialog1">打开窗口 1</mu-button>
+        <mu-button button-type="primary" @click="openDialog1">Open Window 1</mu-button>
       </div>
       <br>
       <div>
-        <mu-button button-type="primary" @click="openDialog2">打开窗口 2</mu-button>
+        <mu-button button-type="primary" @click="openDialog2">Open Window 2</mu-button>
       </div>
       <mu-dialog
         v-model="dialog1Visible"
         width="400px"
         height="300px"
-        title="中华人民共和国成立70周年"
-        primary-button="确认"
-        :buttons="['确认', '取消']"
+        title="I am a superhero"
+        primary-button="Confirm"
+        :buttons="['Confirm', 'Cancel']"
         @buttonclick="onButtonClick">
         <mu-combo-box :options="options">
         </mu-combo-box>
@@ -61,20 +63,20 @@
   <script type="text/javascript">
     var dialog2 = new Vue({
       extends: mussel.BaseDialog,
-      title: '大吉大利，今晚吃鸡',
+      title: 'Hello',
       width: '50%',
       height: '35%',
       danger: true,
       maskAction: 'none',
-      primaryButton: '确定',
+      primaryButton: 'Confirm',
       buttons: [
-        '确定',
+        'Confirm',
         {
-          caption: '取消',
+          caption: 'Cancel',
           action: 'close'
         }
       ],
-      template: '<mu-dialog-wrapper>123</mu-dialog-wrapper>'
+      template: '<mu-dialog-wrapper>Winer winer，chicken dinner</mu-dialog-wrapper>'
     })
     var app = new Vue({
       el: '#app',
@@ -104,7 +106,7 @@
           dialog2.show()
         },
         onButtonClick (btn, win) {
-          if (btn === '取消') {
+          if (btn === 'Cancel') {
             win.hide()
           }
         }

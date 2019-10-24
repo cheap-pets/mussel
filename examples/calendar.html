@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Example</title>
+  <title>Calendar Example</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
   <style>
@@ -13,9 +13,9 @@
 
 <body>
   <div id="app">
-    <h2>日历</h2>
+    <h2>Calendar Example</h2>
     <hr>
-    <h3>日历面板</h3>
+    <h3>Calendar Panel</h3>
     <mu-calendar
       language="en"
       v-model="date1"
@@ -23,10 +23,10 @@
       :range-start="rangeStart"
       :range-end="rangeEnd"
       :marked-dates = "markedDates"
-      style="height: 400px;"
+      style="height: 400px; width: 600px;"
     >
     </mu-calendar>
-    <h3>日期选择框</h3>
+    <h3>Date Editor</h3>
     <mu-date-editor v-model="date2" select-mode="month"></mu-date-editor>
     </div>
   </div>

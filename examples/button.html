@@ -16,16 +16,16 @@
       min-width: 120px;
     }
   </style>
-  <title>Buttons</title>
+  <title>Button Example</title>
 </head>
 
 <body>
   <div id="app">
-    <h2>按钮与链接</h2>
+    <h2>Button Example</h2>
     <hr>
     <div>
-      <h3>按钮：样式与状态</h3>
-      <h5>普通按钮 button-type="normal"（亦可省略 button-type="normal）</h5>
+      <h3>Type & Style</h3>
+      <h5>Normal (button-type="normal")</h5>
       <div>
         <mu-button button-type="normal">NORMAL</mu-button>
         <mu-button button-type="normal" button-style="text">TEXT</mu-button>
@@ -35,7 +35,7 @@
         <mu-button button-type="normal" button-style="link">LINK</mu-button>
         <mu-button button-type="normal" button-style="link" disabled>DISABLED LINK</mu-button>
       </div>
-      <h5>主要按钮 button-type="primary"</h5>
+      <h5>Primary (button-type="primary")</h5>
       <div>
         <mu-button button-type="primary">PRIMARY</mu-button>
         <mu-button button-type="primary" button-style="text">TEXT</mu-button>
@@ -45,7 +45,7 @@
         <mu-button button-type="primary" button-style="link">LINK</mu-button>
         <mu-button button-type="primary" button-style="link" disabled>DISABLED LINK</mu-button>
       </div>
-      <h5>提交按钮 button-type="submit"</h5>
+      <h5>Submit (button-type="submit")</h5>
       <div>
         <mu-button button-type="submit">SUBMIT</mu-button>
         <mu-button button-type="submit" button-style="text">TEXT</mu-button>
@@ -55,7 +55,7 @@
         <mu-button button-type="submit" button-style="link">LINK</mu-button>
         <mu-button button-type="submit" button-style="link" disabled>DISABLED LINK</mu-button>
       </div>
-      <h5>危险按钮 button-type="danger"</h5>
+      <h5>Danger (button-type="danger")</h5>
       <div>
         <mu-button button-type="danger">DANGER</mu-button>
         <mu-button button-type="danger" button-style="text">TEXT</mu-button>
@@ -67,101 +67,56 @@
       </div>
     </div>
     <div>
-      <h3>按钮：形状</h3>
-      <h5>圆边按钮</h5>
+      <h3>Round Shape</h3>
       <mu-button button-type="primary" button-shape="round">PRIMARY</mu-button>
-      <mu-button button-type="submit" button-shape="round">SUBMIT</mu-button>
-      <mu-icon-button button-shape="round" icon="close"></mu-icon-button>
-      <mu-button class="icon icon-trash-can" button-type="danger" button-shape="round"></mu-button>
+      <mu-icon-button button-type="danger" button-shape="round" icon="close"></mu-icon-button>
     </div>
-
     <div>
-      <h3>按钮：内容</h3>
-      <mu-button button-type="primary">仅文字</mu-button>
-      <mu-icon-button title="仅图标" button-style="text" icon="collapse-all"></mu-icon-button>
-      <mu-icon-button title="仅图标" button-style="text" icon="expand-all"></mu-icon-button>
+      <h3>Icon & Content</h3>
+      <mu-button button-type="primary">Text Only</mu-button>
       <mu-button button-type="submit">
-        文字在左
+        Text Left
         <mu-icon icon="key-down"></mu-icon>
       </mu-button>
       <mu-button button-type="danger">
         <mu-icon icon="key-left"></mu-icon>
-        文字在右
+        Text Right
       </mu-button>
+      <p>
+      <mu-icon-button title="Icon Only" button-type="primary" icon="calendar"></mu-icon-button>
+      <mu-icon-button title="Icon Only" button-type="submit" icon="search"></mu-icon-button>
+      <mu-icon-button title="Icon Only" button-shape="round" icon="key-up"></mu-icon-button>
+      <mu-icon-button title="Icon Only" button-shape="round" icon="key-down"></mu-icon-button>
     </div>
+    <br>
     <div>
-      <h3>按钮组</h3>
-      <h5>普通按钮</h5>
+      <h3>Button Group</h3>
+      <h5>Simple</h5>
       <mu-button-group>
-        <mu-button>按钮一</mu-button>
-        <mu-button>按钮二</mu-button>
-        <mu-button>按钮三</mu-button>
+        <mu-button>Button 1</mu-button>
+        <mu-button>Button 2</mu-button>
+        <mu-button>Button 3</mu-button>
       </mu-button-group>
-      <h5>主要按钮</h5>
+      <h5>Primary Type</h5>
       <mu-button-group>
-        <mu-button button-type="primary">按钮一</mu-button>
-        <mu-button button-type="primary">按钮二</mu-button>
-        <mu-button button-type="primary">按钮三</mu-button>
+        <mu-button button-type="primary">Button 1</mu-button>
+        <mu-button button-type="primary">Button 2</mu-button>
+        <mu-button button-type="primary">Button 3</mu-button>
       </mu-button-group>
-      <h5>圆角样式</h5>
+      <h5>Round Shape</h5>
       <mu-button-group button-shape="round">
-        <mu-button button-type="primary" button-style="outline">按钮一</mu-button>
-        <mu-button button-type="primary" button-style="outline">按钮二</mu-button>
-        <mu-button button-type="primary" button-style="outline">按钮三</mu-button>
+        <mu-button button-type="primary" button-style="outline">Button 1</mu-button>
+        <mu-button button-type="primary" button-style="outline">Button 2</mu-button>
+        <mu-button button-type="primary" button-style="outline">Button 3</mu-button>
       </mu-button-group>
-      <h5>分裂按钮</h5>
+      <h5>Split Button</h5>
       <mu-button-group>
-        <mu-button button-type="primary">分裂按钮</mu-button>
+        <mu-button button-type="primary">Split Button</mu-button>
         <mu-button button-type="primary" icon-only>
           <mu-icon icon="key-down"></mu-icon>
         </mu-button>
       </mu-button-group>
-      <mu-split-button>真分裂按钮</mu-split-button>
-      <mu-button button-type="submit">对齐测试</mu-button>
-      <h5>均分充满</h5>
-      <div class="mu-button-group su-tab-box">
-        <mu-button button-type="primary">按钮一</mu-button>
-        <mu-button button-type="primary">按钮二</mu-button>
-        <mu-button button-type="primary">按钮三</mu-button>
-      </div>
-      <mu-button button-type="submit">对齐测试</mu-button>
-      <p></p>
-      <div class="mu-button-group su-tab-box">
-        <mu-button button-type="primary" button-style="text">按钮一</mu-button>
-        <mu-button button-type="primary" button-style="text">按钮二</mu-button>
-        <mu-button button-type="primary" button-style="text">按钮三</mu-button>
-      </div>
-    </div>
-    <div>
-      <h3>链接</h3>
-      <h5>普通样式</h5>
-      <div>
-        <a class="su-link">链接</a>
-        <a class="su-link" link-type="primary">主要链接</a>
-        <a class="su-link" link-type="secondary">次要链接</a>
-        <a class="su-link" link-type="submit">提交链接</a>
-        <a class="su-link" link-type="danger">危险链接</a>
-        <a class="su-link" disabled>禁用状态</a>
-      </div>
-      <h5>始终下划线</h5>
-      <div>
-        <a class="su-link" link-underline="always">链接</a>
-        <a class="su-link" link-type="primary" link-underline="always">主要链接</a>
-        <a class="su-link" link-type="secondary" link-underline="always">次要链接</a>
-        <a class="su-link" link-type="submit" link-underline="always">提交链接</a>
-        <a class="su-link" link-type="danger" link-underline="always">危险链接</a>
-        <a class="su-link" link-underline="always" disabled>禁用状态</a>
-      </div>
-      <h5>没有下划线</h5>
-      <div>
-        <a class="su-link" link-underline="none">链接</a>
-        <a class="su-link" link-type="primary" link-underline="none">主要链接</a>
-        <a class="su-link" link-type="secondary" link-underline="none">次要链接</a>
-        <a class="su-link" link-type="submit" link-underline="none">提交链接</a>
-        <a class="su-link" link-type="danger" link-underline="none">危险链接</a>
-        <a class="su-link" link-underline="always" disabled>禁用状态</a>
-      </div>
-      <mu-button icon-class="iconfont icon-collapse-all"></mu-button>
+      <mu-split-button>Real Split Button</mu-split-button>
     </div>
   </div>
   <script type="text/javascript">

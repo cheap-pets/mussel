@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Example</title>
+  <title>Dropdown Example</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
   <style>
@@ -16,50 +16,58 @@
 
 <body>
   <div id="app">
-    <h2>下拉</h2>
+    <h2>Dropdown Example</h2>
     <hr>
     <div>
-      <h3>下拉列表 / 菜单</h3>
+      <h3>Trigger action</h3>
       <mu-bar style="height: 40px; background: rgba(155, 147, 147, 0.05)">
         <mu-dropdown popup-width="auto">
           <mu-button>
-            悬停下拉
+            Hover Me
             <mu-icon trigger-type="dropdown"></mu-icon>
           </mu-button>
           <template #dropdown>
-            <mu-list-item label='好好学习1'></mu-list-item>
-            <mu-list-item label='好好学习天天向上2'></mu-list-item>
-            <mu-list-item label='好好学习3'></mu-list-item>
+            <mu-list-item label='Item 1'></mu-list-item>
+            <mu-list-item label='Item 2'></mu-list-item>
+            <mu-list-item label='Item 3'></mu-list-item>
           </template>
         </mu-dropdown>
         <mu-dropdown popup-style="dropdown-menu" trigger-action="click" >
           <mu-button-group>
-            <mu-button button-type="primary">点击下拉</mu-button>
+            <mu-button button-type="primary">Click Arrow</mu-button>
             <mu-button button-type="primary" trigger-type="dropdown" dropdown-trigger></mu-button>
           </mu-button-group>
           <template #dropdown>
-            <mu-dropdown-item>好好学习1</mu-dropdown-item>
-            <mu-dropdown-item>好好学习2</mu-dropdown-item>
+            <mu-dropdown-item>Item 1</mu-dropdown-item>
+            <mu-dropdown-item>Item 2</mu-dropdown-item>
             <mu-list-divider></mu-list-divider>
-            <mu-dropdown-item>好好学习3</mu-dropdown-item>
+            <mu-dropdown-item>Item 3</mu-dropdown-item>
           </template>
         </mu-dropdown>
       </mu-bar>
-      <h3>下拉按钮</h3>
-      <mu-dropdown-button caption="下拉按钮" button-shape="round" @click="alert('xxx')" disabled>
+      <h3>Dropdown Button</h3>
+      <mu-dropdown-button caption="Dropdown Button" button-shape="round">
         <template #dropdown>
-          <mu-dropdown-item>好好学习1</mu-dropdown-item>
-          <mu-dropdown-item selected>好好学习2</mu-dropdown-item>
+          <mu-dropdown-item>Item 1</mu-dropdown-item>
+          <mu-dropdown-item selected>Item 2</mu-dropdown-item>
           <mu-list-divider></mu-list-divider>
-          <mu-dropdown-item>好好学习3</mu-dropdown-item>
+          <mu-dropdown-item>Item 3</mu-dropdown-item>
         </template>
       </mu-dropdown-button>
-      <mu-dropdown-button caption="分裂下拉按钮" split-button button-type="danger" @click="alert('yyy')">
+      <mu-dropdown-button caption="Split Button" split-button button-type="danger">
         <template #dropdown>
-          <mu-dropdown-item>好好学习1</mu-dropdown-item>
-          <mu-dropdown-item selected>好好学习2</mu-dropdown-item>
+          <mu-dropdown-item>Item 1</mu-dropdown-item>
+          <mu-dropdown-item selected>Item 2</mu-dropdown-item>
           <mu-list-divider></mu-list-divider>
-          <mu-dropdown-item>好好学习3</mu-dropdown-item>
+          <mu-dropdown-item>Item 3</mu-dropdown-item>
+        </template>
+      </mu-dropdown-button>
+      <mu-dropdown-button caption="I am disabled" disabled>
+        <template #dropdown>
+          <mu-dropdown-item>Item 1</mu-dropdown-item>
+          <mu-dropdown-item selected>Item 2</mu-dropdown-item>
+          <mu-list-divider></mu-list-divider>
+          <mu-dropdown-item>Item 3</mu-dropdown-item>
         </template>
       </mu-dropdown-button>
     </div>
@@ -71,9 +79,6 @@
       data: {
       },
       methods: {
-        alert (v) {
-          alert(v)
-        }
       }
     });
   </script>

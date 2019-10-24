@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Example</title>
+  <title>Form Layout Example</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
   <style>
@@ -13,46 +13,46 @@
 
 <body>
   <div id="app">
-    <h2>表单</h2>
+    <h2>Form Layout Example - Flow Layout</h2>
     <hr>
     <div>
-      <h3>表单布局</h3>
+      <h3>Form</h3>
       <mu-v-box bordered itemspacing>
         <mu-form layout="flow" bordered>
-          <mu-form-field label="输入框框">
+          <mu-form-field label="Feild1">
             <mu-input></mu-input>
           </mu-form-field>
-          <mu-form-field label="输入框2" size="50%">
-            <mu-input></mu-input>
-          </mu-form-field>
-          <mu-space></mu-space>
-          <mu-form-field label="输入框3" size="25%">
-            <mu-input></mu-input>
-          </mu-form-field>
-          <mu-form-field label="输入框4" size="25%">
+          <mu-form-field label="Feild2" size="50%">
             <mu-input></mu-input>
           </mu-form-field>
           <mu-space></mu-space>
-          <mu-form-field label="输入框5" size="25%">
+          <mu-form-field label="Feild3" size="25%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-form-field label="Feild4" size="25%">
+            <mu-input></mu-input>
+          </mu-form-field>
+          <mu-space></mu-space>
+          <mu-form-field label="Feild5" size="25%">
             <mu-input></mu-input>
           </mu-form-field>
           <mu-space size="25%"></mu-space>
-          <mu-form-field label="输入框6" size="50%">
+          <mu-form-field label="Feild6" size="50%">
             <mu-input></mu-input>
           </mu-form-field>
           <mu-space></mu-space>
-          <mu-form-field label="输入框7" size="50%">
+          <mu-form-field label="Feild7" size="50%">
             <textarea class="mu-input"></textarea>
           </mu-form-field>
-          <mu-form-field label="输入框8">
+          <mu-form-field label="Feild8">
             <mu-input></mu-input>
           </mu-form-field>
         </mu-form>
         <mu-bar>
-          <mu-combo-box editable :options="['选项1','选项2','选项3']" :clearable="false" value="选项1"></mu-combo-box>
+          <mu-combo-box editable :options="['option 1','option 2','option 3']" :clearable="false" value="option 1"></mu-combo-box>
           <mu-space></mu-space>
-          <mu-button button-type="submit">保存</mu-button>
-          <mu-button button-type="normal">取消</mu-button>
+          <mu-button button-type="submit">Submit</mu-button>
+          <mu-button button-type="normal">Cancel</mu-button>
         </mu-bar>
       </mu-v-box>
     </div>
