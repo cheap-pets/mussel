@@ -6,7 +6,7 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
-  <title>输入框与表单</title>
+  <title>Button Editor & Combo Box</title>
 </head>
 
 <body>
@@ -19,20 +19,21 @@
       <mu-button-editor placeholder="input something" icon-align="left">
       </mu-button-editor>
       <h5>Hide Clear Button</h5>
-      <mu-button-editor :clearable="false">
+      <mu-button-editor :clearable="false" icon-align="left" value="text value">
       </mu-button-editor>
-      <mu-button-editor :clearable="false" icon-align="left">
+      <mu-button-editor :clearable="false" value="text value">
       </mu-button-editor>
       <h5>Round Shape</h5>
-      <mu-button-editor icon="search" input-shape="round">
-      </mu-button-editor>
       <mu-button-editor icon="search" input-shape="round" icon-align="left">
+      </mu-button-editor>
+      <mu-button-editor icon="search" input-shape="round">
       </mu-button-editor>
       <h5>Readonly & Disabled & Invalid</h5>
       <mu-button-editor :editable="false" placeholder="uneditable">
       </mu-button-editor>
       <mu-button-editor readonly placeholder="readonly">
       </mu-button-editor>
+      <p>
       <mu-button-editor disabled placeholder="disabled">
       </mu-button-editor>
       <mu-button-editor invalid placeholder="invalid">
