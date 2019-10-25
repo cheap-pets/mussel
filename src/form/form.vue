@@ -18,6 +18,13 @@
       }
     },
     props: {
+      layout: {
+        type: String,
+        default: 'flow',
+        validator (value) {
+          return ['flow', 'column', 'row'].indexOf(value) !== -1
+        }
+      },
       cellpadding: {
         type: Boolean,
         default: true

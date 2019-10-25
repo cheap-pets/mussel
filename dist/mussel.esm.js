@@ -5917,7 +5917,6 @@ var ComboBox = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$j
 }, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, undefined, undefined);
 
-//
 var script$l = {
   name: 'MusselForm',
   "extends": FlexBox,
@@ -5927,6 +5926,13 @@ var script$l = {
     };
   },
   props: {
+    layout: {
+      type: String,
+      "default": 'flow',
+      validator: function validator(value) {
+        return ['flow', 'column', 'row'].indexOf(value) !== -1;
+      }
+    },
     cellpadding: {
       type: Boolean,
       "default": true
@@ -6008,7 +6014,7 @@ var script$m = {
       var _this$$el;
 
       var layout = this.parentLayout || 'flow';
-      return this.size || ((_this$$el = this.$el) === null || _this$$el === void 0 ? void 0 : _this$$el.getAttribute('size')) || (layout === 'flow' ? '100%' : layout === 'column' ? undefined : 'auto');
+      return this.size || ((_this$$el = this.$el) === null || _this$$el === void 0 ? void 0 : _this$$el.getAttribute('size')) || (layout === 'flow' ? '100%' : undefined);
     },
     labelStyle: function labelStyle() {
       var w = this.labelWidth || this.form.labelWidth;

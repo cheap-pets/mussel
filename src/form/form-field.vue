@@ -40,7 +40,7 @@
           (
             layout === 'flow'
               ? '100%'
-              : ((layout === 'column') ? undefined : 'auto')
+              : undefined
           )
       },
       labelStyle () {
