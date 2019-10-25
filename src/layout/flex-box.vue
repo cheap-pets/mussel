@@ -132,12 +132,14 @@
     & > [flex-none] {
       flex: 0 0 none !important;
     }
+    /*
     &[direction="column"] > [size] {
       height: 1px;
     }
     &:not([direction="column"]) > [size] {
       width: 1px;
     }
+    */
     & > [size="auto"] {
       flex: 1 1 auto;
     }
