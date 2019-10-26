@@ -16,30 +16,40 @@
     "es6": true
   },
   "rules": {
-    "prefer-const": 2,
+    "prefer-const": "error",
     "no-unused-expressions": "off",
     "babel/no-unused-expressions": "error",
-    "vue/html-indent": [1, 2, {
-      "alignAttributesVertically": false
-    }],
-    "vue/max-attributes-per-line": 0,
-    "vue/html-closing-bracket-newline": 0,
+    "vue/html-indent": [
+      "warn",
+      2,
+      {
+        "alignAttributesVertically": false
+      }],
+    "vue/script-indent": [
+      "error",
+      2,
+      { "baseIndent": 1, "switchCase": 1 }
+    ],
     "vue/require-prop-types": 0,
     "vue/require-default-prop": 0,
-    "vue/script-indent": ["error", 2, { "baseIndent": 1, "switchCase": 1 }],
+    "vue/max-attributes-per-line": 0,
+    "vue/html-closing-bracket-newline": 0,
     "complexity": [ 1, 10 ],
     "max-len": [
-      1,
+      "warn",
+      
       {
         "code": 80,
         "tabWidth": 2,
-        "ignoreComments": true,
-        "ignoreTrailingComments": true,
         "ignoreUrls": true,
         "ignoreStrings": true,
+        "ignoreComments": true,
+        "ignoreTrailingComments": true,
         "ignoreTemplateLiterals": true
       }
-    ]
+    ],
+    "no-shadow": "error",
+    "no-shadow-restricted-names": "error"
   },
   "overrides": [
     {
