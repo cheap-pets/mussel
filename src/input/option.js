@@ -1,6 +1,6 @@
 import ListItem from '../list/list-item.vue'
 
-import { equalFalse } from '../utils/prop'
+import { unsetOrFalse } from '../utils/prop'
 
 export default {
   name: 'MusselOption',
@@ -57,8 +57,8 @@ export default {
     },
     actualIconIndent () {
       return (
-        !equalFalse(this.iconIndent) ||
-        !equalFalse(this.popupParams?.iconIndent)
+        !unsetOrFalse(this.iconIndent) ||
+        !unsetOrFalse(this.popupParams?.iconIndent)
       )
     },
     actualSelected () {

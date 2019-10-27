@@ -1,4 +1,4 @@
-export function equalFalse (value) {
+export function unsetOrFalse (value) {
   return (
     value === undefined ||
     value === null ||

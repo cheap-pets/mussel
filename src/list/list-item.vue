@@ -17,7 +17,7 @@
 <script>
   import Icon from '../icon/index.vue'
 
-  import { equalFalse } from '../utils/prop'
+  import { unsetOrFalse } from '../utils/prop'
 
   export default {
     name: 'MusselListItem',
@@ -46,13 +46,13 @@
         return this.iconClass
       },
       actualIconIndent () {
-        return !equalFalse(this.iconIndent)
+        return !unsetOrFalse(this.iconIndent)
       },
       actualActive () {
         return this.active
       },
       actualSelected () {
-        return !equalFalse(this.selected)
+        return !unsetOrFalse(this.selected)
       },
       actualTriggerIcon () {
         return this.triggerIcon
