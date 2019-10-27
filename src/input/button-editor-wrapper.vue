@@ -18,7 +18,7 @@
     <mu-editor-icon
       v-if="clearable"
       clickable
-      trigger-type="cancel"
+      trigger-type="clear"
       @click="onClearClick" />
     <mu-editor-icon
       v-if="iconAlign === 'right'"

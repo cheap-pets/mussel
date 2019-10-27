@@ -20,7 +20,7 @@
 
   const triggerIcons = {
     close: 'close',
-    cancel: 'cancel',
+    clear: 'clear',
     expander: 'key-down',
     dropdown: 'key-down'
   }

@@ -70,6 +70,9 @@ const variables = {
   /* bar */
   barHeightPx: 40,
 
+  /* tabs */
+  tabsBackground: '#fff',
+
   /* text colours */
   textBlack: grey[9],
   textGrey: grey[7],

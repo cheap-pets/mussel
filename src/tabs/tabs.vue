@@ -17,3 +17,9 @@
     }
   }
 </script>
+
+<style lang="postcss">
+  .mu-tabs {
+    background: $tabsBackground;
+  }
+</style>
