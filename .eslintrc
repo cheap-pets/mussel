@@ -37,7 +37,6 @@
     "complexity": [ 1, 10 ],
     "max-len": [
       "warn",
-      
       {
         "code": 80,
         "tabWidth": 2,

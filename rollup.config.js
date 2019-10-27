@@ -39,14 +39,12 @@ export default {
     resolve({
       mainFields: ['module', 'main', 'browser']
     }),
-    commonjs({
-      include: 'node_modules/**'
-    }),
     babel({
-      exclude: [/\/core-js\//],
+      exclude: 'node_modules/**',
       externalHelpers: true,
       extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
     }),
+    commonjs(),
     terser()
   ],
   onwarn: warning => {
