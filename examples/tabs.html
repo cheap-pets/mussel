@@ -26,9 +26,38 @@
         <mu-button :active="pos==='left'" @click="pos = 'left'">left</mu-button>
         <mu-button :active="pos==='right'" @click="pos = 'right'">right</mu-button>
       </mu-button-group>
-      <mu-tabs style="height: 500px;" :tab-items="tabItems" :tab-position="pos">
-
-      </mu-tabs>
+      <p>
+      <mu-v-box style="height: 500px;" bordered itemspacing>
+        <mu-tabs size="auto" :tab-items="tabItems" :tab-position="pos">
+          <template #header>
+            <mu-space></mu-space>
+            <mu-button button-type="primary" button-style="link" >add ...</mu-button>
+          </template>
+          <mu-tab-panel name="tab0" size="auto">
+            javascript
+          </mu-tab-panel>
+          <mu-tab-panel name="tab1" size="auto">
+            nginx & lua
+          </mu-tab-panel>
+          <mu-tab-panel name="tab2" size="auto">
+            flutter & dart
+          </mu-tab-panel>
+        </mu-tabs>
+      </mu-v-box>
+      <p>
+      <mu-v-box bordered style="height: 300px;">
+        <mu-tabs size="auto" :tab-position="pos">
+          <mu-tab-panel name="javascript" size="auto">
+            javascript
+          </mu-tab-panel>
+          <mu-tab-panel name="nginx & lua" size="auto">
+            nginx & lua
+          </mu-tab-panel>
+          <mu-tab-panel name="flutter & dart" size="auto">
+            flutter & dart
+          </mu-tab-panel>
+        </mu-tabs>
+      </mu-v-box>
     </div>
   </div>
 
@@ -40,11 +69,15 @@
         tabItems: [
           {
             name: 'tab0',
-            label: 'tab-0'
+            label: 'javascript'
           },
           {
             name: 'tab1',
-            label: 'tab-1'
+            label: 'nginx & lua'
+          },
+          {
+            name: 'tab2',
+            label: 'flutter & dart'
           }
         ]
       },

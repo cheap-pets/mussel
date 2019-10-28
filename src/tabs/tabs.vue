@@ -1,14 +1,15 @@
 <template>
-  <div class="mu-tabs mu-flex-box" :direction="direction">
+  <div
+    class="mu-tabs mu-flex-box"
+    :direction="direction"
+    :tab-position="tabPosition">
     <tabs-header
       :tab-items="items"
-      :active-tab="activeName"
+      :active-tab="params.activeName"
       :tab-position="tabPosition">
       <slot name="header" />
     </tabs-header>
-    <div size="auto">
-      <slot />
-    </div>
+    <slot />
   </div>
 </template>
 
@@ -16,12 +17,14 @@
   import TabsHeader from './tabs-header.vue'
 
   export default {
+    name: 'MusselTabs',
     components: {
       TabsHeader
     },
     provide () {
       return {
-        tabs: this
+        tabs: this,
+        params: this.params
       }
     },
     model: {
@@ -41,7 +44,9 @@
     },
     data () {
       return {
-        activeName: '',
+        params: {
+          activeName: ''
+        },
         mountedTabs: []
       }
     },
@@ -70,23 +75,23 @@
     watch: {
       activeTab: {
         handler (value) {
-          this.activeName = value
+          this.params.activeName = value
         },
         immediate: true
       }
     },
     methods: {
       mountTab (tab) {
-        const idx = this.mountedTabs.findIdx(item => tab.name === item.name)
+        const idx = this.mountedTabs.findIndex(item => tab.name === item.name)
         if (idx === -1) this.mountedTabs.push(tab)
       },
       unmountTab (tab) {
-        const idx = this.mountedTabs.findIdx(item => tab.name === item.name)
+        const idx = this.mountedTabs.findIndex(item => tab.name === item.name)
         if (idx !== -1) this.mountedTabs.splice(idx, 1)
       },
       select (name) {
-        if (this.activeName !== name) {
-          this.activeName = name
+        if (this.params.activeName !== name) {
+          this.params.activeName = name
           this.$emit('change', name)
         }
       }

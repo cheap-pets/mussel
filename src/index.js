@@ -37,6 +37,7 @@ import Bar from './bar/bar.vue'
 /* TABS */
 import Tabs from './tabs/tabs.vue'
 import TabsHeader from './tabs/tabs-header.vue'
+import TabPanel from './tabs/tab-panel.vue'
 /* Dropdown */
 import Dropdown from './dropdown/dropdown.vue'
 import DropdownItem from './dropdown/dropdown-item'
@@ -86,6 +87,7 @@ function install (Vue) {
 
   Vue.component('mu-tabs', Tabs)
   Vue.component('mu-tabs-header', TabsHeader)
+  Vue.component('mu-tab-panel', TabPanel)
 
   Vue.component('mu-dropdown', Dropdown)
   Vue.component('mu-dropdown-item', DropdownItem)
@@ -137,6 +139,7 @@ export {
   // Tabs
   Tabs,
   TabsHeader,
+  TabPanel,
   // Dropdown
   Dropdown,
   DropdownItem,
