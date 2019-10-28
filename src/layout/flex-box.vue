@@ -76,6 +76,14 @@
       flex-direction: column;
     }
 
+    &[direction="row-reverse"] {
+      flex-direction: row-reverse;
+    }
+
+    &[direction="column-reverse"] {
+      flex-direction: column-reverse;
+    }
+
     &[inline] {
       display: inline-flex;
     }

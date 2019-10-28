@@ -161,7 +161,7 @@ function setButtonColors (buttonType, colors) {
   variables[`button${buttonType}Color`] = colors[5]
   variables[`button${buttonType}HoverColor`] = colors[4]
   variables[`button${buttonType}ActiveColor`] = colors[6]
-  variables[`button${buttonType}DisabledColor`] = colors[2]
+  variables[`button${buttonType}DisabledColor`] = colors[1]
 
   setButtonShadow(buttonType)
 }

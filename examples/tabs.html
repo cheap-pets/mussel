@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Bar  Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+    .client-area {
+      background: rgba(0, 0, 0, .05);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>Tabs Example</h2>
+    <hr>
+    <div>
+      <h3>Tabs</h3>
+      <mu-button-group>
+        <mu-button :active="pos==='top'" @click="pos = 'top'">top</mu-button>
+        <mu-button :active="pos==='bottom'" @click="pos = 'bottom'">bottom</mu-button>
+        <mu-button :active="pos==='left'" @click="pos = 'left'">left</mu-button>
+        <mu-button :active="pos==='right'" @click="pos = 'right'">right</mu-button>
+      </mu-button-group>
+      <mu-tabs style="height: 500px;" :tab-items="tabItems" :tab-position="pos">
+
+      </mu-tabs>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        pos: 'top',
+        tabItems: [
+          {
+            name: 'tab0',
+            label: 'tab-0'
+          },
+          {
+            name: 'tab1',
+            label: 'tab-1'
+          }
+        ]
+      },
+      methods: {
+      }
+    });
+  </script>
+</body>
+
+</html>

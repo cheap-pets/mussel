@@ -34,6 +34,9 @@ import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
 /* BAR */
 import Bar from './bar/bar.vue'
+/* TABS */
+import Tabs from './tabs/tabs.vue'
+import TabsHeader from './tabs/tabs-header.vue'
 /* Dropdown */
 import Dropdown from './dropdown/dropdown.vue'
 import DropdownItem from './dropdown/dropdown-item'
@@ -80,6 +83,9 @@ function install (Vue) {
   Vue.component('mu-list-divider', ListDivider)
 
   Vue.component('mu-bar', Bar)
+
+  Vue.component('mu-tabs', Tabs)
+  Vue.component('mu-tabs-header', TabsHeader)
 
   Vue.component('mu-dropdown', Dropdown)
   Vue.component('mu-dropdown-item', DropdownItem)
@@ -128,6 +134,9 @@ export {
   ListDivider,
   // Bar
   Bar,
+  // Tabs
+  Tabs,
+  TabsHeader,
   // Dropdown
   Dropdown,
   DropdownItem,
