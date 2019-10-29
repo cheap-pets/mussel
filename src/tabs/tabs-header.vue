@@ -42,6 +42,10 @@
           return ['top', 'bottom', 'left', 'right'].indexOf(v) !== -1
         }
       },
+      instantState: {
+        type: Boolean,
+        default: true
+      },
       activeTab: String
     },
     data () {
@@ -74,7 +78,7 @@
         if (this.tabs) {
           this.tabs.select(item.name)
         } else {
-          this.activeName = item.name
+          if (this.instantState) this.activeName = item.name
           this.$emit('change', item.name)
         }
       }

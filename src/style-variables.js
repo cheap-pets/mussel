@@ -60,6 +60,9 @@ const variables = {
   dropdownListYPaddingPx: 4,
   dropdownItemYPaddingPx: 5,
 
+  /* expander */
+  expanderHeaderHeightPx: 40,
+
   /* list */
   listItemXPaddingPx: 16,
   listItemYPaddingPx: 8,

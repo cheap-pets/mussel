@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Exapnder</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+    .client-area {
+      background: rgba(0, 0, 0, .05);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>Exapnder Example</h2>
+    <hr>
+    <div>
+      <h3>Default Header</h3>
+      <mu-expander class="mu-bordered" style="width: 300px;" title="click to expand">
+        <mu-list-item>Javascript</mu-list-item>
+        <mu-list-item>Nginx & Lua</mu-list-item>
+        <mu-list-item>Flutter & Dart</mu-list-item>
+      </mu-expander>
+    </div>
+    <div>
+      <h3>Customized Header</h3>
+      <mu-expander class="mu-bordered" style="width: 300px;">
+        <template #header>
+          <div class="mu-expander-header">
+            Click here has no effect
+            <mu-icon
+              trigger-type="expander"
+              style="margin-left: 8px;"
+              expand-trigger>
+            </mu-icon>
+          </div>
+        </template>
+        <mu-list-item>Javascript</mu-list-item>
+        <mu-list-item>Nginx & Lua</mu-list-item>
+        <mu-list-item>Flutter & Dart</mu-list-item>
+      </mu-expander>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+      },
+      methods: {
+      }
+    });
+  </script>
+</body>
+
+</html>

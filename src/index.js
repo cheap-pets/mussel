@@ -41,6 +41,8 @@ import TabPanel from './tabs/tab-panel.vue'
 /* Dropdown */
 import Dropdown from './dropdown/dropdown.vue'
 import DropdownItem from './dropdown/dropdown-item'
+/* Expander */
+import Expander from './expander/expander.vue'
 /* LAYER */
 import BaseModal from './layer/base-modal.vue'
 import BaseDialog from './layer/base-dialog.vue'
@@ -91,6 +93,8 @@ function install (Vue) {
 
   Vue.component('mu-dropdown', Dropdown)
   Vue.component('mu-dropdown-item', DropdownItem)
+
+  Vue.component('mu-expander', Expander)
 
   Vue.component('mu-modal', Modal)
   Vue.component('mu-dialog', Dialog)
@@ -143,6 +147,8 @@ export {
   // Dropdown
   Dropdown,
   DropdownItem,
+  // Expander
+  Expander,
   // layer
   BaseModal,
   BaseDialog,

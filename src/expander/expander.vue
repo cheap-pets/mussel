@@ -1,29 +1,48 @@
 <template>
   <div
     class="mu-expander"
-    :expanded="expandParams.visible"
+    :expanded="actualExpanded"
     @click="onClick">
-    <slot />
+    <slot name="header">
+      <div class="mu-expander-header" expand-trigger>
+        {{ title }}
+        <mu-icon trigger-type="expander" style="margin-left: 8px;" />
+      </div>
+    </slot>
     <div
-      v-if="!disabled && expandParams.visible"
-      v-bind="popupParams"
-      @change="setPopupVisible"
-      @mouseover.native.stop="clearHoverTimer"
-      @mouseleave.native.stop="onMouseLeave"
-      @click.native.stop="onDropdownClick">
-      <slot name="dropdown" />
+      v-show="!disabled"
+      class="mu-expand-panel"
+      @click.stop>
+      <slot />
     </div>
   </div>
 </template>
 
 <script>
+  import { isParentElement } from '../utils/dom'
+
   export default {
     name: 'MusselExpander',
+    model: {
+      prop: 'expanded',
+      event: 'change'
+    },
     props: {
       disabled: Boolean,
-      popupStyle: {
-        type: String,
-        default: 'dropdown-list'
+      expanded: Boolean,
+      title: String
+    },
+    data () {
+      return {
+        actualExpanded: false
+      }
+    },
+    watch: {
+      expanded: {
+        handler (value) {
+          this.actualExpanded = value
+        },
+        immediate: true
       }
     },
     mounted () {
@@ -33,17 +52,6 @@
       )
     },
     methods: {
-      clearHoverTimer () {
-        if (this.hoverTimer) {
-          clearTimeout(this.hoverTimer)
-          delete this.hoverTimer
-        }
-      },
-      delayHidePopup () {
-        this.hoverTimer = setTimeout(() => {
-          this.setPopupVisible(false)
-        }, 200)
-      },
       findTrigger (target) {
         return this.triggerElements.reduce(
           (result, el) => result || isParentElement(target, el, true),
@@ -52,34 +60,46 @@
       },
       onClick (event) {
         if (this.disabled) return
-        if (this.triggerAction === 'click' &&
-          (!this.triggerElements.length || this.findTrigger(event.target))) {
-          this.clearHoverTimer()
-          this.togglePopup()
+        if (!this.triggerElements.length || this.findTrigger(event.target)) {
+          this.toggleExpand()
         }
       },
-      onMouseOver (event) {
-        if (this.disabled) return
-        this.clearHoverTimer()
-        const { target } = event
-        const triggerCount = this.triggerElements.length
-        if (this.triggerAction === 'hover' &&
-          (!triggerCount || this.findTrigger(target))) {
-          this.showPopup()
-        } else if (triggerCount && !this.findTrigger(target)) {
-          this.delayHidePopup()
-        }
-      },
-      onMouseLeave (event) {
-        this.clearHoverTimer()
-        this.delayHidePopup()
-      },
-      onDropdownClick () {
-      },
-      onItemClick (item) {
-        this.hidePopup()
-        this.$emit('itemclick', item)
+      toggleExpand () {
+        this.actualExpanded = !this.actualExpanded
+        this.$emit('change', this.actualExpanded)
       }
     }
   }
 </script>
+
+<style lang="postcss">
+  .mu-expander {
+    & [expand-trigger] {
+      cursor: pointer;
+    }
+
+    & > .mu-expander-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: $(expanderHeaderHeightPx)px;
+      text-align: center;
+      font-size: 1rem;
+
+      &:hover {
+        background-color: #eee;
+      }
+    }
+    & > .mu-expand-panel {
+      position: relative;
+      visibility: hidden;
+      max-height: 0;
+      overflow: hidden;
+      transition: all .2s ease-in-out;
+    }
+    &[expanded] > .mu-expand-panel {
+      visibility: visible;
+      max-height: 2000px;
+    }
+  }
+</style>

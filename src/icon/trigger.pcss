@@ -3,22 +3,23 @@
 }
 
 .mu-icon {
-  &[trigger-type="dropdown"],
-  &[trigger-type="expander"] {
+  &[trigger-type] {
     transition: transform .2s ease-in-out;
+  }
 
-    &[trigger-on] {
-      transform: rotate(-180deg);
-    }
+  &[trigger-type="close"]:hover {
+    fill: $buttonDangerHoverColor;
+    color: $buttonDangerHoverColor;
   }
 }
 
 .mu-popup-editor[expanded] > [trigger-type="dropdown"],
-.mu-dropdown[expanded] [trigger-type="dropdown"] {
+.mu-dropdown[expanded] [trigger-type="dropdown"],
+.mu-icon[trigger-type="dropdown"][trigger-on] {
   transform: rotate(-180deg);
 }
 
-.mu-icon[trigger-type="close"]:hover {
-  fill: $buttonDangerHoverColor;
-  color: $buttonDangerHoverColor;
+.mu-expander[expanded] [trigger-type="expander"],
+.mu-icon[trigger-type="expander"][trigger-on] {
+  transform: rotate(90deg);
 }

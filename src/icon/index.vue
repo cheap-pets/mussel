@@ -21,8 +21,8 @@
   const triggerIcons = {
     close: 'close',
     clear: 'clear',
-    expander: 'key-down',
-    dropdown: 'key-down'
+    dropdown: 'key-down',
+    expander: 'key-right'
   }
 
   export default {
