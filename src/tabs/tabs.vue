@@ -6,7 +6,7 @@
     <tabs-header
       :tab-items="items"
       :tab-style="tabStyle"
-      :active-tab="params.activeName"
+      :active-tab="tabParams.activeName"
       :tab-position="tabPosition">
       <template #header-prefix>
         <slot name="header-prefix" />
@@ -32,7 +32,7 @@
     provide () {
       return {
         tabs: this,
-        params: this.params
+        tabParams: this.tabParams
       }
     },
     model: {
@@ -55,11 +55,15 @@
           return ['simple', 'card'].indexOf(v) !== -1
         }
       },
+      instantState: {
+        type: Boolean,
+        default: true
+      },
       activeTab: String
     },
     data () {
       return {
-        params: {
+        tabParams: {
           activeName: ''
         },
         mountedTabs: []
@@ -90,7 +94,7 @@
     watch: {
       activeTab: {
         handler (value) {
-          this.params.activeName = value
+          this.tabParams.activeName = value
         },
         immediate: true
       }
@@ -105,10 +109,11 @@
         if (idx !== -1) this.mountedTabs.splice(idx, 1)
       },
       select (name) {
-        if (this.params.activeName !== name) {
-          this.params.activeName = name
-          this.$emit('change', name)
+        const { tabParams, instantState } = this
+        if (instantState && tabParams.activeName !== name) {
+          tabParams.activeName = name
         }
+        this.$emit('change', name)
       }
     }
   }

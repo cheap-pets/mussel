@@ -32,7 +32,13 @@
       </mu-button-group>
       <p>
       <div style="height: 300px; position: relative;">
-        <mu-tabs class="mu-absolute-fit" active-tab="javascript" :tab-position="pos" :tab-style="style">
+        <mu-tabs
+          class="mu-absolute-fit"
+          :active-tab="activeTabName"
+          :instant-state="false"
+          :tab-position="pos"
+          :tab-style="style"
+          @change="onTabChange">
           <mu-tab-panel name="javascript" size="auto">
             javascript
           </mu-tab-panel>
@@ -77,6 +83,7 @@
       data: {
         pos: 'top',
         style: 'card',
+        activeTabName: 'javascript',
         tabItems: [
           {
             name: 'tab0',
@@ -93,6 +100,9 @@
         ]
       },
       methods: {
+        onTabChange (tabName) {
+          if (confirm('是否进行页签切换 ?')) this.activeTabName = tabName
+        }
       }
     });
   </script>

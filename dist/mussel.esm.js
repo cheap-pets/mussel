@@ -828,14 +828,10 @@ _export({ target: 'Object', stat: true, forced: !descriptors, sham: !descriptors
   defineProperty: objectDefineProperty.f
 });
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var css$2 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=row-reverse] {\r\n  flex-direction: row-reverse;\r\n}\r\n.mu-flex-box[direction=column-reverse] {\r\n  flex-direction: column-reverse;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[content-spacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[content-spacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n  box-sizing: border-box;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex: 1 1 auto;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex: 1 1 1px;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex: 2 2 2px;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex: 3 3 3px;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex: 4 4 4px;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex: 5 5 5px;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex: 6 6 6px;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex: 7 7 7px;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex: 8 8 8px;\r\n}\r\n.mu-absolute-fit {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n[content-spacing] > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}\r\n[cellpadding] > .mu-absolute-fit {\r\n  top: 8px;\r\n  left: 8px;\r\n  right: 8px;\r\n  bottom: 8px;\r\n}\r\n.mu-bordered {\r\n  border: 1px solid #ddd;\r\n}";
+styleInject(css$2);
 
-//
-//
-//
-//
-//
-//
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 var script = {
   name: 'MusselFlexItem',
   inject: {
@@ -1075,9 +1071,6 @@ var script$1 = {
     }
   }
 };
-
-var css$2 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=row-reverse] {\r\n  flex-direction: row-reverse;\r\n}\r\n.mu-flex-box[direction=column-reverse] {\r\n  flex-direction: column-reverse;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[content-spacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[content-spacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n  box-sizing: border-box;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex: 1 1 auto;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex: 1 1 1px;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex: 2 2 2px;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex: 3 3 3px;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex: 4 4 4px;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex: 5 5 5px;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex: 6 6 6px;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex: 7 7 7px;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex: 8 8 8px;\r\n}\r\n.mu-absolute-fit {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n[content-spacing] > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}\r\n[cellpadding] > .mu-absolute-fit {\r\n  top: 8px;\r\n  left: 8px;\r\n  right: 8px;\r\n  bottom: 8px;\r\n}\r\n.mu-bordered {\r\n  border: 1px solid #ddd;\r\n}";
-styleInject(css$2);
 
 /* script */
 var __vue_script__$1 = script$1;
@@ -5863,7 +5856,7 @@ if (descriptors && !(NAME in FunctionPrototype)) {
   });
 }
 
-var css$i = ".mu-tabs {\r\n  background: #fff;\r\n}\r\n.mu-tabs-header {\r\n  font-size: 1rem;\r\n}\r\n.mu-tabs-header > .mu-tab-item {\r\n  display: flex;\r\n  align-items: center;\r\n}\r\n.mu-tabs-header[tab-style=card] > [active]:after {\r\n  background-color: #fff;\r\n}\r\n.mu-tabs-header[tab-style=card] ~ .mu-tab-panel {\r\n  padding: 16px;\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=bottom],\r\n.mu-tabs-header[tab-position=top] {\r\n  align-items: center;\r\n  height: 40px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item {\r\n  align-self: stretch;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item[active]:after {\r\n  left: 0;\r\n  right: 0;\r\n  height: 2px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item + .mu-tab-item {\r\n  margin-left: 20px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card],\r\n.mu-tabs-header[tab-position=top][tab-style=card] {\r\n  border: 0;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item {\r\n  margin-left: 0;\r\n  padding: 0 16px;\r\n  border-width: 0;\r\n  border-right-width: 1px;\r\n  border-left-width: 1px;\r\n  border-style: solid;\r\n  border-color: #ddd;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item + .mu-tab-item {\r\n  border-left-width: 0;\r\n}\r\n.mu-tabs-header[tab-position=left],\r\n.mu-tabs-header[tab-position=right] {\r\n  display: inline-flex;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item {\r\n  height: 40px;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item[active]:after {\r\n  top: 0;\r\n  bottom: 0;\r\n  width: 2px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card],\r\n.mu-tabs-header[tab-position=right][tab-style=card] {\r\n  border: 0;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item {\r\n  padding: 0 16px;\r\n  border-width: 0;\r\n  border-top-width: 1px;\r\n  border-bottom-width: 1px;\r\n  border-style: solid;\r\n  border-color: #ddd;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item + .mu-tab-item {\r\n  border-top-width: 0;\r\n}\r\n.mu-tabs-header[tab-position=top] {\r\n  border-bottom: 2px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item {\r\n  border-bottom: 0;\r\n}\r\n.mu-tabs-header[tab-position=top] > [active]:after {\r\n  bottom: -2px;\r\n}\r\n.mu-tabs-header[tab-position=top] ~ .mu-tab-panel {\r\n  padding-top: 16px;\r\n  border-top: 0;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] {\r\n  border-bottom: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item {\r\n  border-top-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > [active]:after {\r\n  bottom: -1px;\r\n  height: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] {\r\n  border-top: 2px solid rgba(0,0,0,.2);\r\n}\r\n.mu-tabs-header[tab-position=bottom] > [active]:after {\r\n  top: -2px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] ~ .mu-tab-panel {\r\n  padding-bottom: 16px;\r\n  border-bottom: 0;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] {\r\n  border-top: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item {\r\n  border-bottom-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > [active]:after {\r\n  top: -1px;\r\n  height: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left] {\r\n  border-right: 2px solid rgba(0,0,0,.2);\r\n}\r\n.mu-tabs-header[tab-position=left] > :not(.mu-tab-item) {\r\n  align-self: flex-end;\r\n  margin-right: 16px;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item {\r\n  margin-right: 0;\r\n  padding-right: 16px;\r\n}\r\n.mu-tabs-header[tab-position=left] .mu-tab-label {\r\n  text-align: right;\r\n}\r\n.mu-tabs-header[tab-position=left] > [active]:after {\r\n  right: -2px;\r\n}\r\n.mu-tabs-header[tab-position=left] ~ .mu-tab-panel {\r\n  padding-left: 16px;\r\n  border-left: 0;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] {\r\n  border-right: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item {\r\n  border-left-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] .mu-tab-label {\r\n  text-align: left;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > [active]:after {\r\n  right: -1px;\r\n  width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=right] {\r\n  border-left: 2px solid rgba(0,0,0,.2);\r\n}\r\n.mu-tabs-header[tab-position=right] > * {\r\n  margin-left: 16px;\r\n}\r\n.mu-tabs-header[tab-position=right] > :not(.mu-tab-item) {\r\n  align-self: flex-start;\r\n}\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item {\r\n  margin-left: 0;\r\n  padding-left: 16px;\r\n}\r\n.mu-tabs-header[tab-position=right] > [active]:after {\r\n  left: -2px;\r\n}\r\n.mu-tabs-header[tab-position=right] ~ .mu-tab-panel {\r\n  padding-right: 16px;\r\n  border-right: 0;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] {\r\n  border-left: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item {\r\n  border-right-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > [active]:after {\r\n  left: -1px;\r\n  width: 1px;\r\n}\r\n.mu-tab-item {\r\n  position: relative;\r\n  cursor: pointer;\r\n  max-width: 150px;\r\n}\r\n.mu-tab-item > .mu-tab-label {\r\n  display: inline-block;\r\n  width: 100%;\r\n  float: left;\r\n}\r\n.mu-tab-item:hover {\r\n  color: #1890ff;\r\n}\r\n.mu-tab-item[active] {\r\n  color: #1890ff;\r\n}\r\n.mu-tab-item[active]:after {\r\n  position: absolute;\r\n  content: '';\r\n  background-color: #1890ff;\r\n}";
+var css$i = ".mu-tabs {\r\n  background: #fff;\r\n}\r\n.mu-tabs-header {\r\n  font-size: 1rem;\r\n}\r\n.mu-tabs-header[tab-style=card] > .mu-tab-item {\r\n  background-color: #eee;\r\n}\r\n.mu-tabs-header[tab-style=card] > .mu-tab-item[active] {\r\n  background-color: #fff;\r\n}\r\n.mu-tabs-header[tab-style=card] > [active]:before {\r\n  position: absolute;\r\n  background-color: #1890ff;\r\n  content: '';\r\n}\r\n.mu-tabs-header[tab-style=card] > [active]:after {\r\n  background-color: #fff;\r\n}\r\n.mu-tabs-header[tab-style=card] ~ .mu-tab-panel {\r\n  padding: 16px;\r\n  border: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=bottom],\r\n.mu-tabs-header[tab-position=top] {\r\n  align-items: center;\r\n  height: 40px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item {\r\n  align-self: stretch;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item[active]:after {\r\n  left: 0;\r\n  right: 0;\r\n  height: 2px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item + .mu-tab-item {\r\n  margin-left: 20px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card],\r\n.mu-tabs-header[tab-position=top][tab-style=card] {\r\n  border: 0;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item {\r\n  margin-left: 0;\r\n  padding: 0 16px;\r\n  border-width: 0;\r\n  border-right-width: 1px;\r\n  border-left-width: 1px;\r\n  border-style: solid;\r\n  border-color: #ddd;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item[active]:before,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item[active]:before {\r\n  left: -1px;\r\n  right: -1px;\r\n  height: 3px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item[active]:after {\r\n  height: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item + .mu-tab-item {\r\n  border-left-width: 0;\r\n}\r\n.mu-tabs-header[tab-position=left],\r\n.mu-tabs-header[tab-position=right] {\r\n  display: inline-flex;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item {\r\n  height: 40px;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item[active]:after {\r\n  top: 0;\r\n  bottom: 0;\r\n  width: 2px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card],\r\n.mu-tabs-header[tab-position=right][tab-style=card] {\r\n  border: 0;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item {\r\n  padding: 0 16px;\r\n  border-width: 0;\r\n  border-top-width: 1px;\r\n  border-bottom-width: 1px;\r\n  border-style: solid;\r\n  border-color: #ddd;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item[active]:before,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item[active]:before {\r\n  top: -1px;\r\n  bottom: -1px;\r\n  width: 3px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item[active]:after {\r\n  width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item + .mu-tab-item {\r\n  border-top-width: 0;\r\n}\r\n.mu-tabs-header[tab-position=top] {\r\n  border-bottom: 2px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item {\r\n  border-bottom: 0;\r\n}\r\n.mu-tabs-header[tab-position=top] > [active]:after {\r\n  bottom: -2px;\r\n}\r\n.mu-tabs-header[tab-position=top] ~ .mu-tab-panel {\r\n  padding-top: 16px;\r\n  border-top: 0;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] {\r\n  border-bottom: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item {\r\n  border-top-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > [active]:before {\r\n  top: -1px;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > [active]:after {\r\n  bottom: -1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] {\r\n  border-top: 2px solid rgba(0,0,0,.2);\r\n}\r\n.mu-tabs-header[tab-position=bottom] > [active]:after {\r\n  top: -2px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] ~ .mu-tab-panel {\r\n  padding-bottom: 16px;\r\n  border-bottom: 0;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] {\r\n  border-top: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item {\r\n  border-bottom-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > [active]:before {\r\n  bottom: -1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > [active]:after {\r\n  top: -1px;\r\n}\r\n.mu-tabs-header[tab-position=left] {\r\n  border-right: 2px solid rgba(0,0,0,.2);\r\n}\r\n.mu-tabs-header[tab-position=left] > :not(.mu-tab-item) {\r\n  align-self: flex-end;\r\n  margin-right: 16px;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item {\r\n  margin-right: 0;\r\n  padding-right: 16px;\r\n}\r\n.mu-tabs-header[tab-position=left] .mu-tab-label {\r\n  text-align: right;\r\n}\r\n.mu-tabs-header[tab-position=left] > [active]:after {\r\n  right: -2px;\r\n}\r\n.mu-tabs-header[tab-position=left] ~ .mu-tab-panel {\r\n  padding-left: 16px;\r\n  border-left: 0;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] {\r\n  border-right: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item {\r\n  border-left-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] .mu-tab-label {\r\n  text-align: left;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > [active]:before {\r\n  left: -1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > [active]:after {\r\n  right: -1px;\r\n}\r\n.mu-tabs-header[tab-position=right] {\r\n  border-left: 2px solid rgba(0,0,0,.2);\r\n}\r\n.mu-tabs-header[tab-position=right] > * {\r\n  margin-left: 16px;\r\n}\r\n.mu-tabs-header[tab-position=right] > :not(.mu-tab-item) {\r\n  align-self: flex-start;\r\n}\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item {\r\n  margin-left: 0;\r\n  padding-left: 16px;\r\n}\r\n.mu-tabs-header[tab-position=right] > [active]:after {\r\n  left: -2px;\r\n}\r\n.mu-tabs-header[tab-position=right] ~ .mu-tab-panel {\r\n  padding-right: 16px;\r\n  border-right: 0;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] {\r\n  border-left: 1px solid #ddd;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item {\r\n  border-right-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > [active]:before {\r\n  right: -1px;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > [active]:after {\r\n  left: -1px;\r\n}\r\n.mu-tab-item {\r\n  display: flex;\r\n  align-items: center;\r\n  max-width: 150px;\r\n  cursor: pointer;\r\n}\r\n.mu-tab-item > .mu-tab-label {\r\n  display: inline-block;\r\n  width: 100%;\r\n  float: left;\r\n}\r\n.mu-tab-item:hover {\r\n  color: #1890ff;\r\n}\r\n.mu-tab-item[active] {\r\n  color: #1890ff;\r\n}\r\n.mu-tab-item[active]:after {\r\n  position: absolute;\r\n  content: '';\r\n  background-color: #1890ff;\r\n}";
 styleInject(css$i);
 
 var script$p = {
@@ -5991,7 +5984,7 @@ var script$q = {
   provide: function provide() {
     return {
       tabs: this,
-      params: this.params
+      tabParams: this.tabParams
     };
   },
   model: {
@@ -6014,11 +6007,15 @@ var script$q = {
         return ['simple', 'card'].indexOf(v) !== -1;
       }
     },
+    instantState: {
+      type: Boolean,
+      "default": true
+    },
     activeTab: String
   },
   data: function data() {
     return {
-      params: {
+      tabParams: {
         activeName: ''
       },
       mountedTabs: []
@@ -6054,7 +6051,7 @@ var script$q = {
   watch: {
     activeTab: {
       handler: function handler(value) {
-        this.params.activeName = value;
+        this.tabParams.activeName = value;
       },
       immediate: true
     }
@@ -6073,10 +6070,14 @@ var script$q = {
       if (idx !== -1) this.mountedTabs.splice(idx, 1);
     },
     select: function select(name) {
-      if (this.params.activeName !== name) {
-        this.params.activeName = name;
-        this.$emit('change', name);
+      var tabParams = this.tabParams,
+          instantState = this.instantState;
+
+      if (instantState && tabParams.activeName !== name) {
+        tabParams.activeName = name;
       }
+
+      this.$emit('change', name);
     }
   }
 };
@@ -6102,7 +6103,7 @@ var __vue_render__$p = function __vue_render__() {
     attrs: {
       "tab-items": _vm.items,
       "tab-style": _vm.tabStyle,
-      "active-tab": _vm.params.activeName,
+      "active-tab": _vm.tabParams.activeName,
       "tab-position": _vm.tabPosition
     },
     scopedSlots: _vm._u([{
@@ -6150,7 +6151,7 @@ var script$r = {
     tabs: {
       "default": null
     },
-    params: {
+    tabParams: {
       "default": null
     }
   },
@@ -6160,9 +6161,9 @@ var script$r = {
   },
   computed: {
     visible: function visible() {
-      var _this$params;
+      var _this$tabParams;
 
-      return ((_this$params = this.params) === null || _this$params === void 0 ? void 0 : _this$params.activeName) === this.name;
+      return ((_this$tabParams = this.tabParams) === null || _this$tabParams === void 0 ? void 0 : _this$tabParams.activeName) === this.name;
     }
   },
   mounted: function mounted() {

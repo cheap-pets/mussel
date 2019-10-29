@@ -11,7 +11,7 @@
       tabs: {
         default: null
       },
-      params: {
+      tabParams: {
         default: null
       }
     },
@@ -21,7 +21,7 @@
     },
     computed: {
       visible () {
-        return this.params?.activeName === this.name
+        return this.tabParams?.activeName === this.name
       }
     },
     mounted () {

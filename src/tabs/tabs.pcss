@@ -5,12 +5,18 @@
 .mu-tabs-header {
   font-size: 1rem;
 
-  & > .mu-tab-item {
-    display: flex;
-    align-items: center;
-  }
-
   &[tab-style="card"] {
+    & > .mu-tab-item {
+      background-color: #eee;
+      &[active] {
+        background-color: $tabsBackground;
+      }
+    }
+    & > [active]:before {
+      position: absolute;
+      background-color: $primaryColor;
+      content: '';
+    }
     & > [active]:after {
       background-color: $tabsBackground;
     }
@@ -49,6 +55,18 @@
         border-style: solid;
         border-color: #ddd;
 
+        &[active] {
+          &:before {
+            left: -1px;
+            right: -1px;
+            height: 3px;
+          }
+          &:after {
+            height: 1px;
+          }
+        }
+
+
         & + .mu-tab-item {
           border-left-width: 0;
         }
@@ -78,6 +96,17 @@
         border-style: solid;
         border-color: #ddd;
 
+        &[active] {
+          &:before {
+            top: -1px;
+            bottom: -1px;
+            width: 3px;
+          }
+          &:after {
+            width: 1px;
+          }
+        }
+
         & + .mu-tab-item {
           border-top-width: 0;
         }
@@ -106,9 +135,11 @@
       & > .mu-tab-item {
         border-top-width: 1px;
       }
+      & > [active]:before {
+        top: -1px;
+      }
       & > [active]:after {
         bottom: -1px;
-        height: 1px;
       }
     }
   }
@@ -129,9 +160,11 @@
       & > .mu-tab-item {
         border-bottom-width: 1px;
       }
+      & > [active]:before {
+        bottom: -1px;
+      }
       & > [active]:after {
         top: -1px;
-        height: 1px;
       }
     }
   }
@@ -166,9 +199,11 @@
       & .mu-tab-label {
         text-align: left;
       }
+      & > [active]:before {
+        left: -1px;
+      }
       & > [active]:after {
         right: -1px;
-        width: 1px;
       }
     }
   }
@@ -199,18 +234,21 @@
       & > .mu-tab-item {
         border-right-width: 1px;
       }
+      & > [active]:before {
+        right: -1px;
+      }
       & > [active]:after {
         left: -1px;
-        width: 1px;
       }
     }
   }
   }
 
-  .mu-tab-item {
-  position: relative;
-  cursor: pointer;
+.mu-tab-item {
+  display: flex;
+  align-items: center;
   max-width: 150px;
+  cursor: pointer;
 
   & > .mu-tab-label {
     display: inline-block;
