@@ -118,12 +118,12 @@
       border: 1px solid #ddd;
     }
 
-    &[itemspacing],
+    &[content-spacing],
     &[cellpadding] {
       padding: $(unitSpacingSizePx)px;
     }
 
-    &[itemspacing] > *,
+    &[content-spacing] > *,
     & [cellspacing] {
       margin: $(unitSpacingSizePx)px;
     }
@@ -157,4 +157,31 @@
       }
     }
   }
+
+  .mu-absolute-fit {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  [content-spacing] > .mu-absolute-fit {
+    top: $(doubleSpacingSizePx)px;
+    left: $(doubleSpacingSizePx)px;
+    right: $(doubleSpacingSizePx)px;
+    bottom: $(doubleSpacingSizePx)px;
+  }
+
+  [cellpadding] > .mu-absolute-fit {
+    top: $(unitSpacingSizePx)px;
+    left: $(unitSpacingSizePx)px;
+    right: $(unitSpacingSizePx)px;
+    bottom: $(unitSpacingSizePx)px;
+  }
+
+  .mu-bordered {
+    border: 1px solid #ddd;
+  }
+
 </style>

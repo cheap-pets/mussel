@@ -15,6 +15,7 @@ let _buttonActiveShadow = 'none'
 const variables = {
   /* margin, padding */
   unitSpacingSizePx: 8,
+  doubleSpacingSizePx: 16,
 
   /* document */
   documentFontSize: '14px',
@@ -72,6 +73,7 @@ const variables = {
 
   /* tabs */
   tabsBackground: '#fff',
+  tabsHeaderHeight: '40px',
 
   /* text colours */
   textBlack: grey[9],

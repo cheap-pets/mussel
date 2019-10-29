@@ -96,7 +96,7 @@
 
   .mu-dialog-header {
     height: $(dialogHeaderHeightPx)px;
-    padding: calc($unitSpacingSizePx * 2)px;
+    padding: $(doubleSpacingSizePx)px;
     background: $dialogHeaderBackground;
     border-bottom: $dialogHeaderBorderBottom;
 
@@ -110,13 +110,13 @@
     margin-top: auto;
     height: $(dialogFooterHeightPx)px;
     background: $dialogFooterBackground;
-    padding: 0 calc($unitSpacingSizePx * 2)px;
+    padding: 0 $(doubleSpacingSizePx)px;
     & > .mu-button {
       margin-left: $(unitSpacingSizePx)px;
     }
   }
 
   .mu-dialog-body {
-    padding: calc($unitSpacingSizePx * 2)px;
+    padding: $(doubleSpacingSizePx)px;
   }
 </style>

@@ -5,15 +5,23 @@
     :tab-position="tabPosition">
     <tabs-header
       :tab-items="items"
+      :tab-style="tabStyle"
       :active-tab="params.activeName"
       :tab-position="tabPosition">
-      <slot name="header" />
+      <template #header-prefix>
+        <slot name="header-prefix" />
+      </template>
+      <template #header-prefix>
+        <slot name="header-suffix" />
+      </template>
     </tabs-header>
     <slot />
   </div>
 </template>
 
 <script>
+  import './tabs.pcss'
+
   import TabsHeader from './tabs-header.vue'
 
   export default {
@@ -38,6 +46,13 @@
         default: 'top',
         validator (v) {
           return ['top', 'bottom', 'left', 'right'].indexOf(v) !== -1
+        }
+      },
+      tabStyle: {
+        type: String,
+        default: 'simple',
+        validator (v) {
+          return ['simple', 'card'].indexOf(v) !== -1
         }
       },
       activeTab: String
@@ -98,9 +113,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-tabs {
-    background: $tabsBackground;
-  }
-</style>

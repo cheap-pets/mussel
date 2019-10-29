@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Bar  Example</title>
+  <title>Tab Example</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
   <style>
@@ -21,32 +21,18 @@
     <div>
       <h3>Tabs</h3>
       <mu-button-group>
-        <mu-button :active="pos==='top'" @click="pos = 'top'">top</mu-button>
-        <mu-button :active="pos==='bottom'" @click="pos = 'bottom'">bottom</mu-button>
-        <mu-button :active="pos==='left'" @click="pos = 'left'">left</mu-button>
-        <mu-button :active="pos==='right'" @click="pos = 'right'">right</mu-button>
+        <mu-button :active="pos === 'top'" @click="pos = 'top'">top</mu-button>
+        <mu-button :active="pos === 'bottom'" @click="pos = 'bottom'">bottom</mu-button>
+        <mu-button :active="pos === 'left'" @click="pos = 'left'">left</mu-button>
+        <mu-button :active="pos === 'right'" @click="pos = 'right'">right</mu-button>
+      </mu-button-group>
+      <mu-button-group style="margin-left: 16px;">
+        <mu-button :active="style === 'simple'" @click="style = 'simple'">simple style</mu-button>
+        <mu-button :active="style === 'card'" @click="style = 'card'">card style</mu-button>
       </mu-button-group>
       <p>
-      <mu-v-box style="height: 500px;" bordered itemspacing>
-        <mu-tabs size="auto" :tab-items="tabItems" :tab-position="pos">
-          <template #header>
-            <mu-space></mu-space>
-            <mu-button button-type="primary" button-style="link" >add ...</mu-button>
-          </template>
-          <mu-tab-panel name="tab0" size="auto">
-            javascript
-          </mu-tab-panel>
-          <mu-tab-panel name="tab1" size="auto">
-            nginx & lua
-          </mu-tab-panel>
-          <mu-tab-panel name="tab2" size="auto">
-            flutter & dart
-          </mu-tab-panel>
-        </mu-tabs>
-      </mu-v-box>
-      <p>
-      <mu-v-box bordered style="height: 300px;">
-        <mu-tabs size="auto" :tab-position="pos">
+      <div style="height: 300px; position: relative;">
+        <mu-tabs class="mu-absolute-fit" active-tab="javascript" :tab-position="pos" :tab-style="style">
           <mu-tab-panel name="javascript" size="auto">
             javascript
           </mu-tab-panel>
@@ -57,7 +43,31 @@
             flutter & dart
           </mu-tab-panel>
         </mu-tabs>
-      </mu-v-box>
+      </div>
+    </div>
+    <br>
+    <div>
+      <h3>Tabs Header</h3>
+      <h5>Card Style</h5>
+      <mu-tabs-header :tab-items="tabItems" tab-style="card">
+      </mu-tabs-header>
+      <h5>Simple Style</h5>
+      <mu-tabs-header :tab-items="tabItems">
+      </mu-tabs-header>
+      <h5>With Extra Buttons</h5>
+      <mu-tabs-header :tab-items="tabItems">
+        <template #header-prefix>
+          <mu-button button-type="primary" button-style="text"  button-shape="round" style="margin-right: 16px;">
+            prefix button
+          </mu-button>
+        </template>
+        <template #header-suffix>
+          <mu-space></mu-space>
+          <mu-button button-type="primary" button-style="text" button-shape="round">
+            suffix button
+          </mu-button>
+        </template>
+      </mu-tabs-header>
     </div>
   </div>
 
@@ -66,6 +76,7 @@
       el: '#app',
       data: {
         pos: 'top',
+        style: 'card',
         tabItems: [
           {
             name: 'tab0',

@@ -38,28 +38,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-tabs {
-    &[tab-position=top] {
-      & > .mu-tab-panel {
-        margin-top: 16px;
-      }
-    }
-    &[tab-position=bottom] {
-      & > .mu-tab-panel {
-        margin-bottom: 16px;
-      }
-    }
-    &[tab-position=left] {
-      & > .mu-tab-panel {
-        margin-left: 16px;
-      }
-    }
-    &[tab-position=right] {
-      & > .mu-tab-panel {
-        margin-right: 16px;
-      }
-    }
-  }
-</style>

@@ -3,6 +3,7 @@
     class="mu-tabs-header mu-flex-box"
     :tab-position="tabPosition"
     :direction="direction">
+    <slot name="header-prefix" />
     <div
       v-for="item in items"
       :key="item.name"
@@ -14,7 +15,7 @@
         {{ item.label || item.name }}
       </span>
     </div>
-    <slot />
+    <slot name="header-suffix" />
   </div>
 </template>
 
@@ -80,97 +81,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-tabs-header {
-    font-size: 1rem;
-
-    &[tab-position=top] {
-      border-bottom: 2px solid rgba(0, 0, 0, .2);
-      & > .mu-tab-item {
-        padding-bottom: 8px;
-      }
-      & > [active]:after {
-        bottom: -2px;
-      }
-    }
-    &[tab-position=bottom] {
-      border-top: 2px solid rgba(0, 0, 0, .2);
-      & > .mu-tab-item {
-        padding-top: 8px;
-      }
-      & > [active]:after {
-        top: -2px;
-      }
-    }
-    &[tab-position=left] {
-      border-right: 2px solid rgba(0, 0, 0, .2);
-      & > .mu-tab-item {
-        padding-right: 16px;
-        text-align: right;
-      }
-      & > [active]:after {
-        right: -2px;
-      }
-    }
-    &[tab-position=right] {
-      border-left: 2px solid rgba(0, 0, 0, .2);
-      & > .mu-tab-item {
-        padding-left: 16px;
-      }
-      & > [active]:after {
-        left: -2px;
-      }
-    }
-  }
-  .mu-tab-item {
-    position: relative;
-    cursor: pointer;
-    max-width: 150px;
-
-    & > .mu-tab-label {
-      display: inline-block;
-      width: 100%;
-      float: left;
-    }
-
-    &:hover {
-      color: $primaryColor;
-    }
-    &[active] {
-      color: $primaryColor;
-      &:after {
-        position: absolute;
-        content: '';
-        background-color: $primaryColor;
-      }
-    }
-  }
-  [tab-position=top],
-  [tab-position=bottom] {
-
-    & > .mu-tab-item {
-      &[active]:after {
-        left: 0;
-        right: 0;
-        height: 2px;
-      }
-      & + .mu-tab-item  {
-        margin-left: 20px;
-      }
-    }
-  }
-  [tab-position=left],
-  [tab-position=right] {
-    align-items: stretch;
-
-    & > .mu-tab-item {
-      padding: 10px 0;
-      &[active]:after {
-        top: 0;
-        bottom: 0;
-        width: 2px;
-      }
-    }
-  }
-</style>
