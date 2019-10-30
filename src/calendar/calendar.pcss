@@ -2,9 +2,9 @@
   flex-direction: column;
   min-height: 240px;
   min-width: 280px;
-  font-size: 0.857rem;
-  background: $calendarBackground;
-  border: $defaultBoxBorder;
+  font-size: $calendarFontSize;
+  background: $commonBackground;
+  border: 1px solid $commonBorderColor;
   overflow: hidden;
   user-select: none;
 
@@ -20,11 +20,12 @@
 
   & > .mu-calendar-header {
     align-items: center;
-    height: 32px;
-    padding: 0 8px;
+    height: $compactBarHeight;
+    padding: 0 $halfSpacingSize;
+
     & > .mu-calendar-title {
       margin-right: auto;
-      font-size: 1.14rem;
+      font-size: $calendarTitleFontSize;
       font-weight: 600;
       color: $primaryColor;
       cursor: pointer;
@@ -33,10 +34,11 @@
 
   & > .mu-week-header {
     align-items: center;
-    height: 32px;
+    height: $compactBarHeight;
     font-weight: 600;
-    color: $textGrey;
+    color: $grey;
     border-top: 1px solid $primaryColor;
+
     & > * {
       flex-grow: 1;
       width: 1px;
@@ -56,7 +58,7 @@
       flex-grow: 1;
 
       & + .mu-calendar-row {
-        border-top: 1px solid $gridLineColor;
+        border-top: 1px solid $commonGridLineColor;
       }
     }
     & .mu-calendar-cell {
@@ -69,7 +71,7 @@
       cursor: pointer;
 
       & + .mu-calendar-cell {
-        border-left: 1px solid $gridLineColor;
+        border-left: 1px solid $commonGridLineColor;
       }
 
       &[marked]:after {
@@ -78,24 +80,24 @@
         left: 0;
         width: 0;
         height: 0;
+        content: '';
         border-bottom: 8px solid $dangerColor;
         border-right: 8px solid transparent;
-        content: '';
       }
       &[adjacent] {
-        color: $textLightGrey;
+        color: $greyMinus;
       }
       &:hover {
-        color: $buttonPrimaryHoverColor;
-        background: $calendarCellHoverBackground;
+        color: $primaryMinusColor;
+        background: $commonHoverBackground;
       }
       &[present] {
         font-weight: 600;
         color: $warningColor;
       }
       &[invalid] {
-        color: $textLightGrey;
-        background: rgba(0, 0, 0, .03);
+        color: $commonDisabledTextColor;
+        background: $commonDisabledBackground;
         cursor: default;
       }
       &[active] {

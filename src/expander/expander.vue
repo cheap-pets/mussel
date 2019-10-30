@@ -19,6 +19,7 @@
 </template>
 
 <script>
+  import './expander.pcss'
   import { isParentElement } from '../utils/dom'
 
   export default {
@@ -71,35 +72,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-expander {
-    & [expand-trigger] {
-      cursor: pointer;
-    }
-
-    & > .mu-expander-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: $(expanderHeaderHeightPx)px;
-      text-align: center;
-      font-size: 1rem;
-
-      &:hover {
-        background-color: #eee;
-      }
-    }
-    & > .mu-expand-panel {
-      position: relative;
-      visibility: hidden;
-      max-height: 0;
-      overflow: hidden;
-      transition: all .2s ease-in-out;
-    }
-    &[expanded] > .mu-expand-panel {
-      visibility: visible;
-      max-height: 2000px;
-    }
-  }
-</style>

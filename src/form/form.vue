@@ -7,6 +7,7 @@
 </template>
 
 <script>
+  import './form.pcss'
   import FlexBox from '../layout/flex-box.vue'
 
   export default {

@@ -41,6 +41,8 @@
 </template>
 
 <script>
+  import './dialog.pcss'
+
   import VBox from '../layout/flex-v-box'
   import CloseButton from '../button/close-button.vue'
 
@@ -72,51 +74,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-dialog {
-    position: relative;
-    min-width: 200px;
-    min-height: 100px;
-    background: $dialogBackground;
-    opacity: 0;
-    box-shadow: $dialogShadow;
-    transform: translateY(200px);
-    transition: all .2s ease-in-out;
-
-    &[visible]{
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    &[danger] > .mu-dialog-header {
-      border-bottom-color: $dangerColor;
-    }
-  }
-
-  .mu-dialog-header {
-    height: $(dialogHeaderHeightPx)px;
-    padding: $(doubleSpacingSizePx)px;
-    background: $dialogHeaderBackground;
-    border-bottom: $dialogHeaderBorderBottom;
-
-    & > .mu-dialog-title {
-      font-size: $dialogTitleFontSize;
-      font-weight: 600;
-    }
-  }
-
-  .mu-dialog-footer {
-    margin-top: auto;
-    height: $(dialogFooterHeightPx)px;
-    background: $dialogFooterBackground;
-    padding: 0 $(doubleSpacingSizePx)px;
-    & > .mu-button {
-      margin-left: $(unitSpacingSizePx)px;
-    }
-  }
-
-  .mu-dialog-body {
-    padding: $(doubleSpacingSizePx)px;
-  }
-</style>

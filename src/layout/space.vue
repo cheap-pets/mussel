@@ -15,13 +15,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-space {
-    flex: 1 1 0%;
-  }
-  [direction="row"][flex-wrap] > .mu-space {
-    flex: none;
-    width: 100%;
-  }
-</style>

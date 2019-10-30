@@ -1,0 +1,43 @@
+.mu-button-group {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  border-radius: $inputElementBorderRadius;
+  box-shadow: $buttonShadow $greyTiny;
+
+  &[button-type="primary"] {
+    box-shadow: $buttonShadow $primaryColor;
+  }
+  &[button-type="success"] {
+    box-shadow: $buttonShadow $successTinyColor;
+  }
+  &[button-type="danger"] {
+    box-shadow: $buttonShadow $dangerTinyColor;
+  }
+
+  & > .mu-button {
+    z-index : 0;
+    float: left;
+    box-shadow: none;
+
+    &:hover:not([disabled]) {
+      z-index : 1;
+    }
+
+    & + .mu-button {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      &[button-type]:not([button-type="normal"]):not(:hover):not([active]) {
+        &:not([button-style]),
+        &[button-style="normal"] {
+          border-left-color: $buttonDividerColor;
+        }
+      }
+    }
+    &:not(:last-child) {
+      margin-right: -1px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}

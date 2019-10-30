@@ -1,34 +1,34 @@
-$inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
-
 .mu-input {
   position: relative;
   z-index: 1;
   width: 200px;
-  border: 1px solid $inputBorderColor;
-  border-radius: $(inputBorderRadiusPx)px;
+  padding: $inputElementPadding;
   outline: none;
-  background-color: $inputBackground;
-  color: $inputTextColor;
-  line-height: $(inputLineHeightPx)px;
+  border: 1px solid $commonBorderColor;
+  border-radius: $inputElementBorderRadius;
+  line-height: $commonLineHeight;
+  background: $commonBackground;
   font-size: $inputFontSize;
+  color: $commonTextColor;
+
   &:hover,
   &:focus,
   &[focus] {
-    border-color: $inputHoverBorderColor;
+    border-color: $primaryColor;
   }
   &:focus,
   &[focus] {
     z-index: 2;
     text-align: left !important;
-    box-shadow: $inputShadow;
+    box-shadow: $inputFocusShadow $primaryTinyColor;
   }
   &[readonly] {
     background-color: $inputReadonlyBackground;
   }
   &[disabled] {
-    background-color: $inputDisabledBackground;
-    border-color: $inputBorderColor;
-    color: $textGrey;
+    background-color: $commonDisabledBackground;
+    border-color: $commonBorderColor;
+    color: $commonDisabledTextColor;
     box-shadow: none;
   }
   &::-ms-clear {
@@ -39,25 +39,24 @@ $inputYPaddingPx: calc(($inputHeightPx - $inputLineHeightPx - 2) / 2);
 [invalid] .mu-input,
 .mu-input[invalid] {
   color: $dangerColor;
-  border-color: $inputInvalidBorderColor;
+  border-color: $dangerColor;
   &:focus,
   &[focus] {
-    box-shadow: $inputInvalidShadow;
+    box-shadow: $inputFocusShadow $dangerTinyColor;
   }
 }
 input.mu-input {
-  height: $(inputHeightPx)px;
-  padding-left: $(inputXPaddingPx)px;
-  padding-right: $(inputXPaddingPx)px;
+  height: $inputElementHeight;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 textarea.mu-input {
-  padding: $(inputYPaddingPx)px $(inputXPaddingPx)px;
   min-height: 80px;
   resize: none;
 }
 
 .mu-input[input-shape="round"],
 [input-shape="round"] > .mu-input {
-  border-radius: calc($inputHeightPx / 2)px;
+  border-radius: $inputElementRoundRadius;
 }

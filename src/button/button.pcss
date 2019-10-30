@@ -1,21 +1,18 @@
-$buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
-
 .mu-button {
   position: relative;
   display: inline-block;
-  height: $(buttonHeightPx)px;
-  min-width: 65px;
-  padding: $(buttonYPaddingPx)px $(buttonXPaddingPx)px;
+  height: $inputElementHeight;
+  padding: $inputElementPadding;
   outline: none;
-  border: 1px solid $buttonDefaultColor;
-  border-radius: $(buttonBorderRadiusPx)px;
-  background: #fff;
-  line-height: $(buttonLineHeightPx)px;
+  border: 1px solid $grey;
+  border-radius: $inputElementBorderRadius;
+  line-height: $commonLineHeight;
+  background: $commonBackground;
   text-decoration: none;
   text-align: center;
   font-size: $buttonFontSize;
-  color: $buttonDefaultColor;
-  fill: $buttonDefaultColor;
+  color: $grey;
+  fill: $grey;
   cursor: pointer;
 
   &::before {
@@ -25,42 +22,42 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   }
 
   &[button-style="link"] {
-    min-width: 0;
     padding-left: 0;
     padding-right: 0;
   }
 
   &:not([button-type]),
   &[button-type="normal"] {
-    box-shadow: $buttonDefaultShadow;
+    box-shadow: $buttonShadow $greyTiny;
 
     &[button-style="link"] {
       &:hover {
-        color: $buttonPrimaryColor;
-        fill: $buttonPrimaryColor;
+        color: $primaryMinusColor;
+        fill: $primaryMinusColor;
       }
     }
 
     &[active] {
-      background: $buttonDefaultActiveColor;
+      background: $greyPlus;
+      box-shadow: $buttonActiveShadow $greyTiny;
     }
 
     &:hover {
-      background: $buttonDefaultHoverColor;
-      border-color: $buttonDefaultHoverColor;
-      box-shadow: $buttonDefaultHoverShadow;
+      background: $greyMinus;
+      border-color: $greyMinus;
+      box-shadow: $buttonHoverShadow $greyTiny;
       color: #fff;
       fill: #fff;
     }
  
     &[disabled] {
       &[button-style="link"] {
-        color: $buttonDefaultDisabledColor;
-        fill: $buttonDefaultDisabledColor;
+        color: $greyTiny;
+        fill: $greyTiny;
       }
       &:not([button-style="link"]) {
-        background: $buttonDefaultDisabledColor;
-        border-color: $buttonDefaultDisabledColor;
+        border-color: $greyTiny;
+        background: $greyTiny;
       }
     }
   }
@@ -77,47 +74,47 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   &[button-type="primary"] {
     color: #fff;
     fill: #fff;
-    background: $buttonPrimaryColor;
-    border-color: $buttonPrimaryColor;
-    box-shadow: $buttonPrimaryShadow;
+    border-color: $primaryColor;
+    background: $primaryColor;
+    box-shadow: $buttonShadow $primaryTinyColor;
 
     &[button-style="link"] {
-      color: $buttonPrimaryColor;
-      fill: $buttonPrimaryColor;
+      color: $primaryColor;
+      fill: $primaryColor;
       &:hover {
-        color: $buttonPrimaryHoverColor;
-        fill: $buttonPrimaryHoverColor;
+        color: $primaryMinusColor;
+        fill: $primaryMinusColor;
       }
     }
 
     &[button-style="text"],
     &[button-style="outline"] {
-      color: $buttonPrimaryColor;
-      fill: $buttonPrimaryColor;
+      color: $primaryColor;
+      fill: $primaryColor;
     }
 
     &[active] {
-      background: $buttonPrimaryActiveColor;
-      border-color: $buttonPrimaryActiveColor;
-      box-shadow: $buttonPrimaryActiveShadow;
+      background: $primaryPlusColor;
+      border-color: $primaryPlusColor;
+      box-shadow: $buttonActiveShadow $primaryTinyColor;
     }
 
     &:hover {
-      background: $buttonPrimaryHoverColor;
-      border-color: $buttonPrimaryHoverColor;
-      box-shadow: $buttonPrimaryHoverShadow;
+      background: $primaryMinusColor;
+      border-color: $primaryMinusColor;
+      box-shadow: $buttonHoverShadow $primaryTinyColor;
       color: #fff;
       fill: #fff;
     }
 
     &[disabled] {
       &[button-style="link"] {
-        color: $buttonPrimaryDisabledColor;
-        fill: $buttonPrimaryDisabledColor;
+        color: $primaryTinyColor;
+        fill: $primaryTinyColor;
       }
       &:not([button-style="link"]) {
-        background: $buttonPrimaryDisabledColor;
-        border-color: $buttonPrimaryDisabledColor;
+        border-color: $primaryTinyColor;
+        background: $primaryTinyColor;
       }
     }
   }
@@ -125,47 +122,47 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   &[button-type="submit"] {
     color: #fff;
     fill: #fff;
-    background: $buttonSubmitColor;
-    border-color: $buttonSubmitColor;
-    box-shadow: $buttonSubmitShadow;
+    background: $successColor;
+    border-color: $successColor;
+    box-shadow: $buttonShadow $successTinyColor;
 
     &[button-style="link"] {
-      color: $buttonSubmitColor;
-      fill: $buttonSubmitColor;
+      color: $successColor;
+      fill: $successColor;
       &:hover {
-        color: $buttonSubmitHoverColor;
-        fill: $buttonSubmitHoverColor;
+        color: $successMinusColor;
+        fill: $successMinusColor;
       }
     }
 
     &[button-style="text"],
     &[button-style="outline"] {
-      color: $buttonSubmitColor;
-      fill: $buttonSubmitColor;
+      color: $successColor;
+      fill: $successColor;
     }
 
     &[active] {
-      background: $buttonSubmitActiveColor;
-      border-color: $buttonSubmitActiveColor;
-      box-shadow: $buttonSubmitActiveShadow;
+      background: $successPlusColor;
+      border-color: $successPlusColor;
+      box-shadow: $buttonActiveShadow $successTinyColor;
     }
 
     &:hover {
-      background: $buttonSubmitHoverColor;
-      border-color: $buttonSubmitHoverColor;
-      box-shadow: $buttonSubmitHoverShadow;
+      background: $successMinusColor;
+      border-color: $successMinusColor;
+      box-shadow: $buttonHoverShadow $successTinyColor;
       color: #fff;
       fill: #fff;
     }
 
     &[disabled] {
       &[button-style="link"] {
-        color: $buttonSubmitDisabledColor;
-        fill: $buttonSubmitDisabledColor;
+        color: $successTinyColor;
+        fill: $successTinyColor;
       }
       &:not([button-style="link"]) {
-        background: $buttonSubmitDisabledColor;
-        border-color: $buttonSubmitDisabledColor;
+        border-color: $successTinyColor;
+        background: $successTinyColor;
       }
     }
   }
@@ -173,47 +170,47 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   &[button-type="danger"] {
     color: #fff;
     fill: #fff;
-    background: $buttonDangerColor;
-    border-color: $buttonDangerColor;
-    box-shadow: $buttonDangerShadow;
+    background: $dangerColor;
+    border-color: $dangerColor;
+    box-shadow: $buttonShadow $dangerTinyColor;
 
     &[button-style="link"] {
-      color: $buttonDangerColor;
-      fill: $buttonDangerColor;
+      color: $dangerColor;
+      fill: $dangerColor;
       &:hover {
-        color: $buttonDangerHoverColor;
-        fill: $buttonDangerHoverColor;
+        color: $dangerMinusColor;
+        fill: $dangerMinusColor;
       }
     }
 
     &[button-style="text"],
     &[button-style="outline"] {
-      color: $buttonDangerColor;
-      fill: $buttonDangerColor;
+      color: $dangerColor;
+      fill: $dangerColor;
     }
 
     &[active] {
-      background: $buttonDangerActiveColor;
-      border-color: $buttonDangerActiveColor;
-      box-shadow: $buttonDangerActiveShadow;
+      background: $dangerPlusColor;
+      border-color: $dangerPlusColor;
+      box-shadow: $buttonActiveShadow $dangerTinyColor;
     }
 
     &:hover {
-      background: $buttonDangerHoverColor;
-      border-color: $buttonDangerHoverColor;
-      box-shadow: $buttonDangerHoverShadow;
+      background: $dangerMinusColor;
+      border-color: $dangerMinusColor;
+      box-shadow: $buttonHoverShadow $dangerTinyColor;
       color: #fff;
       fill: #fff;
     }
 
     &[disabled] {
       &[button-style="link"] {
-        color: $buttonDangerDisabledColor;
-        fill: $buttonDangerDisabledColor;
+        color: $dangerTinyColor;
+        fill: $dangerTinyColor;
       }
       &:not([button-style="link"]) {
-        background: $buttonDangerDisabledColor;
-        border-color: $buttonDangerDisabledColor;
+        border-color: $dangerTinyColor;
+        background: $dangerTinyColor;
       }
     }
   }
@@ -222,8 +219,8 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   &[button-style="link"]:hover,
   &[button-style="link"][active],
   &[button-style="text"] {
-    background: transparent;
     border-color: transparent;
+    background: transparent;
     box-shadow: none;
   }
   &[button-style="outline"] {
@@ -246,16 +243,25 @@ $buttonYPaddingPx: calc(($buttonHeightPx - $buttonLineHeightPx - 2) / 2);
   &[disabled] {
     cursor: default;
     &:not([button-style="link"]) {
-      color: $textLight;
-      fill: $textLight;
+      color: $buttonDisabledTextColor;
+      fill: $buttonDisabledTextColor;
     }
   }
 
   &[icon-only],
   &:empty {
-    width: $(buttonHeightPx)px;
-    min-width: 0;
+    width: $inputElementHeight;
     padding-left: 0;
     padding-right: 0;
   }
+}
+
+button.mu-button {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+[button-shape="round"],
+[button-shape="round"] > .mu-button {
+  border-radius: $inputElementRoundRadius;
 }

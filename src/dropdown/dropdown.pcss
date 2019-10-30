@@ -1,0 +1,43 @@
+.mu-dropdown {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.mu-dropdown-panel {
+  position: absolute;
+  z-index: 110;
+  display: none;
+  overflow: auto;
+  background: $commonBackground;
+  border: 1px solid $commonBorderColor;
+  border-radius: $dropdownBorderRadius;
+  box-shadow: $dropdownShadow;
+  transition: opacity .2s ease-in-out;
+
+  &[visible] {
+    display: block;
+  }
+
+  &[popup-style=dropdown-list],
+  &[popup-style=dropdown-menu] {
+    padding: $dropdownListPadding;
+  }
+
+  & > .mu-list-item {
+    padding: $dropdownItemPadding;
+    cursor: pointer;
+  }
+}
+
+[popup-style=dropdown-menu] > .mu-list-item {
+  &:hover {
+    color: #fff;
+    fill: #fff;
+    background: $primaryColor;
+  }
+}
+
+body > .mu-dropdown-panel {
+  position: fixed;
+}

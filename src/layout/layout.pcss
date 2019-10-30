@@ -46,17 +46,17 @@
   }
 
   &[bordered], & > [bordered] {
-    border: 1px solid #ddd;
+    border: 1px solid $commonBorderColor;
   }
 
   &[content-spacing],
   &[cellpadding] {
-    padding: $(unitSpacingSizePx)px;
+    padding: $halfSpacingSize;
   }
 
   &[content-spacing] > *,
   & [cellspacing] {
-    margin: $(unitSpacingSizePx)px;
+    margin: $halfSpacingSize;
   }
 
   & > * {
@@ -98,19 +98,63 @@
 }
 
 [content-spacing] > .mu-absolute-fit {
-  top: $(doubleSpacingSizePx)px;
-  left: $(doubleSpacingSizePx)px;
-  right: $(doubleSpacingSizePx)px;
-  bottom: $(doubleSpacingSizePx)px;
+  top: $unitSpacingSize;
+  left: $unitSpacingSize;
+  right: $unitSpacingSize;
+  bottom: $unitSpacingSize;
 }
 
 [cellpadding] > .mu-absolute-fit {
-  top: $(unitSpacingSizePx)px;
-  left: $(unitSpacingSizePx)px;
-  right: $(unitSpacingSizePx)px;
-  bottom: $(unitSpacingSizePx)px;
+  top: $halfSpacingSize;
+  left: $halfSpacingSize;
+  right: $halfSpacingSize;
+  bottom: $halfSpacingSize;
 }
 
 .mu-bordered {
-  border: 1px solid #ddd;
+  border: 1px solid $commonBorderColor;
+}
+
+.mu-splitter {
+  background: $splitterColor;
+  border-radius: $splitterSize;
+  user-select: none;
+
+  &[dragable]:hover {
+    background: $splitterHoverColor;
+  }
+
+  &:first-child,
+  &:last-child {
+    display: none;
+  }
+}
+[cellpadding], [item-spacing] {
+  & > .mu-splitter {
+    margin: $halfSpacingSize;
+  }
+}
+[direction="row"] > .mu-splitter {
+  width: $splitterSize;
+  margin-left: 0;
+  margin-right: 0;
+  &[dragable] {
+    cursor: 'col-resize';
+  }
+}
+[direction="column"] > .mu-splitter[dragable] {
+  height: $splitterSize;
+  margin-top: 0;
+  margin-bottom: 0;
+  &[dragable] {
+    cursor: 'row-resize';
+  }
+}
+
+.mu-space {
+  flex: 1 1 0%;
+}
+[direction="row"][flex-wrap] > .mu-space {
+  flex: none;
+  width: 100%;
 }

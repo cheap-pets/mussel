@@ -1,5 +1,5 @@
 .mu-tabs {
-  background: $tabsBackground;
+  background: $commonBackground;
 }
 
 .mu-tabs-header {
@@ -7,9 +7,12 @@
 
   &[tab-style="card"] {
     & > .mu-tab-item {
-      background-color: #eee;
+      background: $tabCardBackground;
+      border-style: solid;
+      border-color: $commonGridLineColor;
+      
       &[active] {
-        background-color: $tabsBackground;
+        background: $commonBackground;
       }
     }
     & > [active]:before {
@@ -18,18 +21,18 @@
       content: '';
     }
     & > [active]:after {
-      background-color: $tabsBackground;
+      background: $commonBackground;
     }
     & ~ .mu-tab-panel {
-      padding: $(doubleSpacingSizePx)px;
-      border: 1px solid #ddd;
+      padding: $unitSpacingSize;
+      border: 1px solid $commonGridLineColor;
     }
   }
 
   &[tab-position=top],
   &[tab-position=bottom] {
     align-items: center;
-    height: $tabsHeaderHeight;
+    height: $commonBarHeight;
 
     & > .mu-tab-item {
       align-self: stretch;
@@ -48,12 +51,10 @@
       border: 0;
       & > .mu-tab-item  {
         margin-left: 0;
-        padding: 0 $(doubleSpacingSizePx)px;
+        padding: 0 $unitSpacingSize;
         border-width: 0;
         border-right-width: 1px;
         border-left-width: 1px;
-        border-style: solid;
-        border-color: #ddd;
 
         &[active] {
           &:before {
@@ -78,7 +79,7 @@
     display: inline-flex;
 
     & > .mu-tab-item {
-      height: $tabsHeaderHeight;
+      height: $commonBarHeight;
       &[active]:after {
         top: 0;
         bottom: 0;
@@ -89,12 +90,10 @@
     &[tab-style="card"] {
       border: 0;
       & > .mu-tab-item  {
-        padding: 0 $(doubleSpacingSizePx)px;
+        padding: 0 $unitSpacingSize;
         border-width: 0;
         border-top-width: 1px;
         border-bottom-width: 1px;
-        border-style: solid;
-        border-color: #ddd;
 
         &[active] {
           &:before {
@@ -115,7 +114,7 @@
   }
 
   &[tab-position=top] {
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid $commonGridLineColor;
 
     & > .mu-tab-item {
       border-bottom: 0;
@@ -126,12 +125,12 @@
     }
 
     & ~ .mu-tab-panel {
-      padding-top: $(doubleSpacingSizePx)px;
+      padding-top: $unitSpacingSize;
       border-top: 0;
     }
 
     &[tab-style="card"] {
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid $commonGridLineColor;
       & > .mu-tab-item {
         border-top-width: 1px;
       }
@@ -144,19 +143,19 @@
     }
   }
   &[tab-position=bottom] {
-    border-top: 2px solid rgba(0, 0, 0, .2);
+    border-top: 2px solid $commonGridLineColor;
 
     & > [active]:after {
       top: -2px;
     }
 
     & ~ .mu-tab-panel {
-      padding-bottom: $(doubleSpacingSizePx)px;
+      padding-bottom: $unitSpacingSize;
       border-bottom: 0;
     }
 
     &[tab-style="card"] {
-      border-top: 1px solid #ddd;
+      border-top: 1px solid $commonGridLineColor;
       & > .mu-tab-item {
         border-bottom-width: 1px;
       }
@@ -169,15 +168,15 @@
     }
   }
   &[tab-position=left] {
-    border-right: 2px solid rgba(0, 0, 0, .2);
+    border-right: 2px solid $commonGridLineColor;
 
     & > *:not(.mu-tab-item) {
       align-self: flex-end;
-      margin-right: $(doubleSpacingSizePx)px;
+      margin-right: $unitSpacingSize;
     }
     & > .mu-tab-item {
       margin-right: 0;
-      padding-right: $(doubleSpacingSizePx)px;
+      padding-right: $unitSpacingSize;
     }
     & .mu-tab-label {
       text-align: right;
@@ -187,12 +186,12 @@
     }
 
     & ~ .mu-tab-panel {
-      padding-left: $(doubleSpacingSizePx)px;
+      padding-left: $unitSpacingSize;
       border-left: 0;
     }
 
     &[tab-style="card"] {
-      border-right: 1px solid #ddd;
+      border-right: 1px solid $commonGridLineColor;
       & > .mu-tab-item {
         border-left-width: 1px;
       }
@@ -208,29 +207,29 @@
     }
   }
   &[tab-position=right] {
-    border-left: 2px solid rgba(0, 0, 0, .2);
+    border-left: 2px solid $commonGridLineColor;
 
     & > * {
-      margin-left: $(doubleSpacingSizePx)px;
+      margin-left: $unitSpacingSize;
     }
     & > *:not(.mu-tab-item) {
       align-self: flex-start;
     }
     & > .mu-tab-item {
       margin-left: 0;
-      padding-left: $(doubleSpacingSizePx)px;
+      padding-left: $unitSpacingSize;
     }
     & > [active]:after {
       left: -2px;
     }
 
     & ~ .mu-tab-panel {
-      padding-right: $(doubleSpacingSizePx)px;
+      padding-right: $unitSpacingSize;
       border-right: 0;
     }
 
     &[tab-style="card"] {
-      border-left: 1px solid #ddd;
+      border-left: 1px solid $commonGridLineColor;
       & > .mu-tab-item {
         border-right-width: 1px;
       }

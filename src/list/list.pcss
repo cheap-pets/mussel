@@ -1,0 +1,52 @@
+.mu-list-item {
+  position: relative;
+  line-height: $commonLineHeight;
+  padding: $listItemPadding;
+  overflow: hidden;
+
+  &[selected] {
+    color: $primaryColor;
+    fill: $primaryColor;
+    font-weight: 600;
+  }
+
+  &:hover {
+    color: $primaryColor;
+    fill: $primaryColor;
+    background: $commonHoverBackground;
+  }
+
+  &[disabled] {
+    color: $commonDisabledTextColor;
+    fill: $commonDisabledTextColor;
+    background: none;
+  }
+
+  &[active] {
+    color: #fff;
+    fill: #fff;
+    background: $primaryColor;
+  }
+
+  & > .mu-icon {
+    display: inline-block;
+    width: $commonIconWidth;
+  }
+
+  &:not([multi-lines]) {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: default;
+  }
+}
+
+.mu-list-divider {
+  display: block;
+  height: $listDividerHeight;
+  margin: $listDividerMargin;
+  border-bottom: 1px solid $commonGridLineColor;
+
+  &:first-child, &:last-child {
+    display: none;
+  }
+}

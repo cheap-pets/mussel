@@ -1,15 +1,20 @@
-.mu-icon[trigger-type] {
-  cursor: pointer;
+.mu-icon {
+  display: inline-block;
+
+  & > svg {
+    vertical-align: -0.15em;
+  }
 }
 
 .mu-icon {
   &[trigger-type] {
+    cursor: pointer;
     transition: transform .2s ease-in-out;
   }
 
   &[trigger-type="close"]:hover {
-    fill: $buttonDangerHoverColor;
-    color: $buttonDangerHoverColor;
+    fill: $dangerColor;
+    color: $dangerColor;
   }
 }
 

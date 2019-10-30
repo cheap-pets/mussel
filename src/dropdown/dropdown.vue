@@ -7,7 +7,7 @@
     @mouseleave="onMouseLeave">
     <slot />
     <mu-dropdown-panel
-      v-if="!disabled && popupParams.visible"
+      v-show="!disabled && popupParams.visible"
       v-bind="popupParams"
       @change="setPopupVisible"
       @mouseover.native.stop="clearHoverTimer"
@@ -19,6 +19,7 @@
 </template>
 
 <script>
+  import './dropdown.pcss'
   import PopupGroupMixin from '../layer/mix-popup-group'
   import DropdownPanel from './dropdown-panel.vue'
 
@@ -106,11 +107,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-dropdown {
-    position: relative;
-    display: inline-block;
-    vertical-align: top;
-  }
-</style>

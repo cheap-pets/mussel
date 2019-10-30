@@ -1,4 +1,6 @@
 <script>
+  import './modal.pcss'
+
   import RenderToBodyMixin from './mix-render-to-body'
   import PopupVisibleMixin from './mix-popup-visible'
 
@@ -40,27 +42,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-modal-mask {
-    position: absolute;
-    z-index: 100;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: none;
-    background: $modalMaskBackground;
-
-    &[visible] {
-      display: 'block';
-    }
-    &.mu-flex-box[visible] {
-      display: flex;
-    }
-  }
-
-  body > .mu-modal-mask {
-    position: fixed;
-  }
-</style>

@@ -1,0 +1,21 @@
+.mu-modal-mask {
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  background: $maskBackground;
+
+  &[visible] {
+    display: 'block';
+  }
+  &.mu-flex-box[visible] {
+    display: flex;
+  }
+}
+
+body > .mu-modal-mask {
+  position: fixed;
+}

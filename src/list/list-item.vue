@@ -1,6 +1,7 @@
 <template>
   <div
     class="mu-list-item"
+    :disabled="disabled"
     :active="actualActive"
     :selected="actualSelected"
     :icon-indent="actualIconIndent"
@@ -15,6 +16,8 @@
 </template>
 
 <script>
+  import './list.pcss'
+
   import Icon from '../icon/index.vue'
 
   import { unsetOrFalse } from '../utils/prop'
@@ -68,41 +71,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-list-item {
-    position: relative;
-    line-height: $(listItemLineHeightPx)px;
-    padding: $(listItemYPaddingPx)px $(listItemXPaddingPx)px;
-    overflow: hidden;
-
-    &[selected] {
-      color: $primaryColor;
-      fill: $primaryColor;
-      font-weight: 600;
-    }
-
-    &:hover {
-      color: $primaryColor;
-      fill: $primaryColor;
-      background: $listItemHoverBackground;
-    }
-
-    &[active] {
-      color: #fff;
-      fill: #fff;
-      background: $primaryColor;
-    }
-
-    & > .mu-icon {
-      display: inline-block;
-      width: 20px;
-    }
-
-    &:not([multi-lines]) {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      cursor: default;
-    }
-  }
-</style>

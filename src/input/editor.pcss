@@ -1,48 +1,46 @@
-$inputIconSize: calc($inputHeightPx - 2);
-
 .mu-editor {
   position: relative;
   display: inline-block;
   width: 200px;
 
   &:hover > .mu-input {
-    border-color: $inputHoverBorderColor;
+    border-color: $primaryColor;
   }
 
   &[disabled] > .mu-input,
   & > .mu-input[disabled] {
-    border-color: $inputBorderColor;
+    border-color: $commonBorderColor;
   }
 
   & > .mu-input {
     width: 100%;
     vertical-align: middle;
-    padding-right: $(inputIconSize)px;
+    padding-right: $inputIconSize;
   }
 
   &[buttons="0"] > .mu-input {
-    padding-right: $(inputXPaddingPx)px;
+    padding-right: $inputElementPaddingX;
   }
 
   &[buttons="2"] {
     & > input {
-      padding-right: calc($inputIconSize * 2)px;
+      padding-right: $inputIconSizeX2;
       & + .mu-editor-icon {
-        right: $(inputIconSize)px;
+        right: $inputIconSize;
       }
     }
     & > .mu-editor-icon:first-child {
       & + .mu-editor-icon {
-        left: $(inputIconSize)px;
+        left: $inputIconSize;
         right: auto;
       }
       & ~ input {
-        padding-left: calc($inputIconSize * 2)px;
-        padding-right: $(inputXPaddingPx)px;
+        padding-left: $inputIconSizeX2;
+        padding-right: $inputElementPaddingX;
       }
       & + input {
-        padding-left: $(inputIconSize)px;
-        padding-right: $(inputIconSize)px;
+        padding-left: $inputIconSize;
+        padding-right: $inputIconSize;
         & + .mu-editor-icon {
           right: 1px;
         }
@@ -52,9 +50,9 @@ $inputIconSize: calc($inputHeightPx - 2);
 
   &[disabled],
   &[readonly] {
-    & > .mu-input {
-      padding-left: $(inputXPaddingPx)px;
-      padding-right: $(inputXPaddingPx)px;
+    & > input {
+      padding-left: $inputElementPaddingX;
+      padding-right: $inputElementPaddingX;
     }
     & > .mu-editor-icon {
       display: none;
@@ -71,7 +69,7 @@ $inputIconSize: calc($inputHeightPx - 2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: $(inputIconSize)px;
+  width: $inputIconSize;
   color: $inputIconColor;
   fill: $inputIconColor;
 
@@ -80,24 +78,24 @@ $inputIconSize: calc($inputHeightPx - 2);
     right: auto;
 
     & + input {
-      padding-left: $(inputIconSize)px;
-      padding-right: $(inputXPaddingPx)px;
+      padding-left: $inputIconSize;
+      padding-right: $inputElementPaddingX;
     }
   }
 
   &[clickable] {
     cursor: pointer;
     &:hover {
-      fill: $buttonPrimaryHoverColor;
-      color: $buttonPrimaryHoverColor;
+      fill: $primaryColor;
+      color: $primaryColor;
     }
   }
   &[trigger-type="clear"] {
-    color: $textQuarterDark;
-    fill: $textQuarterDark;
+    color: $greyTiny;
+    fill: $greyTiny;
     &:hover {
-      color: $textHalfDark;
-      fill: $textHalfDark;
+      color: $greyMinus;
+      fill: $greyMinus;
     }
   }
 }
@@ -105,10 +103,10 @@ $inputIconSize: calc($inputHeightPx - 2);
 .mu-editor[invalid],
 [invalid] .mu-editor {
   & > .mu-input {
-    border-color: $inputInvalidBorderColor;
+    border-color: $dangerColor;
   }
   & > [clickable]:hover {
-    color: $inputInvalidBorderColor;
-    fill: $inputInvalidBorderColor;
+    color: $dangerColor;
+    fill: $dangerColor;
   }
 }

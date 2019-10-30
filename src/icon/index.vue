@@ -16,7 +16,7 @@
 
 <script>
   import d from './d'
-  import './trigger.pcss'
+  import './icon.pcss'
 
   const triggerIcons = {
     close: 'close',
@@ -61,13 +61,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-icon {
-    display: inline-block;
-
-    & > svg {
-      vertical-align: -0.15em;
-    }
-  }
-</style>

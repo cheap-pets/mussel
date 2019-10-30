@@ -5,7 +5,9 @@
 </template>
 
 <script>
+  import './bar.pcss'
   import HBox from '../layout/flex-h-box'
+
   export default {
     name: 'MusselBar',
     components: {
@@ -13,18 +15,3 @@
     }
   }
 </script>
-
-<style lang="postcss">
-  .mu-bar {
-    & > * {
-      margin-right: $(unitSpacingSizePx)px;
-
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
-  .mu-bar-collapse {
-
-  }
-</style>
