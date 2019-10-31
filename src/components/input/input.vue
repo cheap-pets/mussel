@@ -23,10 +23,6 @@
         default: 'text'
       },
       value: [String, Number],
-      icon: {
-        type: String,
-        default: 'key-down'
-      },
       disabled: {
         type: Boolean,
         default: false

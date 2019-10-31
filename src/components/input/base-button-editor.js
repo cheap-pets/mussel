@@ -21,7 +21,7 @@ export default {
         icon: p.icon,
         iconClickable: p.iconClickable !== false,
         iconClass: p.iconClass,
-        iconAlign: p.iconAlign,
+        iconPosition: p.iconPosition,
         triggerType: p.triggerType,
         readonly: p.readonly,
         disabled: p.disabled,
@@ -48,7 +48,7 @@ export default {
     },
     icon: String,
     iconClass: String,
-    iconAlign: {
+    iconPosition: {
       type: String,
       default: 'right',
       validator (value) {
@@ -88,8 +88,8 @@ export default {
     iconClass (value) {
       this.params.iconClass = value
     },
-    iconAlign (value) {
-      this.params.iconAlign = value
+    iconPosition (value) {
+      this.params.iconPosition = value
     },
     triggerType (value) {
       this.params.triggerType = value

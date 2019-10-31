@@ -5,7 +5,7 @@
     :readonly="params.readonly"
     :disabled="params.disabled">
     <mu-editor-icon
-      v-if="iconAlign === 'left'"
+      v-if="iconPosition === 'left'"
       v-bind="iconParams"
       @click="onButtonClick" />
     <mu-input
@@ -21,7 +21,7 @@
       trigger-type="clear"
       @click="onClearClick" />
     <mu-editor-icon
-      v-if="iconAlign === 'right'"
+      v-if="iconPosition === 'right'"
       v-bind="iconParams"
       @click="onButtonClick" />
     <slot />
@@ -44,18 +44,18 @@
         const p = this.params
         return p.clearable && (!!p.value || p.value === 0)
       },
-      iconAlign () {
+      iconPosition () {
         const p = this.params
         return (p.icon || p.iconClass || p.triggerType)
-          ? p.iconAlign || 'right'
+          ? p.iconPosition || 'right'
           : null
       },
       buttons () {
-        return 0 + (this.clearable ? 1 : 0) + (this.iconAlign ? 1 : 0)
+        return 0 + (this.clearable ? 1 : 0) + (this.iconPosition ? 1 : 0)
       },
       iconParams () {
         const p = this.params
-        return this.iconAlign
+        return this.iconPosition
           ? {
             icon: p.icon,
             iconClass: p.iconClass,

@@ -43,7 +43,7 @@ export default {
   methods: {
     onClick (event) {
       if (this.stopPropagation) event.stopPropagation()
-      this.$emit('click')
+      this.$emit('click', event)
     }
   },
   render (h) {

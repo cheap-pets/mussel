@@ -2191,7 +2191,7 @@ var Button = {
   methods: {
     onClick: function onClick(event) {
       if (this.stopPropagation) event.stopPropagation();
-      this.$emit('click');
+      this.$emit('click', event);
     }
   },
   render: function render(h) {
@@ -2350,11 +2350,11 @@ var script$7 = {
     }
   },
   methods: {
-    onButtonClick: function onButtonClick() {
-      this.$emit('click');
+    onButtonClick: function onButtonClick(event) {
+      this.$emit('click', event);
     },
-    onSplitButtonClick: function onSplitButtonClick() {
-      this.$emit('splitbuttonclick');
+    onSplitButtonClick: function onSplitButtonClick(event) {
+      this.$emit('splitbuttonclick', event);
     }
   }
 };
@@ -3126,10 +3126,6 @@ var script$b = {
       "default": 'text'
     },
     value: [String, Number],
-    icon: {
-      type: String,
-      "default": 'key-down'
-    },
     disabled: {
       type: Boolean,
       "default": false
@@ -3222,16 +3218,16 @@ var script$c = {
       var p = this.params;
       return p.clearable && (!!p.value || p.value === 0);
     },
-    iconAlign: function iconAlign() {
+    iconPosition: function iconPosition() {
       var p = this.params;
-      return p.icon || p.iconClass || p.triggerType ? p.iconAlign || 'right' : null;
+      return p.icon || p.iconClass || p.triggerType ? p.iconPosition || 'right' : null;
     },
     buttons: function buttons() {
-      return 0 + (this.clearable ? 1 : 0) + (this.iconAlign ? 1 : 0);
+      return 0 + (this.clearable ? 1 : 0) + (this.iconPosition ? 1 : 0);
     },
     iconParams: function iconParams() {
       var p = this.params;
-      return this.iconAlign ? {
+      return this.iconPosition ? {
         icon: p.icon,
         iconClass: p.iconClass,
         clickable: p.iconClickable,
@@ -3293,7 +3289,7 @@ var __vue_render__$b = function __vue_render__() {
       readonly: _vm.params.readonly,
       disabled: _vm.params.disabled
     }
-  }, [_vm.iconAlign === "left" ? _c("mu-editor-icon", _vm._b({
+  }, [_vm.iconPosition === "left" ? _c("mu-editor-icon", _vm._b({
     on: {
       click: _vm.onButtonClick
     }
@@ -3317,7 +3313,7 @@ var __vue_render__$b = function __vue_render__() {
     on: {
       click: _vm.onClearClick
     }
-  }) : _vm._e(), _vm._v(" "), _vm.iconAlign === "right" ? _c("mu-editor-icon", _vm._b({
+  }) : _vm._e(), _vm._v(" "), _vm.iconPosition === "right" ? _c("mu-editor-icon", _vm._b({
     on: {
       click: _vm.onButtonClick
     }
@@ -3368,7 +3364,7 @@ var BaseButtonEditor = {
         icon: p.icon,
         iconClickable: p.iconClickable !== false,
         iconClass: p.iconClass,
-        iconAlign: p.iconAlign,
+        iconPosition: p.iconPosition,
         triggerType: p.triggerType,
         readonly: p.readonly,
         disabled: p.disabled,
@@ -3395,7 +3391,7 @@ var BaseButtonEditor = {
     },
     icon: String,
     iconClass: String,
-    iconAlign: {
+    iconPosition: {
       type: String,
       "default": 'right',
       validator: function validator(value) {
@@ -3435,8 +3431,8 @@ var BaseButtonEditor = {
     iconClass: function iconClass(value) {
       this.params.iconClass = value;
     },
-    iconAlign: function iconAlign(value) {
-      this.params.iconAlign = value;
+    iconPosition: function iconPosition(value) {
+      this.params.iconPosition = value;
     },
     triggerType: function triggerType(value) {
       this.params.triggerType = value;

@@ -62,11 +62,11 @@
       }
     },
     methods: {
-      onButtonClick () {
-        this.$emit('click')
+      onButtonClick (event) {
+        this.$emit('click', event)
       },
-      onSplitButtonClick () {
-        this.$emit('splitbuttonclick')
+      onSplitButtonClick (event) {
+        this.$emit('splitbuttonclick', event)
       }
     }
   }
