@@ -3692,7 +3692,7 @@ var BasePopupEditor = {
 
 //
 var script$g = {
-  name: 'MusselPopupBox',
+  name: 'MusselPopupEditor',
   "extends": BasePopupEditor
 };
 

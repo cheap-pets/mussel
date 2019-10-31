@@ -8,7 +8,7 @@
   import BasePopupEditor from './base-popup-editor'
 
   export default {
-    name: 'MusselPopupBox',
+    name: 'MusselPopupEditor',
     extends: BasePopupEditor
   }
 </script>
