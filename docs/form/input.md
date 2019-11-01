@@ -13,11 +13,11 @@ Base input component, for building complex editors.
 -
 
 
-
 ### API
 
 #### Name
 
+* Export Name:  `Input`
 * Component Name:  `MusselInput`
 * Element Tag Name:  `mu-input`
 
@@ -27,13 +27,21 @@ Base input component, for building complex editors.
 
 | name        | description           | type            | accepted values            | default |
 | ----------- | --------------------- | --------------- | -------------------------- | ------- |
-| type        | input (value) type    | String          | text / number / date / ... | text    |
-| value       | input value           | String / Number |                            | -       |
-| readonly    | readonly status       | Boolean         |                            | false   |
 | disabled    | disabled status       | Boolean         |                            | false   |
 | input-shape | input shape           | String          | round / -                  | -       |
-| placeholder | placeholder text      | String          |                            | -       |
 | invalid     | verify failure status | Boolean         |                            | false   |
+| placeholder | placeholder text      | String          |                            | -       |
+| readonly    | readonly status       | Boolean         |                            | false   |
+| type        | input (value) type    | String          | text / number / date / ... | text    |
+| value       | input value           | String / Number |                            | -       |
+
+
+
+#### Model
+
+| prop  | event  |
+| ----- | ------ |
+| value | change |
 
 
 
@@ -41,10 +49,10 @@ Base input component, for building complex editors.
 
 | name     | description                | arguments               |
 | -------- | -------------------------- | ----------------------- |
-| input    | emitted when input         | value                   |
 | change   | emitted when value changed | value                   |
 | enterkey | emitted when enter pressed | this input (vue object) |
 | esckey   | emitted when esc pressed   | this input (vue object) |
+| input    | emitted when input         | value                   |
 
 
 
@@ -58,6 +66,7 @@ Input component, with extra icon and clearable.
 
 #### Name
 
+* Export Name:  `Editor`
 * Component Name:  `MusselEditor`
 * Element Tag Name:  `mu-editor`
 
@@ -67,19 +76,27 @@ Input component, with extra icon and clearable.
 
 | name          | description               | type            | accepted values            | default  |
 | ------------- | ------------------------- | --------------- | -------------------------- | -------- |
-| type          | input (value) type        | String          | text / number / date / ... | text     |
-| value         | input value               | String / Number |                            | -        |
-| readonly      | readonly status           | Boolean         |                            | false    |
+| clearable     | display clear button      | Boolean         |                            | true     |
 | disabled      | disabled status           | Boolean         |                            | false    |
-| input-shape   | input shape               | String          | round / -                  | -        |
-| placeholder   | placeholder text          | String          |                            | -        |
+| editable      | can input by keyboard     | Boolean         |                            | true     |
 | icon          | input button icon         |                 |                            |          |
 | icon-class    | input button icon class   |                 |                            |          |
 | icon-position | input button position     | String          | left / right               | left     |
-| trigger-type  | input button trigger type | String          |                            | ellipsis |
-| editable      | can input by keyboard     | Boolean         |                            | true     |
-| clearable     | display clear button      | Boolean         |                            | true     |
+| input-shape   | input shape               | String          | round / -                  | -        |
 | invalid       | verify failure status     | Boolean         |                            | false    |
+| placeholder   | placeholder text          | String          |                            | -        |
+| readonly      | readonly status           | Boolean         |                            | false    |
+| trigger-type  | input button trigger type | String          |                            | ellipsis |
+| type          | input (value) type        | String          | text / number / date / ... | text     |
+| value         | input value               | String / Number |                            | -        |
+
+
+
+#### Model
+
+| prop  | event  |
+| ----- | ------ |
+| value | change |
 
 
 
@@ -87,10 +104,10 @@ Input component, with extra icon and clearable.
 
 | name     | description                  | arguments                     |
 | -------- | ---------------------------- | ----------------------------- |
-| input    | emitted when input           | value                         |
 | change   | emitted when value changed   | value                         |
 | enterkey | emitted when enter pressed   | this input (vue object)       |
 | esckey   | emitted when esc pressed     | this input (vue object)       |
+| input    | emitted when input           | value                         |
 | keypress | emitted when any key pressed | event (native keypress event) |
 
 
@@ -105,6 +122,7 @@ Input component, with extra button and clearable.
 
 #### Name
 
+* Export Name:  `ButtonEditor`
 * Component Name:  `MusselButtonEditor`
 * Element Tag Name:  `mu-button-editor`
 

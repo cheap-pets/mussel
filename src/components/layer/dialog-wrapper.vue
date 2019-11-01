@@ -11,7 +11,7 @@
       :danger="params.danger"
       :visible="params.dialogVisible"
     >
-      <mu-h-box class="mu-dialog-header">
+      <mu-h-box class="mu-dialog-header" align-items="center">
         <mu-flex-item class="mu-dialog-title mu-text-ellipsis" size="auto">
           {{ params.title }}
         </mu-flex-item>

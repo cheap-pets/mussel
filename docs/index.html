@@ -2,11 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>mussel - another vue components library</title>
+  <title>mussel</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="another vue components library">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+  <link rel="stylesheet" href="theme-vue.css">
+  <style>
+    .markdown-section h3,
+    .markdown-section h4 {
+      margin-block-end: 1rem;
+    }
+    .markdown-section table {
+      display: table;
+      width: 100%;
+    }
+    .markdown-section thead {
+      border-bottom: 2px solid var(--theme-color, #42b983);
+    }
+    .markdown-section thead > tr {
+      border-top: 0;
+    }
+    .markdown-section th,
+    .markdown-section td {
+      line-height: 32px;
+      text-align: left;
+      border: 0;
+    }
+    .markdown-section td:first-child,
+    .markdown-section th:first-child {
+      white-space: nowrap;
+    }
+    .markdown-section td:first-child {
+      color: #666;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
@@ -18,6 +47,7 @@
       repo: 'https://github.com/cheap-pets/mussel'
     }
   </script>
-  <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+  <script src="search.js"></script>
+  <script src="docsify.min.js"></script>
 </body>
 </html>

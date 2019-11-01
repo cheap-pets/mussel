@@ -4,7 +4,7 @@
 
 ## Button
 
-Basic component, tapping event trigger.
+Basic button component, fire 'click' event when tapped.
 
 
 
@@ -18,6 +18,7 @@ Basic component, tapping event trigger.
 
 #### Name
 
+* Export Name:  `Button`
 * Component Name:  `MusselButton`
 * Element Tag Name:  `mu-button`
 
@@ -27,17 +28,17 @@ Basic component, tapping event trigger.
 
 | name             | description                           | type    | accepted values                    | default |
 | ---------------- | ------------------------------------- | ------- | ---------------------------------- | ------- |
-| button-type      | button type                           | String  | normal / primary / submit / danger | normal  |
+| active           | active status                         | Boolean |                                    | false   |
+| caption          | button caption                        | String  |                                    | -       |
+| disabled         | disabled status                       | Boolean |                                    | false   |
 | button-style     | button style                          | String  | normal / outline / text / link     | normal  |
 | button-shape     | button shape                          | String  | normal / round                     | normal  |
+| button-type      | button type                           | String  | normal / primary / submit / danger | normal  |
 | icon             | button icon name <br> (internal icon) | String  |                                    | -       |
 | icon-class       | button icon class<br> (custom icon)   | String  |                                    | -       |
-| trigger-type     | button trigger type                   | String  |                                    | -       |
 | icon-only        | only display icon                     | Boolean |                                    | false   |
-| caption          | button caption                        | String  |                                    | -       |
 | stop-propagation | stop propagation when click           | Boolean |                                    | false   |
-| disabled         | disabled status                       | Boolean |                                    | false   |
-| active           | active status                         | Boolean |                                    | false   |
+| trigger-type     | button trigger type                   | String  |                                    | -       |
 
 
 
@@ -68,11 +69,11 @@ button only with a icon
 -
 
 
-
 ### API
 
 #### Name
 
+* Export Name:  `IconButton`
 * Component Name:  `MusselIconButton`
 * Element Tag Name:  `mu-icon-button`
 
@@ -114,6 +115,7 @@ combine buttons that with relative function.
 
 #### Name
 
+* Export Name:  `ButtonGroup`
 * Component Name:  `MusselButtonGroup`
 * Element Tag Name:  `mu-button-group`
 
@@ -151,6 +153,7 @@ button with a extra small trigger
 
 #### Name
 
+* Export Name:  `SplitButton`
 * Component Name:  `MusselSplitButton`
 * Element Tag Name:  `mu-split-button`
 
@@ -160,16 +163,16 @@ button with a extra small trigger
 
 | name               | description                        | type    | accepted values                    | default  |
 | ------------------ | ---------------------------------- | ------- | ---------------------------------- | -------- |
+| caption            | main button caption                | String  |                                    | -        |
+| disabled           | disabled status                    | Boolean |                                    | false    |
 | button-type        | button type                        | String  | normal / primary / submit / danger | normal   |
 | button-style       | button style                       | String  | normal / outline / text / link     | normal   |
 | button-shape       | button shape                       | String  | normal / round                     | normal   |
 | split-icon         | icon name for the small button     | String  |                                    | -        |
 | split-icon-class   | icon class for the small button    | String  |                                    | -        |
-| split-trigger-type | trigger type for the small button  | String  |                                    | dropdown |
 | split-svg-data     | icon svg data for the small button | Boolean |                                    | false    |
-| caption            | main button caption                | String  |                                    | -        |
+| split-trigger-type | trigger type for the small button  | String  |                                    | dropdown |
 | stop-propagation   | stop propagation when click        | Boolean |                                    | false    |
-| disabled           | disabled status                    | Boolean |                                    | false    |
 
 
 
