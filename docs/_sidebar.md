@@ -15,7 +15,13 @@
     * [Bar](/navigation/bar.md)
     * [Tabs](/navigation/tabs.md)
   * Data
+    * [List](/data/list.md)
   * Modal
+    * [Modal](/modal/modal.md)
+    * [Dialog](/modal/dialog.md)
   * Others
+    * [Dropdown](/others/dropdown.md)
+    * [Expander](/others/expander.md)
+    * [Calendar](/others/calendar.md)
 - Extends & Mixins
 - Extra Styles

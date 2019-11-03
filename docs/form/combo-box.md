@@ -86,8 +86,11 @@ Option item within Combo Box
 
 #### Name
 
+* Export Name:  `Option`
 * Component Name:  `MusselOption`
 * Element Tag Name:  `mu-option`
+
+
 
 #### Attributes
 

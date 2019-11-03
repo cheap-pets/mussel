@@ -9,6 +9,8 @@ Date picker
 -
 
 
+
+
 ### API
 
 #### Name
@@ -16,6 +18,8 @@ Date picker
 * Export Name:  `DateEditor`
 * Component Name:  `MusselDateEditor`
 * Element Tag Name:  `mu-date-editor`
+
+
 
 #### Attributes
 
