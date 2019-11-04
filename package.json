@@ -10,6 +10,7 @@
   "scripts": {
     "build": "rollup -c && rollup --c rollup.dev.js",
     "builddev": "rollup --c rollup.dev.js --watch",
+    "docs": "node open-docs.js && serve docs",
     "pub": "npm run build && npm publish"
   },
   "devDependencies": {
@@ -21,8 +22,10 @@
     "autoprefixer": "^9.7.0",
     "clean-css": "^4.2.1",
     "core-js": "^3.3.5",
+    "delay": "^4.3.0",
     "lodash.isdate": "^4.0.1",
     "lodash.isstring": "^4.0.1",
+    "open": "^7.0.0",
     "postcss": "^7.0.21",
     "postcss-calc": "^7.0.1",
     "postcss-clean": "^1.1.0",
@@ -40,6 +43,7 @@
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-vue": "5.0.1",
+    "serve": "^11.2.0",
     "vue": "^2.6.10",
     "vue-template-compiler": "^2.6.10"
   },
