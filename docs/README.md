@@ -10,7 +10,7 @@ npm i mussel --save-dev
 
 ## Importing
 ### Global Register
-When importing `mussel`, if `window.Vue` exist, it will install all mussel components globally.
+If `window.Vue` exist, you can just import mussel, it will install all mussel components globally.
 
 ``` javascript
 import 'mussel'

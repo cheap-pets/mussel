@@ -10,7 +10,7 @@
   "scripts": {
     "build": "rollup -c && rollup --c rollup.dev.js",
     "builddev": "rollup --c rollup.dev.js --watch",
-    "docs": "node open-docs.js && serve docs",
+    "docs": "concurrently \"node open-docs.js\" \"serve docs\"",
     "pub": "npm run build && npm publish"
   },
   "devDependencies": {
@@ -21,8 +21,8 @@
     "@vue/babel-plugin-transform-vue-jsx": "^1.0.0",
     "autoprefixer": "^9.7.0",
     "clean-css": "^4.2.1",
+    "concurrently": "^5.0.0",
     "core-js": "^3.3.5",
-    "delay": "^4.3.0",
     "lodash.isdate": "^4.0.1",
     "lodash.isstring": "^4.0.1",
     "open": "^7.0.0",
