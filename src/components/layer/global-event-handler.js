@@ -50,8 +50,8 @@ window.addEventListener('popstate', () => {
 })
 
 window.addEventListener('resize', setPositionIf)
-window.addEventListener('scroll', setPositionIf)
-window.addEventListener('mousewheel', setPositionIf)
+window.addEventListener('scroll', () => { hideIf('dropdown') })
+window.addEventListener('mousewheel', () => { hideIf('dropdown') })
 
 export {
   hideIf

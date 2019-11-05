@@ -2650,8 +2650,12 @@
     hideIf('modal', true);
   });
   window.addEventListener('resize', setPositionIf);
-  window.addEventListener('scroll', setPositionIf);
-  window.addEventListener('mousewheel', setPositionIf);
+  window.addEventListener('scroll', function () {
+    hideIf('dropdown');
+  });
+  window.addEventListener('mousewheel', function () {
+    hideIf('dropdown');
+  });
 
   var PopupVisibleMixin = {
     model: {
