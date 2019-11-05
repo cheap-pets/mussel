@@ -43,28 +43,24 @@
     <div>
       <h3>Popup Editor</h3>
       <h5>Custom Popup</h5>
-      <div style="height: 200px; overflow: auto;">
-        <div style="height: 50px; background: silver;"></div>
-        <mu-popup-editor :editable="false" value="xxx" popup-render-to-body>
-          <div style="height: 200px; background: orange;"></div>
-        </mu-popup-editor>
-        <h5>Combo Box</h5>
-        <mu-combo-box v-model="comboValue1" @change="onCombo1Change" editable>
-          <mu-option value='tom' icon="calendar"></mu-option>
-          <mu-option value='jack'></mu-option>
-          <mu-option value='shawn'></mu-option>
-          <mu-list-divider></mu-list-divider>
-          <mu-option value='biff'></mu-option>
-          <mu-option value='floopy'></mu-option>
-        </mu-combo-box>
-        <mu-combo-box v-model="comboValue2" multiple :options="comboOptions" @optionclick="onOptionClick">
-        </mu-combo-box>
-        <mu-combo-box v-model="comboValue3">
-          <mu-option :value='true' label="true"></mu-option>
-          <mu-option :value='false' label="false"></mu-option>
-        </mu-combo-box>
-        <div style="height: 200px; background: silver;"></div>
-      </div>
+      <mu-popup-editor :editable="false" value="xxx" popup-render-to-body>
+        <div style="height: 200px; background: orange;"></div>
+      </mu-popup-editor>
+      <h5>Combo Box</h5>
+      <mu-combo-box v-model="comboValue1" @change="onCombo1Change" editable>
+        <mu-option value='tom' icon="calendar"></mu-option>
+        <mu-option value='jack'></mu-option>
+        <mu-option value='shawn'></mu-option>
+        <mu-list-divider></mu-list-divider>
+        <mu-option value='biff'></mu-option>
+        <mu-option value='floopy'></mu-option>
+      </mu-combo-box>
+      <mu-combo-box v-model="comboValue2" multiple :options="comboOptions" @optionclick="onOptionClick">
+      </mu-combo-box>
+      <mu-combo-box v-model="comboValue3">
+        <mu-option :value='true' label="true"></mu-option>
+        <mu-option :value='false' label="false"></mu-option>
+      </mu-combo-box>
     </div>
   </div>
   <script type="text/javascript">
