@@ -2023,6 +2023,12 @@ var Splitter = normalizeComponent_1({
   staticRenderFns: __vue_staticRenderFns__$3
 }, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, undefined, undefined);
 
+// `Array.isArray` method
+// https://tc39.github.io/ecma262/#sec-array.isarray
+_export({ target: 'Array', stat: true }, {
+  isArray: isArray
+});
+
 var ok = 'M351.81165742 729.48242963L134.32922778 512 61.83508498 584.49414281 351.81165742 874.47071645 973.19002778 253.09234608 900.69588498 180.59820206Z';
 var close = 'M951.90520135 160.07583979L863.92416021 72.09479865 512 424.01896032 160.07583979 72.09479865 72.09479865 160.07583979 424.01896032 512 72.09479865 863.92416021 160.07583979 951.90520135 512 599.98103968 863.92416021 951.90520135 951.90520135 863.92416021 599.98103968 512Z';
 var clear = 'M442.333867 521.3184L310.6816 652.970667a55.842133 55.842133 0 0 0 78.984533 78.984533l131.652267-131.652267 131.652267 131.652267a55.842133 55.842133 0 1 0 78.984533-78.984533l-131.652267-131.652267 131.652267-131.652267a55.842133 55.842133 0 1 0-78.984533-78.984533l-131.652267 131.652267-131.652267-131.652267a55.842133 55.842133 0 1 0-78.984533 78.984533l131.652267 131.652267zM512 1024C229.239467 1024 0 794.760533 0 512 0 229.239467 229.239467 0 512 0c282.760533 0 512 229.239467 512 512 0 282.760533-229.239467 512-512 512z';
@@ -2050,7 +2056,6 @@ var data$1 = {
   'collapse-all': collapseAll
 };
 
-//
 var triggerIcons = {
   close: 'close',
   clear: 'clear',
@@ -2067,6 +2072,10 @@ var script$4 = {
     size: {
       type: String,
       "default": '1em'
+    },
+    viewBox: {
+      type: String,
+      "default": '0 0 1024 1024'
     }
   },
   computed: {
@@ -2079,8 +2088,9 @@ var script$4 = {
           triggerType = this.triggerType;
       return icon || (iconClass || !triggerType ? undefined : triggerIcons[triggerType]);
     },
-    d: function d() {
-      return this.svgData || this.iconName ? data$1[this.iconName] : null;
+    paths: function paths() {
+      var data = this.svgData || (this.iconName ? data$1[this.iconName] : null);
+      return data ? Array.isArray(data) ? data : [data] : null;
     }
   },
   methods: {
@@ -2111,18 +2121,20 @@ var __vue_render__$4 = function __vue_render__() {
     on: {
       click: _vm.onClick
     }
-  }, [_vm.d ? _c("svg", {
+  }, [_vm.paths ? _c("svg", {
     attrs: {
-      icon: _vm.icon,
-      viewBox: "0 0 1024 1024",
+      viewBox: _vm.viewBox,
       width: _vm.size,
       height: _vm.size
     }
-  }, [_c("path", {
-    attrs: {
-      d: _vm.d
-    }
-  })]) : _vm._e()]);
+  }, _vm._l(_vm.paths, function (d) {
+    return _c("path", {
+      key: d,
+      attrs: {
+        d: d
+      }
+    });
+  }), 0) : _vm._e()]);
 };
 
 var __vue_staticRenderFns__$4 = [];
@@ -2633,6 +2645,7 @@ window.addEventListener('popstate', function () {
 });
 window.addEventListener('resize', setPositionIf);
 window.addEventListener('scroll', setPositionIf);
+window.addEventListener('mousewheel', setPositionIf);
 
 var PopupVisibleMixin = {
   model: {
@@ -2766,7 +2779,7 @@ var script$8 = {
         width: w && w !== 'auto' && w !== 'inherit' && w !== 'fit-content' ? w : undefined,
         height: this.height
       });
-      this.$nextTick(this.setStyle);
+      this.$nextTick(this.setPosition);
       this.$emit('show');
       this.$emit('change', true);
     },
@@ -2783,21 +2796,26 @@ var script$8 = {
         this.hide();
       }
     },
-    setStyle: function setStyle() {
-      if (!this.popupVisible) return;
-      var _this$$el = this.$el,
-          offsetWidth = _this$$el.offsetWidth,
-          offsetHeight = _this$$el.offsetHeight;
-      var pRect = getClientRect(this.$parent.$el);
-      var width = !this.width || this.width === 'inherit' ? pRect.width : this.width === 'auto' && offsetWidth < pRect.width ? pRect.width : null;
-      var isOnTop = popOnTop(pRect, offsetHeight);
-      var isOnRight = popOnRight(pRect, width || offsetWidth);
-      Object.assign(this.style, width ? {
-        width: width + 'px'
-      } : {}, this.renderToBody ? getAbsolutePosition(isOnTop, isOnRight, pRect, offsetHeight, width || offsetWidth) : getRelativePosition(isOnTop, isOnRight, pRect), {
-        visibility: 'visible',
-        opacity: 1
-      });
+    setPosition: function setPosition() {
+      var _this = this;
+
+      if (this.positionTimer) clearTimeout(this.positionTimer);
+      this.setPositionTimer = setTimeout(function () {
+        if (!_this.popupVisible) return;
+        var _this$$el = _this.$el,
+            offsetWidth = _this$$el.offsetWidth,
+            offsetHeight = _this$$el.offsetHeight;
+        var pRect = getClientRect(_this.$parent.$el);
+        var width = !_this.width || _this.width === 'inherit' ? pRect.width : _this.width === 'auto' && offsetWidth < pRect.width ? pRect.width : null;
+        var isOnTop = popOnTop(pRect, offsetHeight);
+        var isOnRight = popOnRight(pRect, width || offsetWidth);
+        Object.assign(_this.style, width ? {
+          width: width + 'px'
+        } : {}, _this.renderToBody ? getAbsolutePosition(isOnTop, isOnRight, pRect, offsetHeight, width || offsetWidth) : getRelativePosition(isOnTop, isOnRight, pRect), {
+          visibility: 'visible',
+          opacity: 1
+        });
+      }, 50);
     }
   }
 };
@@ -2819,6 +2837,14 @@ var __vue_render__$7 = function __vue_render__() {
     attrs: {
       "popup-style": _vm.popupStyle,
       visible: _vm.popupVisible
+    },
+    on: {
+      scroll: function scroll($event) {
+        $event.stopPropagation();
+      },
+      mousewheel: function mousewheel($event) {
+        $event.stopPropagation();
+      }
     }
   }, [_vm._t("default")], 2);
 };
@@ -6506,12 +6532,6 @@ var __vue_is_functional_template__$t = undefined;
 /* style inject SSR */
 
 var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, undefined, undefined);
-
-// `Array.isArray` method
-// https://tc39.github.io/ecma262/#sec-array.isarray
-_export({ target: 'Array', stat: true }, {
-  isArray: isArray
-});
 
 //
 var script$u = {

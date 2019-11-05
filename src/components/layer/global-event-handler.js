@@ -51,6 +51,7 @@ window.addEventListener('popstate', () => {
 
 window.addEventListener('resize', setPositionIf)
 window.addEventListener('scroll', setPositionIf)
+window.addEventListener('mousewheel', setPositionIf)
 
 export {
   hideIf

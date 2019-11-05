@@ -5,11 +5,12 @@
     :class="[className, iconClass]"
     :trigger-type="triggerType"
     @click="onClick">
-    <svg v-if="d" :icon="icon"
-      viewBox="0 0 1024 1024"
+    <svg
+      v-if="paths"
+      :viewBox="viewBox"
       :width="size"
       :height="size">
-      <path :d="d" />
+      <path v-for="d in paths" :key="d" :d="d" />
     </svg>
   </span>
 </template>
@@ -34,6 +35,10 @@
       size: {
         type: String,
         default: '1em'
+      },
+      viewBox: {
+        type: String,
+        default: '0 0 1024 1024'
       }
     },
     computed: {
@@ -49,8 +54,11 @@
               : triggerIcons[triggerType]
           )
       },
-      d () {
-        return this.svgData || this.iconName ? d[this.iconName] : null
+      paths () {
+        const data = this.svgData || (this.iconName ? d[this.iconName] : null)
+        return data
+          ? (Array.isArray(data) ? data : [data])
+          : null
       }
     },
     methods: {

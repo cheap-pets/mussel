@@ -3,7 +3,9 @@
     class="mu-dropdown-panel"
     :popup-style="popupStyle"
     :style="style"
-    :visible="popupVisible">
+    :visible="popupVisible"
+    @scroll.stop
+    @mousewheel.stop>
     <slot />
   </div>
 </template>
@@ -86,7 +88,7 @@
             height: this.height
           }
         )
-        this.$nextTick(this.setStyle)
+        this.$nextTick(this.setPosition)
         this.$emit('show')
         this.$emit('change', true)
       },
@@ -106,43 +108,46 @@
           this.hide()
         }
       },
-      setStyle () {
-        if (!this.popupVisible) return
+      setPosition () {
+        if (this.positionTimer) clearTimeout(this.positionTimer)
+        this.setPositionTimer = setTimeout(() => {
+          if (!this.popupVisible) return
 
-        const { offsetWidth, offsetHeight } = this.$el
-        const pRect = getClientRect(this.$parent.$el)
+          const { offsetWidth, offsetHeight } = this.$el
+          const pRect = getClientRect(this.$parent.$el)
 
-        const width = !this.width || this.width === 'inherit'
-          ? pRect.width
-          : (
-            this.width === 'auto' && offsetWidth < pRect.width
-              ? pRect.width
-              : null
-          )
-        const isOnTop = popOnTop(pRect, offsetHeight)
-        const isOnRight = popOnRight(pRect, width || offsetWidth)
-
-        Object.assign(
-          this.style,
-          width ? { width: width + 'px' } : {},
-          this.renderToBody
-            ? getAbsolutePosition(
-              isOnTop,
-              isOnRight,
-              pRect,
-              offsetHeight,
-              width || offsetWidth
+          const width = !this.width || this.width === 'inherit'
+            ? pRect.width
+            : (
+              this.width === 'auto' && offsetWidth < pRect.width
+                ? pRect.width
+                : null
             )
-            : getRelativePosition(
-              isOnTop,
-              isOnRight,
-              pRect
-            ),
-          {
-            visibility: 'visible',
-            opacity: 1
-          }
-        )
+          const isOnTop = popOnTop(pRect, offsetHeight)
+          const isOnRight = popOnRight(pRect, width || offsetWidth)
+
+          Object.assign(
+            this.style,
+            width ? { width: width + 'px' } : {},
+            this.renderToBody
+              ? getAbsolutePosition(
+                isOnTop,
+                isOnRight,
+                pRect,
+                offsetHeight,
+                width || offsetWidth
+              )
+              : getRelativePosition(
+                isOnTop,
+                isOnRight,
+                pRect
+              ),
+            {
+              visibility: 'visible',
+              opacity: 1
+            }
+          )
+        }, 50)
       }
     }
   }

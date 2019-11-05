@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "0.0.22",
+  "version": "0.0.24",
   "description": "Another UI Library for Vue",
   "main": "dist/mussel.esm.js",
   "files": [
@@ -23,8 +23,10 @@
     "clean-css": "^4.2.1",
     "concurrently": "^5.0.0",
     "core-js": "^3.3.5",
+    "lodash.debounce": "^4.0.8",
     "lodash.isdate": "^4.0.1",
     "lodash.isstring": "^4.0.1",
+    "lodash.throttle": "^4.1.1",
     "open": "^7.0.0",
     "postcss": "^7.0.21",
     "postcss-calc": "^7.0.1",

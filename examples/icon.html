@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Icon Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+    @font-face {font-family: "iconfont";
+      src: url('iconfont.eot?t=1569405935250'); /* IE9 */
+      src: url('iconfont.eot?t=1569405935250#iefix') format('embedded-opentype'), /* IE6-IE8 */
+      url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAMMAAsAAAAAB0QAAALAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCDBgqCIIF4ATYCJAMMCwgABCAFhG0HQxtLBhHVk3Nkf4FsDIf46kiYQDdbDY0vMMFxbky5BDyB7f+AyUANSAAAAACAIOrXPnvevI+o7k4BUwh2fxgVW2CVlAdyhCqsGSSwil6evl1v2w9NSokEIgciFwC5CjDbCw9V8Myc6lITJEAyYY+3fNLMV5bXyepqLlXcc2URm9UqADnEUPY/l+MbAYVjf8sCS23t/fyoF+BxQIGNNamISiQQbxneulid3InDECBMiVoyOj7NYWOhowSQzRvWrWAXolisUggi+BsWWuQoPoLmsHkER6Lvy6/mBMHgU+hRs9aOreZ+7bzu8nYt1l3sms8NKMtAgVpgQZY2ZudTRKEqYe10V/qxCGauhOdFUlvv3+kfz4D4ofVRACqJ2XBTMk8AgW8khAbocD8QBBywFCjZCosNhZLkXdGdURPWky87Ym70xu0iE9GYa449a43eeliiJ+91xG4+dqLEEOK8qkCwZyLXbBaWMGEiRCTivNLCOaXxo93ON3rKPX/+3Dm3VP7qNfWikM5ZVwjzr0NcEbvhc43oGPJzrtMvsGuXy8ezHICntCb6hQACFx9Y0iV6/wexALzPP4h4Jryd4C35BH6xDNlkbQW1qTWlntT1KfW5CgwQtgN40WDal/H6HDoNQrAgU8AQoBiUIKWIpdSCjwit4CfIAISpMbE8QsYWitgQUG0/gJB0GQxx7oGS9BixlM/gI+8P+ElGIUxBMhtGKA+/WYJBMdP4p22KgblDbdx4w/J2g+QVEfsFyVuCmrIuF64IkDmm5M/SqjKxRE8XOA7ORUoSd0xarqrpXFXc9KJyit5YQzAoZhr/tE0xcECutvL5G5a3G6SD0BJ+QfLWOTVljUCu2oAi3Msz+bO0qkws0dMF+sG5SKm5345Jy3VEOp0r1oqx2nJ9vf++bXAMvamnlWY0ReeGlFEMztl/aQhzajEG') format('woff2'),
+      url('iconfont.woff?t=1569405935250') format('woff'),
+      url('iconfont.ttf?t=1569405935250') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+      url('iconfont.svg?t=1569405935250#iconfont') format('svg'); /* iOS 4.1- */
+    }
+
+    .icon {
+      font-family: "iconfont" !important;
+      font-size: 16px;
+      font-style: normal;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .icon-collapse-all:before {
+      content: "\e6b8";
+    }
+
+    .icon-expand-all:before {
+      content: "\e716";
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>Icon Example</h2>
+    <hr>
+    <div>
+      <h3>Local Icons</h3>
+      <mu-icon icon="ok"></mu-icon>
+    </div>
+    <div>
+      <h3>Icon Font Class</h3>
+      <mu-icon icon-class="icon icon-expand-all"></mu-icon>
+    </div>
+    <div>
+      <h3>SVG Paths Data</h3>
+      <mu-icon :svg-data="icon1"></mu-icon>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        icon1: 'M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z'
+      },
+      methods: {
+      }
+    });
+  </script>
+</body>
+
+</html>
