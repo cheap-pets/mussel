@@ -56,9 +56,9 @@
       }
     },
     watch: {
-      popupVisible (value) {
-        this.params.modalVisible = value
-      },
+      // popupVisible (value) {
+      //   this.params.modalVisible = value
+      // },
       buttons: {
         handler () {
           this.params.buttons = this.btns
@@ -107,13 +107,14 @@
       },
       show (callbackOnce) {
         window.__mussel_modal = this
+        this.clearHideTimer()
+        this.popupVisible = true
         this.callbackOnce = callbackOnce
         if (!this.$el) {
           this.$mount()
           document.body.appendChild(this.$el)
         }
-        this.clearHideTimer()
-        this.popupVisible = true
+        this.params.modalVisible = true
         setTimeout(() => {
           this.params.dialogVisible = true
         }, 10)
@@ -121,12 +122,13 @@
         this.$emit('change', true)
       },
       actualHide () {
-        this.callbackOnce = null
-        this.deactivate()
-        this.params.dialogVisible = false
         this.clearHideTimer()
+        this.callbackOnce = null
+        this.popupVisible = false
+        this.params.dialogVisible = false
+        this.deactivate()
         this.$hideTimer = setTimeout(() => {
-          this.popupVisible = false
+          this.params.modalVisible = false
         }, 200)
         this.$emit('hide')
         this.$emit('change', false)

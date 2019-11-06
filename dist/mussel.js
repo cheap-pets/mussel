@@ -2673,8 +2673,8 @@
     watch: {
       visible: {
         handler: function handler(value) {
-          if (value === !this.popupVisible) {
-            this.$nextTick(value ? this.show : this.hide);
+          if (!!value === !this.popupVisible) {
+            return value ? this.show() : this.hide(true);
           }
         },
         immediate: true
@@ -6724,9 +6724,9 @@
       }
     },
     watch: {
-      popupVisible: function popupVisible(value) {
-        this.params.modalVisible = value;
-      },
+      // popupVisible (value) {
+      //   this.params.modalVisible = value
+      // },
       buttons: {
         handler: function handler() {
           this.params.buttons = this.btns;
@@ -6777,6 +6777,8 @@
         var _this2 = this;
 
         window.__mussel_modal = this;
+        this.clearHideTimer();
+        this.popupVisible = true;
         this.callbackOnce = callbackOnce;
 
         if (!this.$el) {
@@ -6784,8 +6786,7 @@
           document.body.appendChild(this.$el);
         }
 
-        this.clearHideTimer();
-        this.popupVisible = true;
+        this.params.modalVisible = true;
         setTimeout(function () {
           _this2.params.dialogVisible = true;
         }, 10);
@@ -6795,12 +6796,13 @@
       actualHide: function actualHide() {
         var _this3 = this;
 
-        this.callbackOnce = null;
-        this.deactivate();
-        this.params.dialogVisible = false;
         this.clearHideTimer();
+        this.callbackOnce = null;
+        this.popupVisible = false;
+        this.params.dialogVisible = false;
+        this.deactivate();
         this.$hideTimer = setTimeout(function () {
-          _this3.popupVisible = false;
+          _this3.params.modalVisible = false;
         }, 200);
         this.$emit('hide');
         this.$emit('change', false);

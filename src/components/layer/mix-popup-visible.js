@@ -16,8 +16,8 @@ export default {
   watch: {
     visible: {
       handler (value) {
-        if (value === !this.popupVisible) {
-          this.$nextTick(value ? this.show : this.hide)
+        if (!!value === !this.popupVisible) {
+          return value ? this.show() : this.hide(true)
         }
       },
       immediate: true
