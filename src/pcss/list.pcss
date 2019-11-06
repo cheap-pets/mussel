@@ -1,6 +1,6 @@
 .mu-list-item {
   position: relative;
-  line-height: $commonLineHeight;
+  line-height: $normalLineHeight;
   padding: $listItemPadding;
   overflow: hidden;
 
@@ -13,12 +13,12 @@
   &:hover {
     color: $primaryColor;
     fill: $primaryColor;
-    background: $commonHoverBackground;
+    background: $normalHoverBackground;
   }
 
   &[disabled] {
-    color: $commonDisabledTextColor;
-    fill: $commonDisabledTextColor;
+    color: $normalWeakTextColor;
+    fill: $normalWeakTextColor;
     background: none;
   }
 
@@ -30,7 +30,7 @@
 
   & > .mu-icon {
     display: inline-block;
-    width: $commonIconWidth;
+    width: $normalIconWidth;
   }
 
   &:not([multi-lines]) {
@@ -44,7 +44,7 @@
   display: block;
   height: $listDividerHeight;
   margin: $listDividerMargin;
-  border-bottom: 1px solid $commonGridLineColor;
+  border-bottom: 1px solid $normalDividerColor;
 
   &:first-child, &:last-child {
     display: none;

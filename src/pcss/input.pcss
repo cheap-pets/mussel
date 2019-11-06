@@ -4,12 +4,12 @@
   width: 200px;
   padding: $inputElementPadding;
   outline: none;
-  border: 1px solid $commonBorderColor;
+  border: 1px solid $normalBorderColor;
   border-radius: $inputElementBorderRadius;
-  line-height: $commonLineHeight;
-  background: $commonBackground;
+  line-height: $normalLineHeight;
+  background: $normalBackground;
   font-size: $inputFontSize;
-  color: $commonTextColor;
+  color: $normalTextColor;
 
   &:hover,
   &:focus,
@@ -26,9 +26,9 @@
     background-color: $inputReadonlyBackground;
   }
   &[disabled] {
-    background-color: $commonDisabledBackground;
-    border-color: $commonBorderColor;
-    color: $commonDisabledTextColor;
+    background-color: $normalDisabledBackground;
+    border-color: $normalBorderColor;
+    color: $normalWeakTextColor;
     box-shadow: none;
   }
   &::-ms-clear {

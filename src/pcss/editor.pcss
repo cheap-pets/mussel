@@ -9,7 +9,7 @@
 
   &[disabled] > .mu-input,
   & > .mu-input[disabled] {
-    border-color: $commonBorderColor;
+    border-color: $normalBorderColor;
   }
 
   & > .mu-input {
@@ -70,8 +70,8 @@
   align-items: center;
   justify-content: center;
   width: $inputIconSize;
-  color: $inputIconColor;
-  fill: $inputIconColor;
+  color: $normalSubtitleTextColor;
+  fill: $normalSubtitleTextColor;
 
   &:first-child {
     left: 1px;
@@ -91,11 +91,11 @@
     }
   }
   &[trigger-type="clear"] {
-    color: $greyTiny;
-    fill: $greyTiny;
+    color: $normalWeakTextColor;
+    fill: $normalWeakTextColor;
     &:hover {
-      color: $greyMinus;
-      fill: $greyMinus;
+      color: $normalSubtitleTextColor;
+      fill: $normalSubtitleTextColor;
     }
   }
 }

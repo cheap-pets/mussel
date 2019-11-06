@@ -46,7 +46,7 @@
   }
 
   &[bordered], & > [bordered] {
-    border: 1px solid $commonBorderColor;
+    border: 1px solid $normalBorderColor;
   }
 
   &[content-spacing],
@@ -70,6 +70,12 @@
 
   & > [flex-none] {
     flex: 0 0 none !important;
+  }
+  & > [align-self="center"] {
+    align-self: center;
+  }
+  & > [align-self="stretch"] {
+    align-self: stretch;
   }
   /*
   &[direction="column"] > [size] {
@@ -112,7 +118,7 @@
 }
 
 .mu-bordered {
-  border: 1px solid $commonBorderColor;
+  border: 1px solid $normalBorderColor;
 }
 
 .mu-splitter {

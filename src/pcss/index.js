@@ -1,4 +1,5 @@
 import './global.pcss'
+import './background.pcss'
 import './text.pcss'
 import './icon.pcss'
 import './layout.pcss'

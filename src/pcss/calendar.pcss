@@ -3,8 +3,8 @@
   min-height: 240px;
   min-width: 280px;
   font-size: $calendarFontSize;
-  background: $commonBackground;
-  border: 1px solid $commonBorderColor;
+  background: $normalBackground;
+  border: 1px solid $normalBorderColor;
   overflow: hidden;
   user-select: none;
 
@@ -36,7 +36,7 @@
     align-items: center;
     height: $compactBarHeight;
     font-weight: 600;
-    color: $grey;
+    color: $normalSubtitleTextColor;
     border-top: 1px solid $primaryColor;
 
     & > * {
@@ -58,7 +58,7 @@
       flex-grow: 1;
 
       & + .mu-calendar-row {
-        border-top: 1px solid $commonGridLineColor;
+        border-top: 1px solid $normalDividerColor;
       }
     }
     & .mu-calendar-cell {
@@ -71,7 +71,7 @@
       cursor: pointer;
 
       & + .mu-calendar-cell {
-        border-left: 1px solid $commonGridLineColor;
+        border-left: 1px solid $normalDividerColor;
       }
 
       &[marked]:after {
@@ -85,19 +85,19 @@
         border-right: 8px solid transparent;
       }
       &[adjacent] {
-        color: $greyMinus;
+        color: $normalWeakTextColor;
       }
       &:hover {
         color: $primaryMinusColor;
-        background: $commonHoverBackground;
+        background: $normalHoverBackground;
       }
       &[present] {
         font-weight: 600;
         color: $warningColor;
       }
       &[invalid] {
-        color: $commonDisabledTextColor;
-        background: $commonDisabledBackground;
+        color: $normalWeakTextColor;
+        background: $normalDisabledBackground;
         cursor: default;
       }
       &[active] {

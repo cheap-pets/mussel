@@ -4,15 +4,15 @@
   height: $inputElementHeight;
   padding: $inputElementPadding;
   outline: none;
-  border: 1px solid $grey;
+  border: 1px solid $normalBorderColor;
   border-radius: $inputElementBorderRadius;
-  line-height: $commonLineHeight;
-  background: $commonBackground;
+  line-height: $normalLineHeight;
+  background: $normalBackground;
   text-decoration: none;
   text-align: center;
   font-size: $buttonFontSize;
-  color: $grey;
-  fill: $grey;
+  color: $normalTextColor;
+  fill: $normalTextColor;
   cursor: pointer;
 
   &::before {
@@ -28,7 +28,7 @@
 
   &:not([button-type]),
   &[button-type="normal"] {
-    box-shadow: $buttonShadow $greyTiny;
+    box-shadow: $buttonShadow $normalGreyBackground;
 
     &[button-style="link"] {
       &:hover {
@@ -38,26 +38,27 @@
     }
 
     &[active] {
-      background: $greyPlus;
-      box-shadow: $buttonActiveShadow $greyTiny;
-    }
-
-    &:hover {
-      background: $greyMinus;
-      border-color: $greyMinus;
-      box-shadow: $buttonHoverShadow $greyTiny;
+      background: $normalHighlightBackground;
+      box-shadow: $buttonActiveShadow $normalGreyBackground;
       color: #fff;
       fill: #fff;
     }
+
+    &:hover {
+      background: $normalHoverBackground;
+      box-shadow: $buttonHoverShadow $normalGreyBackground;
+      color: $normalTextColor;
+      fill: $normalTextColor;
+    }
  
     &[disabled] {
-      &[button-style="link"] {
-        color: $greyTiny;
-        fill: $greyTiny;
-      }
       &:not([button-style="link"]) {
-        border-color: $greyTiny;
-        background: $greyTiny;
+        border-color: $normalDisabledBackground;
+        background: $normalDisabledBackground;
+      }
+      &, &[button-style="link"] {
+        color: $normalWeakTextColor;
+        fill: $normalWeakTextColor;
       }
     }
   }
@@ -235,16 +236,17 @@
       text-decoration: none;
     }
   }
-  */
+
   &[active] {
     color: #fff;
     fill: #fff;
   }
+  */
   &[disabled] {
     cursor: default;
     &:not([button-style="link"]) {
-      color: $buttonDisabledTextColor;
-      fill: $buttonDisabledTextColor;
+      color: $normalWeakTextColor;
+      fill: $normalWeakTextColor;
     }
   }
 
