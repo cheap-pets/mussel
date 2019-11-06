@@ -4,9 +4,12 @@
     :expanded="popupParams.visible">
     <mu-dropdown-panel
       v-bind="popupParams"
-      @change="setPopupVisible">
+      @change="setPopupVisible"
+      @mounted="onDropdownMounted"
+      @beforedestroy="beforeDropdownDestroy">
       <slot />
     </mu-dropdown-panel>
+    <slot name="expert" />
   </mu-button-editor-wrapper>
 </template>
 
@@ -25,6 +28,12 @@
       setPopupVisible (value) {
         this.popupParams.visible = value
         this.params.focus = value
+      },
+      onDropdownMounted (el) {
+        this.$emit('dropdownmounted', el)
+      },
+      beforeDropdownDestroy () {
+        this.$emit('beforedropdowndestroy')
       }
     }
   }

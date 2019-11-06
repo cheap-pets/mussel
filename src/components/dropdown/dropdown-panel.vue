@@ -69,6 +69,12 @@
         }
       }
     },
+    mounted () {
+      this.$emit('mounted', this.$el)
+    },
+    beforeDestroy () {
+      this.$emit('beforedestroy')
+    },
     methods: {
       deactivate () {
         if (window.__mussel_dropdown === this) window.__mussel_dropdown = null

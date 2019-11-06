@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../node_modules/a-color-picker/dist/acolorpicker.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+    .mu-color-picker input[readonly] {
+      background: #fff;
+    }
+    .mu-dropdown-panel[popup-style="color-picker"] {
+      overflow: hidden;
+    }
+    .mu-dropdown-panel .a-color-picker {
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .mu-dropdown-panel canvas {
+      border-radius: 0;
+    }
+    .mu-color-picker-footer {
+      padding: 4px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .mu-color-picker-indicator {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      left: 10px;
+      padding: 0 10px;
+      transform: translateY(-50%);
+    }
+  </style>
+  <title>Color Picker</title>
+</head>
+
+<body>
+  <script type="text/x-template" id="color-picker">
+    <mu-popup-editor-wrapper
+      class="mu-color-picker"
+      @dropdownmounted="initPicker"
+      @beforedropdowndestroy="destroyPicker">
+      <div></div>
+      <div class="mu-color-picker-footer mu-background-hover" @click="hidePopup">
+        <mu-icon icon="ok"></mu-icon>
+      </div>
+      <template #expert>
+        <div class="mu-color-picker-indicator"></div>
+      </template>
+    </mu-popup-editor-wrapper>
+  </script>
+  <div id="app">
+    <h2>Color Picker</h2>
+    <div>
+      <color-picker value="blue"></color-picker>
+    </div>
+  </div>
+  <script type="text/javascript">
+    var ColorPicker = {
+      extends: mussel.BasePopupEditor,
+      template: '#color-picker',
+      props: {
+        popupWidth: {
+          type: String,
+          default: 'auto'
+        },
+        popupStyle: {
+          type: String,
+          default: 'color-picker'
+        }
+      },
+      mounted: function () {
+        this.setIndicator(this.value)
+      },
+      methods: {
+        setInputValue: function (value) {
+          if (this.$el) this.setIndicator(this.value)
+        },
+        initPicker: function (el) {
+          el.style.overflow = 'hidden'
+          this.colorPicker = AColorPicker
+            .from(el.querySelector('div'), {
+              showHSL: false,
+              showRGB: false,
+              color: this.value
+            })
+            .on('change', this.setColor)
+        },
+        destroyPicker: function () {
+          this.colorPicker.destroy()
+        },
+        setIndicator: function (color) {
+          const indicator = this.$el.querySelector('.mu-color-picker-indicator')
+          if (!indicator) return
+          if (color) {
+            const hex = AColorPicker.parseColor(color, 'hex')
+            const rgb = AColorPicker.parseColor(color, 'rgb')
+            const isDark = rgb[0] * 0.299 + rgb[1] * 0.578 + rgb[2] * 0.114 < 192
+            indicator.style.backgroundColor = hex
+            indicator.style.color = isDark ? '#eee' : '#222'
+            indicator.innerText = hex
+            this.params.value = hex
+            return hex
+          } else {
+            indicator.style.backgroundColor = 'transparent'
+            indicator.innerText = ''
+            this.params.value = ''
+          }
+        },
+        setColor: function (picker, color) {
+          const hex = this.setIndicator(color)
+          this.$emit('change', hex)
+        },
+        clear: function () {
+          this.setIndicator()
+          this.focus()
+          this.$emit('clear')
+        }
+      }
+    }
+    
+    var view = new Vue({
+      el: '#app',
+      components: {
+        'color-picker': ColorPicker
+      },
+      data: {
+      },
+      methods: {
+      }
+    })
+  </script>
+</body>
+
+</html>
