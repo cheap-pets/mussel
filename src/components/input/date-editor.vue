@@ -1,6 +1,9 @@
 <template>
   <mu-popup-editor-wrapper>
-    <calendar v-bind="calendarParams" @change="onSelect" />
+    <calendar
+      class="mu-absolute-fit"
+      v-bind="calendarParams"
+      @change="onSelect" />
   </mu-popup-editor-wrapper>
 </template>
 
@@ -19,7 +22,11 @@
     props: {
       popupWidth: {
         type: String,
-        default: 'auto'
+        default: '300px'
+      },
+      popupHeight: {
+        type: String,
+        default: '250px'
       },
       value: [String, Date],
       format: String,

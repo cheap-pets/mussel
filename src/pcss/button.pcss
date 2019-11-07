@@ -40,8 +40,8 @@
     &[active] {
       background: $normalHighlightBackground;
       box-shadow: $buttonActiveShadow $normalGreyBackground;
-      color: #fff;
-      fill: #fff;
+      color: $normalHighlightTextColor;
+      fill: $normalHighlightTextColor;
     }
 
     &:hover {
@@ -49,17 +49,6 @@
       box-shadow: $buttonHoverShadow $normalGreyBackground;
       color: $normalTextColor;
       fill: $normalTextColor;
-    }
- 
-    &[disabled] {
-      &:not([button-style="link"]) {
-        border-color: $normalDisabledBackground;
-        background: $normalDisabledBackground;
-      }
-      &, &[button-style="link"] {
-        color: $normalWeakTextColor;
-        fill: $normalWeakTextColor;
-      }
     }
   }
   
@@ -73,11 +62,11 @@
   }
 
   &[button-type="primary"] {
-    color: #fff;
-    fill: #fff;
+    color: $normalHighlightTextColor;
+    fill: $normalHighlightTextColor;
     border-color: $primaryColor;
     background: $primaryColor;
-    box-shadow: $buttonShadow $primaryTinyColor;
+    box-shadow: $buttonShadow $primaryShadowColor;
 
     &[button-style="link"] {
       color: $primaryColor;
@@ -97,35 +86,24 @@
     &[active] {
       background: $primaryPlusColor;
       border-color: $primaryPlusColor;
-      box-shadow: $buttonActiveShadow $primaryTinyColor;
+      box-shadow: $buttonActiveShadow $primaryShadowColor;
     }
 
     &:hover {
       background: $primaryMinusColor;
       border-color: $primaryMinusColor;
-      box-shadow: $buttonHoverShadow $primaryTinyColor;
-      color: #fff;
-      fill: #fff;
-    }
-
-    &[disabled] {
-      &[button-style="link"] {
-        color: $primaryTinyColor;
-        fill: $primaryTinyColor;
-      }
-      &:not([button-style="link"]) {
-        border-color: $primaryTinyColor;
-        background: $primaryTinyColor;
-      }
+      box-shadow: $buttonHoverShadow $primaryShadowColor;
+      color: $normalHighlightTextColor;
+      fill: $normalHighlightTextColor;
     }
   }
 
   &[button-type="submit"] {
-    color: #fff;
-    fill: #fff;
+    color: $normalHighlightTextColor;
+    fill: $normalHighlightTextColor;
     background: $successColor;
     border-color: $successColor;
-    box-shadow: $buttonShadow $successTinyColor;
+    box-shadow: $buttonShadow $successShadowColor;
 
     &[button-style="link"] {
       color: $successColor;
@@ -145,35 +123,24 @@
     &[active] {
       background: $successPlusColor;
       border-color: $successPlusColor;
-      box-shadow: $buttonActiveShadow $successTinyColor;
+      box-shadow: $buttonActiveShadow $successShadowColor;
     }
 
     &:hover {
       background: $successMinusColor;
       border-color: $successMinusColor;
-      box-shadow: $buttonHoverShadow $successTinyColor;
-      color: #fff;
-      fill: #fff;
-    }
-
-    &[disabled] {
-      &[button-style="link"] {
-        color: $successTinyColor;
-        fill: $successTinyColor;
-      }
-      &:not([button-style="link"]) {
-        border-color: $successTinyColor;
-        background: $successTinyColor;
-      }
+      box-shadow: $buttonHoverShadow $successShadowColor;
+      color: $normalHighlightTextColor;
+      fill: $normalHighlightTextColor;
     }
   }
 
   &[button-type="danger"] {
-    color: #fff;
-    fill: #fff;
+    color: $normalHighlightTextColor;
+    fill: $normalHighlightTextColor;
     background: $dangerColor;
     border-color: $dangerColor;
-    box-shadow: $buttonShadow $dangerTinyColor;
+    box-shadow: $buttonShadow $dangerShadowColor;
 
     &[button-style="link"] {
       color: $dangerColor;
@@ -193,26 +160,15 @@
     &[active] {
       background: $dangerPlusColor;
       border-color: $dangerPlusColor;
-      box-shadow: $buttonActiveShadow $dangerTinyColor;
+      box-shadow: $buttonActiveShadow $dangerShadowColor;
     }
 
     &:hover {
       background: $dangerMinusColor;
       border-color: $dangerMinusColor;
-      box-shadow: $buttonHoverShadow $dangerTinyColor;
-      color: #fff;
-      fill: #fff;
-    }
-
-    &[disabled] {
-      &[button-style="link"] {
-        color: $dangerTinyColor;
-        fill: $dangerTinyColor;
-      }
-      &:not([button-style="link"]) {
-        border-color: $dangerTinyColor;
-        background: $dangerTinyColor;
-      }
+      box-shadow: $buttonHoverShadow $dangerShadowColor;
+      color: $normalHighlightTextColor;
+      fill: $normalHighlightTextColor;
     }
   }
 
@@ -225,7 +181,7 @@
     box-shadow: none;
   }
   &[button-style="outline"] {
-    background: #fff;
+    background: $normalBackground;
   }
   /*
   &[button-style="link"] {
@@ -238,15 +194,19 @@
   }
 
   &[active] {
-    color: #fff;
-    fill: #fff;
+    color: $normalHighlightTextColor;
+    fill: $normalHighlightTextColor;
   }
   */
+
   &[disabled] {
+    color: $normalWeakTextColor !important;
+    fill: $normalWeakTextColor !important;
     cursor: default;
+
     &:not([button-style="link"]) {
-      color: $normalWeakTextColor;
-      fill: $normalWeakTextColor;
+      border-color: $normalDisabledBackground !important;
+      background: $normalDisabledBackground !important;
     }
   }
 

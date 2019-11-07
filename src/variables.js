@@ -28,21 +28,21 @@ export default {
 
   /* primary colors */
   primaryColor: primary[5],
-  primaryTinyColor: primary[2],
   primaryPlusColor: primary[6],
   primaryMinusColor: primary[4],
+  primaryShadowColor: primary[1],
 
   /* success colors */
   successColor: success[5],
-  successTinyColor: success[2],
   successPlusColor: success[6],
   successMinusColor: success[4],
+  successShadowColor: success[1],
 
   /* danger colors */
   dangerColor: danger[5],
-  dangerTinyColor: danger[2],
   dangerPlusColor: danger[6],
   dangerMinusColor: danger[4],
+  dangerShadowColor: danger[1],
 
   /* warning colors */
   warningColor: warning[5],
@@ -58,6 +58,7 @@ export default {
   normalWeakTextColor: 'rgba(0, 0, 0, .3)',
   normalTitleTextColor: 'rgba(0, 0, 0, .85)',
   normalSubtitleTextColor: 'rgba(0, 0, 0, .5)',
+  normalHighlightTextColor: '#fff',
 
   // line
   normalBorderColor: 'rgba(0, 0, 0, .15)',
@@ -87,11 +88,11 @@ export default {
   buttonShadow: '0 0 0 0',
   buttonRoundRadius: '16px',
   buttonActiveShadow: '0 0 0 0',
-  buttonHoverShadow: '0 0 0 3px',
+  buttonHoverShadow: '0 0 0 2px',
   buttonDividerColor: 'rgba(255, 255, 255, .5)',
 
   inputFontSize: '1rem',
-  inputFocusShadow: '0 0 0 3px',
+  inputFocusShadow: '0 0 0 2px',
   inputReadonlyBackground: '$normalInfoBackground',
 
   inputIconSize: '30px',
