@@ -1,0 +1,35 @@
+.mu-toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: $inputElementHeight;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.mu-toggle-slip-bar {
+  position: relative;
+  height: 100%;
+  background: $normalHighlightBackground;
+  border-radius: $inputElementHeight;
+  transition: background 0.2s ease-in-out;
+  &:after {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    bottom: 2px;
+    display: inline-block;
+    width: 16px;
+    background: #fff;
+    border-radius: 8px;
+    content: '';
+    transition: all 0.2s ease-in-out;
+  }
+}
+
+.mu-toggle[active] > .mu-toggle-slip-bar {
+  background: $successColor;
+  &:after {
+    left: 20px;
+  }
+}
