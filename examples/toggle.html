@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Toggle Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+    .client-area {
+      background: rgba(0, 0, 0, .05);
+    }
+    h3 {
+      margin-top: 1.5em;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>Toggle Example</h2>
+    <hr>
+    <div>
+      <h3>Simple</h3>
+      <mu-toggle v-model="toggleValue" label="Toggle Setting"></mu-toggle>
+    </div>
+    <div>
+      <h3>Inactive Value & Active Value</h3>
+      <mu-toggle v-model="toggleValue" label="Disable setting" active-label="Enable setting"></mu-toggle>
+    </div>
+    <div>
+      <h3>Disabled</h3>
+      <mu-toggle v-model="toggleValue" label="Toggle Setting" disabled></mu-toggle>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        toggleValue: false
+      },
+      methods: {
+      }
+    });
+  </script>
+</body>
+
+</html>

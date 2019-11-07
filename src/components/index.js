@@ -28,6 +28,8 @@ import Option from './input/option.js'
 /* FORM */
 import Form from './form/form.vue'
 import FormField from './form/form-field.vue'
+/* TOGGLE */
+import Toggle from './form/toggle.vue'
 /* LIST */
 import ListItem from './list/list-item.vue'
 import ListDivider from './list/list-divider.vue'
@@ -80,6 +82,8 @@ function install (Vue) {
 
   Vue.component('mu-form', Form)
   Vue.component('mu-form-field', FormField)
+
+  Vue.component('mu-toggle', Toggle)
 
   Vue.component('mu-list-item', ListItem)
   Vue.component('mu-list-divider', ListDivider)
@@ -138,6 +142,8 @@ export {
   // form
   Form,
   FormField,
+  // Toggle
+  Toggle,
   // list
   ListItem,
   ListDivider,

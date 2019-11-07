@@ -68,7 +68,7 @@ export default {
   normalBackground: '#fff',
   normalGreyBackground: 'rgba(0, 0, 0, .05)',
   normalHoverBackground: 'rgba(0, 0, 0, .05)',
-  normalHighlightBackground: 'rgba(0, 0, 0, .35)',
+  normalDarkGreyBackground: 'rgba(0, 0, 0, .35)',
   normalDisabledBackground: 'rgba(0, 0, 0, .08)',
   normalInfoBackground: '#ffd',
 
@@ -90,6 +90,9 @@ export default {
   buttonActiveShadow: '0 0 0 0',
   buttonHoverShadow: '0 0 0 2px',
   buttonDividerColor: 'rgba(255, 255, 255, .5)',
+
+  /* toggle */
+  toggleButtonHeight: '20px',
 
   inputFontSize: '1rem',
   inputFocusShadow: '0 0 0 2px',

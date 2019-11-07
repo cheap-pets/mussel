@@ -8,6 +8,7 @@
     * [Combo Box](/form/combo-box.md)
     * [Date Editor](/form/date-editor.md)
     * [Popup Editor](/form/popup-editor.md)
+    * [Toggle](/form/toggle.md)
   * Layout
     * [Flex Layout](/layout/flex.md)
     * [Space & Splitter](/layout/space-and-splitter.md)

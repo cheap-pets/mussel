@@ -24,10 +24,7 @@
         <mu-bar cellspacing>
           <mu-button button-type="primary">create</mu-button>
           <mu-button button-type="normal">modify</mu-button>
-          <div class="mu-toggle" :active="toggleActive" @click="clickToggle">
-            <div class="mu-toggle-slip-bar"></div>
-          </div>
-          <span>enable setting</span>
+          <mu-toggle v-model="toggleValue" label="Enable This"></mu-toggle>
           <mu-space></mu-space>
           <mu-combo-box editable :options="[1,2,3]"></mu-combo-box>
         </mu-bar>
@@ -45,12 +42,9 @@
     var app = new Vue({
       el: '#app',
       data: {
-        toggleActive: false
+        toggleValue: false
       },
       methods: {
-        clickToggle: function () {
-          this.toggleActive = !this.toggleActive
-        }
       }
     });
   </script>
