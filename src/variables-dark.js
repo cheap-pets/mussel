@@ -1,4 +1,4 @@
-import { presetPalettes } from '@ant-design/colors' // generate
+import { generate, presetPalettes } from '@ant-design/colors' // generate
 
 /*
 const grey = generate('#b2b2b2')
@@ -7,11 +7,13 @@ const grey = generate('#b2b2b2')
 */
 
 const {
-  blue: primary,
+  // blue: primary,
   green: success,
   red: danger,
   volcano: warning
 } = presetPalettes
+
+const primary = generate('#00F2FF')
 
 export default {
   /* spacing */
@@ -28,21 +30,21 @@ export default {
 
   /* primary colors */
   primaryColor: primary[5],
-  primaryPlusColor: primary[6],
-  primaryMinusColor: primary[4],
-  primaryShadowColor: primary[1],
+  primaryPlusColor: primary[4],
+  primaryMinusColor: primary[6],
+  primaryShadowColor: primary[8],
 
   /* success colors */
   successColor: success[5],
-  successPlusColor: success[6],
-  successMinusColor: success[4],
-  successShadowColor: success[1],
+  successPlusColor: success[4],
+  successMinusColor: success[6],
+  successShadowColor: success[8],
 
   /* danger colors */
   dangerColor: danger[5],
-  dangerPlusColor: danger[6],
-  dangerMinusColor: danger[4],
-  dangerShadowColor: danger[1],
+  dangerPlusColor: danger[4],
+  dangerMinusColor: danger[6],
+  dangerShadowColor: danger[8],
 
   /* warning colors */
   warningColor: warning[5],
@@ -54,24 +56,24 @@ export default {
   /* normal control vars */
 
   // text
-  normalTextColor: 'rgba(0, 0, 0, .7)',
-  normalWeakTextColor: 'rgba(0, 0, 0, .3)',
-  normalTitleTextColor: 'rgba(0, 0, 0, .85)',
-  normalSubtitleTextColor: 'rgba(0, 0, 0, .5)',
-  normalHighlightTextColor: '#fff',
+  normalTextColor: 'rgba(255, 255, 255, .7)',
+  normalWeakTextColor: 'rgba(255, 255, 255, .3)',
+  normalTitleTextColor: 'rgba(255, 255, 255, .85)',
+  normalSubtitleTextColor: 'rgba(255, 255, 255, .5)',
+  normalHighlightTextColor: '#000',
 
   // line
-  normalBorderColor: 'rgba(0, 0, 0, .15)',
-  normalDividerColor: 'rgba(0, 0, 0, .09)',
+  normalBorderColor: 'rgba(255, 255, 255, .25)',
+  normalDividerColor: 'rgba(255, 255, 255, .18)',
 
   // background
-  normalBackground: '#fff',
-  normalGreyBackground: 'rgba(0, 0, 0, .05)',
-  normalHoverBackground: 'rgba(0, 0, 0, .05)',
-  normalShadowBackground: 'rgba(0, 0, 0, .1)',
-  normalDarkGreyBackground: 'rgba(0, 0, 0, .35)',
-  normalDisabledBackground: 'rgba(0, 0, 0, .08)',
-  normalInfoBackground: '#ffd',
+  normalBackground: 'rgba(0, 0, 20, .9)',
+  normalGreyBackground: 'rgba(255, 255, 255, .1)',
+  normalHoverBackground: 'rgba(255, 255, 255, .1)',
+  normalShadowBackground: 'rgba(255, 255, 255, .15)',
+  normalDarkGreyBackground: 'rgba(255, 255, 255, .35)',
+  normalDisabledBackground: 'rgba(255, 255, 255, .15)',
+  normalInfoBackground: 'rgba(255, 255, 0, .1)',
 
   normalBarHeight: '40px',
   compactBarHeight: '32px',
@@ -90,7 +92,7 @@ export default {
   buttonRoundRadius: '16px',
   buttonActiveShadow: '0 0 0 0',
   buttonHoverShadow: '0 0 0 2px',
-  buttonDividerColor: 'rgba(255, 255, 255, .5)',
+  buttonDividerColor: 'rgba(0, 0, 0, .5)',
 
   /* toggle */
   toggleButtonHeight: '20px',
@@ -128,7 +130,7 @@ export default {
   dialogFooterHeight: '50px',
   dialogFooterBackground: '$normalGreyBackground',
   dialogShadow:
-  '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
+  '0 6px 12px rgba(255, 255, 255, 0.23), 0 10px 40px rgba(255, 255, 255, 0.19)',
 
   /* layout & splitter */
   splitterSize: '4px',
