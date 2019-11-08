@@ -7,7 +7,6 @@ const grey = generate('#b2b2b2')
 */
 
 const {
-  // blue: primary,
   green: success,
   red: danger,
   volcano: warning
