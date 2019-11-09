@@ -10,9 +10,9 @@
 
   & > .mu-toggle-slide-bar {
     position: relative;
-    width: 40px;
+    width: $toggleButtonWidth;
     height: 20px;
-    border-radius: $toggleButtonHeight;
+    border-radius: 10px;
     background: $normalDarkGreyBackground;
     transition: background 0.2s ease-in-out;
 
@@ -33,7 +33,8 @@
   &[active] > .mu-toggle-slide-bar {
     background: $successColor;
     &:after {
-      left: 23px;
+      left: 100%;
+      transform: translateX(-17px);
     }
   }
 

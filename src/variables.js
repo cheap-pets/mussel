@@ -93,7 +93,7 @@ export default {
   buttonDividerColor: 'rgba(255, 255, 255, .5)',
 
   /* toggle */
-  toggleButtonHeight: '20px',
+  toggleButtonWidth: '40px',
 
   inputFontSize: '1rem',
   inputFocusShadow: '0 0 0 2px',
