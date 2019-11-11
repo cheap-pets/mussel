@@ -21,6 +21,7 @@ import Editor from './input/editor.vue'
 import BaseButtonEditor from './input/base-button-editor'
 import BasePopupEditor from './input/base-popup-editor'
 import ButtonEditor from './input/button-editor.vue'
+import ColorEditor from './input/color-editor.vue'
 import PopupEditor from './input/popup-editor.vue'
 import DateEditor from './input/date-editor.vue'
 import ComboBox from './input/combo-box.vue'
@@ -76,6 +77,7 @@ function install (Vue) {
   Vue.component('mu-editor', Editor)
   Vue.component('mu-button-editor', ButtonEditor)
   Vue.component('mu-popup-editor', PopupEditor)
+  Vue.component('mu-color-editor', ColorEditor)
   Vue.component('mu-date-editor', DateEditor)
   Vue.component('mu-combo-box', ComboBox)
   Vue.component('mu-option', Option)
@@ -136,6 +138,7 @@ export {
   BasePopupEditor,
   ButtonEditor,
   PopupEditor,
+  ColorEditor,
   DateEditor,
   ComboBox,
   Option,
