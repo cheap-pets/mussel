@@ -16,7 +16,7 @@
       <mu-icon icon="ok" />
     </div>
     <template #expert>
-      <div class="mu-color-indicator" />
+      <div class="mu-color-indicator" @click="togglePopup" />
     </template>
   </mu-popup-editor-wrapper>
 </template>

@@ -18,7 +18,7 @@ import DropdownButton from './button/dropdown-button.vue'
 /* INPUT */
 import Input from './input/input.vue'
 import Editor from './input/editor.vue'
-import BaseButtonEditor from './input/base-button-editor'
+import BaseEditor from './input/base-editor'
 import BasePopupEditor from './input/base-popup-editor'
 import ButtonEditor from './input/button-editor.vue'
 import ColorEditor from './input/color-editor.vue'
@@ -134,7 +134,7 @@ export {
   // input
   Input,
   Editor,
-  BaseButtonEditor,
+  BaseEditor,
   BasePopupEditor,
   ButtonEditor,
   PopupEditor,

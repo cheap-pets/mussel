@@ -1,13 +1,13 @@
 <template>
-  <mu-button-editor-wrapper />
+  <mu-editor-wrapper />
 </template>
 
 <script>
-  import BaseButtonEditor from './base-button-editor'
+  import BaseEditor from './base-editor'
 
   export default {
     name: 'MusselEditor',
-    extends: BaseButtonEditor,
+    extends: BaseEditor,
     props: {
       iconClickable: {
         type: Boolean,

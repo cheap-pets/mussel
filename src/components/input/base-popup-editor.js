@@ -1,4 +1,4 @@
-import BaseButtonEditor from './base-button-editor'
+import BaseEditor from './base-editor'
 import PopupGroupMixin from '../layer/mix-popup-group'
 import PopupEditorWrapper from './popup-editor-wrapper.vue'
 
@@ -7,7 +7,7 @@ export default {
   components: {
     'mu-popup-editor-wrapper': PopupEditorWrapper
   },
-  extends: BaseButtonEditor,
+  extends: BaseEditor,
   mixins: [PopupGroupMixin],
   props: {
     editable: {

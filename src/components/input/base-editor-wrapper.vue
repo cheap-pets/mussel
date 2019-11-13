@@ -33,7 +33,7 @@
   import EditorIcon from './editor-icon'
 
   export default {
-    name: 'MusselButtonEditorWrapper',
+    name: 'MusselBaseEditorWrapper',
     components: {
       'mu-input': Input,
       'mu-editor-icon': EditorIcon

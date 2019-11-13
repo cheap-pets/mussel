@@ -1,9 +1,9 @@
-import ButtonEditorWrapper from './button-editor-wrapper.vue'
+import BaseEditorWrapper from './base-editor-wrapper.vue'
 
 export default {
   name: 'MusselBaseButtonEditor',
   components: {
-    'mu-button-editor-wrapper': ButtonEditorWrapper
+    'mu-editor-wrapper': BaseEditorWrapper
   },
   provide () {
     return {

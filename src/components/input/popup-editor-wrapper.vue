@@ -1,5 +1,5 @@
 <template>
-  <mu-button-editor-wrapper
+  <mu-editor-wrapper
     class="mu-popup-editor"
     :expanded="popupParams.visible">
     <mu-dropdown-panel
@@ -10,18 +10,18 @@
       <slot />
     </mu-dropdown-panel>
     <slot name="expert" />
-  </mu-button-editor-wrapper>
+  </mu-editor-wrapper>
 </template>
 
 <script>
   import DropdownPanel from '../dropdown/dropdown-panel.vue'
-  import ButtonEditorWrapper from './button-editor-wrapper.vue'
+  import BaseEditorWrapper from './base-editor-wrapper.vue'
 
   export default {
     name: 'MusselPopupBoxWrapper',
     inject: ['params', 'popupParams'],
     components: {
-      'mu-button-editor-wrapper': ButtonEditorWrapper,
+      'mu-editor-wrapper': BaseEditorWrapper,
       'mu-dropdown-panel': DropdownPanel
     },
     methods: {
