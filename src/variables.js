@@ -66,7 +66,7 @@ export default {
 
   // background
   normalBackground: '#fff',
-  normalGreyBackground: 'rgba(0, 0, 0, .05)',
+  normalGreyBackground: 'rgba(0, 0, 0, .04)',
   normalHoverBackground: 'rgba(0, 0, 0, .05)',
   normalShadowBackground: 'rgba(0, 0, 0, .1)',
   normalDarkGreyBackground: 'rgba(0, 0, 0, .35)',

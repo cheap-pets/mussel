@@ -105,11 +105,10 @@
           this.hideTimer = null
         }
       },
-      show (callbackOnce) {
+      show () {
         window.__mussel_modal = this
         this.clearHideTimer()
         this.popupVisible = true
-        this.callbackOnce = callbackOnce
         if (!this.$el) {
           this.$mount()
           document.body.appendChild(this.$el)
@@ -121,23 +120,22 @@
         this.$emit('show')
         this.$emit('change', true)
       },
-      actualHide () {
+      actualHide (button) {
         this.clearHideTimer()
-        this.callbackOnce = null
         this.popupVisible = false
         this.params.dialogVisible = false
         this.deactivate()
         this.$hideTimer = setTimeout(() => {
           this.params.modalVisible = false
         }, 200)
-        this.$emit('hide')
+        this.$emit('hide', button)
         this.$emit('change', false)
       },
       hide (force, button) {
         if (!force && this.$options.beforeClose) {
           this.$options.beforeClose(this.actualHide, button)
         } else {
-          this.actualHide()
+          this.actualHide(button)
         }
       },
       onButtonClick (btn) {

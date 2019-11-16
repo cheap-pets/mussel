@@ -51,6 +51,7 @@ import BaseDialog from './layer/base-dialog.vue'
 import Modal from './layer/modal.vue'
 import Dialog from './layer/dialog.vue'
 import DialogWrapper from './layer/dialog-wrapper.vue'
+import * as MessageBox from './layer/message-box'
 /* CALENDAR */
 import Calendar from './calendar/calendar.vue'
 
@@ -108,30 +109,34 @@ function install (Vue) {
   Vue.component('mu-dialog-wrapper', DialogWrapper)
 
   Vue.component('mu-calendar', Calendar)
+
+  MessageBox.install(Vue)
 }
 
 if (window.Vue) install(window.Vue)
 
+const { alert, confirm, warn } = MessageBox
+
 export {
   install,
   registerIcons,
-  // layout
+  // Layout
   FlexBox,
   FlexItem,
   Splitter,
   Space,
   HBox,
   VBox,
-  // icon
+  // Icon
   Icon,
-  // button
+  // Button
   Button,
   IconButton,
   CloseButton,
   ButtonGroup,
   SplitButton,
   DropdownButton,
-  // input
+  // Input
   Input,
   Editor,
   BaseEditor,
@@ -142,12 +147,12 @@ export {
   DateEditor,
   ComboBox,
   Option,
-  // form
+  // Form
   Form,
   FormField,
   // Toggle
   Toggle,
-  // list
+  // List
   ListItem,
   ListDivider,
   // Bar
@@ -161,12 +166,16 @@ export {
   DropdownItem,
   // Expander
   Expander,
-  // layer
+  // Calendar
+  Calendar,
+  // Modal & Window
   BaseModal,
   BaseDialog,
   Modal,
   Dialog,
   DialogWrapper,
-  // Calendar
-  Calendar
+  // message box
+  alert,
+  confirm,
+  warn
 }

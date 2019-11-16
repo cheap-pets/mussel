@@ -87,6 +87,7 @@
   import isString from 'lodash.isstring'
 
   import IconButton from '../button/icon-button'
+  import { isZh } from '../../utils/language'
 
   import {
     compare,
@@ -143,27 +144,23 @@
       }
     },
     computed: {
-      isZh () {
-        return (
-          this.language ||
-          navigator.language ||
-          navigator.userLanguage
-        ).indexOf('zh') === 0
+      isChinese () {
+        return isZh(this.language)
       },
       weekDays () {
-        return this.isZh
+        return this.isChinese
           ? ['日', '一', '二', '三', '四', '五', '六']
           : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
       },
       title () {
         const {
-          isZh,
+          isChinese,
           startYear,
           naviYear: year,
           naviMonth: month
         } = this
         return this.tab === 'date'
-          ? `${year} ${isZh ? '年' : ''} ${getMonthName(month, isZh)}`
+          ? `${year} ${isChinese ? '年' : ''} ${getMonthName(month, isChinese)}`
           : `${startYear} ~ ${startYear + 9}`
       },
       monthRows () {
@@ -171,7 +168,7 @@
         return fillGrid(3, 4, row => {
           row.push({
             month: n,
-            monthName: getMonthName(n, this.isZh)
+            monthName: getMonthName(n, this.isChinese)
           })
           n++
         })

@@ -34,6 +34,7 @@
     "vue/require-default-prop": 0,
     "vue/max-attributes-per-line": 0,
     "vue/html-closing-bracket-newline": 0,
+    "vue/no-v-html": 0,
     "complexity": [ 1, 10 ],
     "max-len": [
       "warn",

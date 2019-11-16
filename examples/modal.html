@@ -56,6 +56,15 @@
         </mu-combo-box>
       </mu-dialog>
     </div>
+    <div>
+      <h3>Message Box</h3>
+      <h5>Alert</h5>
+      <mu-button button-type="normal" @click="showAlert">Alert</mu-button>
+      <h5>Confirm</h5>
+      <mu-button button-type="primary" @click="showConfirm">Confirm</mu-button>
+      <h5>Warn</h5>
+      <mu-button button-type="danger" @click="showWarn">Warn</mu-button>
+    </div>
   </div>
 
   <div id="xxx"></div>
@@ -109,6 +118,16 @@
           if (btn === 'Cancel') {
             win.hide()
           }
+        },
+        showAlert () {
+          mussel.alert('I am iron man !')
+          setTimeout(() => mussel.alert('I am iron man too !'), 1000)
+        },
+        showConfirm () {
+          mussel.confirm('Are you spider man ?')
+        },
+        showWarn () {
+          mussel.warn('Destroy thanos ?', btn => { console.log(btn) })
         }
       }
     });
