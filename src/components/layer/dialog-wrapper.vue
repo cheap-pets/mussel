@@ -15,7 +15,7 @@
         <mu-flex-item class="mu-dialog-title mu-text-ellipsis" size="auto">
           {{ params.title }}
         </mu-flex-item>
-        <mu-close-button @click="hide" />
+        <mu-close-button class="mu-text-color-subtitle" @click="hide" />
       </mu-h-box>
       <mu-flex-item
         class="mu-dialog-body"
