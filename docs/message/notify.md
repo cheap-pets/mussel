@@ -1,6 +1,6 @@
 # Notify
 
-Show message on a floating bar, that will dismiss itself.
+Show message on a floating bar, then dismiss itself.
 
 
 
