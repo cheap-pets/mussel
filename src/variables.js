@@ -68,10 +68,11 @@ export default {
   normalBackground: '#fff',
   normalGreyBackground: 'rgba(0, 0, 0, .04)',
   normalHoverBackground: 'rgba(0, 0, 0, .05)',
-  normalShadowBackground: 'rgba(0, 0, 0, .1)',
   normalDarkGreyBackground: 'rgba(0, 0, 0, .35)',
   normalDisabledBackground: 'rgba(0, 0, 0, .08)',
   normalInfoBackground: '#ffd',
+
+  normalShadowColor: 'rgba(0, 0, 0, .05)',
 
   normalBarHeight: '40px',
   compactBarHeight: '32px',
@@ -126,7 +127,7 @@ export default {
   dialogHeaderBackground: '$normalBackground',
   dialogHeaderBorderBottom: '2px solid $primaryColor',
   dialogFooterHeight: '50px',
-  dialogFooterBackground: '$normalGreyBackground',
+  dialogFooterBackground: 'transparent',
   dialogShadow:
   '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
 

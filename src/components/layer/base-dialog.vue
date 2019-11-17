@@ -42,12 +42,14 @@
     computed: {
       btns () {
         const buttons = this.buttons || this.$options.buttons
+        const { primaryButton } = this.params
         return Array.isArray(buttons)
           ? buttons.map(button => {
             const btn = isString(button)
               ? { caption: button, _rawData: button }
               : { ...button }
-            if (this.params.primaryButton === btn.caption) {
+            if (primaryButton && !btn.buttonType &&
+              ([btn.id, btn.caption].indexOf(primaryButton) !== -1)) {
               btn.buttonType = this.params.danger ? 'danger' : 'primary'
             }
             return btn

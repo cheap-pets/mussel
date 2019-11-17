@@ -69,10 +69,11 @@ export default {
   normalBackground: 'rgba(0, 0, 20, .9)',
   normalGreyBackground: 'rgba(255, 255, 255, .1)',
   normalHoverBackground: 'rgba(255, 255, 255, .1)',
-  normalShadowBackground: 'rgba(255, 255, 255, .15)',
   normalDarkGreyBackground: 'rgba(255, 255, 255, .35)',
   normalDisabledBackground: 'rgba(255, 255, 255, .15)',
   normalInfoBackground: 'rgba(255, 255, 0, .1)',
+
+  normalShadowColor: 'rgba(255, 255, 255, .15)',
 
   normalBarHeight: '40px',
   compactBarHeight: '32px',

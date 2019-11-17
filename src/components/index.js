@@ -51,7 +51,7 @@ import BaseDialog from './layer/base-dialog.vue'
 import Modal from './layer/modal.vue'
 import Dialog from './layer/dialog.vue'
 import DialogWrapper from './layer/dialog-wrapper.vue'
-import * as MessageBox from './layer/message-box'
+import * as MessageBox from './message'
 /* CALENDAR */
 import Calendar from './calendar/calendar.vue'
 
@@ -115,7 +115,7 @@ function install (Vue) {
 
 if (window.Vue) install(window.Vue)
 
-const { alert, confirm, warn } = MessageBox
+const { alert, confirm, warn, notify } = MessageBox
 
 export {
   install,
@@ -177,5 +177,6 @@ export {
   // message box
   alert,
   confirm,
-  warn
+  warn,
+  notify
 }

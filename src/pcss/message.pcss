@@ -1,0 +1,53 @@
+.mu-message-box > .mu-dialog {
+  min-width: 300px;
+
+  & > .mu-dialog-body > div {
+    padding: $unitSpacingSize;
+  }
+}
+
+.mu-notifier {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: $halfSpacingSize;
+  overflow: hidden;
+
+  & > div {
+    width: 300px;
+    font-size: 1rem;
+    line-height: 20px;
+    margin: $halfSpacingSize;
+    padding: $unitSpacingSize;
+    background: $normalBackground;
+    border-left: 5px solid $primaryColor;
+    border-radius: 4px;
+    box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  & > [notify-type=success] {
+    border-color: $successColor;
+    color: $successColor;
+    fill: $successColor;
+  }
+
+  & > [notify-type=warning] {
+    border-color: $warningColor;
+    color: $warningColor;
+    fill: $warningColor;
+  }
+
+  & > [notify-type=error] {
+    border-color: $dangerColor;
+    color: $dangerColor;
+    fill: $dangerColor;
+  }
+}
+
+.mu-notifier-enter, .mu-notifier-leave-to {
+  opacity: 0;
+  transform: translateX(100px);
+}
+.mu-notifier-move, .mu-notifier-enter-active, .mu-notifier-leave-active {
+  transition: all .5s;
+}

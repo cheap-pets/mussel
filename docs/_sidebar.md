@@ -20,6 +20,9 @@
   * Modal
     * [Modal](/modal/modal.md)
     * [Dialog](/modal/dialog.md)
+  * Message
+    * [Message Box](/message/message-box.md)
+    * [Notify](/message/notify.md)
   * Others
     * [Dropdown](/others/dropdown.md)
     * [Expander](/others/expander.md)
