@@ -101,7 +101,10 @@
       },
       methods: {
         onTabChange (tabName) {
-          if (confirm('是否进行页签切换 ?')) this.activeTabName = tabName
+          var tabs = this
+          mussel.confirm('是否进行页签切换 ?', function (btn) {
+            if (btn === 'ok') tabs.activeTabName = tabName
+          })
         }
       }
     });

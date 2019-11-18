@@ -132,6 +132,10 @@ export default {
   dialogShadow:
   '0 6px 12px rgba(255, 255, 255, 0.23), 0 10px 40px rgba(255, 255, 255, 0.19)',
 
+  /* message */
+  notifyWidth: '300px',
+  notifyShadow: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
+
   /* layout & splitter */
   splitterSize: '4px',
   splitterColor: '$normalDividerColor',
