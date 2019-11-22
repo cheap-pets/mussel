@@ -1,8 +1,10 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = global || self, factory(global.mussel = {}));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'vue'], factory) :
+  (global = global || self, factory(global.mussel = {}, global.Vue));
+}(this, (function (exports, Vue) { 'use strict';
+
+  Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
   function styleInject(css, ref) {
     if ( ref === void 0 ) ref = {};
@@ -31,67 +33,67 @@
     }
   }
 
-  var css = "html {\r\n  color: rgba(255,255,255,.7);\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}\r\n[class^=mu-] {\r\n  box-sizing: border-box;\r\n}";
+  var css = "html {\r\n  color: rgba(0,0,0,.7);\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}\r\n[class^=mu-] {\r\n  box-sizing: border-box;\r\n}";
   styleInject(css);
 
-  var css$1 = ".mu-background-normal {\r\n  background: rgba(0,0,20,.9);\r\n}\r\n.mu-background-grey {\r\n  background: rgba(255,255,255,.1);\r\n}\r\n.mu-background-highlight {\r\n  background: rgba(255,255,255,.35);\r\n  color: #000;\r\n}\r\n.mu-background-info {\r\n  background: rgba(255,255,0,.1);\r\n}\r\n.mu-background-hover:hover {\r\n  background: rgba(255,255,255,.1);\r\n}\r\n.mu-background-disabled[disabled] {\r\n  background: rgba(255,255,255,.15);\r\n  color: rgba(255,255,255,.3);\r\n}\r\n.mu-background-primary {\r\n  background: #00f2ff;\r\n}\r\n.mu-background-success {\r\n  background: #52c41a;\r\n}\r\n.mu-background-danger {\r\n  background: #52c41a;\r\n}\r\n.mu-background-warning {\r\n  background: #faad14;\r\n}";
+  var css$1 = ".mu-background-normal {\r\n  background: #fff;\r\n}\r\n.mu-background-grey {\r\n  background: rgba(0,0,0,.04);\r\n}\r\n.mu-background-highlight {\r\n  background: rgba(0,0,0,.35);\r\n  color: #fff;\r\n}\r\n.mu-background-info {\r\n  background: #ffd;\r\n}\r\n.mu-background-hover:hover {\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-background-disabled[disabled] {\r\n  background: rgba(0,0,0,.08);\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-background-primary {\r\n  background: #1890ff;\r\n}\r\n.mu-background-success {\r\n  background: #52c41a;\r\n}\r\n.mu-background-danger {\r\n  background: #52c41a;\r\n}\r\n.mu-background-warning {\r\n  background: #faad14;\r\n}";
   styleInject(css$1);
 
-  var css$2 = ".mu-text-ellipsis {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n.mu-text-color-normal {\r\n  color: rgba(255,255,255,.7);\r\n  fill: rgba(255,255,255,.7);\r\n}\r\n.mu-text-color-weak {\r\n  color: rgba(255,255,255,.3);\r\n  fill: rgba(255,255,255,.3);\r\n}\r\n.mu-text-color-title {\r\n  color: rgba(255,255,255,.85);\r\n  fill: rgba(255,255,255,.85);\r\n}\r\n.mu-text-color-subtitle {\r\n  color: rgba(255,255,255,.5);\r\n  fill: rgba(255,255,255,.5);\r\n}\r\n.mu-text-color-primary {\r\n  color: #00f2ff;\r\n  fill: #00f2ff;\r\n}\r\n.mu-text-color-success {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-text-color-danger {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-text-color-warning {\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-text-color-highlight {\r\n  color: #000;\r\n  fill: #000;\r\n}";
+  var css$2 = ".mu-text-ellipsis {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n.mu-text-color-normal {\r\n  color: rgba(0,0,0,.7);\r\n  fill: rgba(0,0,0,.7);\r\n}\r\n.mu-text-color-weak {\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n}\r\n.mu-text-color-title {\r\n  color: rgba(0,0,0,.85);\r\n  fill: rgba(0,0,0,.85);\r\n}\r\n.mu-text-color-subtitle {\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-text-color-primary {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-text-color-success {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-text-color-danger {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-text-color-warning {\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-text-color-highlight {\r\n  color: #fff;\r\n  fill: #fff;\r\n}";
   styleInject(css$2);
 
   var css$3 = ".mu-icon {\r\n  display: inline-block;\r\n}\r\n.mu-icon > svg {\r\n  vertical-align: -.15em;\r\n}\r\n.mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n  -webkit-transition: -webkit-transform .2s ease-in-out;\r\n  transition: -webkit-transform .2s ease-in-out;\r\n  transition: transform .2s ease-in-out;\r\n  transition: transform .2s ease-in-out,-webkit-transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #f5222d;\r\n  color: #f5222d;\r\n}\r\n.mu-dropdown[expanded] [trigger-type=dropdown],\r\n.mu-icon[trigger-type=dropdown][trigger-on],\r\n.mu-popup-editor[expanded] > [trigger-type=dropdown] {\r\n  -webkit-transform: rotate(-180deg);\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-expander[expanded] [trigger-type=expander],\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  -webkit-transform: rotate(90deg);\r\n  transform: rotate(90deg);\r\n}";
   styleInject(css$3);
 
-  var css$4 = ".mu-flex-box {\r\n  position: relative;\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=row-reverse] {\r\n  -webkit-box-orient: horizontal;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: row-reverse;\r\n}\r\n.mu-flex-box[direction=column-reverse] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: column-reverse;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  -webkit-box-align: start;\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid rgba(255,255,255,.25);\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[content-spacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[content-spacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n  box-sizing: border-box;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  -webkit-box-flex: 1!important;\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  -webkit-box-flex: 0!important;\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box > [align-self=center] {\r\n  align-self: center;\r\n}\r\n.mu-flex-box > [align-self=stretch] {\r\n  align-self: stretch;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 auto;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 1px;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  -webkit-box-flex: 2;\r\n  flex: 2 2 2px;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  -webkit-box-flex: 3;\r\n  flex: 3 3 3px;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  -webkit-box-flex: 4;\r\n  flex: 4 4 4px;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  -webkit-box-flex: 5;\r\n  flex: 5 5 5px;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  -webkit-box-flex: 6;\r\n  flex: 6 6 6px;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  -webkit-box-flex: 7;\r\n  flex: 7 7 7px;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  -webkit-box-flex: 8;\r\n  flex: 8 8 8px;\r\n}\r\n.mu-absolute-fit {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n[content-spacing] > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}\r\n[cellpadding] > .mu-absolute-fit {\r\n  top: 8px;\r\n  left: 8px;\r\n  right: 8px;\r\n  bottom: 8px;\r\n}\r\n.mu-bordered {\r\n  border: 1px solid rgba(255,255,255,.25);\r\n}\r\n.mu-splitter {\r\n  background: rgba(255,255,255,.18);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter[dragable]:hover {\r\n  background: rgba(255,255,255,.25);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n}\r\n[direction=row] > .mu-splitter[dragable] {\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter[dragable] {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n}\r\n[direction=column] > .mu-splitter[dragable][dragable] {\r\n  cursor: row-resize;\r\n}\r\n.mu-space {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 0%;\r\n}\r\n[direction=row][flex-wrap] > .mu-space {\r\n  -webkit-box-flex: 0;\r\n  flex: none;\r\n  width: 100%;\r\n}";
+  var css$4 = ".mu-flex-box {\r\n  position: relative;\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=row-reverse] {\r\n  -webkit-box-orient: horizontal;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: row-reverse;\r\n}\r\n.mu-flex-box[direction=column-reverse] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: column-reverse;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  -webkit-box-align: start;\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[content-spacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[content-spacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n  box-sizing: border-box;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  -webkit-box-flex: 1!important;\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  -webkit-box-flex: 0!important;\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box > [align-self=center] {\r\n  align-self: center;\r\n}\r\n.mu-flex-box > [align-self=stretch] {\r\n  align-self: stretch;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 auto;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 1px;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  -webkit-box-flex: 2;\r\n  flex: 2 2 2px;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  -webkit-box-flex: 3;\r\n  flex: 3 3 3px;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  -webkit-box-flex: 4;\r\n  flex: 4 4 4px;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  -webkit-box-flex: 5;\r\n  flex: 5 5 5px;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  -webkit-box-flex: 6;\r\n  flex: 6 6 6px;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  -webkit-box-flex: 7;\r\n  flex: 7 7 7px;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  -webkit-box-flex: 8;\r\n  flex: 8 8 8px;\r\n}\r\n.mu-absolute-fit {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n[content-spacing] > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}\r\n[cellpadding] > .mu-absolute-fit {\r\n  top: 8px;\r\n  left: 8px;\r\n  right: 8px;\r\n  bottom: 8px;\r\n}\r\n.mu-bordered {\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-splitter {\r\n  background: rgba(0,0,0,.09);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter[dragable]:hover {\r\n  background: rgba(0,0,0,.15);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n}\r\n[direction=row] > .mu-splitter[dragable] {\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter[dragable] {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n}\r\n[direction=column] > .mu-splitter[dragable][dragable] {\r\n  cursor: row-resize;\r\n}\r\n.mu-space {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 0%;\r\n}\r\n[direction=row][flex-wrap] > .mu-space {\r\n  -webkit-box-flex: 0;\r\n  flex: none;\r\n  width: 100%;\r\n}";
   styleInject(css$4);
 
-  var css$5 = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 16px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #00f2ff;\r\n  fill: #00f2ff;\r\n  font-weight: 600;\r\n}\r\n.mu-list-item:hover {\r\n  color: #00f2ff;\r\n  fill: #00f2ff;\r\n  background: rgba(255,255,255,.1);\r\n}\r\n.mu-list-item[disabled] {\r\n  color: rgba(255,255,255,.3);\r\n  fill: rgba(255,255,255,.3);\r\n  background: 0 0;\r\n}\r\n.mu-list-item[active] {\r\n  color: #000;\r\n  fill: #000;\r\n  background: #00f2ff;\r\n}\r\n.mu-list-item > .mu-icon {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  height: 1px;\r\n  margin: 4px 0;\r\n  border-bottom: 1px solid rgba(255,255,255,.18);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
+  var css$5 = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 16px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  font-weight: 600;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-list-item[disabled] {\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n  background: 0 0;\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  height: 1px;\r\n  margin: 4px 0;\r\n  border-bottom: 1px solid rgba(0,0,0,.09);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
   styleInject(css$5);
 
-  var css$6 = ".mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid rgba(255,255,255,.25);\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: rgba(0,0,20,.9);\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: rgba(255,255,255,.7);\r\n  fill: rgba(255,255,255,.7);\r\n  cursor: pointer;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button[button-style=link] {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n.mu-button:not([button-type]),\r\n.mu-button[button-type=normal] {\r\n  box-shadow: 0 0 0 0 rgba(255,255,255,.1);\r\n}\r\n.mu-button:not([button-type])[button-style=link]:hover,\r\n.mu-button[button-type=normal][button-style=link]:hover {\r\n  color: #29fbff;\r\n  fill: #29fbff;\r\n}\r\n.mu-button:not([button-type])[active],\r\n.mu-button[button-type=normal][active] {\r\n  background: rgba(255,255,255,.35);\r\n  box-shadow: 0 0 0 0 rgba(255,255,255,.1);\r\n  color: #000;\r\n  fill: #000;\r\n}\r\n.mu-button:not([button-type]):hover,\r\n.mu-button[button-type=normal]:hover {\r\n  background: rgba(0,0,20,.9);\r\n  box-shadow: 0 0 0 2px rgba(255,255,255,.15);\r\n  color: #00f2ff;\r\n  fill: #00f2ff;\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=text]:hover {\r\n  border-color: rgba(255,255,255,.25);\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[disabled] {\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #000;\r\n  fill: #000;\r\n  border-color: #00f2ff;\r\n  background: #00f2ff;\r\n  box-shadow: 0 0 0 0 #00778c;\r\n}\r\n.mu-button[button-type=primary][button-style=link] {\r\n  color: #00f2ff;\r\n  fill: #00f2ff;\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover {\r\n  color: #29fbff;\r\n  fill: #29fbff;\r\n}\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #00f2ff;\r\n  fill: #00f2ff;\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #00c7d9;\r\n  border-color: #00c7d9;\r\n  box-shadow: 0 0 0 0 #00778c;\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #29fbff;\r\n  border-color: #29fbff;\r\n  box-shadow: 0 0 0 2px #00778c;\r\n  color: #000;\r\n  fill: #000;\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #000;\r\n  fill: #000;\r\n  background: #52c41a;\r\n  border-color: #52c41a;\r\n  box-shadow: 0 0 0 0 #135200;\r\n}\r\n.mu-button[button-type=submit][button-style=link] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover {\r\n  color: #73d13d;\r\n  fill: #73d13d;\r\n}\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  border-color: #389e0d;\r\n  box-shadow: 0 0 0 0 #135200;\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  border-color: #73d13d;\r\n  box-shadow: 0 0 0 2px #135200;\r\n  color: #000;\r\n  fill: #000;\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #000;\r\n  fill: #000;\r\n  background: #f5222d;\r\n  border-color: #f5222d;\r\n  box-shadow: 0 0 0 0 #820014;\r\n}\r\n.mu-button[button-type=danger][button-style=link] {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover {\r\n  color: #ff4d4f;\r\n  fill: #ff4d4f;\r\n}\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #cf1322;\r\n  border-color: #cf1322;\r\n  box-shadow: 0 0 0 0 #820014;\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff4d4f;\r\n  border-color: #ff4d4f;\r\n  box-shadow: 0 0 0 2px #820014;\r\n  color: #000;\r\n  fill: #000;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[button-style=link]:hover,\r\n.mu-button[button-style=link][active],\r\n.mu-button[button-style=text] {\r\n  border-color: transparent;\r\n  background: 0 0;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=outline] {\r\n  background: rgba(0,0,20,.9);\r\n}\r\n.mu-button[disabled] {\r\n  color: rgba(255,255,255,.3)!important;\r\n  fill: rgba(255,255,255,.3)!important;\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  border-color: rgba(255,255,255,.15)!important;\r\n  background: rgba(255,255,255,.15)!important;\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\nbutton.mu-button {\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}";
+  var css$6 = ".mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid rgba(0,0,0,.15);\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: rgba(0,0,0,.7);\r\n  fill: rgba(0,0,0,.7);\r\n  cursor: pointer;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button[button-style=link] {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n.mu-button:not([button-type]),\r\n.mu-button[button-type=normal] {\r\n  box-shadow: 0 0 0 0 rgba(0,0,0,.04);\r\n}\r\n.mu-button:not([button-type])[button-style=link]:hover,\r\n.mu-button[button-type=normal][button-style=link]:hover {\r\n  color: #40a9ff;\r\n  fill: #40a9ff;\r\n}\r\n.mu-button:not([button-type])[active],\r\n.mu-button[button-type=normal][active] {\r\n  background: rgba(0,0,0,.35);\r\n  box-shadow: 0 0 0 0 rgba(0,0,0,.04);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button:not([button-type]):hover,\r\n.mu-button[button-type=normal]:hover {\r\n  background: #fff;\r\n  box-shadow: 0 0 0 2px rgba(0,0,0,.05);\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=text]:hover {\r\n  border-color: rgba(0,0,0,.15);\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[disabled] {\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  border-color: #1890ff;\r\n  background: #1890ff;\r\n  box-shadow: 0 0 0 0 #bae7ff;\r\n}\r\n.mu-button[button-type=primary][button-style=link] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover {\r\n  color: #40a9ff;\r\n  fill: #40a9ff;\r\n}\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  border-color: #096dd9;\r\n  box-shadow: 0 0 0 0 #bae7ff;\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  border-color: #40a9ff;\r\n  box-shadow: 0 0 0 2px #bae7ff;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #52c41a;\r\n  border-color: #52c41a;\r\n  box-shadow: 0 0 0 0 #d9f7be;\r\n}\r\n.mu-button[button-type=submit][button-style=link] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover {\r\n  color: #73d13d;\r\n  fill: #73d13d;\r\n}\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  border-color: #389e0d;\r\n  box-shadow: 0 0 0 0 #d9f7be;\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  border-color: #73d13d;\r\n  box-shadow: 0 0 0 2px #d9f7be;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #f5222d;\r\n  border-color: #f5222d;\r\n  box-shadow: 0 0 0 0 #ffccc7;\r\n}\r\n.mu-button[button-type=danger][button-style=link] {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover {\r\n  color: #ff4d4f;\r\n  fill: #ff4d4f;\r\n}\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #cf1322;\r\n  border-color: #cf1322;\r\n  box-shadow: 0 0 0 0 #ffccc7;\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff4d4f;\r\n  border-color: #ff4d4f;\r\n  box-shadow: 0 0 0 2px #ffccc7;\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-style=link],\r\n.mu-button[button-style=link]:hover,\r\n.mu-button[button-style=link][active],\r\n.mu-button[button-style=text] {\r\n  border-color: transparent;\r\n  background: 0 0;\r\n  box-shadow: none;\r\n}\r\n.mu-button[button-style=outline] {\r\n  background: #fff;\r\n}\r\n.mu-button[disabled] {\r\n  color: rgba(0,0,0,.3)!important;\r\n  fill: rgba(0,0,0,.3)!important;\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  border-color: rgba(0,0,0,.08)!important;\r\n  background: rgba(0,0,0,.08)!important;\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\nbutton.mu-button {\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$6);
 
-  var css$7 = ".mu-toggle {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  height: 32px;\r\n  vertical-align: middle;\r\n}\r\n.mu-toggle > * {\r\n  cursor: pointer;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar {\r\n  position: relative;\r\n  width: 40px;\r\n  height: 20px;\r\n  border-radius: 10px;\r\n  background: rgba(255,255,255,.35);\r\n  -webkit-transition: background .2s ease-in-out;\r\n  transition: background .2s ease-in-out;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar:after {\r\n  position: absolute;\r\n  top: 3px;\r\n  left: 3px;\r\n  bottom: 3px;\r\n  display: inline-block;\r\n  width: 14px;\r\n  background: #fff;\r\n  border-radius: 7px;\r\n  content: '';\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar {\r\n  background: #52c41a;\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar:after {\r\n  left: 100%;\r\n  -webkit-transform: translateX(-17px);\r\n  transform: translateX(-17px);\r\n}\r\n.mu-toggle > * + * {\r\n  margin-left: 5px;\r\n}\r\n.mu-toggle[disabled] > * {\r\n  color: rgba(255,255,255,.3);\r\n  cursor: default;\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar {\r\n  background: rgba(255,255,255,.1);\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar:after {\r\n  background: rgba(255,255,255,.15);\r\n}";
+  var css$7 = ".mu-toggle {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  height: 32px;\r\n  vertical-align: middle;\r\n}\r\n.mu-toggle > * {\r\n  cursor: pointer;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar {\r\n  position: relative;\r\n  width: 40px;\r\n  height: 20px;\r\n  border-radius: 10px;\r\n  background: rgba(0,0,0,.35);\r\n  -webkit-transition: background .2s ease-in-out;\r\n  transition: background .2s ease-in-out;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar:after {\r\n  position: absolute;\r\n  top: 3px;\r\n  left: 3px;\r\n  bottom: 3px;\r\n  display: inline-block;\r\n  width: 14px;\r\n  background: #fff;\r\n  border-radius: 7px;\r\n  content: '';\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar {\r\n  background: #52c41a;\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar:after {\r\n  left: 100%;\r\n  -webkit-transform: translateX(-17px);\r\n  transform: translateX(-17px);\r\n}\r\n.mu-toggle > * + * {\r\n  margin-left: 5px;\r\n}\r\n.mu-toggle[disabled] > * {\r\n  color: rgba(0,0,0,.3);\r\n  cursor: default;\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar {\r\n  background: rgba(0,0,0,.04);\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar:after {\r\n  background: rgba(0,0,0,.08);\r\n}";
   styleInject(css$7);
 
-  var css$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n  border-radius: 2px;\r\n  box-shadow: 0 0 0 0 rgba(255,255,255,.1);\r\n}\r\n.mu-button-group[button-type=primary] {\r\n  box-shadow: 0 0 0 0 #00f2ff;\r\n}\r\n.mu-button-group[button-type=success] {\r\n  box-shadow: 0 0 0 0 #135200;\r\n}\r\n.mu-button-group[button-type=danger] {\r\n  box-shadow: 0 0 0 0 #820014;\r\n}\r\n.mu-button-group > .mu-button {\r\n  z-index: 0;\r\n  float: left;\r\n  box-shadow: none;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button + .mu-button {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(0,0,0,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}";
+  var css$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n  border-radius: 2px;\r\n  box-shadow: 0 0 0 0 rgba(0,0,0,.04);\r\n}\r\n.mu-button-group[button-type=primary] {\r\n  box-shadow: 0 0 0 0 #1890ff;\r\n}\r\n.mu-button-group[button-type=success] {\r\n  box-shadow: 0 0 0 0 #d9f7be;\r\n}\r\n.mu-button-group[button-type=danger] {\r\n  box-shadow: 0 0 0 0 #ffccc7;\r\n}\r\n.mu-button-group > .mu-button {\r\n  z-index: 0;\r\n  float: left;\r\n  box-shadow: none;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button + .mu-button {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}";
   styleInject(css$8);
 
-  var css$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid rgba(255,255,255,.25);\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: rgba(0,0,20,.9);\r\n  font-size: 1rem;\r\n  color: rgba(255,255,255,.7);\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #00f2ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px #00778c;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: rgba(255,255,0,.1);\r\n}\r\n.mu-input[disabled] {\r\n  background-color: rgba(255,255,255,.15);\r\n  border-color: rgba(255,255,255,.25);\r\n  color: rgba(255,255,255,.3);\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  border-color: #f5222d;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 2px #820014;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
+  var css$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid rgba(0,0,0,.15);\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  font-size: 1rem;\r\n  color: rgba(0,0,0,.7);\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px #bae7ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #ffd;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: rgba(0,0,0,.08);\r\n  border-color: rgba(0,0,0,.15);\r\n  color: rgba(0,0,0,.3);\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  border-color: #f5222d;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 2px #ffccc7;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$9);
 
-  var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #00f2ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: rgba(255,255,255,.25);\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[disabled] > input,\r\n.mu-editor[readonly] > input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-icon.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(255,255,255,.5);\r\n  fill: rgba(255,255,255,.5);\r\n}\r\n.mu-icon.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-icon.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-icon.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon.mu-editor-icon[clickable]:hover {\r\n  fill: #00f2ff;\r\n  color: #00f2ff;\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=clear] {\r\n  color: rgba(255,255,255,.3);\r\n  fill: rgba(255,255,255,.3);\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=clear]:hover {\r\n  color: rgba(255,255,255,.5);\r\n  fill: rgba(255,255,255,.5);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #f5222d;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}";
+  var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: rgba(0,0,0,.15);\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[disabled] > input,\r\n.mu-editor[readonly] > input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-icon.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-icon.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-icon.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-icon.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon.mu-editor-icon[clickable]:hover {\r\n  fill: #1890ff;\r\n  color: #1890ff;\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=clear] {\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=clear]:hover {\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #f5222d;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}";
   styleInject(css$a);
 
-  var css$b = ".mu-color-editor > input[readonly] {\r\n  background: rgba(0,0,20,.9);\r\n}\r\n.mu-color-editor > .mu-color-indicator {\r\n  position: absolute;\r\n  z-index: 2;\r\n  top: 50%;\r\n  left: 10px;\r\n  padding: 0 10px;\r\n  -webkit-transform: translateY(-50%);\r\n  transform: translateY(-50%);\r\n}\r\n.mu-color-palette {\r\n  padding: 8px;\r\n  overflow: hidden;\r\n  text-align: center;\r\n  font-size: 0;\r\n}\r\n.mu-color-palette > div + div {\r\n  margin-top: 2px;\r\n}\r\n.mu-color-palette .mu-color-palette-cell {\r\n  display: inline-block;\r\n  width: 12px;\r\n  height: 12px;\r\n  border: 1px solid rgba(0,0,0,.25);\r\n  overflow: hidden;\r\n  cursor: pointer;\r\n}\r\n.mu-color-palette .mu-color-palette-cell:hover {\r\n  -webkit-transform: scale(2);\r\n  transform: scale(2);\r\n}\r\n.mu-color-palette .mu-color-palette-cell + .mu-color-palette-cell {\r\n  margin-left: 2px;\r\n}";
+  var css$b = ".mu-color-editor > input[readonly] {\r\n  background: #fff;\r\n}\r\n.mu-color-editor > .mu-color-indicator {\r\n  position: absolute;\r\n  z-index: 2;\r\n  top: 50%;\r\n  left: 10px;\r\n  padding: 0 10px;\r\n  -webkit-transform: translateY(-50%);\r\n  transform: translateY(-50%);\r\n}\r\n.mu-color-palette {\r\n  padding: 8px;\r\n  overflow: hidden;\r\n  text-align: center;\r\n  font-size: 0;\r\n}\r\n.mu-color-palette > div + div {\r\n  margin-top: 2px;\r\n}\r\n.mu-color-palette .mu-color-palette-cell {\r\n  display: inline-block;\r\n  width: 12px;\r\n  height: 12px;\r\n  border: 1px solid rgba(0,0,0,.25);\r\n  overflow: hidden;\r\n  cursor: pointer;\r\n}\r\n.mu-color-palette .mu-color-palette-cell:hover {\r\n  -webkit-transform: scale(2);\r\n  transform: scale(2);\r\n}\r\n.mu-color-palette .mu-color-palette-cell + .mu-color-palette-cell {\r\n  margin-left: 2px;\r\n}";
   styleInject(css$b);
 
   var css$c = ".mu-form-field {\r\n  min-width: 80px;\r\n}\r\n.mu-form-field > label {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n  padding-right: 12px;\r\n  font-size: 1rem;\r\n}\r\n.mu-form-field > label:before {\r\n  position: absolute;\r\n  right: 0;\r\n  top: -3px;\r\n  display: inline-block;\r\n  visibility: hidden;\r\n  width: 10px;\r\n  text-align: left;\r\n  font-weight: 500;\r\n  color: #f5222d;\r\n  content: \"*\";\r\n}\r\n.mu-form-field[required] > label:before {\r\n  visibility: visible;\r\n}\r\n.mu-form-field[invalid] > label {\r\n  color: #f5222d;\r\n}\r\n.mu-form-field > .mu-editor,\r\n.mu-form-field > .mu-input {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 1px;\r\n  width: 1px;\r\n}";
   styleInject(css$c);
 
-  var css$d = ".mu-calendar {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n  min-height: 240px;\r\n  min-width: 280px;\r\n  font-size: .857rem;\r\n  background: rgba(0,0,20,.9);\r\n  border: 1px solid rgba(255,255,255,.25);\r\n  overflow: hidden;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  height: 32px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.14rem;\r\n  font-weight: 600;\r\n  color: #00f2ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: rgba(255,255,255,.5);\r\n  border-top: 1px solid #00f2ff;\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  -webkit-box-flex: 1;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n  -webkit-box-flex: 1;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid #00f2ff;\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  -webkit-box-flex: 1;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row + .mu-calendar-row {\r\n  border-top: 1px solid rgba(255,255,255,.18);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  -webkit-box-flex: 1;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  color: #00f2ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell + .mu-calendar-cell {\r\n  border-left: 1px solid rgba(255,255,255,.18);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  content: '';\r\n  border-bottom: 8px solid #f5222d;\r\n  border-right: 8px solid transparent;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: rgba(255,255,255,.3);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #29fbff;\r\n  background: rgba(255,255,255,.1);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #faad14;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: rgba(255,255,255,.3);\r\n  background: rgba(255,255,255,.15);\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #000;\r\n  background: #00f2ff;\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}\r\n.mu-dropdown-panel > .mu-calendar {\r\n  border: 0;\r\n}";
+  var css$d = ".mu-calendar {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n  min-height: 240px;\r\n  min-width: 280px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: 1px solid rgba(0,0,0,.15);\r\n  overflow: hidden;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  height: 32px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.14rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: rgba(0,0,0,.5);\r\n  border-top: 1px solid #1890ff;\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  -webkit-box-flex: 1;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n  -webkit-box-flex: 1;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid #1890ff;\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  -webkit-box-flex: 1;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row + .mu-calendar-row {\r\n  border-top: 1px solid rgba(0,0,0,.09);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  -webkit-box-flex: 1;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  color: #1890ff;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell + .mu-calendar-cell {\r\n  border-left: 1px solid rgba(0,0,0,.09);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  content: '';\r\n  border-bottom: 8px solid #f5222d;\r\n  border-right: 8px solid transparent;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #faad14;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: rgba(0,0,0,.3);\r\n  background: rgba(0,0,0,.08);\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}\r\n.mu-dropdown-panel > .mu-calendar {\r\n  border: 0;\r\n}";
   styleInject(css$d);
 
   var css$e = ".mu-bar > * {\r\n  margin-right: 8px;\r\n}\r\n.mu-bar > :last-child {\r\n  margin-right: 0;\r\n}";
   styleInject(css$e);
 
-  var css$f = ".mu-tabs {\r\n  background: rgba(0,0,20,.9);\r\n}\r\n.mu-tabs-header {\r\n  font-size: 1rem;\r\n}\r\n.mu-tabs-header[tab-style=card] > .mu-tab-item {\r\n  background: rgba(255,255,255,.1);\r\n  border-style: solid;\r\n  border-color: rgba(255,255,255,.25);\r\n}\r\n.mu-tabs-header[tab-style=card] > .mu-tab-item[active] {\r\n  background: rgba(0,0,20,.9);\r\n}\r\n.mu-tabs-header[tab-style=card] > [active]:before {\r\n  position: absolute;\r\n  background-color: #00f2ff;\r\n  content: '';\r\n}\r\n.mu-tabs-header[tab-style=card] > [active]:after {\r\n  background: rgba(0,0,20,.9);\r\n}\r\n.mu-tabs-header[tab-style=card] ~ .mu-tab-panel {\r\n  padding: 16px;\r\n  border: 1px solid rgba(255,255,255,.25);\r\n}\r\n.mu-tabs-header[tab-position=bottom],\r\n.mu-tabs-header[tab-position=top] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  height: 40px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item {\r\n  align-self: stretch;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item[active]:after {\r\n  left: 0;\r\n  right: 0;\r\n  height: 2px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item + .mu-tab-item {\r\n  margin-left: 20px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card],\r\n.mu-tabs-header[tab-position=top][tab-style=card] {\r\n  border: 0;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item {\r\n  margin-left: 0;\r\n  padding: 0 16px;\r\n  border-width: 0;\r\n  border-right-width: 1px;\r\n  border-left-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item[active]:before,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item[active]:before {\r\n  left: -1px;\r\n  right: -1px;\r\n  height: 3px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item[active]:after {\r\n  height: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item + .mu-tab-item {\r\n  border-left-width: 0;\r\n}\r\n.mu-tabs-header[tab-position=left],\r\n.mu-tabs-header[tab-position=right] {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item {\r\n  height: 40px;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item[active]:after {\r\n  top: 0;\r\n  bottom: 0;\r\n  width: 2px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card],\r\n.mu-tabs-header[tab-position=right][tab-style=card] {\r\n  border: 0;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item {\r\n  padding: 0 16px;\r\n  border-width: 0;\r\n  border-top-width: 1px;\r\n  border-bottom-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item[active]:before,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item[active]:before {\r\n  top: -1px;\r\n  bottom: -1px;\r\n  width: 3px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item[active]:after {\r\n  width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item + .mu-tab-item {\r\n  border-top-width: 0;\r\n}\r\n.mu-tabs-header[tab-position=top] {\r\n  border-bottom: 2px solid rgba(255,255,255,.18);\r\n}\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item {\r\n  border-bottom: 0;\r\n}\r\n.mu-tabs-header[tab-position=top] > [active]:after {\r\n  bottom: -2px;\r\n}\r\n.mu-tabs-header[tab-position=top] ~ .mu-tab-panel {\r\n  padding-top: 16px;\r\n  border-top: 0;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] {\r\n  border-bottom: 1px solid rgba(255,255,255,.25);\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item {\r\n  border-top-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > [active]:before {\r\n  top: -1px;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > [active]:after {\r\n  bottom: -1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] {\r\n  border-top: 2px solid rgba(255,255,255,.18);\r\n}\r\n.mu-tabs-header[tab-position=bottom] > [active]:after {\r\n  top: -2px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] ~ .mu-tab-panel {\r\n  padding-bottom: 16px;\r\n  border-bottom: 0;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] {\r\n  border-top: 1px solid rgba(255,255,255,.25);\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item {\r\n  border-bottom-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > [active]:before {\r\n  bottom: -1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > [active]:after {\r\n  top: -1px;\r\n}\r\n.mu-tabs-header[tab-position=left] {\r\n  border-right: 2px solid rgba(255,255,255,.18);\r\n}\r\n.mu-tabs-header[tab-position=left] > :not(.mu-tab-item) {\r\n  align-self: flex-end;\r\n  margin-right: 16px;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item {\r\n  margin-right: 0;\r\n  padding-right: 16px;\r\n}\r\n.mu-tabs-header[tab-position=left] .mu-tab-label {\r\n  text-align: right;\r\n}\r\n.mu-tabs-header[tab-position=left] > [active]:after {\r\n  right: -2px;\r\n}\r\n.mu-tabs-header[tab-position=left] ~ .mu-tab-panel {\r\n  padding-left: 16px;\r\n  border-left: 0;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] {\r\n  border-right: 1px solid rgba(255,255,255,.25);\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item {\r\n  border-left-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] .mu-tab-label {\r\n  text-align: left;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > [active]:before {\r\n  left: -1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > [active]:after {\r\n  right: -1px;\r\n}\r\n.mu-tabs-header[tab-position=right] {\r\n  border-left: 2px solid rgba(255,255,255,.18);\r\n}\r\n.mu-tabs-header[tab-position=right] > * {\r\n  margin-left: 16px;\r\n}\r\n.mu-tabs-header[tab-position=right] > :not(.mu-tab-item) {\r\n  align-self: flex-start;\r\n}\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item {\r\n  margin-left: 0;\r\n  padding-left: 16px;\r\n}\r\n.mu-tabs-header[tab-position=right] > [active]:after {\r\n  left: -2px;\r\n}\r\n.mu-tabs-header[tab-position=right] ~ .mu-tab-panel {\r\n  padding-right: 16px;\r\n  border-right: 0;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] {\r\n  border-left: 1px solid rgba(255,255,255,.25);\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item {\r\n  border-right-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > [active]:before {\r\n  right: -1px;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > [active]:after {\r\n  left: -1px;\r\n}\r\n.mu-tab-item {\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  max-width: 150px;\r\n  cursor: pointer;\r\n}\r\n.mu-tab-item > .mu-tab-label {\r\n  display: inline-block;\r\n  width: 100%;\r\n  float: left;\r\n}\r\n.mu-tab-item:hover {\r\n  color: #00f2ff;\r\n}\r\n.mu-tab-item[active] {\r\n  color: #00f2ff;\r\n}\r\n.mu-tab-item[active]:after {\r\n  position: absolute;\r\n  content: '';\r\n  background-color: #00f2ff;\r\n}";
+  var css$f = ".mu-tabs {\r\n  background: #fff;\r\n}\r\n.mu-tabs-header {\r\n  font-size: 1rem;\r\n}\r\n.mu-tabs-header[tab-style=card] > .mu-tab-item {\r\n  background: rgba(0,0,0,.04);\r\n  border-style: solid;\r\n  border-color: rgba(0,0,0,.15);\r\n}\r\n.mu-tabs-header[tab-style=card] > .mu-tab-item[active] {\r\n  background: #fff;\r\n}\r\n.mu-tabs-header[tab-style=card] > [active]:before {\r\n  position: absolute;\r\n  background-color: #1890ff;\r\n  content: '';\r\n}\r\n.mu-tabs-header[tab-style=card] > [active]:after {\r\n  background: #fff;\r\n}\r\n.mu-tabs-header[tab-style=card] ~ .mu-tab-panel {\r\n  padding: 16px;\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-tabs-header[tab-position=bottom],\r\n.mu-tabs-header[tab-position=top] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  height: 40px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item {\r\n  align-self: stretch;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item[active]:after {\r\n  left: 0;\r\n  right: 0;\r\n  height: 2px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item + .mu-tab-item {\r\n  margin-left: 20px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card],\r\n.mu-tabs-header[tab-position=top][tab-style=card] {\r\n  border: 0;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item {\r\n  margin-left: 0;\r\n  padding: 0 16px;\r\n  border-width: 0;\r\n  border-right-width: 1px;\r\n  border-left-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item[active]:before,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item[active]:before {\r\n  left: -1px;\r\n  right: -1px;\r\n  height: 3px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item[active]:after {\r\n  height: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item + .mu-tab-item {\r\n  border-left-width: 0;\r\n}\r\n.mu-tabs-header[tab-position=left],\r\n.mu-tabs-header[tab-position=right] {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item {\r\n  height: 40px;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item[active]:after {\r\n  top: 0;\r\n  bottom: 0;\r\n  width: 2px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card],\r\n.mu-tabs-header[tab-position=right][tab-style=card] {\r\n  border: 0;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item {\r\n  padding: 0 16px;\r\n  border-width: 0;\r\n  border-top-width: 1px;\r\n  border-bottom-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item[active]:before,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item[active]:before {\r\n  top: -1px;\r\n  bottom: -1px;\r\n  width: 3px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item[active]:after,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item[active]:after {\r\n  width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item + .mu-tab-item,\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item + .mu-tab-item {\r\n  border-top-width: 0;\r\n}\r\n.mu-tabs-header[tab-position=top] {\r\n  border-bottom: 2px solid rgba(0,0,0,.09);\r\n}\r\n.mu-tabs-header[tab-position=top] > .mu-tab-item {\r\n  border-bottom: 0;\r\n}\r\n.mu-tabs-header[tab-position=top] > [active]:after {\r\n  bottom: -2px;\r\n}\r\n.mu-tabs-header[tab-position=top] ~ .mu-tab-panel {\r\n  padding-top: 16px;\r\n  border-top: 0;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] {\r\n  border-bottom: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > .mu-tab-item {\r\n  border-top-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > [active]:before {\r\n  top: -1px;\r\n}\r\n.mu-tabs-header[tab-position=top][tab-style=card] > [active]:after {\r\n  bottom: -1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] {\r\n  border-top: 2px solid rgba(0,0,0,.09);\r\n}\r\n.mu-tabs-header[tab-position=bottom] > [active]:after {\r\n  top: -2px;\r\n}\r\n.mu-tabs-header[tab-position=bottom] ~ .mu-tab-panel {\r\n  padding-bottom: 16px;\r\n  border-bottom: 0;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] {\r\n  border-top: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > .mu-tab-item {\r\n  border-bottom-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > [active]:before {\r\n  bottom: -1px;\r\n}\r\n.mu-tabs-header[tab-position=bottom][tab-style=card] > [active]:after {\r\n  top: -1px;\r\n}\r\n.mu-tabs-header[tab-position=left] {\r\n  border-right: 2px solid rgba(0,0,0,.09);\r\n}\r\n.mu-tabs-header[tab-position=left] > :not(.mu-tab-item) {\r\n  align-self: flex-end;\r\n  margin-right: 16px;\r\n}\r\n.mu-tabs-header[tab-position=left] > .mu-tab-item {\r\n  margin-right: 0;\r\n  padding-right: 16px;\r\n}\r\n.mu-tabs-header[tab-position=left] .mu-tab-label {\r\n  text-align: right;\r\n}\r\n.mu-tabs-header[tab-position=left] > [active]:after {\r\n  right: -2px;\r\n}\r\n.mu-tabs-header[tab-position=left] ~ .mu-tab-panel {\r\n  padding-left: 16px;\r\n  border-left: 0;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] {\r\n  border-right: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > .mu-tab-item {\r\n  border-left-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] .mu-tab-label {\r\n  text-align: left;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > [active]:before {\r\n  left: -1px;\r\n}\r\n.mu-tabs-header[tab-position=left][tab-style=card] > [active]:after {\r\n  right: -1px;\r\n}\r\n.mu-tabs-header[tab-position=right] {\r\n  border-left: 2px solid rgba(0,0,0,.09);\r\n}\r\n.mu-tabs-header[tab-position=right] > * {\r\n  margin-left: 16px;\r\n}\r\n.mu-tabs-header[tab-position=right] > :not(.mu-tab-item) {\r\n  align-self: flex-start;\r\n}\r\n.mu-tabs-header[tab-position=right] > .mu-tab-item {\r\n  margin-left: 0;\r\n  padding-left: 16px;\r\n}\r\n.mu-tabs-header[tab-position=right] > [active]:after {\r\n  left: -2px;\r\n}\r\n.mu-tabs-header[tab-position=right] ~ .mu-tab-panel {\r\n  padding-right: 16px;\r\n  border-right: 0;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] {\r\n  border-left: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > .mu-tab-item {\r\n  border-right-width: 1px;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > [active]:before {\r\n  right: -1px;\r\n}\r\n.mu-tabs-header[tab-position=right][tab-style=card] > [active]:after {\r\n  left: -1px;\r\n}\r\n.mu-tab-item {\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  max-width: 150px;\r\n  cursor: pointer;\r\n}\r\n.mu-tab-item > .mu-tab-label {\r\n  display: inline-block;\r\n  width: 100%;\r\n  float: left;\r\n}\r\n.mu-tab-item:hover {\r\n  color: #1890ff;\r\n}\r\n.mu-tab-item[active] {\r\n  color: #1890ff;\r\n}\r\n.mu-tab-item[active]:after {\r\n  position: absolute;\r\n  content: '';\r\n  background-color: #1890ff;\r\n}";
   styleInject(css$f);
 
-  var css$g = ".mu-dropdown {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n}\r\n.mu-dropdown-panel {\r\n  position: absolute;\r\n  z-index: 110;\r\n  display: none;\r\n  overflow: auto;\r\n  background: rgba(0,0,20,.9);\r\n  border: 1px solid rgba(255,255,255,.25);\r\n  border-radius: 0;\r\n  box-shadow: none;\r\n  -webkit-transition: opacity .2s ease-in-out;\r\n  transition: opacity .2s ease-in-out;\r\n}\r\n.mu-dropdown-panel[visible] {\r\n  display: block;\r\n}\r\n.mu-dropdown-panel[popup-style=dropdown-list],\r\n.mu-dropdown-panel[popup-style=dropdown-menu] {\r\n  padding: 4px 0;\r\n}\r\n.mu-dropdown-panel > .mu-list-item {\r\n  padding: 5px 16px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-panel > .mu-footer-button {\r\n  padding: 4px;\r\n  text-align: center;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-panel > .mu-footer-button:hover {\r\n  background: rgba(255,255,255,.1);\r\n}\r\n[popup-style=dropdown-menu] > .mu-list-item:hover {\r\n  color: #000;\r\n  fill: #000;\r\n  background: #00f2ff;\r\n}\r\nbody > .mu-dropdown-panel {\r\n  position: fixed;\r\n}";
+  var css$g = ".mu-dropdown {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n}\r\n.mu-dropdown-panel {\r\n  position: absolute;\r\n  z-index: 110;\r\n  display: none;\r\n  overflow: auto;\r\n  background: #fff;\r\n  border: 1px solid rgba(0,0,0,.15);\r\n  border-radius: 0;\r\n  box-shadow: none;\r\n  -webkit-transition: opacity .2s ease-in-out;\r\n  transition: opacity .2s ease-in-out;\r\n}\r\n.mu-dropdown-panel[visible] {\r\n  display: block;\r\n}\r\n.mu-dropdown-panel[popup-style=dropdown-list],\r\n.mu-dropdown-panel[popup-style=dropdown-menu] {\r\n  padding: 4px 0;\r\n}\r\n.mu-dropdown-panel > .mu-list-item {\r\n  padding: 5px 16px;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-panel > .mu-footer-button {\r\n  padding: 4px;\r\n  text-align: center;\r\n  cursor: pointer;\r\n}\r\n.mu-dropdown-panel > .mu-footer-button:hover {\r\n  background: rgba(0,0,0,.05);\r\n}\r\n[popup-style=dropdown-menu] > .mu-list-item:hover {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\nbody > .mu-dropdown-panel {\r\n  position: fixed;\r\n}";
   styleInject(css$g);
 
-  var css$h = ".mu-expander [expand-trigger] {\r\n  cursor: pointer;\r\n}\r\n.mu-expander > .mu-expander-header {\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  height: 40px;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n}\r\n.mu-expander > .mu-expander-header:hover {\r\n  background: rgba(255,255,255,.1);\r\n}\r\n.mu-expander > .mu-expand-panel {\r\n  position: relative;\r\n  visibility: hidden;\r\n  max-height: 0;\r\n  overflow: hidden;\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-expander[expanded] > .mu-expand-panel {\r\n  visibility: visible;\r\n  max-height: 2000px;\r\n}";
+  var css$h = ".mu-expander [expand-trigger] {\r\n  cursor: pointer;\r\n}\r\n.mu-expander > .mu-expander-header {\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  height: 40px;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n}\r\n.mu-expander > .mu-expander-header:hover {\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-expander > .mu-expand-panel {\r\n  position: relative;\r\n  visibility: hidden;\r\n  max-height: 0;\r\n  overflow: hidden;\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-expander[expanded] > .mu-expand-panel {\r\n  visibility: visible;\r\n  max-height: 2000px;\r\n}";
   styleInject(css$h);
 
   var css$i = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: -webkit-box;\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
   styleInject(css$i);
 
-  var css$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: rgba(0,0,20,.9);\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(255,255,255,.23),0 10px 40px rgba(255,255,255,.19);\r\n  -webkit-transform: translateY(200px);\r\n  transform: translateY(200px);\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  -webkit-transform: translateY(0);\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #f5222d;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 0 16px;\r\n  background: rgba(0,0,20,.9);\r\n  border-bottom: 2px solid #00f2ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: rgba(255,255,255,.1);\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
+  var css$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: #fff;\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  -webkit-transform: translateY(200px);\r\n  transform: translateY(200px);\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  -webkit-transform: translateY(0);\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #f5222d;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 0 16px;\r\n  background: #fff;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: 0 0;\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
   styleInject(css$j);
 
-  var css$k = ".mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: rgba(0,0,20,.9);\r\n  border-left: 5px solid #00f2ff;\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  -webkit-transform: translateX(100px);\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  -webkit-transition: all .5s;\r\n  transition: all .5s;\r\n}";
+  var css$k = ".mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: #fff;\r\n  border-left: 5px solid #1890ff;\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  -webkit-transform: translateX(100px);\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  -webkit-transition: all .5s;\r\n  transition: all .5s;\r\n}";
   styleInject(css$k);
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -290,7 +292,7 @@
   (module.exports = function (key, value) {
     return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
   })('versions', []).push({
-    version: '3.4.1',
+    version: '3.4.2',
     mode:  'global',
     copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
   });
@@ -438,7 +440,7 @@
 
   // Helper for a popular repeating case of the spec:
   // Let integer be ? ToInteger(index).
-  // If integer < 0, let result be max((length + integer), 0); else let result be min(length, length).
+  // If integer < 0, let result be max((length + integer), 0); else let result be min(integer, length).
   var toAbsoluteIndex = function (index, length) {
     var integer = toInteger(index);
     return integer < 0 ? max(integer + length, 0) : min$1(integer, length);
@@ -1075,14 +1077,14 @@
 
   /* style inject shadow dom */
 
-  var FlexItem = normalizeComponent_1({
+  var __vue_component__ = normalizeComponent_1({
     render: __vue_render__,
     staticRenderFns: __vue_staticRenderFns__
   }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, undefined, undefined);
 
   var script$1 = {
     name: 'MusselFlexBox',
-    "extends": FlexItem,
+    "extends": __vue_component__,
     provide: function provide() {
       return {
         parentLayout: this.flexLayout
@@ -1177,14 +1179,14 @@
 
   /* style inject shadow dom */
 
-  var FlexBox = normalizeComponent_1({
+  var __vue_component__$1 = normalizeComponent_1({
     render: __vue_render__$1,
     staticRenderFns: __vue_staticRenderFns__$1
   }, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, false, undefined, undefined, undefined);
 
   var HBox = {
     name: 'MusselHBox',
-    "extends": FlexBox,
+    "extends": __vue_component__$1,
     props: ['layout', 'direction'],
     computed: {
       flexLayout: function flexLayout() {
@@ -1195,7 +1197,7 @@
 
   var VBox = {
     name: 'MusselVBox',
-    "extends": FlexBox,
+    "extends": __vue_component__$1,
     props: ['layout', 'direction'],
     computed: {
       flexLayout: function flexLayout() {
@@ -1207,7 +1209,7 @@
   //
   var script$2 = {
     name: 'MusselSpace',
-    "extends": FlexItem,
+    "extends": __vue_component__,
     computed: {
       flexStyle: function flexStyle() {
         return this.size ? 'none' : undefined;
@@ -1254,7 +1256,7 @@
 
   /* style inject shadow dom */
 
-  var Space = normalizeComponent_1({
+  var __vue_component__$2 = normalizeComponent_1({
     render: __vue_render__$2,
     staticRenderFns: __vue_staticRenderFns__$2
   }, __vue_inject_styles__$2, __vue_script__$2, __vue_scope_id__$2, __vue_is_functional_template__$2, __vue_module_identifier__$2, false, undefined, undefined, undefined);
@@ -1264,6 +1266,12 @@
     // eslint-disable-next-line no-undef
     return !String(Symbol());
   });
+
+  var useSymbolAsUid = nativeSymbol
+    // eslint-disable-next-line no-undef
+    && !Symbol.sham
+    // eslint-disable-next-line no-undef
+    && typeof Symbol() == 'symbol';
 
   // `IsArray` abstract operation
   // https://tc39.github.io/ecma262/#sec-isarray
@@ -1297,12 +1305,15 @@
   	f: f$5
   };
 
+  var WellKnownSymbolsStore = shared('wks');
   var Symbol$1 = global_1.Symbol;
-  var store$2 = shared('wks');
+  var createWellKnownSymbol = useSymbolAsUid ? Symbol$1 : uid;
 
   var wellKnownSymbol = function (name) {
-    return store$2[name] || (store$2[name] = nativeSymbol && Symbol$1[name]
-      || (nativeSymbol ? Symbol$1 : uid)('Symbol.' + name));
+    if (!has(WellKnownSymbolsStore, name)) {
+      if (nativeSymbol && has(Symbol$1, name)) WellKnownSymbolsStore[name] = Symbol$1[name];
+      else WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
+    } return WellKnownSymbolsStore[name];
   };
 
   var f$6 = wellKnownSymbol;
@@ -1457,7 +1468,7 @@
   var ObjectPrototypeSymbols = shared('op-symbols');
   var StringToSymbolRegistry = shared('string-to-symbol-registry');
   var SymbolToStringRegistry = shared('symbol-to-string-registry');
-  var WellKnownSymbolsStore = shared('wks');
+  var WellKnownSymbolsStore$1 = shared('wks');
   var QObject = global_1.QObject;
   // Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
   var USE_SETTER = !QObject || !QObject[PROTOTYPE$1] || !QObject[PROTOTYPE$1].findChild;
@@ -1600,7 +1611,9 @@
         redefine(ObjectPrototype, 'propertyIsEnumerable', $propertyIsEnumerable, { unsafe: true });
       }
     }
+  }
 
+  if (!useSymbolAsUid) {
     wrappedWellKnownSymbol.f = function (name) {
       return wrap(wellKnownSymbol(name), name);
     };
@@ -1610,7 +1623,7 @@
     Symbol: $Symbol
   });
 
-  $forEach(objectKeys(WellKnownSymbolsStore), function (name) {
+  $forEach(objectKeys(WellKnownSymbolsStore$1), function (name) {
     defineWellKnownSymbol(name);
   });
 
@@ -2051,7 +2064,7 @@
 
   /* style inject shadow dom */
 
-  var Splitter = normalizeComponent_1({
+  var __vue_component__$3 = normalizeComponent_1({
     render: __vue_render__$3,
     staticRenderFns: __vue_staticRenderFns__$3
   }, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, false, undefined, undefined, undefined);
@@ -2190,7 +2203,7 @@
 
   /* style inject shadow dom */
 
-  var Icon = normalizeComponent_1({
+  var __vue_component__$4 = normalizeComponent_1({
     render: __vue_render__$4,
     staticRenderFns: __vue_staticRenderFns__$4
   }, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, false, undefined, undefined, undefined);
@@ -2202,7 +2215,7 @@
   var Button = {
     name: 'MusselButton',
     components: {
-      Icon: Icon
+      Icon: __vue_component__$4
     },
     props: {
       buttonType: {
@@ -2275,7 +2288,7 @@
 
   var script$5 = {
     name: 'MusselCloseButton',
-    "extends": Icon,
+    "extends": __vue_component__$4,
     props: {
       triggerType: {
         type: String,
@@ -2306,7 +2319,7 @@
 
   /* style inject shadow dom */
 
-  var CloseButton = normalizeComponent_1({}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, undefined, undefined);
+  var __vue_component__$5 = normalizeComponent_1({}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, undefined, undefined);
 
   //
   //
@@ -2354,7 +2367,7 @@
 
   /* style inject shadow dom */
 
-  var ButtonGroup = normalizeComponent_1({
+  var __vue_component__$6 = normalizeComponent_1({
     render: __vue_render__$5,
     staticRenderFns: __vue_staticRenderFns__$5
   }, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, false, undefined, undefined, undefined);
@@ -2457,7 +2470,7 @@
 
   /* style inject shadow dom */
 
-  var SplitButton = normalizeComponent_1({
+  var __vue_component__$7 = normalizeComponent_1({
     render: __vue_render__$6,
     staticRenderFns: __vue_staticRenderFns__$6
   }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, false, undefined, undefined, undefined);
@@ -2920,7 +2933,7 @@
 
   /* style inject shadow dom */
 
-  var DropdownPanel = normalizeComponent_1({
+  var __vue_component__$8 = normalizeComponent_1({
     render: __vue_render__$7,
     staticRenderFns: __vue_staticRenderFns__$7
   }, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, false, undefined, undefined, undefined);
@@ -2928,7 +2941,7 @@
   var script$9 = {
     name: 'MusselDropdown',
     components: {
-      'mu-dropdown-panel': DropdownPanel
+      'mu-dropdown-panel': __vue_component__$8
     },
     provide: function provide() {
       return {
@@ -3072,7 +3085,7 @@
 
   /* style inject shadow dom */
 
-  var Dropdown = normalizeComponent_1({
+  var __vue_component__$9 = normalizeComponent_1({
     render: __vue_render__$8,
     staticRenderFns: __vue_staticRenderFns__$8
   }, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, false, undefined, undefined, undefined);
@@ -3082,10 +3095,10 @@
     name: 'MusselDropdownButton',
     components: {
       'mu-button': Button,
-      'mu-icon': Icon
+      'mu-icon': __vue_component__$4
     },
-    "extends": Dropdown,
-    mixins: [SplitButton],
+    "extends": __vue_component__$9,
+    mixins: [__vue_component__$7],
     props: {
       splitButton: Boolean
     }
@@ -3180,7 +3193,7 @@
 
   /* style inject shadow dom */
 
-  var DropdownButton = normalizeComponent_1({
+  var __vue_component__$a = normalizeComponent_1({
     render: __vue_render__$9,
     staticRenderFns: __vue_staticRenderFns__$9
   }, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, false, undefined, undefined, undefined);
@@ -3275,14 +3288,14 @@
 
   /* style inject shadow dom */
 
-  var Input = normalizeComponent_1({
+  var __vue_component__$b = normalizeComponent_1({
     render: __vue_render__$a,
     staticRenderFns: __vue_staticRenderFns__$a
   }, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, false, undefined, undefined, undefined);
 
   var EditorIcon = {
     name: 'MusselEditorIcon',
-    "extends": Icon,
+    "extends": __vue_component__$4,
     computed: {
       className: function className() {
         return 'mu-editor-icon';
@@ -3294,7 +3307,7 @@
   var script$c = {
     name: 'MusselBaseEditorWrapper',
     components: {
-      'mu-input': Input,
+      'mu-input': __vue_component__$b,
       'mu-editor-icon': EditorIcon
     },
     inject: ['editor', 'params'],
@@ -3425,7 +3438,7 @@
 
   /* style inject shadow dom */
 
-  var BaseEditorWrapper = normalizeComponent_1({
+  var __vue_component__$c = normalizeComponent_1({
     render: __vue_render__$b,
     staticRenderFns: __vue_staticRenderFns__$b
   }, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, false, undefined, undefined, undefined);
@@ -3433,7 +3446,7 @@
   var BaseEditor = {
     name: 'MusselBaseButtonEditor',
     components: {
-      'mu-editor-wrapper': BaseEditorWrapper
+      'mu-editor-wrapper': __vue_component__$c
     },
     provide: function provide() {
       return {
@@ -3620,7 +3633,7 @@
 
   /* style inject shadow dom */
 
-  var Editor = normalizeComponent_1({
+  var __vue_component__$d = normalizeComponent_1({
     render: __vue_render__$c,
     staticRenderFns: __vue_staticRenderFns__$c
   }, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, false, undefined, undefined, undefined);
@@ -3630,8 +3643,8 @@
     name: 'MusselPopupBoxWrapper',
     inject: ['params', 'popupParams'],
     components: {
-      'mu-editor-wrapper': BaseEditorWrapper,
-      'mu-dropdown-panel': DropdownPanel
+      'mu-editor-wrapper': __vue_component__$c,
+      'mu-dropdown-panel': __vue_component__$8
     },
     methods: {
       setPopupVisible: function setPopupVisible(value) {
@@ -3692,7 +3705,7 @@
 
   /* style inject shadow dom */
 
-  var PopupEditorWrapper = normalizeComponent_1({
+  var __vue_component__$e = normalizeComponent_1({
     render: __vue_render__$d,
     staticRenderFns: __vue_staticRenderFns__$d
   }, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, false, undefined, undefined, undefined);
@@ -3700,7 +3713,7 @@
   var BasePopupEditor = {
     name: 'MusselBasePopupEditor',
     components: {
-      'mu-popup-editor-wrapper': PopupEditorWrapper
+      'mu-popup-editor-wrapper': __vue_component__$e
     },
     "extends": BaseEditor,
     mixins: [PopupGroupMixin],
@@ -3786,7 +3799,7 @@
 
   /* style inject shadow dom */
 
-  var ButtonEditor = normalizeComponent_1({
+  var __vue_component__$f = normalizeComponent_1({
     render: __vue_render__$e,
     staticRenderFns: __vue_staticRenderFns__$e
   }, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, false, undefined, undefined, undefined);
@@ -3965,7 +3978,7 @@
 
   /* style inject shadow dom */
 
-  var ColorEditor = normalizeComponent_1({
+  var __vue_component__$g = normalizeComponent_1({
     render: __vue_render__$f,
     staticRenderFns: __vue_staticRenderFns__$f
   }, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, false, undefined, undefined, undefined);
@@ -4010,7 +4023,7 @@
 
   /* style inject shadow dom */
 
-  var PopupEditor = normalizeComponent_1({
+  var __vue_component__$h = normalizeComponent_1({
     render: __vue_render__$g,
     staticRenderFns: __vue_staticRenderFns__$g
   }, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, false, undefined, undefined, undefined);
@@ -4822,7 +4835,7 @@
 
   /* style inject shadow dom */
 
-  var Calendar = normalizeComponent_1({
+  var __vue_component__$i = normalizeComponent_1({
     render: __vue_render__$h,
     staticRenderFns: __vue_staticRenderFns__$h
   }, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, false, undefined, undefined, undefined);
@@ -5287,7 +5300,7 @@
   var script$j = {
     name: 'MusselDateEditor',
     components: {
-      Calendar: Calendar
+      Calendar: __vue_component__$i
     },
     "extends": BasePopupEditor,
     props: {
@@ -5396,7 +5409,7 @@
 
   /* style inject shadow dom */
 
-  var DateEditor = normalizeComponent_1({
+  var __vue_component__$j = normalizeComponent_1({
     render: __vue_render__$i,
     staticRenderFns: __vue_staticRenderFns__$i
   }, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, false, undefined, undefined, undefined);
@@ -5545,7 +5558,7 @@
   var script$k = {
     name: 'MusselListItem',
     components: {
-      'mu-icon': Icon
+      'mu-icon': __vue_component__$4
     },
     props: {
       value: null,
@@ -5644,14 +5657,14 @@
 
   /* style inject shadow dom */
 
-  var ListItem = normalizeComponent_1({
+  var __vue_component__$k = normalizeComponent_1({
     render: __vue_render__$j,
     staticRenderFns: __vue_staticRenderFns__$j
   }, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, false, undefined, undefined, undefined);
 
   var Option = {
     name: 'MusselOption',
-    "extends": ListItem,
+    "extends": __vue_component__$k,
     inject: {
       editor: {
         "default": null
@@ -5924,14 +5937,14 @@
 
   /* style inject shadow dom */
 
-  var ComboBox = normalizeComponent_1({
+  var __vue_component__$l = normalizeComponent_1({
     render: __vue_render__$k,
     staticRenderFns: __vue_staticRenderFns__$k
   }, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, false, undefined, undefined, undefined);
 
   var script$m = {
     name: 'MusselForm',
-    "extends": FlexBox,
+    "extends": __vue_component__$1,
     provide: function provide() {
       return {
         form: this
@@ -5996,14 +6009,14 @@
 
   /* style inject shadow dom */
 
-  var Form = normalizeComponent_1({
+  var __vue_component__$m = normalizeComponent_1({
     render: __vue_render__$l,
     staticRenderFns: __vue_staticRenderFns__$l
   }, __vue_inject_styles__$m, __vue_script__$m, __vue_scope_id__$m, __vue_is_functional_template__$m, __vue_module_identifier__$m, false, undefined, undefined, undefined);
 
   var script$n = {
     name: 'MusselFormField',
-    "extends": FlexItem,
+    "extends": __vue_component__,
     inject: {
       form: {
         "default": null
@@ -6083,7 +6096,7 @@
 
   /* style inject shadow dom */
 
-  var FormField = normalizeComponent_1({
+  var __vue_component__$n = normalizeComponent_1({
     render: __vue_render__$m,
     staticRenderFns: __vue_staticRenderFns__$m
   }, __vue_inject_styles__$n, __vue_script__$n, __vue_scope_id__$n, __vue_is_functional_template__$n, __vue_module_identifier__$n, false, undefined, undefined, undefined);
@@ -6222,7 +6235,7 @@
 
   /* style inject shadow dom */
 
-  var Toggle = normalizeComponent_1({
+  var __vue_component__$o = normalizeComponent_1({
     render: __vue_render__$n,
     staticRenderFns: __vue_staticRenderFns__$n
   }, __vue_inject_styles__$o, __vue_script__$o, __vue_scope_id__$o, __vue_is_functional_template__$o, __vue_module_identifier__$o, false, undefined, undefined, undefined);
@@ -6271,7 +6284,7 @@
 
   /* style inject shadow dom */
 
-  var ListDivider = normalizeComponent_1({
+  var __vue_component__$p = normalizeComponent_1({
     render: __vue_render__$o,
     staticRenderFns: __vue_staticRenderFns__$o
   }, __vue_inject_styles__$p, __vue_script__$p, __vue_scope_id__$p, __vue_is_functional_template__$p, __vue_module_identifier__$p, false, undefined, undefined, undefined);
@@ -6323,7 +6336,7 @@
 
   /* style inject shadow dom */
 
-  var Bar = normalizeComponent_1({
+  var __vue_component__$q = normalizeComponent_1({
     render: __vue_render__$p,
     staticRenderFns: __vue_staticRenderFns__$p
   }, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, false, undefined, undefined, undefined);
@@ -6468,7 +6481,7 @@
 
   /* style inject shadow dom */
 
-  var TabsHeader = normalizeComponent_1({
+  var __vue_component__$r = normalizeComponent_1({
     render: __vue_render__$q,
     staticRenderFns: __vue_staticRenderFns__$q
   }, __vue_inject_styles__$r, __vue_script__$r, __vue_scope_id__$r, __vue_is_functional_template__$r, __vue_module_identifier__$r, false, undefined, undefined, undefined);
@@ -6476,7 +6489,7 @@
   var script$s = {
     name: 'MusselTabs',
     components: {
-      TabsHeader: TabsHeader
+      TabsHeader: __vue_component__$r
     },
     provide: function provide() {
       return {
@@ -6633,7 +6646,7 @@
 
   /* style inject shadow dom */
 
-  var Tabs = normalizeComponent_1({
+  var __vue_component__$s = normalizeComponent_1({
     render: __vue_render__$r,
     staticRenderFns: __vue_staticRenderFns__$r
   }, __vue_inject_styles__$s, __vue_script__$s, __vue_scope_id__$s, __vue_is_functional_template__$s, __vue_module_identifier__$s, false, undefined, undefined, undefined);
@@ -6728,14 +6741,14 @@
 
   /* style inject shadow dom */
 
-  var TabPanel = normalizeComponent_1({
+  var __vue_component__$t = normalizeComponent_1({
     render: __vue_render__$s,
     staticRenderFns: __vue_staticRenderFns__$s
   }, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, false, undefined, undefined, undefined);
 
   var DropdownItem = {
     name: 'MusselDropdownItem',
-    "extends": ListItem,
+    "extends": __vue_component__$k,
     inject: {
       dropdown: {
         "default": null
@@ -6896,7 +6909,7 @@
 
   /* style inject shadow dom */
 
-  var Expander = normalizeComponent_1({
+  var __vue_component__$u = normalizeComponent_1({
     render: __vue_render__$t,
     staticRenderFns: __vue_staticRenderFns__$t
   }, __vue_inject_styles__$u, __vue_script__$u, __vue_scope_id__$u, __vue_is_functional_template__$u, __vue_module_identifier__$u, false, undefined, undefined, undefined);
@@ -6961,14 +6974,14 @@
 
   /* style inject shadow dom */
 
-  var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, undefined, undefined);
+  var __vue_component__$v = normalizeComponent_1({}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, undefined, undefined);
 
   //
   var script$w = {
     name: 'MusselDialogWrapper',
     components: {
       'mu-v-box': VBox,
-      'mu-close-button': CloseButton
+      'mu-close-button': __vue_component__$5
     },
     inject: ['dialog', 'params'],
     computed: {
@@ -7082,7 +7095,7 @@
 
   /* style inject shadow dom */
 
-  var DialogWrapper = normalizeComponent_1({
+  var __vue_component__$w = normalizeComponent_1({
     render: __vue_render__$u,
     staticRenderFns: __vue_staticRenderFns__$u
   }, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, false, undefined, undefined, undefined);
@@ -7095,9 +7108,9 @@
   var script$x = {
     name: 'MusselBaseDialog',
     components: {
-      'mu-dialog-wrapper': DialogWrapper
+      'mu-dialog-wrapper': __vue_component__$w
     },
-    "extends": BaseModal,
+    "extends": __vue_component__$v,
     provide: function provide() {
       return {
         dialog: this,
@@ -7274,12 +7287,12 @@
 
   /* style inject shadow dom */
 
-  var BaseDialog = normalizeComponent_1({}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, undefined, undefined, undefined);
+  var __vue_component__$x = normalizeComponent_1({}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, undefined, undefined, undefined);
 
   //
   var script$y = {
     name: 'MusselModal',
-    "extends": BaseModal
+    "extends": __vue_component__$v
   };
 
   /* script */
@@ -7324,7 +7337,7 @@
 
   /* style inject shadow dom */
 
-  var Modal = normalizeComponent_1({
+  var __vue_component__$y = normalizeComponent_1({
     render: __vue_render__$v,
     staticRenderFns: __vue_staticRenderFns__$v
   }, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
@@ -7332,7 +7345,7 @@
   //
   var script$z = {
     name: 'MusselDialog',
-    "extends": BaseDialog
+    "extends": __vue_component__$x
   };
 
   /* script */
@@ -7369,14 +7382,14 @@
 
   /* style inject shadow dom */
 
-  var Dialog = normalizeComponent_1({
+  var __vue_component__$z = normalizeComponent_1({
     render: __vue_render__$w,
     staticRenderFns: __vue_staticRenderFns__$w
   }, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, undefined, undefined, undefined);
 
   var script$A = {
     name: 'MusselMessageBox',
-    "extends": BaseDialog,
+    "extends": __vue_component__$x,
     methods: {
       hide: function hide(button) {
         var _this = this;
@@ -7434,7 +7447,7 @@
 
   /* style inject shadow dom */
 
-  var MessageBox = normalizeComponent_1({
+  var __vue_component__$A = normalizeComponent_1({
     render: __vue_render__$x,
     staticRenderFns: __vue_staticRenderFns__$x
   }, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, undefined, undefined, undefined);
@@ -7538,12 +7551,11 @@
 
   /* style inject shadow dom */
 
-  var Notifier = normalizeComponent_1({
+  var __vue_component__$B = normalizeComponent_1({
     render: __vue_render__$y,
     staticRenderFns: __vue_staticRenderFns__$y
   }, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, undefined, undefined);
 
-  var $Vue;
   var alertTitle = isZh ? '提示' : 'Alert';
   var confirmTitle = isZh ? '确认提示' : 'Confirm';
   var warnTitle = isZh ? '确认警告' : 'Warning';
@@ -7559,9 +7571,8 @@
   };
 
   function showMessage(method, message, callback) {
-    if (!$Vue) return;
-    var dialog = new $Vue({
-      "extends": MessageBox,
+    var dialog = new Vue({
+      "extends": __vue_component__$A,
       data: {
         message: message
       },
@@ -7585,114 +7596,106 @@
   }
   var notifier;
   function notify(notifyType, message, timeout) {
-    if (!$Vue) return;
-
     if (!notifier) {
-      notifier = new $Vue(Notifier).$mount();
+      notifier = new Vue(__vue_component__$B).$mount();
       document.body.appendChild(notifier.$el);
     }
 
     notifier.notify(notifyType, message, timeout);
   }
-  function install(Vue) {
-    $Vue = Vue;
-  }
 
-  /* LAYOUT */
-
-  function install$1(Vue) {
-    Vue.component('mu-flex-box', FlexBox);
-    Vue.component('mu-flex-item', FlexItem);
+  function install() {
+    Vue.component('mu-flex-box', __vue_component__$1);
+    Vue.component('mu-flex-item', __vue_component__);
     Vue.component('mu-h-box', HBox);
     Vue.component('mu-v-box', VBox);
-    Vue.component('mu-space', Space);
-    Vue.component('mu-splitter', Splitter);
-    Vue.component('mu-icon', Icon);
+    Vue.component('mu-space', __vue_component__$2);
+    Vue.component('mu-splitter', __vue_component__$3);
+    Vue.component('mu-icon', __vue_component__$4);
     Vue.component('mu-button', Button);
     Vue.component('mu-icon-button', IconButton);
-    Vue.component('mu-close-button', CloseButton);
-    Vue.component('mu-button-group', ButtonGroup);
-    Vue.component('mu-split-button', SplitButton);
-    Vue.component('mu-dropdown-button', DropdownButton);
-    Vue.component('mu-input', Input);
-    Vue.component('mu-editor', Editor);
-    Vue.component('mu-button-editor', ButtonEditor);
-    Vue.component('mu-popup-editor', PopupEditor);
-    Vue.component('mu-color-editor', ColorEditor);
-    Vue.component('mu-date-editor', DateEditor);
-    Vue.component('mu-combo-box', ComboBox);
+    Vue.component('mu-close-button', __vue_component__$5);
+    Vue.component('mu-button-group', __vue_component__$6);
+    Vue.component('mu-split-button', __vue_component__$7);
+    Vue.component('mu-dropdown-button', __vue_component__$a);
+    Vue.component('mu-input', __vue_component__$b);
+    Vue.component('mu-editor', __vue_component__$d);
+    Vue.component('mu-button-editor', __vue_component__$f);
+    Vue.component('mu-popup-editor', __vue_component__$h);
+    Vue.component('mu-color-editor', __vue_component__$g);
+    Vue.component('mu-date-editor', __vue_component__$j);
+    Vue.component('mu-combo-box', __vue_component__$l);
     Vue.component('mu-option', Option);
-    Vue.component('mu-form', Form);
-    Vue.component('mu-form-field', FormField);
-    Vue.component('mu-toggle', Toggle);
-    Vue.component('mu-list-item', ListItem);
-    Vue.component('mu-list-divider', ListDivider);
-    Vue.component('mu-bar', Bar);
-    Vue.component('mu-tabs', Tabs);
-    Vue.component('mu-tabs-header', TabsHeader);
-    Vue.component('mu-tab-panel', TabPanel);
-    Vue.component('mu-dropdown', Dropdown);
+    Vue.component('mu-form', __vue_component__$m);
+    Vue.component('mu-form-field', __vue_component__$n);
+    Vue.component('mu-toggle', __vue_component__$o);
+    Vue.component('mu-list-item', __vue_component__$k);
+    Vue.component('mu-list-divider', __vue_component__$p);
+    Vue.component('mu-bar', __vue_component__$q);
+    Vue.component('mu-tabs', __vue_component__$s);
+    Vue.component('mu-tabs-header', __vue_component__$r);
+    Vue.component('mu-tab-panel', __vue_component__$t);
+    Vue.component('mu-dropdown', __vue_component__$9);
     Vue.component('mu-dropdown-item', DropdownItem);
-    Vue.component('mu-expander', Expander);
-    Vue.component('mu-base-modal', BaseModal);
-    Vue.component('mu-base-dialog', BaseDialog);
-    Vue.component('mu-modal', Modal);
-    Vue.component('mu-dialog', Dialog);
-    Vue.component('mu-dialog-wrapper', DialogWrapper);
-    Vue.component('mu-calendar', Calendar);
-    install(Vue);
+    Vue.component('mu-expander', __vue_component__$u);
+    Vue.component('mu-base-modal', __vue_component__$v);
+    Vue.component('mu-base-dialog', __vue_component__$x);
+    Vue.component('mu-modal', __vue_component__$y);
+    Vue.component('mu-dialog', __vue_component__$z);
+    Vue.component('mu-dialog-wrapper', __vue_component__$w);
+    Vue.component('mu-calendar', __vue_component__$i);
   }
 
-  if (window.Vue) install$1(window.Vue);
+  if (Vue) install();
   var alert$1 = alert,
       confirm$1 = confirm,
       warn$1 = warn,
       notify$1 = notify;
 
-  exports.Bar = Bar;
-  exports.BaseDialog = BaseDialog;
+  exports.Bar = __vue_component__$q;
+  exports.BaseDialog = __vue_component__$x;
   exports.BaseEditor = BaseEditor;
-  exports.BaseModal = BaseModal;
+  exports.BaseModal = __vue_component__$v;
   exports.BasePopupEditor = BasePopupEditor;
   exports.Button = Button;
-  exports.ButtonEditor = ButtonEditor;
-  exports.ButtonGroup = ButtonGroup;
-  exports.Calendar = Calendar;
-  exports.CloseButton = CloseButton;
-  exports.ColorEditor = ColorEditor;
-  exports.ComboBox = ComboBox;
-  exports.DateEditor = DateEditor;
-  exports.Dialog = Dialog;
-  exports.DialogWrapper = DialogWrapper;
-  exports.Dropdown = Dropdown;
-  exports.DropdownButton = DropdownButton;
+  exports.ButtonEditor = __vue_component__$f;
+  exports.ButtonGroup = __vue_component__$6;
+  exports.Calendar = __vue_component__$i;
+  exports.CloseButton = __vue_component__$5;
+  exports.ColorEditor = __vue_component__$g;
+  exports.ComboBox = __vue_component__$l;
+  exports.DateEditor = __vue_component__$j;
+  exports.Dialog = __vue_component__$z;
+  exports.DialogWrapper = __vue_component__$w;
+  exports.Dropdown = __vue_component__$9;
+  exports.DropdownButton = __vue_component__$a;
   exports.DropdownItem = DropdownItem;
-  exports.Editor = Editor;
-  exports.Expander = Expander;
-  exports.FlexBox = FlexBox;
-  exports.FlexItem = FlexItem;
-  exports.Form = Form;
-  exports.FormField = FormField;
+  exports.Editor = __vue_component__$d;
+  exports.Expander = __vue_component__$u;
+  exports.FlexBox = __vue_component__$1;
+  exports.FlexItem = __vue_component__;
+  exports.Form = __vue_component__$m;
+  exports.FormField = __vue_component__$n;
   exports.HBox = HBox;
-  exports.Icon = Icon;
+  exports.Icon = __vue_component__$4;
   exports.IconButton = IconButton;
-  exports.Input = Input;
-  exports.ListDivider = ListDivider;
-  exports.ListItem = ListItem;
-  exports.Modal = Modal;
+  exports.Input = __vue_component__$b;
+  exports.ListDivider = __vue_component__$p;
+  exports.ListItem = __vue_component__$k;
+  exports.Modal = __vue_component__$y;
   exports.Option = Option;
-  exports.PopupEditor = PopupEditor;
-  exports.Space = Space;
-  exports.SplitButton = SplitButton;
-  exports.Splitter = Splitter;
-  exports.TabPanel = TabPanel;
-  exports.Tabs = Tabs;
-  exports.TabsHeader = TabsHeader;
-  exports.Toggle = Toggle;
+  exports.PopupEditor = __vue_component__$h;
+  exports.Space = __vue_component__$2;
+  exports.SplitButton = __vue_component__$7;
+  exports.Splitter = __vue_component__$3;
+  exports.TabPanel = __vue_component__$t;
+  exports.Tabs = __vue_component__$s;
+  exports.TabsHeader = __vue_component__$r;
+  exports.Toggle = __vue_component__$o;
   exports.VBox = VBox;
   exports.alert = alert$1;
   exports.confirm = confirm$1;
-  exports.install = install$1;
+  exports.install = install;
   exports.notify = notify$1;
   exports.registerIcons = register;
   exports.warn = warn$1;

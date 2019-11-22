@@ -1,9 +1,9 @@
-import { isZh } from '../../utils/language'
+import Vue from 'vue'
 
 import MessageBox from './message-box.vue'
 import Notifier from './notifier.vue'
 
-let $Vue
+import { isZh } from '../../utils/language'
 
 const alertTitle = isZh ? '提示' : 'Alert'
 const confirmTitle = isZh ? '确认提示' : 'Confirm'
@@ -22,8 +22,7 @@ const cancelButton = {
 }
 
 function showMessage (method, message, callback) {
-  if (!$Vue) return
-  const dialog = new $Vue({
+  const dialog = new Vue({
     extends: MessageBox,
     data: {
       message
@@ -60,14 +59,9 @@ export function warn (message, callback) {
 let notifier
 
 export function notify (notifyType, message, timeout) {
-  if (!$Vue) return
   if (!notifier) {
-    notifier = new $Vue(Notifier).$mount()
+    notifier = new Vue(Notifier).$mount()
     document.body.appendChild(notifier.$el)
   }
   notifier.notify(notifyType, message, timeout)
-}
-
-export function install (Vue) {
-  $Vue = Vue
 }

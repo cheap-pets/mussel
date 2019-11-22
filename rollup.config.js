@@ -20,6 +20,7 @@ import variables from './src/variables'
 
 export default {
   input: 'src/index.js',
+  external: ['vue'],
   plugins: [
     vue({
       css: false
@@ -63,11 +64,17 @@ export default {
       file: 'dist/mussel.min.js',
       format: 'umd',
       name: 'mussel',
+      globals: {
+        vue: 'Vue'
+      },
       sourcemap: true
     },
     {
       file: 'dist/mussel.esm.min.js',
       format: 'esm',
+      globals: {
+        vue: 'Vue'
+      },
       sourcemap: true
     }
   ]

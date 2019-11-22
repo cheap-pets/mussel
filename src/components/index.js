@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 /* LAYOUT */
 import FlexBox from './layout/flex-box.vue'
 import FlexItem from './layout/flex-item.vue'
@@ -57,7 +59,7 @@ import Calendar from './calendar/calendar.vue'
 
 // import './transform'
 
-function install (Vue) {
+function install ($Vue = Vue) {
   Vue.component('mu-flex-box', FlexBox)
   Vue.component('mu-flex-item', FlexItem)
   Vue.component('mu-h-box', HBox)
@@ -109,11 +111,9 @@ function install (Vue) {
   Vue.component('mu-dialog-wrapper', DialogWrapper)
 
   Vue.component('mu-calendar', Calendar)
-
-  MessageBox.install(Vue)
 }
 
-if (window.Vue) install(window.Vue)
+if (Vue) install(Vue)
 
 const { alert, confirm, warn, notify } = MessageBox
 

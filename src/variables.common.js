@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   /* spacing */
   halfSpacingSize: '8px',
   unitSpacingSize: '16px',
