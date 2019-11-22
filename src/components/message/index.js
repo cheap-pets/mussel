@@ -6,54 +6,86 @@ import Notifier from './notifier.vue'
 import { isZh } from '../../utils/language'
 
 const alertTitle = isZh ? '提示' : 'Alert'
+const errorTitle = isZh ? '错误' : 'Error'
 const confirmTitle = isZh ? '确认提示' : 'Confirm'
 const warnTitle = isZh ? '确认警告' : 'Warning'
 
-const okButton = {
-  id: 'ok',
-  caption: isZh ? '确定' : 'OK',
-  action: 'close'
-}
+const dialogButtons = [
+  {
+    id: 'ok',
+    caption: isZh ? '确定' : 'OK',
+    action: 'close'
+  },
+  {
+    id: 'cancel',
+    caption: isZh ? '取消' : 'CANCEL',
+    action: 'close'
+  },
+  {
+    id: 'yes',
+    caption: isZh ? '是' : 'YES',
+    action: 'close'
+  },
+  {
+    id: 'no',
+    caption: isZh ? '否' : 'NO',
+    action: 'close'
+  }
+]
 
-const cancelButton = {
-  id: 'cancel',
-  caption: isZh ? '取消' : 'CANCEL',
-  action: 'close'
-}
-
-function showMessage (method, message, callback) {
+export function showMessage ({ title, message, buttons, danger, callback }) {
   const dialog = new Vue({
     extends: MessageBox,
     data: {
       message
     },
-    title: method === 'warn'
-      ? warnTitle
-      : (
-        method === 'confirm'
-          ? confirmTitle
-          : alertTitle
-      ),
-    danger: method === 'warn',
-    buttons: method !== 'alert'
-      ? [okButton, cancelButton]
-      : [okButton],
-    primaryButton: 'ok'
+    title,
+    danger,
+    buttons: buttons.map(
+      btnId => dialogButtons.find(btn => btn.id === btnId)
+    ),
+    primaryButton: buttons[0]
   })
   if (callback) dialog.$on('hide', callback)
   dialog.show()
 }
 
 export function alert (message, callback) {
-  showMessage('alert', message, callback)
+  showMessage({
+    title: alertTitle,
+    buttons: ['ok'],
+    message,
+    callback
+  })
+}
+
+export function error (message, callback) {
+  showMessage({
+    title: errorTitle,
+    buttons: ['ok'],
+    danger: true,
+    message,
+    callback
+  })
 }
 
 export function confirm (message, callback) {
-  showMessage('confirm', message, callback)
+  showMessage({
+    title: confirmTitle,
+    buttons: ['ok', 'cancel'],
+    message,
+    callback
+  })
 }
 
 export function warn (message, callback) {
-  showMessage('warn', message, callback)
+  showMessage({
+    title: warnTitle,
+    buttons: ['ok', 'cancel'],
+    danger: true,
+    message,
+    callback
+  })
 }
 
 let notifier

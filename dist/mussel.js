@@ -7557,42 +7557,82 @@
   }, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, undefined, undefined);
 
   var alertTitle = isZh ? '提示' : 'Alert';
+  var errorTitle = isZh ? '错误' : 'Error';
   var confirmTitle = isZh ? '确认提示' : 'Confirm';
   var warnTitle = isZh ? '确认警告' : 'Warning';
-  var okButton = {
+  var dialogButtons = [{
     id: 'ok',
     caption: isZh ? '确定' : 'OK',
     action: 'close'
-  };
-  var cancelButton = {
+  }, {
     id: 'cancel',
     caption: isZh ? '取消' : 'CANCEL',
     action: 'close'
-  };
-
-  function showMessage(method, message, callback) {
+  }, {
+    id: 'yes',
+    caption: isZh ? '是' : 'YES',
+    action: 'close'
+  }, {
+    id: 'no',
+    caption: isZh ? '否' : 'NO',
+    action: 'close'
+  }];
+  function showMessage(_ref) {
+    var title = _ref.title,
+        message = _ref.message,
+        buttons = _ref.buttons,
+        danger = _ref.danger,
+        callback = _ref.callback;
     var dialog = new Vue({
       "extends": __vue_component__$A,
       data: {
         message: message
       },
-      title: method === 'warn' ? warnTitle : method === 'confirm' ? confirmTitle : alertTitle,
-      danger: method === 'warn',
-      buttons: method !== 'alert' ? [okButton, cancelButton] : [okButton],
-      primaryButton: 'ok'
+      title: title,
+      danger: danger,
+      buttons: buttons.map(function (btnId) {
+        return dialogButtons.find(function (btn) {
+          return btn.id === btnId;
+        });
+      }),
+      primaryButton: buttons[0]
     });
     if (callback) dialog.$on('hide', callback);
     dialog.show();
   }
-
   function alert(message, callback) {
-    showMessage('alert', message, callback);
+    showMessage({
+      title: alertTitle,
+      buttons: ['ok'],
+      message: message,
+      callback: callback
+    });
+  }
+  function error(message, callback) {
+    showMessage({
+      title: errorTitle,
+      buttons: ['ok'],
+      danger: true,
+      message: message,
+      callback: callback
+    });
   }
   function confirm(message, callback) {
-    showMessage('confirm', message, callback);
+    showMessage({
+      title: confirmTitle,
+      buttons: ['ok', 'cancel'],
+      message: message,
+      callback: callback
+    });
   }
   function warn(message, callback) {
-    showMessage('warn', message, callback);
+    showMessage({
+      title: warnTitle,
+      buttons: ['ok', 'cancel'],
+      danger: true,
+      message: message,
+      callback: callback
+    });
   }
   var notifier;
   function notify(notifyType, message, timeout) {
@@ -7647,7 +7687,9 @@
   }
 
   if (Vue) install();
-  var alert$1 = alert,
+  var showMessage$1 = showMessage,
+      alert$1 = alert,
+      error$1 = error,
       confirm$1 = confirm,
       warn$1 = warn,
       notify$1 = notify;
@@ -7695,9 +7737,11 @@
   exports.VBox = VBox;
   exports.alert = alert$1;
   exports.confirm = confirm$1;
+  exports.error = error$1;
   exports.install = install;
   exports.notify = notify$1;
   exports.registerIcons = register;
+  exports.showMessage = showMessage$1;
   exports.warn = warn$1;
 
   Object.defineProperty(exports, '__esModule', { value: true });

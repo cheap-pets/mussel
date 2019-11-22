@@ -7551,42 +7551,82 @@ var __vue_component__$B = normalizeComponent_1({
 }, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, undefined, undefined);
 
 var alertTitle = isZh ? '提示' : 'Alert';
+var errorTitle = isZh ? '错误' : 'Error';
 var confirmTitle = isZh ? '确认提示' : 'Confirm';
 var warnTitle = isZh ? '确认警告' : 'Warning';
-var okButton = {
+var dialogButtons = [{
   id: 'ok',
   caption: isZh ? '确定' : 'OK',
   action: 'close'
-};
-var cancelButton = {
+}, {
   id: 'cancel',
   caption: isZh ? '取消' : 'CANCEL',
   action: 'close'
-};
-
-function showMessage(method, message, callback) {
+}, {
+  id: 'yes',
+  caption: isZh ? '是' : 'YES',
+  action: 'close'
+}, {
+  id: 'no',
+  caption: isZh ? '否' : 'NO',
+  action: 'close'
+}];
+function showMessage(_ref) {
+  var title = _ref.title,
+      message = _ref.message,
+      buttons = _ref.buttons,
+      danger = _ref.danger,
+      callback = _ref.callback;
   var dialog = new Vue({
     "extends": __vue_component__$A,
     data: {
       message: message
     },
-    title: method === 'warn' ? warnTitle : method === 'confirm' ? confirmTitle : alertTitle,
-    danger: method === 'warn',
-    buttons: method !== 'alert' ? [okButton, cancelButton] : [okButton],
-    primaryButton: 'ok'
+    title: title,
+    danger: danger,
+    buttons: buttons.map(function (btnId) {
+      return dialogButtons.find(function (btn) {
+        return btn.id === btnId;
+      });
+    }),
+    primaryButton: buttons[0]
   });
   if (callback) dialog.$on('hide', callback);
   dialog.show();
 }
-
 function alert(message, callback) {
-  showMessage('alert', message, callback);
+  showMessage({
+    title: alertTitle,
+    buttons: ['ok'],
+    message: message,
+    callback: callback
+  });
+}
+function error(message, callback) {
+  showMessage({
+    title: errorTitle,
+    buttons: ['ok'],
+    danger: true,
+    message: message,
+    callback: callback
+  });
 }
 function confirm(message, callback) {
-  showMessage('confirm', message, callback);
+  showMessage({
+    title: confirmTitle,
+    buttons: ['ok', 'cancel'],
+    message: message,
+    callback: callback
+  });
 }
 function warn(message, callback) {
-  showMessage('warn', message, callback);
+  showMessage({
+    title: warnTitle,
+    buttons: ['ok', 'cancel'],
+    danger: true,
+    message: message,
+    callback: callback
+  });
 }
 var notifier;
 function notify(notifyType, message, timeout) {
@@ -7641,9 +7681,11 @@ function install() {
 }
 
 if (Vue) install();
-var alert$1 = alert,
+var showMessage$1 = showMessage,
+    alert$1 = alert,
+    error$1 = error,
     confirm$1 = confirm,
     warn$1 = warn,
     notify$1 = notify;
 
-export { __vue_component__$q as Bar, __vue_component__$x as BaseDialog, BaseEditor, __vue_component__$v as BaseModal, BasePopupEditor, Button, __vue_component__$f as ButtonEditor, __vue_component__$6 as ButtonGroup, __vue_component__$i as Calendar, __vue_component__$5 as CloseButton, __vue_component__$g as ColorEditor, __vue_component__$l as ComboBox, __vue_component__$j as DateEditor, __vue_component__$z as Dialog, __vue_component__$w as DialogWrapper, __vue_component__$9 as Dropdown, __vue_component__$a as DropdownButton, DropdownItem, __vue_component__$d as Editor, __vue_component__$u as Expander, __vue_component__$1 as FlexBox, __vue_component__ as FlexItem, __vue_component__$m as Form, __vue_component__$n as FormField, HBox, __vue_component__$4 as Icon, IconButton, __vue_component__$b as Input, __vue_component__$p as ListDivider, __vue_component__$k as ListItem, __vue_component__$y as Modal, Option, __vue_component__$h as PopupEditor, __vue_component__$2 as Space, __vue_component__$7 as SplitButton, __vue_component__$3 as Splitter, __vue_component__$t as TabPanel, __vue_component__$s as Tabs, __vue_component__$r as TabsHeader, __vue_component__$o as Toggle, VBox, alert$1 as alert, confirm$1 as confirm, install, notify$1 as notify, register as registerIcons, warn$1 as warn };
+export { __vue_component__$q as Bar, __vue_component__$x as BaseDialog, BaseEditor, __vue_component__$v as BaseModal, BasePopupEditor, Button, __vue_component__$f as ButtonEditor, __vue_component__$6 as ButtonGroup, __vue_component__$i as Calendar, __vue_component__$5 as CloseButton, __vue_component__$g as ColorEditor, __vue_component__$l as ComboBox, __vue_component__$j as DateEditor, __vue_component__$z as Dialog, __vue_component__$w as DialogWrapper, __vue_component__$9 as Dropdown, __vue_component__$a as DropdownButton, DropdownItem, __vue_component__$d as Editor, __vue_component__$u as Expander, __vue_component__$1 as FlexBox, __vue_component__ as FlexItem, __vue_component__$m as Form, __vue_component__$n as FormField, HBox, __vue_component__$4 as Icon, IconButton, __vue_component__$b as Input, __vue_component__$p as ListDivider, __vue_component__$k as ListItem, __vue_component__$y as Modal, Option, __vue_component__$h as PopupEditor, __vue_component__$2 as Space, __vue_component__$7 as SplitButton, __vue_component__$3 as Splitter, __vue_component__$t as TabPanel, __vue_component__$s as Tabs, __vue_component__$r as TabsHeader, __vue_component__$o as Toggle, VBox, alert$1 as alert, confirm$1 as confirm, error$1 as error, install, notify$1 as notify, register as registerIcons, showMessage$1 as showMessage, warn$1 as warn };

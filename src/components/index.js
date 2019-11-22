@@ -115,7 +115,7 @@ function install ($Vue = Vue) {
 
 if (Vue) install(Vue)
 
-const { alert, confirm, warn, notify } = MessageBox
+const { showMessage, alert, error, confirm, warn, notify } = MessageBox
 
 export {
   install,
@@ -175,8 +175,10 @@ export {
   Dialog,
   DialogWrapper,
   // message box
+  showMessage,
   alert,
   confirm,
+  error,
   warn,
   notify
 }

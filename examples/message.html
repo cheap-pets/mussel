@@ -19,7 +19,9 @@
       <h3>Message Box</h3>
       <mu-button button-type="normal" @click="showAlert">Alert</mu-button>
       <mu-button button-type="primary" @click="showConfirm">Confirm</mu-button>
-      <mu-button button-type="danger" @click="showWarn">Warn</mu-button>
+      <mu-button button-type="danger" button-style="outline" @click="showWarn">Warn</mu-button>
+      <mu-button button-type="danger" @click="showError">Error</mu-button>
+      <mu-button button-type="primary" button-style="outline" @click="showCustomMessage">Custom Message</mu-button>
     </div>
     <div>
       <h3>Notification</h3>
@@ -45,6 +47,20 @@
         showWarn: function () {
           mussel.warn('Destroy thanos ?', function (btn) {
             console.log(btn)
+          })
+        },
+        showError: function () {
+          mussel.error('Mission Failed !')
+        },
+        showCustomMessage: function () {
+          mussel.showMessage({
+            title: 'My Message',
+            message: 'Yes or no ?',
+            buttons: ['yes', 'no'],
+            danger: true,
+            callback: function (btn) {
+              if (btn === 'yes') console.log('"yes" button been pressed !')
+            }
           })
         },
         notify: function (type, message) {
