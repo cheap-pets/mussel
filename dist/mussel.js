@@ -7402,7 +7402,7 @@
         }, 500);
       },
       onButtonClick: function onButtonClick(button) {
-        this.hide(button.id);
+        this.hide(button.id || button);
       }
     }
   };
@@ -7560,7 +7560,7 @@
   var errorTitle = isZh ? '错误' : 'Error';
   var confirmTitle = isZh ? '确认提示' : 'Confirm';
   var warnTitle = isZh ? '确认警告' : 'Warning';
-  var dialogButtons = [{
+  var defaultButtons = [{
     id: 'ok',
     caption: isZh ? '确定' : 'OK',
     action: 'close'
@@ -7577,12 +7577,13 @@
     caption: isZh ? '否' : 'NO',
     action: 'close'
   }];
-  function showMessage(_ref) {
-    var title = _ref.title,
-        message = _ref.message,
-        buttons = _ref.buttons,
-        danger = _ref.danger,
-        callback = _ref.callback;
+  function showMessage(options) {
+    var title = options.title,
+        message = options.message,
+        buttons = options.buttons,
+        primaryButton = options.primaryButton,
+        danger = options.danger,
+        callback = options.callback;
     var dialog = new Vue({
       "extends": __vue_component__$A,
       data: {
@@ -7590,12 +7591,12 @@
       },
       title: title,
       danger: danger,
-      buttons: buttons.map(function (btnId) {
-        return dialogButtons.find(function (btn) {
-          return btn.id === btnId;
-        });
+      buttons: buttons.map(function (btn) {
+        return defaultButtons.find(function (item) {
+          return item.id === btn;
+        }) || btn;
       }),
-      primaryButton: buttons[0]
+      primaryButton: primaryButton === undefined ? buttons[0] : primaryButton
     });
     if (callback) dialog.$on('hide', callback);
     dialog.show();

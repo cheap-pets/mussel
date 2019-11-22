@@ -10,7 +10,7 @@ const errorTitle = isZh ? '错误' : 'Error'
 const confirmTitle = isZh ? '确认提示' : 'Confirm'
 const warnTitle = isZh ? '确认警告' : 'Warning'
 
-const dialogButtons = [
+const defaultButtons = [
   {
     id: 'ok',
     caption: isZh ? '确定' : 'OK',
@@ -33,7 +33,8 @@ const dialogButtons = [
   }
 ]
 
-export function showMessage ({ title, message, buttons, danger, callback }) {
+export function showMessage (options) {
+  const { title, message, buttons, primaryButton, danger, callback } = options
   const dialog = new Vue({
     extends: MessageBox,
     data: {
@@ -41,10 +42,12 @@ export function showMessage ({ title, message, buttons, danger, callback }) {
     },
     title,
     danger,
-    buttons: buttons.map(
-      btnId => dialogButtons.find(btn => btn.id === btnId)
+    buttons: buttons.map(btn =>
+      (defaultButtons.find(item => item.id === btn) || btn)
     ),
-    primaryButton: buttons[0]
+    primaryButton: primaryButton === undefined
+      ? buttons[0]
+      : primaryButton
   })
   if (callback) dialog.$on('hide', callback)
   dialog.show()

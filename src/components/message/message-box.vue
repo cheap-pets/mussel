@@ -19,7 +19,7 @@
         }, 500)
       },
       onButtonClick (button) {
-        this.hide(button.id)
+        this.hide(button.id || button)
       }
     }
   }
