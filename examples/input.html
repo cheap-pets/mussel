@@ -28,7 +28,7 @@
     <div>
       <h3>With Icon & Clear Button</h3>
       <h5>Normal</h5>
-      <mu-editor placeholder="input something"></mu-editor>
+      <mu-editor placeholder="input something" v-model="editorValue1" @blur="onBlur"></mu-editor>
       <h5>Hide clear button</h5>
       <mu-editor value="text value" :clearable="false"></mu-editor>
       <h5>Readonly</h5>
@@ -45,11 +45,15 @@
     var view = new Vue({
       el: '#app',
       data: {
-        inputValue: 'foo'
+        inputValue: 'foo',
+        editorValue1: 'bar'
       },
       methods: {
         log (msg) {
           console.log(msg)
+        },
+        onBlur (editor) {
+          console.log(editor.value)
         }
       }
     })

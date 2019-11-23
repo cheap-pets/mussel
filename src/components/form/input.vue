@@ -5,6 +5,7 @@
     :value="value"
     :disabled="disabled"
     @input="onInput"
+    @blur="onBlur"
     @click="onClick"
     @keydown="onKeyDown"
   >
@@ -38,6 +39,9 @@
       },
       onClick () {
         if (!this.disabled) this.$emit('click')
+      },
+      onBlur () {
+        this.$emit('blur', this)
       }
     }
   }

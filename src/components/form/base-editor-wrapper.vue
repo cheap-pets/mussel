@@ -12,6 +12,7 @@
       v-bind="inputParams"
       @input="onInput"
       @click="onInputClick"
+      @blur="onBlur"
       @esckey="onEscKey"
       @enterkey="onEnterKey"
       @keypress.native="onKeyPress" />
@@ -97,6 +98,9 @@
       },
       onEnterKey () {
         this.editor.onEnterKey()
+      },
+      onBlur () {
+        this.editor.onBlur()
       }
     }
   }
