@@ -53,9 +53,12 @@
           return ['simple', 'card'].indexOf(v) !== -1
         }
       },
-      instantState: {
-        type: Boolean,
-        default: true
+      modelControl: {
+        type: String,
+        default: 'both',
+        validator (v) {
+          return ['both', 'external'].indexOf(v) !== -1
+        }
       },
       activeTab: String
     },
@@ -97,6 +100,9 @@
         immediate: true
       }
     },
+    created () {
+      console.log(this)
+    },
     methods: {
       mountTab (tab) {
         const idx = this.mountedTabs.findIndex(item => tab.name === item.name)
@@ -107,8 +113,9 @@
         if (idx !== -1) this.mountedTabs.splice(idx, 1)
       },
       select (name) {
-        const { tabParams, instantState } = this
-        if (instantState && tabParams.activeName !== name) {
+        const { tabParams, modelControl } = this
+        if (modelControl !== 'external' &&
+          tabParams.activeName !== name) {
           tabParams.activeName = name
         }
         this.$emit('change', name)

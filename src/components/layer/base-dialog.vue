@@ -22,6 +22,7 @@
       height: String,
       buttons: Array,
       danger: Boolean,
+      draggable: Boolean,
       primaryButton: String
     },
     data () {
@@ -35,7 +36,8 @@
           danger: this.danger || o.danger,
           title: this.title || o.title,
           primaryButton: this.primaryButton || o.primaryButton,
-          btns: this.btns
+          btns: this.btns,
+          draggable: this.draggable || o.draggable
         }
       }
     },

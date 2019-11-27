@@ -126,7 +126,7 @@
   border-radius: $splitterSize;
   user-select: none;
 
-  &[dragable]:hover {
+  &[draggable]:hover {
     background: $splitterHoverColor;
   }
 
@@ -144,15 +144,15 @@
   width: $splitterSize;
   margin-left: 0;
   margin-right: 0;
-  &[dragable] {
+  &[draggable] {
     cursor: 'col-resize';
   }
 }
-[direction="column"] > .mu-splitter[dragable] {
+[direction="column"] > .mu-splitter[draggable] {
   height: $splitterSize;
   margin-top: 0;
   margin-bottom: 0;
-  &[dragable] {
+  &[draggable] {
     cursor: 'row-resize';
   }
 }

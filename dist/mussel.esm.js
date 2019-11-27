@@ -39,7 +39,7 @@ styleInject(css$2);
 var css$3 = ".mu-icon {\r\n  display: inline-block;\r\n}\r\n.mu-icon > svg {\r\n  vertical-align: -.15em;\r\n}\r\n.mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n  -webkit-transition: -webkit-transform .2s ease-in-out;\r\n  transition: -webkit-transform .2s ease-in-out;\r\n  transition: transform .2s ease-in-out;\r\n  transition: transform .2s ease-in-out,-webkit-transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #f5222d;\r\n  color: #f5222d;\r\n}\r\n.mu-dropdown[expanded] [trigger-type=dropdown],\r\n.mu-icon[trigger-type=dropdown][trigger-on],\r\n.mu-popup-editor[expanded] > [trigger-type=dropdown] {\r\n  -webkit-transform: rotate(-180deg);\r\n  transform: rotate(-180deg);\r\n}\r\n.mu-expander[expanded] [trigger-type=expander],\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  -webkit-transform: rotate(90deg);\r\n  transform: rotate(90deg);\r\n}";
 styleInject(css$3);
 
-var css$4 = ".mu-flex-box {\r\n  position: relative;\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=row-reverse] {\r\n  -webkit-box-orient: horizontal;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: row-reverse;\r\n}\r\n.mu-flex-box[direction=column-reverse] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: column-reverse;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  -webkit-box-align: start;\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[content-spacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[content-spacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n  box-sizing: border-box;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  -webkit-box-flex: 1!important;\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  -webkit-box-flex: 0!important;\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box > [align-self=center] {\r\n  align-self: center;\r\n}\r\n.mu-flex-box > [align-self=stretch] {\r\n  align-self: stretch;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 auto;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 1px;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  -webkit-box-flex: 2;\r\n  flex: 2 2 2px;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  -webkit-box-flex: 3;\r\n  flex: 3 3 3px;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  -webkit-box-flex: 4;\r\n  flex: 4 4 4px;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  -webkit-box-flex: 5;\r\n  flex: 5 5 5px;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  -webkit-box-flex: 6;\r\n  flex: 6 6 6px;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  -webkit-box-flex: 7;\r\n  flex: 7 7 7px;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  -webkit-box-flex: 8;\r\n  flex: 8 8 8px;\r\n}\r\n.mu-absolute-fit {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n[content-spacing] > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}\r\n[cellpadding] > .mu-absolute-fit {\r\n  top: 8px;\r\n  left: 8px;\r\n  right: 8px;\r\n  bottom: 8px;\r\n}\r\n.mu-bordered {\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-splitter {\r\n  background: rgba(0,0,0,.09);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter[dragable]:hover {\r\n  background: rgba(0,0,0,.15);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n}\r\n[direction=row] > .mu-splitter[dragable] {\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter[dragable] {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n}\r\n[direction=column] > .mu-splitter[dragable][dragable] {\r\n  cursor: row-resize;\r\n}\r\n.mu-space {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 0%;\r\n}\r\n[direction=row][flex-wrap] > .mu-space {\r\n  -webkit-box-flex: 0;\r\n  flex: none;\r\n  width: 100%;\r\n}";
+var css$4 = ".mu-flex-box {\r\n  position: relative;\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=row-reverse] {\r\n  -webkit-box-orient: horizontal;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: row-reverse;\r\n}\r\n.mu-flex-box[direction=column-reverse] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: column-reverse;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  -webkit-box-align: start;\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[content-spacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[content-spacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n  box-sizing: border-box;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  -webkit-box-flex: 1!important;\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  -webkit-box-flex: 0!important;\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box > [align-self=center] {\r\n  align-self: center;\r\n}\r\n.mu-flex-box > [align-self=stretch] {\r\n  align-self: stretch;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 auto;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 1px;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  -webkit-box-flex: 2;\r\n  flex: 2 2 2px;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  -webkit-box-flex: 3;\r\n  flex: 3 3 3px;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  -webkit-box-flex: 4;\r\n  flex: 4 4 4px;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  -webkit-box-flex: 5;\r\n  flex: 5 5 5px;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  -webkit-box-flex: 6;\r\n  flex: 6 6 6px;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  -webkit-box-flex: 7;\r\n  flex: 7 7 7px;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  -webkit-box-flex: 8;\r\n  flex: 8 8 8px;\r\n}\r\n.mu-absolute-fit {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n[content-spacing] > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}\r\n[cellpadding] > .mu-absolute-fit {\r\n  top: 8px;\r\n  left: 8px;\r\n  right: 8px;\r\n  bottom: 8px;\r\n}\r\n.mu-bordered {\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-splitter {\r\n  background: rgba(0,0,0,.09);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter[draggable]:hover {\r\n  background: rgba(0,0,0,.15);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n}\r\n[direction=row] > .mu-splitter[draggable] {\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter[draggable] {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n}\r\n[direction=column] > .mu-splitter[draggable][draggable] {\r\n  cursor: row-resize;\r\n}\r\n.mu-space {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 0%;\r\n}\r\n[direction=row][flex-wrap] > .mu-space {\r\n  -webkit-box-flex: 0;\r\n  flex: none;\r\n  width: 100%;\r\n}";
 styleInject(css$4);
 
 var css$5 = ".mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 16px;\r\n  overflow: hidden;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  font-weight: 600;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-list-item[disabled] {\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n  background: 0 0;\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-list-item > .mu-icon {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  height: 1px;\r\n  margin: 4px 0;\r\n  border-bottom: 1px solid rgba(0,0,0,.09);\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
@@ -84,7 +84,7 @@ styleInject(css$h);
 var css$i = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: -webkit-box;\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
 styleInject(css$i);
 
-var css$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: #fff;\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  -webkit-transform: translateY(200px);\r\n  transform: translateY(200px);\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n  -webkit-transform: translateY(0);\r\n  transform: translateY(0);\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #f5222d;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 0 16px;\r\n  background: #fff;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: 0 0;\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
+var css$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: #fff;\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #f5222d;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 0 16px;\r\n  background: #fff;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: 0 0;\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
 styleInject(css$j);
 
 var css$k = ".mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-message-box > .mu-dialog .mu-button {\r\n  min-width: 55px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: #fff;\r\n  border-left: 5px solid #1890ff;\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  -webkit-transform: translateX(100px);\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  -webkit-transition: all .5s;\r\n  transition: all .5s;\r\n}";
@@ -1972,7 +1972,7 @@ function resizeElement(_ref) {
 var script$3 = {
   name: 'MusselSplitter',
   props: {
-    dragable: {
+    draggable: {
       type: Boolean,
       "default": true
     }
@@ -1984,7 +1984,7 @@ var script$3 = {
   },
   methods: {
     onDragStart: function onDragStart(event) {
-      if (!this.dragable) return;
+      if (!this.draggable) return;
       var state = getInitialState(this.$el.previousElementSibling, this.$el.nextElementSibling);
       if (!state) return;
       this.initialState = _objectSpread({
@@ -1997,7 +1997,7 @@ var script$3 = {
       if (this.initialState.resized) this.$emit('resizestart');
     },
     onDragMove: function onDragMove(event) {
-      if (!this.dragable) return;
+      if (!this.draggable) return;
 
       if (resizeElement(_objectSpread({}, this.initialState, {
         x: event.pageX,
@@ -2008,7 +2008,7 @@ var script$3 = {
       }
     },
     onDragEnd: function onDragEnd(event) {
-      if (!this.dragable) return;
+      if (!this.draggable) return;
       window.removeEventListener('mousemove', this.onDragMove);
       window.removeEventListener('mouseup', this.onDragEnd);
       if (this.initialState.resized) this.$emit('resizeend');
@@ -2030,7 +2030,7 @@ var __vue_render__$3 = function __vue_render__() {
   return _c("div", {
     staticClass: "mu-splitter",
     attrs: {
-      dragable: _vm.dragable
+      draggable: _vm.draggable
     },
     on: {
       mousedown: _vm.onDragStart
@@ -3233,7 +3233,7 @@ var script$b = {
       if (!this.disabled) this.$emit('click');
     },
     onBlur: function onBlur() {
-      this.$emit('blur');
+      this.$emit('blur', this);
     }
   }
 };
@@ -6523,9 +6523,12 @@ var script$s = {
         return ['simple', 'card'].indexOf(v) !== -1;
       }
     },
-    instantState: {
-      type: Boolean,
-      "default": true
+    modelControl: {
+      type: String,
+      "default": 'both',
+      validator: function validator(v) {
+        return ['both', 'external'].indexOf(v) !== -1;
+      }
     },
     activeTab: String
   },
@@ -6572,6 +6575,9 @@ var script$s = {
       immediate: true
     }
   },
+  created: function created() {
+    console.log(this);
+  },
   methods: {
     mountTab: function mountTab(tab) {
       var idx = this.mountedTabs.findIndex(function (item) {
@@ -6587,9 +6593,9 @@ var script$s = {
     },
     select: function select(name) {
       var tabParams = this.tabParams,
-          instantState = this.instantState;
+          modelControl = this.modelControl;
 
-      if (instantState && tabParams.activeName !== name) {
+      if (modelControl !== 'external' && tabParams.activeName !== name) {
         tabParams.activeName = name;
       }
 
@@ -6982,7 +6988,6 @@ var __vue_is_functional_template__$v = undefined;
 
 var __vue_component__$v = normalizeComponent_1({}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, undefined, undefined);
 
-//
 var script$w = {
   name: 'MusselDialogWrapper',
   components: {
@@ -6990,23 +6995,92 @@ var script$w = {
     'mu-close-button': __vue_component__$5
   },
   inject: ['dialog', 'params'],
+  data: function data() {
+    return {
+      translateX: 0,
+      translateY: 0,
+      transitionDuration: '.2s'
+    };
+  },
   computed: {
     style: function style() {
+      var _this$params = this.params,
+          visible = _this$params.dialogVisible,
+          width = _this$params.width,
+          height = _this$params.height;
+      var tx = this.translateX,
+          ty = this.translateY,
+          transitionDuration = this.transitionDuration;
+      ty = visible ? ty : ty + 200;
       return {
-        width: this.params.width,
-        height: this.params.height
+        width: width,
+        height: height,
+        transitionDuration: transitionDuration,
+        transform: "translate3d(".concat(tx, "px, ").concat(ty, "px, 0)")
       };
     }
   },
   methods: {
     onMaskClick: function onMaskClick(event) {
-      this.dialog.onMaskClick(event);
+      if (!this.dragState) this.dialog.onMaskClick(event);
     },
     hide: function hide() {
       this.dialog.hide();
     },
     onButtonClick: function onButtonClick(btn) {
       this.dialog.onButtonClick(btn);
+    },
+    onDragStart: function onDragStart(event) {
+      var targetCls = event.target.className || '';
+      if (!this.params.draggable || targetCls.indexOf('mu-icon') !== -1) return;
+      var el = this.$el.querySelector('.mu-dialog');
+      this.dragState = {
+        tx: this.translateX,
+        ty: this.translateY,
+        startX: event.pageX,
+        startY: event.pageY,
+        el: el
+      };
+      this.transitionDuration = '0s';
+      window.addEventListener('mousemove', this.onDragMove);
+      window.addEventListener('mouseup', this.onDragEnd);
+    },
+    onDragMove: function onDragMove(event) {
+      if (!this.dragState) return;
+      var x = event.pageX,
+          y = event.pageY;
+      var _this$dragState = this.dragState,
+          el = _this$dragState.el,
+          tx = _this$dragState.tx,
+          ty = _this$dragState.ty,
+          startX = _this$dragState.startX,
+          startY = _this$dragState.startY;
+
+      var _getClientRect = getClientRect(el),
+          top = _getClientRect.top,
+          left = _getClientRect.left;
+
+      var newX = tx + x - startX;
+      var newY = ty + y - startY;
+
+      if ((left > 0 || newX > this.translateX) && x < window.innerWidth) {
+        this.translateX = newX;
+      }
+
+      if ((top > 0 || ty + y - startY > this.translateY) && y < window.innerHeight) {
+        this.translateY = newY;
+      }
+    },
+    onDragEnd: function onDragEnd(event) {
+      var _this = this;
+
+      if (!this.dragState) return;
+      window.removeEventListener('mousemove', this.onDragMove);
+      window.removeEventListener('mouseup', this.onDragEnd);
+      this.transitionDuration = '.2s';
+      setTimeout(function () {
+        delete _this.dragState;
+      }, 50);
     }
   }
 };
@@ -7033,7 +7107,13 @@ var __vue_render__$u = function __vue_render__() {
         return _vm.onMaskClick($event);
       }
     }
-  }, [_vm.params.modalVisible ? _c("mu-v-box", {
+  }, [_c("mu-v-box", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.params.modalVisible,
+      expression: "params.modalVisible"
+    }],
     staticClass: "mu-dialog",
     style: _vm.style,
     attrs: {
@@ -7044,6 +7124,11 @@ var __vue_render__$u = function __vue_render__() {
     staticClass: "mu-dialog-header",
     attrs: {
       "align-items": "center"
+    },
+    nativeOn: {
+      mousedown: function mousedown($event) {
+        return _vm.onDragStart($event);
+      }
     }
   }, [_c("mu-flex-item", {
     staticClass: "mu-dialog-title mu-text-ellipsis",
@@ -7078,7 +7163,7 @@ var __vue_render__$u = function __vue_render__() {
         }
       }
     }, "mu-button", btn, false));
-  })], 2) : _vm._e()])], 2) : _vm._e()], 1);
+  })], 2) : _vm._e()])], 2)], 1);
 };
 
 var __vue_staticRenderFns__$u = [];
@@ -7129,6 +7214,7 @@ var script$x = {
     height: String,
     buttons: Array,
     danger: Boolean,
+    draggable: Boolean,
     primaryButton: String
   },
   data: function data() {
@@ -7142,7 +7228,8 @@ var script$x = {
         danger: this.danger || o.danger,
         title: this.title || o.title,
         primaryButton: this.primaryButton || o.primaryButton,
-        btns: this.btns
+        btns: this.btns,
+        draggable: this.draggable || o.draggable
       }
     };
   },

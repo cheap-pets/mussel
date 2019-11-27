@@ -3,15 +3,20 @@
     class="mu-modal-mask"
     flex-center
     :visible="params.modalVisible"
-    @click.native="onMaskClick">
+    @click.native="onMaskClick"
+  >
     <mu-v-box
-      v-if="params.modalVisible"
+      v-show="params.modalVisible"
       class="mu-dialog"
       :style="style"
       :danger="params.danger"
       :visible="params.dialogVisible"
     >
-      <mu-h-box class="mu-dialog-header" align-items="center">
+      <mu-h-box
+        class="mu-dialog-header"
+        align-items="center"
+        @mousedown.native="onDragStart"
+      >
         <mu-flex-item class="mu-dialog-title mu-text-ellipsis" size="auto">
           {{ params.title }}
         </mu-flex-item>
@@ -44,6 +49,8 @@
   import VBox from '../layout/flex-v-box'
   import CloseButton from '../button/close-button.vue'
 
+  import getClientRect from '../../utils/client-rect'
+
   export default {
     name: 'MusselDialogWrapper',
     components: {
@@ -51,23 +58,85 @@
       'mu-close-button': CloseButton
     },
     inject: ['dialog', 'params'],
+    data () {
+      return {
+        translateX: 0,
+        translateY: 0,
+        transitionDuration: '.2s'
+      }
+    },
     computed: {
       style () {
+        const { dialogVisible: visible, width, height } = this.params
+        let {
+          translateX: tx,
+          translateY: ty,
+          transitionDuration
+        } = this
+        ty = visible ? ty : ty + 200
         return {
-          width: this.params.width,
-          height: this.params.height
+          width,
+          height,
+          transitionDuration,
+          transform: `translate3d(${tx}px, ${ty}px, 0)`
         }
       }
     },
     methods: {
       onMaskClick (event) {
-        this.dialog.onMaskClick(event)
+        if (!this.dragState) this.dialog.onMaskClick(event)
       },
       hide () {
         this.dialog.hide()
       },
       onButtonClick (btn) {
         this.dialog.onButtonClick(btn)
+      },
+      onDragStart (event) {
+        const targetCls = event.target.className || ''
+        if (!this.params.draggable ||
+          targetCls.indexOf('mu-icon') !== -1) return
+        const el = this.$el.querySelector('.mu-dialog')
+        this.dragState = {
+          tx: this.translateX,
+          ty: this.translateY,
+          startX: event.pageX,
+          startY: event.pageY,
+          el
+        }
+        this.transitionDuration = '0s'
+        window.addEventListener('mousemove', this.onDragMove)
+        window.addEventListener('mouseup', this.onDragEnd)
+      },
+      onDragMove (event) {
+        if (!this.dragState) return
+
+        const { pageX: x, pageY: y } = event
+        const { el, tx, ty, startX, startY } = this.dragState
+        const { top, left } = getClientRect(el)
+        const newX = tx + x - startX
+        const newY = ty + y - startY
+        if (
+          (left > 0 || newX > this.translateX) &&
+          (x < window.innerWidth)
+        ) {
+          this.translateX = newX
+        }
+        if (
+          (top > 0 || ty + y - startY > this.translateY) &&
+          (y < window.innerHeight)
+        ) {
+          this.translateY = newY
+        }
+      },
+      onDragEnd (event) {
+        if (!this.dragState) return
+        window.removeEventListener('mousemove', this.onDragMove)
+        window.removeEventListener('mouseup', this.onDragEnd)
+        this.transitionDuration = '.2s'
+        setTimeout(() => {
+          delete this.dragState
+        }, 50)
       }
     }
   }

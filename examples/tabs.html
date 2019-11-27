@@ -34,8 +34,8 @@
       <div style="height: 300px; position: relative;">
         <mu-tabs
           class="mu-absolute-fit"
+          model-control="external"
           :active-tab="activeTabName"
-          :instant-state="false"
           :tab-position="pos"
           :tab-style="style"
           @change="onTabChange">
@@ -102,7 +102,7 @@
       methods: {
         onTabChange (tabName) {
           var tabs = this
-          mussel.confirm('是否进行页签切换 ?', function (btn) {
+          mussel.confirm('switch tab ?', function (btn) {
             if (btn === 'ok') tabs.activeTabName = tabName
           })
         }

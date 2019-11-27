@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-splitter" :dragable="dragable" @mousedown="onDragStart" />
+  <div class="mu-splitter" :draggable="draggable" @mousedown="onDragStart" />
 </template>
 
 <script>
@@ -67,7 +67,7 @@
   export default {
     name: 'MusselSplitter',
     props: {
-      dragable: {
+      draggable: {
         type: Boolean,
         default: true
       }
@@ -79,7 +79,7 @@
     },
     methods: {
       onDragStart (event) {
-        if (!this.dragable) return
+        if (!this.draggable) return
         const state = getInitialState(
           this.$el.previousElementSibling,
           this.$el.nextElementSibling
@@ -96,7 +96,7 @@
         if (this.initialState.resized) this.$emit('resizestart')
       },
       onDragMove (event) {
-        if (!this.dragable) return
+        if (!this.draggable) return
         if (resizeElement({
           ...this.initialState,
           x: event.pageX,
@@ -107,7 +107,7 @@
         }
       },
       onDragEnd (event) {
-        if (!this.dragable) return
+        if (!this.draggable) return
         window.removeEventListener('mousemove', this.onDragMove)
         window.removeEventListener('mouseup', this.onDragEnd)
         if (this.initialState.resized) this.$emit('resizeend')
