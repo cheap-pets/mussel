@@ -60,7 +60,7 @@
   var css$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n  border-radius: 2px;\r\n  box-shadow: 0 0 0 0 rgba(0,0,0,.04);\r\n}\r\n.mu-button-group[button-type=primary] {\r\n  box-shadow: 0 0 0 0 #1890ff;\r\n}\r\n.mu-button-group[button-type=success] {\r\n  box-shadow: 0 0 0 0 #d9f7be;\r\n}\r\n.mu-button-group[button-type=danger] {\r\n  box-shadow: 0 0 0 0 #ffccc7;\r\n}\r\n.mu-button-group > .mu-button {\r\n  z-index: 0;\r\n  float: left;\r\n  box-shadow: none;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button + .mu-button {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}";
   styleInject(css$8);
 
-  var css$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid rgba(0,0,0,.15);\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  font-size: 1rem;\r\n  color: rgba(0,0,0,.7);\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px #bae7ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #ffd;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: rgba(0,0,0,.08);\r\n  border-color: rgba(0,0,0,.15);\r\n  color: rgba(0,0,0,.3);\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  border-color: #f5222d;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 2px #ffccc7;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
+  var css$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid rgba(0,0,0,.15);\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  font-size: 1rem;\r\n  color: rgba(0,0,0,.7);\r\n}\r\n.mu-input::-webkit-input-placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input::-moz-placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input:-ms-input-placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input::-ms-input-placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input::placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px #bae7ff;\r\n}\r\n.mu-input[readonly] {\r\n  background-color: #ffd;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: rgba(0,0,0,.08);\r\n  border-color: rgba(0,0,0,.15);\r\n  color: rgba(0,0,0,.3);\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  border-color: #f5222d;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 2px #ffccc7;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
   styleInject(css$9);
 
   var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: rgba(0,0,0,.15);\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[disabled] > input,\r\n.mu-editor[readonly] > input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-icon.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-icon.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-icon.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-icon.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon.mu-editor-icon[clickable]:hover {\r\n  fill: #1890ff;\r\n  color: #1890ff;\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=clear] {\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=clear]:hover {\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #f5222d;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}";
@@ -292,17 +292,21 @@
   (module.exports = function (key, value) {
     return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
   })('versions', []).push({
-    version: '3.4.2',
+    version: '3.4.5',
     mode:  'global',
     copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
   });
   });
 
-  var functionToString = shared('native-function-to-string', Function.toString);
+  var functionToString = Function.toString;
+
+  var inspectSource = shared('inspectSource', function (it) {
+    return functionToString.call(it);
+  });
 
   var WeakMap = global_1.WeakMap;
 
-  var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(functionToString.call(WeakMap));
+  var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(inspectSource(WeakMap));
 
   var id = 0;
   var postfix = Math.random();
@@ -376,11 +380,7 @@
   var redefine = createCommonjsModule(function (module) {
   var getInternalState = internalState.get;
   var enforceInternalState = internalState.enforce;
-  var TEMPLATE = String(functionToString).split('toString');
-
-  shared('inspectSource', function (it) {
-    return functionToString.call(it);
-  });
+  var TEMPLATE = String(String).split('String');
 
   (module.exports = function (O, key, value, options) {
     var unsafe = options ? !!options.unsafe : false;
@@ -403,7 +403,7 @@
     else createNonEnumerableProperty(O, key, value);
   // add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
   })(Function.prototype, 'toString', function toString() {
-    return typeof this == 'function' && getInternalState(this).source || functionToString.call(this);
+    return typeof this == 'function' && getInternalState(this).source || inspectSource(this);
   });
   });
 
@@ -849,11 +849,22 @@
   };
 
   var nativeAssign = Object.assign;
+  var defineProperty$1 = Object.defineProperty;
 
   // `Object.assign` method
   // https://tc39.github.io/ecma262/#sec-object.assign
-  // should work with symbols and should have deterministic property order (V8 bug)
   var objectAssign = !nativeAssign || fails(function () {
+    // should have correct order of operations (Edge bug)
+    if (descriptors && nativeAssign({ b: 1 }, nativeAssign(defineProperty$1({}, 'a', {
+      enumerable: true,
+      get: function () {
+        defineProperty$1(this, 'b', {
+          value: 3,
+          enumerable: false
+        });
+      }
+    }), { b: 2 })).b !== 1) return true;
+    // should work with symbols and should have deterministic property order (V8 bug)
     var A = {};
     var B = {};
     // eslint-disable-next-line no-undef
@@ -1322,16 +1333,16 @@
   	f: f$6
   };
 
-  var defineProperty$1 = objectDefineProperty.f;
+  var defineProperty$2 = objectDefineProperty.f;
 
   var defineWellKnownSymbol = function (NAME) {
     var Symbol = path.Symbol || (path.Symbol = {});
-    if (!has(Symbol, NAME)) defineProperty$1(Symbol, NAME, {
+    if (!has(Symbol, NAME)) defineProperty$2(Symbol, NAME, {
       value: wrappedWellKnownSymbol.f(NAME)
     });
   };
 
-  var defineProperty$2 = objectDefineProperty.f;
+  var defineProperty$3 = objectDefineProperty.f;
 
 
 
@@ -1339,7 +1350,7 @@
 
   var setToStringTag = function (it, TAG, STATIC) {
     if (it && !has(it = STATIC ? it : it.prototype, TO_STRING_TAG)) {
-      defineProperty$2(it, TO_STRING_TAG, { configurable: true, value: TAG });
+      defineProperty$3(it, TO_STRING_TAG, { configurable: true, value: TAG });
     }
   };
 
@@ -1762,10 +1773,17 @@
   var $filter = arrayIteration.filter;
 
 
+
+  var HAS_SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('filter');
+  // Edge 14- issue
+  var USES_TO_LENGTH = HAS_SPECIES_SUPPORT && !fails(function () {
+    [].filter.call({ length: -1, 0: 1 }, function (it) { throw it; });
+  });
+
   // `Array.prototype.filter` method
   // https://tc39.github.io/ecma262/#sec-array.prototype.filter
   // with adding support of @@species
-  _export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('filter') }, {
+  _export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT || !USES_TO_LENGTH }, {
     filter: function filter(callbackfn /* , thisArg */) {
       return $filter(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
     }
@@ -1904,7 +1922,7 @@
 
   function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$1(source, true).forEach(function (key) { _defineProperty$1(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$1(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$1(Object(source), true).forEach(function (key) { _defineProperty$1(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
   function _defineProperty$1(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -3230,7 +3248,8 @@
     },
     methods: {
       onInput: function onInput(event) {
-        this.$emit('input', event.target.value);
+        var value = event.target.value;
+        if (value !== this.value) this.$emit('input', value);
       },
       onKeyDown: function onKeyDown() {
         if (event.keyCode === 13) this.$emit('enterkey', this);else if (event.keyCode === 27) this.$emit('esckey', this);
@@ -4889,7 +4908,7 @@
     }
   };
 
-  var defineProperty$3 = objectDefineProperty.f;
+  var defineProperty$4 = objectDefineProperty.f;
   var getOwnPropertyNames$1 = objectGetOwnPropertyNames.f;
 
 
@@ -4929,7 +4948,7 @@
         , thisIsRegExp ? this : RegExpPrototype, RegExpWrapper);
     };
     var proxy = function (key) {
-      key in RegExpWrapper || defineProperty$3(RegExpWrapper, key, {
+      key in RegExpWrapper || defineProperty$4(RegExpWrapper, key, {
         configurable: true,
         get: function () { return NativeRegExp[key]; },
         set: function (it) { NativeRegExp[key] = it; }
@@ -5496,10 +5515,17 @@
   var $map = arrayIteration.map;
 
 
+
+  var HAS_SPECIES_SUPPORT$1 = arrayMethodHasSpeciesSupport('map');
+  // FF49- issue
+  var USES_TO_LENGTH$1 = HAS_SPECIES_SUPPORT$1 && !fails(function () {
+    [].map.call({ length: -1, 0: 1 }, function (it) { throw it; });
+  });
+
   // `Array.prototype.map` method
   // https://tc39.github.io/ecma262/#sec-array.prototype.map
   // with adding support of @@species
-  _export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('map') }, {
+  _export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT$1 || !USES_TO_LENGTH$1 }, {
     map: function map(callbackfn /* , thisArg */) {
       return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
     }
@@ -5821,6 +5847,8 @@
     },
     methods: {
       setInputValue: function setInputValue(value) {
+        console.log('value: ', value);
+
         if (this.comboValue !== value) {
           this.comboValue = isEmptyValue(value) ? this.multiple ? [] : null : value;
           this.refreshInputValue();
@@ -6353,7 +6381,7 @@
     staticRenderFns: __vue_staticRenderFns__$p
   }, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, false, undefined, undefined, undefined);
 
-  var defineProperty$4 = objectDefineProperty.f;
+  var defineProperty$5 = objectDefineProperty.f;
 
   var FunctionPrototype = Function.prototype;
   var FunctionPrototypeToString = FunctionPrototype.toString;
@@ -6363,7 +6391,7 @@
   // Function instances `.name` property
   // https://tc39.github.io/ecma262/#sec-function-instances-name
   if (descriptors && !(NAME in FunctionPrototype)) {
-    defineProperty$4(FunctionPrototype, NAME, {
+    defineProperty$5(FunctionPrototype, NAME, {
       configurable: true,
       get: function () {
         try {
@@ -7037,15 +7065,18 @@
         this.dialog.onButtonClick(btn);
       },
       onDragStart: function onDragStart(event) {
-        var targetCls = event.target.className || '';
-        if (!this.params.draggable || targetCls.indexOf('mu-icon') !== -1) return;
+        var target = event.target,
+            pageX = event.pageX,
+            pageY = event.pageY;
         var el = this.$el.querySelector('.mu-dialog');
+        var isIcon = String(target.className).indexOf('mu-icon') !== -1;
+        if (!el || this.params.draggable === false || isIcon) return;
         this.dragState = {
           tx: this.translateX,
           ty: this.translateY,
-          startX: event.pageX,
-          startY: event.pageY,
-          el: el
+          startX: pageX,
+          startY: pageY,
+          el: this.$el.querySelector('.mu-dialog')
         };
         this.transitionDuration = '0s';
         window.addEventListener('mousemove', this.onDragMove);
@@ -7113,13 +7144,7 @@
           return _vm.onMaskClick($event);
         }
       }
-    }, [_c("mu-v-box", {
-      directives: [{
-        name: "show",
-        rawName: "v-show",
-        value: _vm.params.modalVisible,
-        expression: "params.modalVisible"
-      }],
+    }, [_vm.params.modalVisible ? _c("mu-v-box", {
       staticClass: "mu-dialog",
       style: _vm.style,
       attrs: {
@@ -7169,7 +7194,7 @@
           }
         }
       }, "mu-button", btn, false));
-    })], 2) : _vm._e()])], 2)], 1);
+    })], 2) : _vm._e()])], 2) : _vm._e()], 1);
   };
 
   var __vue_staticRenderFns__$u = [];
@@ -7199,7 +7224,7 @@
 
   function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-  function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(source, true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+  function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(Object(source), true).forEach(function (key) { _defineProperty$2(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
   function _defineProperty$2(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
   var script$x = {
@@ -7220,8 +7245,11 @@
       height: String,
       buttons: Array,
       danger: Boolean,
-      draggable: Boolean,
-      primaryButton: String
+      primaryButton: String,
+      draggable: {
+        type: Boolean,
+        "default": true
+      }
     },
     data: function data() {
       var o = this.$options;
@@ -7233,9 +7261,9 @@
           height: this.height || o.height,
           danger: this.danger || o.danger,
           title: this.title || o.title,
-          primaryButton: this.primaryButton || o.primaryButton,
           btns: this.btns,
-          draggable: this.draggable || o.draggable
+          primaryButton: this.primaryButton || o.primaryButton,
+          draggable: !(this.draggable === false || o.draggable === false)
         }
       };
     },

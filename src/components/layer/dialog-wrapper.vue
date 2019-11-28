@@ -6,7 +6,7 @@
     @click.native="onMaskClick"
   >
     <mu-v-box
-      v-show="params.modalVisible"
+      v-if="params.modalVisible"
       class="mu-dialog"
       :style="style"
       :danger="params.danger"
@@ -93,16 +93,18 @@
         this.dialog.onButtonClick(btn)
       },
       onDragStart (event) {
-        const targetCls = event.target.className || ''
-        if (!this.params.draggable ||
-          targetCls.indexOf('mu-icon') !== -1) return
+        const { target, pageX, pageY } = event
         const el = this.$el.querySelector('.mu-dialog')
+        const isIcon = String(target.className).indexOf('mu-icon') !== -1
+
+        if (!el || this.params.draggable === false || isIcon) return
+
         this.dragState = {
           tx: this.translateX,
           ty: this.translateY,
-          startX: event.pageX,
-          startY: event.pageY,
-          el
+          startX: pageX,
+          startY: pageY,
+          el: this.$el.querySelector('.mu-dialog')
         }
         this.transitionDuration = '0s'
         window.addEventListener('mousemove', this.onDragMove)

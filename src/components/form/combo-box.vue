@@ -69,6 +69,7 @@
     },
     methods: {
       setInputValue (value) {
+        console.log('value: ', value)
         if (this.comboValue !== value) {
           this.comboValue = isEmptyValue(value)
             ? (this.multiple ? [] : null)

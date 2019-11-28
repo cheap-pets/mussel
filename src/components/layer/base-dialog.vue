@@ -22,8 +22,11 @@
       height: String,
       buttons: Array,
       danger: Boolean,
-      draggable: Boolean,
-      primaryButton: String
+      primaryButton: String,
+      draggable: {
+        type: Boolean,
+        default: true
+      }
     },
     data () {
       const o = this.$options
@@ -35,9 +38,9 @@
           height: this.height || o.height,
           danger: this.danger || o.danger,
           title: this.title || o.title,
-          primaryButton: this.primaryButton || o.primaryButton,
           btns: this.btns,
-          draggable: this.draggable || o.draggable
+          primaryButton: this.primaryButton || o.primaryButton,
+          draggable: !(this.draggable === false || o.draggable === false)
         }
       }
     },

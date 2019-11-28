@@ -31,7 +31,8 @@
     },
     methods: {
       onInput (event) {
-        this.$emit('input', event.target.value)
+        const value = event.target.value
+        if (value !== this.value) this.$emit('input', value)
       },
       onKeyDown () {
         if (event.keyCode === 13) this.$emit('enterkey', this)
