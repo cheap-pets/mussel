@@ -7070,7 +7070,8 @@
             pageY = event.pageY;
         var el = this.$el.querySelector('.mu-dialog');
         var isIcon = String(target.className).indexOf('mu-icon') !== -1;
-        if (!el || this.params.draggable === false || isIcon) return;
+        var isInput = target.tagName.toLowerCase() === 'input';
+        if (!el || this.params.draggable === false || isIcon || isInput) return;
         this.dragState = {
           tx: this.translateX,
           ty: this.translateY,

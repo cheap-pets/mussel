@@ -97,8 +97,9 @@
         const { target, pageX, pageY } = event
         const el = this.$el.querySelector('.mu-dialog')
         const isIcon = String(target.className).indexOf('mu-icon') !== -1
+        const isInput = target.tagName.toLowerCase() === 'input'
 
-        if (!el || this.params.draggable === false || isIcon) return
+        if (!el || this.params.draggable === false || isIcon || isInput) return
 
         this.dragState = {
           tx: this.translateX,
