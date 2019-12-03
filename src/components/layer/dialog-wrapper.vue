@@ -20,6 +20,7 @@
         <mu-flex-item class="mu-dialog-title mu-text-ellipsis" size="auto">
           {{ params.title }}
         </mu-flex-item>
+        <slot name="header" />
         <mu-close-button class="mu-text-color-subtitle" @click="hide" />
       </mu-h-box>
       <mu-flex-item
@@ -28,19 +29,19 @@
       >
         <slot />
       </mu-flex-item>
-      <slot name="footer">
-        <mu-h-box
-          v-if="params.buttons"
-          class="mu-dialog-footer"
-          align-items="center">
-          <div style="margin-right: auto" />
-          <mu-button
-            v-for="btn in params.buttons"
-            :key="btn.caption || btn.icon || btn.iconClass"
-            v-bind="btn"
-            @click="onButtonClick(btn)" />
-        </mu-h-box>
-      </slot>
+      <mu-h-box
+        v-if="params.footer"
+        class="mu-dialog-footer"
+        align-items="center"
+      >
+        <slot name="footer" />
+        <div style="margin-right: auto" />
+        <mu-button
+          v-for="btn in params.buttons"
+          :key="btn.caption || btn.icon || btn.iconClass"
+          v-bind="btn"
+          @click="onButtonClick(btn)" />
+      </mu-h-box>
     </mu-v-box>
   </mu-v-box>
 </template>

@@ -53,8 +53,14 @@
         primary-button="Confirm"
         :buttons="['Confirm', 'Cancel']"
         @buttonclick="onButtonClick">
-        <mu-combo-box :options="options">
-        </mu-combo-box>
+        <h1>hey, dude</h1>
+        <template #header>
+          <mu-editor style="width: 150px;"></mu-editor>
+        </template>
+        <template #footer>
+          <input type="checkbox">
+          check me if you can
+        </template>
       </mu-dialog>
     </div>
   </div>

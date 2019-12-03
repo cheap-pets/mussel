@@ -90,7 +90,7 @@
   var css$i = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.17);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: -webkit-box;\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
   styleInject(css$i);
 
-  var css$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: #fff;\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #f5222d;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 0 16px;\r\n  background: #fff;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: 0 0;\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
+  var css$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: #fff;\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #f5222d;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 0 16px;\r\n  background: #fff;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-header > [trigger-type=close] {\r\n  margin-left: 16px;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: 0 0;\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}";
   styleInject(css$j);
 
   var css$k = ".mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-message-box > .mu-dialog .mu-button {\r\n  min-width: 55px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: #fff;\r\n  border-left: 5px solid #1890ff;\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  -webkit-transform: translateX(100px);\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  -webkit-transition: all .5s;\r\n  transition: all .5s;\r\n}";
@@ -7166,22 +7166,22 @@
       attrs: {
         size: "auto"
       }
-    }, [_vm._v("\n        " + _vm._s(_vm.params.title) + "\n      ")]), _vm._v(" "), _c("mu-close-button", {
+    }, [_vm._v("\n        " + _vm._s(_vm.params.title) + "\n      ")]), _vm._v(" "), _vm._t("header"), _vm._v(" "), _c("mu-close-button", {
       staticClass: "mu-text-color-subtitle",
       on: {
         click: _vm.hide
       }
-    })], 1), _vm._v(" "), _c("mu-flex-item", {
+    })], 2), _vm._v(" "), _c("mu-flex-item", {
       staticClass: "mu-dialog-body",
       attrs: {
         size: _vm.params.height ? "auto" : undefined
       }
-    }, [_vm._t("default")], 2), _vm._v(" "), _vm._t("footer", [_vm.params.buttons ? _c("mu-h-box", {
+    }, [_vm._t("default")], 2), _vm._v(" "), _vm.params.footer ? _c("mu-h-box", {
       staticClass: "mu-dialog-footer",
       attrs: {
         "align-items": "center"
       }
-    }, [_c("div", {
+    }, [_vm._t("footer"), _vm._v(" "), _c("div", {
       staticStyle: {
         "margin-right": "auto"
       }
@@ -7194,7 +7194,7 @@
           }
         }
       }, "mu-button", btn, false));
-    })], 2) : _vm._e()])], 2) : _vm._e()], 1);
+    })], 2) : _vm._e()], 1) : _vm._e()], 1);
   };
 
   var __vue_staticRenderFns__$u = [];
@@ -7246,6 +7246,10 @@
       buttons: Array,
       danger: Boolean,
       primaryButton: String,
+      footer: {
+        type: Boolean,
+        "default": true
+      },
       draggable: {
         type: Boolean,
         "default": true
@@ -7262,6 +7266,7 @@
           danger: this.danger || o.danger,
           title: this.title || o.title,
           btns: this.btns,
+          footer: this.footer !== false && o.footer !== false,
           primaryButton: this.primaryButton || o.primaryButton,
           draggable: !(this.draggable === false || o.draggable === false)
         }
@@ -7486,7 +7491,21 @@
 
     var _c = _vm._self._c || _h;
 
-    return _c("mu-dialog-wrapper", [_vm._t("default")], 2);
+    return _c("mu-dialog-wrapper", {
+      scopedSlots: _vm._u([{
+        key: "header",
+        fn: function fn() {
+          return [_vm._t("header")];
+        },
+        proxy: true
+      }, {
+        key: "footer",
+        fn: function fn() {
+          return [_vm._t("footer")];
+        },
+        proxy: true
+      }], null, true)
+    }, [_vm._t("default")], 2);
   };
 
   var __vue_staticRenderFns__$w = [];

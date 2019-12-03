@@ -23,6 +23,10 @@
       buttons: Array,
       danger: Boolean,
       primaryButton: String,
+      footer: {
+        type: Boolean,
+        default: true
+      },
       draggable: {
         type: Boolean,
         default: true
@@ -39,6 +43,7 @@
           danger: this.danger || o.danger,
           title: this.title || o.title,
           btns: this.btns,
+          footer: this.footer !== false && o.footer !== false,
           primaryButton: this.primaryButton || o.primaryButton,
           draggable: !(this.draggable === false || o.draggable === false)
         }
