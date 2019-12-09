@@ -9,7 +9,16 @@
     name: 'MusselSidebarMenu',
     provide () {
       return {
-        sidebar: this
+        sidebar: this,
+        menu: this
+      }
+    },
+    methods: {
+      setActiveItem (item) {
+        if (this.$activeItem !== item) {
+          this.$activeItem?.unselect()
+          this.$activeItem = item
+        }
       }
     }
   }

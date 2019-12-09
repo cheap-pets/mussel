@@ -14,7 +14,7 @@ import postcssNested from 'postcss-nested'
 import postcssVars from 'postcss-simple-vars'
 import postcssUnprefix from 'postcss-unprefix'
 
-import variables from './src/variables-dark'
+import variables from './src/variables'
 
 export default {
   input: 'src/index.js',

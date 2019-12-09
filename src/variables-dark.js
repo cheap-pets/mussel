@@ -42,7 +42,7 @@ export default {
   normalDividerColor: 'rgba(255, 255, 255, .18)',
 
   // background
-  normalBackground: 'rgba(0, 0, 20, .9)',
+  normalBackground: '#19192B',
   normalGreyBackground: 'rgba(255, 255, 255, .1)',
   normalHoverBackground: 'rgba(255, 255, 255, .1)',
   normalDarkGreyBackground: 'rgba(255, 255, 255, .35)',

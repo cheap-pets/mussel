@@ -26,7 +26,7 @@
       @click="onButtonClick">
       <slot>
         <span>{{ caption }}</span>
-        <mu-icon trigger-type="dropdown" />
+        <mu-icon trigger-type="expander" />
       </slot>
     </mu-button>
     <mu-dropdown-panel

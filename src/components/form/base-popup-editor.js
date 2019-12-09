@@ -39,7 +39,7 @@ export default {
   },
   created () {
     if (!this.icon && !this.iconClass && !this.triggerType) {
-      this.params.triggerType = 'dropdown'
+      this.params.triggerType = 'expander'
     }
   }
 }
