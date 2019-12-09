@@ -1,0 +1,96 @@
+.mu-menu-group {
+  
+}
+
+.mu-menu-item,
+.mu-menu-group_header {
+  position: relative;
+  padding: 0 $unitSpacingSize 0 $menuItemHeight;
+  height: $menuItemHeight;
+  line-height: $menuItemHeight;
+  font-size: 1rem;
+  color: $normalTextColor;
+  fill: $normalTextColor;
+  cursor: pointer;
+
+  &:hover {
+    color: $primaryColor;
+    fill: $primaryColor;
+    background: $normalHoverBackground;
+  }
+
+  & > .mu-icon {
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    width: $menuItemHeight;
+    text-align: center;
+    
+
+    &[trigger-type] {
+      left: auto;
+      right: 0;
+    }
+  }
+}
+
+.mu-menu-group_body {
+  & .mu-menu-group_header {
+    font-size: 0.857rem;
+    font-weight: 600;
+    color: $normalSubtitleTextColor;
+    fill: $normalSubtitleTextColor;
+    background: transparent;
+    cursor: default;
+  }
+}
+
+.mu-menu-group .mu-menu-item {
+  display: block;
+}
+
+.mu-sidebar-menu {
+  overflow: auto;
+  background: $normalBackground;
+
+  & .mu-menu-item,
+  & .mu-menu-group_header {
+    display: block;
+    height: $sidebarMenuItemHeight;
+    line-height: $sidebarMenuItemHeight;
+    padding-left: $sidebarMenuItemHeight;
+    
+    & > .mu-icon {
+      width: $sidebarMenuItemHeight;
+    }
+  }
+
+  & > .mu-menu-group {
+    & > .mu-menu-group_header {
+      padding-right: $sidebarMenuItemHeight;
+    }
+    & > .mu-menu-group_body {
+      position: relative;
+      visibility: hidden;
+      overflow: hidden;
+      max-height: 0;
+      transition: all .2s ease-in-out;
+    }
+    &[expanded] {
+      background: rgba(24, 144, 255, .05);
+
+      & > .mu-menu-group_body {
+        visibility: visible;
+        max-height: 2000px;
+      }
+      & > .mu-menu-group_header {
+        background: $normalGreyBackground;
+      }
+    }
+  }
+}
+
+
+.mu-menu-group .mu-menu-group + .mu-menu-item {
+  border-top: 1px solid $normalDividerColor;
+}

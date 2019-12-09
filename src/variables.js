@@ -48,6 +48,7 @@ export default {
   normalDarkGreyBackground: 'rgba(0, 0, 0, .35)',
   normalDisabledBackground: 'rgba(0, 0, 0, .08)',
   normalInfoBackground: '#ffd',
+  primaryGreyBackground: 'rgba(24, 144, 255, .07)',
 
   normalShadowColor: 'rgba(0, 0, 0, .05)',
 
@@ -123,5 +124,9 @@ export default {
   listDividerHeight: '1px',
 
   /* tab */
-  tabCardBackground: '$normalGreyBackground'
+  tabCardBackground: '$normalGreyBackground',
+
+  /* menu */
+  menuItemHeight: '32px',
+  sidebarMenuItemHeight: '40px'
 }

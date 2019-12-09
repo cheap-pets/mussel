@@ -22,7 +22,7 @@
     close: 'close',
     clear: 'clear',
     dropdown: 'key-down',
-    expander: 'key-right'
+    expander: 'key-down'
   }
 
   export default {

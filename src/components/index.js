@@ -56,6 +56,10 @@ import DialogWrapper from './layer/dialog-wrapper.vue'
 import * as MessageBox from './message'
 /* CALENDAR */
 import Calendar from './calendar/calendar.vue'
+/* MENU */
+import SidebarMenu from './menu/sidebar-menu.vue'
+import MenuGroup from './menu/menu-group.vue'
+import MenuItem from './menu/menu-item.vue'
 
 // import './transform'
 
@@ -111,6 +115,10 @@ function install ($Vue = Vue) {
   Vue.component('mu-dialog-wrapper', DialogWrapper)
 
   Vue.component('mu-calendar', Calendar)
+
+  Vue.component('mu-sidebar-menu', SidebarMenu)
+  Vue.component('mu-menu-group', MenuGroup)
+  Vue.component('mu-menu-item', MenuItem)
 }
 
 if (Vue) install(Vue)
@@ -180,5 +188,9 @@ export {
   confirm,
   error,
   warn,
-  notify
+  notify,
+  // Menu
+  SidebarMenu,
+  MenuGroup,
+  MenuItem
 }

@@ -48,6 +48,7 @@ module.exports = {
   normalDarkGreyBackground: 'rgba(255, 255, 255, .35)',
   normalDisabledBackground: 'rgba(255, 255, 255, .15)',
   normalInfoBackground: 'rgba(255, 255, 0, .1)',
+  primaryGreyBackground: 'rgba(0, 242, 255, .07)',
 
   normalShadowColor: 'rgba(255, 255, 255, .15)',
 
@@ -123,5 +124,9 @@ module.exports = {
   listDividerHeight: '1px',
 
   /* tab */
-  tabCardBackground: '$normalGreyBackground'
+  tabCardBackground: '$normalGreyBackground',
+
+  /* menu */
+  menuItemHeight: '32px',
+  sidebarMenuItemHeight: '40px'
 }

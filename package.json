@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "rollup -c && rollup --c rollup.dev.js",
-    "builddev": "rollup --c rollup.dev.js --watch",
+    "build:dev": "rollup --c rollup.dev.js --watch",
     "docs": "concurrently \"node open-docs.js\" \"serve docs\"",
     "pub": "npm run build && npm publish"
   },
