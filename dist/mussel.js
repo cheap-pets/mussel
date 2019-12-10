@@ -96,8 +96,11 @@
   var css$k = ".mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-message-box > .mu-dialog .mu-button {\r\n  min-width: 55px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: #fff;\r\n  border-left: 5px solid #1890ff;\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  -webkit-transform: translateX(100px);\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  -webkit-transition: all .5s;\r\n  transition: all .5s;\r\n}";
   styleInject(css$k);
 
-  var css$l = ".mu-menu-group_header,\r\n.mu-menu-item {\r\n  position: relative;\r\n  padding: 0 16px 0 32px;\r\n  height: 32px;\r\n  line-height: 32px;\r\n  font-size: 1rem;\r\n  color: rgba(0,0,0,.7);\r\n  fill: rgba(0,0,0,.7);\r\n  cursor: pointer;\r\n}\r\n.mu-menu-group_header:hover,\r\n.mu-menu-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-menu-group_header > .mu-icon,\r\n.mu-menu-item > .mu-icon {\r\n  position: absolute;\r\n  left: 0;\r\n  display: inline-block;\r\n  width: 32px;\r\n  text-align: center;\r\n}\r\n.mu-menu-group_header > .mu-icon[trigger-type],\r\n.mu-menu-item > .mu-icon[trigger-type] {\r\n  left: auto;\r\n  right: 0;\r\n}\r\n.mu-menu-group_body .mu-menu-group_header {\r\n  font-size: .857rem;\r\n  font-weight: 600;\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n  background: 0 0;\r\n  cursor: default;\r\n}\r\n.mu-menu-group .mu-menu-item {\r\n  display: block;\r\n}\r\n.mu-menu-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-sidebar-menu {\r\n  overflow: auto;\r\n  background: #fff;\r\n}\r\n.mu-sidebar-menu .mu-menu-group_header,\r\n.mu-sidebar-menu .mu-menu-item {\r\n  display: block;\r\n  height: 40px;\r\n  line-height: 40px;\r\n  padding-left: 40px;\r\n}\r\n.mu-sidebar-menu .mu-menu-group_header > .mu-icon,\r\n.mu-sidebar-menu .mu-menu-item > .mu-icon {\r\n  width: 40px;\r\n}\r\n.mu-sidebar-menu > .mu-menu-group > .mu-menu-group_header {\r\n  padding-right: 40px;\r\n}\r\n.mu-sidebar-menu > .mu-menu-group > .mu-menu-group_body {\r\n  position: relative;\r\n  visibility: hidden;\r\n  overflow: hidden;\r\n  max-height: 0;\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-sidebar-menu > .mu-menu-group[expanded] {\r\n  background: rgba(24,144,255,.05);\r\n}\r\n.mu-sidebar-menu > .mu-menu-group[expanded] > .mu-menu-group_body {\r\n  visibility: visible;\r\n  max-height: 2000px;\r\n}\r\n.mu-sidebar-menu > .mu-menu-group[expanded] > .mu-menu-group_header {\r\n  background: rgba(0,0,0,.04);\r\n}\r\n.mu-menu-group .mu-menu-group + .mu-menu-item {\r\n  border-top: 1px solid rgba(0,0,0,.09);\r\n}";
+  var css$l = ".mu-menu-group_header,\r\n.mu-menu-item {\r\n  position: relative;\r\n  padding: 0 16px 0 32px;\r\n  height: 32px;\r\n  line-height: 32px;\r\n  font-size: 1rem;\r\n  color: rgba(0,0,0,.7);\r\n  fill: rgba(0,0,0,.7);\r\n  cursor: pointer;\r\n}\r\n.mu-menu-group_header:hover,\r\n.mu-menu-item:hover {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n  background: rgba(0,0,0,.05);\r\n}\r\n.mu-menu-group_header > .mu-icon,\r\n.mu-menu-item > .mu-icon {\r\n  position: absolute;\r\n  left: 0;\r\n  display: inline-block;\r\n  width: 32px;\r\n  text-align: center;\r\n}\r\n.mu-menu-group_header > .mu-icon[trigger-type],\r\n.mu-menu-item > .mu-icon[trigger-type] {\r\n  left: auto;\r\n  right: 0;\r\n}\r\n.mu-menu-group_body .mu-menu-group_header {\r\n  font-size: .857rem;\r\n  font-weight: 600;\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n  background: 0 0;\r\n  cursor: default;\r\n}\r\n.mu-menu-group .mu-menu-item {\r\n  display: block;\r\n}\r\n.mu-menu-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n}\r\n.mu-menu-group .mu-menu-group + .mu-menu-item {\r\n  border-top: 1px solid rgba(0,0,0,.09);\r\n}\r\n.mu-sidebar .mu-menu-group_header,\r\n.mu-sidebar .mu-menu-item {\r\n  display: block;\r\n  height: 40px;\r\n  line-height: 40px;\r\n  padding-left: 40px;\r\n}\r\n.mu-sidebar .mu-menu-group_header > .mu-icon,\r\n.mu-sidebar .mu-menu-item > .mu-icon {\r\n  width: 40px;\r\n}\r\n.mu-sidebar > .mu-menu-group > .mu-menu-group_header {\r\n  padding-right: 40px;\r\n}\r\n.mu-sidebar > .mu-menu-group > .mu-menu-group_body {\r\n  position: relative;\r\n  visibility: hidden;\r\n  overflow: hidden;\r\n  max-height: 0;\r\n  -webkit-transition: all .2s ease-in-out;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-sidebar > .mu-menu-group[expanded] {\r\n  background: rgba(24,144,255,.05);\r\n}\r\n.mu-sidebar > .mu-menu-group[expanded] > .mu-menu-group_body {\r\n  visibility: visible;\r\n  max-height: 2000px;\r\n}\r\n.mu-sidebar > .mu-menu-group[expanded] > .mu-menu-group_header {\r\n  background: rgba(0,0,0,.04);\r\n}";
   styleInject(css$l);
+
+  var css$m = ".mu-sidebar {\r\n  overflow: auto;\r\n  background: #fff;\r\n}";
+  styleInject(css$m);
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -295,7 +298,7 @@
   (module.exports = function (key, value) {
     return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
   })('versions', []).push({
-    version: '3.4.7',
+    version: '3.4.5',
     mode:  'global',
     copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
   });
@@ -1091,14 +1094,14 @@
 
   /* style inject shadow dom */
 
-  var FlexItem = normalizeComponent_1({
+  var __vue_component__ = normalizeComponent_1({
     render: __vue_render__,
     staticRenderFns: __vue_staticRenderFns__
   }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, undefined, undefined);
 
   var script$1 = {
     name: 'MusselFlexBox',
-    "extends": FlexItem,
+    "extends": __vue_component__,
     provide: function provide() {
       return {
         parentLayout: this.flexLayout
@@ -1193,14 +1196,14 @@
 
   /* style inject shadow dom */
 
-  var FlexBox = normalizeComponent_1({
+  var __vue_component__$1 = normalizeComponent_1({
     render: __vue_render__$1,
     staticRenderFns: __vue_staticRenderFns__$1
   }, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, false, undefined, undefined, undefined);
 
   var HBox = {
     name: 'MusselHBox',
-    "extends": FlexBox,
+    "extends": __vue_component__$1,
     props: ['layout', 'direction'],
     computed: {
       flexLayout: function flexLayout() {
@@ -1211,7 +1214,7 @@
 
   var VBox = {
     name: 'MusselVBox',
-    "extends": FlexBox,
+    "extends": __vue_component__$1,
     props: ['layout', 'direction'],
     computed: {
       flexLayout: function flexLayout() {
@@ -1223,7 +1226,7 @@
   //
   var script$2 = {
     name: 'MusselSpace',
-    "extends": FlexItem,
+    "extends": __vue_component__,
     computed: {
       flexStyle: function flexStyle() {
         return this.size ? 'none' : undefined;
@@ -1270,7 +1273,7 @@
 
   /* style inject shadow dom */
 
-  var Space = normalizeComponent_1({
+  var __vue_component__$2 = normalizeComponent_1({
     render: __vue_render__$2,
     staticRenderFns: __vue_staticRenderFns__$2
   }, __vue_inject_styles__$2, __vue_script__$2, __vue_scope_id__$2, __vue_is_functional_template__$2, __vue_module_identifier__$2, false, undefined, undefined, undefined);
@@ -2085,7 +2088,7 @@
 
   /* style inject shadow dom */
 
-  var Splitter = normalizeComponent_1({
+  var __vue_component__$3 = normalizeComponent_1({
     render: __vue_render__$3,
     staticRenderFns: __vue_staticRenderFns__$3
   }, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, false, undefined, undefined, undefined);
@@ -2224,7 +2227,7 @@
 
   /* style inject shadow dom */
 
-  var Icon = normalizeComponent_1({
+  var __vue_component__$4 = normalizeComponent_1({
     render: __vue_render__$4,
     staticRenderFns: __vue_staticRenderFns__$4
   }, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, false, undefined, undefined, undefined);
@@ -2236,7 +2239,7 @@
   var Button = {
     name: 'MusselButton',
     components: {
-      Icon: Icon
+      Icon: __vue_component__$4
     },
     props: {
       buttonType: {
@@ -2309,7 +2312,7 @@
 
   var script$5 = {
     name: 'MusselCloseButton',
-    "extends": Icon,
+    "extends": __vue_component__$4,
     props: {
       triggerType: {
         type: String,
@@ -2340,7 +2343,7 @@
 
   /* style inject shadow dom */
 
-  var CloseButton = normalizeComponent_1({}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, undefined, undefined);
+  var __vue_component__$5 = normalizeComponent_1({}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, undefined, undefined);
 
   //
   //
@@ -2388,7 +2391,7 @@
 
   /* style inject shadow dom */
 
-  var ButtonGroup = normalizeComponent_1({
+  var __vue_component__$6 = normalizeComponent_1({
     render: __vue_render__$5,
     staticRenderFns: __vue_staticRenderFns__$5
   }, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, false, undefined, undefined, undefined);
@@ -2491,7 +2494,7 @@
 
   /* style inject shadow dom */
 
-  var SplitButton = normalizeComponent_1({
+  var __vue_component__$7 = normalizeComponent_1({
     render: __vue_render__$6,
     staticRenderFns: __vue_staticRenderFns__$6
   }, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, false, undefined, undefined, undefined);
@@ -2954,7 +2957,7 @@
 
   /* style inject shadow dom */
 
-  var DropdownPanel = normalizeComponent_1({
+  var __vue_component__$8 = normalizeComponent_1({
     render: __vue_render__$7,
     staticRenderFns: __vue_staticRenderFns__$7
   }, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, false, undefined, undefined, undefined);
@@ -2962,7 +2965,7 @@
   var script$9 = {
     name: 'MusselDropdown',
     components: {
-      'mu-dropdown-panel': DropdownPanel
+      'mu-dropdown-panel': __vue_component__$8
     },
     provide: function provide() {
       return {
@@ -3106,7 +3109,7 @@
 
   /* style inject shadow dom */
 
-  var Dropdown = normalizeComponent_1({
+  var __vue_component__$9 = normalizeComponent_1({
     render: __vue_render__$8,
     staticRenderFns: __vue_staticRenderFns__$8
   }, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, false, undefined, undefined, undefined);
@@ -3116,10 +3119,10 @@
     name: 'MusselDropdownButton',
     components: {
       'mu-button': Button,
-      'mu-icon': Icon
+      'mu-icon': __vue_component__$4
     },
-    "extends": Dropdown,
-    mixins: [SplitButton],
+    "extends": __vue_component__$9,
+    mixins: [__vue_component__$7],
     props: {
       splitButton: Boolean
     }
@@ -3214,7 +3217,7 @@
 
   /* style inject shadow dom */
 
-  var DropdownButton = normalizeComponent_1({
+  var __vue_component__$a = normalizeComponent_1({
     render: __vue_render__$9,
     staticRenderFns: __vue_staticRenderFns__$9
   }, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, false, undefined, undefined, undefined);
@@ -3315,14 +3318,14 @@
 
   /* style inject shadow dom */
 
-  var Input = normalizeComponent_1({
+  var __vue_component__$b = normalizeComponent_1({
     render: __vue_render__$a,
     staticRenderFns: __vue_staticRenderFns__$a
   }, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, false, undefined, undefined, undefined);
 
   var EditorIcon = {
     name: 'MusselEditorIcon',
-    "extends": Icon,
+    "extends": __vue_component__$4,
     computed: {
       className: function className() {
         return 'mu-editor-icon';
@@ -3334,7 +3337,7 @@
   var script$c = {
     name: 'MusselBaseEditorWrapper',
     components: {
-      'mu-input': Input,
+      'mu-input': __vue_component__$b,
       'mu-editor-icon': EditorIcon
     },
     inject: ['editor', 'params'],
@@ -3469,7 +3472,7 @@
 
   /* style inject shadow dom */
 
-  var BaseEditorWrapper = normalizeComponent_1({
+  var __vue_component__$c = normalizeComponent_1({
     render: __vue_render__$b,
     staticRenderFns: __vue_staticRenderFns__$b
   }, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, false, undefined, undefined, undefined);
@@ -3477,7 +3480,7 @@
   var BaseEditor = {
     name: 'MusselBaseButtonEditor',
     components: {
-      'mu-editor-wrapper': BaseEditorWrapper
+      'mu-editor-wrapper': __vue_component__$c
     },
     provide: function provide() {
       return {
@@ -3667,7 +3670,7 @@
 
   /* style inject shadow dom */
 
-  var Editor = normalizeComponent_1({
+  var __vue_component__$d = normalizeComponent_1({
     render: __vue_render__$c,
     staticRenderFns: __vue_staticRenderFns__$c
   }, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, false, undefined, undefined, undefined);
@@ -3677,8 +3680,8 @@
     name: 'MusselPopupBoxWrapper',
     inject: ['params', 'popupParams'],
     components: {
-      'mu-editor-wrapper': BaseEditorWrapper,
-      'mu-dropdown-panel': DropdownPanel
+      'mu-editor-wrapper': __vue_component__$c,
+      'mu-dropdown-panel': __vue_component__$8
     },
     methods: {
       setPopupVisible: function setPopupVisible(value) {
@@ -3739,7 +3742,7 @@
 
   /* style inject shadow dom */
 
-  var PopupEditorWrapper = normalizeComponent_1({
+  var __vue_component__$e = normalizeComponent_1({
     render: __vue_render__$d,
     staticRenderFns: __vue_staticRenderFns__$d
   }, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, false, undefined, undefined, undefined);
@@ -3747,7 +3750,7 @@
   var BasePopupEditor = {
     name: 'MusselBasePopupEditor',
     components: {
-      'mu-popup-editor-wrapper': PopupEditorWrapper
+      'mu-popup-editor-wrapper': __vue_component__$e
     },
     "extends": BaseEditor,
     mixins: [PopupGroupMixin],
@@ -3833,7 +3836,7 @@
 
   /* style inject shadow dom */
 
-  var ButtonEditor = normalizeComponent_1({
+  var __vue_component__$f = normalizeComponent_1({
     render: __vue_render__$e,
     staticRenderFns: __vue_staticRenderFns__$e
   }, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, false, undefined, undefined, undefined);
@@ -4012,7 +4015,7 @@
 
   /* style inject shadow dom */
 
-  var ColorEditor = normalizeComponent_1({
+  var __vue_component__$g = normalizeComponent_1({
     render: __vue_render__$f,
     staticRenderFns: __vue_staticRenderFns__$f
   }, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, false, undefined, undefined, undefined);
@@ -4057,7 +4060,7 @@
 
   /* style inject shadow dom */
 
-  var PopupEditor = normalizeComponent_1({
+  var __vue_component__$h = normalizeComponent_1({
     render: __vue_render__$g,
     staticRenderFns: __vue_staticRenderFns__$g
   }, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, false, undefined, undefined, undefined);
@@ -4869,7 +4872,7 @@
 
   /* style inject shadow dom */
 
-  var Calendar = normalizeComponent_1({
+  var __vue_component__$i = normalizeComponent_1({
     render: __vue_render__$h,
     staticRenderFns: __vue_staticRenderFns__$h
   }, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, false, undefined, undefined, undefined);
@@ -5334,7 +5337,7 @@
   var script$j = {
     name: 'MusselDateEditor',
     components: {
-      Calendar: Calendar
+      Calendar: __vue_component__$i
     },
     "extends": BasePopupEditor,
     props: {
@@ -5443,7 +5446,7 @@
 
   /* style inject shadow dom */
 
-  var DateEditor = normalizeComponent_1({
+  var __vue_component__$j = normalizeComponent_1({
     render: __vue_render__$i,
     staticRenderFns: __vue_staticRenderFns__$i
   }, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, false, undefined, undefined, undefined);
@@ -5599,7 +5602,7 @@
   var script$k = {
     name: 'MusselListItem',
     components: {
-      'mu-icon': Icon
+      'mu-icon': __vue_component__$4
     },
     props: {
       value: null,
@@ -5698,14 +5701,14 @@
 
   /* style inject shadow dom */
 
-  var ListItem = normalizeComponent_1({
+  var __vue_component__$k = normalizeComponent_1({
     render: __vue_render__$j,
     staticRenderFns: __vue_staticRenderFns__$j
   }, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, false, undefined, undefined, undefined);
 
   var Option = {
     name: 'MusselOption',
-    "extends": ListItem,
+    "extends": __vue_component__$k,
     inject: {
       editor: {
         "default": null
@@ -5980,14 +5983,14 @@
 
   /* style inject shadow dom */
 
-  var ComboBox = normalizeComponent_1({
+  var __vue_component__$l = normalizeComponent_1({
     render: __vue_render__$k,
     staticRenderFns: __vue_staticRenderFns__$k
   }, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, false, undefined, undefined, undefined);
 
   var script$m = {
     name: 'MusselForm',
-    "extends": FlexBox,
+    "extends": __vue_component__$1,
     provide: function provide() {
       return {
         form: this
@@ -6052,14 +6055,14 @@
 
   /* style inject shadow dom */
 
-  var Form = normalizeComponent_1({
+  var __vue_component__$m = normalizeComponent_1({
     render: __vue_render__$l,
     staticRenderFns: __vue_staticRenderFns__$l
   }, __vue_inject_styles__$m, __vue_script__$m, __vue_scope_id__$m, __vue_is_functional_template__$m, __vue_module_identifier__$m, false, undefined, undefined, undefined);
 
   var script$n = {
     name: 'MusselFormField',
-    "extends": FlexItem,
+    "extends": __vue_component__,
     inject: {
       form: {
         "default": null
@@ -6139,7 +6142,7 @@
 
   /* style inject shadow dom */
 
-  var FormField = normalizeComponent_1({
+  var __vue_component__$n = normalizeComponent_1({
     render: __vue_render__$m,
     staticRenderFns: __vue_staticRenderFns__$m
   }, __vue_inject_styles__$n, __vue_script__$n, __vue_scope_id__$n, __vue_is_functional_template__$n, __vue_module_identifier__$n, false, undefined, undefined, undefined);
@@ -6278,7 +6281,7 @@
 
   /* style inject shadow dom */
 
-  var Toggle = normalizeComponent_1({
+  var __vue_component__$o = normalizeComponent_1({
     render: __vue_render__$n,
     staticRenderFns: __vue_staticRenderFns__$n
   }, __vue_inject_styles__$o, __vue_script__$o, __vue_scope_id__$o, __vue_is_functional_template__$o, __vue_module_identifier__$o, false, undefined, undefined, undefined);
@@ -6327,7 +6330,7 @@
 
   /* style inject shadow dom */
 
-  var ListDivider = normalizeComponent_1({
+  var __vue_component__$p = normalizeComponent_1({
     render: __vue_render__$o,
     staticRenderFns: __vue_staticRenderFns__$o
   }, __vue_inject_styles__$p, __vue_script__$p, __vue_scope_id__$p, __vue_is_functional_template__$p, __vue_module_identifier__$p, false, undefined, undefined, undefined);
@@ -6379,7 +6382,7 @@
 
   /* style inject shadow dom */
 
-  var Bar = normalizeComponent_1({
+  var __vue_component__$q = normalizeComponent_1({
     render: __vue_render__$p,
     staticRenderFns: __vue_staticRenderFns__$p
   }, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, false, undefined, undefined, undefined);
@@ -6524,7 +6527,7 @@
 
   /* style inject shadow dom */
 
-  var TabsHeader = normalizeComponent_1({
+  var __vue_component__$r = normalizeComponent_1({
     render: __vue_render__$q,
     staticRenderFns: __vue_staticRenderFns__$q
   }, __vue_inject_styles__$r, __vue_script__$r, __vue_scope_id__$r, __vue_is_functional_template__$r, __vue_module_identifier__$r, false, undefined, undefined, undefined);
@@ -6532,7 +6535,7 @@
   var script$s = {
     name: 'MusselTabs',
     components: {
-      TabsHeader: TabsHeader
+      TabsHeader: __vue_component__$r
     },
     provide: function provide() {
       return {
@@ -6695,7 +6698,7 @@
 
   /* style inject shadow dom */
 
-  var Tabs = normalizeComponent_1({
+  var __vue_component__$s = normalizeComponent_1({
     render: __vue_render__$r,
     staticRenderFns: __vue_staticRenderFns__$r
   }, __vue_inject_styles__$s, __vue_script__$s, __vue_scope_id__$s, __vue_is_functional_template__$s, __vue_module_identifier__$s, false, undefined, undefined, undefined);
@@ -6790,14 +6793,14 @@
 
   /* style inject shadow dom */
 
-  var TabPanel = normalizeComponent_1({
+  var __vue_component__$t = normalizeComponent_1({
     render: __vue_render__$s,
     staticRenderFns: __vue_staticRenderFns__$s
   }, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, false, undefined, undefined, undefined);
 
   var DropdownItem = {
     name: 'MusselDropdownItem',
-    "extends": ListItem,
+    "extends": __vue_component__$k,
     inject: {
       dropdown: {
         "default": null
@@ -6958,7 +6961,7 @@
 
   /* style inject shadow dom */
 
-  var Expander = normalizeComponent_1({
+  var __vue_component__$u = normalizeComponent_1({
     render: __vue_render__$t,
     staticRenderFns: __vue_staticRenderFns__$t
   }, __vue_inject_styles__$u, __vue_script__$u, __vue_scope_id__$u, __vue_is_functional_template__$u, __vue_module_identifier__$u, false, undefined, undefined, undefined);
@@ -7023,13 +7026,13 @@
 
   /* style inject shadow dom */
 
-  var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, undefined, undefined);
+  var __vue_component__$v = normalizeComponent_1({}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, undefined, undefined);
 
   var script$w = {
     name: 'MusselDialogWrapper',
     components: {
       'mu-v-box': VBox,
-      'mu-close-button': CloseButton
+      'mu-close-button': __vue_component__$5
     },
     inject: ['dialog', 'params'],
     data: function data() {
@@ -7221,7 +7224,7 @@
 
   /* style inject shadow dom */
 
-  var DialogWrapper = normalizeComponent_1({
+  var __vue_component__$w = normalizeComponent_1({
     render: __vue_render__$u,
     staticRenderFns: __vue_staticRenderFns__$u
   }, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, false, undefined, undefined, undefined);
@@ -7234,9 +7237,9 @@
   var script$x = {
     name: 'MusselBaseDialog',
     components: {
-      'mu-dialog-wrapper': DialogWrapper
+      'mu-dialog-wrapper': __vue_component__$w
     },
-    "extends": BaseModal,
+    "extends": __vue_component__$v,
     provide: function provide() {
       return {
         dialog: this,
@@ -7423,12 +7426,12 @@
 
   /* style inject shadow dom */
 
-  var BaseDialog = normalizeComponent_1({}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, undefined, undefined, undefined);
+  var __vue_component__$x = normalizeComponent_1({}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, undefined, undefined, undefined);
 
   //
   var script$y = {
     name: 'MusselModal',
-    "extends": BaseModal
+    "extends": __vue_component__$v
   };
 
   /* script */
@@ -7473,7 +7476,7 @@
 
   /* style inject shadow dom */
 
-  var Modal = normalizeComponent_1({
+  var __vue_component__$y = normalizeComponent_1({
     render: __vue_render__$v,
     staticRenderFns: __vue_staticRenderFns__$v
   }, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
@@ -7481,7 +7484,7 @@
   //
   var script$z = {
     name: 'MusselDialog',
-    "extends": BaseDialog
+    "extends": __vue_component__$x
   };
 
   /* script */
@@ -7532,14 +7535,14 @@
 
   /* style inject shadow dom */
 
-  var Dialog = normalizeComponent_1({
+  var __vue_component__$z = normalizeComponent_1({
     render: __vue_render__$w,
     staticRenderFns: __vue_staticRenderFns__$w
   }, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, undefined, undefined, undefined);
 
   var script$A = {
     name: 'MusselMessageBox',
-    "extends": BaseDialog,
+    "extends": __vue_component__$x,
     methods: {
       hide: function hide(button) {
         var _this = this;
@@ -7597,7 +7600,7 @@
 
   /* style inject shadow dom */
 
-  var MessageBox = normalizeComponent_1({
+  var __vue_component__$A = normalizeComponent_1({
     render: __vue_render__$x,
     staticRenderFns: __vue_staticRenderFns__$x
   }, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, undefined, undefined, undefined);
@@ -7701,7 +7704,7 @@
 
   /* style inject shadow dom */
 
-  var Notifier = normalizeComponent_1({
+  var __vue_component__$B = normalizeComponent_1({
     render: __vue_render__$y,
     staticRenderFns: __vue_staticRenderFns__$y
   }, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, undefined, undefined);
@@ -7735,7 +7738,7 @@
         danger = options.danger,
         callback = options.callback;
     var dialog = new Vue({
-      "extends": MessageBox,
+      "extends": __vue_component__$A,
       data: {
         message: message
       },
@@ -7788,7 +7791,7 @@
   var notifier;
   function notify(notifyType, message, timeout) {
     if (!notifier) {
-      notifier = new Vue(Notifier).$mount();
+      notifier = new Vue(__vue_component__$B).$mount();
       document.body.appendChild(notifier.$el);
     }
 
@@ -7833,7 +7836,7 @@
     var _c = _vm._self._c || _h;
 
     return _c("div", {
-      staticClass: "mu-sidebar-menu"
+      staticClass: "mu-sidebar"
     }, [_vm._t("default")], 2);
   };
 
@@ -7857,7 +7860,7 @@
 
   /* style inject shadow dom */
 
-  var SidebarMenu = normalizeComponent_1({
+  var __vue_component__$C = normalizeComponent_1({
     render: __vue_render__$z,
     staticRenderFns: __vue_staticRenderFns__$z
   }, __vue_inject_styles__$C, __vue_script__$C, __vue_scope_id__$C, __vue_is_functional_template__$C, __vue_module_identifier__$C, false, undefined, undefined, undefined);
@@ -8015,7 +8018,7 @@
 
   /* style inject shadow dom */
 
-  var MenuGroup = normalizeComponent_1({
+  var __vue_component__$D = normalizeComponent_1({
     render: __vue_render__$A,
     staticRenderFns: __vue_staticRenderFns__$A
   }, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, false, undefined, undefined, undefined);
@@ -8148,54 +8151,54 @@
 
   /* style inject shadow dom */
 
-  var MenuItem = normalizeComponent_1({
+  var __vue_component__$E = normalizeComponent_1({
     render: __vue_render__$B,
     staticRenderFns: __vue_staticRenderFns__$B
   }, __vue_inject_styles__$E, __vue_script__$E, __vue_scope_id__$E, __vue_is_functional_template__$E, __vue_module_identifier__$E, false, undefined, undefined, undefined);
 
   function install() {
-    Vue.component('mu-flex-box', FlexBox);
-    Vue.component('mu-flex-item', FlexItem);
+    Vue.component('mu-flex-box', __vue_component__$1);
+    Vue.component('mu-flex-item', __vue_component__);
     Vue.component('mu-h-box', HBox);
     Vue.component('mu-v-box', VBox);
-    Vue.component('mu-space', Space);
-    Vue.component('mu-splitter', Splitter);
-    Vue.component('mu-icon', Icon);
+    Vue.component('mu-space', __vue_component__$2);
+    Vue.component('mu-splitter', __vue_component__$3);
+    Vue.component('mu-icon', __vue_component__$4);
     Vue.component('mu-button', Button);
     Vue.component('mu-icon-button', IconButton);
-    Vue.component('mu-close-button', CloseButton);
-    Vue.component('mu-button-group', ButtonGroup);
-    Vue.component('mu-split-button', SplitButton);
-    Vue.component('mu-dropdown-button', DropdownButton);
-    Vue.component('mu-input', Input);
-    Vue.component('mu-editor', Editor);
-    Vue.component('mu-button-editor', ButtonEditor);
-    Vue.component('mu-popup-editor', PopupEditor);
-    Vue.component('mu-color-editor', ColorEditor);
-    Vue.component('mu-date-editor', DateEditor);
-    Vue.component('mu-combo-box', ComboBox);
+    Vue.component('mu-close-button', __vue_component__$5);
+    Vue.component('mu-button-group', __vue_component__$6);
+    Vue.component('mu-split-button', __vue_component__$7);
+    Vue.component('mu-dropdown-button', __vue_component__$a);
+    Vue.component('mu-input', __vue_component__$b);
+    Vue.component('mu-editor', __vue_component__$d);
+    Vue.component('mu-button-editor', __vue_component__$f);
+    Vue.component('mu-popup-editor', __vue_component__$h);
+    Vue.component('mu-color-editor', __vue_component__$g);
+    Vue.component('mu-date-editor', __vue_component__$j);
+    Vue.component('mu-combo-box', __vue_component__$l);
     Vue.component('mu-option', Option);
-    Vue.component('mu-form', Form);
-    Vue.component('mu-form-field', FormField);
-    Vue.component('mu-toggle', Toggle);
-    Vue.component('mu-list-item', ListItem);
-    Vue.component('mu-list-divider', ListDivider);
-    Vue.component('mu-bar', Bar);
-    Vue.component('mu-tabs', Tabs);
-    Vue.component('mu-tabs-header', TabsHeader);
-    Vue.component('mu-tab-panel', TabPanel);
-    Vue.component('mu-dropdown', Dropdown);
+    Vue.component('mu-form', __vue_component__$m);
+    Vue.component('mu-form-field', __vue_component__$n);
+    Vue.component('mu-toggle', __vue_component__$o);
+    Vue.component('mu-list-item', __vue_component__$k);
+    Vue.component('mu-list-divider', __vue_component__$p);
+    Vue.component('mu-bar', __vue_component__$q);
+    Vue.component('mu-tabs', __vue_component__$s);
+    Vue.component('mu-tabs-header', __vue_component__$r);
+    Vue.component('mu-tab-panel', __vue_component__$t);
+    Vue.component('mu-dropdown', __vue_component__$9);
     Vue.component('mu-dropdown-item', DropdownItem);
-    Vue.component('mu-expander', Expander);
-    Vue.component('mu-base-modal', BaseModal);
-    Vue.component('mu-base-dialog', BaseDialog);
-    Vue.component('mu-modal', Modal);
-    Vue.component('mu-dialog', Dialog);
-    Vue.component('mu-dialog-wrapper', DialogWrapper);
-    Vue.component('mu-calendar', Calendar);
-    Vue.component('mu-sidebar-menu', SidebarMenu);
-    Vue.component('mu-menu-group', MenuGroup);
-    Vue.component('mu-menu-item', MenuItem);
+    Vue.component('mu-expander', __vue_component__$u);
+    Vue.component('mu-base-modal', __vue_component__$v);
+    Vue.component('mu-base-dialog', __vue_component__$x);
+    Vue.component('mu-modal', __vue_component__$y);
+    Vue.component('mu-dialog', __vue_component__$z);
+    Vue.component('mu-dialog-wrapper', __vue_component__$w);
+    Vue.component('mu-calendar', __vue_component__$i);
+    Vue.component('mu-sidebar-menu', __vue_component__$C);
+    Vue.component('mu-menu-group', __vue_component__$D);
+    Vue.component('mu-menu-item', __vue_component__$E);
   }
 
   if (Vue) install();
@@ -8206,49 +8209,49 @@
       warn$1 = warn,
       notify$1 = notify;
 
-  exports.Bar = Bar;
-  exports.BaseDialog = BaseDialog;
+  exports.Bar = __vue_component__$q;
+  exports.BaseDialog = __vue_component__$x;
   exports.BaseEditor = BaseEditor;
-  exports.BaseModal = BaseModal;
+  exports.BaseModal = __vue_component__$v;
   exports.BasePopupEditor = BasePopupEditor;
   exports.Button = Button;
-  exports.ButtonEditor = ButtonEditor;
-  exports.ButtonGroup = ButtonGroup;
-  exports.Calendar = Calendar;
-  exports.CloseButton = CloseButton;
-  exports.ColorEditor = ColorEditor;
-  exports.ComboBox = ComboBox;
-  exports.DateEditor = DateEditor;
-  exports.Dialog = Dialog;
-  exports.DialogWrapper = DialogWrapper;
-  exports.Dropdown = Dropdown;
-  exports.DropdownButton = DropdownButton;
+  exports.ButtonEditor = __vue_component__$f;
+  exports.ButtonGroup = __vue_component__$6;
+  exports.Calendar = __vue_component__$i;
+  exports.CloseButton = __vue_component__$5;
+  exports.ColorEditor = __vue_component__$g;
+  exports.ComboBox = __vue_component__$l;
+  exports.DateEditor = __vue_component__$j;
+  exports.Dialog = __vue_component__$z;
+  exports.DialogWrapper = __vue_component__$w;
+  exports.Dropdown = __vue_component__$9;
+  exports.DropdownButton = __vue_component__$a;
   exports.DropdownItem = DropdownItem;
-  exports.Editor = Editor;
-  exports.Expander = Expander;
-  exports.FlexBox = FlexBox;
-  exports.FlexItem = FlexItem;
-  exports.Form = Form;
-  exports.FormField = FormField;
+  exports.Editor = __vue_component__$d;
+  exports.Expander = __vue_component__$u;
+  exports.FlexBox = __vue_component__$1;
+  exports.FlexItem = __vue_component__;
+  exports.Form = __vue_component__$m;
+  exports.FormField = __vue_component__$n;
   exports.HBox = HBox;
-  exports.Icon = Icon;
+  exports.Icon = __vue_component__$4;
   exports.IconButton = IconButton;
-  exports.Input = Input;
-  exports.ListDivider = ListDivider;
-  exports.ListItem = ListItem;
-  exports.MenuGroup = MenuGroup;
-  exports.MenuItem = MenuItem;
-  exports.Modal = Modal;
+  exports.Input = __vue_component__$b;
+  exports.ListDivider = __vue_component__$p;
+  exports.ListItem = __vue_component__$k;
+  exports.MenuGroup = __vue_component__$D;
+  exports.MenuItem = __vue_component__$E;
+  exports.Modal = __vue_component__$y;
   exports.Option = Option;
-  exports.PopupEditor = PopupEditor;
-  exports.SidebarMenu = SidebarMenu;
-  exports.Space = Space;
-  exports.SplitButton = SplitButton;
-  exports.Splitter = Splitter;
-  exports.TabPanel = TabPanel;
-  exports.Tabs = Tabs;
-  exports.TabsHeader = TabsHeader;
-  exports.Toggle = Toggle;
+  exports.PopupEditor = __vue_component__$h;
+  exports.SidebarMenu = __vue_component__$C;
+  exports.Space = __vue_component__$2;
+  exports.SplitButton = __vue_component__$7;
+  exports.Splitter = __vue_component__$3;
+  exports.TabPanel = __vue_component__$t;
+  exports.Tabs = __vue_component__$s;
+  exports.TabsHeader = __vue_component__$r;
+  exports.Toggle = __vue_component__$o;
   exports.VBox = VBox;
   exports.alert = alert$1;
   exports.confirm = confirm$1;

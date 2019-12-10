@@ -1,7 +1,3 @@
-.mu-menu-group {
-  
-}
-
 .mu-menu-item,
 .mu-menu-group_header {
   position: relative;
@@ -55,10 +51,11 @@
   background: $primaryColor;
 }
 
-.mu-sidebar-menu {
-  overflow: auto;
-  background: $normalBackground;
+.mu-menu-group .mu-menu-group + .mu-menu-item {
+  border-top: 1px solid $normalDividerColor;
+}
 
+.mu-sidebar {
   & .mu-menu-item,
   & .mu-menu-group_header {
     display: block;
@@ -94,9 +91,4 @@
       }
     }
   }
-}
-
-
-.mu-menu-group .mu-menu-group + .mu-menu-item {
-  border-top: 1px solid $normalDividerColor;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-sidebar-menu">
+  <div class="mu-sidebar">
     <slot />
   </div>
 </template>
