@@ -6,7 +6,8 @@
     @click.native="onMaskClick"
   >
     <mu-v-box
-      v-if="params.modalVisible"
+      v-if="params.keepAlive || params.modalVisible"
+      v-show="!params.keepAlive || params.modalVisible"
       class="mu-dialog"
       :style="style"
       :danger="params.danger"

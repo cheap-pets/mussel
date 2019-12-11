@@ -22,6 +22,7 @@
       height: String,
       buttons: Array,
       danger: Boolean,
+      keepAlive: Boolean,
       primaryButton: String,
       footer: {
         type: Boolean,
@@ -43,6 +44,7 @@
           danger: this.danger || o.danger,
           title: this.title || o.title,
           btns: this.btns,
+          keepAlive: this.keepAlive || o.keepAlive,
           footer: this.footer !== false && o.footer !== false,
           primaryButton: this.primaryButton || o.primaryButton,
           draggable: !(this.draggable === false || o.draggable === false)

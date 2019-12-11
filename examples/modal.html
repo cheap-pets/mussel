@@ -46,6 +46,7 @@
       </div>
       <mu-dialog
         v-model="dialog1Visible"
+        keep-alive
         width="400px"
         height="300px"
         :draggable="true"
@@ -74,6 +75,7 @@
       width: '50%',
       height: '35%',
       danger: true,
+      keepAlive: true,
       maskAction: 'none',
       primaryButton: 'Confirm',
       buttons: [
