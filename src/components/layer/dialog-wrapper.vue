@@ -3,21 +3,18 @@
     class="mu-modal-mask"
     flex-center
     :visible="params.modalVisible"
-    @click.native="onMaskClick"
-  >
+    @click.native="onMaskClick">
     <mu-v-box
       v-if="params.keepAlive || params.modalVisible"
       v-show="!params.keepAlive || params.modalVisible"
       class="mu-dialog"
       :style="style"
       :danger="params.danger"
-      :visible="params.dialogVisible"
-    >
+      :visible="params.dialogVisible">
       <mu-h-box
         class="mu-dialog-header"
         align-items="center"
-        @mousedown.native="onDragStart"
-      >
+        @mousedown.native="onDragStart">
         <mu-flex-item class="mu-dialog-title mu-text-ellipsis" size="auto">
           {{ params.title }}
         </mu-flex-item>
@@ -26,15 +23,13 @@
       </mu-h-box>
       <mu-flex-item
         class="mu-dialog-body"
-        :size="params.height ? 'auto' : undefined"
-      >
+        :size="params.height ? 'auto' : undefined">
         <slot />
       </mu-flex-item>
       <mu-h-box
         v-if="params.footer"
         class="mu-dialog-footer"
-        align-items="center"
-      >
+        align-items="center">
         <slot name="footer" />
         <div style="margin-right: auto" />
         <mu-button

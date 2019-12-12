@@ -1,15 +1,11 @@
-<template>
-  <div class="mu-sidebar">
-    <slot />
-  </div>
-</template>
-
 <script>
+  import SideBar from '../sidebar/sidebar.vue'
+
   export default {
     name: 'MusselSidebarMenu',
+    extends: SideBar,
     provide () {
       return {
-        sidebar: this,
         menu: this
       }
     },
