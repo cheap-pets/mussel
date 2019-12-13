@@ -1,26 +1,46 @@
 <template>
   <div
     class="mu-sidebar"
-    collapsed="collapsed">
+    :floating="floating"
+    :collapsed="collapsed"
+    :style="{ width: sidebarWidth }">
     <div
       class="mu-sidebar_container mu-absolute-fit mu-flex-box"
-      direction="column">
-      <div v-if="headerVisible" class="mu-sidebar_header">
+      direction="column"
+      :style="{ width: contentWidth }"
+      @mouseleave="onCollapseBtnMouseLeave">
+      <div
+        v-if="headerVisible"
+        class="mu-sidebar_header mu-flex-box">
         <a
           v-if="collapseBtnPosition === 'top'"
-          class="mu-sidebar_collapse-button" />
-        <slot v-show="!collapsed" name="header" />
-      </div>
-      <div class="mu-sidebar_body" size="1">
-        <slot v-show="!collapsed" />
-      </div>
-      <div v-if="footerVisible" class="mu-sidebar_footer">
-        <a
-          v-if="collapseBtnPosition === 'bottom'"
-          class="mu-sidebar_collapse-button">
+          class="mu-sidebar_collapse-button mu-button-like"
+          @mouseover="onCollapseBtnMouseOver"
+          @click="toggleCollapse">
           <mu-icon icon="collapse" />
         </a>
-        <slot v-show="!collapsed" name="footer" />
+        <slot v-if="!collapsed" name="header" />
+      </div>
+      <div
+        class="mu-sidebar_body"
+        size="1">
+        <div
+          v-show="!collapsed"
+          class="mu-sidebar_body-container mu-absolute-fit">
+          <slot />
+        </div>
+      </div>
+      <div
+        v-if="footerVisible"
+        class="mu-sidebar_footer mu-flex-box">
+        <a
+          v-if="collapseBtnPosition === 'bottom'"
+          class="mu-sidebar_collapse-button mu-button-like"
+          :class="{ 'mu-text-color-success': !floating }"
+          @click="toggleCollapse">
+          <mu-icon icon="collapse" />
+        </a>
+        <slot v-if="!collapsed" name="footer" />
       </div>
     </div>
   </div>
@@ -35,17 +55,23 @@
       }
     },
     props: {
+      floatable: Boolean,
       collapsible: Boolean,
       collapseButtonPosition: {
         type: String,
         validator (v) {
           return ['top', 'bottom'].indexOf(v) !== -1
         }
+      },
+      width: {
+        type: String,
+        default: '240px'
       }
     },
     data () {
       return {
-        collapsed: false
+        floating: this.floatable,
+        collapsed: this.floatable
       }
     },
     computed: {
@@ -65,6 +91,42 @@
       footerVisible () {
         return this.$slots.footer ||
           (this.collapsible && this.collapseBtnPosition === 'bottom')
+      },
+      sidebarWidth () {
+        return (this.floating || this.collapsed) ? undefined : this.width
+      },
+      contentWidth () {
+        return this.collapsed ? undefined : this.width
+      }
+    },
+    methods: {
+      toggleCollapse () {
+        if (this.floatable) {
+          this.floating = !this.floating
+        } else {
+          this.collapsed = !this.collapsed
+        }
+      },
+      clearHoverTimer () {
+        if (this.hoverTimer) {
+          clearTimeout(this.hoverTimer)
+          delete this.hoverTimer
+        }
+      },
+      delayCollapse () {
+        this.hoverTimer = setTimeout(() => {
+          this.collapsed = true
+        }, 500)
+      },
+      onCollapseBtnMouseOver () {
+        if (!this.floating) return
+        this.clearHoverTimer()
+        this.collapsed = false
+      },
+      onCollapseBtnMouseLeave () {
+        if (!this.floating) return
+        this.clearHoverTimer()
+        this.delayCollapse()
       }
     }
   }

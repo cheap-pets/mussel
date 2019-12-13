@@ -231,3 +231,22 @@ button.mu-button {
 [button-shape="round"] > .mu-button {
   border-radius: $inputElementRoundRadius;
 }
+
+.mu-button-like {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    color: $primaryColor;
+    fill: $primaryColor;
+    background: $normalHoverBackground;
+  }
+  &[active] {
+    color: $normalHighlightTextColor;
+    fill: $normalHighlightTextColor;
+    background: $primaryColor;
+  }
+}

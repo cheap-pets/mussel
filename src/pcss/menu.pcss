@@ -9,12 +9,6 @@
   fill: $normalTextColor;
   cursor: pointer;
 
-  &:hover {
-    color: $primaryColor;
-    fill: $primaryColor;
-    background: $normalHoverBackground;
-  }
-
   & > .mu-icon {
     position: absolute;
     left: 0;
@@ -45,12 +39,6 @@
   display: block;
 }
 
-.mu-menu-item[active] {
-  color: $normalHighlightTextColor;
-  fill: $normalHighlightTextColor;
-  background: $primaryColor;
-}
-
 .mu-menu-group .mu-menu-group + .mu-menu-item {
   border-top: 1px solid $normalDividerColor;
 }
@@ -69,7 +57,7 @@
   }
 }
 
-.mu-sidebar_body > .mu-menu-group {
+.mu-sidebar_body-container > .mu-menu-group {
   & > .mu-menu-group_header {
     padding-right: $sidebarMenuItemHeight;
   }
@@ -78,7 +66,7 @@
     visibility: hidden;
     overflow: hidden;
     max-height: 0;
-    transition: all .2s ease-in-out;
+    transition: all .1s ease-in-out;
   }
   &[expanded] {
     background: rgba(24, 144, 255, .05);

@@ -45,7 +45,7 @@ styleInject(css$4);
 var css$5 = ".mu-list-item {\n  position: relative;\n  line-height: 20px;\n  padding: 10px 16px;\n  overflow: hidden;\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n}\n.mu-list-item[selected] {\n  color: #1890ff;\n  fill: #1890ff;\n  font-weight: 600;\n}\n.mu-list-item:hover {\n  color: #1890ff;\n  fill: #1890ff;\n  background: rgba(0,0,0,.05);\n}\n.mu-list-item[disabled] {\n  color: rgba(0,0,0,.3);\n  fill: rgba(0,0,0,.3);\n  background: 0 0;\n}\n.mu-list-item[active] {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n}\n.mu-list-item > .mu-icon {\n  display: inline-block;\n  width: 20px;\n}\n.mu-list-item:not([multi-lines]) {\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  cursor: default;\n}\n.mu-list-divider {\n  display: block;\n  height: 1px;\n  margin: 4px 0;\n  border-bottom: 1px solid rgba(0,0,0,.09);\n}\n.mu-list-divider:first-child,\n.mu-list-divider:last-child {\n  display: none;\n}";
 styleInject(css$5);
 
-var css$6 = ".mu-button {\n  position: relative;\n  display: inline-block;\n  height: 32px;\n  padding: 5px 10px;\n  outline: 0;\n  border: 1px solid rgba(0,0,0,.15);\n  border-radius: 2px;\n  line-height: 20px;\n  background: #fff;\n  text-decoration: none;\n  text-align: center;\n  font-size: 1rem;\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n  cursor: pointer;\n}\n.mu-button::before {\n  display: inline-block;\n  width: 0;\n  content: '\\00a0';\n}\n.mu-button[button-style=link] {\n  padding-left: 0;\n  padding-right: 0;\n}\n.mu-button:not([button-type]),\n.mu-button[button-type=normal] {\n  box-shadow: 0 0 0 0 rgba(0,0,0,.04);\n}\n.mu-button:not([button-type])[button-style=link]:hover,\n.mu-button[button-type=normal][button-style=link]:hover {\n  color: #40a9ff;\n  fill: #40a9ff;\n}\n.mu-button:not([button-type])[active],\n.mu-button[button-type=normal][active] {\n  background: rgba(0,0,0,.35);\n  box-shadow: 0 0 0 0 rgba(0,0,0,.04);\n  color: #fff;\n  fill: #fff;\n}\n.mu-button:not([button-type]):hover,\n.mu-button[button-type=normal]:hover {\n  background: #fff;\n  box-shadow: 0 0 0 2px rgba(0,0,0,.05);\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-style=text] {\n  box-shadow: none;\n}\n.mu-button[button-style=text]:hover {\n  border-color: rgba(0,0,0,.15);\n}\n.mu-button[button-style=link],\n.mu-button[disabled] {\n  box-shadow: none!important;\n}\n.mu-button[button-type=primary] {\n  color: #fff;\n  fill: #fff;\n  border-color: #1890ff;\n  background: #1890ff;\n  box-shadow: 0 0 0 0 #bae7ff;\n}\n.mu-button[button-type=primary][button-style=link] {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-type=primary][button-style=link]:hover {\n  color: #40a9ff;\n  fill: #40a9ff;\n}\n.mu-button[button-type=primary][button-style=outline],\n.mu-button[button-type=primary][button-style=text] {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-type=primary][active] {\n  background: #096dd9;\n  border-color: #096dd9;\n  box-shadow: 0 0 0 0 #bae7ff;\n}\n.mu-button[button-type=primary]:hover {\n  background: #40a9ff;\n  border-color: #40a9ff;\n  box-shadow: 0 0 0 2px #bae7ff;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=submit] {\n  color: #fff;\n  fill: #fff;\n  background: #52c41a;\n  border-color: #52c41a;\n  box-shadow: 0 0 0 0 #d9f7be;\n}\n.mu-button[button-type=submit][button-style=link] {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-button[button-type=submit][button-style=link]:hover {\n  color: #73d13d;\n  fill: #73d13d;\n}\n.mu-button[button-type=submit][button-style=outline],\n.mu-button[button-type=submit][button-style=text] {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-button[button-type=submit][active] {\n  background: #389e0d;\n  border-color: #389e0d;\n  box-shadow: 0 0 0 0 #d9f7be;\n}\n.mu-button[button-type=submit]:hover {\n  background: #73d13d;\n  border-color: #73d13d;\n  box-shadow: 0 0 0 2px #d9f7be;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=danger] {\n  color: #fff;\n  fill: #fff;\n  background: #f5222d;\n  border-color: #f5222d;\n  box-shadow: 0 0 0 0 #ffccc7;\n}\n.mu-button[button-type=danger][button-style=link] {\n  color: #f5222d;\n  fill: #f5222d;\n}\n.mu-button[button-type=danger][button-style=link]:hover {\n  color: #ff4d4f;\n  fill: #ff4d4f;\n}\n.mu-button[button-type=danger][button-style=outline],\n.mu-button[button-type=danger][button-style=text] {\n  color: #f5222d;\n  fill: #f5222d;\n}\n.mu-button[button-type=danger][active] {\n  background: #cf1322;\n  border-color: #cf1322;\n  box-shadow: 0 0 0 0 #ffccc7;\n}\n.mu-button[button-type=danger]:hover {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  box-shadow: 0 0 0 2px #ffccc7;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-style=link],\n.mu-button[button-style=link]:hover,\n.mu-button[button-style=link][active],\n.mu-button[button-style=text] {\n  border-color: transparent;\n  background: 0 0;\n  box-shadow: none;\n}\n.mu-button[button-style=outline] {\n  background: #fff;\n}\n.mu-button[disabled] {\n  color: rgba(0,0,0,.3)!important;\n  fill: rgba(0,0,0,.3)!important;\n  cursor: default;\n}\n.mu-button[disabled]:not([button-style=link]) {\n  border-color: rgba(0,0,0,.08)!important;\n  background: rgba(0,0,0,.08)!important;\n}\n.mu-button:empty,\n.mu-button[icon-only] {\n  width: 32px;\n  padding-left: 0;\n  padding-right: 0;\n}\nbutton.mu-button {\n  padding-top: 0;\n  padding-bottom: 0;\n}\n[button-shape=round],\n[button-shape=round] > .mu-button {\n  border-radius: 16px;\n}";
+var css$6 = ".mu-button {\n  position: relative;\n  display: inline-block;\n  height: 32px;\n  padding: 5px 10px;\n  outline: 0;\n  border: 1px solid rgba(0,0,0,.15);\n  border-radius: 2px;\n  line-height: 20px;\n  background: #fff;\n  text-decoration: none;\n  text-align: center;\n  font-size: 1rem;\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n  cursor: pointer;\n}\n.mu-button::before {\n  display: inline-block;\n  width: 0;\n  content: '\\00a0';\n}\n.mu-button[button-style=link] {\n  padding-left: 0;\n  padding-right: 0;\n}\n.mu-button:not([button-type]),\n.mu-button[button-type=normal] {\n  box-shadow: 0 0 0 0 rgba(0,0,0,.04);\n}\n.mu-button:not([button-type])[button-style=link]:hover,\n.mu-button[button-type=normal][button-style=link]:hover {\n  color: #40a9ff;\n  fill: #40a9ff;\n}\n.mu-button:not([button-type])[active],\n.mu-button[button-type=normal][active] {\n  background: rgba(0,0,0,.35);\n  box-shadow: 0 0 0 0 rgba(0,0,0,.04);\n  color: #fff;\n  fill: #fff;\n}\n.mu-button:not([button-type]):hover,\n.mu-button[button-type=normal]:hover {\n  background: #fff;\n  box-shadow: 0 0 0 2px rgba(0,0,0,.05);\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-style=text] {\n  box-shadow: none;\n}\n.mu-button[button-style=text]:hover {\n  border-color: rgba(0,0,0,.15);\n}\n.mu-button[button-style=link],\n.mu-button[disabled] {\n  box-shadow: none!important;\n}\n.mu-button[button-type=primary] {\n  color: #fff;\n  fill: #fff;\n  border-color: #1890ff;\n  background: #1890ff;\n  box-shadow: 0 0 0 0 #bae7ff;\n}\n.mu-button[button-type=primary][button-style=link] {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-type=primary][button-style=link]:hover {\n  color: #40a9ff;\n  fill: #40a9ff;\n}\n.mu-button[button-type=primary][button-style=outline],\n.mu-button[button-type=primary][button-style=text] {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-button[button-type=primary][active] {\n  background: #096dd9;\n  border-color: #096dd9;\n  box-shadow: 0 0 0 0 #bae7ff;\n}\n.mu-button[button-type=primary]:hover {\n  background: #40a9ff;\n  border-color: #40a9ff;\n  box-shadow: 0 0 0 2px #bae7ff;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=submit] {\n  color: #fff;\n  fill: #fff;\n  background: #52c41a;\n  border-color: #52c41a;\n  box-shadow: 0 0 0 0 #d9f7be;\n}\n.mu-button[button-type=submit][button-style=link] {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-button[button-type=submit][button-style=link]:hover {\n  color: #73d13d;\n  fill: #73d13d;\n}\n.mu-button[button-type=submit][button-style=outline],\n.mu-button[button-type=submit][button-style=text] {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-button[button-type=submit][active] {\n  background: #389e0d;\n  border-color: #389e0d;\n  box-shadow: 0 0 0 0 #d9f7be;\n}\n.mu-button[button-type=submit]:hover {\n  background: #73d13d;\n  border-color: #73d13d;\n  box-shadow: 0 0 0 2px #d9f7be;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-type=danger] {\n  color: #fff;\n  fill: #fff;\n  background: #f5222d;\n  border-color: #f5222d;\n  box-shadow: 0 0 0 0 #ffccc7;\n}\n.mu-button[button-type=danger][button-style=link] {\n  color: #f5222d;\n  fill: #f5222d;\n}\n.mu-button[button-type=danger][button-style=link]:hover {\n  color: #ff4d4f;\n  fill: #ff4d4f;\n}\n.mu-button[button-type=danger][button-style=outline],\n.mu-button[button-type=danger][button-style=text] {\n  color: #f5222d;\n  fill: #f5222d;\n}\n.mu-button[button-type=danger][active] {\n  background: #cf1322;\n  border-color: #cf1322;\n  box-shadow: 0 0 0 0 #ffccc7;\n}\n.mu-button[button-type=danger]:hover {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  box-shadow: 0 0 0 2px #ffccc7;\n  color: #fff;\n  fill: #fff;\n}\n.mu-button[button-style=link],\n.mu-button[button-style=link]:hover,\n.mu-button[button-style=link][active],\n.mu-button[button-style=text] {\n  border-color: transparent;\n  background: 0 0;\n  box-shadow: none;\n}\n.mu-button[button-style=outline] {\n  background: #fff;\n}\n.mu-button[disabled] {\n  color: rgba(0,0,0,.3)!important;\n  fill: rgba(0,0,0,.3)!important;\n  cursor: default;\n}\n.mu-button[disabled]:not([button-style=link]) {\n  border-color: rgba(0,0,0,.08)!important;\n  background: rgba(0,0,0,.08)!important;\n}\n.mu-button:empty,\n.mu-button[icon-only] {\n  width: 32px;\n  padding-left: 0;\n  padding-right: 0;\n}\nbutton.mu-button {\n  padding-top: 0;\n  padding-bottom: 0;\n}\n[button-shape=round],\n[button-shape=round] > .mu-button {\n  border-radius: 16px;\n}\n.mu-button-like {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  cursor: pointer;\n}\n.mu-button-like:hover {\n  color: #1890ff;\n  fill: #1890ff;\n  background: rgba(0,0,0,.05);\n}\n.mu-button-like[active] {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n}";
 styleInject(css$6);
 
 var css$7 = ".mu-toggle {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n  align-items: center;\n  height: 32px;\n  vertical-align: middle;\n}\n.mu-toggle > * {\n  cursor: pointer;\n}\n.mu-toggle > .mu-toggle-slide-bar {\n  position: relative;\n  width: 40px;\n  height: 20px;\n  border-radius: 10px;\n  background: rgba(0,0,0,.35);\n  -webkit-transition: background .2s ease-in-out;\n  transition: background .2s ease-in-out;\n}\n.mu-toggle > .mu-toggle-slide-bar:after {\n  position: absolute;\n  top: 3px;\n  left: 3px;\n  bottom: 3px;\n  display: inline-block;\n  width: 14px;\n  background: #fff;\n  border-radius: 7px;\n  content: '';\n  -webkit-transition: all .2s ease-in-out;\n  transition: all .2s ease-in-out;\n}\n.mu-toggle[active] > .mu-toggle-slide-bar {\n  background: #52c41a;\n}\n.mu-toggle[active] > .mu-toggle-slide-bar:after {\n  left: 100%;\n  -webkit-transform: translateX(-17px);\n  transform: translateX(-17px);\n}\n.mu-toggle > * + * {\n  margin-left: 5px;\n}\n.mu-toggle[disabled] > * {\n  color: rgba(0,0,0,.3);\n  cursor: default;\n}\n.mu-toggle[disabled] > .mu-toggle-slide-bar {\n  background: rgba(0,0,0,.04);\n}\n.mu-toggle[disabled] > .mu-toggle-slide-bar:after {\n  background: rgba(0,0,0,.08);\n}";
@@ -90,10 +90,10 @@ styleInject(css$j);
 var css$k = ".mu-message-box > .mu-dialog {\n  min-width: 300px;\n}\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\n  padding: 16px;\n}\n.mu-message-box > .mu-dialog .mu-button {\n  min-width: 55px;\n}\n.mu-notifier {\n  position: fixed;\n  top: 0;\n  right: 0;\n  padding: 8px;\n  overflow: hidden;\n}\n.mu-notifier > div {\n  width: 300px;\n  font-size: 1rem;\n  line-height: 20px;\n  margin: 8px;\n  padding: 16px;\n  background: #fff;\n  border-left: 5px solid #1890ff;\n  border-radius: 4px;\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\n}\n.mu-notifier > [notify-type=success] {\n  border-color: #52c41a;\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-notifier > [notify-type=warning] {\n  border-color: #faad14;\n  color: #faad14;\n  fill: #faad14;\n}\n.mu-notifier > [notify-type=error] {\n  border-color: #f5222d;\n  color: #f5222d;\n  fill: #f5222d;\n}\n.mu-notifier-enter,\n.mu-notifier-leave-to {\n  opacity: 0;\n  -webkit-transform: translateX(100px);\n  transform: translateX(100px);\n}\n.mu-notifier-enter-active,\n.mu-notifier-leave-active,\n.mu-notifier-move {\n  -webkit-transition: all .5s;\n  transition: all .5s;\n}";
 styleInject(css$k);
 
-var css$l = ".mu-menu-group_header,\n.mu-menu-item {\n  position: relative;\n  padding: 0 16px 0 32px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 1rem;\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n  cursor: pointer;\n}\n.mu-menu-group_header:hover,\n.mu-menu-item:hover {\n  color: #1890ff;\n  fill: #1890ff;\n  background: rgba(0,0,0,.05);\n}\n.mu-menu-group_header > .mu-icon,\n.mu-menu-item > .mu-icon {\n  position: absolute;\n  left: 0;\n  display: inline-block;\n  width: 32px;\n  text-align: center;\n}\n.mu-menu-group_header > .mu-icon[trigger-type],\n.mu-menu-item > .mu-icon[trigger-type] {\n  left: auto;\n  right: 0;\n}\n.mu-menu-group_body .mu-menu-group_header {\n  font-size: .857rem;\n  font-weight: 600;\n  color: rgba(0,0,0,.5);\n  fill: rgba(0,0,0,.5);\n  background: 0 0;\n  cursor: default;\n}\n.mu-menu-group .mu-menu-item {\n  display: block;\n}\n.mu-menu-item[active] {\n  color: #fff;\n  fill: #fff;\n  background: #1890ff;\n}\n.mu-menu-group .mu-menu-group + .mu-menu-item {\n  border-top: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar .mu-menu-group_header,\n.mu-sidebar .mu-menu-item {\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  padding-left: 40px;\n}\n.mu-sidebar .mu-menu-group_header > .mu-icon,\n.mu-sidebar .mu-menu-item > .mu-icon {\n  width: 40px;\n}\n.mu-sidebar_body > .mu-menu-group > .mu-menu-group_header {\n  padding-right: 40px;\n}\n.mu-sidebar_body > .mu-menu-group > .mu-menu-group_body {\n  position: relative;\n  visibility: hidden;\n  overflow: hidden;\n  max-height: 0;\n  -webkit-transition: all .2s ease-in-out;\n  transition: all .2s ease-in-out;\n}\n.mu-sidebar_body > .mu-menu-group[expanded] {\n  background: rgba(24,144,255,.05);\n}\n.mu-sidebar_body > .mu-menu-group[expanded] > .mu-menu-group_body {\n  visibility: visible;\n  max-height: 2000px;\n}\n.mu-sidebar_body > .mu-menu-group[expanded] > .mu-menu-group_header {\n  background: rgba(0,0,0,.04);\n}";
+var css$l = ".mu-menu-group_header,\n.mu-menu-item {\n  position: relative;\n  padding: 0 16px 0 32px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 1rem;\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n  cursor: pointer;\n}\n.mu-menu-group_header > .mu-icon,\n.mu-menu-item > .mu-icon {\n  position: absolute;\n  left: 0;\n  display: inline-block;\n  width: 32px;\n  text-align: center;\n}\n.mu-menu-group_header > .mu-icon[trigger-type],\n.mu-menu-item > .mu-icon[trigger-type] {\n  left: auto;\n  right: 0;\n}\n.mu-menu-group_body .mu-menu-group_header {\n  font-size: .857rem;\n  font-weight: 600;\n  color: rgba(0,0,0,.5);\n  fill: rgba(0,0,0,.5);\n  background: 0 0;\n  cursor: default;\n}\n.mu-menu-group .mu-menu-item {\n  display: block;\n}\n.mu-menu-group .mu-menu-group + .mu-menu-item {\n  border-top: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar .mu-menu-group_header,\n.mu-sidebar .mu-menu-item {\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  padding-left: 40px;\n}\n.mu-sidebar .mu-menu-group_header > .mu-icon,\n.mu-sidebar .mu-menu-item > .mu-icon {\n  width: 40px;\n}\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_header {\n  padding-right: 40px;\n}\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_body {\n  position: relative;\n  visibility: hidden;\n  overflow: hidden;\n  max-height: 0;\n  -webkit-transition: all .1s ease-in-out;\n  transition: all .1s ease-in-out;\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded] {\n  background: rgba(24,144,255,.05);\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_body {\n  visibility: visible;\n  max-height: 2000px;\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_header {\n  background: rgba(0,0,0,.04);\n}";
 styleInject(css$l);
 
-var css$m = ".mu-sidebar {\n  position: relative;\n  background: #fff;\n}\n.mu-sidebar_body {\n  overflow: auto;\n}\n.mu-sidebar_header {\n  height: 40px;\n  border-bottom: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar_footer {\n  height: 40px;\n  border-top: 1px solid rgba(0,0,0,.09);\n}";
+var css$m = ".mu-sidebar {\n  position: relative;\n  z-index: 90;\n  overflow: visible;\n}\n.mu-sidebar[floating] {\n  width: 40px;\n  overflow: visible;\n}\n.mu-sidebar[floating] .mu-sidebar_collapse-button {\n  fill: rgba(0,0,0,.7);\n}\n.mu-sidebar[collapsed] {\n  width: 40px;\n}\n.mu-sidebar[collapsed] > .mu-sidebar_container {\n  width: 40px;\n}\n.mu-sidebar[collapsed] .mu-sidebar_collapse-button {\n  border-right: 0;\n}\n.mu-sidebar[collapsed] .mu-sidebar_collapse-button > .mu-icon {\n  -webkit-transform: rotate3d(0,1,0,180deg);\n  transform: rotate3d(0,1,0,180deg);\n}\n.mu-sidebar_container {\n  overflow: hidden;\n  background: #fff;\n  -webkit-transition: width .1s ease-in-out;\n  transition: width .1s ease-in-out;\n}\n.mu-sidebar_body {\n  position: relative;\n}\n.mu-sidebar_body-container {\n  overflow: auto;\n}\n.mu-sidebar_footer,\n.mu-sidebar_header {\n  overflow: hidden;\n  height: 40px;\n}\n.mu-sidebar_header {\n  border-bottom: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar_footer {\n  border-top: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar_collapse-button {\n  width: 40px;\n  min-width: 40px;\n  line-height: 40px;\n  text-align: center;\n  border-right: 1px solid rgba(0,0,0,.09);\n  fill: #1890ff;\n}\n.mu-sidebar_collapse-button > .mu-icon {\n  -webkit-transition: -webkit-transform .2s ease-in-out;\n  transition: -webkit-transform .2s ease-in-out;\n  transition: transform .2s ease-in-out;\n  transition: transform .2s ease-in-out,-webkit-transform .2s ease-in-out;\n}";
 styleInject(css$m);
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -307,7 +307,7 @@ var shared = createCommonjsModule(function (module) {
 (module.exports = function (key, value) {
   return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.4.8',
+  version: '3.5.0',
   mode:  'global',
   copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
@@ -7837,6 +7837,26 @@ function notify(notifyType, message, timeout) {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var script$C = {
   name: 'MusselSidebar',
   provide: function provide() {
@@ -7845,17 +7865,23 @@ var script$C = {
     };
   },
   props: {
+    floatable: Boolean,
     collapsible: Boolean,
     collapseButtonPosition: {
       type: String,
       validator: function validator(v) {
         return ['top', 'bottom'].indexOf(v) !== -1;
       }
+    },
+    width: {
+      type: String,
+      "default": '240px'
     }
   },
   data: function data() {
     return {
-      collapsed: false
+      floating: this.floatable,
+      collapsed: this.floatable
     };
   },
   computed: {
@@ -7870,6 +7896,44 @@ var script$C = {
     },
     footerVisible: function footerVisible() {
       return this.$slots.footer || this.collapsible && this.collapseBtnPosition === 'bottom';
+    },
+    sidebarWidth: function sidebarWidth() {
+      return this.floating || this.collapsed ? undefined : this.width;
+    },
+    contentWidth: function contentWidth() {
+      return this.collapsed ? undefined : this.width;
+    }
+  },
+  methods: {
+    toggleCollapse: function toggleCollapse() {
+      if (this.floatable) {
+        this.floating = !this.floating;
+      } else {
+        this.collapsed = !this.collapsed;
+      }
+    },
+    clearHoverTimer: function clearHoverTimer() {
+      if (this.hoverTimer) {
+        clearTimeout(this.hoverTimer);
+        delete this.hoverTimer;
+      }
+    },
+    delayCollapse: function delayCollapse() {
+      var _this = this;
+
+      this.hoverTimer = setTimeout(function () {
+        _this.collapsed = true;
+      }, 500);
+    },
+    onCollapseBtnMouseOver: function onCollapseBtnMouseOver() {
+      if (!this.floating) return;
+      this.clearHoverTimer();
+      this.collapsed = false;
+    },
+    onCollapseBtnMouseLeave: function onCollapseBtnMouseLeave() {
+      if (!this.floating) return;
+      this.clearHoverTimer();
+      this.delayCollapse();
     }
   }
 };
@@ -7887,32 +7951,64 @@ var __vue_render__$z = function __vue_render__() {
 
   return _c("div", {
     staticClass: "mu-sidebar",
+    style: {
+      width: _vm.sidebarWidth
+    },
     attrs: {
-      collapsed: "collapsed"
+      floating: _vm.floating,
+      collapsed: _vm.collapsed
     }
   }, [_c("div", {
     staticClass: "mu-sidebar_container mu-absolute-fit mu-flex-box",
+    style: {
+      width: _vm.contentWidth
+    },
     attrs: {
       direction: "column"
+    },
+    on: {
+      mouseleave: _vm.onCollapseBtnMouseLeave
     }
   }, [_vm.headerVisible ? _c("div", {
-    staticClass: "mu-sidebar_header"
+    staticClass: "mu-sidebar_header mu-flex-box"
   }, [_vm.collapseBtnPosition === "top" ? _c("a", {
-    staticClass: "mu-sidebar_collapse-button"
-  }) : _vm._e(), _vm._v(" "), _vm._t("header")], 2) : _vm._e(), _vm._v(" "), _c("div", {
-    staticClass: "mu-sidebar_body",
-    attrs: {
-      size: "1"
+    staticClass: "mu-sidebar_collapse-button mu-button-like",
+    on: {
+      mouseover: _vm.onCollapseBtnMouseOver,
+      click: _vm.toggleCollapse
     }
-  }, [_vm._t("default")], 2), _vm._v(" "), _vm.footerVisible ? _c("div", {
-    staticClass: "mu-sidebar_footer"
-  }, [_vm.collapseBtnPosition === "bottom" ? _c("a", {
-    staticClass: "mu-sidebar_collapse-button"
   }, [_c("mu-icon", {
     attrs: {
       icon: "collapse"
     }
-  })], 1) : _vm._e(), _vm._v(" "), _vm._t("footer")], 2) : _vm._e()])]);
+  })], 1) : _vm._e(), _vm._v(" "), !_vm.collapsed ? _vm._t("header") : _vm._e()], 2) : _vm._e(), _vm._v(" "), _c("div", {
+    staticClass: "mu-sidebar_body",
+    attrs: {
+      size: "1"
+    }
+  }, [_c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: !_vm.collapsed,
+      expression: "!collapsed"
+    }],
+    staticClass: "mu-sidebar_body-container mu-absolute-fit"
+  }, [_vm._t("default")], 2)]), _vm._v(" "), _vm.footerVisible ? _c("div", {
+    staticClass: "mu-sidebar_footer mu-flex-box"
+  }, [_vm.collapseBtnPosition === "bottom" ? _c("a", {
+    staticClass: "mu-sidebar_collapse-button mu-button-like",
+    "class": {
+      "mu-text-color-success": !_vm.floating
+    },
+    on: {
+      click: _vm.toggleCollapse
+    }
+  }, [_c("mu-icon", {
+    attrs: {
+      icon: "collapse"
+    }
+  })], 1) : _vm._e(), _vm._v(" "), !_vm.collapsed ? _vm._t("footer") : _vm._e()], 2) : _vm._e()])]);
 };
 
 var __vue_staticRenderFns__$z = [];
@@ -8094,7 +8190,7 @@ var __vue_render__$A = function __vue_render__() {
       expanded: _vm.expanded
     }
   }, [_c("div", {
-    staticClass: "mu-menu-group_header mu-text-ellipsis",
+    staticClass: "mu-menu-group_header mu-button-like",
     on: {
       click: _vm.onClick,
       mouseover: _vm.onMouseOver,
@@ -8234,7 +8330,7 @@ var __vue_render__$B = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _c("a", {
-    staticClass: "mu-menu-item mu-text-ellipsis",
+    staticClass: "mu-menu-item mu-button-like",
     attrs: {
       disabled: _vm.disabled,
       active: _vm.selected

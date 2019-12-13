@@ -1,18 +1,69 @@
 .mu-sidebar {
   position: relative;
+  z-index: 90;
+  overflow: visible;
+  
+  &[floating] {
+    width: $normalBarHeight;
+    overflow: visible;
+
+    & .mu-sidebar_collapse-button {
+      fill: $normalTextColor;
+    }
+  }
+
+  &[collapsed] {
+    width: $normalBarHeight;
+
+    & > .mu-sidebar_container {
+      width: $normalBarHeight;
+    }
+
+    & .mu-sidebar_collapse-button {
+      border-right: 0;
+      & > .mu-icon {
+        transform: rotate3d(0, 1, 0, 180deg);
+      }
+    }
+  }
+}
+
+.mu-sidebar_container {
+  overflow: hidden;
   background: $normalBackground;
+  transition: width .1s ease-in-out;
 }
 
 .mu-sidebar_body {
+  position: relative;
+}
+.mu-sidebar_body-container {
   overflow: auto;
 }
 
-.mu-sidebar_header {
+.mu-sidebar_header,
+.mu-sidebar_footer {
+  overflow: hidden;
   height: $normalBarHeight;
+}
+
+.mu-sidebar_header {
   border-bottom: 1px solid $normalDividerColor;
 }
 
 .mu-sidebar_footer {
-  height: $normalBarHeight;
   border-top: 1px solid $normalDividerColor;
+}
+
+.mu-sidebar_collapse-button {
+  width: $normalBarHeight;
+  min-width: $normalBarHeight;
+  line-height: $normalBarHeight;
+  text-align: center;
+  border-right: 1px solid $normalDividerColor;
+  fill: $primaryColor;
+
+  & > .mu-icon {
+    transition: transform .2s ease-in-out;
+  }
 }

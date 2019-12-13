@@ -1,7 +1,7 @@
 <template>
   <div class="mu-menu-group" :expanded="expanded">
     <div
-      class="mu-menu-group_header mu-text-ellipsis"
+      class="mu-menu-group_header mu-button-like"
       @click="onClick"
       @mouseover="onMouseOver"
       @mouseleave="onMouseLeave"

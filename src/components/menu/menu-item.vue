@@ -1,6 +1,6 @@
 <template>
   <a
-    class="mu-menu-item mu-text-ellipsis"
+    class="mu-menu-item mu-button-like"
     :disabled="disabled"
     :active="selected"
     @click="onClick"

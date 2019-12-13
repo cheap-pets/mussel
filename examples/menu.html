@@ -12,8 +12,9 @@
       background: rgba(0, 0, 0, .05);
     }
     .sidebar-menu {
-      width: 240px;
       height: 300px;
+    }
+    .mu-sidebar_container {
       box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12);
     }
   </style>
@@ -25,7 +26,14 @@
     <hr>
     <div>
       <h3>1 Level Menu</h3>
-      <mu-sidebar-menu class="sidebar-menu" collapsible>
+      <mu-sidebar-menu
+        class="sidebar-menu"
+        floatable
+        collapsible
+        collapse-button-position="top">
+        <template #header>
+          <div align-self="center" style="padding: 0 10px;">Welcome</div>
+        </template>
         <mu-menu-item title="Menu Item 1" icon="calendar" active>
         </mu-menu-item>
         <mu-menu-item title="Menu Item 2" icon="ok">
@@ -36,7 +44,7 @@
     </div>
     <div>
       <h3>2 Levels Menu</h3>
-      <mu-sidebar-menu class="sidebar-menu">
+      <mu-sidebar-menu class="sidebar-menu" collapsible>
         <mu-menu-group title="Menu Group 1" icon="search">
           <mu-menu-item title="Menu Item 1">
           </mu-menu-item>
