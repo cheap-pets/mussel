@@ -7880,8 +7880,8 @@ var script$C = {
   },
   data: function data() {
     return {
-      floating: this.floatable,
-      collapsed: this.floatable
+      floating: false,
+      collapsed: false
     };
   },
   computed: {
