@@ -76,7 +76,7 @@ export default {
 
   inputFontSize: '1rem',
   inputFocusShadow: '0 0 0 2px',
-  inputReadonlyBackground: '$normalInfoBackground',
+  inputReadonlyBackground: '$primaryGreyBackground',
 
   inputIconSize: '30px',
   inputIconSizeX2: '60px',

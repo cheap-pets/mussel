@@ -16,6 +16,7 @@
     width: 100%;
     vertical-align: middle;
     padding-right: $inputIconSize;
+    background: $normalBackground;
   }
 
   &[buttons="0"] > .mu-input {
@@ -46,6 +47,14 @@
         }
       }
     }
+  }
+
+  &[readonly] > input {
+    background-color: $inputReadonlyBackground;
+  }
+  
+  &[disabled] > input {
+    background-color: $normalDisabledBackground;
   }
 
   &[disabled],
