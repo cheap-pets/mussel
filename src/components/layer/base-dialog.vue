@@ -31,6 +31,13 @@
       draggable: {
         type: Boolean,
         default: true
+      },
+      modelControl: {
+        type: String,
+        default: 'both',
+        validator (v) {
+          return ['both', 'external'].indexOf(v) !== -1
+        }
       }
     },
     data () {
@@ -143,11 +150,15 @@
           this.params.modalVisible = false
         }, 200)
         this.$emit('hide', button)
-        this.$emit('change', false)
+        if (this.visible !== false) {
+          this.$emit('change', false, button)
+        }
       },
       hide (force, button) {
         if (!force && this.$options.beforeClose) {
           this.$options.beforeClose(this.actualHide, button)
+        } else if (!force && this.modelControl === 'external') {
+          this.$emit('change', false, button)
         } else {
           this.actualHide(button)
         }

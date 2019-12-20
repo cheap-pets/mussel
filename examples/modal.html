@@ -45,7 +45,8 @@
         <mu-button button-type="primary" @click="openDialog2">Open Window 2</mu-button>
       </div>
       <mu-dialog
-        v-model="dialog1Visible"
+        :visible="dialog1Visible"
+        model-control="external"
         keep-alive
         width="400px"
         height="300px"
@@ -53,6 +54,7 @@
         title="I am a superhero"
         primary-button="Confirm"
         :buttons="['Confirm', 'Cancel']"
+        @change="onDialog1VisibleChange"
         @buttonclick="onButtonClick">
         <h1>hey, dude</h1>
         <template #header>
@@ -115,9 +117,11 @@
           dialog2.show()
         },
         onButtonClick: function (btn, win) {
-          if (btn === 'Cancel') {
-            win.hide()
-          }
+          win.hide()
+        },
+        onDialog1VisibleChange: function (v, btn) {
+          this.dialog1Visible = v
+          console.log(btn)
         }
       }
     });

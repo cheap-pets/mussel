@@ -19,7 +19,7 @@
           {{ params.title }}
         </mu-flex-item>
         <slot name="header" />
-        <mu-close-button class="mu-text-color-subtitle" @click="hide" />
+        <mu-close-button class="mu-text-color-subtitle" @click="hide('$close')" />
       </mu-h-box>
       <mu-flex-item
         class="mu-dialog-body"
@@ -83,8 +83,8 @@
       onMaskClick (event) {
         if (!this.dragState) this.dialog.onMaskClick(event)
       },
-      hide () {
-        this.dialog.hide()
+      hide (btn) {
+        this.dialog.hide(false, btn)
       },
       onButtonClick (btn) {
         this.dialog.onButtonClick(btn)

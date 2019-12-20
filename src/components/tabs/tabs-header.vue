@@ -42,9 +42,12 @@
           return ['top', 'bottom', 'left', 'right'].indexOf(v) !== -1
         }
       },
-      instantState: {
-        type: Boolean,
-        default: true
+      modelControl: {
+        type: String,
+        default: 'both',
+        validator (v) {
+          return ['both', 'external'].indexOf(v) !== -1
+        }
       },
       activeTab: String
     },
@@ -78,7 +81,9 @@
         if (this.tabs) {
           this.tabs.select(item.name)
         } else {
-          if (this.instantState) this.activeName = item.name
+          if (this.modelControl !== 'external') {
+            this.activeName = item.name
+          }
           this.$emit('change', item.name)
         }
       }

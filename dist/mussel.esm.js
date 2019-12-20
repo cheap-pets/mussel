@@ -6432,9 +6432,12 @@ var script$r = {
         return ['top', 'bottom', 'left', 'right'].indexOf(v) !== -1;
       }
     },
-    instantState: {
-      type: Boolean,
-      "default": true
+    modelControl: {
+      type: String,
+      "default": 'both',
+      validator: function validator(v) {
+        return ['both', 'external'].indexOf(v) !== -1;
+      }
     },
     activeTab: String
   },
@@ -6468,7 +6471,10 @@ var script$r = {
       if (this.tabs) {
         this.tabs.select(item.name);
       } else {
-        if (this.instantState) this.activeName = item.name;
+        if (this.modelControl !== 'external') {
+          this.activeName = item.name;
+        }
+
         this.$emit('change', item.name);
       }
     }
@@ -7067,8 +7073,8 @@ var script$w = {
     onMaskClick: function onMaskClick(event) {
       if (!this.dragState) this.dialog.onMaskClick(event);
     },
-    hide: function hide() {
-      this.dialog.hide();
+    hide: function hide(btn) {
+      this.dialog.hide(false, btn);
     },
     onButtonClick: function onButtonClick(btn) {
       this.dialog.onButtonClick(btn);
@@ -7185,7 +7191,9 @@ var __vue_render__$u = function __vue_render__() {
   }, [_vm._v("\n        " + _vm._s(_vm.params.title) + "\n      ")]), _vm._v(" "), _vm._t("header"), _vm._v(" "), _c("mu-close-button", {
     staticClass: "mu-text-color-subtitle",
     on: {
-      click: _vm.hide
+      click: function click($event) {
+        return _vm.hide("$close");
+      }
     }
   })], 2), _vm._v(" "), _c("mu-flex-item", {
     staticClass: "mu-dialog-body",
@@ -7270,6 +7278,13 @@ var script$x = {
     draggable: {
       type: Boolean,
       "default": true
+    },
+    modelControl: {
+      type: String,
+      "default": 'both',
+      validator: function validator(v) {
+        return ['both', 'external'].indexOf(v) !== -1;
+      }
     }
   },
   data: function data() {
@@ -7390,11 +7405,16 @@ var script$x = {
         _this3.params.modalVisible = false;
       }, 200);
       this.$emit('hide', button);
-      this.$emit('change', false);
+
+      if (this.visible !== false) {
+        this.$emit('change', false, button);
+      }
     },
     hide: function hide(force, button) {
       if (!force && this.$options.beforeClose) {
         this.$options.beforeClose(this.actualHide, button);
+      } else if (!force && this.modelControl === 'external') {
+        this.$emit('change', false, button);
       } else {
         this.actualHide(button);
       }

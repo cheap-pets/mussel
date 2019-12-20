@@ -58,7 +58,7 @@
       <mu-tabs-header :tab-items="tabItems" tab-style="card">
       </mu-tabs-header>
       <h5>Simple Style</h5>
-      <mu-tabs-header :tab-items="tabItems">
+      <mu-tabs-header :tab-items="tabItems" model-control="external" v-model="activeTabHeaderName">
       </mu-tabs-header>
       <h5>With Extra Buttons</h5>
       <mu-tabs-header :tab-items="tabItems">
@@ -84,6 +84,7 @@
         pos: 'top',
         style: 'card',
         activeTabName: 'javascript',
+        activeTabHeaderName: 'tab1',
         tabItems: [
           {
             name: 'tab0',
