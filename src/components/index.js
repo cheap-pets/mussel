@@ -45,6 +45,7 @@ import TabPanel from './tabs/tab-panel.vue'
 /* Dropdown */
 import Dropdown from './dropdown/dropdown.vue'
 import DropdownItem from './dropdown/dropdown-item'
+import DropdownPanel from './dropdown/dropdown-panel.vue'
 /* Expander */
 import Expander from './expander/expander.vue'
 /* LAYER */
@@ -60,6 +61,9 @@ import Calendar from './calendar/calendar.vue'
 import SidebarMenu from './menu/sidebar-menu.vue'
 import MenuGroup from './menu/menu-group.vue'
 import MenuItem from './menu/menu-item.vue'
+
+/* MIXINS */
+import PopupGroupMixin from './layer/mix-popup-group'
 
 // import './transform'
 
@@ -105,6 +109,7 @@ function install ($Vue = Vue) {
 
   Vue.component('mu-dropdown', Dropdown)
   Vue.component('mu-dropdown-item', DropdownItem)
+  Vue.component('mu-dropdown-panel', DropdownPanel)
 
   Vue.component('mu-expander', Expander)
 
@@ -172,6 +177,7 @@ export {
   // Dropdown
   Dropdown,
   DropdownItem,
+  DropdownPanel,
   // Expander
   Expander,
   // Calendar
@@ -192,5 +198,7 @@ export {
   // Menu
   SidebarMenu,
   MenuGroup,
-  MenuItem
+  MenuItem,
+  // Mixins
+  PopupGroupMixin
 }
