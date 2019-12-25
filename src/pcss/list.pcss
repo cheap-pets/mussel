@@ -1,3 +1,4 @@
+.mu-list-group-header,
 .mu-list-item {
   position: relative;
   line-height: $normalLineHeight;
@@ -6,6 +7,19 @@
   color: $normalTextColor;
   fill: $normalTextColor;
 
+  & > .mu-icon {
+    display: inline-block;
+    width: $normalIconWidth;
+  }
+}
+
+.mu-list-group-header {
+  font-size: 0.85em;
+  color: $normalSubtitleTextColor;
+  fill: $normalSubtitleTextColor;
+}
+
+.mu-list-item {
   &[selected] {
     color: $primaryColor;
     fill: $primaryColor;
@@ -28,11 +42,6 @@
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
     background: $primaryColor;
-  }
-
-  & > .mu-icon {
-    display: inline-block;
-    width: $normalIconWidth;
   }
 
   &:not([multi-lines]) {
