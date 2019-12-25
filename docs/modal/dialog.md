@@ -29,15 +29,17 @@ Popup window, within a modal mask.
 
 #### Attributes
 
-| name           | description                | type    | accepted values | default |
-| -------------- | -------------------------- | ------- | --------------- | ------- |
-| buttons        | buttons in footer          | Array   |                 | []      |
-| danger         | danger style               | Boolean |                 | false   |
-| height         | height value               | String  |                 | -       |
-| primary-button | name of the primary button | String  |                 | String  |
-| title          | caption in header          | String  |                 | -       |
-| visible        | hidden or visible          | Boolean |                 | false   |
-| width          | width value                | String  |                 | -       |
+| name           | description                  | type    | accepted values | default |
+| -------------- | ---------------------------- | ------- | --------------- | ------- |
+| buttons        | buttons in footer            | Array   |                 | []      |
+| danger         | danger style                 | Boolean |                 | false   |
+| footer         | visibility of footer         | Boolean |                 | true    |
+| height         | height value                 | String  |                 | -       |
+| keep-alive     | keep-alive with body content | Boolean |                 | false   |
+| primary-button | name of the primary button   | String  |                 | String  |
+| title          | caption in header            | String  |                 | -       |
+| visible        | hidden or visible            | Boolean |                 | false   |
+| width          | width value                  | String  |                 | -       |
 
 
 
