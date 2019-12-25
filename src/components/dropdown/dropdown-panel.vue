@@ -1,6 +1,7 @@
 <template>
   <div
     class="mu-dropdown-panel"
+    :class="popupClass"
     :popup-style="popupStyle"
     :style="style"
     :visible="popupVisible"
@@ -52,6 +53,7 @@
     props: {
       width: String,
       height: String,
+      popupClass: String,
       popupStyle: String
     },
     data () {

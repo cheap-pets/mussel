@@ -39,7 +39,7 @@
   var css$1 = ".mu-background-normal {\n  background: #fff;\n}\n.mu-background-grey {\n  background: rgba(0,0,0,.04);\n}\n.mu-background-highlight {\n  background: rgba(0,0,0,.35);\n  color: #fff;\n}\n.mu-background-info {\n  background: #ffd;\n}\n.mu-background-hover:hover {\n  background: rgba(0,0,0,.05);\n}\n.mu-background-disabled[disabled] {\n  background: rgba(0,0,0,.08);\n  color: rgba(0,0,0,.3);\n}\n.mu-background-primary {\n  background: #1890ff;\n}\n.mu-background-success {\n  background: #52c41a;\n}\n.mu-background-danger {\n  background: #52c41a;\n}\n.mu-background-warning {\n  background: #faad14;\n}";
   styleInject(css$1);
 
-  var css$2 = ".mu-text-ellipsis {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.mu-text-color-normal {\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n}\n.mu-text-color-weak {\n  color: rgba(0,0,0,.3);\n  fill: rgba(0,0,0,.3);\n}\n.mu-text-color-title {\n  color: rgba(0,0,0,.85);\n  fill: rgba(0,0,0,.85);\n}\n.mu-text-color-subtitle {\n  color: rgba(0,0,0,.5);\n  fill: rgba(0,0,0,.5);\n}\n.mu-text-color-primary {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-text-color-success {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-text-color-danger {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-text-color-warning {\n  color: #faad14;\n  fill: #faad14;\n}\n.mu-text-color-highlight {\n  color: #fff;\n  fill: #fff;\n}";
+  var css$2 = ".mu-text-ellipsis {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.mu-text-color-normal {\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n}\n.mu-text-color-weak {\n  color: rgba(0,0,0,.3);\n  fill: rgba(0,0,0,.3);\n}\n.mu-text-color-title {\n  color: rgba(0,0,0,.85);\n  fill: rgba(0,0,0,.85);\n}\n.mu-text-color-subtitle {\n  color: rgba(0,0,0,.5);\n  fill: rgba(0,0,0,.5);\n}\n.mu-text-title {\n  font-size: 1em;\n  color: rgba(0,0,0,.85);\n  fill: rgba(0,0,0,.85);\n}\n.mu-text-subtitle {\n  font-size: .85em;\n  color: rgba(0,0,0,.5);\n  fill: rgba(0,0,0,.5);\n}\n.mu-text-weak {\n  font-size: .7em;\n  color: rgba(0,0,0,.3);\n  fill: rgba(0,0,0,.3);\n}\n.mu-text-body {\n  font-size: .85em;\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n}\n.mu-text-color-primary {\n  color: #1890ff;\n  fill: #1890ff;\n}\n.mu-text-color-success {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-text-color-danger {\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-text-color-warning {\n  color: #faad14;\n  fill: #faad14;\n}\n.mu-text-color-highlight {\n  color: #fff;\n  fill: #fff;\n}";
   styleInject(css$2);
 
   var css$3 = ".mu-icon {\n  display: inline-block;\n}\n.mu-icon > svg {\n  vertical-align: -.15em;\n}\n.mu-icon[trigger-type] {\n  cursor: pointer;\n  -webkit-transition: -webkit-transform .2s ease-in-out;\n  transition: -webkit-transform .2s ease-in-out;\n  transition: transform .2s ease-in-out;\n  transition: transform .2s ease-in-out,-webkit-transform .2s ease-in-out;\n}\n.mu-icon[trigger-type=close]:hover {\n  fill: #f5222d;\n  color: #f5222d;\n}\n.mu-dropdown[expanded] [trigger-type=expander],\n.mu-expander[expanded] [trigger-type=expander],\n.mu-icon[trigger-type=expander][trigger-on],\n.mu-popup-editor[expanded] > [trigger-type=expander] {\n  -webkit-transform: rotate(180deg);\n  transform: rotate(180deg);\n}";
@@ -2624,6 +2624,7 @@
           visible: false,
           width: this.popupWidth,
           height: this.popupHeight,
+          popupClass: this.popupClass,
           popupStyle: this.popupStyle,
           iconIndent: this.popupIconIndent,
           renderToBody: this.popupRenderToBody
@@ -2636,6 +2637,7 @@
       };
     },
     props: {
+      popupClass: String,
       popupStyle: String,
       popupWidth: {
         type: String,
@@ -2841,6 +2843,7 @@
     props: {
       width: String,
       height: String,
+      popupClass: String,
       popupStyle: String
     },
     data: function data() {
@@ -2932,6 +2935,7 @@
 
     return _c("div", {
       staticClass: "mu-dropdown-panel",
+      "class": _vm.popupClass,
       style: _vm.style,
       attrs: {
         "popup-style": _vm.popupStyle,

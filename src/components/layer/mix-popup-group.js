@@ -5,6 +5,7 @@ export default {
         visible: false,
         width: this.popupWidth,
         height: this.popupHeight,
+        popupClass: this.popupClass,
         popupStyle: this.popupStyle,
         iconIndent: this.popupIconIndent,
         renderToBody: this.popupRenderToBody
@@ -17,6 +18,7 @@ export default {
     }
   },
   props: {
+    popupClass: String,
     popupStyle: String,
     popupWidth: {
       type: String,
