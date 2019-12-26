@@ -1,17 +1,22 @@
-.mu-message-box > .mu-dialog {
-  min-width: 300px;
+.mu-message-box {
+  z-index: 998;
 
-  & > .mu-dialog-body > div {
-    padding: $unitSpacingSize;
-  }
+  & > .mu-dialog {
+    min-width: 300px;
 
-  & .mu-button {
-    min-width: 55px;
+    & > .mu-dialog-body > div {
+      padding: $unitSpacingSize;
+    }
+
+    & .mu-button {
+      min-width: 55px;
+    }
   }
 }
 
 .mu-notifier {
   position: fixed;
+  z-index: 999;
   top: 0;
   right: 0;
   padding: $halfSpacingSize;

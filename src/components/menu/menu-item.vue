@@ -3,13 +3,11 @@
     class="mu-menu-item mu-button-like"
     :disabled="disabled"
     :active="selected"
-    @click="onClick"
-  >
+    @click="onClick">
     <slot>
       <mu-icon
         :icon="icon"
-        :icon-class="iconClass"
-      />
+        :icon-class="iconClass" />
       {{ title }}
     </slot>
   </a>
@@ -35,7 +33,8 @@
       iconClass: String,
       title: String,
       active: Boolean,
-      disabled: Boolean
+      disabled: Boolean,
+      data: null
     },
     data () {
       return {
@@ -52,8 +51,10 @@
       }
     },
     mounted () {
-      if (this.active && this.menuGroup?.isExpander) {
-        this.menuGroup.expand()
+      if (this.active) {
+        const group = this.menuGroup
+        if (group?.isExpander) group.expand()
+        else if (group?.menuGroup?.isExpander) group.menuGroup.expand()
       }
     },
     methods: {

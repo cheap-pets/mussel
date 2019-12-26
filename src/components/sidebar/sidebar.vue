@@ -2,7 +2,7 @@
   <div
     class="mu-sidebar"
     :floating="floating"
-    :collapsed="collapsed"
+    :collapsed="isCollapsed"
     :style="{ width: sidebarWidth }">
     <div
       class="mu-sidebar_container mu-absolute-fit mu-flex-box"
@@ -19,13 +19,11 @@
           @click="toggleCollapse">
           <mu-icon icon="collapse" />
         </a>
-        <slot v-if="!collapsed" name="header" />
+        <slot v-if="!isCollapsed" name="header" />
       </div>
-      <div
-        class="mu-sidebar_body"
-        size="1">
+      <div class="mu-sidebar_body" size="1">
         <div
-          v-show="!collapsed"
+          v-show="!isCollapsed"
           class="mu-sidebar_body-container mu-absolute-fit">
           <slot />
         </div>
@@ -40,7 +38,7 @@
           @click="toggleCollapse">
           <mu-icon icon="collapse" />
         </a>
-        <slot v-if="!collapsed" name="footer" />
+        <slot v-if="!isCollapsed" name="footer" />
       </div>
     </div>
   </div>
@@ -56,6 +54,7 @@
     },
     props: {
       floatable: Boolean,
+      collapsed: Boolean,
       collapsible: Boolean,
       collapseButtonPosition: {
         type: String,
@@ -70,8 +69,8 @@
     },
     data () {
       return {
-        floating: false,
-        collapsed: false
+        floating: this.collapsed,
+        isCollapsed: this.collapsed
       }
     },
     computed: {
@@ -93,10 +92,10 @@
           (this.collapsible && this.collapseBtnPosition === 'bottom')
       },
       sidebarWidth () {
-        return (this.floating || this.collapsed) ? undefined : this.width
+        return (this.floating || this.isCollapsed) ? undefined : this.width
       },
       contentWidth () {
-        return this.collapsed ? undefined : this.width
+        return this.isCollapsed ? undefined : this.width
       }
     },
     methods: {
@@ -104,7 +103,7 @@
         if (this.floatable) {
           this.floating = !this.floating
         } else {
-          this.collapsed = !this.collapsed
+          this.isCollapsed = !this.isCollapsed
         }
       },
       clearHoverTimer () {
@@ -115,13 +114,13 @@
       },
       delayCollapse () {
         this.hoverTimer = setTimeout(() => {
-          this.collapsed = true
-        }, 500)
+          this.isCollapsed = true
+        }, 300)
       },
       onCollapseBtnMouseOver () {
         if (!this.floating) return
         this.clearHoverTimer()
-        this.collapsed = false
+        this.isCollapsed = false
       },
       onCollapseBtnMouseLeave () {
         if (!this.floating) return

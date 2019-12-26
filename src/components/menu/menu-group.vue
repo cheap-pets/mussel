@@ -4,8 +4,7 @@
       class="mu-menu-group_header mu-button-like"
       @click="onClick"
       @mouseover="onMouseOver"
-      @mouseleave="onMouseLeave"
-    >
+      @mouseleave="onMouseLeave">
       <slot name="header">
         <mu-icon
           :icon="icon"
@@ -15,19 +14,11 @@
       <mu-icon
         v-if="isExpander || isDropdown"
         trigger-type="expander"
-        :trigger-on="expanded"
-      />
+        :trigger-on="expanded" />
     </div>
-    <template v-if="isDropdown">
-      <div class="mu-menu-group_body">
-        <slot />
-      </div>
-    </template>
-    <template v-else>
-      <div class="mu-menu-group_body">
-        <slot />
-      </div>
-    </template>
+    <div class="mu-menu-group_body">
+      <slot />
+    </div>
   </div>
 </template>
 

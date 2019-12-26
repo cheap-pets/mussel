@@ -7887,8 +7887,6 @@
   //
   //
   //
-  //
-  //
   var script$C = {
     name: 'MusselSidebar',
     provide: function provide() {
@@ -7898,6 +7896,7 @@
     },
     props: {
       floatable: Boolean,
+      collapsed: Boolean,
       collapsible: Boolean,
       collapseButtonPosition: {
         type: String,
@@ -7912,8 +7911,8 @@
     },
     data: function data() {
       return {
-        floating: false,
-        collapsed: false
+        floating: this.collapsed,
+        isCollapsed: this.collapsed
       };
     },
     computed: {
@@ -7930,10 +7929,10 @@
         return this.$slots.footer || this.collapsible && this.collapseBtnPosition === 'bottom';
       },
       sidebarWidth: function sidebarWidth() {
-        return this.floating || this.collapsed ? undefined : this.width;
+        return this.floating || this.isCollapsed ? undefined : this.width;
       },
       contentWidth: function contentWidth() {
-        return this.collapsed ? undefined : this.width;
+        return this.isCollapsed ? undefined : this.width;
       }
     },
     methods: {
@@ -7941,7 +7940,7 @@
         if (this.floatable) {
           this.floating = !this.floating;
         } else {
-          this.collapsed = !this.collapsed;
+          this.isCollapsed = !this.isCollapsed;
         }
       },
       clearHoverTimer: function clearHoverTimer() {
@@ -7954,13 +7953,13 @@
         var _this = this;
 
         this.hoverTimer = setTimeout(function () {
-          _this.collapsed = true;
-        }, 500);
+          _this.isCollapsed = true;
+        }, 300);
       },
       onCollapseBtnMouseOver: function onCollapseBtnMouseOver() {
         if (!this.floating) return;
         this.clearHoverTimer();
-        this.collapsed = false;
+        this.isCollapsed = false;
       },
       onCollapseBtnMouseLeave: function onCollapseBtnMouseLeave() {
         if (!this.floating) return;
@@ -7988,7 +7987,7 @@
       },
       attrs: {
         floating: _vm.floating,
-        collapsed: _vm.collapsed
+        collapsed: _vm.isCollapsed
       }
     }, [_c("div", {
       staticClass: "mu-sidebar_container mu-absolute-fit mu-flex-box",
@@ -8013,7 +8012,7 @@
       attrs: {
         icon: "collapse"
       }
-    })], 1) : _vm._e(), _vm._v(" "), !_vm.collapsed ? _vm._t("header") : _vm._e()], 2) : _vm._e(), _vm._v(" "), _c("div", {
+    })], 1) : _vm._e(), _vm._v(" "), !_vm.isCollapsed ? _vm._t("header") : _vm._e()], 2) : _vm._e(), _vm._v(" "), _c("div", {
       staticClass: "mu-sidebar_body",
       attrs: {
         size: "1"
@@ -8022,8 +8021,8 @@
       directives: [{
         name: "show",
         rawName: "v-show",
-        value: !_vm.collapsed,
-        expression: "!collapsed"
+        value: !_vm.isCollapsed,
+        expression: "!isCollapsed"
       }],
       staticClass: "mu-sidebar_body-container mu-absolute-fit"
     }, [_vm._t("default")], 2)]), _vm._v(" "), _vm.footerVisible ? _c("div", {
@@ -8040,7 +8039,7 @@
       attrs: {
         icon: "collapse"
       }
-    })], 1) : _vm._e(), _vm._v(" "), !_vm.collapsed ? _vm._t("footer") : _vm._e()], 2) : _vm._e()])]);
+    })], 1) : _vm._e(), _vm._v(" "), !_vm.isCollapsed ? _vm._t("footer") : _vm._e()], 2) : _vm._e()])]);
   };
 
   var __vue_staticRenderFns__$z = [];
@@ -8112,15 +8111,6 @@
 
   var __vue_component__$D = normalizeComponent_1({}, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, false, undefined, undefined, undefined);
 
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
   //
   //
   //
@@ -8238,11 +8228,9 @@
         "trigger-type": "expander",
         "trigger-on": _vm.expanded
       }
-    }) : _vm._e()], 2), _vm._v(" "), _vm.isDropdown ? [_c("div", {
+    }) : _vm._e()], 2), _vm._v(" "), _c("div", {
       staticClass: "mu-menu-group_body"
-    }, [_vm._t("default")], 2)] : [_c("div", {
-      staticClass: "mu-menu-group_body"
-    }, [_vm._t("default")], 2)]], 2);
+    }, [_vm._t("default")], 2)]);
   };
 
   var __vue_staticRenderFns__$A = [];
@@ -8285,8 +8273,6 @@
   //
   //
   //
-  //
-  //
   var script$F = {
     name: 'MusselMenuItem',
     inject: {
@@ -8306,7 +8292,8 @@
       iconClass: String,
       title: String,
       active: Boolean,
-      disabled: Boolean
+      disabled: Boolean,
+      data: null
     },
     data: function data() {
       return {
@@ -8323,10 +8310,11 @@
       }
     },
     mounted: function mounted() {
-      var _this$menuGroup;
+      if (this.active) {
+        var _group$menuGroup;
 
-      if (this.active && ((_this$menuGroup = this.menuGroup) === null || _this$menuGroup === void 0 ? void 0 : _this$menuGroup.isExpander)) {
-        this.menuGroup.expand();
+        var group = this.menuGroup;
+        if (group === null || group === void 0 ? void 0 : group.isExpander) group.expand();else if (group === null || group === void 0 ? void 0 : (_group$menuGroup = group.menuGroup) === null || _group$menuGroup === void 0 ? void 0 : _group$menuGroup.isExpander) group.menuGroup.expand();
       }
     },
     methods: {
