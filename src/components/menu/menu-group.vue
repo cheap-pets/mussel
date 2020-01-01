@@ -62,15 +62,18 @@
         this.toggleExpand()
       },
       onMouseOver () {
-        if (!this.isDropdown) return
+        // if (!this.isDropdown) return
       },
       onMouseLeave () {
-        if (!this.isDropdown) return
+        // if (!this.isDropdown) return
       },
       expand () {
         this.expanded = true
         const el = this.$el.querySelector('.mu-menu-group_body')
-        if (el) el.style.maxHeight = el.scrollHeight + 'px'
+        if (el) {
+          const h = el.scrollHeight || 2000
+          el.style.maxHeight = h + 'px'
+        }
       },
       collapse () {
         this.expanded = false

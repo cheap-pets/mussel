@@ -34,7 +34,7 @@
         <a
           v-if="collapseBtnPosition === 'bottom'"
           class="mu-sidebar_collapse-button mu-button-like"
-          :class="{ 'mu-text-color-success': !floating }"
+          @mouseover="onCollapseBtnMouseOver"
           @click="toggleCollapse">
           <mu-icon icon="collapse" />
         </a>
