@@ -7,19 +7,20 @@ module.exports = {
   primaryColor: '#00f2ff',
   primaryPlusColor: '#00c7d9',
   primaryMinusColor: '#29fbff',
-  primaryShadowColor: '#00778c',
+  primaryTinyColor: '#00778c',
+  primaryTransparentColor: 'rgba(0, 242, 255, .07)',
 
   /* success colors */
   successColor: '#52c41a',
   successPlusColor: '#389e0d',
   successMinusColor: '#73d13d',
-  successShadowColor: '#135200',
+  successTinyColor: '#135200',
 
   /* danger colors */
   dangerColor: '#f5222d',
   dangerPlusColor: '#cf1322',
   dangerMinusColor: '#ff4d4f',
-  dangerShadowColor: '#820014',
+  dangerTinyColor: '#820014',
 
   /* warning colors */
   warningColor: '#faad14',
@@ -48,7 +49,6 @@ module.exports = {
   normalDarkGreyBackground: 'rgba(255, 255, 255, .35)',
   normalDisabledBackground: 'rgba(255, 255, 255, .15)',
   normalInfoBackground: 'rgba(255, 255, 0, .1)',
-  primaryGreyBackground: 'rgba(0, 242, 255, .07)',
 
   normalShadowColor: 'rgba(255, 255, 255, .15)',
 

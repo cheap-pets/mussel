@@ -90,7 +90,7 @@ styleInject(css$j);
 var css$k = ".mu-message-box {\n  z-index: 998;\n}\n.mu-message-box > .mu-dialog {\n  min-width: 300px;\n}\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\n  padding: 16px;\n}\n.mu-message-box > .mu-dialog .mu-button {\n  min-width: 55px;\n}\n.mu-notifier {\n  position: fixed;\n  z-index: 999;\n  top: 0;\n  right: 0;\n  padding: 8px;\n  overflow: hidden;\n}\n.mu-notifier > div {\n  width: 300px;\n  font-size: 1rem;\n  line-height: 20px;\n  margin: 8px;\n  padding: 16px;\n  background: #fff;\n  border-left: 5px solid #1890ff;\n  border-radius: 4px;\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\n}\n.mu-notifier > [notify-type=success] {\n  border-color: #52c41a;\n  color: #52c41a;\n  fill: #52c41a;\n}\n.mu-notifier > [notify-type=warning] {\n  border-color: #faad14;\n  color: #faad14;\n  fill: #faad14;\n}\n.mu-notifier > [notify-type=error] {\n  border-color: #f5222d;\n  color: #f5222d;\n  fill: #f5222d;\n}\n.mu-notifier-enter,\n.mu-notifier-leave-to {\n  opacity: 0;\n  -webkit-transform: translateX(100px);\n  transform: translateX(100px);\n}\n.mu-notifier-enter-active,\n.mu-notifier-leave-active,\n.mu-notifier-move {\n  -webkit-transition: all .5s;\n  transition: all .5s;\n}";
 styleInject(css$k);
 
-var css$l = ".mu-menu-group_header,\n.mu-menu-item {\n  position: relative;\n  padding: 0 16px 0 32px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 1rem;\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n  cursor: pointer;\n}\n.mu-menu-group_header > .mu-icon,\n.mu-menu-item > .mu-icon {\n  position: absolute;\n  left: 0;\n  display: inline-block;\n  width: 32px;\n  text-align: center;\n}\n.mu-menu-group_header > .mu-icon[trigger-type],\n.mu-menu-item > .mu-icon[trigger-type] {\n  left: auto;\n  right: 0;\n}\n.mu-menu-group_body .mu-menu-group_header {\n  font-size: .857rem;\n  font-weight: 600;\n  color: rgba(0,0,0,.5);\n  fill: rgba(0,0,0,.5);\n  background: 0 0;\n  cursor: default;\n}\n.mu-menu-group .mu-menu-item {\n  display: block;\n}\n.mu-menu-group .mu-menu-group + .mu-menu-item {\n  border-top: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar .mu-menu-group_header,\n.mu-sidebar .mu-menu-item {\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  padding-left: 40px;\n}\n.mu-sidebar .mu-menu-group_header > .mu-icon,\n.mu-sidebar .mu-menu-item > .mu-icon {\n  width: 40px;\n}\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_header {\n  padding-right: 40px;\n}\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_body {\n  position: relative;\n  visibility: hidden;\n  overflow: hidden;\n  max-height: 0;\n  -webkit-transition: all .1s ease-in-out;\n  transition: all .1s ease-in-out;\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded] {\n  background: rgba(24,144,255,.05);\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_body {\n  visibility: visible;\n  max-height: 2000px;\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_header {\n  background: rgba(0,0,0,.04);\n}";
+var css$l = ".mu-menu-group_header,\n.mu-menu-item {\n  position: relative;\n  padding: 0 16px 0 32px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 1rem;\n  color: rgba(0,0,0,.7);\n  fill: rgba(0,0,0,.7);\n  cursor: pointer;\n}\n.mu-menu-group_header > .mu-icon,\n.mu-menu-item > .mu-icon {\n  position: absolute;\n  left: 0;\n  display: inline-block;\n  width: 32px;\n  text-align: center;\n}\n.mu-menu-group_header > .mu-icon[trigger-type],\n.mu-menu-item > .mu-icon[trigger-type] {\n  left: auto;\n  right: 0;\n}\n.mu-menu-group_body .mu-menu-group_header {\n  font-size: .857rem;\n  font-weight: 600;\n  color: rgba(0,0,0,.5);\n  fill: rgba(0,0,0,.5);\n  background: 0 0;\n  cursor: default;\n}\n.mu-menu-group .mu-menu-item {\n  display: block;\n}\n.mu-menu-group .mu-menu-group + .mu-menu-item {\n  border-top: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar .mu-menu-group_header,\n.mu-sidebar .mu-menu-item {\n  display: block;\n  height: 40px;\n  line-height: 40px;\n  padding-left: 40px;\n}\n.mu-sidebar .mu-menu-group_header > .mu-icon,\n.mu-sidebar .mu-menu-item > .mu-icon {\n  width: 40px;\n}\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_header,\n.mu-sidebar_menu-wrapper > .mu-menu-group > .mu-menu-group_header {\n  padding-right: 40px;\n}\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_body,\n.mu-sidebar_menu-wrapper > .mu-menu-group > .mu-menu-group_body {\n  position: relative;\n  visibility: hidden;\n  overflow: hidden;\n  max-height: 0;\n  -webkit-transition: all .1s ease-in-out;\n  transition: all .1s ease-in-out;\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded],\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] {\n  background: rgba(24,144,255,.05);\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_body,\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] > .mu-menu-group_body {\n  visibility: visible;\n  max-height: 2000px;\n}\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_header,\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] > .mu-menu-group_header {\n  background: rgba(0,0,0,.04);\n}";
 styleInject(css$l);
 
 var css$m = ".mu-sidebar {\n  position: relative;\n  z-index: 90;\n  overflow: visible;\n}\n.mu-sidebar[floating] {\n  width: 40px;\n  overflow: visible;\n}\n.mu-sidebar[floating] .mu-sidebar_collapse-button {\n  fill: rgba(0,0,0,.7);\n}\n.mu-sidebar[collapsed] {\n  width: 40px;\n}\n.mu-sidebar[collapsed] > .mu-sidebar_container {\n  width: 40px;\n}\n.mu-sidebar[collapsed] .mu-sidebar_collapse-button {\n  border-right: 0;\n}\n.mu-sidebar[collapsed] .mu-sidebar_collapse-button > .mu-icon {\n  -webkit-transform: rotate3d(0,1,0,180deg);\n  transform: rotate3d(0,1,0,180deg);\n}\n.mu-sidebar_container {\n  overflow: hidden;\n  background: #fff;\n  -webkit-transition: width .1s ease-in-out;\n  transition: width .1s ease-in-out;\n}\n.mu-sidebar_body {\n  position: relative;\n}\n.mu-sidebar_body-container {\n  overflow: auto;\n}\n.mu-sidebar_footer,\n.mu-sidebar_header {\n  overflow: hidden;\n  height: 40px;\n}\n.mu-sidebar_header {\n  border-bottom: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar_footer {\n  border-top: 1px solid rgba(0,0,0,.09);\n}\n.mu-sidebar_collapse-button {\n  width: 40px;\n  min-width: 40px;\n  line-height: 40px;\n  text-align: center;\n  border-right: 1px solid rgba(0,0,0,.09);\n  fill: #1890ff;\n}\n.mu-sidebar_collapse-button > .mu-icon {\n  -webkit-transition: -webkit-transform .2s ease-in-out;\n  transition: -webkit-transform .2s ease-in-out;\n  transition: transform .2s ease-in-out;\n  transition: transform .2s ease-in-out,-webkit-transform .2s ease-in-out;\n}";
@@ -307,7 +307,7 @@ var shared = createCommonjsModule(function (module) {
 (module.exports = function (key, value) {
   return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.6.1',
+  version: '3.5.0',
   mode:  'global',
   copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
@@ -706,76 +706,48 @@ var objectDefineProperties = descriptors ? Object.defineProperties : function de
 
 var html = getBuiltIn('document', 'documentElement');
 
-var GT = '>';
-var LT = '<';
-var PROTOTYPE = 'prototype';
-var SCRIPT = 'script';
 var IE_PROTO = sharedKey('IE_PROTO');
 
-var EmptyConstructor = function () { /* empty */ };
-
-var scriptTag = function (content) {
-  return LT + SCRIPT + GT + content + LT + '/' + SCRIPT + GT;
-};
-
-// Create object with fake `null` prototype: use ActiveX Object with cleared prototype
-var NullProtoObjectViaActiveX = function (activeXDocument) {
-  activeXDocument.write(scriptTag(''));
-  activeXDocument.close();
-  var temp = activeXDocument.parentWindow.Object;
-  activeXDocument = null; // avoid memory leak
-  return temp;
-};
+var PROTOTYPE = 'prototype';
+var Empty = function () { /* empty */ };
 
 // Create object with fake `null` prototype: use iframe Object with cleared prototype
-var NullProtoObjectViaIFrame = function () {
+var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
   var iframe = documentCreateElement('iframe');
-  var JS = 'java' + SCRIPT + ':';
+  var length = enumBugKeys.length;
+  var lt = '<';
+  var script = 'script';
+  var gt = '>';
+  var js = 'java' + script + ':';
   var iframeDocument;
   iframe.style.display = 'none';
   html.appendChild(iframe);
-  // https://github.com/zloirock/core-js/issues/475
-  iframe.src = String(JS);
+  iframe.src = String(js);
   iframeDocument = iframe.contentWindow.document;
   iframeDocument.open();
-  iframeDocument.write(scriptTag('document.F=Object'));
+  iframeDocument.write(lt + script + gt + 'document.F=Object' + lt + '/' + script + gt);
   iframeDocument.close();
-  return iframeDocument.F;
+  createDict = iframeDocument.F;
+  while (length--) delete createDict[PROTOTYPE][enumBugKeys[length]];
+  return createDict();
 };
-
-// Check for document.domain and active x support
-// No need to use active x approach when document.domain is not set
-// see https://github.com/es-shims/es5-shim/issues/150
-// variation of https://github.com/kitcambridge/es5-shim/commit/4f738ac066346
-// avoid IE GC bug
-var activeXDocument;
-var NullProtoObject = function () {
-  try {
-    /* global ActiveXObject */
-    activeXDocument = document.domain && new ActiveXObject('htmlfile');
-  } catch (error) { /* ignore */ }
-  NullProtoObject = activeXDocument ? NullProtoObjectViaActiveX(activeXDocument) : NullProtoObjectViaIFrame();
-  var length = enumBugKeys.length;
-  while (length--) delete NullProtoObject[PROTOTYPE][enumBugKeys[length]];
-  return NullProtoObject();
-};
-
-hiddenKeys[IE_PROTO] = true;
 
 // `Object.create` method
 // https://tc39.github.io/ecma262/#sec-object.create
 var objectCreate = Object.create || function create(O, Properties) {
   var result;
   if (O !== null) {
-    EmptyConstructor[PROTOTYPE] = anObject(O);
-    result = new EmptyConstructor();
-    EmptyConstructor[PROTOTYPE] = null;
+    Empty[PROTOTYPE] = anObject(O);
+    result = new Empty();
+    Empty[PROTOTYPE] = null;
     // add "__proto__" for Object.getPrototypeOf polyfill
     result[IE_PROTO] = O;
-  } else result = NullProtoObject();
+  } else result = createDict();
   return Properties === undefined ? result : objectDefineProperties(result, Properties);
 };
+
+hiddenKeys[IE_PROTO] = true;
 
 // a string of all valid unicode whitespaces
 // eslint-disable-next-line max-len
@@ -1119,14 +1091,16 @@ var __vue_is_functional_template__ = false;
 
 /* style inject SSR */
 
-var FlexItem = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__ = normalizeComponent_1({
   render: __vue_render__,
   staticRenderFns: __vue_staticRenderFns__
-}, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, undefined, undefined);
+}, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, undefined, undefined);
 
 var script$1 = {
   name: 'MusselFlexBox',
-  "extends": FlexItem,
+  "extends": __vue_component__,
   provide: function provide() {
     return {
       parentLayout: this.flexLayout
@@ -1219,14 +1193,16 @@ var __vue_is_functional_template__$1 = false;
 
 /* style inject SSR */
 
-var FlexBox = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$1 = normalizeComponent_1({
   render: __vue_render__$1,
   staticRenderFns: __vue_staticRenderFns__$1
-}, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, undefined, undefined);
+}, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, false, undefined, undefined, undefined);
 
 var HBox = {
   name: 'MusselHBox',
-  "extends": FlexBox,
+  "extends": __vue_component__$1,
   props: ['layout', 'direction'],
   computed: {
     flexLayout: function flexLayout() {
@@ -1237,7 +1213,7 @@ var HBox = {
 
 var VBox = {
   name: 'MusselVBox',
-  "extends": FlexBox,
+  "extends": __vue_component__$1,
   props: ['layout', 'direction'],
   computed: {
     flexLayout: function flexLayout() {
@@ -1249,7 +1225,7 @@ var VBox = {
 //
 var script$2 = {
   name: 'MusselSpace',
-  "extends": FlexItem,
+  "extends": __vue_component__,
   computed: {
     flexStyle: function flexStyle() {
       return this.size ? 'none' : undefined;
@@ -1294,10 +1270,12 @@ var __vue_is_functional_template__$2 = false;
 
 /* style inject SSR */
 
-var Space = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$2 = normalizeComponent_1({
   render: __vue_render__$2,
   staticRenderFns: __vue_staticRenderFns__$2
-}, __vue_inject_styles__$2, __vue_script__$2, __vue_scope_id__$2, __vue_is_functional_template__$2, __vue_module_identifier__$2, undefined, undefined);
+}, __vue_inject_styles__$2, __vue_script__$2, __vue_scope_id__$2, __vue_is_functional_template__$2, __vue_module_identifier__$2, false, undefined, undefined, undefined);
 
 var nativeSymbol = !!Object.getOwnPropertySymbols && !fails(function () {
   // Chrome 38 Symbol has incorrect toString conversion
@@ -1309,7 +1287,7 @@ var useSymbolAsUid = nativeSymbol
   // eslint-disable-next-line no-undef
   && !Symbol.sham
   // eslint-disable-next-line no-undef
-  && typeof Symbol.iterator == 'symbol';
+  && typeof Symbol() == 'symbol';
 
 // `IsArray` abstract operation
 // https://tc39.github.io/ecma262/#sec-isarray
@@ -1345,7 +1323,7 @@ var objectGetOwnPropertyNamesExternal = {
 
 var WellKnownSymbolsStore = shared('wks');
 var Symbol$1 = global_1.Symbol;
-var createWellKnownSymbol = useSymbolAsUid ? Symbol$1 : Symbol$1 && Symbol$1.withoutSetter || uid;
+var createWellKnownSymbol = useSymbolAsUid ? Symbol$1 : uid;
 
 var wellKnownSymbol = function (name) {
   if (!has(WellKnownSymbolsStore, name)) {
@@ -1536,7 +1514,7 @@ var wrap = function (tag, description) {
   return symbol;
 };
 
-var isSymbol = useSymbolAsUid ? function (it) {
+var isSymbol = nativeSymbol && typeof $Symbol.iterator == 'symbol' ? function (it) {
   return typeof it == 'symbol';
 } : function (it) {
   return Object(it) instanceof $Symbol;
@@ -1631,19 +1609,11 @@ if (!nativeSymbol) {
     return getInternalState(this).tag;
   });
 
-  redefine($Symbol, 'withoutSetter', function (description) {
-    return wrap(uid(description), description);
-  });
-
   objectPropertyIsEnumerable.f = $propertyIsEnumerable;
   objectDefineProperty.f = $defineProperty;
   objectGetOwnPropertyDescriptor.f = $getOwnPropertyDescriptor;
   objectGetOwnPropertyNames.f = objectGetOwnPropertyNamesExternal.f = $getOwnPropertyNames;
   objectGetOwnPropertySymbols.f = $getOwnPropertySymbols;
-
-  wrappedWellKnownSymbol.f = function (name) {
-    return wrap(wellKnownSymbol(name), name);
-  };
 
   if (descriptors) {
     // https://github.com/tc39/proposal-Symbol-description
@@ -1657,6 +1627,12 @@ if (!nativeSymbol) {
       redefine(ObjectPrototype, 'propertyIsEnumerable', $propertyIsEnumerable, { unsafe: true });
     }
   }
+}
+
+if (!useSymbolAsUid) {
+  wrappedWellKnownSymbol.f = function (name) {
+    return wrap(wellKnownSymbol(name), name);
+  };
 }
 
 _export({ global: true, wrap: true, forced: !nativeSymbol, sham: !nativeSymbol }, {
@@ -2109,10 +2085,12 @@ var __vue_is_functional_template__$3 = false;
 
 /* style inject SSR */
 
-var Splitter = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$3 = normalizeComponent_1({
   render: __vue_render__$3,
   staticRenderFns: __vue_staticRenderFns__$3
-}, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, undefined, undefined);
+}, __vue_inject_styles__$3, __vue_script__$3, __vue_scope_id__$3, __vue_is_functional_template__$3, __vue_module_identifier__$3, false, undefined, undefined, undefined);
 
 // `Array.isArray` method
 // https://tc39.github.io/ecma262/#sec-array.isarray
@@ -2252,10 +2230,12 @@ var __vue_is_functional_template__$4 = false;
 
 /* style inject SSR */
 
-var Icon = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$4 = normalizeComponent_1({
   render: __vue_render__$4,
   staticRenderFns: __vue_staticRenderFns__$4
-}, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, undefined, undefined);
+}, __vue_inject_styles__$4, __vue_script__$4, __vue_scope_id__$4, __vue_is_functional_template__$4, __vue_module_identifier__$4, false, undefined, undefined, undefined);
 
 function register(icons) {
   Object.assign(data$1, icons);
@@ -2264,7 +2244,7 @@ function register(icons) {
 var Button = {
   name: 'MusselButton',
   components: {
-    Icon: Icon
+    Icon: __vue_component__$4
   },
   props: {
     buttonType: {
@@ -2337,7 +2317,7 @@ var IconButton = {
 
 var script$5 = {
   name: 'MusselCloseButton',
-  "extends": Icon,
+  "extends": __vue_component__$4,
   props: {
     triggerType: {
       type: String,
@@ -2366,7 +2346,9 @@ var __vue_is_functional_template__$5 = undefined;
 
 /* style inject SSR */
 
-var CloseButton = normalizeComponent_1({}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, undefined, undefined);
+/* style inject shadow dom */
+
+var __vue_component__$5 = normalizeComponent_1({}, __vue_inject_styles__$5, __vue_script__$5, __vue_scope_id__$5, __vue_is_functional_template__$5, __vue_module_identifier__$5, false, undefined, undefined, undefined);
 
 //
 //
@@ -2412,10 +2394,12 @@ var __vue_is_functional_template__$6 = false;
 
 /* style inject SSR */
 
-var ButtonGroup = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$6 = normalizeComponent_1({
   render: __vue_render__$5,
   staticRenderFns: __vue_staticRenderFns__$5
-}, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, undefined, undefined);
+}, __vue_inject_styles__$6, __vue_script__$6, __vue_scope_id__$6, __vue_is_functional_template__$6, __vue_module_identifier__$6, false, undefined, undefined, undefined);
 
 //
 var script$7 = {
@@ -2513,10 +2497,12 @@ var __vue_is_functional_template__$7 = false;
 
 /* style inject SSR */
 
-var SplitButton = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$7 = normalizeComponent_1({
   render: __vue_render__$6,
   staticRenderFns: __vue_staticRenderFns__$6
-}, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, undefined, undefined);
+}, __vue_inject_styles__$7, __vue_script__$7, __vue_scope_id__$7, __vue_is_functional_template__$7, __vue_module_identifier__$7, false, undefined, undefined, undefined);
 
 // `Array.prototype.{ reduce, reduceRight }` methods implementation
 var createMethod$3 = function (IS_RIGHT) {
@@ -2978,15 +2964,17 @@ var __vue_is_functional_template__$8 = false;
 
 /* style inject SSR */
 
-var DropdownPanel = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$8 = normalizeComponent_1({
   render: __vue_render__$7,
   staticRenderFns: __vue_staticRenderFns__$7
-}, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, undefined, undefined);
+}, __vue_inject_styles__$8, __vue_script__$8, __vue_scope_id__$8, __vue_is_functional_template__$8, __vue_module_identifier__$8, false, undefined, undefined, undefined);
 
 var script$9 = {
   name: 'MusselDropdown',
   components: {
-    'mu-dropdown-panel': DropdownPanel
+    'mu-dropdown-panel': __vue_component__$8
   },
   provide: function provide() {
     return {
@@ -3128,20 +3116,22 @@ var __vue_is_functional_template__$9 = false;
 
 /* style inject SSR */
 
-var Dropdown = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$9 = normalizeComponent_1({
   render: __vue_render__$8,
   staticRenderFns: __vue_staticRenderFns__$8
-}, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, undefined, undefined);
+}, __vue_inject_styles__$9, __vue_script__$9, __vue_scope_id__$9, __vue_is_functional_template__$9, __vue_module_identifier__$9, false, undefined, undefined, undefined);
 
 //
 var script$a = {
   name: 'MusselDropdownButton',
   components: {
     'mu-button': Button,
-    'mu-icon': Icon
+    'mu-icon': __vue_component__$4
   },
-  "extends": Dropdown,
-  mixins: [SplitButton],
+  "extends": __vue_component__$9,
+  mixins: [__vue_component__$7],
   props: {
     splitButton: Boolean
   }
@@ -3234,10 +3224,12 @@ var __vue_is_functional_template__$a = false;
 
 /* style inject SSR */
 
-var DropdownButton = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$a = normalizeComponent_1({
   render: __vue_render__$9,
   staticRenderFns: __vue_staticRenderFns__$9
-}, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, undefined, undefined);
+}, __vue_inject_styles__$a, __vue_script__$a, __vue_scope_id__$a, __vue_is_functional_template__$a, __vue_module_identifier__$a, false, undefined, undefined, undefined);
 
 //
 //
@@ -3333,14 +3325,16 @@ var __vue_is_functional_template__$b = false;
 
 /* style inject SSR */
 
-var Input = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$b = normalizeComponent_1({
   render: __vue_render__$a,
   staticRenderFns: __vue_staticRenderFns__$a
-}, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, undefined, undefined);
+}, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, false, undefined, undefined, undefined);
 
 var EditorIcon = {
   name: 'MusselEditorIcon',
-  "extends": Icon,
+  "extends": __vue_component__$4,
   computed: {
     className: function className() {
       return 'mu-editor-icon';
@@ -3352,7 +3346,7 @@ var EditorIcon = {
 var script$c = {
   name: 'MusselBaseEditorWrapper',
   components: {
-    'mu-input': Input,
+    'mu-input': __vue_component__$b,
     'mu-editor-icon': EditorIcon
   },
   inject: ['editor', 'params'],
@@ -3485,15 +3479,17 @@ var __vue_is_functional_template__$c = false;
 
 /* style inject SSR */
 
-var BaseEditorWrapper = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$c = normalizeComponent_1({
   render: __vue_render__$b,
   staticRenderFns: __vue_staticRenderFns__$b
-}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, undefined, undefined);
+}, __vue_inject_styles__$c, __vue_script__$c, __vue_scope_id__$c, __vue_is_functional_template__$c, __vue_module_identifier__$c, false, undefined, undefined, undefined);
 
 var BaseEditor = {
   name: 'MusselBaseButtonEditor',
   components: {
-    'mu-editor-wrapper': BaseEditorWrapper
+    'mu-editor-wrapper': __vue_component__$c
   },
   provide: function provide() {
     return {
@@ -3681,18 +3677,20 @@ var __vue_is_functional_template__$d = false;
 
 /* style inject SSR */
 
-var Editor = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$d = normalizeComponent_1({
   render: __vue_render__$c,
   staticRenderFns: __vue_staticRenderFns__$c
-}, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, undefined, undefined);
+}, __vue_inject_styles__$d, __vue_script__$d, __vue_scope_id__$d, __vue_is_functional_template__$d, __vue_module_identifier__$d, false, undefined, undefined, undefined);
 
 //
 var script$e = {
   name: 'MusselPopupBoxWrapper',
   inject: ['params', 'popupParams'],
   components: {
-    'mu-editor-wrapper': BaseEditorWrapper,
-    'mu-dropdown-panel': DropdownPanel
+    'mu-editor-wrapper': __vue_component__$c,
+    'mu-dropdown-panel': __vue_component__$8
   },
   methods: {
     setPopupVisible: function setPopupVisible(value) {
@@ -3751,15 +3749,17 @@ var __vue_is_functional_template__$e = false;
 
 /* style inject SSR */
 
-var PopupEditorWrapper = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$e = normalizeComponent_1({
   render: __vue_render__$d,
   staticRenderFns: __vue_staticRenderFns__$d
-}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, undefined, undefined);
+}, __vue_inject_styles__$e, __vue_script__$e, __vue_scope_id__$e, __vue_is_functional_template__$e, __vue_module_identifier__$e, false, undefined, undefined, undefined);
 
 var BasePopupEditor = {
   name: 'MusselBasePopupEditor',
   components: {
-    'mu-popup-editor-wrapper': PopupEditorWrapper
+    'mu-popup-editor-wrapper': __vue_component__$e
   },
   "extends": BaseEditor,
   mixins: [PopupGroupMixin],
@@ -3843,10 +3843,12 @@ var __vue_is_functional_template__$f = false;
 
 /* style inject SSR */
 
-var ButtonEditor = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$f = normalizeComponent_1({
   render: __vue_render__$e,
   staticRenderFns: __vue_staticRenderFns__$e
-}, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, undefined, undefined);
+}, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, false, undefined, undefined, undefined);
 
 var trim$1 = stringTrim.trim;
 
@@ -4020,10 +4022,12 @@ var __vue_is_functional_template__$g = false;
 
 /* style inject SSR */
 
-var ColorEditor = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$g = normalizeComponent_1({
   render: __vue_render__$f,
   staticRenderFns: __vue_staticRenderFns__$f
-}, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, undefined, undefined);
+}, __vue_inject_styles__$g, __vue_script__$g, __vue_scope_id__$g, __vue_is_functional_template__$g, __vue_module_identifier__$g, false, undefined, undefined, undefined);
 
 //
 var script$h = {
@@ -4063,10 +4067,12 @@ var __vue_is_functional_template__$h = false;
 
 /* style inject SSR */
 
-var PopupEditor = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$h = normalizeComponent_1({
   render: __vue_render__$g,
   staticRenderFns: __vue_staticRenderFns__$g
-}, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, undefined, undefined);
+}, __vue_inject_styles__$h, __vue_script__$h, __vue_scope_id__$h, __vue_is_functional_template__$h, __vue_module_identifier__$h, false, undefined, undefined, undefined);
 
 var DatePrototype = Date.prototype;
 var INVALID_DATE = 'Invalid Date';
@@ -4873,10 +4879,12 @@ var __vue_is_functional_template__$i = false;
 
 /* style inject SSR */
 
-var Calendar = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$i = normalizeComponent_1({
   render: __vue_render__$h,
   staticRenderFns: __vue_staticRenderFns__$h
-}, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, undefined, undefined);
+}, __vue_inject_styles__$i, __vue_script__$i, __vue_scope_id__$i, __vue_is_functional_template__$i, __vue_module_identifier__$i, false, undefined, undefined, undefined);
 
 var MATCH = wellKnownSymbol('match');
 
@@ -4901,31 +4909,6 @@ var regexpFlags = function () {
   return result;
 };
 
-// babel-minify transpiles RegExp('a', 'y') -> /a/y and it causes SyntaxError,
-// so we use an intermediate function.
-function RE(s, f) {
-  return RegExp(s, f);
-}
-
-var UNSUPPORTED_Y = fails(function () {
-  // babel-minify transpiles RegExp('a', 'y') -> /a/y and it causes SyntaxError
-  var re = RE('a', 'y');
-  re.lastIndex = 2;
-  return re.exec('abcd') != null;
-});
-
-var BROKEN_CARET = fails(function () {
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=773687
-  var re = RE('^r', 'gy');
-  re.lastIndex = 2;
-  return re.exec('str') != null;
-});
-
-var regexpStickyHelpers = {
-	UNSUPPORTED_Y: UNSUPPORTED_Y,
-	BROKEN_CARET: BROKEN_CARET
-};
-
 var SPECIES$3 = wellKnownSymbol('species');
 
 var setSpecies = function (CONSTRUCTOR_NAME) {
@@ -4947,8 +4930,6 @@ var getOwnPropertyNames$1 = objectGetOwnPropertyNames.f;
 
 
 
-var setInternalState$1 = internalState.set;
-
 
 
 var MATCH$1 = wellKnownSymbol('match');
@@ -4960,9 +4941,7 @@ var re2 = /a/g;
 // "new" should create a new object, old webkit bug
 var CORRECT_NEW = new NativeRegExp(re1) !== re1;
 
-var UNSUPPORTED_Y$1 = regexpStickyHelpers.UNSUPPORTED_Y;
-
-var FORCED$3 = descriptors && isForced_1('RegExp', (!CORRECT_NEW || UNSUPPORTED_Y$1 || fails(function () {
+var FORCED$3 = descriptors && isForced_1('RegExp', (!CORRECT_NEW || fails(function () {
   re2[MATCH$1] = false;
   // RegExp constructor can alter flags and IsRegExp works correct with @@match
   return NativeRegExp(re1) != re1 || NativeRegExp(re2) == re2 || NativeRegExp(re1, 'i') != '/a/i';
@@ -4975,33 +4954,13 @@ if (FORCED$3) {
     var thisIsRegExp = this instanceof RegExpWrapper;
     var patternIsRegExp = isRegexp(pattern);
     var flagsAreUndefined = flags === undefined;
-    var sticky;
-
-    if (!thisIsRegExp && patternIsRegExp && pattern.constructor === RegExpWrapper && flagsAreUndefined) {
-      return pattern;
-    }
-
-    if (CORRECT_NEW) {
-      if (patternIsRegExp && !flagsAreUndefined) pattern = pattern.source;
-    } else if (pattern instanceof RegExpWrapper) {
-      if (flagsAreUndefined) flags = regexpFlags.call(pattern);
-      pattern = pattern.source;
-    }
-
-    if (UNSUPPORTED_Y$1) {
-      sticky = !!flags && flags.indexOf('y') > -1;
-      if (sticky) flags = flags.replace(/y/g, '');
-    }
-
-    var result = inheritIfRequired(
-      CORRECT_NEW ? new NativeRegExp(pattern, flags) : NativeRegExp(pattern, flags),
-      thisIsRegExp ? this : RegExpPrototype,
-      RegExpWrapper
-    );
-
-    if (UNSUPPORTED_Y$1 && sticky) setInternalState$1(result, { sticky: sticky });
-
-    return result;
+    return !thisIsRegExp && patternIsRegExp && pattern.constructor === RegExpWrapper && flagsAreUndefined ? pattern
+      : inheritIfRequired(CORRECT_NEW
+        ? new NativeRegExp(patternIsRegExp && !flagsAreUndefined ? pattern.source : pattern, flags)
+        : NativeRegExp((patternIsRegExp = pattern instanceof RegExpWrapper)
+          ? pattern.source
+          : pattern, patternIsRegExp && flagsAreUndefined ? regexpFlags.call(pattern) : flags)
+      , thisIsRegExp ? this : RegExpPrototype, RegExpWrapper);
   };
   var proxy = function (key) {
     key in RegExpWrapper || defineProperty$4(RegExpWrapper, key, {
@@ -5037,56 +4996,24 @@ var UPDATES_LAST_INDEX_WRONG = (function () {
   return re1.lastIndex !== 0 || re2.lastIndex !== 0;
 })();
 
-var UNSUPPORTED_Y$2 = regexpStickyHelpers.UNSUPPORTED_Y || regexpStickyHelpers.BROKEN_CARET;
-
 // nonparticipating capturing group, copied from es5-shim's String#split patch.
 var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
 
-var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED || UNSUPPORTED_Y$2;
+var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED;
 
 if (PATCH) {
   patchedExec = function exec(str) {
     var re = this;
     var lastIndex, reCopy, match, i;
-    var sticky = UNSUPPORTED_Y$2 && re.sticky;
-    var flags = regexpFlags.call(re);
-    var source = re.source;
-    var charsAdded = 0;
-    var strCopy = str;
-
-    if (sticky) {
-      flags = flags.replace('y', '');
-      if (flags.indexOf('g') === -1) {
-        flags += 'g';
-      }
-
-      strCopy = String(str).slice(re.lastIndex);
-      // Support anchored sticky behavior.
-      if (re.lastIndex > 0 && (!re.multiline || re.multiline && str[re.lastIndex - 1] !== '\n')) {
-        source = '(?: ' + source + ')';
-        strCopy = ' ' + strCopy;
-        charsAdded++;
-      }
-      // ^(? + rx + ) is needed, in combination with some str slicing, to
-      // simulate the 'y' flag.
-      reCopy = new RegExp('^(?:' + source + ')', flags);
-    }
 
     if (NPCG_INCLUDED) {
-      reCopy = new RegExp('^' + source + '$(?!\\s)', flags);
+      reCopy = new RegExp('^' + re.source + '$(?!\\s)', regexpFlags.call(re));
     }
     if (UPDATES_LAST_INDEX_WRONG) lastIndex = re.lastIndex;
 
-    match = nativeExec.call(sticky ? reCopy : re, strCopy);
+    match = nativeExec.call(re, str);
 
-    if (sticky) {
-      if (match) {
-        match.input = match.input.slice(charsAdded);
-        match[0] = match[0].slice(charsAdded);
-        match.index = re.lastIndex;
-        re.lastIndex += match[0].length;
-      } else re.lastIndex = 0;
-    } else if (UPDATES_LAST_INDEX_WRONG && match) {
+    if (UPDATES_LAST_INDEX_WRONG && match) {
       re.lastIndex = re.global ? match.index + match[0].length : lastIndex;
     }
     if (NPCG_INCLUDED && match && match.length > 1) {
@@ -5144,12 +5071,6 @@ var REPLACE_SUPPORTS_NAMED_GROUPS = !fails(function () {
   return ''.replace(re, '$<a>') !== '7';
 });
 
-// IE <= 11 replaces $0 with the whole match, as if it was $&
-// https://stackoverflow.com/questions/6024666/getting-ie-to-replace-a-regex-with-the-literal-string-0
-var REPLACE_KEEPS_$0 = (function () {
-  return 'a'.replace(/./, '$0') === '$0';
-})();
-
 // Chrome 51 has a buggy "split" implementation when RegExp#exec !== nativeExec
 // Weex JS has frozen built-in prototypes, so use try / catch wrapper
 var SPLIT_WORKS_WITH_OVERWRITTEN_EXEC = !fails(function () {
@@ -5197,7 +5118,7 @@ var fixRegexpWellKnownSymbolLogic = function (KEY, length, exec, sham) {
   if (
     !DELEGATES_TO_SYMBOL ||
     !DELEGATES_TO_EXEC ||
-    (KEY === 'replace' && !(REPLACE_SUPPORTS_NAMED_GROUPS && REPLACE_KEEPS_$0)) ||
+    (KEY === 'replace' && !REPLACE_SUPPORTS_NAMED_GROUPS) ||
     (KEY === 'split' && !SPLIT_WORKS_WITH_OVERWRITTEN_EXEC)
   ) {
     var nativeRegExpMethod = /./[SYMBOL];
@@ -5212,7 +5133,7 @@ var fixRegexpWellKnownSymbolLogic = function (KEY, length, exec, sham) {
         return { done: true, value: nativeMethod.call(str, regexp, arg2) };
       }
       return { done: false };
-    }, { REPLACE_KEEPS_$0: REPLACE_KEEPS_$0 });
+    });
     var stringMethod = methods[0];
     var regexMethod = methods[1];
 
@@ -5225,9 +5146,8 @@ var fixRegexpWellKnownSymbolLogic = function (KEY, length, exec, sham) {
       // 21.2.5.9 RegExp.prototype[@@search](string)
       : function (string) { return regexMethod.call(string, this); }
     );
+    if (sham) createNonEnumerableProperty(RegExp.prototype[SYMBOL], 'sham', true);
   }
-
-  if (sham) createNonEnumerableProperty(RegExp.prototype[SYMBOL], 'sham', true);
 };
 
 // `String.prototype.{ codePointAt, at }` methods implementation
@@ -5293,7 +5213,7 @@ var maybeToString = function (it) {
 };
 
 // @@replace logic
-fixRegexpWellKnownSymbolLogic('replace', 2, function (REPLACE, nativeReplace, maybeCallNative, reason) {
+fixRegexpWellKnownSymbolLogic('replace', 2, function (REPLACE, nativeReplace, maybeCallNative) {
   return [
     // `String.prototype.replace` method
     // https://tc39.github.io/ecma262/#sec-string.prototype.replace
@@ -5307,10 +5227,8 @@ fixRegexpWellKnownSymbolLogic('replace', 2, function (REPLACE, nativeReplace, ma
     // `RegExp.prototype[@@replace]` method
     // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@replace
     function (regexp, replaceValue) {
-      if (reason.REPLACE_KEEPS_$0 || (typeof replaceValue === 'string' && replaceValue.indexOf('$0') === -1)) {
-        var res = maybeCallNative(nativeReplace, regexp, this, replaceValue);
-        if (res.done) return res.value;
-      }
+      var res = maybeCallNative(nativeReplace, regexp, this, replaceValue);
+      if (res.done) return res.value;
 
       var rx = anObject(regexp);
       var S = String(this);
@@ -5428,7 +5346,7 @@ function formatDate(date) {
 var script$j = {
   name: 'MusselDateEditor',
   components: {
-    Calendar: Calendar
+    Calendar: __vue_component__$i
   },
   "extends": BasePopupEditor,
   props: {
@@ -5535,10 +5453,12 @@ var __vue_is_functional_template__$j = false;
 
 /* style inject SSR */
 
-var DateEditor = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$j = normalizeComponent_1({
   render: __vue_render__$i,
   staticRenderFns: __vue_staticRenderFns__$i
-}, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, undefined, undefined);
+}, __vue_inject_styles__$j, __vue_script__$j, __vue_scope_id__$j, __vue_is_functional_template__$j, __vue_module_identifier__$j, false, undefined, undefined, undefined);
 
 var UNSCOPABLES = wellKnownSymbol('unscopables');
 var ArrayPrototype = Array.prototype;
@@ -5546,10 +5466,7 @@ var ArrayPrototype = Array.prototype;
 // Array.prototype[@@unscopables]
 // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
 if (ArrayPrototype[UNSCOPABLES] == undefined) {
-  objectDefineProperty.f(ArrayPrototype, UNSCOPABLES, {
-    configurable: true,
-    value: objectCreate(null)
-  });
+  createNonEnumerableProperty(ArrayPrototype, UNSCOPABLES, objectCreate(null));
 }
 
 // add a key to Array.prototype[@@unscopables]
@@ -5694,7 +5611,7 @@ function unsetOrFalse(value) {
 var script$k = {
   name: 'MusselListItem',
   components: {
-    'mu-icon': Icon
+    'mu-icon': __vue_component__$4
   },
   props: {
     value: null,
@@ -5791,14 +5708,16 @@ var __vue_is_functional_template__$k = false;
 
 /* style inject SSR */
 
-var ListItem = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$k = normalizeComponent_1({
   render: __vue_render__$j,
   staticRenderFns: __vue_staticRenderFns__$j
-}, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, undefined, undefined);
+}, __vue_inject_styles__$k, __vue_script__$k, __vue_scope_id__$k, __vue_is_functional_template__$k, __vue_module_identifier__$k, false, undefined, undefined, undefined);
 
 var Option = {
   name: 'MusselOption',
-  "extends": ListItem,
+  "extends": __vue_component__$k,
   inject: {
     editor: {
       "default": null
@@ -6071,14 +5990,16 @@ var __vue_is_functional_template__$l = false;
 
 /* style inject SSR */
 
-var ComboBox = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$l = normalizeComponent_1({
   render: __vue_render__$k,
   staticRenderFns: __vue_staticRenderFns__$k
-}, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, undefined, undefined);
+}, __vue_inject_styles__$l, __vue_script__$l, __vue_scope_id__$l, __vue_is_functional_template__$l, __vue_module_identifier__$l, false, undefined, undefined, undefined);
 
 var script$m = {
   name: 'MusselForm',
-  "extends": FlexBox,
+  "extends": __vue_component__$1,
   provide: function provide() {
     return {
       form: this
@@ -6141,14 +6062,16 @@ var __vue_is_functional_template__$m = false;
 
 /* style inject SSR */
 
-var Form = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$m = normalizeComponent_1({
   render: __vue_render__$l,
   staticRenderFns: __vue_staticRenderFns__$l
-}, __vue_inject_styles__$m, __vue_script__$m, __vue_scope_id__$m, __vue_is_functional_template__$m, __vue_module_identifier__$m, undefined, undefined);
+}, __vue_inject_styles__$m, __vue_script__$m, __vue_scope_id__$m, __vue_is_functional_template__$m, __vue_module_identifier__$m, false, undefined, undefined, undefined);
 
 var script$n = {
   name: 'MusselFormField',
-  "extends": FlexItem,
+  "extends": __vue_component__,
   inject: {
     form: {
       "default": null
@@ -6226,10 +6149,12 @@ var __vue_is_functional_template__$n = false;
 
 /* style inject SSR */
 
-var FormField = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$n = normalizeComponent_1({
   render: __vue_render__$m,
   staticRenderFns: __vue_staticRenderFns__$m
-}, __vue_inject_styles__$n, __vue_script__$n, __vue_scope_id__$n, __vue_is_functional_template__$n, __vue_module_identifier__$n, undefined, undefined);
+}, __vue_inject_styles__$n, __vue_script__$n, __vue_scope_id__$n, __vue_is_functional_template__$n, __vue_module_identifier__$n, false, undefined, undefined, undefined);
 
 //
 //
@@ -6363,10 +6288,12 @@ var __vue_is_functional_template__$o = false;
 
 /* style inject SSR */
 
-var Toggle = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$o = normalizeComponent_1({
   render: __vue_render__$n,
   staticRenderFns: __vue_staticRenderFns__$n
-}, __vue_inject_styles__$o, __vue_script__$o, __vue_scope_id__$o, __vue_is_functional_template__$o, __vue_module_identifier__$o, undefined, undefined);
+}, __vue_inject_styles__$o, __vue_script__$o, __vue_scope_id__$o, __vue_is_functional_template__$o, __vue_module_identifier__$o, false, undefined, undefined, undefined);
 
 //
 //
@@ -6410,10 +6337,12 @@ var __vue_is_functional_template__$p = false;
 
 /* style inject SSR */
 
-var ListDivider = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$p = normalizeComponent_1({
   render: __vue_render__$o,
   staticRenderFns: __vue_staticRenderFns__$o
-}, __vue_inject_styles__$p, __vue_script__$p, __vue_scope_id__$p, __vue_is_functional_template__$p, __vue_module_identifier__$p, undefined, undefined);
+}, __vue_inject_styles__$p, __vue_script__$p, __vue_scope_id__$p, __vue_is_functional_template__$p, __vue_module_identifier__$p, false, undefined, undefined, undefined);
 
 //
 var script$q = {
@@ -6460,10 +6389,12 @@ var __vue_is_functional_template__$q = false;
 
 /* style inject SSR */
 
-var Bar = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$q = normalizeComponent_1({
   render: __vue_render__$p,
   staticRenderFns: __vue_staticRenderFns__$p
-}, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, undefined, undefined);
+}, __vue_inject_styles__$q, __vue_script__$q, __vue_scope_id__$q, __vue_is_functional_template__$q, __vue_module_identifier__$q, false, undefined, undefined, undefined);
 
 var defineProperty$5 = objectDefineProperty.f;
 
@@ -6609,15 +6540,17 @@ var __vue_is_functional_template__$r = false;
 
 /* style inject SSR */
 
-var TabsHeader = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$r = normalizeComponent_1({
   render: __vue_render__$q,
   staticRenderFns: __vue_staticRenderFns__$q
-}, __vue_inject_styles__$r, __vue_script__$r, __vue_scope_id__$r, __vue_is_functional_template__$r, __vue_module_identifier__$r, undefined, undefined);
+}, __vue_inject_styles__$r, __vue_script__$r, __vue_scope_id__$r, __vue_is_functional_template__$r, __vue_module_identifier__$r, false, undefined, undefined, undefined);
 
 var script$s = {
   name: 'MusselTabs',
   components: {
-    TabsHeader: TabsHeader
+    TabsHeader: __vue_component__$r
   },
   provide: function provide() {
     return {
@@ -6778,10 +6711,12 @@ var __vue_is_functional_template__$s = false;
 
 /* style inject SSR */
 
-var Tabs = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$s = normalizeComponent_1({
   render: __vue_render__$r,
   staticRenderFns: __vue_staticRenderFns__$r
-}, __vue_inject_styles__$s, __vue_script__$s, __vue_scope_id__$s, __vue_is_functional_template__$s, __vue_module_identifier__$s, undefined, undefined);
+}, __vue_inject_styles__$s, __vue_script__$s, __vue_scope_id__$s, __vue_is_functional_template__$s, __vue_module_identifier__$s, false, undefined, undefined, undefined);
 
 //
 //
@@ -6871,14 +6806,16 @@ var __vue_is_functional_template__$t = false;
 
 /* style inject SSR */
 
-var TabPanel = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$t = normalizeComponent_1({
   render: __vue_render__$s,
   staticRenderFns: __vue_staticRenderFns__$s
-}, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, undefined, undefined);
+}, __vue_inject_styles__$t, __vue_script__$t, __vue_scope_id__$t, __vue_is_functional_template__$t, __vue_module_identifier__$t, false, undefined, undefined, undefined);
 
 var DropdownItem = {
   name: 'MusselDropdownItem',
-  "extends": ListItem,
+  "extends": __vue_component__$k,
   inject: {
     dropdown: {
       "default": null
@@ -7037,10 +6974,12 @@ var __vue_is_functional_template__$u = false;
 
 /* style inject SSR */
 
-var Expander = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$u = normalizeComponent_1({
   render: __vue_render__$t,
   staticRenderFns: __vue_staticRenderFns__$t
-}, __vue_inject_styles__$u, __vue_script__$u, __vue_scope_id__$u, __vue_is_functional_template__$u, __vue_module_identifier__$u, undefined, undefined);
+}, __vue_inject_styles__$u, __vue_script__$u, __vue_scope_id__$u, __vue_is_functional_template__$u, __vue_module_identifier__$u, false, undefined, undefined, undefined);
 
 var script$v = {
   name: 'MusselBaseModal',
@@ -7100,13 +7039,15 @@ var __vue_is_functional_template__$v = undefined;
 
 /* style inject SSR */
 
-var BaseModal = normalizeComponent_1({}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, undefined, undefined);
+/* style inject shadow dom */
+
+var __vue_component__$v = normalizeComponent_1({}, __vue_inject_styles__$v, __vue_script__$v, __vue_scope_id__$v, __vue_is_functional_template__$v, __vue_module_identifier__$v, false, undefined, undefined, undefined);
 
 var script$w = {
   name: 'MusselDialogWrapper',
   components: {
     'mu-v-box': VBox,
-    'mu-close-button': CloseButton
+    'mu-close-button': __vue_component__$5
   },
   inject: ['dialog', 'params'],
   data: function data() {
@@ -7304,10 +7245,12 @@ var __vue_is_functional_template__$w = false;
 
 /* style inject SSR */
 
-var DialogWrapper = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$w = normalizeComponent_1({
   render: __vue_render__$u,
   staticRenderFns: __vue_staticRenderFns__$u
-}, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, undefined, undefined);
+}, __vue_inject_styles__$w, __vue_script__$w, __vue_scope_id__$w, __vue_is_functional_template__$w, __vue_module_identifier__$w, false, undefined, undefined, undefined);
 
 function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -7317,9 +7260,9 @@ function _defineProperty$2(obj, key, value) { if (key in obj) { Object.definePro
 var script$x = {
   name: 'MusselBaseDialog',
   components: {
-    'mu-dialog-wrapper': DialogWrapper
+    'mu-dialog-wrapper': __vue_component__$w
   },
-  "extends": BaseModal,
+  "extends": __vue_component__$v,
   provide: function provide() {
     return {
       dialog: this,
@@ -7518,12 +7461,14 @@ var __vue_is_functional_template__$x = undefined;
 
 /* style inject SSR */
 
-var BaseDialog = normalizeComponent_1({}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, undefined, undefined);
+/* style inject shadow dom */
+
+var __vue_component__$x = normalizeComponent_1({}, __vue_inject_styles__$x, __vue_script__$x, __vue_scope_id__$x, __vue_is_functional_template__$x, __vue_module_identifier__$x, false, undefined, undefined, undefined);
 
 //
 var script$y = {
   name: 'MusselModal',
-  "extends": BaseModal
+  "extends": __vue_component__$v
 };
 
 /* script */
@@ -7566,15 +7511,17 @@ var __vue_is_functional_template__$y = false;
 
 /* style inject SSR */
 
-var Modal = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$y = normalizeComponent_1({
   render: __vue_render__$v,
   staticRenderFns: __vue_staticRenderFns__$v
-}, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, undefined, undefined);
+}, __vue_inject_styles__$y, __vue_script__$y, __vue_scope_id__$y, __vue_is_functional_template__$y, __vue_module_identifier__$y, false, undefined, undefined, undefined);
 
 //
 var script$z = {
   name: 'MusselDialog',
-  "extends": BaseDialog
+  "extends": __vue_component__$x
 };
 
 /* script */
@@ -7623,14 +7570,16 @@ var __vue_is_functional_template__$z = false;
 
 /* style inject SSR */
 
-var Dialog = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$z = normalizeComponent_1({
   render: __vue_render__$w,
   staticRenderFns: __vue_staticRenderFns__$w
-}, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, undefined, undefined);
+}, __vue_inject_styles__$z, __vue_script__$z, __vue_scope_id__$z, __vue_is_functional_template__$z, __vue_module_identifier__$z, false, undefined, undefined, undefined);
 
 var script$A = {
   name: 'MusselMessageBox',
-  "extends": BaseDialog,
+  "extends": __vue_component__$x,
   methods: {
     hide: function hide(button) {
       var _this = this;
@@ -7686,10 +7635,12 @@ var __vue_is_functional_template__$A = false;
 
 /* style inject SSR */
 
-var MessageBox = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$A = normalizeComponent_1({
   render: __vue_render__$x,
   staticRenderFns: __vue_staticRenderFns__$x
-}, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, undefined, undefined);
+}, __vue_inject_styles__$A, __vue_script__$A, __vue_scope_id__$A, __vue_is_functional_template__$A, __vue_module_identifier__$A, false, undefined, undefined, undefined);
 
 //
 //
@@ -7788,10 +7739,12 @@ var __vue_is_functional_template__$B = false;
 
 /* style inject SSR */
 
-var Notifier = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$B = normalizeComponent_1({
   render: __vue_render__$y,
   staticRenderFns: __vue_staticRenderFns__$y
-}, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, undefined, undefined);
+}, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, undefined, undefined);
 
 var alertTitle = isZh ? '提示' : 'Alert';
 var errorTitle = isZh ? '错误' : 'Error';
@@ -7822,7 +7775,7 @@ function showMessage(options) {
       danger = options.danger,
       callback = options.callback;
   var dialog = new Vue({
-    "extends": MessageBox,
+    "extends": __vue_component__$A,
     data: {
       message: message
     },
@@ -7875,7 +7828,7 @@ function warn(message, callback) {
 var notifier;
 function notify(notifyType, message, timeout) {
   if (!notifier) {
-    notifier = new Vue(Notifier).$mount();
+    notifier = new Vue(__vue_component__$B).$mount();
     document.body.appendChild(notifier.$el);
   }
 
@@ -8099,14 +8052,16 @@ var __vue_is_functional_template__$C = false;
 
 /* style inject SSR */
 
-var SideBar = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$C = normalizeComponent_1({
   render: __vue_render__$z,
   staticRenderFns: __vue_staticRenderFns__$z
-}, __vue_inject_styles__$C, __vue_script__$C, __vue_scope_id__$C, __vue_is_functional_template__$C, __vue_module_identifier__$C, undefined, undefined);
+}, __vue_inject_styles__$C, __vue_script__$C, __vue_scope_id__$C, __vue_is_functional_template__$C, __vue_module_identifier__$C, false, undefined, undefined, undefined);
 
 var script$D = {
   name: 'MusselSidebarMenu',
-  "extends": SideBar,
+  "extends": __vue_component__$C,
   provide: function provide() {
     return {
       menu: this
@@ -8144,7 +8099,9 @@ var __vue_is_functional_template__$D = undefined;
 
 /* style inject SSR */
 
-var SidebarMenu = normalizeComponent_1({}, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, undefined, undefined);
+/* style inject shadow dom */
+
+var __vue_component__$D = normalizeComponent_1({}, __vue_inject_styles__$D, __vue_script__$D, __vue_scope_id__$D, __vue_is_functional_template__$D, __vue_module_identifier__$D, false, undefined, undefined, undefined);
 
 //
 //
@@ -8288,10 +8245,12 @@ var __vue_is_functional_template__$E = false;
 
 /* style inject SSR */
 
-var MenuGroup = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$E = normalizeComponent_1({
   render: __vue_render__$A,
   staticRenderFns: __vue_staticRenderFns__$A
-}, __vue_inject_styles__$E, __vue_script__$E, __vue_scope_id__$E, __vue_is_functional_template__$E, __vue_module_identifier__$E, undefined, undefined);
+}, __vue_inject_styles__$E, __vue_script__$E, __vue_scope_id__$E, __vue_is_functional_template__$E, __vue_module_identifier__$E, false, undefined, undefined, undefined);
 
 //
 //
@@ -8419,58 +8378,61 @@ var __vue_is_functional_template__$F = false;
 
 /* style inject SSR */
 
-var MenuItem = normalizeComponent_1({
+/* style inject shadow dom */
+
+var __vue_component__$F = normalizeComponent_1({
   render: __vue_render__$B,
   staticRenderFns: __vue_staticRenderFns__$B
-}, __vue_inject_styles__$F, __vue_script__$F, __vue_scope_id__$F, __vue_is_functional_template__$F, __vue_module_identifier__$F, undefined, undefined);
+}, __vue_inject_styles__$F, __vue_script__$F, __vue_scope_id__$F, __vue_is_functional_template__$F, __vue_module_identifier__$F, false, undefined, undefined, undefined);
 
 function install() {
-  Vue.component('mu-flex-box', FlexBox);
-  Vue.component('mu-flex-item', FlexItem);
-  Vue.component('mu-h-box', HBox);
-  Vue.component('mu-v-box', VBox);
-  Vue.component('mu-space', Space);
-  Vue.component('mu-splitter', Splitter);
-  Vue.component('mu-icon', Icon);
-  Vue.component('mu-button', Button);
-  Vue.component('mu-icon-button', IconButton);
-  Vue.component('mu-close-button', CloseButton);
-  Vue.component('mu-button-group', ButtonGroup);
-  Vue.component('mu-split-button', SplitButton);
-  Vue.component('mu-dropdown-button', DropdownButton);
-  Vue.component('mu-input', Input);
-  Vue.component('mu-editor', Editor);
-  Vue.component('mu-button-editor', ButtonEditor);
-  Vue.component('mu-popup-editor', PopupEditor);
-  Vue.component('mu-color-editor', ColorEditor);
-  Vue.component('mu-date-editor', DateEditor);
-  Vue.component('mu-combo-box', ComboBox);
-  Vue.component('mu-option', Option);
-  Vue.component('mu-form', Form);
-  Vue.component('mu-form-field', FormField);
-  Vue.component('mu-toggle', Toggle);
-  Vue.component('mu-list-item', ListItem);
-  Vue.component('mu-list-divider', ListDivider);
-  Vue.component('mu-bar', Bar);
-  Vue.component('mu-tabs', Tabs);
-  Vue.component('mu-tabs-header', TabsHeader);
-  Vue.component('mu-tab-panel', TabPanel);
-  Vue.component('mu-dropdown', Dropdown);
-  Vue.component('mu-dropdown-item', DropdownItem);
-  Vue.component('mu-dropdown-panel', DropdownPanel);
-  Vue.component('mu-expander', Expander);
-  Vue.component('mu-base-modal', BaseModal);
-  Vue.component('mu-base-dialog', BaseDialog);
-  Vue.component('mu-modal', Modal);
-  Vue.component('mu-dialog', Dialog);
-  Vue.component('mu-dialog-wrapper', DialogWrapper);
-  Vue.component('mu-calendar', Calendar);
-  Vue.component('mu-sidebar-menu', SidebarMenu);
-  Vue.component('mu-menu-group', MenuGroup);
-  Vue.component('mu-menu-item', MenuItem);
+  var $Vue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Vue;
+  $Vue.component('mu-flex-box', __vue_component__$1);
+  $Vue.component('mu-flex-item', __vue_component__);
+  $Vue.component('mu-h-box', HBox);
+  $Vue.component('mu-v-box', VBox);
+  $Vue.component('mu-space', __vue_component__$2);
+  $Vue.component('mu-splitter', __vue_component__$3);
+  $Vue.component('mu-icon', __vue_component__$4);
+  $Vue.component('mu-button', Button);
+  $Vue.component('mu-icon-button', IconButton);
+  $Vue.component('mu-close-button', __vue_component__$5);
+  $Vue.component('mu-button-group', __vue_component__$6);
+  $Vue.component('mu-split-button', __vue_component__$7);
+  $Vue.component('mu-dropdown-button', __vue_component__$a);
+  $Vue.component('mu-input', __vue_component__$b);
+  $Vue.component('mu-editor', __vue_component__$d);
+  $Vue.component('mu-button-editor', __vue_component__$f);
+  $Vue.component('mu-popup-editor', __vue_component__$h);
+  $Vue.component('mu-color-editor', __vue_component__$g);
+  $Vue.component('mu-date-editor', __vue_component__$j);
+  $Vue.component('mu-combo-box', __vue_component__$l);
+  $Vue.component('mu-option', Option);
+  $Vue.component('mu-form', __vue_component__$m);
+  $Vue.component('mu-form-field', __vue_component__$n);
+  $Vue.component('mu-toggle', __vue_component__$o);
+  $Vue.component('mu-list-item', __vue_component__$k);
+  $Vue.component('mu-list-divider', __vue_component__$p);
+  $Vue.component('mu-bar', __vue_component__$q);
+  $Vue.component('mu-tabs', __vue_component__$s);
+  $Vue.component('mu-tabs-header', __vue_component__$r);
+  $Vue.component('mu-tab-panel', __vue_component__$t);
+  $Vue.component('mu-dropdown', __vue_component__$9);
+  $Vue.component('mu-dropdown-item', DropdownItem);
+  $Vue.component('mu-dropdown-panel', __vue_component__$8);
+  $Vue.component('mu-expander', __vue_component__$u);
+  $Vue.component('mu-base-modal', __vue_component__$v);
+  $Vue.component('mu-base-dialog', __vue_component__$x);
+  $Vue.component('mu-modal', __vue_component__$y);
+  $Vue.component('mu-dialog', __vue_component__$z);
+  $Vue.component('mu-dialog-wrapper', __vue_component__$w);
+  $Vue.component('mu-calendar', __vue_component__$i);
+  $Vue.component('mu-sidebar-menu', __vue_component__$D);
+  $Vue.component('mu-menu-group', __vue_component__$E);
+  $Vue.component('mu-menu-item', __vue_component__$F);
 }
 
-if (Vue) install();
+if (Vue) install(Vue);
 var showMessage$1 = showMessage,
     alert$1 = alert,
     error$1 = error,
@@ -8478,4 +8440,4 @@ var showMessage$1 = showMessage,
     warn$1 = warn,
     notify$1 = notify;
 
-export { Bar, BaseDialog, BaseEditor, BaseModal, BasePopupEditor, Button, ButtonEditor, ButtonGroup, Calendar, CloseButton, ColorEditor, ComboBox, DateEditor, Dialog, DialogWrapper, Dropdown, DropdownButton, DropdownItem, DropdownPanel, Editor, Expander, FlexBox, FlexItem, Form, FormField, HBox, Icon, IconButton, Input, ListDivider, ListItem, MenuGroup, MenuItem, Modal, Option, PopupEditor, PopupGroupMixin, SidebarMenu, Space, SplitButton, Splitter, TabPanel, Tabs, TabsHeader, Toggle, VBox, alert$1 as alert, confirm$1 as confirm, error$1 as error, install, notify$1 as notify, register as registerIcons, showMessage$1 as showMessage, warn$1 as warn };
+export { __vue_component__$q as Bar, __vue_component__$x as BaseDialog, BaseEditor, __vue_component__$v as BaseModal, BasePopupEditor, Button, __vue_component__$f as ButtonEditor, __vue_component__$6 as ButtonGroup, __vue_component__$i as Calendar, __vue_component__$5 as CloseButton, __vue_component__$g as ColorEditor, __vue_component__$l as ComboBox, __vue_component__$j as DateEditor, __vue_component__$z as Dialog, __vue_component__$w as DialogWrapper, __vue_component__$9 as Dropdown, __vue_component__$a as DropdownButton, DropdownItem, __vue_component__$8 as DropdownPanel, __vue_component__$d as Editor, __vue_component__$u as Expander, __vue_component__$1 as FlexBox, __vue_component__ as FlexItem, __vue_component__$m as Form, __vue_component__$n as FormField, HBox, __vue_component__$4 as Icon, IconButton, __vue_component__$b as Input, __vue_component__$p as ListDivider, __vue_component__$k as ListItem, __vue_component__$E as MenuGroup, __vue_component__$F as MenuItem, __vue_component__$y as Modal, Option, __vue_component__$h as PopupEditor, PopupGroupMixin, __vue_component__$D as SidebarMenu, __vue_component__$2 as Space, __vue_component__$7 as SplitButton, __vue_component__$3 as Splitter, __vue_component__$t as TabPanel, __vue_component__$s as Tabs, __vue_component__$r as TabsHeader, __vue_component__$o as Toggle, VBox, alert$1 as alert, confirm$1 as confirm, error$1 as error, install, notify$1 as notify, register as registerIcons, showMessage$1 as showMessage, warn$1 as warn };

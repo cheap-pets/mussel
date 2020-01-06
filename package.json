@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "0.0.59",
+  "version": "0.0.63",
   "description": "Another UI Library for Vue",
   "main": "dist/mussel.esm.js",
   "files": [
