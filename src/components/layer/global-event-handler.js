@@ -51,7 +51,17 @@ window.addEventListener('popstate', () => {
 
 window.addEventListener('resize', setPositionIf)
 window.addEventListener('scroll', () => { hideIf('dropdown') })
-window.addEventListener('mousewheel', () => { hideIf('dropdown') })
+
+window.addEventListener('mousewheel', ({ target }) => {
+  while (target) {
+    if (target.className.indexOf('mu-dropdown-panel') !== -1) return
+
+    target = target.parentNode.nodeType === 1
+      ? target.parentNode
+      : undefined
+  }
+  hideIf('dropdown')
+})
 
 export {
   hideIf
