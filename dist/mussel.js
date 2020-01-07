@@ -2738,7 +2738,14 @@
   window.addEventListener('scroll', function () {
     hideIf('dropdown');
   });
-  window.addEventListener('mousewheel', function () {
+  window.addEventListener('mousewheel', function (_ref) {
+    var target = _ref.target;
+
+    while (target) {
+      if (target.className.indexOf('mu-dropdown-panel') !== -1) return;
+      target = target.parentNode.nodeType === 1 ? target.parentNode : undefined;
+    }
+
     hideIf('dropdown');
   });
 
@@ -5868,8 +5875,6 @@
     },
     methods: {
       setInputValue: function setInputValue(value) {
-        console.log('value: ', value);
-
         if (this.comboValue !== value) {
           this.comboValue = isEmptyValue(value) ? this.multiple ? [] : null : value;
           this.refreshInputValue();
