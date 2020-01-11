@@ -17,7 +17,7 @@ export default {
     }
   },
   props: {
-    fields: Array,
+    fields: Object,
     option: [String, Number, Object]
   },
   computed: {
