@@ -1,4 +1,5 @@
 import isDate from 'lodash.isdate'
+import isString from 'lodash.isstring'
 
 export function fillGrid (rowCount, colCount, callbackFn) {
   const rows = []
@@ -13,6 +14,16 @@ export function fillGrid (rowCount, colCount, callbackFn) {
 }
 
 export function parseDate (v) {
+  try {
+    v = v
+      ? (
+        isDate(v)
+          ? v
+          : (isString(v) ? new Date(Date.parse(v)) : null)
+      )
+      : null
+  } catch (e) {
+  }
   v = v || new Date()
   return {
     year: v.getFullYear(),

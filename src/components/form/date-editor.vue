@@ -8,6 +8,9 @@
 </template>
 
 <script>
+  import isDate from 'lodash.isdate'
+  import isString from 'lodash.isstring'
+
   import BasePopupEditor from './base-popup-editor'
   import Calendar from '../calendar/calendar.vue'
 
@@ -79,6 +82,13 @@
     },
     methods: {
       setInputValue (value) {
+        if (value) {
+          try {
+            value = isDate(value)
+              ? value
+              : (isString(value) ? new Date(Date.parse(value)) : null)
+          } catch (e) {}
+        }
         this.params.value = value
           ? formatDate(value, this.dateFormat)
           : ''
