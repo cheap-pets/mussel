@@ -100,9 +100,6 @@
         immediate: true
       }
     },
-    created () {
-      console.log(this)
-    },
     methods: {
       mountTab (tab) {
         const idx = this.mountedTabs.findIndex(item => tab.name === item.name)
