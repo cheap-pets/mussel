@@ -1,7 +1,7 @@
 import vue from 'rollup-plugin-vue'
 import babel from 'rollup-plugin-babel'
-import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
+import commonjs from '@rollup/plugin-commonjs'
+import resolve from '@rollup/plugin-node-resolve'
 
 import postcss from 'rollup-plugin-postcss'
 import postcssAutoprefixer from 'autoprefixer'
