@@ -4,7 +4,7 @@
     :buttons="buttons"
     :readonly="params.readonly"
     :disabled="params.disabled">
-    <mu-editor-icon
+    <mu-icon
       v-if="iconPosition === 'left'"
       v-bind="iconParams"
       @click="onButtonClick" />
@@ -16,12 +16,12 @@
       @esckey="onEscKey"
       @enterkey="onEnterKey"
       @keypress.native="onKeyPress" />
-    <mu-editor-icon
+    <mu-icon
       v-if="clearable"
       clickable
       trigger-type="clear"
       @click="onClearClick" />
-    <mu-editor-icon
+    <mu-icon
       v-if="iconPosition === 'right'"
       v-bind="iconParams"
       @click="onButtonClick" />
@@ -31,13 +31,13 @@
 
 <script>
   import Input from './input.vue'
-  import EditorIcon from './editor-icon'
+  import Icon from '../icon/index.vue'
 
   export default {
     name: 'MusselBaseEditorWrapper',
     components: {
       'mu-input': Input,
-      'mu-editor-icon': EditorIcon
+      'mu-icon': Icon
     },
     inject: ['editor', 'params'],
     computed: {

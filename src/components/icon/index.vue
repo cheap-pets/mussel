@@ -2,14 +2,11 @@
   <span
     class="mu-icon"
     :icon="icon"
-    :class="[className, iconClass]"
+    :class="iconClass"
     :trigger-type="triggerType"
     @click="onClick">
-    <svg
-      v-if="paths"
-      :viewBox="viewBox"
-      :width="size"
-      :height="size">
+    <span v-if="html" v-html="html" />
+    <svg v-else-if="paths" :viewBox="viewBox">
       <path v-for="d in paths" :key="d" :d="d" />
     </svg>
   </span>
@@ -28,37 +25,42 @@
   export default {
     name: 'MusselIcon',
     props: {
+      svg: String,
       icon: String,
-      svgData: String,
       iconClass: String,
       triggerType: String,
-      size: {
-        type: String,
-        default: '1em'
-      },
       viewBox: {
         type: String,
         default: '0 0 1024 1024'
       }
     },
     computed: {
-      className () {
-        return undefined
-      },
       iconName () {
-        const { icon, iconClass, triggerType } = this
-        return icon ||
-          (
-            (iconClass || !triggerType)
-              ? undefined
-              : triggerIcons[triggerType]
+        return this.iconClass
+          ? undefined
+          : (
+            this.triggerType
+              ? triggerIcons[this.triggerType]
+              : this.icon
+          )
+      },
+      html () {
+        return (this.iconClass || this.iconName)
+          ? undefined
+          : (
+            String(this.svg).indexOf('<svg') !== -1
+              ? this.svg
+              : undefined
           )
       },
       paths () {
-        const data = this.svgData || (this.iconName ? d[this.iconName] : null)
+        const data = (this.iconClass || this.html)
+          ? undefined
+          : (this.iconName ? d[this.iconName] : this.svg)
+
         return data
           ? (Array.isArray(data) ? data : [data])
-          : null
+          : undefined
       }
     },
     methods: {

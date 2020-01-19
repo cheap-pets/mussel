@@ -1,9 +1,9 @@
 import vue from 'rollup-plugin-vue'
 import babel from 'rollup-plugin-babel'
-import string from 'rollup-plugin-string'
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import { terser } from 'rollup-plugin-terser'
+import { string } from 'rollup-plugin-string'
 
 import postcss from 'rollup-plugin-postcss'
 import postcssAutoprefixer from 'autoprefixer'

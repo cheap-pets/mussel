@@ -36,7 +36,7 @@ styleInject(css$1);
 var css$2 = ".mu-text-ellipsis {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n.mu-text-color-normal {\r\n  color: rgba(0,0,0,.7);\r\n  fill: rgba(0,0,0,.7);\r\n}\r\n.mu-text-color-weak {\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n}\r\n.mu-text-color-title {\r\n  color: rgba(0,0,0,.85);\r\n  fill: rgba(0,0,0,.85);\r\n}\r\n.mu-text-color-subtitle {\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-text-title {\r\n  font-size: 1em;\r\n  color: rgba(0,0,0,.85);\r\n  fill: rgba(0,0,0,.85);\r\n}\r\n.mu-text-subtitle {\r\n  font-size: .85em;\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-text-weak {\r\n  font-size: .7em;\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n}\r\n.mu-text-body {\r\n  font-size: .85em;\r\n  color: rgba(0,0,0,.7);\r\n  fill: rgba(0,0,0,.7);\r\n}\r\n.mu-text-color-primary {\r\n  color: #1890ff;\r\n  fill: #1890ff;\r\n}\r\n.mu-text-color-success {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-text-color-danger {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-text-color-warning {\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-text-color-highlight {\r\n  color: #fff;\r\n  fill: #fff;\r\n}";
 styleInject(css$2);
 
-var css$3 = ".mu-icon {\r\n  display: inline-block;\r\n}\r\n.mu-icon > svg {\r\n  vertical-align: -.15em;\r\n}\r\n.mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n  -webkit-transition: -webkit-transform .2s ease-in-out;\r\n  transition: -webkit-transform .2s ease-in-out;\r\n  transition: transform .2s ease-in-out;\r\n  transition: transform .2s ease-in-out,-webkit-transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #f5222d;\r\n  color: #f5222d;\r\n}\r\n.mu-dropdown[expanded] [trigger-type=expander],\r\n.mu-expander[expanded] [trigger-type=expander],\r\n.mu-icon[trigger-type=expander][trigger-on],\r\n.mu-popup-editor[expanded] > [trigger-type=expander] {\r\n  -webkit-transform: rotate(180deg);\r\n  transform: rotate(180deg);\r\n}";
+var css$3 = ".mu-icon {\r\n  display: inline-block;\r\n}\r\n.mu-icon svg {\r\n  vertical-align: -.15em;\r\n  width: 1em;\r\n  height: 1em;\r\n}\r\n.mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n  -webkit-transition: -webkit-transform .2s ease-in-out;\r\n  transition: -webkit-transform .2s ease-in-out;\r\n  transition: transform .2s ease-in-out;\r\n  transition: transform .2s ease-in-out,-webkit-transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #f5222d;\r\n  color: #f5222d;\r\n}\r\n.mu-dropdown[expanded] [trigger-type=expander],\r\n.mu-expander[expanded] [trigger-type=expander],\r\n.mu-icon[trigger-type=expander][trigger-on],\r\n.mu-popup-editor[expanded] > [trigger-type=expander] {\r\n  -webkit-transform: rotate(180deg);\r\n  transform: rotate(180deg);\r\n}";
 styleInject(css$3);
 
 var css$4 = ".mu-flex-box {\r\n  position: relative;\r\n  display: -webkit-box;\r\n  display: flex;\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: normal;\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=row-reverse] {\r\n  -webkit-box-orient: horizontal;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: row-reverse;\r\n}\r\n.mu-flex-box[direction=column-reverse] {\r\n  -webkit-box-orient: vertical;\r\n  -webkit-box-direction: reverse;\r\n  flex-direction: column-reverse;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  -webkit-box-align: start;\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  -webkit-box-align: stretch;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > [bordered],\r\n.mu-flex-box[bordered] {\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-flex-box[cellpadding],\r\n.mu-flex-box[content-spacing] {\r\n  padding: 8px;\r\n}\r\n.mu-flex-box [cellspacing],\r\n.mu-flex-box[content-spacing] > * {\r\n  margin: 8px;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n  box-sizing: border-box;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  -webkit-box-flex: 1!important;\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  -webkit-box-flex: 0!important;\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box > [align-self=center] {\r\n  align-self: center;\r\n}\r\n.mu-flex-box > [align-self=stretch] {\r\n  align-self: stretch;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 auto;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 1px;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  -webkit-box-flex: 2;\r\n  flex: 2 2 2px;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  -webkit-box-flex: 3;\r\n  flex: 3 3 3px;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  -webkit-box-flex: 4;\r\n  flex: 4 4 4px;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  -webkit-box-flex: 5;\r\n  flex: 5 5 5px;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  -webkit-box-flex: 6;\r\n  flex: 6 6 6px;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  -webkit-box-flex: 7;\r\n  flex: 7 7 7px;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  -webkit-box-flex: 8;\r\n  flex: 8 8 8px;\r\n}\r\n.mu-absolute-fit {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n[content-spacing] > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}\r\n[cellpadding] > .mu-absolute-fit {\r\n  top: 8px;\r\n  left: 8px;\r\n  right: 8px;\r\n  bottom: 8px;\r\n}\r\n.mu-bordered {\r\n  border: 1px solid rgba(0,0,0,.15);\r\n}\r\n.mu-splitter {\r\n  background: rgba(0,0,0,.09);\r\n  border-radius: 4px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter[draggable]:hover {\r\n  background: rgba(0,0,0,.15);\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[cellpadding] > .mu-splitter,\r\n[item-spacing] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 4px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n}\r\n[direction=row] > .mu-splitter[draggable] {\r\n  cursor: col-resize;\r\n}\r\n[direction=column] > .mu-splitter[draggable] {\r\n  height: 4px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n}\r\n[direction=column] > .mu-splitter[draggable][draggable] {\r\n  cursor: row-resize;\r\n}\r\n.mu-space {\r\n  -webkit-box-flex: 1;\r\n  flex: 1 1 0%;\r\n}\r\n[direction=row][flex-wrap] > .mu-space {\r\n  -webkit-box-flex: 0;\r\n  flex: none;\r\n  width: 100%;\r\n}";
@@ -57,7 +57,7 @@ styleInject(css$8);
 var css$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid rgba(0,0,0,.15);\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  font-size: 1rem;\r\n  color: rgba(0,0,0,.7);\r\n}\r\n.mu-input::-webkit-input-placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input::-moz-placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input:-ms-input-placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input::-ms-input-placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input::placeholder {\r\n  color: rgba(0,0,0,.3);\r\n}\r\n.mu-input:focus,\r\n.mu-input:hover,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px #bae7ff;\r\n}\r\n.mu-input[readonly] {\r\n  cursor: default;\r\n  background-color: #ffd;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: rgba(0,0,0,.08);\r\n  border-color: rgba(0,0,0,.15);\r\n  color: rgba(0,0,0,.3);\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  border-color: #f5222d;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  box-shadow: 0 0 0 2px #ffccc7;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}";
 styleInject(css$9);
 
-var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: rgba(0,0,0,.15);\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n  background: #fff;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-editor-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + .mu-editor-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-editor-icon:first-child + input + .mu-editor-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[readonly] > input {\r\n  background-color: #ffd;\r\n}\r\n.mu-editor[disabled] > input {\r\n  background-color: rgba(0,0,0,.08);\r\n}\r\n.mu-editor[disabled] > input,\r\n.mu-editor[readonly] > input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-editor-icon,\r\n.mu-editor[readonly] > .mu-editor-icon {\r\n  display: none;\r\n}\r\n.mu-icon.mu-editor-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-icon.mu-editor-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-icon.mu-editor-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-icon.mu-editor-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-icon.mu-editor-icon[clickable]:hover {\r\n  fill: #1890ff;\r\n  color: #1890ff;\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=clear] {\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n}\r\n.mu-icon.mu-editor-icon[trigger-type=clear]:hover {\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #f5222d;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}";
+var css$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: rgba(0,0,0,.15);\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n  background: #fff;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + .mu-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + input + .mu-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[readonly] > input {\r\n  background-color: #ffd;\r\n}\r\n.mu-editor[disabled] > input {\r\n  background-color: rgba(0,0,0,.08);\r\n}\r\n.mu-editor[disabled] > input,\r\n.mu-editor[readonly] > input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-icon,\r\n.mu-editor[readonly] > .mu-icon {\r\n  display: none;\r\n}\r\n.mu-editor > .mu-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: -webkit-inline-box;\r\n  display: inline-flex;\r\n  -webkit-box-align: center;\r\n  align-items: center;\r\n  -webkit-box-pack: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-editor > .mu-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-editor > .mu-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor > .mu-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-editor > .mu-icon[clickable]:hover {\r\n  fill: #1890ff;\r\n  color: #1890ff;\r\n}\r\n.mu-editor > .mu-icon[trigger-type=clear] {\r\n  color: rgba(0,0,0,.3);\r\n  fill: rgba(0,0,0,.3);\r\n}\r\n.mu-editor > .mu-icon[trigger-type=clear]:hover {\r\n  color: rgba(0,0,0,.5);\r\n  fill: rgba(0,0,0,.5);\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #f5222d;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}";
 styleInject(css$a);
 
 var css$b = ".mu-color-editor > input[readonly] {\r\n  background: #fff;\r\n}\r\n.mu-color-editor > .mu-color-indicator {\r\n  position: absolute;\r\n  z-index: 2;\r\n  top: 50%;\r\n  left: 10px;\r\n  padding: 0 10px;\r\n  -webkit-transform: translateY(-50%);\r\n  transform: translateY(-50%);\r\n}\r\n.mu-color-palette {\r\n  padding: 8px;\r\n  overflow: hidden;\r\n  text-align: center;\r\n  font-size: 0;\r\n}\r\n.mu-color-palette > div + div {\r\n  margin-top: 2px;\r\n}\r\n.mu-color-palette .mu-color-palette-cell {\r\n  display: inline-block;\r\n  width: 12px;\r\n  height: 12px;\r\n  border: 1px solid rgba(0,0,0,.25);\r\n  overflow: hidden;\r\n  cursor: pointer;\r\n}\r\n.mu-color-palette .mu-color-palette-cell:hover {\r\n  -webkit-transform: scale(2);\r\n  transform: scale(2);\r\n}\r\n.mu-color-palette .mu-color-palette-cell + .mu-color-palette-cell {\r\n  margin-left: 2px;\r\n}";
@@ -2188,32 +2188,25 @@ var triggerIcons = {
 var script$4 = {
   name: 'MusselIcon',
   props: {
+    svg: String,
     icon: String,
-    svgData: String,
     iconClass: String,
     triggerType: String,
-    size: {
-      type: String,
-      "default": '1em'
-    },
     viewBox: {
       type: String,
       "default": '0 0 1024 1024'
     }
   },
   computed: {
-    className: function className() {
-      return undefined;
-    },
     iconName: function iconName() {
-      var icon = this.icon,
-          iconClass = this.iconClass,
-          triggerType = this.triggerType;
-      return icon || (iconClass || !triggerType ? undefined : triggerIcons[triggerType]);
+      return this.iconClass ? undefined : this.triggerType ? triggerIcons[this.triggerType] : this.icon;
+    },
+    html: function html() {
+      return this.iconClass || this.iconName ? undefined : String(this.svg).indexOf('<svg') !== -1 ? this.svg : undefined;
     },
     paths: function paths() {
-      var data = this.svgData || (this.iconName ? data$1[this.iconName] : null);
-      return data ? Array.isArray(data) ? data : [data] : null;
+      var data = this.iconClass || this.html ? undefined : this.iconName ? data$1[this.iconName] : this.svg;
+      return data ? Array.isArray(data) ? data : [data] : undefined;
     }
   },
   methods: {
@@ -2236,7 +2229,7 @@ var __vue_render__$4 = function __vue_render__() {
 
   return _c("span", {
     staticClass: "mu-icon",
-    "class": [_vm.className, _vm.iconClass],
+    "class": _vm.iconClass,
     attrs: {
       icon: _vm.icon,
       "trigger-type": _vm.triggerType
@@ -2244,11 +2237,13 @@ var __vue_render__$4 = function __vue_render__() {
     on: {
       click: _vm.onClick
     }
-  }, [_vm.paths ? _c("svg", {
+  }, [_vm.html ? _c("span", {
+    domProps: {
+      innerHTML: _vm._s(_vm.html)
+    }
+  }) : _vm.paths ? _c("svg", {
     attrs: {
-      viewBox: _vm.viewBox,
-      width: _vm.size,
-      height: _vm.size
+      viewBox: _vm.viewBox
     }
   }, _vm._l(_vm.paths, function (d) {
     return _c("path", {
@@ -3394,22 +3389,12 @@ var __vue_component__$b = normalizeComponent({
   staticRenderFns: __vue_staticRenderFns__$a
 }, __vue_inject_styles__$b, __vue_script__$b, __vue_scope_id__$b, __vue_is_functional_template__$b, __vue_module_identifier__$b, false, undefined, undefined, undefined);
 
-var EditorIcon = {
-  name: 'MusselEditorIcon',
-  "extends": __vue_component__$4,
-  computed: {
-    className: function className() {
-      return 'mu-editor-icon';
-    }
-  }
-};
-
 //
 var script$c = {
   name: 'MusselBaseEditorWrapper',
   components: {
     'mu-input': __vue_component__$b,
-    'mu-editor-icon': EditorIcon
+    'mu-icon': __vue_component__$4
   },
   inject: ['editor', 'params'],
   computed: {
@@ -3491,11 +3476,11 @@ var __vue_render__$b = function __vue_render__() {
       readonly: _vm.params.readonly,
       disabled: _vm.params.disabled
     }
-  }, [_vm.iconPosition === "left" ? _c("mu-editor-icon", _vm._b({
+  }, [_vm.iconPosition === "left" ? _c("mu-icon", _vm._b({
     on: {
       click: _vm.onButtonClick
     }
-  }, "mu-editor-icon", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _c("mu-input", _vm._b({
+  }, "mu-icon", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _c("mu-input", _vm._b({
     on: {
       input: _vm.onInput,
       click: _vm.onInputClick,
@@ -3508,7 +3493,7 @@ var __vue_render__$b = function __vue_render__() {
         return _vm.onKeyPress($event);
       }
     }
-  }, "mu-input", _vm.inputParams, false)), _vm._v(" "), _vm.clearable ? _c("mu-editor-icon", {
+  }, "mu-input", _vm.inputParams, false)), _vm._v(" "), _vm.clearable ? _c("mu-icon", {
     attrs: {
       clickable: "",
       "trigger-type": "clear"
@@ -3516,11 +3501,11 @@ var __vue_render__$b = function __vue_render__() {
     on: {
       click: _vm.onClearClick
     }
-  }) : _vm._e(), _vm._v(" "), _vm.iconPosition === "right" ? _c("mu-editor-icon", _vm._b({
+  }) : _vm._e(), _vm._v(" "), _vm.iconPosition === "right" ? _c("mu-icon", _vm._b({
     on: {
       click: _vm.onButtonClick
     }
-  }, "mu-editor-icon", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _vm._t("default")], 2);
+  }, "mu-icon", _vm.iconParams, false)) : _vm._e(), _vm._v(" "), _vm._t("default")], 2);
 };
 
 var __vue_staticRenderFns__$b = [];

@@ -19,7 +19,9 @@
           {{ params.title }}
         </mu-flex-item>
         <slot name="header" />
-        <mu-close-button class="mu-text-color-subtitle" @click="hide('$close')" />
+        <mu-close-button
+          class="mu-text-color-subtitle"
+          @click="hide('$close')" />
       </mu-h-box>
       <mu-flex-item
         class="mu-dialog-body"

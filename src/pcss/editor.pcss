@@ -26,12 +26,12 @@
   &[buttons="2"] {
     & > input {
       padding-right: $inputIconSizeX2;
-      & + .mu-editor-icon {
+      & + .mu-icon {
         right: $inputIconSize;
       }
     }
-    & > .mu-editor-icon:first-child {
-      & + .mu-editor-icon {
+    & > .mu-icon:first-child {
+      & + .mu-icon {
         left: $inputIconSize;
         right: auto;
       }
@@ -42,7 +42,7 @@
       & + input {
         padding-left: $inputIconSize;
         padding-right: $inputIconSize;
-        & + .mu-editor-icon {
+        & + .mu-icon {
           right: 1px;
         }
       }
@@ -63,48 +63,48 @@
       padding-left: $inputElementPaddingX;
       padding-right: $inputElementPaddingX;
     }
-    & > .mu-editor-icon {
+    & > .mu-icon {
       display: none;
     }
   }
-}
 
-.mu-icon.mu-editor-icon {
-  position: absolute;
-  z-index: 3;
-  top: 1px;
-  bottom: 1px;
-  right: 1px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: $inputIconSize;
-  color: $normalSubtitleTextColor;
-  fill: $normalSubtitleTextColor;
+  & > .mu-icon {
+    position: absolute;
+    z-index: 3;
+    top: 1px;
+    bottom: 1px;
+    right: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $inputIconSize;
+    color: $normalSubtitleTextColor;
+    fill: $normalSubtitleTextColor;
 
-  &:first-child {
-    left: 1px;
-    right: auto;
+    &:first-child {
+      left: 1px;
+      right: auto;
 
-    & + input {
-      padding-left: $inputIconSize;
-      padding-right: $inputElementPaddingX;
+      & + input {
+        padding-left: $inputIconSize;
+        padding-right: $inputElementPaddingX;
+      }
     }
-  }
 
-  &[clickable] {
-    cursor: pointer;
-    &:hover {
-      fill: $primaryColor;
-      color: $primaryColor;
+    &[clickable] {
+      cursor: pointer;
+      &:hover {
+        fill: $primaryColor;
+        color: $primaryColor;
+      }
     }
-  }
-  &[trigger-type="clear"] {
-    color: $normalWeakTextColor;
-    fill: $normalWeakTextColor;
-    &:hover {
-      color: $normalSubtitleTextColor;
-      fill: $normalSubtitleTextColor;
+    &[trigger-type="clear"] {
+      color: $normalWeakTextColor;
+      fill: $normalWeakTextColor;
+      &:hover {
+        color: $normalSubtitleTextColor;
+        fill: $normalSubtitleTextColor;
+      }
     }
   }
 }
