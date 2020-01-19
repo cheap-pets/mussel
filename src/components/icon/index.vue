@@ -44,19 +44,21 @@
               : this.icon
           )
       },
-      html () {
-        return (this.iconClass || this.iconName)
+      svgData () {
+        const { iconClass, iconName, svg } = this
+        return iconClass
           ? undefined
-          : (
-            String(this.svg).indexOf('<svg') !== -1
-              ? this.svg
-              : undefined
-          )
+          : (iconName ? d[iconName] : svg)
+      },
+      html () {
+        return String(this.svgData).indexOf('<svg') !== -1
+          ? this.svgData
+          : undefined
       },
       paths () {
         const data = (this.iconClass || this.html)
           ? undefined
-          : (this.iconName ? d[this.iconName] : this.svg)
+          : this.svgData
 
         return data
           ? (Array.isArray(data) ? data : [data])

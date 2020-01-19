@@ -2201,11 +2201,17 @@ var script$4 = {
     iconName: function iconName() {
       return this.iconClass ? undefined : this.triggerType ? triggerIcons[this.triggerType] : this.icon;
     },
+    svgData: function svgData() {
+      var iconClass = this.iconClass,
+          iconName = this.iconName,
+          svg = this.svg;
+      return iconClass ? undefined : iconName ? data$1[iconName] : svg;
+    },
     html: function html() {
-      return this.iconClass || this.iconName ? undefined : String(this.svg).indexOf('<svg') !== -1 ? this.svg : undefined;
+      return String(this.svgData).indexOf('<svg') !== -1 ? this.svgData : undefined;
     },
     paths: function paths() {
-      var data = this.iconClass || this.html ? undefined : this.iconName ? data$1[this.iconName] : this.svg;
+      var data = this.iconClass || this.html ? undefined : this.svgData;
       return data ? Array.isArray(data) ? data : [data] : undefined;
     }
   },
