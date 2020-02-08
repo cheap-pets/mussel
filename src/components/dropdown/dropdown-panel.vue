@@ -53,6 +53,7 @@
     props: {
       width: String,
       height: String,
+      maxHeight: String,
       popupClass: String,
       popupStyle: String
     },
@@ -66,6 +67,7 @@
           right: undefined,
           bottom: undefined,
           height: undefined,
+          maxHeight: undefined,
           width: undefined,
           minWidth: undefined
         }
@@ -93,8 +95,12 @@
             width: w && w !== 'auto' && w !== 'inherit' && w !== 'fit-content'
               ? w
               : undefined,
-            height: this.height
-          }
+            height: this.height,
+            maxHeight: this.maxHeight
+          },
+          (!this.height && this.maxHeight)
+            ? { maxHeight: this.maxHeight }
+            : undefined
         )
         this.$nextTick(this.setPosition)
         this.$emit('show')

@@ -39,6 +39,10 @@
       popupStyle: {
         type: String,
         default: 'mu-dropdown-list'
+      },
+      popupMaxHeight: {
+        type: String,
+        default: '300px'
       }
     },
     data () {

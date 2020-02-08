@@ -5,6 +5,7 @@ export default {
         visible: false,
         width: this.popupWidth,
         height: this.popupHeight,
+        maxHeight: this.popupMaxHeight,
         popupClass: this.popupClass,
         popupStyle: this.popupStyle,
         iconIndent: this.popupIconIndent,
@@ -25,6 +26,7 @@ export default {
       default: 'auto'
     },
     popupHeight: String,
+    popupMaxHeight: String,
     popupIconIndent: null,
     popupRenderToBody: {
       type: Boolean,
@@ -37,6 +39,9 @@ export default {
     },
     popupHeight (value) {
       this.popupParams.height = value
+    },
+    popupMaxHeight (value) {
+      this.popupParams.maxHeight = value
     },
     popupRenderToBody (value) {
       this.popupParams.renderToBody = value
