@@ -8,7 +8,7 @@
     "src"
   ],
   "scripts": {
-    "build": "rollup -c && rollup --c rollup.dev.js",
+    "build": "rollup -c",
     "build:dev": "rollup --c rollup.dev.js --watch",
     "docs": "concurrently \"node open-docs.js\" \"serve docs\"",
     "pub": "npm run build && npm publish"
