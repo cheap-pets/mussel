@@ -4098,7 +4098,6 @@
       }
     }
 
-    console.log(colors);
     return colors;
   }
 

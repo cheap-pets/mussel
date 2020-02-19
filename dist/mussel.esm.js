@@ -4092,7 +4092,6 @@ function safe() {
     }
   }
 
-  console.log(colors);
   return colors;
 }
 
