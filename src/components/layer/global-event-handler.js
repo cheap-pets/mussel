@@ -1,3 +1,5 @@
+import isString from 'lodash.isstring'
+
 function callbackIf (name, handler) {
   const popup = window['__mussel_' + name]
   if (popup) handler(popup)
@@ -54,11 +56,14 @@ window.addEventListener('scroll', () => { hideIf('dropdown') })
 
 window.addEventListener('mousewheel', ({ target }) => {
   while (target) {
-    if (target.className.indexOf('mu-dropdown-panel') !== -1) return
+    const { className, parentNode } = target
 
-    target = target.parentNode.nodeType === 1
-      ? target.parentNode
-      : undefined
+    if (
+      isString(className) &&
+      className.indexOf('mu-dropdown-panel') !== -1
+    ) return
+
+    target = parentNode.nodeType === 1 ? parentNode : undefined
   }
   hideIf('dropdown')
 })
