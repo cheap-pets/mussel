@@ -114,6 +114,7 @@
   }
 
   &[tab-position=top] {
+    flex: 0 1 auto;
     border-bottom: 2px solid $normalDividerColor;
 
     & > .mu-tab-item {
@@ -143,6 +144,7 @@
     }
   }
   &[tab-position=bottom] {
+    flex: 0 1 auto;
     border-top: 2px solid $normalDividerColor;
 
     & > [active]:after {
@@ -247,6 +249,7 @@
   display: flex;
   align-items: center;
   max-width: 150px;
+  min-width: 40px;
   cursor: pointer;
 
   & > .mu-tab-label {
