@@ -1,0 +1,28 @@
+.mu-badge {
+  display: inline-block;
+  height: 1rem;
+  min-width: 1.5rem;
+  line-height: 1rem;
+  padding: 0 4px;
+  vertical-align: .15em;
+  font-size: 0.8rem;
+  border-radius: 0.5rem;
+  background: $normalDarkGreyBackground;
+  color: #fff;
+
+  &[badge-type=primary] {
+    background: $primaryColor;
+  }
+
+  &[badge-type=success] {
+    background: $successColor;
+  }
+
+  &[badge-type=warning] {
+    background: $warningColor;
+  }
+
+  &[badge-type=danger] {
+    background: $dangerColor;
+  }
+}

@@ -27,7 +27,10 @@
     >
     </mu-calendar>
     <h3>Date Editor</h3>
+    <mu-date-editor v-model="date2"></mu-date-editor>
     <mu-date-editor v-model="date2" select-mode="month"></mu-date-editor>
+    <h3>Date Range Editor</h3>
+    <mu-date-range-editor :start-date.sync="startDate" :end-date.sync="endDate"></mu-date-editor>
     </div>
   </div>
 
@@ -39,8 +42,8 @@
         date2: '2029-1-1',
         rangeStart: new Date(2019, 3, 5),
         rangeEnd: new Date(2019, 11, 15),
-        startDate: new Date(2019, 2, 20),
-        endDate: new Date(2019, 5, 20),
+        startDate: new Date(2020, 2, 24),
+        endDate: new Date(2020, 2, 28),
         markedDates: [
           new Date(2019, 2, 3),
           new Date(2019, 3, 20),

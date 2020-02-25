@@ -26,6 +26,7 @@ import ButtonEditor from './form/button-editor.vue'
 import ColorEditor from './form/color-editor.vue'
 import PopupEditor from './form/popup-editor.vue'
 import DateEditor from './form/date-editor.vue'
+import DateRangeEditor from './form/date-range-editor.vue'
 import ComboBox from './form/combo-box.vue'
 import Option from './form/option.js'
 /* FORM */
@@ -90,6 +91,7 @@ function install ($Vue = Vue) {
   $Vue.component('mu-popup-editor', PopupEditor)
   $Vue.component('mu-color-editor', ColorEditor)
   $Vue.component('mu-date-editor', DateEditor)
+  $Vue.component('mu-date-range-editor', DateRangeEditor)
   $Vue.component('mu-combo-box', ComboBox)
   $Vue.component('mu-option', Option)
 
@@ -158,6 +160,7 @@ export {
   PopupEditor,
   ColorEditor,
   DateEditor,
+  DateRangeEditor,
   ComboBox,
   Option,
   // Form

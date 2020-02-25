@@ -1,7 +1,7 @@
 .mu-calendar {
   flex-direction: column;
-  min-height: 240px;
-  min-width: 280px;
+  min-height: 220px;
+  min-width: 240px;
   font-size: $calendarFontSize;
   background: $normalBackground;
   border: 1px solid $normalBorderColor;
@@ -67,7 +67,6 @@
       justify-content: center;
       flex-grow: 1;
       width: 1px;
-      color: $primaryColor;
       cursor: pointer;
 
       & + .mu-calendar-cell {
@@ -111,6 +110,6 @@
   }
 }
 
-.mu-dropdown-panel > .mu-calendar {
+.mu-dropdown-panel .mu-calendar {
   border: 0;
 }

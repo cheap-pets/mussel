@@ -25,11 +25,11 @@
     props: {
       popupWidth: {
         type: String,
-        default: '300px'
+        default: '245px'
       },
       popupHeight: {
         type: String,
-        default: '250px'
+        default: '225px'
       },
       value: [String, Date],
       format: String,
