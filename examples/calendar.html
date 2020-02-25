@@ -30,7 +30,13 @@
     <mu-date-editor v-model="date2"></mu-date-editor>
     <mu-date-editor v-model="date2" select-mode="month"></mu-date-editor>
     <h3>Date Range Editor</h3>
-    <mu-date-range-editor :start-date.sync="startDate" :end-date.sync="endDate"></mu-date-editor>
+    <mu-date-range-editor
+      style="width: 280px;"
+      format="yyyy年MM月dd"
+      :start-date.sync="startDate"
+      :end-date.sync="endDate"
+    >
+    </mu-date-editor>
     </div>
   </div>
 
