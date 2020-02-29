@@ -5755,7 +5755,7 @@ var script$k = {
     setInputValue: function setInputValue(startDate, endDate) {
       startDate = this.parseDate(startDate);
       endDate = this.parseDate(endDate);
-      this.params.value = (startDate ? formatDate(startDate, this.dateFormat) : '') + ' ~ ' + (endDate ? formatDate(endDate, this.dateFormat) : '');
+      this.params.value = startDate || endDate ? (startDate ? formatDate(startDate, this.dateFormat) : '') + ' ~ ' + (endDate ? formatDate(endDate, this.dateFormat) : '') : '';
     },
     onSelectStart: function onSelectStart(value) {
       this.focus();
