@@ -7,7 +7,7 @@
     <div
       v-for="item in items"
       :key="item.name"
-      class="mu-tab-item mu-text-ellipsis"
+      class="mu-tab-item"
       :title="item.label || item.name"
       :disabled="item.disabled"
       :active="activeName === item.name"
