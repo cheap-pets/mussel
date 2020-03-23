@@ -2191,7 +2191,7 @@ var triggerIcons = {
 var script$4 = {
   name: 'MusselIcon',
   props: {
-    svg: String,
+    svg: [String, Array],
     icon: String,
     iconClass: String,
     triggerType: String,
