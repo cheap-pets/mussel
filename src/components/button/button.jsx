@@ -29,7 +29,8 @@ export default {
     triggerType: String,
     iconOnly: Boolean,
     caption: String,
-    stopPropagation: Boolean
+    gradient: Boolean
+    // stopPropagation: Boolean
   },
   computed: {
     isIconOnly () {
@@ -42,7 +43,7 @@ export default {
   },
   methods: {
     onClick (event) {
-      if (this.stopPropagation) event.stopPropagation()
+      // if (this.stopPropagation) event.stopPropagation()
       this.$emit('click', event)
     }
   },
@@ -50,10 +51,11 @@ export default {
     return (
       <button
         class="mu-button mu-text-ellipsis"
-        icon-only={ this.isIconOnly }
         button-type={ this.buttonType }
         button-style={ this.buttonStyle }
         button-shape={ this.buttonShape }
+        icon-only={ this.isIconOnly }
+        gradient={ this.gradient }
         onClick={ this.onClick }>
         {
           this.icon || this.iconClass || this.triggerType

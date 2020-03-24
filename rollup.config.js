@@ -19,152 +19,89 @@ import postcssUnprefix from 'postcss-unprefix'
 
 import variables from './src/variables'
 
-export default [
-  {
-    input: 'src/index.js',
-    external: ['vue'],
-    plugins: [
-      vue({
-        css: false
-      }),
-      string({
-        include: "**/*.svg",
-      }),
-      postcss({
-        plugins: [
-          postcssImport,
-          postcssUnprefix,
-          postcssEach,
-          postcssFor,
-          postcssVars({ variables }),
-          postcssCalc,
-          postcssNested,
-          postcssConditionals,
-          postcssAutoprefixer,
-          postcssClean
-        ]
-      }),
-      resolve({
-        mainFields: ['module', 'main', 'browser']
-      }),
-      babel({
-        exclude: 'node_modules/**',
-        externalHelpers: true,
-        extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
-      }),
-      commonjs(),
-      terser()
-    ],
-    onwarn: warning => {
-      const { code, plugin, id, input, message, text } = warning
-      console.warn('[!]', '[B]', code || warning)
-      if (plugin) console.warn('[!]', '...', '[plugin]', plugin)
-      if (id) console.warn('[!]', '...', '[id]', id)
-      if (input) console.warn('[!]', '...', '[input]', input.file || input)
-      if (message) console.warn('[!]', '...', '[message]', message)
-      if (text) console.warn('[!]', '...', '[message]', text)
-    },
-    output: [
-      {
-        file: 'dist/mussel.min.js',
-        format: 'umd',
-        name: 'mussel',
-        globals: {
-          vue: 'Vue'
-        },
-        sourcemap: true
-      },
-      {
-        file: 'dist/mussel.esm.min.js',
-        format: 'esm',
-        globals: {
-          vue: 'Vue'
-        },
-        sourcemap: true
-      }
-    ]
+export default {
+  input: 'src/index.js',
+  external: ['vue'],
+  plugins: [
+    vue({
+      css: false
+    }),
+    string({
+      include: "**/*.svg",
+    }),
+    postcss({
+      plugins: [
+        postcssImport,
+        postcssUnprefix,
+        postcssEach,
+        postcssFor,
+        postcssVars({ variables }),
+        postcssCalc,
+        postcssNested,
+        postcssConditionals,
+        postcssAutoprefixer,
+        postcssClean
+      ]
+    }),
+    resolve({
+      mainFields: ['module', 'main', 'browser']
+    }),
+    babel({
+      exclude: 'node_modules/**',
+      externalHelpers: true,
+      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
+    }),
+    commonjs()
+  ],
+  onwarn: warning => {
+    const { code, plugin, id, input, message, text } = warning
+    console.warn('[!]', '[B]', code || warning)
+    if (plugin) console.warn('[!]', '...', '[plugin]', plugin)
+    if (id) console.warn('[!]', '...', '[id]', id)
+    if (input) console.warn('[!]', '...', '[input]', input.file || input)
+    if (message) console.warn('[!]', '...', '[message]', message)
+    if (text) console.warn('[!]', '...', '[message]', text)
   },
-  {
-    input: 'src/index.js',
-    external: ['vue'],
-    plugins: [
-      vue({
-        css: false
-      }),
-      string({
-        include: "**/*.svg",
-      }),
-      postcss({
-        plugins: [
-          postcssImport,
-          postcssUnprefix,
-          postcssFor,
-          postcssVars({ variables }),
-          postcssCalc,
-          postcssNested,
-          postcssConditionals,
-          postcssAutoprefixer,
-          postcssClean({
-            format: {
-              breaks: {
-                afterAtRule: true,
-                afterBlockBegins: true,
-                afterBlockEnds: true,
-                afterComment: true,
-                afterProperty: true,
-                afterRuleBegins: true,
-                afterRuleEnds: true,
-                beforeBlockEnds: true,
-                betweenSelectors: true
-              },
-              spaces: {
-                aroundSelectorRelation: true,
-                beforeBlockBegins: true,
-                beforeValue: true
-              },
-              semicolonAfterLastProperty: true,
-              indentBy: 2
-            }
-          })
-        ]
-      }),
-      resolve({
-        mainFields: ['module', 'main', 'browser']
-      }),
-      babel({
-        exclude: 'node_modules/**',
-        externalHelpers: true,
-        extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
-      }),
-      commonjs()
-    ],
-    onwarn: warning => {
-      const { code, plugin, id, input, message, text } = warning
-      console.warn('[!]', '[B]', code || warning)
-      if (plugin) console.warn('[!]', '...', '[plugin]', plugin)
-      if (id) console.warn('[!]', '...', '[id]', id)
-      if (input) console.warn('[!]', '...', '[input]', input.file || input)
-      if (message) console.warn('[!]', '...', '[message]', message)
-      if (text) console.warn('[!]', '...', '[message]', text)
-    },
-    output: [
-      {
-        file: 'dist/mussel.js',
-        format: 'umd',
-        name: 'mussel',
-        globals: {
-          vue: 'Vue'
-        },
-        sourcemap: false
+  output: [
+    {
+      file: 'dist/mussel.js',
+      format: 'umd',
+      name: 'mussel',
+      globals: {
+        vue: 'Vue'
       },
-      {
-        file: 'dist/mussel.esm.js',
-        format: 'esm',
-        globals: {
-          vue: 'Vue'
-        },
-        sourcemap: false
-      }
-    ]
-  }
-]
+      sourcemap: true
+    },
+    {
+      file: 'dist/mussel.esm.js',
+      format: 'esm',
+      globals: {
+        vue: 'Vue'
+      },
+      sourcemap: true
+    },
+    {
+      file: 'dist/mussel.min.js',
+      format: 'umd',
+      name: 'mussel',
+      plugins: [
+        terser()
+      ],
+      globals: {
+        vue: 'Vue'
+      },
+      sourcemap: true
+    },
+    {
+      file: 'dist/mussel.esm.min.js',
+      format: 'esm',
+      plugins: [
+        terser()
+      ],
+      globals: {
+        vue: 'Vue'
+      },
+      sourcemap: true
+    }
+  ]
+}
