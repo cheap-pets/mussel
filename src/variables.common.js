@@ -64,6 +64,7 @@ module.exports = {
   inputElementRoundRadius: '16px',
   inputElementBorderRadius: '2px',
 
+  buttonGradient: false,
   buttonFontSize: '1rem',
   buttonShadow: '0 0 0 0',
   buttonRoundRadius: '16px',

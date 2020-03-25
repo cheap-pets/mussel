@@ -68,9 +68,16 @@
   &[button-type="primary"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    border-color: $primaryColor;
-    background: $primaryColor;
     box-shadow: $buttonShadow $primaryTinyColor;
+
+    @if $buttonGradient {
+      border-color: $primaryMinusColor;
+      background: linear-gradient(to bottom, $primaryMinusColor, $primaryPlusColor);;
+    }
+    @else {
+      border-color: $primaryColor;
+      background: $primaryColor;
+    }
 
     &[button-style="link"] {
       color: $primaryColor;
@@ -105,9 +112,16 @@
   &[button-type="submit"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    background: $successColor;
-    border-color: $successColor;
     box-shadow: $buttonShadow $successTinyColor;
+
+    @if $buttonGradient {
+      border-color: $successMinusColor;
+      background: linear-gradient(to bottom, $successMinusColor, $successPlusColor);;
+    }
+    @else {
+      border-color: $successColor;
+      background: $successColor;
+    }
 
     &[button-style="link"] {
       color: $successColor;
@@ -142,9 +156,16 @@
   &[button-type="danger"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    background: $dangerColor;
-    border-color: $dangerColor;
     box-shadow: $buttonShadow $dangerTinyColor;
+
+    @if $buttonGradient {
+      border-color: $dangerMinusColor;
+      background: linear-gradient(to bottom, $dangerMinusColor, $dangerPlusColor);;
+    }
+    @else {
+      border-color: $successColor;
+      background: $successColor;
+    }
 
     &[button-style="link"] {
       color: $dangerColor;
@@ -187,21 +208,6 @@
   &[button-style="outline"] {
     background: $normalBackground;
   }
-  /*
-  &[button-style="link"] {
-    &:hover {
-      text-decoration: underline;
-    }
-    &[disabled] {
-      text-decoration: none;
-    }
-  }
-
-  &[active] {
-    color: $normalHighlightTextColor;
-    fill: $normalHighlightTextColor;
-  }
-  */
 
   &[disabled] {
     color: $normalWeakTextColor !important;

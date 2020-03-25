@@ -28,8 +28,7 @@ export default {
     iconClass: String,
     triggerType: String,
     iconOnly: Boolean,
-    caption: String,
-    gradient: Boolean
+    caption: String
     // stopPropagation: Boolean
   },
   computed: {
@@ -55,7 +54,6 @@ export default {
         button-style={ this.buttonStyle }
         button-shape={ this.buttonShape }
         icon-only={ this.isIconOnly }
-        gradient={ this.gradient }
         onClick={ this.onClick }>
         {
           this.icon || this.iconClass || this.triggerType
