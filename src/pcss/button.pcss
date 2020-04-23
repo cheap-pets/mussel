@@ -163,8 +163,8 @@
       background: linear-gradient(to bottom, $dangerMinusColor, $dangerPlusColor);;
     }
     @else {
-      border-color: $successColor;
-      background: $successColor;
+      border-color: $dangerColor;
+      background: $dangerColor;
     }
 
     &[button-style="link"] {
@@ -210,8 +210,8 @@
   }
 
   &[disabled] {
-    color: $normalWeakTextColor !important;
-    fill: $normalWeakTextColor !important;
+    color: $normalDisabledTextColor !important;
+    fill: $normalDisabledTextColor !important;
     cursor: default;
 
     &:not([button-style="link"]) {

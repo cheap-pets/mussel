@@ -36,6 +36,7 @@ module.exports = {
   normalWeakTextColor: 'rgba(0, 0, 0, .3)',
   normalTitleTextColor: 'rgba(0, 0, 0, .85)',
   normalSubtitleTextColor: 'rgba(0, 0, 0, .5)',
+  normalDisabledTextColor: 'rgba(0, 0, 0, .4)',
   normalHighlightTextColor: '#fff',
 
   // line
