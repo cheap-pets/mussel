@@ -79,6 +79,7 @@
     },
     methods: {
       onTabClick (item) {
+        if (item.disabled) return
         if (this.tabs) {
           this.tabs.select(item.name)
         } else {
