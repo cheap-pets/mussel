@@ -32,6 +32,11 @@
     border-left: 5px solid $primaryColor;
     border-radius: 4px;
     box-shadow: $notifyShadow;
+
+    &[link-style]:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
   }
 
   & > [notify-type=success] {

@@ -64,7 +64,7 @@
           })
         },
         notify: function (type, message) {
-          mussel.notify(type, message)
+          mussel.notify(type, message, 5000, () => { console.log('hello') })
         }
       }
     });

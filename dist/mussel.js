@@ -90,7 +90,7 @@
   var css_248z$i = ".mu-dialog{position:relative;min-width:200px;min-height:100px;background:#fff;opacity:0;box-shadow:0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);transition:all .2s ease-in-out}.mu-dialog[visible]{opacity:1}.mu-dialog[danger]>.mu-dialog-header{border-bottom-color:#f5222d}.mu-dialog-header{height:50px;padding:0 16px;background:#fff;border-bottom:2px solid #1890ff}.mu-dialog-header>.mu-dialog-title{font-size:1rem;font-weight:600}.mu-dialog-header>[trigger-type=close]{margin-left:16px}.mu-dialog-footer{margin-top:auto;height:50px;background:0 0;padding:0 16px}.mu-dialog-footer>.mu-button{margin-left:8px}.mu-dialog-body{padding:16px}";
   styleInject(css_248z$i);
 
-  var css_248z$j = ".mu-message-box{z-index:998}.mu-message-box>.mu-dialog{min-width:300px}.mu-message-box>.mu-dialog>.mu-dialog-body>div{padding:16px}.mu-message-box>.mu-dialog .mu-button{min-width:55px}.mu-notifier{position:fixed;z-index:999;top:0;right:0;padding:8px;overflow:hidden}.mu-notifier>div{width:300px;font-size:1rem;line-height:20px;margin:8px;padding:16px;background:#fff;border-left:5px solid #1890ff;border-radius:4px;box-shadow:0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12)}.mu-notifier>[notify-type=success]{border-color:#52c41a;color:#52c41a;fill:#52c41a}.mu-notifier>[notify-type=warning]{border-color:#faad14;color:#faad14;fill:#faad14}.mu-notifier>[notify-type=error]{border-color:#f5222d;color:#f5222d;fill:#f5222d}.mu-notifier-enter,.mu-notifier-leave-to{opacity:0;transform:translateX(100px)}.mu-notifier-enter-active,.mu-notifier-leave-active,.mu-notifier-move{transition:all .5s}";
+  var css_248z$j = ".mu-message-box{z-index:998}.mu-message-box>.mu-dialog{min-width:300px}.mu-message-box>.mu-dialog>.mu-dialog-body>div{padding:16px}.mu-message-box>.mu-dialog .mu-button{min-width:55px}.mu-notifier{position:fixed;z-index:999;top:0;right:0;padding:8px;overflow:hidden}.mu-notifier>div{width:300px;font-size:1rem;line-height:20px;margin:8px;padding:16px;background:#fff;border-left:5px solid #1890ff;border-radius:4px;box-shadow:0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12)}.mu-notifier>div[link-style]:hover{text-decoration:underline;cursor:pointer}.mu-notifier>[notify-type=success]{border-color:#52c41a;color:#52c41a;fill:#52c41a}.mu-notifier>[notify-type=warning]{border-color:#faad14;color:#faad14;fill:#faad14}.mu-notifier>[notify-type=error]{border-color:#f5222d;color:#f5222d;fill:#f5222d}.mu-notifier-enter,.mu-notifier-leave-to{opacity:0;transform:translateX(100px)}.mu-notifier-enter-active,.mu-notifier-leave-active,.mu-notifier-move{transition:all .5s}";
   styleInject(css_248z$j);
 
   var css_248z$k = ".mu-menu-group_header,.mu-menu-item{position:relative;padding:0 16px 0 32px;height:32px;line-height:32px;font-size:1rem;color:rgba(0,0,0,.7);fill:rgba(0,0,0,.7);cursor:pointer}.mu-menu-group_header>.mu-icon,.mu-menu-item>.mu-icon{position:absolute;left:0;display:inline-block;width:32px;text-align:center}.mu-menu-group_header>.mu-icon[trigger-type],.mu-menu-item>.mu-icon[trigger-type]{left:auto;right:0}.mu-menu-group_body .mu-menu-group_header{font-size:.857rem;font-weight:600;color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5);background:0 0;cursor:default}.mu-menu-group .mu-menu-item{display:block}.mu-menu-group .mu-menu-group+.mu-menu-item{border-top:1px solid rgba(0,0,0,.09)}.mu-sidebar .mu-menu-group_header,.mu-sidebar .mu-menu-item{display:block;height:40px;line-height:40px;padding-left:40px}.mu-sidebar .mu-menu-group_header>.mu-icon,.mu-sidebar .mu-menu-item>.mu-icon{width:40px}.mu-sidebar_body-container>.mu-menu-group>.mu-menu-group_header,.mu-sidebar_menu-wrapper>.mu-menu-group>.mu-menu-group_header{padding-right:40px}.mu-sidebar_body-container>.mu-menu-group>.mu-menu-group_body,.mu-sidebar_menu-wrapper>.mu-menu-group>.mu-menu-group_body{position:relative;visibility:hidden;overflow:hidden;max-height:0;transition:all .1s ease-in-out}.mu-sidebar_body-container>.mu-menu-group[expanded],.mu-sidebar_menu-wrapper>.mu-menu-group[expanded]{background:rgba(24,144,255,.05)}.mu-sidebar_body-container>.mu-menu-group[expanded]>.mu-menu-group_body,.mu-sidebar_menu-wrapper>.mu-menu-group[expanded]>.mu-menu-group_body{visibility:visible;max-height:2000px}.mu-sidebar_body-container>.mu-menu-group[expanded]>.mu-menu-group_header,.mu-sidebar_menu-wrapper>.mu-menu-group[expanded]>.mu-menu-group_header{background:rgba(0,0,0,.04)}";
@@ -8067,18 +8067,162 @@
     staticRenderFns: __vue_staticRenderFns__$y
   }, __vue_inject_styles__$B, __vue_script__$B, __vue_scope_id__$B, __vue_is_functional_template__$B, __vue_module_identifier__$B, false, undefined, undefined, undefined);
 
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
+  /**
+   * Lodash (Custom Build) <https://lodash.com/>
+   * Build: `lodash modularize exports="npm" -o ./`
+   * Copyright JS Foundation and other contributors <https://js.foundation/>
+   * Released under MIT license <https://lodash.com/license>
+   * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+   * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+   */
+
+  /** `Object#toString` result references. */
+  var asyncTag = '[object AsyncFunction]',
+      funcTag = '[object Function]',
+      genTag = '[object GeneratorFunction]',
+      nullTag = '[object Null]',
+      proxyTag = '[object Proxy]',
+      undefinedTag = '[object Undefined]';
+
+  /** Detect free variable `global` from Node.js. */
+  var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+
+  /** Detect free variable `self`. */
+  var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+  /** Used as a reference to the global object. */
+  var root = freeGlobal || freeSelf || Function('return this')();
+
+  /** Used for built-in method references. */
+  var objectProto$1 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$1 = objectProto$1.hasOwnProperty;
+
+  /**
+   * Used to resolve the
+   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+   * of values.
+   */
+  var nativeObjectToString = objectProto$1.toString;
+
+  /** Built-in value references. */
+  var Symbol$2 = root.Symbol,
+      symToStringTag = Symbol$2 ? Symbol$2.toStringTag : undefined;
+
+  /**
+   * The base implementation of `getTag` without fallbacks for buggy environments.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @returns {string} Returns the `toStringTag`.
+   */
+  function baseGetTag(value) {
+    if (value == null) {
+      return value === undefined ? undefinedTag : nullTag;
+    }
+    return (symToStringTag && symToStringTag in Object(value))
+      ? getRawTag(value)
+      : objectToString$1(value);
+  }
+
+  /**
+   * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @returns {string} Returns the raw `toStringTag`.
+   */
+  function getRawTag(value) {
+    var isOwn = hasOwnProperty$1.call(value, symToStringTag),
+        tag = value[symToStringTag];
+
+    try {
+      value[symToStringTag] = undefined;
+      var unmasked = true;
+    } catch (e) {}
+
+    var result = nativeObjectToString.call(value);
+    if (unmasked) {
+      if (isOwn) {
+        value[symToStringTag] = tag;
+      } else {
+        delete value[symToStringTag];
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Converts `value` to a string using `Object.prototype.toString`.
+   *
+   * @private
+   * @param {*} value The value to convert.
+   * @returns {string} Returns the converted string.
+   */
+  function objectToString$1(value) {
+    return nativeObjectToString.call(value);
+  }
+
+  /**
+   * Checks if `value` is classified as a `Function` object.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+   * @example
+   *
+   * _.isFunction(_);
+   * // => true
+   *
+   * _.isFunction(/abc/);
+   * // => false
+   */
+  function isFunction(value) {
+    if (!isObject$1(value)) {
+      return false;
+    }
+    // The use of `Object#toString` avoids issues with the `typeof` operator
+    // in Safari 9 which returns 'object' for typed arrays and other constructors.
+    var tag = baseGetTag(value);
+    return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
+  }
+
+  /**
+   * Checks if `value` is the
+   * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+   * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+   * @example
+   *
+   * _.isObject({});
+   * // => true
+   *
+   * _.isObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isObject(_.noop);
+   * // => true
+   *
+   * _.isObject(null);
+   * // => false
+   */
+  function isObject$1(value) {
+    var type = typeof value;
+    return value != null && (type == 'object' || type == 'function');
+  }
+
+  var lodash_isfunction = isFunction;
+
   var script$C = {
     name: 'MusselNotifier',
     data: function data() {
@@ -8092,8 +8236,10 @@
         var _this = this;
 
         var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 3000;
+        var onClickHandler = arguments.length > 3 ? arguments[3] : undefined;
 
         if (!isNaN(message) || !message && !timeout) {
+          onClickHandler = lodash_isfunction(timeout) ? timeout : null;
           timeout = isNaN(message) ? 3000 : message;
           message = notifyType;
           notifyType = null;
@@ -8103,7 +8249,8 @@
         this.items.unshift({
           id: id,
           message: message,
-          notifyType: notifyType
+          notifyType: notifyType,
+          onClickHandler: onClickHandler
         });
         setTimeout(function () {
           _this.dismiss(id);
@@ -8114,6 +8261,11 @@
           return el.id === id;
         });
         if (idx !== -1) this.items.splice(idx, 1);
+      },
+      onItemClick: function onItemClick(item) {
+        var _item$onClickHandler;
+
+        (_item$onClickHandler = item.onClickHandler) === null || _item$onClickHandler === void 0 ? void 0 : _item$onClickHandler.call(item, item);
       }
     }
   };
@@ -8140,7 +8292,13 @@
         key: item.id,
         staticClass: "mu-text-ellipsis",
         attrs: {
-          "notify-type": item.notifyType
+          "notify-type": item.notifyType,
+          "link-style": item.onClickHandler ? "" : false
+        },
+        on: {
+          click: function click($event) {
+            return _vm.onItemClick(item);
+          }
         }
       }, [_vm._v("\n    " + _vm._s(item.message) + "\n  ")]);
     }), 0);
@@ -8251,13 +8409,13 @@
     });
   }
   var notifier;
-  function notify(notifyType, message, timeout) {
+  function notify(notifyType, message, timeout, onClickHandler) {
     if (!notifier) {
       notifier = new Vue(__vue_component__$C).$mount();
       document.body.appendChild(notifier.$el);
     }
 
-    notifier.notify(notifyType, message, timeout);
+    notifier.notify(notifyType, message, timeout, onClickHandler);
   }
 
   //

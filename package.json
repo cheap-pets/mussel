@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Another UI Library for Vue",
   "main": "dist/mussel.esm.js",
   "files": [
@@ -36,6 +36,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-vue": "^6.2.2",
     "lodash.isdate": "^4.0.1",
+    "lodash.isfunction": "^3.0.9",
     "lodash.isstring": "^4.0.1",
     "open": "^7.0.2",
     "postcss": "^7.0.27",
