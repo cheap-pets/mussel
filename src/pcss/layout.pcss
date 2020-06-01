@@ -49,16 +49,6 @@
     border: 1px solid $normalBorderColor;
   }
 
-  &[content-spacing],
-  &[cellpadding] {
-    padding: $halfSpacingSize;
-  }
-
-  &[content-spacing] > *,
-  & [cellspacing] {
-    margin: $halfSpacingSize;
-  }
-
   & > * {
     position: relative;
     box-sizing: border-box;
@@ -71,20 +61,15 @@
   & > [flex-none] {
     flex: 0 0 none !important;
   }
+
   & > [align-self="center"] {
     align-self: center;
   }
+
   & > [align-self="stretch"] {
     align-self: stretch;
   }
-  /*
-  &[direction="column"] > [size] {
-    height: 1px;
-  }
-  &:not([direction="column"]) > [size] {
-    width: 1px;
-  }
-  */
+
   & > [size="auto"] {
     flex: 1 1 auto;
   }
@@ -103,31 +88,29 @@
   bottom: 0;
 }
 
-[content-spacing] > .mu-absolute-fit {
-  top: $unitSpacingSize;
-  left: $unitSpacingSize;
-  right: $unitSpacingSize;
-  bottom: $unitSpacingSize;
-}
-
-[cellpadding] > .mu-absolute-fit {
-  top: $halfSpacingSize;
-  left: $halfSpacingSize;
-  right: $halfSpacingSize;
-  bottom: $halfSpacingSize;
-}
-
 .mu-bordered {
   border: 1px solid $normalBorderColor;
 }
 
 .mu-splitter {
+  position: relative;
   background: $splitterColor;
   border-radius: $splitterSize;
   user-select: none;
 
-  &[draggable]:hover {
-    background: $splitterHoverColor;
+  &[draggable] > div {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, .01);
+
+    &:hover {
+      background: $splitterHoverColor;
+    }
   }
 
   &:first-child,
@@ -135,32 +118,171 @@
     display: none;
   }
 }
-[cellpadding], [item-spacing] {
-  & > .mu-splitter {
-    margin: $halfSpacingSize;
-  }
-}
+
 [direction="row"] > .mu-splitter {
   width: $splitterSize;
   margin-left: 0;
   margin-right: 0;
+
   &[draggable] {
     cursor: 'col-resize';
+
+    & > div:hover {
+      left: -1px;
+      right: -1px;
+    }
   }
 }
+
 [direction="column"] > .mu-splitter[draggable] {
   height: $splitterSize;
   margin-top: 0;
   margin-bottom: 0;
+
   &[draggable] {
     cursor: 'row-resize';
+
+    & > div:hover {
+      top: -1px;
+      bottom: -1px;
+    }
   }
 }
 
 .mu-space {
   flex: 1 1 0%;
 }
+
 [direction="row"][flex-wrap] > .mu-space {
   flex: none;
   width: 100%;
+}
+
+[cell-spacing], [cellspacing] {
+  margin: $halfSpacingSize;
+}
+
+[cell-padding], [cellpadding] {
+  padding: $halfSpacingSize;
+
+  & > .mu-splitter {
+    margin: $halfSpacingSize;
+  }
+
+  & > .mu-absolute-fit {
+    top: $halfSpacingSize;
+    left: $halfSpacingSize;
+    right: $halfSpacingSize;
+    bottom: $halfSpacingSize;
+  }
+}
+
+[content-spacing] {
+  padding: $halfSpacingSize;
+
+  & > div {
+    margin: $halfSpacingSize;
+  }
+
+  & > .mu-absolute-fit {
+    top: $unitSpacingSize;
+    left: $unitSpacingSize;
+    right: $unitSpacingSize;
+    bottom: $unitSpacingSize;
+  }
+}
+
+[content-spacing=along] {
+  &[direction="row"],
+  &[direction="row-reverse"] {
+    padding: 0 $halfSpacingSize;
+
+    & > div {
+      margin: 0 $halfSpacingSize;
+    }
+
+    & > .mu-absolute-fit {
+      top: 0;
+      bottom: 0;
+    }
+  }
+
+  &[direction="column"],
+  &[direction="column-reverse"] {
+    padding: $halfSpacingSize 0;
+
+    & > div {
+      margin: $halfSpacingSize 0;
+    }
+
+    & > .mu-absolute-fit {
+      left: 0;
+      right: 0;
+    }
+  }
+}
+
+[content-spacing=between] {
+  padding: 0;
+
+  &[direction="row"],
+  &[direction="row-reverse"] {
+    & > div {
+      margin: 0 $halfSpacingSize;
+    }
+  }
+
+  &[direction="row"] {
+    & > div:first-child {
+      margin-left: 0;
+    }
+
+    & > div:last-child {
+      margin-right: 0;
+    }
+  }
+  
+  &[direction="row-reverse"] {
+    & > div:first-child {
+      margin-right: 0;
+    }
+
+    & > div:last-child {
+      margin-left: 0;
+    }
+  }
+
+  &[direction="column"],
+  &[direction="column-reverse"] {
+    & > div {
+      margin: $halfSpacingSize 0;
+    }
+  }
+
+  &[direction="column"] {
+    & > div:first-child {
+      margin-top: 0;
+    }
+
+    & > div:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &[direction="column-reverse"] {
+    & > div:first-child {
+      margin-bottom: 0;
+    }
+
+    & > div:last-child {
+      margin-top: 0;
+    }
+  }
+
+  & > div.mu-absolute-fit {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
 }

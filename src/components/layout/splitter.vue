@@ -1,5 +1,7 @@
 <template>
-  <div class="mu-splitter" :draggable="draggable" @mousedown="onDragStart" />
+  <div class="mu-splitter" :draggable="draggable">
+    <div @mousedown="onDragStart" />
+  </div>
 </template>
 
 <script>

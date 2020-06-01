@@ -8,19 +8,21 @@ export default {
   primaryPlusColor: '#096dd9',
   primaryMinusColor: '#40a9ff',
   primaryTinyColor: '#bae7ff',
-  primaryTransparentColor: 'rgba(24, 144, 255, .07)',
+  primaryShadowColor: 'rgba(24, 144, 255, .15)',
 
   /* success colors */
   successColor: '#52c41a',
   successPlusColor: '#389e0d',
   successMinusColor: '#73d13d',
   successTinyColor: '#d9f7be',
+  successShadowColor: 'rgba(82, 196, 26, .15)',
 
   /* danger colors */
   dangerColor: '#f5222d',
   dangerPlusColor: '#cf1322',
   dangerMinusColor: '#ff4d4f',
   dangerTinyColor: '#ffccc7',
+  dangerShadowColor: 'rgba(245, 34, 45, .15)',
 
   /* warning colors */
   warningColor: '#faad14',
@@ -72,6 +74,7 @@ export default {
   buttonActiveShadow: '0 0 0 0',
   buttonHoverShadow: '0 0 0 2px',
   buttonDividerColor: 'rgba(255, 255, 255, .5)',
+  normalButtonTextColor: 'rgba(0, 0, 0, .6)',
 
   /* toggle */
   toggleButtonWidth: '40px',
@@ -100,7 +103,7 @@ export default {
   formLabelFontSize: '1rem',
 
   /* modal & dialog */
-  maskBackground: 'rgba(0, 0, 0, .17)',
+  maskBackground: 'rgba(0, 0, 0, .5)',
 
   dialogHeaderHeight: '50px',
   dialogTitleFontSize: '1rem',

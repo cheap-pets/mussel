@@ -15,7 +15,6 @@
     color: $normalWeakTextColor;
   }
 
-  &:hover,
   &:focus,
   &[focus] {
     border-color: $primaryColor;
@@ -24,7 +23,10 @@
   &[focus] {
     z-index: 2;
     text-align: left !important;
-    box-shadow: $inputFocusShadow $primaryTinyColor;
+    box-shadow: $inputFocusShadow $primaryShadowColor;
+  }
+  &:hover {
+    border-color: $primaryMinusColor;
   }
   &[readonly] {
     cursor: default;
@@ -47,7 +49,11 @@
   border-color: $dangerColor;
   &:focus,
   &[focus] {
-    box-shadow: $inputFocusShadow $dangerTinyColor;
+    border-color: $dangerPlusColor;
+    box-shadow: $inputFocusShadow $dangerShadowColor;
+  }
+  &:hover {
+    border-color: $dangerMinusColor;
   }
 }
 input.mu-input {

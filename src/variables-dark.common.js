@@ -8,19 +8,21 @@ module.exports = {
   primaryPlusColor: '#00c7d9',
   primaryMinusColor: '#29fbff',
   primaryTinyColor: '#00778c',
-  primaryTransparentColor: 'rgba(0, 242, 255, .07)',
+  primaryShadowColor: 'rgba(0, 242, 255, .15)',
 
   /* success colors */
   successColor: '#52c41a',
   successPlusColor: '#389e0d',
   successMinusColor: '#73d13d',
   successTinyColor: '#135200',
+  successShadowColor: 'rgba(82, 196, 26, .15)',
 
   /* danger colors */
   dangerColor: '#f5222d',
   dangerPlusColor: '#cf1322',
   dangerMinusColor: '#ff4d4f',
   dangerTinyColor: '#820014',
+  dangerShadowColor: 'rgba(245, 34, 45, .15)',
 
   /* warning colors */
   warningColor: '#faad14',
@@ -72,6 +74,7 @@ module.exports = {
   buttonActiveShadow: '0 0 0 0',
   buttonHoverShadow: '0 0 0 2px',
   buttonDividerColor: 'rgba(0, 0, 0, .5)',
+  normalButtonTextColor: 'rgba(255, 255, 255, .7)',
 
   /* toggle */
   toggleButtonWidth: '40px',

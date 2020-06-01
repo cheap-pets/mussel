@@ -11,12 +11,14 @@
   text-decoration: none;
   text-align: center;
   font-size: $buttonFontSize;
-  color: $normalTextColor;
-  fill: $normalTextColor;
+  color: $normalButtonTextColor;
+  fill: $normalButtonTextColor;
   cursor: pointer;
+  box-shadow: $buttonShadow $normalGreyBackground;
 
   &::before {
     display: inline-block;
+    float: left;
     width: 0;
     content: '\00a0';
   }
@@ -24,51 +26,29 @@
   &[button-style="link"] {
     padding-left: 0;
     padding-right: 0;
-  }
-
-  &:not([button-type]),
-  &[button-type="normal"] {
-    box-shadow: $buttonShadow $normalGreyBackground;
-
-    &[button-style="link"] {
-      &:hover {
-        color: $primaryMinusColor;
-        fill: $primaryMinusColor;
-      }
-    }
-
-    &[active] {
-      background: $normalDarkGreyBackground;
-      box-shadow: $buttonActiveShadow $normalGreyBackground;
-      color: $normalHighlightTextColor;
-      fill: $normalHighlightTextColor;
-    }
-
-    &:hover {
-      background: $normalBackground;
-      box-shadow: $buttonHoverShadow $normalShadowColor;
-      color: $primaryColor;
-      fill: $primaryColor;
-    }
-  }
-  
-  &[button-style="text"] {
-    box-shadow: none;
-    
-    &:hover {
-      border-color: $normalBorderColor;
-    }
-  }
-
-  &[button-style="link"],
-  &[disabled] {
     box-shadow: none !important;
+  }
+
+  &[active] {
+    border-color: $primaryPlusColor;
+    background: $primaryTinyColor;
+    box-shadow: $buttonActiveShadow $primaryShadowColor;
+    color: $primaryPlusColor;
+    fill: $primaryPlusColor;
+  }
+
+  &:hover,
+  &[button-style="text"]:hover {
+    border-color: $primaryMinusColor;
+    color: $primaryMinusColor;
+    fill: $primaryMinusColor;
+    box-shadow: $buttonHoverShadow $primaryShadowColor;
   }
 
   &[button-type="primary"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    box-shadow: $buttonShadow $primaryTinyColor;
+    box-shadow: $buttonShadow $primaryShadowColor;
 
     @if $buttonGradient {
       border-color: $primaryMinusColor;
@@ -79,84 +59,90 @@
       background: $primaryColor;
     }
 
-    &[button-style="link"] {
-      color: $primaryColor;
-      fill: $primaryColor;
-      &:hover {
-        color: $primaryMinusColor;
-        fill: $primaryMinusColor;
-      }
-    }
-
-    &[button-style="text"],
-    &[button-style="outline"] {
-      color: $primaryColor;
-      fill: $primaryColor;
-    }
-
     &[active] {
       background: $primaryPlusColor;
       border-color: $primaryPlusColor;
-      box-shadow: $buttonActiveShadow $primaryTinyColor;
+      box-shadow: $buttonActiveShadow $primaryShadowColor;
     }
 
     &:hover {
       background: $primaryMinusColor;
       border-color: $primaryMinusColor;
-      box-shadow: $buttonHoverShadow $primaryTinyColor;
+      box-shadow: $buttonHoverShadow $primaryShadowColor;
       color: $normalHighlightTextColor;
       fill: $normalHighlightTextColor;
+    }
+
+    &[button-style="link"],
+    &[button-style="text"],
+    &[button-style="outline"] {
+      color: $primaryColor;
+      fill: $primaryColor;
+
+      &[active] {
+        color: $primaryPlusColor;
+        fill: $primaryPlusColor;
+        background: $primaryTinyColor;
+      }
+
+      &:hover {
+        color: $primaryMinusColor;
+        fill: $primaryMinusColor;
+      }
     }
   }
 
   &[button-type="submit"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    box-shadow: $buttonShadow $successTinyColor;
+    box-shadow: $buttonShadow $successShadowColor;
 
     @if $buttonGradient {
       border-color: $successMinusColor;
-      background: linear-gradient(to bottom, $successMinusColor, $successPlusColor);;
+      background: linear-gradient(to bottom, $successMinusColor, $successPlusColor);
     }
     @else {
       border-color: $successColor;
       background: $successColor;
     }
 
-    &[button-style="link"] {
-      color: $successColor;
-      fill: $successColor;
-      &:hover {
-        color: $successMinusColor;
-        fill: $successMinusColor;
-      }
-    }
-
-    &[button-style="text"],
-    &[button-style="outline"] {
-      color: $successColor;
-      fill: $successColor;
-    }
-
     &[active] {
       background: $successPlusColor;
       border-color: $successPlusColor;
-      box-shadow: $buttonActiveShadow $successTinyColor;
+      box-shadow: $buttonActiveShadow $successShadowColor;
     }
 
     &:hover {
       background: $successMinusColor;
       border-color: $successMinusColor;
-      box-shadow: $buttonHoverShadow $successTinyColor;
+      box-shadow: $buttonHoverShadow $successShadowColor;
       color: $normalHighlightTextColor;
       fill: $normalHighlightTextColor;
+    }
+
+    &[button-style="link"],
+    &[button-style="text"],
+    &[button-style="outline"] {
+      color: $successColor;
+      fill: $successColor;
+
+      &[active] {
+        color: $successPlusColor;
+        fill: $successPlusColor;
+        background: $successTinyColor;
+      }
+
+      &:hover {
+        color: $successMinusColor;
+        fill: $successMinusColor;
+      }
     }
   }
 
   &[button-type="danger"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    box-shadow: $buttonShadow $dangerTinyColor;
+    box-shadow: $buttonShadow $dangerShadowColor;
 
     @if $buttonGradient {
       border-color: $dangerMinusColor;
@@ -167,51 +153,63 @@
       background: $dangerColor;
     }
 
-    &[button-style="link"] {
-      color: $dangerColor;
-      fill: $dangerColor;
-      &:hover {
-        color: $dangerMinusColor;
-        fill: $dangerMinusColor;
-      }
-    }
-
-    &[button-style="text"],
-    &[button-style="outline"] {
-      color: $dangerColor;
-      fill: $dangerColor;
-    }
-
     &[active] {
       background: $dangerPlusColor;
       border-color: $dangerPlusColor;
-      box-shadow: $buttonActiveShadow $dangerTinyColor;
+      box-shadow: $buttonActiveShadow $dangerShadowColor;
     }
 
     &:hover {
       background: $dangerMinusColor;
       border-color: $dangerMinusColor;
-      box-shadow: $buttonHoverShadow $dangerTinyColor;
+      box-shadow: $buttonHoverShadow $dangerShadowColor;
       color: $normalHighlightTextColor;
       fill: $normalHighlightTextColor;
     }
+
+    &[button-style="link"],
+    &[button-style="text"],
+    &[button-style="outline"] {
+      color: $dangerColor;
+      fill: $dangerColor;
+
+      &[active] {
+        color: $dangerPlusColor;
+        fill: $dangerPlusColor;
+        background: $dangerTinyColor;
+      }
+
+      &:hover {
+        color: $dangerMinusColor;
+        fill: $dangerMinusColor;
+      }
+    }
   }
 
-  &[button-style="link"],
-  &[button-style="link"]:hover,
-  &[button-style="link"][active],
   &[button-style="text"] {
-    border-color: transparent;
-    background: transparent;
     box-shadow: none;
+    border-color: transparent;
   }
+
+  &[button-style="link"] {
+    background: transparent !important;
+    border-color: transparent !important;
+  }
+
+  &[button-style="text"],
   &[button-style="outline"] {
-    background: $normalBackground;
+    background: transparent;
+
+    &[active],
+    &:hover {
+      background: transparent;
+    }
   }
 
   &[disabled] {
     color: $normalDisabledTextColor !important;
     fill: $normalDisabledTextColor !important;
+    box-shadow: none !important;
     cursor: default;
 
     &:not([button-style="link"]) {
@@ -225,6 +223,11 @@
     width: $inputElementHeight;
     padding-left: 0;
     padding-right: 0;
+  }
+
+  & > .mu-icon + span,
+  & > span + .mu-icon {
+    margin-left: 4px;
   }
 }
 

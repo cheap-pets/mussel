@@ -21,6 +21,11 @@
     }
   }
 
+  & > label + span {
+    display: inline-block;
+    line-height: $inputElementHeight;
+  }
+
   &[required] > label:before {
     visibility: visible;
   }
@@ -30,8 +35,73 @@
   }
 
   & > .mu-editor,
-  & > .mu-input {
+  & > .mu-input,
+  & > span {
     flex: 1 1 1px;
     width: 1px;
+  }
+}
+
+.mu-form-row {
+  width: 100%;
+}
+
+.mu-form {
+  &[form-style="table"] {
+    border: 1px solid $normalBorderColor;
+
+    & > .mu-form-row {
+      & + .mu-form-row  {
+        border-top: 1px solid $normalBorderColor;
+      }
+      & > .mu-form-field {
+        align-items: center;
+        height: $normalBarHeight;
+        border-right: 1px solid $normalBorderColor;
+
+        &:last-child {
+          border-right: 0;
+        }
+
+        & > label,
+        & > span {
+          overflow: hidden;
+          line-height: 20px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          padding: 0 $halfSpacingSize;
+        }
+        
+        & > .mu-editor,
+        & > .mu-input {
+          margin: 0 4px;
+        }
+        & .mu-input {
+          border-style: dashed;
+          &:hover {
+            border-style: solid;
+          }
+        }
+        & > label:first-child {
+          display: inline-flex;
+          align-self: stretch;
+          align-items: center;
+          border-right: 1px solid $normalBorderColor;
+          background-color: $normalGreyBackground;
+        }
+      }
+    }
+
+    &[row-height="compact"] > .mu-form-row,
+    & > .mu-form-row[row-height="compact"] {
+      & > .mu-form-field {
+        height: $compactBarHeight;
+
+        & > .mu-editor,
+        & > .mu-input {
+          margin: 0;
+        }
+      }
+    }
   }
 }

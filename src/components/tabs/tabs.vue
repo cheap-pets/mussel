@@ -11,7 +11,7 @@
       <template #header-prefix>
         <slot name="header-prefix" />
       </template>
-      <template #header-prefix>
+      <template #header-suffix>
         <slot name="header-suffix" />
       </template>
     </tabs-header>

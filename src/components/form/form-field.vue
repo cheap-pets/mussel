@@ -3,7 +3,9 @@
     <label v-if="label" class="mu-text-ellipsis" :style="labelStyle">
       {{ label }}
     </label>
-    <slot />
+    <slot>
+      <span v-if="value || value === 0">{{ value }}</span>
+    </slot>
   </div>
 </template>
 
@@ -29,8 +31,11 @@
       },
       cellpadding: {
         type: Boolean,
-        default: true
-      }
+        default () {
+          return this.form.formStyle !== 'table'
+        }
+      },
+      value: null
     },
     computed: {
       sizeValue () {

@@ -31,6 +31,7 @@ import ComboBox from './form/combo-box.vue'
 import Option from './form/option.js'
 /* FORM */
 import Form from './form/form.vue'
+import FormRow from './form/form-row.vue'
 import FormField from './form/form-field.vue'
 /* TOGGLE */
 import Toggle from './form/toggle.vue'
@@ -96,6 +97,7 @@ function install ($Vue = Vue) {
   $Vue.component('mu-option', Option)
 
   $Vue.component('mu-form', Form)
+  $Vue.component('mu-form-row', FormRow)
   $Vue.component('mu-form-field', FormField)
 
   $Vue.component('mu-toggle', Toggle)
@@ -165,6 +167,7 @@ export {
   Option,
   // Form
   Form,
+  FormRow,
   FormField,
   // Toggle
   Toggle,

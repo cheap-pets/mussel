@@ -6,13 +6,13 @@
   box-shadow: $buttonShadow $normalGreyBackground;
 
   &[button-type="primary"] {
-    box-shadow: $buttonShadow $primaryColor;
+    box-shadow: $buttonShadow $primaryShadowColor;
   }
   &[button-type="success"] {
-    box-shadow: $buttonShadow $successTinyColor;
+    box-shadow: $buttonShadow $successShadowColor;
   }
   &[button-type="danger"] {
-    box-shadow: $buttonShadow $dangerTinyColor;
+    box-shadow: $buttonShadow $dangerShadowColor;
   }
 
   & > .mu-button {
@@ -20,6 +20,7 @@
     float: left;
     box-shadow: none;
 
+    &[active]:not([disabled]),
     &:hover:not([disabled]) {
       z-index : 1;
     }
