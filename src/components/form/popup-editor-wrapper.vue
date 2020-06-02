@@ -3,6 +3,7 @@
     class="mu-popup-editor"
     :expanded="popupParams.visible">
     <mu-dropdown-panel
+      v-if="popupParams.popupStyle !== 'none'"
       v-bind="popupParams"
       @change="setPopupVisible"
       @mounted="onDropdownMounted"

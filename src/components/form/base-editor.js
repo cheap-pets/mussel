@@ -69,7 +69,7 @@ export default {
   watch: {
     value: {
       handler (value) {
-        this.setInputValue(value)
+        this.setValue(value)
       },
       immediate: true
     },
@@ -105,11 +105,11 @@ export default {
     }
   },
   methods: {
-    setInputValue (value) {
+    setValue (value) {
       this.params.value = value
     },
     onInput (value) {
-      this.setInputValue(value)
+      this.setValue(value)
       this.$emit('input', value)
       this.$emit('change', value)
     },

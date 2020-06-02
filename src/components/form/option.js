@@ -73,10 +73,10 @@ export default {
       value: this.actualValue,
       label: this.actualLabel
     }
-    this.editor.mountOption(this.mountedOption)
+    this.editor.mountOption?.(this.mountedOption)
   },
   beforeDestroy () {
-    this.editor.unmountOption(this.mountedOption)
+    this.editor.unmountOption?.(this.mountedOption)
   },
   watch: {
     actualIcon: {

@@ -66,7 +66,7 @@
       value: {
         handler (value) {
           this.calendarParams.value = value
-          this.setInputValue(value)
+          this.setValue(value)
         },
         immediate: true
       },
@@ -81,7 +81,7 @@
       }
     },
     methods: {
-      setInputValue (value) {
+      setValue (value) {
         if (value) {
           try {
             value = isDate(value)
@@ -94,7 +94,7 @@
           : ''
       },
       onSelect (value, year, month, date) {
-        this.setInputValue(value)
+        this.setValue(value)
         this.hidePopup()
         this.focus()
         this.$emit('change', value, year, month, date)

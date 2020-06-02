@@ -83,19 +83,19 @@
     watch: {
       value: {
         handler (value = {}) {
-          this.setInputValue(value.startDate, value.endDate)
+          this.setValue(value.startDate, value.endDate)
         },
         immediate: true
       },
       startDate: {
         handler (value) {
-          this.setInputValue(value, this.endDate)
+          this.setValue(value, this.endDate)
         },
         immediate: true
       },
       endDate: {
         handler (value) {
-          this.setInputValue(this.startDate, value)
+          this.setValue(this.startDate, value)
         },
         immediate: true
       },
@@ -117,7 +117,7 @@
         }
         return value
       },
-      setInputValue (startDate, endDate) {
+      setValue (startDate, endDate) {
         startDate = this.parseDate(startDate)
         endDate = this.parseDate(endDate)
         this.params.value = (startDate || endDate)
@@ -131,14 +131,14 @@
       onSelectStart (value) {
         this.focus()
         if (value > this.end) {
-          this.setInputValue(value, null)
+          this.setValue(value, null)
           this.$emit('update:endDate', null)
           this.$emit('change', {
             startDate: value,
             endDate: null
           })
         } else {
-          this.setInputValue(value, null)
+          this.setValue(value, null)
           this.$emit('update:startDate', value)
           this.$emit('change', {
             startDate: value,
@@ -147,7 +147,7 @@
         }
       },
       onSelectEnd (value) {
-        this.setInputValue(this.start, value)
+        this.setValue(this.start, value)
         this.hidePopup()
         this.focus()
         this.$emit('update:endDate', value)
@@ -158,7 +158,7 @@
       },
       onClearClick () {
         this.clear()
-        this.setInputValue()
+        this.setValue()
         this.$emit('update:startDate', null)
         this.$emit('update:endDate', null)
         this.$emit('change', null)

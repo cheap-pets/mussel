@@ -36,24 +36,19 @@
       fields: Object,
       options: Array,
       multiple: Boolean,
-      popupStyle: {
-        type: String,
-        default: 'mu-dropdown-list'
-      },
       popupMaxHeight: {
         type: String,
         default: '300px'
+      },
+      popupStyle: {
+        type: String,
+        default: 'dropdown-list'
       }
     },
     data () {
       return {
         comboValue: null,
         mountedOptions: []
-      }
-    },
-    computed: {
-      valueField () {
-        return this.fields?.value || 'value'
       }
     },
     watch: {
@@ -69,18 +64,18 @@
     },
     mounted () {
       this.params.editable = this.editable && !this.multiple
-      this.refreshInputValue()
+      this.delaySetValue()
     },
     methods: {
-      setInputValue (value) {
+      setValue (value) {
         if (this.comboValue !== value) {
           this.comboValue = isEmptyValue(value)
             ? (this.multiple ? [] : null)
             : value
-          this.refreshInputValue()
+          this.delaySetValue()
         }
       },
-      setInputValueImmediately () {
+      setInputValue () {
         const {
           mountedOptions: options,
           comboValue: v,
@@ -101,25 +96,25 @@
               )
           )
       },
-      refreshInputValue (immediate = false) {
-        if (this.rivTimer) {
-          clearTimeout(this.rivTimer)
-          this.rivTimer = null
-        }
+      delaySetValue (immediate = false) {
+        if (this.__delayTimer) clearTimeout(this.__delayTimer)
+        this.__delayTimer = setTimeout(this.setInputValue, 50)
+        /*
         if (this.params.editable || immediate) {
-          this.setInputValueImmediately()
+          this.setInputValue()
         } else {
-          this.rivTimer = setTimeout(
-            this.setInputValueImmediately,
+          this.delayTimer = setTimeout(
+            this.setInputValue,
             50
           )
         }
+        */
       },
       mountOption (option) {
         const { mountedOptions: options } = this
         if (!options.find(item => option === item)) {
           options.push(option)
-          if (!this.params.editable) this.refreshInputValue()
+          if (!this.params.editable) this.delaySetValue()
         }
       },
       unmountOption (option) {
@@ -127,26 +122,22 @@
         const idx = options.findIndex(item => option === item)
         if (idx !== -1) options.splice(idx, 1)
       },
-      toggleSelection (value, option, hidePopup = true) {
+      toggleSelection (value, option) {
         if (this.multiple) {
           const { comboValue: values } = this
           const idx = values.indexOf(value)
-          if (idx !== -1) {
-            values.splice(idx, 1)
-          } else {
-            values.push(value)
-          }
-          this.$emit('change', values)
+          if (idx !== -1) values.splice(idx, 1)
+          else values.push(value)
         } else {
           this.comboValue = value
-          this.$emit('change', value)
         }
-        this.refreshInputValue(true)
-        if (hidePopup) {
-          this.popupParams.visible = false
-          this.focus()
-        }
+
+        this.delaySetValue(true)
+        this.popupParams.visible = false
+        this.focus()
+
         this.$emit('optionclick', value, option)
+        this.$emit('change', this.comboValue)
       },
       onClearClick () {
         this.comboValue = this.multiple ? [] : null

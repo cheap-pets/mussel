@@ -32,7 +32,7 @@
       cellpadding: {
         type: Boolean,
         default () {
-          return this.form.formStyle !== 'table'
+          return this.form?.formStyle !== 'table'
         }
       },
       value: null
@@ -49,11 +49,11 @@
           )
       },
       labelStyle () {
-        const w = this.labelWidth || this.form.labelWidth
+        const w = this.labelWidth || this.form?.labelWidth
         return {
           width: w,
           minWidth: w,
-          textAlign: this.labelAlign || this.form.labelAlign || 'right'
+          textAlign: this.labelAlign || this.form?.labelAlign || 'right'
         }
       }
     }

@@ -53,7 +53,7 @@
       this.setIndicator(this.value)
     },
     methods: {
-      setInputValue (value) {
+      setValue (value) {
         if (this.$el) this.setIndicator(this.value)
       },
       setIndicator (color) {
