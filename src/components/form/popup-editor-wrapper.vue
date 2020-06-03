@@ -1,7 +1,7 @@
 <template>
   <mu-editor-wrapper
-    class="mu-popup-editor"
-    :expanded="popupParams.visible">
+    :expanded="popupParams.visible"
+    :popup-style="popupParams.popupStyle">
     <mu-dropdown-panel
       v-if="popupParams.popupStyle !== 'none'"
       v-bind="popupParams"

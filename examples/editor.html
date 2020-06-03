@@ -62,7 +62,13 @@
         <mu-option :value='false' label="false"></mu-option>
       </mu-combo-box>
       <h5>Search Combo Box</h5>
-      <mu-search-box :options="comboOptions" editable @optionclick="onOptionClick">
+      <mu-search-box placeholder="input" @search="onSearch" >
+      </mu-search-box>
+      <mu-search-box
+        value-mode="select"
+        placeholder="query & select"
+        :options="searchOptions"
+        @search="onSearchQuery">
       </mu-search-box>
     </div>
   </div>
@@ -95,7 +101,8 @@
         ],
         comboValue1: '',
         comboValue2: [1,2],
-        comboValue3: true
+        comboValue3: true,
+        searchOptions: []
       },
       methods: {
         onDropdownItemClick: function () {
@@ -116,6 +123,14 @@
         },
         onOptionClick: function (value, option) {
           
+        },
+        onSearch: function (value) {
+          console.log(new Date(), value)
+        },
+        onSearchQuery: function (value) {
+          for (var i = 0; i < 10; i++) {
+            this.searchOptions[i] = { value: i, label: value + '_option_' + i }
+          }
         }
       }
     })

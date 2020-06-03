@@ -29,6 +29,7 @@ import DateEditor from './form/date-editor.vue'
 import DateRangeEditor from './form/date-range-editor.vue'
 import ComboBox from './form/combo-box.vue'
 import Option from './form/option.js'
+import SearchBox from './form/search-box.vue'
 /* FORM */
 import Form from './form/form.vue'
 import FormRow from './form/form-row.vue'
@@ -95,6 +96,7 @@ function install ($Vue = Vue) {
   $Vue.component('mu-date-range-editor', DateRangeEditor)
   $Vue.component('mu-combo-box', ComboBox)
   $Vue.component('mu-option', Option)
+  $Vue.component('mu-search-box', SearchBox)
 
   $Vue.component('mu-form', Form)
   $Vue.component('mu-form-row', FormRow)
@@ -165,6 +167,7 @@ export {
   DateRangeEditor,
   ComboBox,
   Option,
+  SearchBox,
   // Form
   Form,
   FormRow,

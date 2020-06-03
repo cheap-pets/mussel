@@ -38,7 +38,10 @@ export default {
     }
   },
   created () {
-    if (!this.icon && !this.iconClass && !this.triggerType) {
+    if (!this.icon &&
+      !this.iconClass &&
+      !this.triggerType
+    ) {
       this.params.triggerType = 'expander'
     }
   }

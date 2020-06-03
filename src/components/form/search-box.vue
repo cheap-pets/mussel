@@ -1,7 +1,10 @@
 <template>
-  <mu-popup-editor-wrapper class="mu-search-box">
-    <slot v-if="!options" />
-    <template v-else>
+  <mu-popup-editor-wrapper
+    class="mu-search-box"
+    :value-mode="valueMode"
+    :selected="selected">
+    <slot v-if="!options && isDropdownStyle" />
+    <template v-else-if="isDropdownStyle">
       <mu-option
         v-for="(option, index) in options"
         :key="+new Date() + '_' + index"
@@ -13,6 +16,8 @@
 </template>
 
 <script>
+  import isPlainObject from 'lodash.isplainobject'
+
   import BasePopupEditor from './base-popup-editor'
   import Option from './option.js'
 
@@ -26,32 +31,44 @@
       value: String,
       fields: Object,
       options: Array,
-      editable: {
-        type: Boolean,
-        default: true
-      },
-      popupStyle: {
-        type: String,
-        default: 'none'
-      }
+      valueMode: String,
+      popupStyle: String,
+      editable: { type: Boolean, default: true }
     },
     data () {
       return {
-
+        selected: false
+      }
+    },
+    computed: {
+      isDropdownStyle () {
+        return this.valueMode === 'select' ||
+          this.popupStyle === 'dropdown-list'
       }
     },
     created () {
       this.params.value = null
       this.params.editable = true
-    },
-    mounted () {
+      this.popupParams.popupStyle = this.isDropdownStyle ? 'dropdown-list' : 'none'
 
+      if (
+        !this.icon &&
+        !this.iconClass &&
+        !this.triggerType &&
+        !this.isDropdownStyle
+      ) {
+        this.params.triggerType = undefined
+        this.params.icon = 'search'
+      }
     },
     methods: {
       setValue (value) {
+        this.params.value = value
       },
       toggleSelection (value, option) {
         this.hidePopup()
+        this.selected = true
+        this.setValue(value)
         this.$emit('change', value)
         this.$emit('optionclick', value, option)
         this.focus()
@@ -62,11 +79,21 @@
         this.$emit('change', null)
       },
       onInput (value) {
+        this.selected = false
         if (this.__delayTimer) clearTimeout(this.__delayTimer)
         this.__delayTimer = setTimeout(() => {
+          this.setValue(value)
           this.$emit('search', value)
-          if (this.popupStyle !== 'none') this.showPopup()
+          if (this.isDropdownStyle) this.showPopup()
         }, 500)
+      },
+      onButtonClick () {
+        if (!this.isDropdownStyle) {
+          this.$emit('search', this.params.value)
+        } else {
+          this.focus()
+          this.togglePopup()
+        }
       }
     }
   }
