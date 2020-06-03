@@ -113,8 +113,8 @@ export default {
       this.$emit('input', value)
       this.$emit('change', value)
     },
-    onInputClick () {
-      this.$emit('inputclick')
+    onInputClick (event) {
+      this.$emit('inputclick', event)
     },
     onClearClick () {
       this.clear()

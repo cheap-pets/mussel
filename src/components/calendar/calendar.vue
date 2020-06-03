@@ -98,7 +98,7 @@
     getMonthName,
     getSiblingMonth,
     getFilteredMarks
-  } from './calendar-utils'
+  } from './calendar-util'
 
   export default {
     components: {

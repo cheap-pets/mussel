@@ -122,7 +122,7 @@
         const idx = options.findIndex(item => option === item)
         if (idx !== -1) options.splice(idx, 1)
       },
-      toggleSelection (value, option) {
+      toggleSelection (value, label, option) {
         if (this.multiple) {
           const { comboValue: values } = this
           const idx = values.indexOf(value)

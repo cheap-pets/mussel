@@ -38,7 +38,8 @@ export default {
     }
   },
   created () {
-    if (!this.icon &&
+    if (
+      !this.icon &&
       !this.iconClass &&
       !this.triggerType
     ) {

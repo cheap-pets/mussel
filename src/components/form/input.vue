@@ -38,8 +38,8 @@
         if (event.keyCode === 13) this.$emit('enterkey', this)
         else if (event.keyCode === 27) this.$emit('esckey', this)
       },
-      onClick () {
-        if (!this.disabled) this.$emit('click')
+      onClick (event) {
+        if (!this.disabled) this.$emit('click', event)
       },
       onBlur () {
         this.$emit('blur', this)

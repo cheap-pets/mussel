@@ -81,8 +81,8 @@
       onInput (value) {
         this.editor.onInput(value)
       },
-      onInputClick () {
-        this.editor.onInputClick()
+      onInputClick (event) {
+        this.editor.onInputClick(event)
       },
       onClearClick () {
         this.editor.onClearClick()

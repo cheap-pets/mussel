@@ -1,6 +1,7 @@
 import ListItem from '../list/list-item.vue'
 
 import { unsetOrFalse } from '../../utils/prop'
+import { getOptionValue, getOptionLabel } from './combo-util'
 
 export default {
   name: 'MusselOption',
@@ -21,34 +22,11 @@ export default {
     option: [String, Number, Object]
   },
   computed: {
-    valueField () {
-      return this.fields?.value || 'value'
-    },
-    labelField () {
-      return this.fields?.label || 'label'
-    },
     actualValue () {
-      const option = Object(this.option)
-      const v =
-        this.value === undefined
-          ? (
-            (this.valueField in option)
-              ? option[this.valueField]
-              : option.key
-          )
-          : this.value
-      return v === undefined ? this.option : v
+      return getOptionValue(this.value, this.option, this.fields)
     },
     actualLabel () {
-      const { params: { editable } } = this.editor
-      const label = editable
-        ? null
-        : (
-          this.label === undefined
-            ? this.option?.[this.labelField]
-            : this.label
-        )
-      return label || this.actualValue
+      return getOptionLabel(this.label, this.actualValue, this.option, this.fields)
     },
     actualIcon () {
       return this.multiple
@@ -93,7 +71,12 @@ export default {
   methods: {
     onClick () {
       if (this.disabled) return
-      this.editor.toggleSelection(this.actualValue, this.option)
+      this.editor.toggleSelection(
+        this.actualValue,
+        this.actualLabel,
+        this.option,
+        this.fields
+      )
       this.$emit('click')
     }
   }

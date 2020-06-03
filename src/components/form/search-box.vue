@@ -17,9 +17,10 @@
 
 <script>
   import isPlainObject from 'lodash.isplainobject'
-
   import BasePopupEditor from './base-popup-editor'
   import Option from './option.js'
+
+  import { getOptionLabel } from './combo-util'
 
   export default {
     name: 'MusselSearchBox',
@@ -33,7 +34,8 @@
       options: Array,
       valueMode: String,
       popupStyle: String,
-      editable: { type: Boolean, default: true }
+      editable: { type: Boolean, default: true },
+      popupMaxHeight: { type: String, default: '300px' }
     },
     data () {
       return {
@@ -49,7 +51,9 @@
     created () {
       this.params.value = null
       this.params.editable = true
-      this.popupParams.popupStyle = this.isDropdownStyle ? 'dropdown-list' : 'none'
+      this.popupParams.popupStyle = this.isDropdownStyle
+        ? 'dropdown-list'
+        : 'none'
 
       if (
         !this.icon &&
@@ -63,13 +67,18 @@
     },
     methods: {
       setValue (value) {
-        this.params.value = value
+        if (isPlainObject(value)) {
+          this.selected = this.valueMode === 'select'
+          this.params.value = getOptionLabel(null, null, value, this.fields)
+        } else {
+          this.params.value = value
+        }
       },
-      toggleSelection (value, option) {
+      toggleSelection (value, label, option) {
+        this.selected = this.valueMode === 'select'
         this.hidePopup()
-        this.selected = true
-        this.setValue(value)
-        this.$emit('change', value)
+        this.setValue(label)
+        this.$emit('change', option || { value, label })
         this.$emit('optionclick', value, option)
         this.focus()
       },
@@ -84,7 +93,10 @@
         this.__delayTimer = setTimeout(() => {
           this.setValue(value)
           this.$emit('search', value)
-          if (this.isDropdownStyle) this.showPopup()
+          if (this.isDropdownStyle) {
+            this.$emit('change', null)
+            this.showPopup()
+          }
         }, 500)
       },
       onButtonClick () {
@@ -94,6 +106,9 @@
           this.focus()
           this.togglePopup()
         }
+      },
+      onInputClick (event) {
+        event.target.select()
       }
     }
   }

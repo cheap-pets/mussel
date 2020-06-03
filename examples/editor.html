@@ -62,13 +62,14 @@
         <mu-option :value='false' label="false"></mu-option>
       </mu-combo-box>
       <h5>Search Combo Box</h5>
-      <mu-search-box placeholder="input" @search="onSearch" >
+      <mu-search-box placeholder="input only" @search="onSearch" >
       </mu-search-box>
       <mu-search-box
         value-mode="select"
-        placeholder="query & select"
+        placeholder="input & select"
         :options="searchOptions"
-        @search="onSearchQuery">
+        @search="onSearchQuery"
+        @change="onSearchResult">
       </mu-search-box>
     </div>
   </div>
@@ -128,9 +129,14 @@
           console.log(new Date(), value)
         },
         onSearchQuery: function (value) {
+          var arr = []
           for (var i = 0; i < 10; i++) {
-            this.searchOptions[i] = { value: i, label: value + '_option_' + i }
+            arr[i] = value + '_option_' + i // { value: i, label: value + '_option_' + i }
           }
+          this.searchOptions = arr
+        },
+        onSearchResult: function (value) {
+          console.log(value)
         }
       }
     })
