@@ -69,7 +69,7 @@ export default {
   watch: {
     value: {
       handler (value) {
-        this.setValue(value)
+        if (!this.$options.preventBaseWatch?.value) this.setValue(value)
       },
       immediate: true
     },

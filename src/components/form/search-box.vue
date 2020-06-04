@@ -2,7 +2,7 @@
   <mu-popup-editor-wrapper
     class="mu-search-box"
     :value-mode="valueMode"
-    :selected="selected">
+    :valid="valid">
     <slot v-if="!options && isDropdownStyle" />
     <template v-else-if="isDropdownStyle">
       <mu-option
@@ -29,7 +29,7 @@
     },
     extends: BasePopupEditor,
     props: {
-      value: String,
+      value: null,
       fields: Object,
       options: Array,
       valueMode: String,
@@ -39,7 +39,7 @@
     },
     data () {
       return {
-        selected: false
+        valid: false
       }
     },
     computed: {
@@ -48,8 +48,15 @@
           this.popupStyle === 'dropdown-list'
       }
     },
+    watch: {
+      value: {
+        handler (v) {
+          this.setValue(v, true)
+        },
+        immediate: true
+      }
+    },
     created () {
-      this.params.value = null
       this.params.editable = true
       this.popupParams.popupStyle = this.isDropdownStyle
         ? 'dropdown-list'
@@ -66,20 +73,23 @@
       }
     },
     methods: {
-      setValue (value) {
-        if (isPlainObject(value)) {
-          this.selected = this.valueMode === 'select'
-          this.params.value = getOptionLabel(null, null, value, this.fields)
-        } else {
-          this.params.value = value
+      setValue (value, valid) {
+        const v = (isPlainObject(value)
+          ? getOptionLabel(null, null, value, this.fields)
+          : value
+        ) || null
+        if ((!valid || value !== null) && this.params.value !== v) {
+          this.params.value = v
         }
+        this.valid = this.valueMode === 'select' && valid
       },
       toggleSelection (value, label, option) {
-        this.selected = this.valueMode === 'select'
+        this.valid = this.valueMode === 'select'
         this.hidePopup()
         this.setValue(label)
         this.$emit('change', option || { value, label })
         this.$emit('optionclick', value, option)
+        this.$el.querySelector('input').focus()
         this.focus()
       },
       onClearClick () {
@@ -88,13 +98,13 @@
         this.$emit('change', null)
       },
       onInput (value) {
-        this.selected = false
+        this.valid = false
         if (this.__delayTimer) clearTimeout(this.__delayTimer)
         this.__delayTimer = setTimeout(() => {
           this.setValue(value)
           this.$emit('search', value)
           if (this.isDropdownStyle) {
-            this.$emit('change', null)
+            if (this.value !== null) this.$emit('change', null)
             this.showPopup()
           }
         }, 500)
@@ -110,6 +120,9 @@
       onInputClick (event) {
         event.target.select()
       }
+    },
+    preventBaseWatch: {
+      value: true
     }
   }
 </script>

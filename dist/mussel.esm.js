@@ -54,7 +54,7 @@ styleInject(css_248z$7);
 var css_248z$8 = ".mu-input{position:relative;z-index:1;width:200px;padding:5px 10px;outline:0;border:1px solid rgba(0,0,0,.15);border-radius:2px;line-height:20px;background:#fff;font-size:1rem;color:rgba(0,0,0,.7)}.mu-input::-webkit-input-placeholder{color:rgba(0,0,0,.3)}.mu-input::-moz-placeholder{color:rgba(0,0,0,.3)}.mu-input:-ms-input-placeholder{color:rgba(0,0,0,.3)}.mu-input::-ms-input-placeholder{color:rgba(0,0,0,.3)}.mu-input::placeholder{color:rgba(0,0,0,.3)}.mu-input:focus,.mu-input[focus]{border-color:#1890ff}.mu-input:focus,.mu-input[focus]{z-index:2;text-align:left!important;box-shadow:0 0 0 2px rgba(24,144,255,.15)}.mu-input:hover{border-color:#40a9ff}.mu-input[readonly]{cursor:default;background-color:#ffd}.mu-input[disabled]{background-color:rgba(0,0,0,.08);border-color:rgba(0,0,0,.15);color:rgba(0,0,0,.4);box-shadow:none}.mu-input::-ms-clear{display:none}.mu-input[invalid],[invalid] .mu-input{color:#f5222d;border-color:#f5222d}.mu-input[invalid]:focus,.mu-input[invalid][focus],[invalid] .mu-input:focus,[invalid] .mu-input[focus]{border-color:#cf1322;box-shadow:0 0 0 2px rgba(245,34,45,.15)}.mu-input[invalid]:hover,[invalid] .mu-input:hover{border-color:#ff4d4f}input.mu-input{height:32px;padding-top:0;padding-bottom:0}textarea.mu-input{min-height:80px;resize:none}.mu-input[input-shape=round],[input-shape=round]>.mu-input{border-radius:16px}";
 styleInject(css_248z$8);
 
-var css_248z$9 = ".mu-editor{position:relative;display:inline-block;width:200px}.mu-editor:hover>.mu-input{border-color:#1890ff}.mu-editor>.mu-input[disabled],.mu-editor[disabled]>.mu-input{border-color:rgba(0,0,0,.15)}.mu-editor>.mu-input{width:100%;vertical-align:middle;padding-right:30px;background:#fff}.mu-editor[buttons=\"0\"]>.mu-input{padding-right:10px}.mu-editor[buttons=\"2\"]>input{padding-right:60px}.mu-editor[buttons=\"2\"]>input+.mu-icon{right:30px}.mu-editor[buttons=\"2\"]>.mu-icon:first-child+.mu-icon{left:30px;right:auto}.mu-editor[buttons=\"2\"]>.mu-icon:first-child~input{padding-left:60px;padding-right:10px}.mu-editor[buttons=\"2\"]>.mu-icon:first-child+input{padding-left:30px;padding-right:30px}.mu-editor[buttons=\"2\"]>.mu-icon:first-child+input+.mu-icon{right:1px}.mu-editor[readonly]>input{background-color:#ffd}.mu-editor[disabled]>input{background-color:rgba(0,0,0,.08)}.mu-editor[disabled]>input,.mu-editor[readonly]>input{padding-left:10px;padding-right:10px}.mu-editor[disabled]>.mu-icon,.mu-editor[readonly]>.mu-icon{display:none}.mu-editor>.mu-icon{position:absolute;z-index:3;top:1px;bottom:1px;right:1px;display:inline-flex;align-items:center;justify-content:center;width:30px;font-size:1rem;color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5)}.mu-editor>.mu-icon:first-child{left:1px;right:auto}.mu-editor>.mu-icon:first-child+input{padding-left:30px;padding-right:10px}.mu-editor>.mu-icon[clickable]{cursor:pointer}.mu-editor>.mu-icon[clickable]:hover{fill:#1890ff;color:#1890ff}.mu-editor>.mu-icon[trigger-type=clear]{color:rgba(0,0,0,.3);fill:rgba(0,0,0,.3)}.mu-editor>.mu-icon[trigger-type=clear]:hover{color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5)}.mu-editor[invalid]>.mu-input,[invalid] .mu-editor>.mu-input{border-color:#f5222d}.mu-editor[invalid]>[clickable]:hover,[invalid] .mu-editor>[clickable]:hover{color:#f5222d;fill:#f5222d}.mu-search-box[value-mode=select]>input{font-style:italic;color:rgba(0,0,0,.3)}.mu-search-box[value-mode=select]>input::-webkit-input-placeholder{font-style:normal}.mu-search-box[value-mode=select]>input::-moz-placeholder{font-style:normal}.mu-search-box[value-mode=select]>input:-ms-input-placeholder{font-style:normal}.mu-search-box[value-mode=select]>input::-ms-input-placeholder{font-style:normal}.mu-search-box[value-mode=select]>input::placeholder{font-style:normal}.mu-search-box[value-mode=select]>input:focus,.mu-search-box[value-mode=select][selected]>input{font-style:normal;color:rgba(0,0,0,.7)}.mu-date-range-editor_to{width:20px;display:flex;align-items:center;justify-content:center;border-left:1px solid rgba(0,0,0,.09);border-right:1px solid rgba(0,0,0,.09)}";
+var css_248z$9 = ".mu-editor{position:relative;display:inline-block;width:200px}.mu-editor:hover>.mu-input{border-color:#1890ff}.mu-editor>.mu-input[disabled],.mu-editor[disabled]>.mu-input{border-color:rgba(0,0,0,.15)}.mu-editor>.mu-input{width:100%;vertical-align:middle;padding-right:30px;background:#fff}.mu-editor[buttons=\"0\"]>.mu-input{padding-right:10px}.mu-editor[buttons=\"2\"]>input{padding-right:60px}.mu-editor[buttons=\"2\"]>input+.mu-icon{right:30px}.mu-editor[buttons=\"2\"]>.mu-icon:first-child+.mu-icon{left:30px;right:auto}.mu-editor[buttons=\"2\"]>.mu-icon:first-child~input{padding-left:60px;padding-right:10px}.mu-editor[buttons=\"2\"]>.mu-icon:first-child+input{padding-left:30px;padding-right:30px}.mu-editor[buttons=\"2\"]>.mu-icon:first-child+input+.mu-icon{right:1px}.mu-editor[readonly]>input{background-color:#ffd}.mu-editor[disabled]>input{background-color:rgba(0,0,0,.08)}.mu-editor[disabled]>input,.mu-editor[readonly]>input{padding-left:10px;padding-right:10px}.mu-editor[disabled]>.mu-icon,.mu-editor[readonly]>.mu-icon{display:none}.mu-editor>.mu-icon{position:absolute;z-index:3;top:1px;bottom:1px;right:1px;display:inline-flex;align-items:center;justify-content:center;width:30px;font-size:1rem;color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5)}.mu-editor>.mu-icon:first-child{left:1px;right:auto}.mu-editor>.mu-icon:first-child+input{padding-left:30px;padding-right:10px}.mu-editor>.mu-icon[clickable]{cursor:pointer}.mu-editor>.mu-icon[clickable]:hover{fill:#1890ff;color:#1890ff}.mu-editor>.mu-icon[trigger-type=clear]{color:rgba(0,0,0,.3);fill:rgba(0,0,0,.3)}.mu-editor>.mu-icon[trigger-type=clear]:hover{color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5)}.mu-editor[invalid]>.mu-input,[invalid] .mu-editor>.mu-input{border-color:#f5222d}.mu-editor[invalid]>[clickable]:hover,[invalid] .mu-editor>[clickable]:hover{color:#f5222d;fill:#f5222d}.mu-search-box[value-mode=select]>input{font-style:italic;color:rgba(0,0,0,.3)}.mu-search-box[value-mode=select]>input::-webkit-input-placeholder{font-style:normal}.mu-search-box[value-mode=select]>input::-moz-placeholder{font-style:normal}.mu-search-box[value-mode=select]>input:-ms-input-placeholder{font-style:normal}.mu-search-box[value-mode=select]>input::-ms-input-placeholder{font-style:normal}.mu-search-box[value-mode=select]>input::placeholder{font-style:normal}.mu-search-box[value-mode=select]>input:focus,.mu-search-box[value-mode=select][valid]>input{font-style:normal;color:rgba(0,0,0,.7)}.mu-date-range-editor_to{width:20px;display:flex;align-items:center;justify-content:center;border-left:1px solid rgba(0,0,0,.09);border-right:1px solid rgba(0,0,0,.09)}";
 styleInject(css_248z$9);
 
 var css_248z$a = ".mu-color-editor>input[readonly]{background:#fff}.mu-color-editor>.mu-color-indicator{position:absolute;z-index:2;top:50%;left:10px;padding:0 10px;transform:translateY(-50%)}.mu-color-palette{padding:8px;overflow:hidden;text-align:center;font-size:0}.mu-color-palette>div+div{margin-top:2px}.mu-color-palette .mu-color-palette-cell{display:inline-block;width:12px;height:12px;border:1px solid rgba(0,0,0,.25);overflow:hidden;cursor:pointer}.mu-color-palette .mu-color-palette-cell:hover{transform:scale(2)}.mu-color-palette .mu-color-palette-cell+.mu-color-palette-cell{margin-left:2px}";
@@ -96,7 +96,7 @@ styleInject(css_248z$l);
 var css_248z$m = ".mu-background-normal{background:#fff}.mu-background-grey{background:rgba(0,0,0,.04)}.mu-background-highlight{background:rgba(0,0,0,.35);color:#fff}.mu-background-info{background:#ffd}.mu-background-hover:hover{background:rgba(0,0,0,.05)}.mu-background-disabled[disabled]{background:rgba(0,0,0,.08);color:rgba(0,0,0,.3)}.mu-background-primary{background:#1890ff}.mu-background-success{background:#52c41a}.mu-background-danger{background:#52c41a}.mu-background-warning{background:#faad14}";
 styleInject(css_248z$m);
 
-var css_248z$n = ".mu-text-ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mu-text-color-normal{color:rgba(0,0,0,.7);fill:rgba(0,0,0,.7)}.mu-text-color-weak{color:rgba(0,0,0,.3);fill:rgba(0,0,0,.3)}.mu-text-color-title{color:rgba(0,0,0,.85);fill:rgba(0,0,0,.85)}.mu-text-color-subtitle{color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5)}.mu-text-title{font-size:1em;color:rgba(0,0,0,.85);fill:rgba(0,0,0,.85)}.mu-text-subtitle{font-size:.85em;color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5)}.mu-text-weak{font-size:.7em;color:rgba(0,0,0,.3);fill:rgba(0,0,0,.3)}.mu-text-body{font-size:.85em;color:rgba(0,0,0,.7);fill:rgba(0,0,0,.7)}.mu-text-color-primary{color:#1890ff;fill:#1890ff}.mu-text-color-success{color:#52c41a;fill:#52c41a}.mu-text-color-danger{color:#f5222d;fill:#f5222d}.mu-text-color-warning{color:#faad14;fill:#faad14}.mu-text-color-highlight{color:#fff;fill:#fff}";
+var css_248z$n = ".mu-text-ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mu-text-color-normal{color:rgba(0,0,0,.7);fill:rgba(0,0,0,.7)}.mu-text-color-weak{color:rgba(0,0,0,.3);fill:rgba(0,0,0,.3)}.mu-text-color-title{color:rgba(0,0,0,.85);fill:rgba(0,0,0,.85)}.mu-text-color-subtitle{color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5)}.mu-text-title{font-size:1em;color:rgba(0,0,0,.85);fill:rgba(0,0,0,.85)}.mu-text-subtitle{font-size:.9em;color:rgba(0,0,0,.5);fill:rgba(0,0,0,.5)}.mu-text-weak{font-size:.8em;color:rgba(0,0,0,.3);fill:rgba(0,0,0,.3)}.mu-text-body{font-size:.9em;color:rgba(0,0,0,.7);fill:rgba(0,0,0,.7)}.mu-text-color-primary{color:#1890ff;fill:#1890ff}.mu-text-color-success{color:#52c41a;fill:#52c41a}.mu-text-color-danger{color:#f5222d;fill:#f5222d}.mu-text-color-warning{color:#faad14;fill:#faad14}.mu-text-color-highlight{color:#fff;fill:#fff}";
 styleInject(css_248z$n);
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -3723,7 +3723,9 @@ var BaseEditor = {
   watch: {
     value: {
       handler: function handler(value) {
-        this.setValue(value);
+        var _this$$options$preven;
+
+        if (!((_this$$options$preven = this.$options.preventBaseWatch) === null || _this$$options$preven === void 0 ? void 0 : _this$$options$preven.value)) this.setValue(value);
       },
       immediate: true
     },
@@ -6542,7 +6544,7 @@ var script$n = {
   },
   "extends": BasePopupEditor,
   props: {
-    value: String,
+    value: null,
     fields: Object,
     options: Array,
     valueMode: String,
@@ -6558,7 +6560,7 @@ var script$n = {
   },
   data: function data() {
     return {
-      selected: false
+      valid: false
     };
   },
   computed: {
@@ -6566,8 +6568,15 @@ var script$n = {
       return this.valueMode === 'select' || this.popupStyle === 'dropdown-list';
     }
   },
+  watch: {
+    value: {
+      handler: function handler(v) {
+        this.setValue(v, true);
+      },
+      immediate: true
+    }
+  },
   created: function created() {
-    this.params.value = null;
     this.params.editable = true;
     this.popupParams.popupStyle = this.isDropdownStyle ? 'dropdown-list' : 'none';
 
@@ -6577,16 +6586,17 @@ var script$n = {
     }
   },
   methods: {
-    setValue: function setValue(value) {
-      if (lodash_isplainobject(value)) {
-        this.selected = this.valueMode === 'select';
-        this.params.value = getOptionLabel(null, null, value, this.fields);
-      } else {
-        this.params.value = value;
+    setValue: function setValue(value, valid) {
+      var v = (lodash_isplainobject(value) ? getOptionLabel(null, null, value, this.fields) : value) || null;
+
+      if ((!valid || value !== null) && this.params.value !== v) {
+        this.params.value = v;
       }
+
+      this.valid = this.valueMode === 'select' && valid;
     },
     toggleSelection: function toggleSelection(value, label, option) {
-      this.selected = this.valueMode === 'select';
+      this.valid = this.valueMode === 'select';
       this.hidePopup();
       this.setValue(label);
       this.$emit('change', option || {
@@ -6594,6 +6604,7 @@ var script$n = {
         label: label
       });
       this.$emit('optionclick', value, option);
+      this.$el.querySelector('input').focus();
       this.focus();
     },
     onClearClick: function onClearClick() {
@@ -6604,7 +6615,7 @@ var script$n = {
     onInput: function onInput(value) {
       var _this = this;
 
-      this.selected = false;
+      this.valid = false;
       if (this.__delayTimer) clearTimeout(this.__delayTimer);
       this.__delayTimer = setTimeout(function () {
         _this.setValue(value);
@@ -6612,7 +6623,7 @@ var script$n = {
         _this.$emit('search', value);
 
         if (_this.isDropdownStyle) {
-          _this.$emit('change', null);
+          if (_this.value !== null) _this.$emit('change', null);
 
           _this.showPopup();
         }
@@ -6629,6 +6640,9 @@ var script$n = {
     onInputClick: function onInputClick(event) {
       event.target.select();
     }
+  },
+  preventBaseWatch: {
+    value: true
   }
 };
 
@@ -6646,7 +6660,7 @@ var __vue_render__$m = function __vue_render__() {
     staticClass: "mu-search-box",
     attrs: {
       "value-mode": _vm.valueMode,
-      selected: _vm.selected
+      valid: _vm.valid
     }
   }, [!_vm.options && _vm.isDropdownStyle ? _vm._t("default") : _vm.isDropdownStyle ? _vm._l(_vm.options, function (option, index) {
     return _c("mu-option", {

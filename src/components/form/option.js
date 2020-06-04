@@ -26,7 +26,12 @@ export default {
       return getOptionValue(this.value, this.option, this.fields)
     },
     actualLabel () {
-      return getOptionLabel(this.label, this.actualValue, this.option, this.fields)
+      return getOptionLabel(
+        this.label,
+        this.actualValue,
+        this.option,
+        this.fields
+      )
     },
     actualIcon () {
       return this.multiple

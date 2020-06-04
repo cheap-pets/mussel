@@ -65,6 +65,7 @@
       <mu-search-box placeholder="input only" @search="onSearch" >
       </mu-search-box>
       <mu-search-box
+        v-model="searchValue"
         value-mode="select"
         placeholder="input & select"
         :options="searchOptions"
@@ -103,7 +104,8 @@
         comboValue1: '',
         comboValue2: [1,2],
         comboValue3: true,
-        searchOptions: []
+        searchOptions: [],
+        searchValue: { label: 'x', value: 'x'}
       },
       methods: {
         onDropdownItemClick: function () {
