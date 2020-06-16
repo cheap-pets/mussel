@@ -34,6 +34,9 @@
       sidebar: {
         default: null
       },
+      menu: {
+        default: null
+      },
       menuGroup: {
         default: null
       }
@@ -54,6 +57,16 @@
       },
       isDropdown () {
         return !this.sidebar && !this.menuGroup
+      },
+      expandedSilbling () {
+        return (this.menu?.accordion && this.isExpander)
+          ? this.sidebar.expandedGroup
+          : null
+      }
+    },
+    watch: {
+      expandedSilbling (v) {
+        if (v && v !== this && this.expanded) this.collapse()
       }
     },
     methods: {
@@ -74,6 +87,7 @@
           const h = el.scrollHeight || 2000
           el.style.maxHeight = h + 'px'
         }
+        this.menu?.setExpandedGroup(this)
       },
       collapse () {
         this.expanded = false

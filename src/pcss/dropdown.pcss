@@ -22,6 +22,10 @@
   &[popup-style=dropdown-list],
   &[popup-style=dropdown-menu] {
     padding: $dropdownListPadding;
+
+    &:empty {
+      visibility: hidden !important;
+    }
   }
 
   & > .mu-list-item {
