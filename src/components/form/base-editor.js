@@ -27,7 +27,8 @@ export default {
         disabled: p.disabled,
         editable: p.editable,
         clearable: p.clearable,
-        placeholder: p.placeholder
+        placeholder: p.placeholder,
+        autofocus: p.autofocus
       }
     }
   },
@@ -64,6 +65,7 @@ export default {
       type: Boolean,
       default: true
     },
+    autofocus: Boolean,
     triggerType: String
   },
   watch: {
@@ -102,6 +104,9 @@ export default {
     },
     placeholder (value) {
       this.params.placeholder = value
+    },
+    autofocus (value) {
+      this.params.autofocus = value
     }
   },
   methods: {

@@ -4,6 +4,7 @@
     :type="type"
     :value="value"
     :disabled="disabled"
+    :autofocus="autofocus"
     @input="onInput"
     @blur="onBlur"
     @click="onClick"
@@ -24,10 +25,8 @@
         default: 'text'
       },
       value: [String, Number],
-      disabled: {
-        type: Boolean,
-        default: false
-      }
+      disabled: Boolean,
+      autofocus: Boolean
     },
     methods: {
       onInput (event) {

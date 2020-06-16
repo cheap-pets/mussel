@@ -73,6 +73,7 @@
           focus: p.focus,
           readonly: p.readonly || !p.editable,
           disabled: p.disabled,
+          autofocus: p.autofocus,
           placeholder: p.placeholder
         }
       }

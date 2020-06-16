@@ -9,6 +9,9 @@
         menu: this
       }
     },
+    props: {
+      accordion: Boolean
+    },
     methods: {
       setActiveItem (item) {
         if (this.$activeItem !== item) {
