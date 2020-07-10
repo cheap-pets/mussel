@@ -1,6 +1,6 @@
 <template>
   <mu-dialog-wrapper class="mu-message-box">
-    <div v-html="message" />
+    <div v-html="$options.message" />
   </mu-dialog-wrapper>
 </template>
 
@@ -11,7 +11,7 @@
     name: 'MusselMessageBox',
     extends: BaseDialog,
     methods: {
-      hide (button) {
+      hide (force, button) {
         this.actualHide(button)
         setTimeout(() => {
           this.$el.parentNode.removeChild(this.$el)
@@ -19,7 +19,7 @@
         }, 500)
       },
       onButtonClick (button) {
-        this.hide(button.id || button)
+        this.hide(null, button.id || button)
       }
     }
   }

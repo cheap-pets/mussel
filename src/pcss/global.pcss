@@ -24,3 +24,9 @@ button {
 [class^="mu-"] {
   box-sizing: border-box;
 }
+
+.mu-bordered,
+[class^="mu-"][bordered],
+[class^="mu-"] > [bordered] {
+  border: 1px solid $normalBorderColor;
+}

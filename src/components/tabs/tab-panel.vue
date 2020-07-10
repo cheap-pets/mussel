@@ -24,6 +24,14 @@
         return this.tabParams?.activeName === this.name
       }
     },
+    watch: {
+      visible: {
+        handler (v) {
+          this.$emit(v ? 'activated' : 'deactivated', this.name)
+        },
+        immediate: true
+      }
+    },
     mounted () {
       this.tabs?.mountTab({
         name: this.name,
