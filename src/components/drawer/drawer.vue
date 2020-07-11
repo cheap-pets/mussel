@@ -3,21 +3,23 @@
     v-if="popupVisible"
     class="mu-drawer-wrapper"
     :class="maskClass"
-    :direction="direction"
-    :drawer-visible="drawerVisible"
-    @click.native="onMaskClick">
+    :position="position"
+    :popup="drawerPopup"
+    @click.stop="onMaskClick">
     <slot />
   </div>
 </template>
 
 <script>
-  import BaseModal from './base-modal.vue'
+  import BaseModal from '../layer/base-modal.vue'
+
+  import { isParentElement } from '../../utils/dom'
 
   export default {
+    name: 'MusselDrawer',
     extends: BaseModal,
     props: {
       mask: String,
-      maskAction: String,
       position: {
         type: String,
         default: 'right',
@@ -28,7 +30,7 @@
     },
     data () {
       return {
-        drawerVisible: false
+        drawerPopup: false
       }
     },
     computed: {
@@ -43,22 +45,39 @@
     },
     methods: {
       show () {
-        if (this.mask !== 'none') window.__mussel_modal = this
+        if (this.mask === 'none') window.__mussel_drawer = this
+        else window.__mussel_modal = this
         this.$emit('show')
         this.$emit('change', true)
+        if (this.__visibleTimer) {
+          clearTimeout(this.__visibleTimer)
+        }
         this.popupVisible = true
-        setTimeout(() => {
-          this.drawerVisible = true
+        this.__visibleTimer = setTimeout(() => {
+          this.drawerPopup = true
         }, 10)
       },
       hide () {
-        if (this.mask !== 'none') this.deactivate()
-        this.drawerVisible = false
-        setTimeout(() => {
+        if (this.mask === 'none') {
+          if (window.__mussel_drawer === this) window.__mussel_drawer = null
+        } else if (window.__mussel_modal === this) {
+          window.__mussel_modal = null
+        }
+        if (this.__visibleTimer) {
+          clearTimeout(this.__visibleTimer)
+        }
+        this.drawerPopup = false
+        this.__visibleTimer = setTimeout(() => {
           this.popupVisible = false
           this.$emit('hide')
           this.$emit('change', false)
         }, 200)
+      },
+      hideIf (triggerEl) {
+        if (
+          !isParentElement(triggerEl, this.$el) &&
+          triggerEl.className.indexOf('mu-modal-mask') === -1
+        ) this.hide()
       }
     }
   }

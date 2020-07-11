@@ -58,6 +58,8 @@ import Modal from './layer/modal.vue'
 import Dialog from './layer/dialog.vue'
 import DialogWrapper from './layer/dialog-wrapper.vue'
 import * as MessageBox from './message'
+/* DRAWER */
+import Drawer from './drawer/drawer.vue'
 /* CALENDAR */
 import Calendar from './calendar/calendar.vue'
 /* MENU */
@@ -124,6 +126,7 @@ function install ($Vue = Vue) {
   $Vue.component('mu-modal', Modal)
   $Vue.component('mu-dialog', Dialog)
   $Vue.component('mu-dialog-wrapper', DialogWrapper)
+  $Vue.component('mu-drawer', Drawer)
 
   $Vue.component('mu-calendar', Calendar)
 
@@ -197,6 +200,8 @@ export {
   Modal,
   Dialog,
   DialogWrapper,
+  // Drawer
+  Drawer,
   // message box
   showMessage,
   alert,

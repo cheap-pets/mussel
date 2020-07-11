@@ -8,6 +8,30 @@
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
   <style>
+    .drawer1-5 {
+      border-radius: 0 0 16px 16px;
+      height: 400px;
+      margin-left: 50px;
+      margin-right: 50px;
+    }
+    .drawer2-6 {
+      border-radius: 16px 16px 0 0;
+      height: 400px;
+      margin-left: 50px;
+      margin-right: 50px;
+    }
+    .drawer3-7 {
+      border-radius: 0 16px 16px 0;
+      width: 400px;
+      margin-top: 50px;
+      margin-bottom: 50px;
+    }
+    .drawer4-8 {
+      border-radius: 16px 0 0 16px;
+      width: 400px;
+      margin-top: 50px;
+      margin-bottom: 50px;
+    }
   </style>
 </head>
 
@@ -16,37 +40,49 @@
     <h2>Drawer</h2>
     <hr>
     <div>
-      <h3>Drawer</h3>
+      <h3>Drawer with Mask</h3>
       <div>
         <mu-button @click="openDrawer1">At Top</mu-button>
         <mu-button @click="openDrawer2">At Bottom</mu-button>
         <mu-button @click="openDrawer3">At Left</mu-button>
         <mu-button @click="openDrawer4">At Right</mu-button>
       </div>
-      <mu-drawer :visible="draw1Visible">
+      <mu-drawer v-model="draw1Visible" position="top">
+        <div class="drawer1-5" content-spacing>
+          <mu-button @click="showMessage">Show Message</mu-button>
+        </div>
       </mu-drawer>
-      <mu-drawer :visible="draw2Visible">
+      <mu-drawer v-model="draw2Visible" position="bottom">
+        <div class="drawer2-6"></div>
       </mu-drawer>
-      <mu-drawer :visible="draw3Visible">
+      <mu-drawer v-model="draw3Visible" position="left">
+        <div class="drawer3-7"></div>
       </mu-drawer>
-      <mu-drawer :visible="draw4Visible">
+      <mu-drawer v-model="draw4Visible" position="right">
+        <div class="drawer4-8"></div>
       </mu-drawer>
     </div>
     <div>
-      <h3>Drawer With Mask</h3>
+      <h3>Drawer without Mask</h3>
       <div>
-        <mu-button @click="openDrawerWithMask1">At Top</mu-button>
-        <mu-button @click="openDrawerWithMask2">At Bottom</mu-button>
-        <mu-button @click="openDrawerWithMask3">At Left</mu-button>
-        <mu-button @click="openDrawerWithMask4">At Right</mu-button>
+        <mu-button @click="openDrawer5">At Top</mu-button>
+        <mu-button @click="openDrawer6">At Bottom</mu-button>
+        <mu-button @click="openDrawer7">At Left</mu-button>
+        <mu-button @click="openDrawer8">At Right</mu-button>
       </div>
-      <mu-drawer :mask="false" :visible="drawWithMask1Visible">
+      <mu-drawer mask="none" v-model="draw5Visible" position="top">
+        <div class="drawer1-5" content-spacing>
+          <mu-button @click="showMessage">Show Message</mu-button>
+        </div>
       </mu-drawer>
-      <mu-drawer :mask="false" :visible="drawWithMask2Visible">
+      <mu-drawer mask="none" v-model="draw6Visible" position="bottom">
+        <div class="drawer2-6"></div>
       </mu-drawer>
-      <mu-drawer :mask="false" :visible="drawWithMask3Visible">
+      <mu-drawer mask="none" v-model="draw7Visible" position="left">
+        <div class="drawer3-7"></div>
       </mu-drawer>
-      <mu-drawer :mask="false" :visible="drawWithMask4Visible">
+      <mu-drawer mask="none" v-model="draw8Visible" position="right">
+        <div class="drawer4-8"></div>
       </mu-drawer>
     </div>
   </div>
@@ -59,27 +95,38 @@
         draw2Visible: false,
         draw3Visible: false,
         draw4Visible: false,
-        drawWithMask1Visible: false,
-        drawWithMask2Visible: false,
-        drawWithMask3Visible: false, 
-        drawWithMask4Visible: false
+        draw5Visible: false,
+        draw6Visible: false,
+        draw7Visible: false,
+        draw8Visible: false
       },
       methods: {
         openDrawer1: function () {
+          this.draw1Visible = true
         },
         openDrawer2: function () {
+          this.draw2Visible = true
         },
         openDrawer3: function () {
+          this.draw3Visible = true
         },
         openDrawer4: function () {
+          this.draw4Visible = true
         },
-        openDrawerWithMask1: function () {
+        openDrawer5: function () {
+          this.draw5Visible = true
         },
-        openDrawerWithMask2: function () {
+        openDrawer6: function () {
+          this.draw6Visible = true
         },
-        openDrawerWithMask3: function () {
+        openDrawer7: function () {
+          this.draw7Visible = true
         },
-        openDrawerWithMask4: function () {
+        openDrawer8: function () {
+          this.draw8Visible = true
+        },
+        showMessage: function () {
+          mussel.alert('i am groot')
         }
       }
     });

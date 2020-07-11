@@ -40,9 +40,9 @@ window.addEventListener(
 
 window.addEventListener(
   'mousedown',
-  event => callbackIf(
-    'dropdown',
-    dropdown => dropdown.hideIf(event.target)
+  event => (
+    callbackIf('dropdown', dropdown => dropdown.hideIf(event.target)) ||
+    callbackIf('drawer', drawer => drawer.hideIf(event.target))
   )
 )
 

@@ -4,47 +4,69 @@
   left: 0;
   right: 0;
   bottom: 0;
-}
+  display: block;
+  overflow: visible;
 
-.mu-drawer {
-  position: absolute;
-  z-index: 100;
-  max-width: 100%;
-  max-height: 100%;
-  visibility: hidden;
-  background: $normalBackground;
-  transition: all .2s ease-in-out;
-
-  &[visible] {
-    visibility: visible;
+  & > div {
+    position: absolute;
+    transition: all .2s ease-in-out;
+    background: $normalBackground;
+    box-shadow: $dialogShadow;
   }
 
-  &[drawer-from="left"] {
+  &[position="left"] {
+    right: auto;
+
+    & > div {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      transform: translateX(-100%);
+    }
+  }
+
+  &[position="right"] {
+    left: auto;
+
+    & > div {
+      top: 0;
+      bottom: 0;
+      right: 0;
+      transform: translateX(100%);
+    }
+  }
+
+  &[position="top"] {
+    bottom: auto;
+
+    & > div {
+      top: 0;
+      left: 0;
+      right: 0;
+      transform: translateY(-100%);
+    }
+  }
+
+  &[position="bottom"] {
+    top: auto;
+
+    & > div{
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transform: translateY(100%);
+    }
+  }
+
+  &.mu-modal-mask {
     top: 0;
-    bottom: 0;
-    left: 0;
-    transform: translateX(-100%);
-  }
-
-  &[drawer-from="right"] {
-    top: 0;
-    bottom: 0;
-    right: 0;
-    transform: translateX(100%);
-  }
-
-  &[drawer-from="top"] {
-    top: 0;
     left: 0;
     right: 0;
-    transform: translateY(-100%);
+    bottom: 0;
   }
 
-  &[drawer-from="bottom"] {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    transform: translateY(100%);
+  &[popup] > div {
+    transform: translate(0, 0);
   }
 }
 
