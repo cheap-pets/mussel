@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Modal Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+  </style>
+</head>
+
+<body class="mu-background-normal">
+  <div id="app">
+    <h2>Drawer</h2>
+    <hr>
+    <div>
+      <h3>Drawer</h3>
+      <div>
+        <mu-button @click="openDrawer1">At Top</mu-button>
+        <mu-button @click="openDrawer2">At Bottom</mu-button>
+        <mu-button @click="openDrawer3">At Left</mu-button>
+        <mu-button @click="openDrawer4">At Right</mu-button>
+      </div>
+      <mu-drawer :visible="draw1Visible">
+      </mu-drawer>
+      <mu-drawer :visible="draw2Visible">
+      </mu-drawer>
+      <mu-drawer :visible="draw3Visible">
+      </mu-drawer>
+      <mu-drawer :visible="draw4Visible">
+      </mu-drawer>
+    </div>
+    <div>
+      <h3>Drawer With Mask</h3>
+      <div>
+        <mu-button @click="openDrawerWithMask1">At Top</mu-button>
+        <mu-button @click="openDrawerWithMask2">At Bottom</mu-button>
+        <mu-button @click="openDrawerWithMask3">At Left</mu-button>
+        <mu-button @click="openDrawerWithMask4">At Right</mu-button>
+      </div>
+      <mu-drawer :mask="false" :visible="drawWithMask1Visible">
+      </mu-drawer>
+      <mu-drawer :mask="false" :visible="drawWithMask2Visible">
+      </mu-drawer>
+      <mu-drawer :mask="false" :visible="drawWithMask3Visible">
+      </mu-drawer>
+      <mu-drawer :mask="false" :visible="drawWithMask4Visible">
+      </mu-drawer>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        draw1Visible: false,
+        draw2Visible: false,
+        draw3Visible: false,
+        draw4Visible: false,
+        drawWithMask1Visible: false,
+        drawWithMask2Visible: false,
+        drawWithMask3Visible: false, 
+        drawWithMask4Visible: false
+      },
+      methods: {
+        openDrawer1: function () {
+        },
+        openDrawer2: function () {
+        },
+        openDrawer3: function () {
+        },
+        openDrawer4: function () {
+        },
+        openDrawerWithMask1: function () {
+        },
+        openDrawerWithMask2: function () {
+        },
+        openDrawerWithMask3: function () {
+        },
+        openDrawerWithMask4: function () {
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
