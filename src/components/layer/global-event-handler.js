@@ -43,7 +43,8 @@ window.addEventListener(
   event => (
     callbackIf('dropdown', dropdown => dropdown.hideIf(event.target)) ||
     callbackIf('drawer', drawer => drawer.hideIf(event.target))
-  )
+  ),
+  true
 )
 
 window.addEventListener('popstate', () => {
