@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Another UI Library for Vue",
   "main": "dist/mussel.esm.js",
   "files": [
@@ -19,7 +19,7 @@
     "@babel/preset-env": "^7.10.4",
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^8.1.0",
+    "@rollup/plugin-node-resolve": "^8.4.0",
     "@vue/babel-plugin-transform-vue-jsx": "^1.1.2",
     "a-color-picker": "^1.2.1",
     "autoprefixer": "^9.8.5",

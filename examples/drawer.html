@@ -11,14 +11,10 @@
     .drawer1-5 {
       border-radius: 0 0 16px 16px;
       height: 400px;
-      margin-left: 50px;
-      margin-right: 50px;
     }
     .drawer2-6 {
       border-radius: 16px 16px 0 0;
       height: 400px;
-      margin-left: 50px;
-      margin-right: 50px;
     }
     .drawer3-7 {
       border-radius: 0 16px 16px 0;
@@ -47,19 +43,14 @@
         <mu-button @click="openDrawer3">At Left</mu-button>
         <mu-button @click="openDrawer4">At Right</mu-button>
       </div>
-      <mu-drawer v-model="draw1Visible" position="top">
-        <div class="drawer1-5" content-spacing>
-          <mu-button @click="showMessage">Show Message</mu-button>
-        </div>
+      <mu-drawer v-model="draw1Visible" drawer-class="drawer1-5" position="top" width="80%">
+        <mu-button @click="showMessage">Show Message</mu-button>
       </mu-drawer>
-      <mu-drawer v-model="draw2Visible" position="bottom">
-        <div class="drawer2-6"></div>
+      <mu-drawer v-model="draw2Visible" drawer-class="drawer2-6" position="bottom" margin="0 50px">
       </mu-drawer>
-      <mu-drawer v-model="draw3Visible" position="left">
-        <div class="drawer3-7"></div>
+      <mu-drawer v-model="draw3Visible" drawer-class="drawer3-7" position="left">
       </mu-drawer>
-      <mu-drawer v-model="draw4Visible" position="right">
-        <div class="drawer4-8"></div>
+      <mu-drawer v-model="draw4Visible" drawer-class="drawer4-8" position="right">
       </mu-drawer>
     </div>
     <div>
@@ -70,19 +61,19 @@
         <mu-button @click="openDrawer7">At Left</mu-button>
         <mu-button @click="openDrawer8">At Right</mu-button>
       </div>
-      <mu-drawer mask="none" v-model="draw5Visible" position="top">
-        <div class="drawer1-5" content-spacing>
+      <mu-drawer mask="none" v-model="draw5Visible" position="top" slot-wrapper="none">
+        <div class="mu-drawer drawer1-5" content-spacing>
           <mu-button @click="showMessage">Show Message</mu-button>
         </div>
       </mu-drawer>
-      <mu-drawer mask="none" v-model="draw6Visible" position="bottom">
-        <div class="drawer2-6"></div>
+      <mu-drawer mask="none" v-model="draw6Visible" position="bottom" slot-wrapper="none">
+        <div class="mu-drawer drawer2-6"></div>
       </mu-drawer>
-      <mu-drawer mask="none" v-model="draw7Visible" position="left">
-        <div class="drawer3-7"></div>
+      <mu-drawer mask="none" v-model="draw7Visible" position="left" slot-wrapper="none">
+        <div class="mu-drawer drawer3-7"></div>
       </mu-drawer>
-      <mu-drawer mask="none" v-model="draw8Visible" position="right">
-        <div class="drawer4-8"></div>
+      <mu-drawer mask="none" v-model="draw8Visible" position="right" slot-wrapper="none">
+        <div class="mu-drawer drawer4-8"></div>
       </mu-drawer>
     </div>
   </div>

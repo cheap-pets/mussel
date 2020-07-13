@@ -1,12 +1,17 @@
 <template>
-  <div
-    v-if="popupVisible"
+  <div v-if="popupVisible"
     class="mu-drawer-wrapper"
     :class="maskClass"
     :position="position"
     :popup="drawerPopup"
     @click.stop="onMaskClick">
-    <slot />
+    <slot v-if="slotWrapper === 'none'" />
+    <div v-else
+      class="mu-drawer"
+      :class="drawerClass"
+      :style="drawerStyles">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -14,12 +19,19 @@
   import BaseModal from '../layer/base-modal.vue'
 
   import { isParentElement } from '../../utils/dom'
+  import { assignIfDefined } from '../../utils/assign-if-defined'
 
   export default {
     name: 'MusselDrawer',
     extends: BaseModal,
     props: {
       mask: String,
+      width: String,
+      height: String,
+      margin: String,
+      drawerClass: null,
+      drawerStyle: Object,
+      slotWrapper: String,
       position: {
         type: String,
         default: 'right',
@@ -37,10 +49,17 @@
       maskClass () {
         return this.mask === 'none' ? undefined : 'mu-modal-mask'
       },
-      direction () {
-        return ['top', 'bottom'].indexOf(this.position) !== -1
-          ? 'column'
-          : 'row'
+      drawerStyles () {
+        return assignIfDefined(
+          {
+            ...this.drawerStyle
+          },
+          {
+            width: this.width,
+            height: this.height,
+            margin: this.margin
+          }
+        )
       }
     },
     methods: {
