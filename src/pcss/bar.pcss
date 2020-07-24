@@ -6,6 +6,18 @@
       margin-right: 0;
     }
   }
+
+  &.mu-toolbar {
+    height: $normalBarHeight; 
+    padding: 0 10px;
+
+    & > span,
+    & > label {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
 }
 
 .mu-bar-collapse {
