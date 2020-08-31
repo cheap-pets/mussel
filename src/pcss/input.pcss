@@ -71,3 +71,61 @@ textarea.mu-input {
 [input-shape="round"] > .mu-input {
   border-radius: $inputElementRoundRadius;
 }
+
+.mu-radio-box {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+
+  & + .mu-radio-box {
+    margin-left: $unitSpacingSize;
+  }
+
+  & > .mu-radio-box_fake {
+    display: inline-block;
+    height: 13px;
+    width: 13px;
+    margin-right: 3px;
+    border-radius: 6.5px;
+    border: 1px solid $normalBorderColor;
+    padding: 1px;
+    
+    &:hover {
+      border-color: $primaryMinusColor;
+    }
+  }
+
+  & > input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+
+    &:checked + .mu-radio-box_fake {
+      border-color: $primaryColor;
+      &:before {
+        box-sizing: border-box;
+        display: block;
+        height: 9px;
+        content: '';
+        border-radius: 4.5px;
+        background-color: $primaryMinusColor;
+      }
+    }
+  }
+
+  &[disabled] > input {
+    & + .mu-radio-box_fake {
+      border-color: #ddd;
+      background-color: #ddd;
+    }
+
+    &:checked + .mu-radio-box_fake {
+      background-color: inherit;
+      border-color: #ddd;
+
+      &:before {
+        background-color: #ddd;
+      }
+    }
+  }
+}
