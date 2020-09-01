@@ -30,7 +30,10 @@ import DateRangeEditor from './form/date-range-editor.vue'
 import ComboBox from './form/combo-box.vue'
 import Option from './form/option.js'
 import SearchBox from './form/search-box.vue'
-import RadioBox from './form/radio-box.vue'
+import RadioGroup from './form/radio-group.vue'
+import Radio from './form/radio-box.vue'
+import Checkbox from './form/checkbox.vue'
+import CheckboxGroup from './form/checkbox-group.vue'
 /* FORM */
 import Form from './form/form.vue'
 import FormRow from './form/form-row.vue'
@@ -100,7 +103,10 @@ function install ($Vue = Vue) {
   $Vue.component('mu-combo-box', ComboBox)
   $Vue.component('mu-option', Option)
   $Vue.component('mu-search-box', SearchBox)
-  $Vue.component('mu-radio-box', RadioBox)
+  $Vue.component('mu-radio-group', RadioGroup)
+  $Vue.component('mu-radio', Radio)
+  $Vue.component('mu-checkbox', Checkbox)
+  $Vue.component('mu-checkbox-group', CheckboxGroup)
 
   $Vue.component('mu-form', Form)
   $Vue.component('mu-form-row', FormRow)
@@ -173,7 +179,10 @@ export {
   ComboBox,
   Option,
   SearchBox,
-  RadioBox,
+  RadioGroup,
+  Radio,
+  Checkbox,
+  CheckboxGroup,
   // Form
   Form,
   FormRow,

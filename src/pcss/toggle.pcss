@@ -13,7 +13,7 @@
     width: $toggleButtonWidth;
     height: 20px;
     border-radius: 10px;
-    background: $normalDarkGreyBackground;
+    background-color: $normalDarkGreyBackground;
     transition: background 0.2s ease-in-out;
 
     &:after {
@@ -23,7 +23,7 @@
       bottom: 3px;
       display: inline-block;
       width: 14px;
-      background: #fff;
+      background-color: #fff;
       border-radius: 7px;
       content: '';
       transition: all 0.2s ease-in-out;
@@ -31,7 +31,7 @@
   }
 
   &[active] > .mu-toggle-slide-bar {
-    background: $successColor;
+    background-color: $successColor;
     &:after {
       left: 100%;
       transform: translateX(-17px);
@@ -48,10 +48,10 @@
       cursor: default;
     }
     & > .mu-toggle-slide-bar {
-      background: $normalGreyBackground;
+      background-color: $normalDisabledBackground;
 
       &:after {
-        background: $normalDisabledBackground;
+        background-color: $normalDisabledTextColor;
       }
     }
   }

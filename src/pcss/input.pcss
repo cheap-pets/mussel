@@ -7,7 +7,7 @@
   border: 1px solid $normalBorderColor;
   border-radius: $inputElementBorderRadius;
   line-height: $normalLineHeight;
-  background: $normalBackground;
+  background-color: $normalBackground;
   font-size: $inputFontSize;
   color: $normalTextColor;
 
@@ -35,7 +35,7 @@
   &[disabled] {
     background-color: $normalDisabledBackground;
     border-color: $normalBorderColor;
-    color: $normalDisabledTextColor;
+    color: $inputDisabledTextColor;
     box-shadow: none;
   }
   &::-ms-clear {
@@ -72,27 +72,28 @@ textarea.mu-input {
   border-radius: $inputElementRoundRadius;
 }
 
-.mu-radio-box {
+.mu-radio {
   display: inline-flex;
   align-items: center;
+  line-height: 1.7rem;
   cursor: pointer;
 
-  & + .mu-radio-box {
+  & + .mu-radio {
     margin-left: $unitSpacingSize;
   }
 
-  & > .mu-radio-box_fake {
+  & > .mu-radio_fake {
     display: inline-block;
-    height: 13px;
-    width: 13px;
-    margin-right: 3px;
-    border-radius: 6.5px;
-    border: 1px solid $normalBorderColor;
-    padding: 1px;
-    
-    &:hover {
-      border-color: $primaryMinusColor;
-    }
+    height: 1rem;
+    width: 1rem;
+    padding: 2px;
+    margin-right: 5px;
+    border: 1px solid $normalTextColor;
+    border-radius: .5rem;
+  }
+
+  &:hover > .mu-radio_fake {
+    border-color: $primaryMinusColor;
   }
 
   & > input {
@@ -100,32 +101,106 @@ textarea.mu-input {
     z-index: -1;
     opacity: 0;
 
-    &:checked + .mu-radio-box_fake {
+    &:checked + .mu-radio_fake {
       border-color: $primaryColor;
       &:before {
         box-sizing: border-box;
         display: block;
-        height: 9px;
+        height: 100%;
+        width: 100%;
         content: '';
-        border-radius: 4.5px;
+        border-radius: 50%;
         background-color: $primaryMinusColor;
       }
     }
   }
 
   &[disabled] > input {
-    & + .mu-radio-box_fake {
-      border-color: #ddd;
-      background-color: #ddd;
+    & + .mu-radio_fake {
+      border-color: $normalDisabledBackground;
+      background-color: $normalDisabledBackground;
     }
 
-    &:checked + .mu-radio-box_fake {
+    &:checked + .mu-radio_fake {
       background-color: inherit;
-      border-color: #ddd;
+      border-color: $normalDisabledTextColor;
 
       &:before {
-        background-color: #ddd;
+        background-color: $normalDisabledTextColor;
       }
     }
+  }
+}
+
+.mu-radio-group[vertical] {
+  & > .mu-radio {
+    display: flex;
+    margin-left: 0;
+  }
+}
+
+.mu-checkbox {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.7rem;
+  cursor: pointer;
+
+  & + .mu-checkbox {
+    margin-left: $unitSpacingSize;
+  }
+
+  & > .mu-checkbox_fake {
+    display: inline-block;
+    height: 1rem;
+    width: 1rem;
+    padding: 2px;
+    margin-right: 5px;
+    border: 1px solid $normalTextColor;
+    border-radius: 2px;
+  }
+
+  &:hover > .mu-checkbox_fake {
+    border-color: $primaryMinusColor;
+  }
+
+  & > input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+
+    &:checked + .mu-checkbox_fake {
+      border-color: $primaryColor;
+      &:before {
+        box-sizing: border-box;
+        display: block;
+        height: 100%;
+        width: 100%;
+        content: '';
+        background-color: $primaryMinusColor;
+      }
+    }
+  }
+
+  &[disabled] > input {
+    & + .mu-checkbox_fake {
+      border-color: $normalDisabledBackground;
+      background-color: $normalDisabledBackground;
+    }
+
+    &:checked + .mu-checkbox_fake {
+      background-color: inherit;
+      border-color: $normalDisabledTextColor;
+
+      &:before {
+        background-color: $normalDisabledTextColor;
+      }
+    }
+  }
+}
+
+.mu-checkbox-group[vertical] {
+  & > .mu-checkbox {
+    display: flex;
+    margin-left: 0;
   }
 }

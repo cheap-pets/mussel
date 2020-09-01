@@ -40,19 +40,13 @@
       <h5>Search Box Style</h5>
       <mu-editor input-shape="round" icon-position="left" icon="search" @enterkey="log('enter')"></mu-editor>
     </div>
-    <div>
-      <h3>Radio Box</h3>
-      <mu-radio-box v-model="radioValue" option="1" disabled>选项一</mu-radio-box>
-      <mu-radio-box v-model="radioValue" option="2">选项二</mu-radio-box>
-    </div>
   </div>
   <script type="text/javascript">
     var view = new Vue({
       el: '#app',
       data: {
         inputValue: 'foo',
-        editorValue1: 'bar',
-        radioValue: "1"
+        editorValue1: 'bar'
       },
       methods: {
         log: function (msg) {

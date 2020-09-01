@@ -1,22 +1,27 @@
 <template>
-  <label class="mu-radio-box" :disabled="disabled">
+  <label class="mu-radio" :disabled="isDisabled" :style="{ width }">
     <input
       type="radio"
       :name="name"
-      :value="option"
-      :checked="value === option"
-      :disabled="disabled"
+      :value="optionValue"
+      :checked="checkedValue === optionValue"
+      :disabled="isDisabled"
       @change="onChange">
-    <span class="mu-radio-box_fake" />
+    <span class="mu-radio_fake" />
     <slot>
-      <span>{{ label }}</span>
+      <span>{{ labelText }}</span>
     </slot>
   </label>
 </template>
 
 <script>
   export default {
-    name: 'MusselRadioBox',
+    name: 'MusselRadio',
+    inject: {
+      radioGroup: {
+        default: null
+      }
+    },
     model: {
       prop: 'value',
       event: 'change'
@@ -28,9 +33,27 @@
       'option',
       'disabled'
     ],
+    computed: {
+      optionValue () {
+        return this.option ?? this.label
+      },
+      labelText () {
+        return this.label ?? this.option
+      },
+      checkedValue () {
+        return this.value ?? this.radioGroup?.value
+      },
+      isDisabled () {
+        return this.disabled || this.radioGroup?.disabled
+      },
+      width () {
+        return this.radioGroup?.itemWidth
+      }
+    },
     methods: {
       onChange () {
-        this.$emit('change', this.option)
+        this.radioGroup?.changeValue(this.optionValue)
+        this.$emit('change', this.optionValue)
       }
     }
   }

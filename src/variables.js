@@ -34,23 +34,23 @@ export default {
   /* normal control vars */
 
   // text
-  normalTextColor: 'rgba(0, 0, 0, .7)',
-  normalWeakTextColor: 'rgba(0, 0, 0, .3)',
-  normalTitleTextColor: 'rgba(0, 0, 0, .85)',
-  normalSubtitleTextColor: 'rgba(0, 0, 0, .5)',
-  normalDisabledTextColor: 'rgba(0, 0, 0, .4)',
+  normalTextColor: '#666',
+  normalWeakTextColor: '#bbb',
+  normalTitleTextColor: '#555',
+  normalSubtitleTextColor: '#777',
+  normalDisabledTextColor: '#bbb',
   normalHighlightTextColor: '#fff',
 
-  // line
-  normalBorderColor: 'rgba(0, 0, 0, .15)',
-  normalDividerColor: 'rgba(0, 0, 0, .09)',
+  // lineP
+  normalBorderColor: '#d6d6d6',
+  normalDividerColor: '#e0e0e0',
 
   // background
   normalBackground: '#fff',
-  normalGreyBackground: 'rgba(0, 0, 0, .04)',
-  normalHoverBackground: 'rgba(0, 0, 0, .05)',
-  normalDarkGreyBackground: 'rgba(0, 0, 0, .35)',
-  normalDisabledBackground: 'rgba(0, 0, 0, .08)',
+  normalGreyBackground: '#e9e9e9',
+  normalHoverBackground: '#ececec',
+  normalDarkGreyBackground: '#a6a6a6',
+  normalDisabledBackground: '#e6e6e6',
   normalInfoBackground: '#ffd',
 
   normalShadowColor: 'rgba(0, 0, 0, .05)',
@@ -74,13 +74,13 @@ export default {
   buttonActiveShadow: '0 0 0 0',
   buttonHoverShadow: '0 0 0 2px',
   buttonDividerColor: 'rgba(255, 255, 255, .5)',
-  normalButtonTextColor: 'rgba(0, 0, 0, .6)',
 
   /* toggle */
   toggleButtonWidth: '40px',
 
   inputFontSize: '1rem',
   inputFocusShadow: '0 0 0 2px',
+  inputDisabledTextColor: '#999',
   inputReadonlyBackground: '$normalInfoBackground',
 
   inputIconSize: '30px',
@@ -119,7 +119,7 @@ export default {
   notifyShadow: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
 
   /* layout & splitter */
-  splitterSize: '4px',
+  splitterSize: '1px',
   splitterColor: '$normalDividerColor',
   splitterHoverColor: '$normalBorderColor',
 

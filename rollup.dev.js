@@ -65,6 +65,7 @@ export default {
       mainFields: ['module', 'main', 'browser']
     }),
     babel({
+      babelHelpers: 'bundled',
       exclude: 'node_modules/**',
       extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
     }),
