@@ -38,11 +38,13 @@ export default {
   },
   methods: {
     onClick () {
-      this.dropdown?.onItemClick({
-        value: this.value,
-        label: this.label
-      })
-      this.$emit('click')
+      if (!this.disabled) {
+        this.dropdown?.onItemClick({
+          value: this.value,
+          label: this.label
+        })
+        this.$emit('click')
+      }
     }
   }
 }

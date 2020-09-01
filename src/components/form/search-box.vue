@@ -84,9 +84,8 @@
         this.valid = this.valueMode === 'select' && valid
       },
       toggleSelection (value, label, option) {
-        this.valid = this.valueMode === 'select'
         this.hidePopup()
-        this.setValue(label)
+        this.setValue(label, true)
         this.$emit('change', option || { value, label })
         this.$emit('optionclick', value, option)
         this.$el.querySelector('input').focus()

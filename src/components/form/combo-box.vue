@@ -130,10 +130,12 @@
           else values.push(value)
         } else {
           this.comboValue = value
+          this.$nextTick(() => {
+            this.popupParams.visible = false
+          })
         }
 
         this.delaySetValue(true)
-        this.popupParams.visible = false
         this.focus()
 
         this.$emit('optionclick', value, option)
