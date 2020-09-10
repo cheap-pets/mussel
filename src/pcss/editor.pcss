@@ -4,7 +4,7 @@
   width: 200px;
 
   &:hover > .mu-input {
-    border-color: $primaryColor;
+    border-color: var(--mu-primary-color);
   }
 
   &[disabled] > .mu-input,
@@ -95,8 +95,8 @@
     &[clickable] {
       cursor: pointer;
       &:hover {
-        fill: $primaryColor;
-        color: $primaryColor;
+        fill: var(--mu-primary-color);
+        color: var(--mu-primary-color);
       }
     }
     &[trigger-type="clear"] {

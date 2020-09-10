@@ -9,6 +9,7 @@ import postcssAutoprefixer from 'autoprefixer'
 import postcssCalc from 'postcss-calc'
 import postcssClean from 'postcss-clean'
 import postcssConditionals from 'postcss-conditionals'
+import postcssCustomProperties from './postcss-custom-properties-polyfill'
 import postcssFor from 'postcss-for'
 import postcssImport from 'postcss-import'
 import postcssNested from 'postcss-nested'
@@ -16,6 +17,8 @@ import postcssVars from 'postcss-simple-vars'
 import postcssUnprefix from 'postcss-unprefix'
 
 import variables from './src/variables'
+
+import path from 'path'
 
 export default {
   input: 'src/index.js',
@@ -33,6 +36,9 @@ export default {
         postcssUnprefix,
         postcssFor,
         postcssVars({ variables }),
+        postcssCustomProperties({
+          importFrom: path.resolve(__dirname, 'src/pcss/root-variables.pcss')
+        }),
         postcssCalc,
         postcssNested,
         postcssConditionals,

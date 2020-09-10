@@ -17,7 +17,7 @@
     }
     & > [active]:before {
       position: absolute;
-      background-color: $primaryColor;
+      background-color: var(--mu-primary-color);
       content: '';
     }
     & > [active]:after {
@@ -284,15 +284,15 @@
   }
 
   &:hover {
-    color: $primaryColor;
+    color: var(--mu-primary-color);
   }
 
   &[active] {
-    color: $primaryColor;
+    color: var(--mu-primary-color);
     &:after {
       position: absolute;
       content: '';
-      background-color: $primaryColor;
+      background-color: var(--mu-primary-color);
     }
   }
 

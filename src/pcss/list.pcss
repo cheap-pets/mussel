@@ -21,14 +21,14 @@
 
 .mu-list-item {
   &[selected] {
-    color: $primaryColor;
-    fill: $primaryColor;
+    color: var(--mu-primary-color);
+    fill: var(--mu-primary-color);
     font-weight: 600;
   }
 
   &:hover {
-    color: $primaryColor;
-    fill: $primaryColor;
+    color: var(--mu-primary-color);
+    fill: var(--mu-primary-color);
     background: $normalHoverBackground;
   }
 
@@ -46,7 +46,7 @@
   &[active] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    background: $primaryColor;
+    background: var(--mu-primary-color);
   }
 
   &:not([multi-lines]) {

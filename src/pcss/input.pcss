@@ -17,16 +17,16 @@
 
   &:focus,
   &[focus] {
-    border-color: $primaryColor;
+    border-color: var(--mu-primary-color);
   }
   &:focus,
   &[focus] {
     z-index: 2;
     text-align: left !important;
-    box-shadow: $inputFocusShadow $primaryShadowColor;
+    box-shadow: $inputFocusShadow var(--mu-primary-shadow-color);
   }
   &:hover {
-    border-color: $primaryMinusColor;
+    border-color: var(--mu-primary-minus-color);
   }
   &[readonly] {
     cursor: default;
@@ -93,7 +93,7 @@ textarea.mu-input {
   }
 
   &:hover > .mu-radio_fake {
-    border-color: $primaryMinusColor;
+    border-color: var(--mu-primary-minus-color);
   }
 
   & > input {
@@ -102,7 +102,7 @@ textarea.mu-input {
     opacity: 0;
 
     &:checked + .mu-radio_fake {
-      border-color: $primaryColor;
+      border-color: var(--mu-primary-color);
       &:before {
         box-sizing: border-box;
         display: block;
@@ -110,7 +110,7 @@ textarea.mu-input {
         width: 100%;
         content: '';
         border-radius: 50%;
-        background-color: $primaryMinusColor;
+        background-color: var(--mu-primary-minus-color);
       }
     }
   }
@@ -160,7 +160,7 @@ textarea.mu-input {
   }
 
   &:hover > .mu-checkbox_fake {
-    border-color: $primaryMinusColor;
+    border-color: var(--mu-primary-minus-color);
   }
 
   & > input {
@@ -169,14 +169,14 @@ textarea.mu-input {
     opacity: 0;
 
     &:checked + .mu-checkbox_fake {
-      border-color: $primaryColor;
+      border-color: var(--mu-primary-color);
       &:before {
         box-sizing: border-box;
         display: block;
         height: 100%;
         width: 100%;
         content: '';
-        background-color: $primaryMinusColor;
+        background-color: var(--mu-primary-minus-color);
       }
     }
   }

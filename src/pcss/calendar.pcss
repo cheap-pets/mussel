@@ -27,7 +27,7 @@
       margin-right: auto;
       font-size: $calendarTitleFontSize;
       font-weight: 600;
-      color: $primaryColor;
+      color: var(--mu-primary-color);
       cursor: pointer;
     }
   }
@@ -37,7 +37,7 @@
     height: $compactBarHeight;
     font-weight: 600;
     color: $normalSubtitleTextColor;
-    border-top: 1px solid $primaryColor;
+    border-top: 1px solid var(--mu-primary-color);
 
     & > * {
       flex-grow: 1;
@@ -50,7 +50,7 @@
     flex-direction: column;
     flex-grow: 1;
     height: 1px;
-    border-top: 1px solid $primaryColor;
+    border-top: 1px solid var(--mu-primary-color);
     overflow: visible;
 
     & > .mu-calendar-row {
@@ -87,7 +87,7 @@
         color: $normalWeakTextColor;
       }
       &:hover {
-        color: $primaryMinusColor;
+        color: var(--mu-primary-minus-color);
         background: $normalHoverBackground;
       }
       &[present] {
@@ -103,7 +103,7 @@
         z-index: 1;
         font-weight: 600;
         color: $normalHighlightTextColor;
-        background: $primaryColor;
+        background: var(--mu-primary-color);
         box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.17), 0px 0px 4px rgba(0, 0, 0, 0.35);
       }
     }

@@ -1,3 +1,8 @@
+
+h1 {
+  color: var(--mu-primary-color);
+}
+
 .mu-button {
   position: relative;
   display: inline-block;
@@ -30,45 +35,45 @@
   }
 
   &[active] {
-    border-color: $primaryPlusColor;
-    background: $primaryTinyColor;
-    box-shadow: $buttonActiveShadow $primaryShadowColor;
-    color: $primaryPlusColor;
-    fill: $primaryPlusColor;
+    border-color: var(--mu-primary-plus-color);
+    background: var(--mu-primary-tiny-color);
+    box-shadow: $buttonActiveShadow var(--mu-primary-shadow-color);
+    color: var(--mu-primary-plus-color);
+    fill: var(--mu-primary-plus-color);
   }
 
   &:hover,
   &[button-style="text"]:hover {
-    border-color: $primaryMinusColor;
-    color: $primaryMinusColor;
-    fill: $primaryMinusColor;
-    box-shadow: $buttonHoverShadow $primaryShadowColor;
+    border-color: var(--mu-primary-minus-color);
+    color: var(--mu-primary-minus-color);
+    fill: var(--mu-primary-minus-color);
+    box-shadow: $buttonHoverShadow var(--mu-primary-shadow-color);
   }
 
   &[button-type="primary"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    box-shadow: $buttonShadow $primaryShadowColor;
+    box-shadow: $buttonShadow var(--mu-primary-shadow-color);
 
     @if $buttonGradient {
-      border-color: $primaryMinusColor;
-      background: linear-gradient(to bottom, $primaryMinusColor, $primaryPlusColor);;
+      border-color: var(--mu-primary-minus-color);
+      background: linear-gradient(to bottom, var(--mu-primary-minus-color), var(--mu-primary-plus-color));;
     }
     @else {
-      border-color: $primaryColor;
-      background: $primaryColor;
+      border-color: var(--mu-primary-color);
+      background: var(--mu-primary-color);
     }
 
     &[active] {
-      background: $primaryPlusColor;
-      border-color: $primaryPlusColor;
-      box-shadow: $buttonActiveShadow $primaryShadowColor;
+      background: var(--mu-primary-plus-color);
+      border-color: var(--mu-primary-plus-color);
+      box-shadow: $buttonActiveShadow var(--mu-primary-shadow-color);
     }
 
     &:hover {
-      background: $primaryMinusColor;
-      border-color: $primaryMinusColor;
-      box-shadow: $buttonHoverShadow $primaryShadowColor;
+      background: var(--mu-primary-minus-color);
+      border-color: var(--mu-primary-minus-color);
+      box-shadow: $buttonHoverShadow var(--mu-primary-shadow-color);
       color: $normalHighlightTextColor;
       fill: $normalHighlightTextColor;
     }
@@ -76,18 +81,18 @@
     &[button-style="link"],
     &[button-style="text"],
     &[button-style="outline"] {
-      color: $primaryColor;
-      fill: $primaryColor;
+      color: var(--mu-primary-color);
+      fill: var(--mu-primary-color);
 
       &[active] {
-        color: $primaryPlusColor;
-        fill: $primaryPlusColor;
-        background: $primaryTinyColor;
+        color: var(--mu-primary-plus-color);
+        fill: var(--mu-primary-plus-color);
+        background: var(--mu-primary-tiny-color);
       }
 
       &:hover {
-        color: $primaryMinusColor;
-        fill: $primaryMinusColor;
+        color: var(--mu-primary-minus-color);
+        fill: var(--mu-primary-minus-color);
       }
     }
   }
@@ -249,13 +254,13 @@ button.mu-button {
   cursor: pointer;
 
   &:hover {
-    color: $primaryColor;
-    fill: $primaryColor;
+    color: var(--mu-primary-color);
+    fill: var(--mu-primary-color);
     background: $normalHoverBackground;
   }
   &[active] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    background: $primaryColor;
+    background: var(--mu-primary-color);
   }
 }

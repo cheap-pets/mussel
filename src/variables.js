@@ -41,7 +41,7 @@ export default {
   normalDisabledTextColor: '#bbb',
   normalHighlightTextColor: '#fff',
 
-  // lineP
+  // line
   normalBorderColor: '#d6d6d6',
   normalDividerColor: '#e0e0e0',
 

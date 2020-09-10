@@ -1,3 +1,4 @@
+import './root-variables.pcss'
 import './global.pcss'
 import './badge.pcss'
 import './icon.pcss'
