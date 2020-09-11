@@ -21,6 +21,10 @@ h1 {
   cursor: pointer;
   box-shadow: $buttonShadow $normalGreyBackground;
 
+  & > .mu-icon {
+    line-height: 0;
+  }
+
   &::before {
     display: inline-block;
     float: left;
@@ -100,27 +104,27 @@ h1 {
   &[button-type="submit"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    box-shadow: $buttonShadow $successShadowColor;
+    box-shadow: $buttonShadow var(--mu-success-shadow-color);
 
     @if $buttonGradient {
-      border-color: $successMinusColor;
-      background: linear-gradient(to bottom, $successMinusColor, $successPlusColor);
+      border-color: var(--mu-success-minus-color);
+      background: linear-gradient(to bottom, var(--mu-success-minus-color), var(--mu-success-plus-color));
     }
     @else {
-      border-color: $successColor;
-      background: $successColor;
+      border-color: var(--mu-success-color);
+      background: var(--mu-success-color);
     }
 
     &[active] {
-      background: $successPlusColor;
-      border-color: $successPlusColor;
-      box-shadow: $buttonActiveShadow $successShadowColor;
+      background: var(--mu-success-plus-color);
+      border-color: var(--mu-success-plus-color);
+      box-shadow: $buttonActiveShadow var(--mu-success-shadow-color);
     }
 
     &:hover {
-      background: $successMinusColor;
-      border-color: $successMinusColor;
-      box-shadow: $buttonHoverShadow $successShadowColor;
+      background: var(--mu-success-minus-color);
+      border-color: var(--mu-success-minus-color);
+      box-shadow: $buttonHoverShadow var(--mu-success-shadow-color);
       color: $normalHighlightTextColor;
       fill: $normalHighlightTextColor;
     }
@@ -128,18 +132,18 @@ h1 {
     &[button-style="link"],
     &[button-style="text"],
     &[button-style="outline"] {
-      color: $successColor;
-      fill: $successColor;
+      color: var(--mu-success-color);
+      fill: var(--mu-success-color);
 
       &[active] {
-        color: $successPlusColor;
-        fill: $successPlusColor;
-        background: $successTinyColor;
+        color: var(--mu-success-plus-color);
+        fill: var(--mu-success-plus-color);
+        background: var(--mu-success-tiny-color);
       }
 
       &:hover {
-        color: $successMinusColor;
-        fill: $successMinusColor;
+        color: var(--mu-success-minus-color);
+        fill: var(--mu-success-minus-color);
       }
     }
   }
@@ -147,27 +151,27 @@ h1 {
   &[button-type="danger"] {
     color: $normalHighlightTextColor;
     fill: $normalHighlightTextColor;
-    box-shadow: $buttonShadow $dangerShadowColor;
+    box-shadow: $buttonShadow var(--mu-danger-shadow-color);
 
     @if $buttonGradient {
-      border-color: $dangerMinusColor;
-      background: linear-gradient(to bottom, $dangerMinusColor, $dangerPlusColor);
+      border-color: var(--mu-danger-minus-color);
+      background: linear-gradient(to bottom, var(--mu-danger-minus-color), var(--mu-danger-plus-color));
     }
     @else {
-      border-color: $dangerColor;
-      background: $dangerColor;
+      border-color: var(--mu-danger-color);
+      background: var(--mu-danger-color);
     }
 
     &[active] {
-      background: $dangerPlusColor;
-      border-color: $dangerPlusColor;
-      box-shadow: $buttonActiveShadow $dangerShadowColor;
+      background: var(--mu-danger-plus-color);
+      border-color: var(--mu-danger-plus-color);
+      box-shadow: $buttonActiveShadow var(--mu-danger-shadow-color);
     }
 
     &:hover {
-      background: $dangerMinusColor;
-      border-color: $dangerMinusColor;
-      box-shadow: $buttonHoverShadow $dangerShadowColor;
+      background: var(--mu-danger-minus-color);
+      border-color: var(--mu-danger-minus-color);
+      box-shadow: $buttonHoverShadow var(--mu-danger-shadow-color);
       color: $normalHighlightTextColor;
       fill: $normalHighlightTextColor;
     }
@@ -175,18 +179,18 @@ h1 {
     &[button-style="link"],
     &[button-style="text"],
     &[button-style="outline"] {
-      color: $dangerColor;
-      fill: $dangerColor;
+      color: var(--mu-danger-color);
+      fill: var(--mu-danger-color);
 
       &[active] {
-        color: $dangerPlusColor;
-        fill: $dangerPlusColor;
-        background: $dangerTinyColor;
+        color: var(--mu-danger-plus-color);
+        fill: var(--mu-danger-plus-color);
+        background: var(--mu-danger-tiny-color);
       }
 
       &:hover {
-        color: $dangerMinusColor;
-        fill: $dangerMinusColor;
+        color: var(--mu-danger-minus-color);
+        fill: var(--mu-danger-minus-color);
       }
     }
   }

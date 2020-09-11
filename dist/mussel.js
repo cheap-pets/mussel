@@ -35,46 +35,46 @@
     }
   }
 
-  var css_248z = ":root {\r\n  --mu-primary-color: #1890ff;\r\n  --mu-primary-plus-color: #096dd9;\r\n  --mu-primary-minus-color: #40a9ff;\r\n  --mu-primary-tiny-color: #bae7ff;\r\n  --mu-primary-shadow-color: rgba(24, 144, 255, .15);\r\n}\r\nh1 {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n}";
+  var css_248z = ":root {\r\n  --mu-primary-color: #1890ff;\r\n  --mu-primary-plus-color: #096dd9;\r\n  --mu-primary-minus-color: #40a9ff;\r\n  --mu-primary-tiny-color: #bae7ff;\r\n  --mu-primary-shadow-color: rgba(24, 144, 255, .15);\r\n  --mu-success-color: #52c41a;\r\n  --mu-success-plus-color: #389e0d;\r\n  --mu-success-minus-color: #73d13d;\r\n  --mu-success-tiny-color: #d9f7be;\r\n  --mu-success-shadow-color: rgba(82, 196, 26, .15);\r\n  --mu-danger-color: #f5222d;\r\n  --mu-danger-plus-color: #cf1322;\r\n  --mu-danger-minus-color: #ff4d4f;\r\n  --mu-danger-tiny-color: #ffccc7;\r\n  --mu-danger-shadow-color: rgba(245, 34, 45, .15);\r\n  --mu-warning-color: #faad14;\r\n}";
   styleInject(css_248z);
 
   var css_248z$1 = "html {\r\n  color: #666;\r\n  font-size: 14px;\r\n  font-weight: 400;\r\n}\r\nbody {\r\n  font-size: 100%;\r\n}\r\nbutton,\r\nhtml {\r\n  font-family: -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Helvetica Neue\",Helvetica,Arial,sans-serif;\r\n}\r\n[class^=mu-] {\r\n  box-sizing: border-box;\r\n}\r\n.mu-bordered,\r\n[class^=mu-] > [bordered],\r\n[class^=mu-][bordered] {\r\n  border: 1px solid #d6d6d6;\r\n}";
   styleInject(css_248z$1);
 
-  var css_248z$2 = ".mu-badge {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  min-width: 1.5rem;\r\n  line-height: 1rem;\r\n  padding: 0 4px;\r\n  font-size: .8rem;\r\n  border-radius: .5rem;\r\n  background: #a6a6a6;\r\n  color: #fff;\r\n}\r\n.mu-badge[badge-type=primary] {\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-badge[badge-type=success] {\r\n  background: #52c41a;\r\n}\r\n.mu-badge[badge-type=warning] {\r\n  background: #faad14;\r\n}\r\n.mu-badge[badge-type=danger] {\r\n  background: #f5222d;\r\n}";
+  var css_248z$2 = ".mu-badge {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  min-width: 1.5rem;\r\n  line-height: 1rem;\r\n  padding: 0 4px;\r\n  font-size: .8rem;\r\n  border-radius: .5rem;\r\n  background: #a6a6a6;\r\n  color: #fff;\r\n}\r\n.mu-badge[badge-type=primary] {\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-badge[badge-type=success] {\r\n  background: #52c41a;\r\n  background: var(--mu-success-color);\r\n}\r\n.mu-badge[badge-type=warning] {\r\n  background: #faad14;\r\n  background: var(--mu-warning-color);\r\n}\r\n.mu-badge[badge-type=danger] {\r\n  background: #f5222d;\r\n  background: var(--mu-danger-color);\r\n}";
   styleInject(css_248z$2);
 
-  var css_248z$3 = ".mu-icon {\r\n  display: inline-block;\r\n  font-size: 1.15rem;\r\n}\r\n.mu-icon svg {\r\n  vertical-align: -.15em;\r\n  width: 1em;\r\n  height: 1em;\r\n}\r\n.mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #f5222d;\r\n  color: #f5222d;\r\n}\r\n.mu-dropdown[expanded] [trigger-type=expander],\r\n.mu-editor[expanded] > [trigger-type=expander],\r\n.mu-expander[expanded] [trigger-type=expander],\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(180deg);\r\n}";
+  var css_248z$3 = ".mu-icon {\r\n  display: inline-block;\r\n  font-size: 1.15rem;\r\n}\r\n.mu-icon svg {\r\n  vertical-align: -.15em;\r\n  width: 1em;\r\n  height: 1em;\r\n}\r\n.mu-icon[trigger-type] {\r\n  cursor: pointer;\r\n  transition: transform .2s ease-in-out;\r\n}\r\n.mu-icon[trigger-type=close]:hover {\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n}\r\n.mu-dropdown[expanded] [trigger-type=expander],\r\n.mu-editor[expanded] > [trigger-type=expander],\r\n.mu-expander[expanded] [trigger-type=expander],\r\n.mu-icon[trigger-type=expander][trigger-on] {\r\n  transform: rotate(180deg);\r\n}";
   styleInject(css_248z$3);
 
   var css_248z$4 = ".mu-flex-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[direction=column] {\r\n  flex-direction: column;\r\n}\r\n.mu-flex-box[direction=row-reverse] {\r\n  flex-direction: row-reverse;\r\n}\r\n.mu-flex-box[direction=column-reverse] {\r\n  flex-direction: column-reverse;\r\n}\r\n.mu-flex-box[inline] {\r\n  display: inline-flex;\r\n}\r\n.mu-flex-box[flex-wrap] {\r\n  flex-wrap: wrap;\r\n  align-content: flex-start;\r\n}\r\n.mu-flex-box[justify-content=center] {\r\n  justify-content: center;\r\n}\r\n.mu-flex-box[align-items=flex-start] {\r\n  align-items: flex-start;\r\n}\r\n.mu-flex-box[align-items=center] {\r\n  align-items: center;\r\n}\r\n.mu-flex-box[align-items=stretch] {\r\n  align-items: stretch;\r\n}\r\n.mu-flex-box[flex-center] {\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n.mu-flex-box > * {\r\n  position: relative;\r\n  box-sizing: border-box;\r\n}\r\n.mu-flex-box > [flex-auto] {\r\n  flex: 1 1 auto!important;\r\n}\r\n.mu-flex-box > [flex-none] {\r\n  flex: 0 0 none!important;\r\n}\r\n.mu-flex-box > [align-self=center] {\r\n  align-self: center;\r\n}\r\n.mu-flex-box > [align-self=stretch] {\r\n  align-self: stretch;\r\n}\r\n.mu-flex-box > [size=auto] {\r\n  flex: 1 1 auto;\r\n}\r\n.mu-flex-box > [size=\"1\"] {\r\n  flex: 1 1 1px;\r\n}\r\n.mu-flex-box > [size=\"2\"] {\r\n  flex: 2 2 2px;\r\n}\r\n.mu-flex-box > [size=\"3\"] {\r\n  flex: 3 3 3px;\r\n}\r\n.mu-flex-box > [size=\"4\"] {\r\n  flex: 4 4 4px;\r\n}\r\n.mu-flex-box > [size=\"5\"] {\r\n  flex: 5 5 5px;\r\n}\r\n.mu-flex-box > [size=\"6\"] {\r\n  flex: 6 6 6px;\r\n}\r\n.mu-flex-box > [size=\"7\"] {\r\n  flex: 7 7 7px;\r\n}\r\n.mu-flex-box > [size=\"8\"] {\r\n  flex: 8 8 8px;\r\n}\r\n.mu-absolute-fit {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n.mu-splitter {\r\n  position: relative;\r\n  background: #e0e0e0;\r\n  border-radius: 1px;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-splitter[draggable] > div {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  border-radius: 8px;\r\n  background: rgba(0,0,0,.01);\r\n}\r\n.mu-splitter[draggable] > div:hover {\r\n  background: #d6d6d6;\r\n}\r\n.mu-splitter:first-child,\r\n.mu-splitter:last-child {\r\n  display: none;\r\n}\r\n[direction=row] > .mu-splitter {\r\n  width: 1px;\r\n  margin-left: 0;\r\n  margin-right: 0;\r\n}\r\n[direction=row] > .mu-splitter[draggable] {\r\n  cursor: col-resize;\r\n}\r\n[direction=row] > .mu-splitter[draggable] > div:hover {\r\n  left: -1px;\r\n  right: -1px;\r\n}\r\n[direction=column] > .mu-splitter[draggable] {\r\n  height: 1px;\r\n  margin-top: 0;\r\n  margin-bottom: 0;\r\n}\r\n[direction=column] > .mu-splitter[draggable][draggable] {\r\n  cursor: row-resize;\r\n}\r\n[direction=column] > .mu-splitter[draggable][draggable] > div:hover {\r\n  top: -1px;\r\n  bottom: -1px;\r\n}\r\n.mu-space {\r\n  flex: 1 1 0%;\r\n}\r\n[direction=row][flex-wrap] > .mu-space {\r\n  flex: none;\r\n  width: 100%;\r\n}\r\n[cell-spacing],\r\n[cellspacing] {\r\n  margin: 8px;\r\n}\r\n[cell-padding],\r\n[cellpadding] {\r\n  padding: 8px;\r\n}\r\n[cell-padding] > .mu-splitter,\r\n[cellpadding] > .mu-splitter {\r\n  margin: 8px;\r\n}\r\n[cell-padding] > .mu-absolute-fit,\r\n[cellpadding] > .mu-absolute-fit {\r\n  top: 8px;\r\n  left: 8px;\r\n  right: 8px;\r\n  bottom: 8px;\r\n}\r\n[content-spacing] {\r\n  padding: 8px;\r\n}\r\n[content-spacing] > div {\r\n  margin: 8px;\r\n}\r\n[content-spacing] > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}\r\n[content-spacing=along][direction=row-reverse],\r\n[content-spacing=along][direction=row] {\r\n  padding: 0 8px;\r\n}\r\n[content-spacing=along][direction=row-reverse] > div,\r\n[content-spacing=along][direction=row] > div {\r\n  margin: 0 8px;\r\n}\r\n[content-spacing=along][direction=row-reverse] > .mu-absolute-fit,\r\n[content-spacing=along][direction=row] > .mu-absolute-fit {\r\n  top: 0;\r\n  bottom: 0;\r\n}\r\n[content-spacing=along][direction=column-reverse],\r\n[content-spacing=along][direction=column] {\r\n  padding: 8px 0;\r\n}\r\n[content-spacing=along][direction=column-reverse] > div,\r\n[content-spacing=along][direction=column] > div {\r\n  margin: 8px 0;\r\n}\r\n[content-spacing=along][direction=column-reverse] > .mu-absolute-fit,\r\n[content-spacing=along][direction=column] > .mu-absolute-fit {\r\n  left: 0;\r\n  right: 0;\r\n}\r\n[content-spacing=between] {\r\n  padding: 0;\r\n}\r\n[content-spacing=between][direction=row-reverse] > div,\r\n[content-spacing=between][direction=row] > div {\r\n  margin: 0 8px;\r\n}\r\n[content-spacing=between][direction=row] > div:first-child {\r\n  margin-left: 0;\r\n}\r\n[content-spacing=between][direction=row] > div:last-child {\r\n  margin-right: 0;\r\n}\r\n[content-spacing=between][direction=row-reverse] > div:first-child {\r\n  margin-right: 0;\r\n}\r\n[content-spacing=between][direction=row-reverse] > div:last-child {\r\n  margin-left: 0;\r\n}\r\n[content-spacing=between][direction=column-reverse] > div,\r\n[content-spacing=between][direction=column] > div {\r\n  margin: 8px 0;\r\n}\r\n[content-spacing=between][direction=column] > div:first-child {\r\n  margin-top: 0;\r\n}\r\n[content-spacing=between][direction=column] > div:last-child {\r\n  margin-bottom: 0;\r\n}\r\n[content-spacing=between][direction=column-reverse] > div:first-child {\r\n  margin-bottom: 0;\r\n}\r\n[content-spacing=between][direction=column-reverse] > div:last-child {\r\n  margin-top: 0;\r\n}\r\n[content-spacing=between] > div.mu-absolute-fit {\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}";
   styleInject(css_248z$4);
 
-  var css_248z$5 = ".mu-list-group-header,\r\n.mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 16px;\r\n  overflow: hidden;\r\n  color: #666;\r\n  fill: #666;\r\n}\r\n.mu-list-group-header > .mu-icon,\r\n.mu-list-item > .mu-icon {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-group-header {\r\n  font-size: .85em;\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  font-weight: 600;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  background: #ececec;\r\n}\r\n.mu-list-item[danger] {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-list-item[disabled] {\r\n  color: #bbb;\r\n  fill: #bbb;\r\n  background: 0 0;\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  height: 1px;\r\n  margin: 4px 0;\r\n  border-bottom: 1px solid #e0e0e0;\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
+  var css_248z$5 = ".mu-list-group-header,\r\n.mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 16px;\r\n  overflow: hidden;\r\n  color: #666;\r\n  fill: #666;\r\n}\r\n.mu-list-group-header > .mu-icon,\r\n.mu-list-item > .mu-icon {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-group-header {\r\n  font-size: .85em;\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  font-weight: 600;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  background: #ececec;\r\n}\r\n.mu-list-item[danger] {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-list-item[disabled] {\r\n  color: #bbb;\r\n  fill: #bbb;\r\n  background: 0 0;\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  height: 1px;\r\n  margin: 4px 0;\r\n  border-bottom: 1px solid #e0e0e0;\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
   styleInject(css_248z$5);
 
-  var css_248z$6 = "h1 {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n}\r\n.mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #d6d6d6;\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n  box-shadow: 0 0 0 0 #e9e9e9;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  float: left;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button[button-style=link] {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[active] {\r\n  border-color: #096dd9;\r\n  border-color: var(--mu-primary-plus-color);\r\n  background: #bae7ff;\r\n  background: var(--mu-primary-tiny-color);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n  color: #096dd9;\r\n  color: var(--mu-primary-plus-color);\r\n  fill: #096dd9;\r\n  fill: var(--mu-primary-plus-color);\r\n}\r\n.mu-button:hover,\r\n.mu-button[button-style=text]:hover {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  fill: #40a9ff;\r\n  fill: var(--mu-primary-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  background: var(--mu-primary-plus-color);\r\n  border-color: #096dd9;\r\n  border-color: var(--mu-primary-plus-color);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  background: var(--mu-primary-minus-color);\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][button-style=link],\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n}\r\n.mu-button[button-type=primary][button-style=link][active],\r\n.mu-button[button-type=primary][button-style=outline][active],\r\n.mu-button[button-type=primary][button-style=text][active] {\r\n  color: #096dd9;\r\n  color: var(--mu-primary-plus-color);\r\n  fill: #096dd9;\r\n  fill: var(--mu-primary-plus-color);\r\n  background: #bae7ff;\r\n  background: var(--mu-primary-tiny-color);\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover,\r\n.mu-button[button-type=primary][button-style=outline]:hover,\r\n.mu-button[button-type=primary][button-style=text]:hover {\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  fill: #40a9ff;\r\n  fill: var(--mu-primary-minus-color);\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 rgba(82,196,26,.15);\r\n  border-color: #52c41a;\r\n  background: #52c41a;\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  border-color: #389e0d;\r\n  box-shadow: 0 0 0 0 rgba(82,196,26,.15);\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  border-color: #73d13d;\r\n  box-shadow: 0 0 0 2px rgba(82,196,26,.15);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][button-style=link],\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-button[button-type=submit][button-style=link][active],\r\n.mu-button[button-type=submit][button-style=outline][active],\r\n.mu-button[button-type=submit][button-style=text][active] {\r\n  color: #389e0d;\r\n  fill: #389e0d;\r\n  background: #d9f7be;\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover,\r\n.mu-button[button-type=submit][button-style=outline]:hover,\r\n.mu-button[button-type=submit][button-style=text]:hover {\r\n  color: #73d13d;\r\n  fill: #73d13d;\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 rgba(245,34,45,.15);\r\n  border-color: #f5222d;\r\n  background: #f5222d;\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #cf1322;\r\n  border-color: #cf1322;\r\n  box-shadow: 0 0 0 0 rgba(245,34,45,.15);\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff4d4f;\r\n  border-color: #ff4d4f;\r\n  box-shadow: 0 0 0 2px rgba(245,34,45,.15);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][button-style=link],\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-button[button-type=danger][button-style=link][active],\r\n.mu-button[button-type=danger][button-style=outline][active],\r\n.mu-button[button-type=danger][button-style=text][active] {\r\n  color: #cf1322;\r\n  fill: #cf1322;\r\n  background: #ffccc7;\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover,\r\n.mu-button[button-type=danger][button-style=outline]:hover,\r\n.mu-button[button-type=danger][button-style=text]:hover {\r\n  color: #ff4d4f;\r\n  fill: #ff4d4f;\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n  border-color: transparent;\r\n}\r\n.mu-button[button-style=link] {\r\n  background: 0 0!important;\r\n  border-color: transparent!important;\r\n}\r\n.mu-button[button-style=outline],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n}\r\n.mu-button[button-style=outline]:hover,\r\n.mu-button[button-style=outline][active],\r\n.mu-button[button-style=text]:hover,\r\n.mu-button[button-style=text][active] {\r\n  background: 0 0;\r\n}\r\n.mu-button[disabled] {\r\n  color: #bbb!important;\r\n  fill: #bbb!important;\r\n  box-shadow: none!important;\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  border-color: #e6e6e6!important;\r\n  background: #e6e6e6!important;\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n.mu-button > .mu-icon + span,\r\n.mu-button > span + .mu-icon {\r\n  margin-left: 4px;\r\n}\r\nbutton.mu-button {\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}\r\n.mu-button-like {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n  cursor: pointer;\r\n}\r\n.mu-button-like:hover {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  background: #ececec;\r\n}\r\n.mu-button-like[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}";
+  var css_248z$6 = "h1 {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n}\r\n.mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #d6d6d6;\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n  box-shadow: 0 0 0 0 #e9e9e9;\r\n}\r\n.mu-button > .mu-icon {\r\n  line-height: 0;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  float: left;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button[button-style=link] {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[active] {\r\n  border-color: #096dd9;\r\n  border-color: var(--mu-primary-plus-color);\r\n  background: #bae7ff;\r\n  background: var(--mu-primary-tiny-color);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n  color: #096dd9;\r\n  color: var(--mu-primary-plus-color);\r\n  fill: #096dd9;\r\n  fill: var(--mu-primary-plus-color);\r\n}\r\n.mu-button:hover,\r\n.mu-button[button-style=text]:hover {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  fill: #40a9ff;\r\n  fill: var(--mu-primary-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  background: var(--mu-primary-plus-color);\r\n  border-color: #096dd9;\r\n  border-color: var(--mu-primary-plus-color);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  background: var(--mu-primary-minus-color);\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][button-style=link],\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n}\r\n.mu-button[button-type=primary][button-style=link][active],\r\n.mu-button[button-type=primary][button-style=outline][active],\r\n.mu-button[button-type=primary][button-style=text][active] {\r\n  color: #096dd9;\r\n  color: var(--mu-primary-plus-color);\r\n  fill: #096dd9;\r\n  fill: var(--mu-primary-plus-color);\r\n  background: #bae7ff;\r\n  background: var(--mu-primary-tiny-color);\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover,\r\n.mu-button[button-type=primary][button-style=outline]:hover,\r\n.mu-button[button-type=primary][button-style=text]:hover {\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  fill: #40a9ff;\r\n  fill: var(--mu-primary-minus-color);\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n  border-color: #52c41a;\r\n  border-color: var(--mu-success-color);\r\n  background: #52c41a;\r\n  background: var(--mu-success-color);\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  background: var(--mu-success-plus-color);\r\n  border-color: #389e0d;\r\n  border-color: var(--mu-success-plus-color);\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  background: var(--mu-success-minus-color);\r\n  border-color: #73d13d;\r\n  border-color: var(--mu-success-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-success-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][button-style=link],\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  color: var(--mu-success-color);\r\n  fill: #52c41a;\r\n  fill: var(--mu-success-color);\r\n}\r\n.mu-button[button-type=submit][button-style=link][active],\r\n.mu-button[button-type=submit][button-style=outline][active],\r\n.mu-button[button-type=submit][button-style=text][active] {\r\n  color: #389e0d;\r\n  color: var(--mu-success-plus-color);\r\n  fill: #389e0d;\r\n  fill: var(--mu-success-plus-color);\r\n  background: #d9f7be;\r\n  background: var(--mu-success-tiny-color);\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover,\r\n.mu-button[button-type=submit][button-style=outline]:hover,\r\n.mu-button[button-type=submit][button-style=text]:hover {\r\n  color: #73d13d;\r\n  color: var(--mu-success-minus-color);\r\n  fill: #73d13d;\r\n  fill: var(--mu-success-minus-color);\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n  background: #f5222d;\r\n  background: var(--mu-danger-color);\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #cf1322;\r\n  background: var(--mu-danger-plus-color);\r\n  border-color: #cf1322;\r\n  border-color: var(--mu-danger-plus-color);\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff4d4f;\r\n  background: var(--mu-danger-minus-color);\r\n  border-color: #ff4d4f;\r\n  border-color: var(--mu-danger-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-danger-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][button-style=link],\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-button[button-type=danger][button-style=link][active],\r\n.mu-button[button-type=danger][button-style=outline][active],\r\n.mu-button[button-type=danger][button-style=text][active] {\r\n  color: #cf1322;\r\n  color: var(--mu-danger-plus-color);\r\n  fill: #cf1322;\r\n  fill: var(--mu-danger-plus-color);\r\n  background: #ffccc7;\r\n  background: var(--mu-danger-tiny-color);\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover,\r\n.mu-button[button-type=danger][button-style=outline]:hover,\r\n.mu-button[button-type=danger][button-style=text]:hover {\r\n  color: #ff4d4f;\r\n  color: var(--mu-danger-minus-color);\r\n  fill: #ff4d4f;\r\n  fill: var(--mu-danger-minus-color);\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n  border-color: transparent;\r\n}\r\n.mu-button[button-style=link] {\r\n  background: 0 0!important;\r\n  border-color: transparent!important;\r\n}\r\n.mu-button[button-style=outline],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n}\r\n.mu-button[button-style=outline]:hover,\r\n.mu-button[button-style=outline][active],\r\n.mu-button[button-style=text]:hover,\r\n.mu-button[button-style=text][active] {\r\n  background: 0 0;\r\n}\r\n.mu-button[disabled] {\r\n  color: #bbb!important;\r\n  fill: #bbb!important;\r\n  box-shadow: none!important;\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  border-color: #e6e6e6!important;\r\n  background: #e6e6e6!important;\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n.mu-button > .mu-icon + span,\r\n.mu-button > span + .mu-icon {\r\n  margin-left: 4px;\r\n}\r\nbutton.mu-button {\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}\r\n.mu-button-like {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n  cursor: pointer;\r\n}\r\n.mu-button-like:hover {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  background: #ececec;\r\n}\r\n.mu-button-like[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}";
   styleInject(css_248z$6);
 
-  var css_248z$7 = ".mu-toggle {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  height: 32px;\r\n  vertical-align: middle;\r\n}\r\n.mu-toggle > * {\r\n  cursor: pointer;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar {\r\n  position: relative;\r\n  width: 40px;\r\n  height: 20px;\r\n  border-radius: 10px;\r\n  background-color: #a6a6a6;\r\n  transition: background .2s ease-in-out;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar:after {\r\n  position: absolute;\r\n  top: 3px;\r\n  left: 3px;\r\n  bottom: 3px;\r\n  display: inline-block;\r\n  width: 14px;\r\n  background-color: #fff;\r\n  border-radius: 7px;\r\n  content: '';\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar {\r\n  background-color: #52c41a;\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar:after {\r\n  left: 100%;\r\n  transform: translateX(-17px);\r\n}\r\n.mu-toggle > * + * {\r\n  margin-left: 5px;\r\n}\r\n.mu-toggle[disabled] > * {\r\n  color: #bbb;\r\n  cursor: default;\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar {\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar:after {\r\n  background-color: #bbb;\r\n}";
+  var css_248z$7 = ".mu-toggle {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  height: 32px;\r\n  vertical-align: middle;\r\n}\r\n.mu-toggle > * {\r\n  cursor: pointer;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar {\r\n  position: relative;\r\n  width: 40px;\r\n  height: 20px;\r\n  border-radius: 10px;\r\n  background-color: #a6a6a6;\r\n  transition: background .2s ease-in-out;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar:after {\r\n  position: absolute;\r\n  top: 3px;\r\n  left: 3px;\r\n  bottom: 3px;\r\n  display: inline-block;\r\n  width: 14px;\r\n  background-color: #fff;\r\n  border-radius: 7px;\r\n  content: '';\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar {\r\n  background-color: #52c41a;\r\n  background-color: var(--mu-success-color);\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar:after {\r\n  left: 100%;\r\n  transform: translateX(-17px);\r\n}\r\n.mu-toggle > * + * {\r\n  margin-left: 5px;\r\n}\r\n.mu-toggle[disabled] > * {\r\n  color: #bbb;\r\n  cursor: default;\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar {\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar:after {\r\n  background-color: #bbb;\r\n}";
   styleInject(css_248z$7);
 
-  var css_248z$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n  border-radius: 2px;\r\n  box-shadow: 0 0 0 0 #e9e9e9;\r\n}\r\n.mu-button-group[button-type=primary] {\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n}\r\n.mu-button-group[button-type=success] {\r\n  box-shadow: 0 0 0 0 rgba(82,196,26,.15);\r\n}\r\n.mu-button-group[button-type=danger] {\r\n  box-shadow: 0 0 0 0 rgba(245,34,45,.15);\r\n}\r\n.mu-button-group > .mu-button {\r\n  z-index: 0;\r\n  float: left;\r\n  box-shadow: none;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]),\r\n.mu-button-group > .mu-button[active]:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button + .mu-button {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}";
+  var css_248z$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n  border-radius: 2px;\r\n  box-shadow: 0 0 0 0 #e9e9e9;\r\n}\r\n.mu-button-group[button-type=primary] {\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n}\r\n.mu-button-group[button-type=success] {\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n}\r\n.mu-button-group[button-type=danger] {\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n}\r\n.mu-button-group > .mu-button {\r\n  z-index: 0;\r\n  float: left;\r\n  box-shadow: none;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]),\r\n.mu-button-group > .mu-button[active]:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button + .mu-button {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}";
   styleInject(css_248z$8);
 
-  var css_248z$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #d6d6d6;\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background-color: #fff;\r\n  font-size: 1rem;\r\n  color: #666;\r\n}\r\n.mu-input::-moz-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input:-ms-input-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input::-ms-input-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input::placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n}\r\n.mu-input:hover {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-input[readonly] {\r\n  cursor: default;\r\n  background-color: #ffd;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #d6d6d6;\r\n  color: #999;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  border-color: #f5222d;\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  border-color: #cf1322;\r\n  box-shadow: 0 0 0 2px rgba(245,34,45,.15);\r\n}\r\n.mu-input[invalid]:hover,\r\n[invalid] .mu-input:hover {\r\n  border-color: #ff4d4f;\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}\r\n.mu-radio {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  line-height: 1.7rem;\r\n  cursor: pointer;\r\n}\r\n.mu-radio + .mu-radio {\r\n  margin-left: 16px;\r\n}\r\n.mu-radio > .mu-radio_fake {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  width: 1rem;\r\n  padding: 2px;\r\n  margin-right: 5px;\r\n  border: 1px solid #666;\r\n  border-radius: .5rem;\r\n}\r\n.mu-radio:hover > .mu-radio_fake {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-radio > input {\r\n  position: absolute;\r\n  z-index: -1;\r\n  opacity: 0;\r\n}\r\n.mu-radio > input:checked + .mu-radio_fake {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-radio > input:checked + .mu-radio_fake:before {\r\n  box-sizing: border-box;\r\n  display: block;\r\n  height: 100%;\r\n  width: 100%;\r\n  content: '';\r\n  border-radius: 50%;\r\n  background-color: #40a9ff;\r\n  background-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-radio[disabled] > input + .mu-radio_fake {\r\n  border-color: #e6e6e6;\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-radio[disabled] > input:checked + .mu-radio_fake {\r\n  background-color: inherit;\r\n  border-color: #bbb;\r\n}\r\n.mu-radio[disabled] > input:checked + .mu-radio_fake:before {\r\n  background-color: #bbb;\r\n}\r\n.mu-radio-group[vertical] > .mu-radio {\r\n  display: flex;\r\n  margin-left: 0;\r\n}\r\n.mu-checkbox {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  line-height: 1.7rem;\r\n  cursor: pointer;\r\n}\r\n.mu-checkbox + .mu-checkbox {\r\n  margin-left: 16px;\r\n}\r\n.mu-checkbox > .mu-checkbox_fake {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  width: 1rem;\r\n  padding: 2px;\r\n  margin-right: 5px;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n}\r\n.mu-checkbox:hover > .mu-checkbox_fake {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-checkbox > input {\r\n  position: absolute;\r\n  z-index: -1;\r\n  opacity: 0;\r\n}\r\n.mu-checkbox > input:checked + .mu-checkbox_fake {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-checkbox > input:checked + .mu-checkbox_fake:before {\r\n  box-sizing: border-box;\r\n  display: block;\r\n  height: 100%;\r\n  width: 100%;\r\n  content: '';\r\n  background-color: #40a9ff;\r\n  background-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-checkbox[disabled] > input + .mu-checkbox_fake {\r\n  border-color: #e6e6e6;\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-checkbox[disabled] > input:checked + .mu-checkbox_fake {\r\n  background-color: inherit;\r\n  border-color: #bbb;\r\n}\r\n.mu-checkbox[disabled] > input:checked + .mu-checkbox_fake:before {\r\n  background-color: #bbb;\r\n}\r\n.mu-checkbox-group[vertical] > .mu-checkbox {\r\n  display: flex;\r\n  margin-left: 0;\r\n}";
+  var css_248z$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #d6d6d6;\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background-color: #fff;\r\n  font-size: 1rem;\r\n  color: #666;\r\n}\r\n.mu-input::-moz-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input:-ms-input-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input::-ms-input-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input::placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n}\r\n.mu-input:hover {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-input[readonly] {\r\n  cursor: default;\r\n  background-color: #ffd;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #d6d6d6;\r\n  color: #999;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  border-color: #cf1322;\r\n  border-color: var(--mu-danger-plus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-danger-shadow-color);\r\n}\r\n.mu-input[invalid]:hover,\r\n[invalid] .mu-input:hover {\r\n  border-color: #ff4d4f;\r\n  border-color: var(--mu-danger-minus-color);\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}\r\n.mu-radio {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  line-height: 1.7rem;\r\n  cursor: pointer;\r\n}\r\n.mu-radio + .mu-radio {\r\n  margin-left: 16px;\r\n}\r\n.mu-radio > .mu-radio_fake {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  width: 1rem;\r\n  padding: 2px;\r\n  margin-right: 5px;\r\n  border: 1px solid #666;\r\n  border-radius: .5rem;\r\n}\r\n.mu-radio:hover > .mu-radio_fake {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-radio > input {\r\n  position: absolute;\r\n  z-index: -1;\r\n  opacity: 0;\r\n}\r\n.mu-radio > input:checked + .mu-radio_fake {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-radio > input:checked + .mu-radio_fake:before {\r\n  box-sizing: border-box;\r\n  display: block;\r\n  height: 100%;\r\n  width: 100%;\r\n  content: '';\r\n  border-radius: 50%;\r\n  background-color: #40a9ff;\r\n  background-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-radio[disabled] > input + .mu-radio_fake {\r\n  border-color: #e6e6e6;\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-radio[disabled] > input:checked + .mu-radio_fake {\r\n  background-color: inherit;\r\n  border-color: #bbb;\r\n}\r\n.mu-radio[disabled] > input:checked + .mu-radio_fake:before {\r\n  background-color: #bbb;\r\n}\r\n.mu-radio-group[vertical] > .mu-radio {\r\n  display: flex;\r\n  margin-left: 0;\r\n}\r\n.mu-checkbox {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  line-height: 1.7rem;\r\n  cursor: pointer;\r\n}\r\n.mu-checkbox + .mu-checkbox {\r\n  margin-left: 16px;\r\n}\r\n.mu-checkbox > .mu-checkbox_fake {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  width: 1rem;\r\n  padding: 2px;\r\n  margin-right: 5px;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n}\r\n.mu-checkbox:hover > .mu-checkbox_fake {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-checkbox > input {\r\n  position: absolute;\r\n  z-index: -1;\r\n  opacity: 0;\r\n}\r\n.mu-checkbox > input:checked + .mu-checkbox_fake {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-checkbox > input:checked + .mu-checkbox_fake:before {\r\n  box-sizing: border-box;\r\n  display: block;\r\n  height: 100%;\r\n  width: 100%;\r\n  content: '';\r\n  background-color: #40a9ff;\r\n  background-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-checkbox[disabled] > input + .mu-checkbox_fake {\r\n  border-color: #e6e6e6;\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-checkbox[disabled] > input:checked + .mu-checkbox_fake {\r\n  background-color: inherit;\r\n  border-color: #bbb;\r\n}\r\n.mu-checkbox[disabled] > input:checked + .mu-checkbox_fake:before {\r\n  background-color: #bbb;\r\n}\r\n.mu-checkbox-group[vertical] > .mu-checkbox {\r\n  display: flex;\r\n  margin-left: 0;\r\n}";
   styleInject(css_248z$9);
 
-  var css_248z$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: #d6d6d6;\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n  background: #fff;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + .mu-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + input + .mu-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[readonly] > input {\r\n  background-color: #ffd;\r\n}\r\n.mu-editor[disabled] > input {\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-editor[disabled] > input,\r\n.mu-editor[readonly] > input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-icon,\r\n.mu-editor[readonly] > .mu-icon {\r\n  display: none;\r\n}\r\n.mu-editor > .mu-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  font-size: 1rem;\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-editor > .mu-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-editor > .mu-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor > .mu-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-editor > .mu-icon[clickable]:hover {\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n}\r\n.mu-editor > .mu-icon[trigger-type=clear] {\r\n  color: #bbb;\r\n  fill: #bbb;\r\n}\r\n.mu-editor > .mu-icon[trigger-type=clear]:hover {\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #f5222d;\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-search-box[value-mode=select] > input {\r\n  font-style: italic;\r\n  color: #bbb;\r\n}\r\n.mu-search-box[value-mode=select] > input::-moz-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input:-ms-input-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input::-ms-input-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input::placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input:focus,\r\n.mu-search-box[value-mode=select][valid] > input {\r\n  font-style: normal;\r\n  color: #666;\r\n}\r\n.mu-date-range-editor_to {\r\n  width: 20px;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-left: 1px solid #e0e0e0;\r\n  border-right: 1px solid #e0e0e0;\r\n}";
+  var css_248z$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: #d6d6d6;\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n  background: #fff;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + .mu-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + input + .mu-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[readonly] > input {\r\n  background-color: #ffd;\r\n}\r\n.mu-editor[disabled] > input {\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-editor[disabled] > input,\r\n.mu-editor[readonly] > input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-icon,\r\n.mu-editor[readonly] > .mu-icon {\r\n  display: none;\r\n}\r\n.mu-editor > .mu-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  font-size: 1rem;\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-editor > .mu-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-editor > .mu-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor > .mu-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-editor > .mu-icon[clickable]:hover {\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n}\r\n.mu-editor > .mu-icon[trigger-type=clear] {\r\n  color: #bbb;\r\n  fill: #bbb;\r\n}\r\n.mu-editor > .mu-icon[trigger-type=clear]:hover {\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-search-box[value-mode=select] > input {\r\n  font-style: italic;\r\n  color: #bbb;\r\n}\r\n.mu-search-box[value-mode=select] > input::-moz-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input:-ms-input-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input::-ms-input-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input::placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input:focus,\r\n.mu-search-box[value-mode=select][valid] > input {\r\n  font-style: normal;\r\n  color: #666;\r\n}\r\n.mu-date-range-editor_to {\r\n  width: 20px;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-left: 1px solid #e0e0e0;\r\n  border-right: 1px solid #e0e0e0;\r\n}";
   styleInject(css_248z$a);
 
   var css_248z$b = ".mu-color-editor > input[readonly] {\r\n  background: #fff;\r\n}\r\n.mu-color-editor > .mu-color-indicator {\r\n  position: absolute;\r\n  z-index: 2;\r\n  top: 50%;\r\n  left: 10px;\r\n  padding: 0 10px;\r\n  transform: translateY(-50%);\r\n}\r\n.mu-color-palette {\r\n  padding: 8px;\r\n  overflow: hidden;\r\n  text-align: center;\r\n  font-size: 0;\r\n}\r\n.mu-color-palette > div + div {\r\n  margin-top: 2px;\r\n}\r\n.mu-color-palette .mu-color-palette-cell {\r\n  display: inline-block;\r\n  width: 12px;\r\n  height: 12px;\r\n  border: 1px solid rgba(0,0,0,.25);\r\n  overflow: hidden;\r\n  cursor: pointer;\r\n}\r\n.mu-color-palette .mu-color-palette-cell:hover {\r\n  transform: scale(2);\r\n}\r\n.mu-color-palette .mu-color-palette-cell + .mu-color-palette-cell {\r\n  margin-left: 2px;\r\n}";
   styleInject(css_248z$b);
 
-  var css_248z$c = ".mu-form-field {\r\n  min-width: 80px;\r\n}\r\n.mu-form-field > label {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n  padding-right: 12px;\r\n  font-size: 1rem;\r\n}\r\n.mu-form-field > label:before {\r\n  position: absolute;\r\n  right: 0;\r\n  top: -3px;\r\n  display: inline-block;\r\n  visibility: hidden;\r\n  width: 10px;\r\n  text-align: left;\r\n  font-weight: 500;\r\n  color: #f5222d;\r\n  content: \"*\";\r\n}\r\n.mu-form-field > label + span {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n}\r\n.mu-form-field[required] > label:before {\r\n  visibility: visible;\r\n}\r\n.mu-form-field[invalid] > label {\r\n  color: #f5222d;\r\n}\r\n.mu-form-field > .mu-editor,\r\n.mu-form-field > .mu-input,\r\n.mu-form-field > span {\r\n  flex: 1 1 1px;\r\n  width: 1px;\r\n}\r\n.mu-form-row {\r\n  width: 100%;\r\n}\r\n.mu-form[form-style=table] {\r\n  border: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row + .mu-form-row {\r\n  border-top: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field {\r\n  align-items: center;\r\n  height: 40px;\r\n  border-right: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field:last-child {\r\n  border-right: 0;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > label,\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > span {\r\n  overflow: hidden;\r\n  line-height: 20px;\r\n  white-space: nowrap;\r\n  text-overflow: ellipsis;\r\n  padding: 0 8px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > .mu-input {\r\n  margin: 0 4px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field .mu-input {\r\n  border-style: dashed;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field .mu-input:hover {\r\n  border-style: solid;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > label:first-child {\r\n  display: inline-flex;\r\n  align-self: stretch;\r\n  align-items: center;\r\n  border-right: 1px solid #d6d6d6;\r\n  background-color: #e9e9e9;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field {\r\n  height: 32px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field > .mu-input,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field > .mu-input {\r\n  margin: 0;\r\n}";
+  var css_248z$c = ".mu-form-field {\r\n  min-width: 80px;\r\n}\r\n.mu-form-field > label {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n  padding-right: 12px;\r\n  font-size: 1rem;\r\n}\r\n.mu-form-field > label:before {\r\n  position: absolute;\r\n  right: 0;\r\n  top: -3px;\r\n  display: inline-block;\r\n  visibility: hidden;\r\n  width: 10px;\r\n  text-align: left;\r\n  font-weight: 500;\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  content: \"*\";\r\n}\r\n.mu-form-field > label + span {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n}\r\n.mu-form-field[required] > label:before {\r\n  visibility: visible;\r\n}\r\n.mu-form-field[invalid] > label {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n}\r\n.mu-form-field > .mu-editor,\r\n.mu-form-field > .mu-input,\r\n.mu-form-field > span {\r\n  flex: 1 1 1px;\r\n  width: 1px;\r\n}\r\n.mu-form-row {\r\n  width: 100%;\r\n}\r\n.mu-form[form-style=table] {\r\n  border: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row + .mu-form-row {\r\n  border-top: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field {\r\n  align-items: center;\r\n  height: 40px;\r\n  border-right: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field:last-child {\r\n  border-right: 0;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > label,\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > span {\r\n  overflow: hidden;\r\n  line-height: 20px;\r\n  white-space: nowrap;\r\n  text-overflow: ellipsis;\r\n  padding: 0 8px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > .mu-input {\r\n  margin: 0 4px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field .mu-input {\r\n  border-style: dashed;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field .mu-input:hover {\r\n  border-style: solid;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > label:first-child {\r\n  display: inline-flex;\r\n  align-self: stretch;\r\n  align-items: center;\r\n  border-right: 1px solid #d6d6d6;\r\n  background-color: #e9e9e9;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field {\r\n  height: 32px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field > .mu-input,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field > .mu-input {\r\n  margin: 0;\r\n}";
   styleInject(css_248z$c);
 
-  var css_248z$d = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 220px;\r\n  min-width: 240px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: 1px solid #d6d6d6;\r\n  overflow: hidden;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.14rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #777;\r\n  border-top: 1px solid var(--mu-primary-color);\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid var(--mu-primary-color);\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  content: '';\r\n  border-bottom: 8px solid #f5222d;\r\n  border-right: 8px solid transparent;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #bbb;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  background: #ececec;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #faad14;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: #bbb;\r\n  background: #e6e6e6;\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}\r\n.mu-dropdown-panel .mu-calendar {\r\n  border: 0;\r\n}";
+  var css_248z$d = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 220px;\r\n  min-width: 240px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: 1px solid #d6d6d6;\r\n  overflow: hidden;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.14rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #777;\r\n  border-top: 1px solid var(--mu-primary-color);\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid var(--mu-primary-color);\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  content: '';\r\n  border-bottom: 8px solid var(--mu-danger-color);\r\n  border-right: 8px solid transparent;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #bbb;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  background: #ececec;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #faad14;\r\n  color: var(--mu-warning-color);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: #bbb;\r\n  background: #e6e6e6;\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}\r\n.mu-dropdown-panel .mu-calendar {\r\n  border: 0;\r\n}";
   styleInject(css_248z$d);
 
   var css_248z$e = ".mu-bar > * {\r\n  margin-right: 8px;\r\n}\r\n.mu-bar > :last-child {\r\n  margin-right: 0;\r\n}\r\n.mu-bar.mu-toolbar {\r\n  height: 40px;\r\n  padding: 0 10px;\r\n}\r\n.mu-bar.mu-toolbar > label,\r\n.mu-bar.mu-toolbar > span {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  text-overflow: ellipsis;\r\n}";
@@ -92,13 +92,13 @@
   var css_248z$i = ".mu-modal-mask {\r\n  position: absolute;\r\n  z-index: 100;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: none;\r\n  background: rgba(0,0,0,.5);\r\n}\r\n.mu-modal-mask[visible] {\r\n  display: block;\r\n}\r\n.mu-modal-mask.mu-flex-box[visible] {\r\n  display: flex;\r\n}\r\nbody > .mu-modal-mask {\r\n  position: fixed;\r\n}";
   styleInject(css_248z$i);
 
-  var css_248z$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: #fff;\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #f5222d;\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 0 16px;\r\n  background: #fff;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-header > [trigger-type=close] {\r\n  margin-left: 16px;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: 0 0;\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  min-width: 50px;\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}\r\n.mu-dialog-body > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}";
+  var css_248z$j = ".mu-dialog {\r\n  position: relative;\r\n  min-width: 200px;\r\n  min-height: 100px;\r\n  background: #fff;\r\n  opacity: 0;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-dialog[visible] {\r\n  opacity: 1;\r\n}\r\n.mu-dialog[danger] > .mu-dialog-header {\r\n  border-bottom-color: #f5222d;\r\n  border-bottom-color: var(--mu-danger-color);\r\n}\r\n.mu-dialog-header {\r\n  height: 50px;\r\n  padding: 0 16px;\r\n  background: #fff;\r\n  border-bottom: 2px solid #1890ff;\r\n}\r\n.mu-dialog-header > .mu-dialog-title {\r\n  font-size: 1rem;\r\n  font-weight: 600;\r\n}\r\n.mu-dialog-header > [trigger-type=close] {\r\n  margin-left: 16px;\r\n}\r\n.mu-dialog-footer {\r\n  margin-top: auto;\r\n  height: 50px;\r\n  background: 0 0;\r\n  padding: 0 16px;\r\n}\r\n.mu-dialog-footer > .mu-button {\r\n  min-width: 50px;\r\n  margin-left: 8px;\r\n}\r\n.mu-dialog-body {\r\n  padding: 16px;\r\n}\r\n.mu-dialog-body > .mu-absolute-fit {\r\n  top: 16px;\r\n  left: 16px;\r\n  right: 16px;\r\n  bottom: 16px;\r\n}";
   styleInject(css_248z$j);
 
   var css_248z$k = ".mu-drawer-wrapper {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: block;\r\n  overflow: visible;\r\n}\r\n.mu-drawer-wrapper > div {\r\n  position: absolute;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-drawer-wrapper[position=left] {\r\n  right: auto;\r\n}\r\n.mu-drawer-wrapper[position=left] > div {\r\n  top: 0;\r\n  bottom: 0;\r\n  left: 0;\r\n  transform: translateX(-100%);\r\n}\r\n.mu-drawer-wrapper[position=right] {\r\n  left: auto;\r\n}\r\n.mu-drawer-wrapper[position=right] > div {\r\n  top: 0;\r\n  bottom: 0;\r\n  right: 0;\r\n  transform: translateX(100%);\r\n}\r\n.mu-drawer-wrapper[position=top] {\r\n  bottom: auto;\r\n}\r\n.mu-drawer-wrapper[position=top] > div {\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  transform: translateY(-100%);\r\n}\r\n.mu-drawer-wrapper[position=bottom] {\r\n  top: auto;\r\n}\r\n.mu-drawer-wrapper[position=bottom] > div {\r\n  bottom: 0;\r\n  left: 0;\r\n  right: 0;\r\n  transform: translateY(100%);\r\n}\r\n.mu-drawer-wrapper.mu-modal-mask {\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n.mu-drawer-wrapper[popup] > div {\r\n  transform: translate(0,0);\r\n}\r\nbody > .mu-drawer-wrapper {\r\n  position: fixed;\r\n}\r\n.mu-drawer {\r\n  margin: auto;\r\n  background: #fff;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n}";
   styleInject(css_248z$k);
 
-  var css_248z$l = ".mu-message-box {\r\n  z-index: 998;\r\n}\r\n.mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-message-box > .mu-dialog .mu-button {\r\n  min-width: 55px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  z-index: 999;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: #fff;\r\n  border-left: 5px solid var(--mu-primary-color);\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > div[link-style]:hover {\r\n  text-decoration: underline;\r\n  cursor: pointer;\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  transition: all .5s;\r\n}";
+  var css_248z$l = ".mu-message-box {\r\n  z-index: 998;\r\n}\r\n.mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-message-box > .mu-dialog .mu-button {\r\n  min-width: 55px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  z-index: 999;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: #fff;\r\n  border-left: 5px solid var(--mu-primary-color);\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > div[link-style]:hover {\r\n  text-decoration: underline;\r\n  cursor: pointer;\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  border-color: var(--mu-success-color);\r\n  color: #52c41a;\r\n  color: var(--mu-success-color);\r\n  fill: #52c41a;\r\n  fill: var(--mu-success-color);\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  border-color: var(--mu-warning-color);\r\n  color: #faad14;\r\n  color: var(--mu-warning-color);\r\n  fill: #faad14;\r\n  fill: var(--mu-warning-color);\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  transition: all .5s;\r\n}";
   styleInject(css_248z$l);
 
   var css_248z$m = ".mu-menu-group_header,\r\n.mu-menu-item {\r\n  position: relative;\r\n  padding: 0 16px 0 32px;\r\n  height: 32px;\r\n  line-height: 32px;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n}\r\n.mu-menu-group_header > .mu-icon,\r\n.mu-menu-item > .mu-icon {\r\n  position: absolute;\r\n  left: 0;\r\n  display: inline-block;\r\n  width: 32px;\r\n  text-align: center;\r\n}\r\n.mu-menu-group_header > .mu-icon[trigger-type],\r\n.mu-menu-item > .mu-icon[trigger-type] {\r\n  left: auto;\r\n  right: 0;\r\n}\r\n.mu-menu-group_body .mu-menu-group_header {\r\n  font-size: .857rem;\r\n  font-weight: 600;\r\n  color: #777;\r\n  fill: #777;\r\n  background: 0 0;\r\n  cursor: default;\r\n}\r\n.mu-menu-group .mu-menu-item {\r\n  display: block;\r\n}\r\n.mu-menu-group .mu-menu-group + .mu-menu-item {\r\n  border-top: 1px solid #e0e0e0;\r\n}\r\n.mu-sidebar .mu-menu-group_header,\r\n.mu-sidebar .mu-menu-item {\r\n  display: block;\r\n  height: 40px;\r\n  line-height: 40px;\r\n  padding-left: 40px;\r\n}\r\n.mu-sidebar .mu-menu-group_header > .mu-icon,\r\n.mu-sidebar .mu-menu-item > .mu-icon {\r\n  width: 40px;\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_header,\r\n.mu-sidebar_menu-wrapper > .mu-menu-group > .mu-menu-group_header {\r\n  padding-right: 40px;\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_body,\r\n.mu-sidebar_menu-wrapper > .mu-menu-group > .mu-menu-group_body {\r\n  position: relative;\r\n  visibility: hidden;\r\n  overflow: hidden;\r\n  max-height: 0;\r\n  transition: all .1s ease-in-out;\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group[expanded],\r\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] {\r\n  background: rgba(24,144,255,.05);\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_body,\r\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] > .mu-menu-group_body {\r\n  visibility: visible;\r\n  max-height: 2000px;\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_header,\r\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] > .mu-menu-group_header {\r\n  background: #e9e9e9;\r\n}";
@@ -107,10 +107,10 @@
   var css_248z$n = ".mu-sidebar {\r\n  position: relative;\r\n  z-index: 90;\r\n  overflow: visible;\r\n}\r\n.mu-sidebar[floating] {\r\n  width: 40px;\r\n  overflow: visible;\r\n}\r\n.mu-sidebar[floating] .mu-sidebar_collapse-button {\r\n  fill: #666;\r\n}\r\n.mu-sidebar[collapsed] {\r\n  width: 40px;\r\n}\r\n.mu-sidebar[collapsed] > .mu-sidebar_container {\r\n  width: 40px;\r\n}\r\n.mu-sidebar[collapsed] .mu-sidebar_collapse-button {\r\n  border-right: 0;\r\n}\r\n.mu-sidebar[collapsed] .mu-sidebar_collapse-button > .mu-icon {\r\n  transform: rotate3d(0,1,0,180deg);\r\n}\r\n.mu-sidebar_container {\r\n  overflow: hidden;\r\n  background: #fff;\r\n  transition: width .1s ease-in-out;\r\n}\r\n.mu-sidebar_body {\r\n  position: relative;\r\n}\r\n.mu-sidebar_body-container {\r\n  overflow: auto;\r\n}\r\n.mu-sidebar_footer,\r\n.mu-sidebar_header {\r\n  overflow: hidden;\r\n  height: 40px;\r\n}\r\n.mu-sidebar_header {\r\n  border-bottom: 1px solid #e0e0e0;\r\n}\r\n.mu-sidebar_footer {\r\n  border-top: 1px solid #e0e0e0;\r\n}\r\n.mu-sidebar_collapse-button {\r\n  width: 40px;\r\n  min-width: 40px;\r\n  line-height: 40px;\r\n  text-align: center;\r\n  border-right: 1px solid #e0e0e0;\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n}\r\n.mu-sidebar_collapse-button > .mu-icon {\r\n  transition: transform .2s ease-in-out;\r\n}";
   styleInject(css_248z$n);
 
-  var css_248z$o = ".mu-background-normal {\r\n  background: #fff;\r\n}\r\n.mu-background-grey {\r\n  background: #e9e9e9;\r\n}\r\n.mu-background-highlight {\r\n  background: #a6a6a6;\r\n  color: #fff;\r\n}\r\n.mu-background-info {\r\n  background: #ffd;\r\n}\r\n.mu-background-hover:hover {\r\n  background: #ececec;\r\n}\r\n.mu-background-disabled[disabled] {\r\n  background: #e6e6e6;\r\n  color: #bbb;\r\n}\r\n.mu-background-primary {\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-background-success {\r\n  background: #52c41a;\r\n}\r\n.mu-background-danger {\r\n  background: #52c41a;\r\n}\r\n.mu-background-warning {\r\n  background: #faad14;\r\n}";
+  var css_248z$o = ".mu-background-normal {\r\n  background: #fff;\r\n}\r\n.mu-background-grey {\r\n  background: #e9e9e9;\r\n}\r\n.mu-background-highlight {\r\n  background: #a6a6a6;\r\n  color: #fff;\r\n}\r\n.mu-background-info {\r\n  background: #ffd;\r\n}\r\n.mu-background-hover:hover {\r\n  background: #ececec;\r\n}\r\n.mu-background-disabled[disabled] {\r\n  background: #e6e6e6;\r\n  color: #bbb;\r\n}\r\n.mu-background-primary {\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-background-success {\r\n  background: #52c41a;\r\n  background: var(--mu-success-color);\r\n}\r\n.mu-background-danger {\r\n  background: #52c41a;\r\n  background: var(--mu-success-color);\r\n}\r\n.mu-background-warning {\r\n  background: #faad14;\r\n  background: var(--mu-warning-color);\r\n}";
   styleInject(css_248z$o);
 
-  var css_248z$p = ".mu-text-ellipsis {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n.mu-text-color-normal {\r\n  color: #666;\r\n  fill: #666;\r\n}\r\n.mu-text-color-weak {\r\n  color: #bbb;\r\n  fill: #bbb;\r\n}\r\n.mu-text-color-title {\r\n  color: #555;\r\n  fill: #555;\r\n}\r\n.mu-text-color-subtitle {\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-text-title {\r\n  font-size: 1em;\r\n  color: #555;\r\n  fill: #555;\r\n}\r\n.mu-text-subtitle {\r\n  font-size: .9em;\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-text-weak {\r\n  font-size: .8em;\r\n  color: #bbb;\r\n  fill: #bbb;\r\n}\r\n.mu-text-body {\r\n  font-size: .9em;\r\n  color: #666;\r\n  fill: #666;\r\n}\r\n.mu-text-color-primary {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n}\r\n.mu-text-color-success {\r\n  color: #52c41a;\r\n  fill: #52c41a;\r\n}\r\n.mu-text-color-danger {\r\n  color: #f5222d;\r\n  fill: #f5222d;\r\n}\r\n.mu-text-color-warning {\r\n  color: #faad14;\r\n  fill: #faad14;\r\n}\r\n.mu-text-color-highlight {\r\n  color: #fff;\r\n  fill: #fff;\r\n}";
+  var css_248z$p = ".mu-text-ellipsis {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n}\r\n.mu-text-color-normal {\r\n  color: #666;\r\n  fill: #666;\r\n}\r\n.mu-text-color-weak {\r\n  color: #bbb;\r\n  fill: #bbb;\r\n}\r\n.mu-text-color-title {\r\n  color: #555;\r\n  fill: #555;\r\n}\r\n.mu-text-color-subtitle {\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-text-title {\r\n  font-size: 1em;\r\n  color: #555;\r\n  fill: #555;\r\n}\r\n.mu-text-subtitle {\r\n  font-size: .9em;\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-text-weak {\r\n  font-size: .8em;\r\n  color: #bbb;\r\n  fill: #bbb;\r\n}\r\n.mu-text-body {\r\n  font-size: .9em;\r\n  color: #666;\r\n  fill: #666;\r\n}\r\n.mu-text-color-primary {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n}\r\n.mu-text-color-success {\r\n  color: #52c41a;\r\n  color: var(--mu-success-color);\r\n  fill: #52c41a;\r\n  fill: var(--mu-success-color);\r\n}\r\n.mu-text-color-danger {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-text-color-warning {\r\n  color: #faad14;\r\n  color: var(--mu-warning-color);\r\n  fill: #faad14;\r\n  fill: var(--mu-warning-color);\r\n}\r\n.mu-text-color-highlight {\r\n  color: #fff;\r\n  fill: #fff;\r\n}";
   styleInject(css_248z$p);
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -3607,6 +3607,71 @@
     staticRenderFns: __vue_staticRenderFns__$e
   }, __vue_inject_styles__$f, __vue_script__$f, __vue_scope_id__$f, __vue_is_functional_template__$f, __vue_module_identifier__$f, false, undefined, undefined, undefined);
 
+  var SPECIES$2 = wellKnownSymbol('species');
+
+  // `ArraySpeciesCreate` abstract operation
+  // https://tc39.github.io/ecma262/#sec-arrayspeciescreate
+  var arraySpeciesCreate = function (originalArray, length) {
+    var C;
+    if (isArray(originalArray)) {
+      C = originalArray.constructor;
+      // cross-realm fallback
+      if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;
+      else if (isObject(C)) {
+        C = C[SPECIES$2];
+        if (C === null) C = undefined;
+      }
+    } return new (C === undefined ? Array : C)(length === 0 ? 0 : length);
+  };
+
+  var IS_CONCAT_SPREADABLE = wellKnownSymbol('isConcatSpreadable');
+  var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
+  var MAXIMUM_ALLOWED_INDEX_EXCEEDED = 'Maximum allowed index exceeded';
+
+  // We can't use this feature detection in V8 since it causes
+  // deoptimization and serious performance degradation
+  // https://github.com/zloirock/core-js/issues/679
+  var IS_CONCAT_SPREADABLE_SUPPORT = engineV8Version >= 51 || !fails(function () {
+    var array = [];
+    array[IS_CONCAT_SPREADABLE] = false;
+    return array.concat()[0] !== array;
+  });
+
+  var SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('concat');
+
+  var isConcatSpreadable = function (O) {
+    if (!isObject(O)) return false;
+    var spreadable = O[IS_CONCAT_SPREADABLE];
+    return spreadable !== undefined ? !!spreadable : isArray(O);
+  };
+
+  var FORCED = !IS_CONCAT_SPREADABLE_SUPPORT || !SPECIES_SUPPORT;
+
+  // `Array.prototype.concat` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.concat
+  // with adding support of @@isConcatSpreadable and @@species
+  _export({ target: 'Array', proto: true, forced: FORCED }, {
+    concat: function concat(arg) { // eslint-disable-line no-unused-vars
+      var O = toObject(this);
+      var A = arraySpeciesCreate(O, 0);
+      var n = 0;
+      var i, k, length, len, E;
+      for (i = -1, length = arguments.length; i < length; i++) {
+        E = i === -1 ? O : arguments[i];
+        if (isConcatSpreadable(E)) {
+          len = toLength(E.length);
+          if (n + len > MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
+          for (k = 0; k < len; k++, n++) if (k in E) createProperty(A, n, E[k]);
+        } else {
+          if (n >= MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
+          createProperty(A, n++, E);
+        }
+      }
+      A.length = n;
+      return A;
+    }
+  });
+
   // optional / simple context binding
   var functionBindContext = function (fn, that, length) {
     aFunction$1(fn);
@@ -3628,23 +3693,6 @@
     return function (/* ...args */) {
       return fn.apply(that, arguments);
     };
-  };
-
-  var SPECIES$2 = wellKnownSymbol('species');
-
-  // `ArraySpeciesCreate` abstract operation
-  // https://tc39.github.io/ecma262/#sec-arrayspeciescreate
-  var arraySpeciesCreate = function (originalArray, length) {
-    var C;
-    if (isArray(originalArray)) {
-      C = originalArray.constructor;
-      // cross-realm fallback
-      if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;
-      else if (isObject(C)) {
-        C = C[SPECIES$2];
-        if (C === null) C = undefined;
-      }
-    } return new (C === undefined ? Array : C)(length === 0 ? 0 : length);
   };
 
   var push = [].push;
@@ -3731,11 +3779,11 @@
 
   var $parseInt = global_1.parseInt;
   var hex = /^[+-]?0[Xx]/;
-  var FORCED = $parseInt(whitespaces + '08') !== 8 || $parseInt(whitespaces + '0x16') !== 22;
+  var FORCED$1 = $parseInt(whitespaces + '08') !== 8 || $parseInt(whitespaces + '0x16') !== 22;
 
   // `parseInt` method
   // https://tc39.github.io/ecma262/#sec-parseint-string-radix
-  var numberParseInt = FORCED ? function parseInt(string, radix) {
+  var numberParseInt = FORCED$1 ? function parseInt(string, radix) {
     var S = trim$1(String(string));
     return $parseInt(S, (radix >>> 0) || (hex.test(S) ? 16 : 10));
   } : $parseInt;
@@ -3746,119 +3794,16 @@
     parseInt: numberParseInt
   });
 
-  // iterable DOM collections
-  // flag - `iterable` interface - 'entries', 'keys', 'values', 'forEach' methods
-  var domIterables = {
-    CSSRuleList: 0,
-    CSSStyleDeclaration: 0,
-    CSSValueList: 0,
-    ClientRectList: 0,
-    DOMRectList: 0,
-    DOMStringList: 0,
-    DOMTokenList: 1,
-    DataTransferItemList: 0,
-    FileList: 0,
-    HTMLAllCollection: 0,
-    HTMLCollection: 0,
-    HTMLFormElement: 0,
-    HTMLSelectElement: 0,
-    MediaList: 0,
-    MimeTypeArray: 0,
-    NamedNodeMap: 0,
-    NodeList: 1,
-    PaintRequestList: 0,
-    Plugin: 0,
-    PluginArray: 0,
-    SVGLengthList: 0,
-    SVGNumberList: 0,
-    SVGPathSegList: 0,
-    SVGPointList: 0,
-    SVGStringList: 0,
-    SVGTransformList: 0,
-    SourceBufferList: 0,
-    StyleSheetList: 0,
-    TextTrackCueList: 0,
-    TextTrackList: 0,
-    TouchList: 0
-  };
+  var Colors = [];
+  var base = ['00', '33', '66', '99', 'CC', 'FF'];
 
-  for (var COLLECTION_NAME in domIterables) {
-    var Collection = global_1[COLLECTION_NAME];
-    var CollectionPrototype = Collection && Collection.prototype;
-    // some Chrome versions have non-configurable methods on DOMTokenList
-    if (CollectionPrototype && CollectionPrototype.forEach !== arrayForEach) try {
-      createNonEnumerableProperty(CollectionPrototype, 'forEach', arrayForEach);
-    } catch (error) {
-      CollectionPrototype.forEach = arrayForEach;
-    }
-  }
-
-  var IS_CONCAT_SPREADABLE = wellKnownSymbol('isConcatSpreadable');
-  var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
-  var MAXIMUM_ALLOWED_INDEX_EXCEEDED = 'Maximum allowed index exceeded';
-
-  // We can't use this feature detection in V8 since it causes
-  // deoptimization and serious performance degradation
-  // https://github.com/zloirock/core-js/issues/679
-  var IS_CONCAT_SPREADABLE_SUPPORT = engineV8Version >= 51 || !fails(function () {
-    var array = [];
-    array[IS_CONCAT_SPREADABLE] = false;
-    return array.concat()[0] !== array;
-  });
-
-  var SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('concat');
-
-  var isConcatSpreadable = function (O) {
-    if (!isObject(O)) return false;
-    var spreadable = O[IS_CONCAT_SPREADABLE];
-    return spreadable !== undefined ? !!spreadable : isArray(O);
-  };
-
-  var FORCED$1 = !IS_CONCAT_SPREADABLE_SUPPORT || !SPECIES_SUPPORT;
-
-  // `Array.prototype.concat` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.concat
-  // with adding support of @@isConcatSpreadable and @@species
-  _export({ target: 'Array', proto: true, forced: FORCED$1 }, {
-    concat: function concat(arg) { // eslint-disable-line no-unused-vars
-      var O = toObject(this);
-      var A = arraySpeciesCreate(O, 0);
-      var n = 0;
-      var i, k, length, len, E;
-      for (i = -1, length = arguments.length; i < length; i++) {
-        E = i === -1 ? O : arguments[i];
-        if (isConcatSpreadable(E)) {
-          len = toLength(E.length);
-          if (n + len > MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
-          for (k = 0; k < len; k++, n++) if (k in E) createProperty(A, n, E[k]);
-        } else {
-          if (n >= MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
-          createProperty(A, n++, E);
-        }
-      }
-      A.length = n;
-      return A;
-    }
-  });
-
-  function safe() {
-    var colors = [];
-    var base = ['00', '33', '66', '99', 'CC', 'FF'];
-
-    for (var i = 0; i < 6; i++) {
-      for (var j = 0; j < 6; j++) {
-        for (var k = 0; k < 6; k++) {
-          colors.push("#".concat(base[i]).concat(base[j]).concat(base[k]));
-        }
+  for (var i = 0; i < 6; i++) {
+    for (var j$1 = 0; j$1 < 6; j$1++) {
+      for (var k = 0; k < 6; k++) {
+        Colors.push("#".concat(base[i]).concat(base[j$1]).concat(base[k]));
       }
     }
-
-    return colors;
   }
-
-  var Colors = {
-    safe: safe()
-  };
 
   var script$g = {
     name: 'MusselColorEditor',
@@ -3872,7 +3817,7 @@
     data: function data() {
       var grid = [];
       var row = [];
-      Colors.safe.forEach(function (color) {
+      Colors.forEach(function (color) {
         row.push(color);
 
         if (row.length === 18) {
@@ -5294,6 +5239,53 @@
       });
     }
   });
+
+  // iterable DOM collections
+  // flag - `iterable` interface - 'entries', 'keys', 'values', 'forEach' methods
+  var domIterables = {
+    CSSRuleList: 0,
+    CSSStyleDeclaration: 0,
+    CSSValueList: 0,
+    ClientRectList: 0,
+    DOMRectList: 0,
+    DOMStringList: 0,
+    DOMTokenList: 1,
+    DataTransferItemList: 0,
+    FileList: 0,
+    HTMLAllCollection: 0,
+    HTMLCollection: 0,
+    HTMLFormElement: 0,
+    HTMLSelectElement: 0,
+    MediaList: 0,
+    MimeTypeArray: 0,
+    NamedNodeMap: 0,
+    NodeList: 1,
+    PaintRequestList: 0,
+    Plugin: 0,
+    PluginArray: 0,
+    SVGLengthList: 0,
+    SVGNumberList: 0,
+    SVGPathSegList: 0,
+    SVGPointList: 0,
+    SVGStringList: 0,
+    SVGTransformList: 0,
+    SourceBufferList: 0,
+    StyleSheetList: 0,
+    TextTrackCueList: 0,
+    TextTrackList: 0,
+    TouchList: 0
+  };
+
+  for (var COLLECTION_NAME in domIterables) {
+    var Collection = global_1[COLLECTION_NAME];
+    var CollectionPrototype = Collection && Collection.prototype;
+    // some Chrome versions have non-configurable methods on DOMTokenList
+    if (CollectionPrototype && CollectionPrototype.forEach !== arrayForEach) try {
+      createNonEnumerableProperty(CollectionPrototype, 'forEach', arrayForEach);
+    } catch (error) {
+      CollectionPrototype.forEach = arrayForEach;
+    }
+  }
 
   function formatDate(date) {
     var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'yyyy-MM-dd';
@@ -10528,6 +10520,433 @@
       warn$1 = warn,
       notify$3 = notify$2;
 
+  // `thisNumberValue` abstract operation
+  // https://tc39.github.io/ecma262/#sec-thisnumbervalue
+  var thisNumberValue = function (value) {
+    if (typeof value != 'number' && classofRaw(value) != 'Number') {
+      throw TypeError('Incorrect invocation');
+    }
+    return +value;
+  };
+
+  // `String.prototype.repeat` method implementation
+  // https://tc39.github.io/ecma262/#sec-string.prototype.repeat
+  var stringRepeat = ''.repeat || function repeat(count) {
+    var str = String(requireObjectCoercible(this));
+    var result = '';
+    var n = toInteger(count);
+    if (n < 0 || n == Infinity) throw RangeError('Wrong number of repetitions');
+    for (;n > 0; (n >>>= 1) && (str += str)) if (n & 1) result += str;
+    return result;
+  };
+
+  var nativeToFixed = 1.0.toFixed;
+  var floor$3 = Math.floor;
+
+  var pow = function (x, n, acc) {
+    return n === 0 ? acc : n % 2 === 1 ? pow(x, n - 1, acc * x) : pow(x * x, n / 2, acc);
+  };
+
+  var log = function (x) {
+    var n = 0;
+    var x2 = x;
+    while (x2 >= 4096) {
+      n += 12;
+      x2 /= 4096;
+    }
+    while (x2 >= 2) {
+      n += 1;
+      x2 /= 2;
+    } return n;
+  };
+
+  var FORCED$4 = nativeToFixed && (
+    0.00008.toFixed(3) !== '0.000' ||
+    0.9.toFixed(0) !== '1' ||
+    1.255.toFixed(2) !== '1.25' ||
+    1000000000000000128.0.toFixed(0) !== '1000000000000000128'
+  ) || !fails(function () {
+    // V8 ~ Android 4.3-
+    nativeToFixed.call({});
+  });
+
+  // `Number.prototype.toFixed` method
+  // https://tc39.github.io/ecma262/#sec-number.prototype.tofixed
+  _export({ target: 'Number', proto: true, forced: FORCED$4 }, {
+    // eslint-disable-next-line max-statements
+    toFixed: function toFixed(fractionDigits) {
+      var number = thisNumberValue(this);
+      var fractDigits = toInteger(fractionDigits);
+      var data = [0, 0, 0, 0, 0, 0];
+      var sign = '';
+      var result = '0';
+      var e, z, j, k;
+
+      var multiply = function (n, c) {
+        var index = -1;
+        var c2 = c;
+        while (++index < 6) {
+          c2 += n * data[index];
+          data[index] = c2 % 1e7;
+          c2 = floor$3(c2 / 1e7);
+        }
+      };
+
+      var divide = function (n) {
+        var index = 6;
+        var c = 0;
+        while (--index >= 0) {
+          c += data[index];
+          data[index] = floor$3(c / n);
+          c = (c % n) * 1e7;
+        }
+      };
+
+      var dataToString = function () {
+        var index = 6;
+        var s = '';
+        while (--index >= 0) {
+          if (s !== '' || index === 0 || data[index] !== 0) {
+            var t = String(data[index]);
+            s = s === '' ? t : s + stringRepeat.call('0', 7 - t.length) + t;
+          }
+        } return s;
+      };
+
+      if (fractDigits < 0 || fractDigits > 20) throw RangeError('Incorrect fraction digits');
+      // eslint-disable-next-line no-self-compare
+      if (number != number) return 'NaN';
+      if (number <= -1e21 || number >= 1e21) return String(number);
+      if (number < 0) {
+        sign = '-';
+        number = -number;
+      }
+      if (number > 1e-21) {
+        e = log(number * pow(2, 69, 1)) - 69;
+        z = e < 0 ? number * pow(2, -e, 1) : number / pow(2, e, 1);
+        z *= 0x10000000000000;
+        e = 52 - e;
+        if (e > 0) {
+          multiply(0, z);
+          j = fractDigits;
+          while (j >= 7) {
+            multiply(1e7, 0);
+            j -= 7;
+          }
+          multiply(pow(10, j, 1), 0);
+          j = e - 1;
+          while (j >= 23) {
+            divide(1 << 23);
+            j -= 23;
+          }
+          divide(1 << j);
+          multiply(1, 1);
+          divide(2);
+          result = dataToString();
+        } else {
+          multiply(0, z);
+          multiply(1 << -e, 0);
+          result = dataToString() + stringRepeat.call('0', fractDigits);
+        }
+      }
+      if (fractDigits > 0) {
+        k = result.length;
+        result = sign + (k <= fractDigits
+          ? '0.' + stringRepeat.call('0', fractDigits - k) + result
+          : result.slice(0, k - fractDigits) + '.' + result.slice(k - fractDigits));
+      } else {
+        result = sign + result;
+      } return result;
+    }
+  });
+
+  /*! *****************************************************************************
+  Copyright (c) Microsoft Corporation. All rights reserved.
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+  this file except in compliance with the License. You may obtain a copy of the
+  License at http://www.apache.org/licenses/LICENSE-2.0
+
+  THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+  WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+  MERCHANTABLITY OR NON-INFRINGEMENT.
+
+  See the Apache Version 2.0 License for specific language governing permissions
+  and limitations under the License.
+  ***************************************************************************** */
+
+  var __assign = function() {
+      __assign = Object.assign || function __assign(t) {
+          for (var s, i = 1, n = arguments.length; i < n; i++) {
+              s = arguments[i];
+              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+          }
+          return t;
+      };
+      return __assign.apply(this, arguments);
+  };
+
+  /**
+   * Source: ftp://ftp.unicode.org/Public/UCD/latest/ucd/SpecialCasing.txt
+   */
+  /**
+   * Lower case as a function.
+   */
+  function lowerCase(str) {
+      return str.toLowerCase();
+  }
+
+  // Support camel case ("camelCase" -> "camel Case" and "CAMELCase" -> "CAMEL Case").
+  var DEFAULT_SPLIT_REGEXP = [/([a-z0-9])([A-Z])/g, /([A-Z])([A-Z][a-z])/g];
+  // Remove all non-word characters.
+  var DEFAULT_STRIP_REGEXP = /[^A-Z0-9]+/gi;
+  /**
+   * Normalize the string into something other libraries can manipulate easier.
+   */
+  function noCase(input, options) {
+      if (options === void 0) { options = {}; }
+      var _a = options.splitRegexp, splitRegexp = _a === void 0 ? DEFAULT_SPLIT_REGEXP : _a, _b = options.stripRegexp, stripRegexp = _b === void 0 ? DEFAULT_STRIP_REGEXP : _b, _c = options.transform, transform = _c === void 0 ? lowerCase : _c, _d = options.delimiter, delimiter = _d === void 0 ? " " : _d;
+      var result = replace(replace(input, splitRegexp, "$1\0$2"), stripRegexp, "\0");
+      var start = 0;
+      var end = result.length;
+      // Trim the delimiter from around the output string.
+      while (result.charAt(start) === "\0")
+          start++;
+      while (result.charAt(end - 1) === "\0")
+          end--;
+      // Transform each token independently.
+      return result
+          .slice(start, end)
+          .split("\0")
+          .map(transform)
+          .join(delimiter);
+  }
+  /**
+   * Replace `re` in the input string with the replacement value.
+   */
+  function replace(input, re, value) {
+      if (re instanceof RegExp)
+          return input.replace(re, value);
+      return re.reduce(function (input, re) { return input.replace(re, value); }, input);
+  }
+
+  function dotCase(input, options) {
+      if (options === void 0) { options = {}; }
+      return noCase(input, __assign({ delimiter: "." }, options));
+  }
+
+  function paramCase(input, options) {
+      if (options === void 0) { options = {}; }
+      return dotCase(input, __assign({ delimiter: "-" }, options));
+  }
+
+  var trim$2 = stringTrim.trim;
+
+
+  var $parseFloat = global_1.parseFloat;
+  var FORCED$5 = 1 / $parseFloat(whitespaces + '-0') !== -Infinity;
+
+  // `parseFloat` method
+  // https://tc39.github.io/ecma262/#sec-parsefloat-string
+  var numberParseFloat = FORCED$5 ? function parseFloat(string) {
+    var trimmedString = trim$2(String(string));
+    var result = $parseFloat(trimmedString);
+    return result === 0 && trimmedString.charAt(0) == '-' ? -0 : result;
+  } : $parseFloat;
+
+  // `parseFloat` method
+  // https://tc39.github.io/ecma262/#sec-parsefloat-string
+  _export({ global: true, forced: parseFloat != numberParseFloat }, {
+    parseFloat: numberParseFloat
+  });
+
+  var RGB_MAX = 255;
+  var HUE_MAX = 360;
+  var SV_MAX = 100;
+
+  function _normalizeAngle(degrees) {
+    return (degrees % 360 + 360) % 360;
+  }
+
+  function hex2rgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || /^#?([a-f\d])([a-f\d])([a-f\d])$/i.exec(hex);
+    return result ? {
+      r: parseInt((result[1] + result[1]).substr(0, 2), 16),
+      g: parseInt((result[2] + result[2]).substr(0, 2), 16),
+      b: parseInt((result[3] + result[3]).substr(0, 2), 16)
+    } : null;
+  }
+  function rgb2hex(r, g, b) {
+    r = Math.round(r).toString(16);
+    g = Math.round(g).toString(16);
+    b = Math.round(b).toString(16);
+    r = r.length === 1 ? '0' + r : r;
+    g = g.length === 1 ? '0' + g : g;
+    b = b.length === 1 ? '0' + b : b;
+    return '#' + r + g + b;
+  }
+  function rgb2hsv(r, g, b) {
+    // It converts [0,255] format, to [0,1]
+    r = r === RGB_MAX ? 1 : r % RGB_MAX / parseFloat(RGB_MAX);
+    g = g === RGB_MAX ? 1 : g % RGB_MAX / parseFloat(RGB_MAX);
+    b = b === RGB_MAX ? 1 : b % RGB_MAX / parseFloat(RGB_MAX);
+    var max = Math.max(r, g, b);
+    var min = Math.min(r, g, b);
+    var d = max - min;
+    var v = max;
+    var s = max === 0 ? 0 : d / max;
+    var h = max === min ? 0 : (max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4) / 6;
+    return {
+      h: Math.round(h * HUE_MAX),
+      s: Math.round(s * SV_MAX),
+      v: Math.round(v * SV_MAX)
+    };
+  }
+  function hsv2rgb(h, s, v) {
+    h = _normalizeAngle(h);
+    h = h === HUE_MAX ? 1 : h % HUE_MAX / parseFloat(HUE_MAX) * 6;
+    s = s === SV_MAX ? 1 : s % SV_MAX / parseFloat(SV_MAX);
+    v = v === SV_MAX ? 1 : v % SV_MAX / parseFloat(SV_MAX);
+    var i = Math.floor(h);
+    var f = h - i;
+    var p = v * (1 - s);
+    var q = v * (1 - f * s);
+    var t = v * (1 - (1 - f) * s);
+    var mod = i % 6;
+    var r = [v, q, p, p, t, v][mod];
+    var g = [t, v, v, q, p, p][mod];
+    var b = [p, p, t, v, v, q][mod];
+    return {
+      r: Math.floor(r * RGB_MAX),
+      g: Math.floor(g * RGB_MAX),
+      b: Math.floor(b * RGB_MAX)
+    };
+  }
+  function hsv2hex(h, s, v) {
+    var _hsv2rgb = hsv2rgb(h, s, v),
+        r = _hsv2rgb.r,
+        g = _hsv2rgb.g,
+        b = _hsv2rgb.b;
+
+    return rgb2hex(r, g, b);
+  }
+
+  var props = ['--mu-primary-color', '--mu-primary-plus-color', '--mu-primary-minus-color', '--mu-primary-tiny-color', '--mu-primary-shadow-color', '--mu-success-color', '--mu-success-plus-color', '--mu-success-minus-color', '--mu-success-tiny-color', '--mu-success-shadow-color', '--mu-danger-color', '--mu-danger-plus-color', '--mu-danger-minus-color', '--mu-danger-tiny-color', '--mu-danger-shadow-color', '--mu-warning-color'];
+  var hueStep = 2;
+  var saturationStep = 16;
+  var saturationStep2 = 5;
+  var brightnessStep1 = 5;
+  var brightnessStep2 = 15;
+  var lightColorCount = 5;
+  var darkColorCount = 4;
+
+  function calcHue(hsv, i, isLight) {
+    var h = Math.round(hsv.h);
+    var hue = h >= 60 && h <= 240 ? isLight ? h - hueStep * i : h + hueStep * i : isLight ? h + hueStep * i : h - hueStep * i;
+    return hue < 0 ? 360 + hue : hue >= 360 ? hue - 360 : hue;
+  }
+
+  function calcSaturation(hsv, i, isLight) {
+    var saturation = hsv.h === 0 && hsv.s === 0 ? hsv.s : Math.min(Math.max(isLight ? hsv.s - saturationStep * i : i === darkColorCount ? hsv.s + saturationStep : hsv.s + saturationStep2 * i, 6), i === isLight && lightColorCount ? 10 : 100);
+    return Number(saturation.toFixed(0));
+  }
+
+  function calcValue(hsv, i, isLight) {
+    var value = Math.min(isLight ? hsv.v + brightnessStep1 * i : hsv.v - brightnessStep2 * i, 100);
+    return Number(value.toFixed(0));
+  }
+
+  function generatePalettes(_ref) {
+    var r = _ref.r,
+        g = _ref.g,
+        b = _ref.b;
+    var palettes = [];
+    var hsv = rgb2hsv(r, g, b);
+
+    for (var i = lightColorCount; i > 0; i--) {
+      var h = calcHue(hsv, i, true);
+      var s = calcSaturation(hsv, i, true);
+      var v = calcValue(hsv, i, true);
+      var hex = hsv2hex(h, s, v);
+      palettes.push(hex);
+    }
+
+    palettes.push(rgb2hex(r, g, b));
+
+    for (var _i = 1; _i <= darkColorCount; _i++) {
+      var _h = calcHue(hsv, _i);
+
+      var _s = calcSaturation(hsv, _i);
+
+      var _v = calcValue(hsv, _i);
+
+      var _hex = hsv2hex(_h, _s, _v);
+
+      palettes.push(_hex);
+    }
+
+    return palettes;
+  }
+
+  function convert2rgb(color) {
+    var rgbExp = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/;
+    var rgb = hex2rgb(color) || rgbExp.exec(color);
+    return Array.isArray(rgb) ? {
+      r: rgb[1],
+      g: rgb[2],
+      b: rgb[3]
+    } : rgb;
+  }
+
+  function setColorVariables(option) {
+    ['primary', 'success', 'danger'].forEach(function (key) {
+      var rgb = convert2rgb(option["--mu-".concat(key, "-color")]);
+      if (!rgb) return;
+      var palettes = generatePalettes(rgb);
+      ['plus', 'minus', 'tiny', 'shadow'].forEach(function (sub) {
+        var prop = "--mu-".concat(key, "-").concat(sub, "-color");
+        var value = option[prop];
+
+        if (!value) {
+          switch (sub) {
+            case 'plus':
+              option[prop] = palettes[6];
+              break;
+
+            case 'minus':
+              option[prop] = palettes[4];
+              break;
+
+            case 'tiny':
+              option[prop] = palettes[1];
+              break;
+
+            case 'shadow':
+              option[prop] = "rgba(".concat(rgb.r, ", ").concat(rgb.g, ", ").concat(rgb.b, ", .15)");
+              break;
+          }
+        }
+      });
+    });
+  }
+
+  function setTheme() {
+    var option = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (lodash_isstring(option)) option = {
+      primaryColor: option
+    };
+    var validOption = Object.keys(option).reduce(function (o, key) {
+      var p = paramCase(key);
+      if (p.indexOf('mu') !== 0) p = '--mu-' + p;
+      if (props.indexOf(p) !== -1) o[p] = option[key];
+      return o;
+    }, {});
+    setColorVariables(validOption);
+    Object.keys(validOption).forEach(function (key) {
+      document.documentElement.style.setProperty(key, validOption[key]);
+    });
+  }
+
   exports.Bar = __vue_component__$x;
   exports.BaseDialog = __vue_component__$E;
   exports.BaseEditor = BaseEditor;
@@ -10588,6 +11007,7 @@
   exports.install = install;
   exports.notify = notify$3;
   exports.registerIcons = register;
+  exports.setTheme = setTheme;
   exports.showMessage = showMessage$1;
   exports.warn = warn$1;
 

@@ -23,7 +23,16 @@
 
 <script>
   import BasePopupEditor from './base-popup-editor'
-  import Colors from '../../utils/colors'
+
+  const Colors = []
+  const base = ['00', '33', '66', '99', 'CC', 'FF']
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < 6; j++) {
+      for (let k = 0; k < 6; k++) {
+        Colors.push(`#${base[i]}${base[j]}${base[k]}`)
+      }
+    }
+  }
 
   export default {
     name: 'MusselColorEditor',
@@ -37,7 +46,7 @@
     data () {
       const grid = []
       let row = []
-      Colors.safe.forEach(color => {
+      Colors.forEach(color => {
         row.push(color)
         if (row.length === 18) {
           grid.push(row)

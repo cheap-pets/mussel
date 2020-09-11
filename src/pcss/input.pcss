@@ -45,15 +45,15 @@
 
 [invalid] .mu-input,
 .mu-input[invalid] {
-  color: $dangerColor;
-  border-color: $dangerColor;
+  color: var(--mu-danger-color);
+  border-color: var(--mu-danger-color);
   &:focus,
   &[focus] {
-    border-color: $dangerPlusColor;
-    box-shadow: $inputFocusShadow $dangerShadowColor;
+    border-color: var(--mu-danger-plus-color);
+    box-shadow: $inputFocusShadow var(--mu-danger-shadow-color);
   }
   &:hover {
-    border-color: $dangerMinusColor;
+    border-color: var(--mu-danger-minus-color);
   }
 }
 input.mu-input {

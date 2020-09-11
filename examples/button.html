@@ -15,6 +15,11 @@
     .mu-button:not(:empty):not([icon-only]):not([button-style=link]) {
       min-width: 120px;
     }
+    .mu-color-editor {
+      width: 120px;
+      margin-left: 8px;
+      margin-right: 16px;
+    }
   </style>
   <title>Button Example</title>
 </head>
@@ -23,6 +28,16 @@
   <div id="app">
     <h2>Button Example</h2>
     <hr>
+    <div>
+      <h3>Colors</h3>
+      <label>Primary Color</label>
+      <mu-color-editor v-model="primaryColor" :clearable="false" @change="changePrimaryColor">
+      </mu-color-editor>
+      <label>Success Color</label>
+      <mu-color-editor v-model="successColor" :clearable="false" @change="changeSuccessColor"></mu-color-editor>
+      <label>Danger Color</label>
+      <mu-color-editor v-model="dangerColor" :clearable="false" @change="changeDangerColor"></mu-color-editor>
+    </div>
     <div>
       <h3>Type & Style</h3>
       <h5>Normal (button-type="normal")</h5>
@@ -128,7 +143,29 @@
   </div>
   <script type="text/javascript">
     const view = new Vue({
-      el: '#app'
+      el: '#app',
+      data: {
+        primaryColor: '#1890ff',
+        successColor: '#52c41a',
+        dangerColor: '#f5222d'
+      },
+      methods: {
+        changePrimaryColor (value) {
+          mussel.setTheme({
+            primaryColor: value
+          })
+        },
+        changeSuccessColor (value) {
+          mussel.setTheme({
+            successColor: value
+          })
+        },
+        changeDangerColor (value) {
+          mussel.setTheme({
+            dangerColor: value
+          })
+        },
+      }
     })
   </script>
 </body>
