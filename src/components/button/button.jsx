@@ -29,7 +29,6 @@ export default {
     triggerType: String,
     iconOnly: Boolean,
     caption: String
-    // stopPropagation: Boolean
   },
   computed: {
     isIconOnly () {
@@ -42,7 +41,6 @@ export default {
   },
   methods: {
     onClick (event) {
-      // if (this.stopPropagation) event.stopPropagation()
       this.$emit('click', event)
     }
   },

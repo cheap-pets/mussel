@@ -77,9 +77,6 @@
       }
     },
     watch: {
-      // popupVisible (value) {
-      //   this.params.modalVisible = value
-      // },
       buttons: {
         handler () {
           this.params.buttons = this.btns

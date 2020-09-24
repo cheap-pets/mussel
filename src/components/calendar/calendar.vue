@@ -86,16 +86,15 @@
   import isDate from 'lodash.isdate'
   import isString from 'lodash.isstring'
 
+  import lang from '../../lang'
   import IconButton from '../button/icon-button'
-  import { isZh } from '../../utils/language'
 
   import {
-    compare,
+    isEqual,
     fillGrid,
     parseDate,
     getMaxDays,
     getFirstDay,
-    getMonthName,
     getSiblingMonth,
     getFilteredMarks
   } from './calendar-util'
@@ -112,12 +111,6 @@
       value: [String, Date],
       rangeStart: Date,
       rangeEnd: Date,
-      language: {
-        type: String,
-        validator (v) {
-          return ['zh', 'en'].indexOf(v) !== -1
-        }
-      },
       selectMode: {
         type: String,
         default: 'date',
@@ -144,23 +137,36 @@
       }
     },
     computed: {
-      isChinese () {
-        return isZh(this.language)
-      },
       weekDays () {
-        return this.isChinese
-          ? ['日', '一', '二', '三', '四', '五', '六']
-          : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+        const Calendar = lang.Calendar
+        return [
+          'SUNDAY',
+          'MONDAY',
+          'TUESDAY',
+          'WEDNESDAY',
+          'THURSDAY',
+          'FRIDAY',
+          'SATURDAY'
+        ].map(el => Calendar[el])
+      },
+      monthNames () {
+        const Calendar = lang.Calendar
+        return [
+          'JANUARY', 'FEBRUARY', 'MARCH',
+          'APRIL', 'MAY', 'JUNE',
+          'JULY', 'AUGUST', 'SEPTEMBER',
+          'OCTOBER', 'NOVEMBER', 'DECEMBER'
+        ].map(el => Calendar[el])
       },
       title () {
+        const { YEAR } = lang.Calendar
         const {
-          isChinese,
           startYear,
           naviYear: year,
           naviMonth: month
         } = this
         return this.tab === 'date'
-          ? `${year} ${isChinese ? '年' : ''} ${getMonthName(month, isChinese)}`
+          ? `${year} ${YEAR} ${this.monthNames[month]}`
           : `${startYear} ~ ${startYear + 9}`
       },
       monthRows () {
@@ -168,7 +174,7 @@
         return fillGrid(3, 4, row => {
           row.push({
             month: n,
-            monthName: getMonthName(n, this.isChinese)
+            monthName: this.monthNames[n]
           })
           n++
         })
@@ -196,7 +202,7 @@
       setDateCellStatus (cell, marks, today) {
         const date = new Date(cell.year, cell.month, cell.date)
         const { rangeStart: start, rangeEnd: end } = this
-        if (compare(cell, today)) cell.today = true
+        if (isEqual(cell, today)) cell.today = true
         if (marks.indexOf(cell.text) !== -1) cell.marked = true
         if ((start && date < start) || (end && date > end)) {
           cell.invalid = true
@@ -356,7 +362,7 @@
         const { year, month, date, invalid } = cell
         const value = new Date(year, month, date)
         if (invalid) return
-        if (!this.value || !compare(cell, this.value)) {
+        if (!this.value || !isEqual(cell, this.value)) {
           this.dateText = `${year}-${month + 1}-${date}`
           this.$emit('change', value, year, month, date)
         }

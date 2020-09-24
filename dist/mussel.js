@@ -53,16 +53,16 @@
   var css_248z$5 = ".mu-list-group-header,\r\n.mu-list-item {\r\n  position: relative;\r\n  line-height: 20px;\r\n  padding: 10px 16px;\r\n  overflow: hidden;\r\n  color: #666;\r\n  fill: #666;\r\n}\r\n.mu-list-group-header > .mu-icon,\r\n.mu-list-item > .mu-icon {\r\n  display: inline-block;\r\n  width: 20px;\r\n}\r\n.mu-list-group-header {\r\n  font-size: .85em;\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-list-item[selected] {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  font-weight: 600;\r\n}\r\n.mu-list-item:hover {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  background: #ececec;\r\n}\r\n.mu-list-item[danger] {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-list-item[disabled] {\r\n  color: #bbb;\r\n  fill: #bbb;\r\n  background: 0 0;\r\n}\r\n.mu-list-item[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-list-item:not([multi-lines]) {\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  cursor: default;\r\n}\r\n.mu-list-divider {\r\n  display: block;\r\n  height: 1px;\r\n  margin: 4px 0;\r\n  border-bottom: 1px solid #e0e0e0;\r\n}\r\n.mu-list-divider:first-child,\r\n.mu-list-divider:last-child {\r\n  display: none;\r\n}";
   styleInject(css_248z$5);
 
-  var css_248z$6 = "h1 {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n}\r\n.mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #d6d6d6;\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n  box-shadow: 0 0 0 0 #e9e9e9;\r\n}\r\n.mu-button > .mu-icon {\r\n  line-height: 0;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  float: left;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button[button-style=link] {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[active] {\r\n  border-color: #096dd9;\r\n  border-color: var(--mu-primary-plus-color);\r\n  background: #bae7ff;\r\n  background: var(--mu-primary-tiny-color);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n  color: #096dd9;\r\n  color: var(--mu-primary-plus-color);\r\n  fill: #096dd9;\r\n  fill: var(--mu-primary-plus-color);\r\n}\r\n.mu-button:hover,\r\n.mu-button[button-style=text]:hover {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  fill: #40a9ff;\r\n  fill: var(--mu-primary-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  background: var(--mu-primary-plus-color);\r\n  border-color: #096dd9;\r\n  border-color: var(--mu-primary-plus-color);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  background: var(--mu-primary-minus-color);\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][button-style=link],\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n}\r\n.mu-button[button-type=primary][button-style=link][active],\r\n.mu-button[button-type=primary][button-style=outline][active],\r\n.mu-button[button-type=primary][button-style=text][active] {\r\n  color: #096dd9;\r\n  color: var(--mu-primary-plus-color);\r\n  fill: #096dd9;\r\n  fill: var(--mu-primary-plus-color);\r\n  background: #bae7ff;\r\n  background: var(--mu-primary-tiny-color);\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover,\r\n.mu-button[button-type=primary][button-style=outline]:hover,\r\n.mu-button[button-type=primary][button-style=text]:hover {\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  fill: #40a9ff;\r\n  fill: var(--mu-primary-minus-color);\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n  border-color: #52c41a;\r\n  border-color: var(--mu-success-color);\r\n  background: #52c41a;\r\n  background: var(--mu-success-color);\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  background: var(--mu-success-plus-color);\r\n  border-color: #389e0d;\r\n  border-color: var(--mu-success-plus-color);\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  background: var(--mu-success-minus-color);\r\n  border-color: #73d13d;\r\n  border-color: var(--mu-success-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-success-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][button-style=link],\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  color: var(--mu-success-color);\r\n  fill: #52c41a;\r\n  fill: var(--mu-success-color);\r\n}\r\n.mu-button[button-type=submit][button-style=link][active],\r\n.mu-button[button-type=submit][button-style=outline][active],\r\n.mu-button[button-type=submit][button-style=text][active] {\r\n  color: #389e0d;\r\n  color: var(--mu-success-plus-color);\r\n  fill: #389e0d;\r\n  fill: var(--mu-success-plus-color);\r\n  background: #d9f7be;\r\n  background: var(--mu-success-tiny-color);\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover,\r\n.mu-button[button-type=submit][button-style=outline]:hover,\r\n.mu-button[button-type=submit][button-style=text]:hover {\r\n  color: #73d13d;\r\n  color: var(--mu-success-minus-color);\r\n  fill: #73d13d;\r\n  fill: var(--mu-success-minus-color);\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n  background: #f5222d;\r\n  background: var(--mu-danger-color);\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #cf1322;\r\n  background: var(--mu-danger-plus-color);\r\n  border-color: #cf1322;\r\n  border-color: var(--mu-danger-plus-color);\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff4d4f;\r\n  background: var(--mu-danger-minus-color);\r\n  border-color: #ff4d4f;\r\n  border-color: var(--mu-danger-minus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-danger-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][button-style=link],\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-button[button-type=danger][button-style=link][active],\r\n.mu-button[button-type=danger][button-style=outline][active],\r\n.mu-button[button-type=danger][button-style=text][active] {\r\n  color: #cf1322;\r\n  color: var(--mu-danger-plus-color);\r\n  fill: #cf1322;\r\n  fill: var(--mu-danger-plus-color);\r\n  background: #ffccc7;\r\n  background: var(--mu-danger-tiny-color);\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover,\r\n.mu-button[button-type=danger][button-style=outline]:hover,\r\n.mu-button[button-type=danger][button-style=text]:hover {\r\n  color: #ff4d4f;\r\n  color: var(--mu-danger-minus-color);\r\n  fill: #ff4d4f;\r\n  fill: var(--mu-danger-minus-color);\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n  border-color: transparent;\r\n}\r\n.mu-button[button-style=link] {\r\n  background: 0 0!important;\r\n  border-color: transparent!important;\r\n}\r\n.mu-button[button-style=outline],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n}\r\n.mu-button[button-style=outline]:hover,\r\n.mu-button[button-style=outline][active],\r\n.mu-button[button-style=text]:hover,\r\n.mu-button[button-style=text][active] {\r\n  background: 0 0;\r\n}\r\n.mu-button[disabled] {\r\n  color: #bbb!important;\r\n  fill: #bbb!important;\r\n  box-shadow: none!important;\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  border-color: #e6e6e6!important;\r\n  background: #e6e6e6!important;\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n.mu-button > .mu-icon + span,\r\n.mu-button > span + .mu-icon {\r\n  margin-left: 4px;\r\n}\r\nbutton.mu-button {\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}\r\n.mu-button-like {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n  cursor: pointer;\r\n}\r\n.mu-button-like:hover {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  background: #ececec;\r\n}\r\n.mu-button-like[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}";
+  var css_248z$6 = "h1 {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n}\r\n.mu-button {\r\n  position: relative;\r\n  display: inline-block;\r\n  height: 32px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #d6d6d6;\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background: #fff;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n  box-shadow: 0 0 0 0 #e9e9e9;\r\n}\r\n.mu-button > .mu-icon {\r\n  line-height: 0;\r\n}\r\n.mu-button::before {\r\n  display: inline-block;\r\n  float: left;\r\n  width: 0;\r\n  content: '\\00a0';\r\n}\r\n.mu-button[button-style=link] {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n  box-shadow: none!important;\r\n}\r\n.mu-button[active] {\r\n  border-color: #096dd9;\r\n  border-color: var(--mu-primary-plus-color);\r\n  background: #bae7ff;\r\n  background: var(--mu-primary-tiny-color);\r\n  box-shadow: 0 0 0 0 rgba(24,144,255,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n  color: #096dd9;\r\n  color: var(--mu-primary-plus-color);\r\n  fill: #096dd9;\r\n  fill: var(--mu-primary-plus-color);\r\n}\r\n.mu-button:hover,\r\n.mu-button[button-style=text]:hover {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  fill: #40a9ff;\r\n  fill: var(--mu-primary-minus-color);\r\n  box-shadow: 0 0 0 2px rgba(24,144,255,.15);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n}\r\n.mu-button[button-type=primary] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 rgba(24,144,255,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}\r\n.mu-button[button-type=primary][active] {\r\n  background: #096dd9;\r\n  background: var(--mu-primary-plus-color);\r\n  border-color: #096dd9;\r\n  border-color: var(--mu-primary-plus-color);\r\n  box-shadow: 0 0 0 0 rgba(24,144,255,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n}\r\n.mu-button[button-type=primary]:hover {\r\n  background: #40a9ff;\r\n  background: var(--mu-primary-minus-color);\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n  box-shadow: 0 0 0 2px rgba(24,144,255,.15);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=primary][button-style=link],\r\n.mu-button[button-type=primary][button-style=outline],\r\n.mu-button[button-type=primary][button-style=text] {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n}\r\n.mu-button[button-type=primary][button-style=link][active],\r\n.mu-button[button-type=primary][button-style=outline][active],\r\n.mu-button[button-type=primary][button-style=text][active] {\r\n  color: #096dd9;\r\n  color: var(--mu-primary-plus-color);\r\n  fill: #096dd9;\r\n  fill: var(--mu-primary-plus-color);\r\n  background: #bae7ff;\r\n  background: var(--mu-primary-tiny-color);\r\n}\r\n.mu-button[button-type=primary][button-style=link]:hover,\r\n.mu-button[button-type=primary][button-style=outline]:hover,\r\n.mu-button[button-type=primary][button-style=text]:hover {\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  fill: #40a9ff;\r\n  fill: var(--mu-primary-minus-color);\r\n}\r\n.mu-button[button-type=submit] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 rgba(82,196,26,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n  border-color: #52c41a;\r\n  border-color: var(--mu-success-color);\r\n  background: #52c41a;\r\n  background: var(--mu-success-color);\r\n}\r\n.mu-button[button-type=submit][active] {\r\n  background: #389e0d;\r\n  background: var(--mu-success-plus-color);\r\n  border-color: #389e0d;\r\n  border-color: var(--mu-success-plus-color);\r\n  box-shadow: 0 0 0 0 rgba(82,196,26,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n}\r\n.mu-button[button-type=submit]:hover {\r\n  background: #73d13d;\r\n  background: var(--mu-success-minus-color);\r\n  border-color: #73d13d;\r\n  border-color: var(--mu-success-minus-color);\r\n  box-shadow: 0 0 0 2px rgba(82,196,26,.15);\r\n  box-shadow: 0 0 0 2px var(--mu-success-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=submit][button-style=link],\r\n.mu-button[button-type=submit][button-style=outline],\r\n.mu-button[button-type=submit][button-style=text] {\r\n  color: #52c41a;\r\n  color: var(--mu-success-color);\r\n  fill: #52c41a;\r\n  fill: var(--mu-success-color);\r\n}\r\n.mu-button[button-type=submit][button-style=link][active],\r\n.mu-button[button-type=submit][button-style=outline][active],\r\n.mu-button[button-type=submit][button-style=text][active] {\r\n  color: #389e0d;\r\n  color: var(--mu-success-plus-color);\r\n  fill: #389e0d;\r\n  fill: var(--mu-success-plus-color);\r\n  background: #d9f7be;\r\n  background: var(--mu-success-tiny-color);\r\n}\r\n.mu-button[button-type=submit][button-style=link]:hover,\r\n.mu-button[button-type=submit][button-style=outline]:hover,\r\n.mu-button[button-type=submit][button-style=text]:hover {\r\n  color: #73d13d;\r\n  color: var(--mu-success-minus-color);\r\n  fill: #73d13d;\r\n  fill: var(--mu-success-minus-color);\r\n}\r\n.mu-button[button-type=danger] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  box-shadow: 0 0 0 0 rgba(245,34,45,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n  background: #f5222d;\r\n  background: var(--mu-danger-color);\r\n}\r\n.mu-button[button-type=danger][active] {\r\n  background: #cf1322;\r\n  background: var(--mu-danger-plus-color);\r\n  border-color: #cf1322;\r\n  border-color: var(--mu-danger-plus-color);\r\n  box-shadow: 0 0 0 0 rgba(245,34,45,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n}\r\n.mu-button[button-type=danger]:hover {\r\n  background: #ff4d4f;\r\n  background: var(--mu-danger-minus-color);\r\n  border-color: #ff4d4f;\r\n  border-color: var(--mu-danger-minus-color);\r\n  box-shadow: 0 0 0 2px rgba(245,34,45,.15);\r\n  box-shadow: 0 0 0 2px var(--mu-danger-shadow-color);\r\n  color: #fff;\r\n  fill: #fff;\r\n}\r\n.mu-button[button-type=danger][button-style=link],\r\n.mu-button[button-type=danger][button-style=outline],\r\n.mu-button[button-type=danger][button-style=text] {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-button[button-type=danger][button-style=link][active],\r\n.mu-button[button-type=danger][button-style=outline][active],\r\n.mu-button[button-type=danger][button-style=text][active] {\r\n  color: #cf1322;\r\n  color: var(--mu-danger-plus-color);\r\n  fill: #cf1322;\r\n  fill: var(--mu-danger-plus-color);\r\n  background: #ffccc7;\r\n  background: var(--mu-danger-tiny-color);\r\n}\r\n.mu-button[button-type=danger][button-style=link]:hover,\r\n.mu-button[button-type=danger][button-style=outline]:hover,\r\n.mu-button[button-type=danger][button-style=text]:hover {\r\n  color: #ff4d4f;\r\n  color: var(--mu-danger-minus-color);\r\n  fill: #ff4d4f;\r\n  fill: var(--mu-danger-minus-color);\r\n}\r\n.mu-button[button-style=text] {\r\n  box-shadow: none;\r\n  border-color: transparent;\r\n}\r\n.mu-button[button-style=link] {\r\n  background: 0 0!important;\r\n  border-color: transparent!important;\r\n}\r\n.mu-button[button-style=outline],\r\n.mu-button[button-style=text] {\r\n  background: 0 0;\r\n}\r\n.mu-button[button-style=outline]:hover,\r\n.mu-button[button-style=outline][active],\r\n.mu-button[button-style=text]:hover,\r\n.mu-button[button-style=text][active] {\r\n  background: 0 0;\r\n}\r\n.mu-button[disabled] {\r\n  color: #bbb!important;\r\n  fill: #bbb!important;\r\n  box-shadow: none!important;\r\n  cursor: default;\r\n}\r\n.mu-button[disabled]:not([button-style=link]) {\r\n  border-color: #e6e6e6!important;\r\n  background: #e6e6e6!important;\r\n}\r\n.mu-button:empty,\r\n.mu-button[icon-only] {\r\n  width: 32px;\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n.mu-button > .mu-icon + span,\r\n.mu-button > span + .mu-icon {\r\n  margin-left: 4px;\r\n}\r\nbutton.mu-button {\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\n[button-shape=round],\r\n[button-shape=round] > .mu-button {\r\n  border-radius: 16px;\r\n}\r\n.mu-button-like {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n  cursor: pointer;\r\n}\r\n.mu-button-like:hover {\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  background: #ececec;\r\n}\r\n.mu-button-like[active] {\r\n  color: #fff;\r\n  fill: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n}";
   styleInject(css_248z$6);
 
   var css_248z$7 = ".mu-toggle {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  height: 32px;\r\n  vertical-align: middle;\r\n}\r\n.mu-toggle > * {\r\n  cursor: pointer;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar {\r\n  position: relative;\r\n  width: 40px;\r\n  height: 20px;\r\n  border-radius: 10px;\r\n  background-color: #a6a6a6;\r\n  transition: background .2s ease-in-out;\r\n}\r\n.mu-toggle > .mu-toggle-slide-bar:after {\r\n  position: absolute;\r\n  top: 3px;\r\n  left: 3px;\r\n  bottom: 3px;\r\n  display: inline-block;\r\n  width: 14px;\r\n  background-color: #fff;\r\n  border-radius: 7px;\r\n  content: '';\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar {\r\n  background-color: #52c41a;\r\n  background-color: var(--mu-success-color);\r\n}\r\n.mu-toggle[active] > .mu-toggle-slide-bar:after {\r\n  left: 100%;\r\n  transform: translateX(-17px);\r\n}\r\n.mu-toggle > * + * {\r\n  margin-left: 5px;\r\n}\r\n.mu-toggle[disabled] > * {\r\n  color: #bbb;\r\n  cursor: default;\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar {\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-toggle[disabled] > .mu-toggle-slide-bar:after {\r\n  background-color: #bbb;\r\n}";
   styleInject(css_248z$7);
 
-  var css_248z$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n  border-radius: 2px;\r\n  box-shadow: 0 0 0 0 #e9e9e9;\r\n}\r\n.mu-button-group[button-type=primary] {\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n}\r\n.mu-button-group[button-type=success] {\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n}\r\n.mu-button-group[button-type=danger] {\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n}\r\n.mu-button-group > .mu-button {\r\n  z-index: 0;\r\n  float: left;\r\n  box-shadow: none;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]),\r\n.mu-button-group > .mu-button[active]:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button + .mu-button {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}";
+  var css_248z$8 = ".mu-button-group {\r\n  position: relative;\r\n  display: inline-block;\r\n  vertical-align: top;\r\n  border-radius: 2px;\r\n  box-shadow: 0 0 0 0 #e9e9e9;\r\n}\r\n.mu-button-group[button-type=primary] {\r\n  box-shadow: 0 0 0 0 rgba(24,144,255,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-primary-shadow-color);\r\n}\r\n.mu-button-group[button-type=success] {\r\n  box-shadow: 0 0 0 0 rgba(82,196,26,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-success-shadow-color);\r\n}\r\n.mu-button-group[button-type=danger] {\r\n  box-shadow: 0 0 0 0 rgba(245,34,45,.15);\r\n  box-shadow: 0 0 0 0 var(--mu-danger-shadow-color);\r\n}\r\n.mu-button-group > .mu-button {\r\n  z-index: 0;\r\n  float: left;\r\n  box-shadow: none;\r\n}\r\n.mu-button-group > .mu-button:hover:not([disabled]),\r\n.mu-button-group > .mu-button[active]:not([disabled]) {\r\n  z-index: 1;\r\n}\r\n.mu-button-group > .mu-button + .mu-button {\r\n  border-top-left-radius: 0;\r\n  border-bottom-left-radius: 0;\r\n}\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active]):not([button-style]),\r\n.mu-button-group > .mu-button + .mu-button[button-type]:not([button-type=normal]):not(:hover):not([active])[button-style=normal] {\r\n  border-left-color: rgba(255,255,255,.5);\r\n}\r\n.mu-button-group > .mu-button:not(:last-child) {\r\n  margin-right: -1px;\r\n  border-top-right-radius: 0;\r\n  border-bottom-right-radius: 0;\r\n}";
   styleInject(css_248z$8);
 
-  var css_248z$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #d6d6d6;\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background-color: #fff;\r\n  font-size: 1rem;\r\n  color: #666;\r\n}\r\n.mu-input::-moz-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input:-ms-input-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input::-ms-input-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input::placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n}\r\n.mu-input:hover {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-input[readonly] {\r\n  cursor: default;\r\n  background-color: #ffd;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #d6d6d6;\r\n  color: #999;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  border-color: #cf1322;\r\n  border-color: var(--mu-danger-plus-color);\r\n  box-shadow: 0 0 0 2px var(--mu-danger-shadow-color);\r\n}\r\n.mu-input[invalid]:hover,\r\n[invalid] .mu-input:hover {\r\n  border-color: #ff4d4f;\r\n  border-color: var(--mu-danger-minus-color);\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}\r\n.mu-radio {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  line-height: 1.7rem;\r\n  cursor: pointer;\r\n}\r\n.mu-radio + .mu-radio {\r\n  margin-left: 16px;\r\n}\r\n.mu-radio > .mu-radio_fake {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  width: 1rem;\r\n  padding: 2px;\r\n  margin-right: 5px;\r\n  border: 1px solid #666;\r\n  border-radius: .5rem;\r\n}\r\n.mu-radio:hover > .mu-radio_fake {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-radio > input {\r\n  position: absolute;\r\n  z-index: -1;\r\n  opacity: 0;\r\n}\r\n.mu-radio > input:checked + .mu-radio_fake {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-radio > input:checked + .mu-radio_fake:before {\r\n  box-sizing: border-box;\r\n  display: block;\r\n  height: 100%;\r\n  width: 100%;\r\n  content: '';\r\n  border-radius: 50%;\r\n  background-color: #40a9ff;\r\n  background-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-radio[disabled] > input + .mu-radio_fake {\r\n  border-color: #e6e6e6;\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-radio[disabled] > input:checked + .mu-radio_fake {\r\n  background-color: inherit;\r\n  border-color: #bbb;\r\n}\r\n.mu-radio[disabled] > input:checked + .mu-radio_fake:before {\r\n  background-color: #bbb;\r\n}\r\n.mu-radio-group[vertical] > .mu-radio {\r\n  display: flex;\r\n  margin-left: 0;\r\n}\r\n.mu-checkbox {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  line-height: 1.7rem;\r\n  cursor: pointer;\r\n}\r\n.mu-checkbox + .mu-checkbox {\r\n  margin-left: 16px;\r\n}\r\n.mu-checkbox > .mu-checkbox_fake {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  width: 1rem;\r\n  padding: 2px;\r\n  margin-right: 5px;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n}\r\n.mu-checkbox:hover > .mu-checkbox_fake {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-checkbox > input {\r\n  position: absolute;\r\n  z-index: -1;\r\n  opacity: 0;\r\n}\r\n.mu-checkbox > input:checked + .mu-checkbox_fake {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-checkbox > input:checked + .mu-checkbox_fake:before {\r\n  box-sizing: border-box;\r\n  display: block;\r\n  height: 100%;\r\n  width: 100%;\r\n  content: '';\r\n  background-color: #40a9ff;\r\n  background-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-checkbox[disabled] > input + .mu-checkbox_fake {\r\n  border-color: #e6e6e6;\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-checkbox[disabled] > input:checked + .mu-checkbox_fake {\r\n  background-color: inherit;\r\n  border-color: #bbb;\r\n}\r\n.mu-checkbox[disabled] > input:checked + .mu-checkbox_fake:before {\r\n  background-color: #bbb;\r\n}\r\n.mu-checkbox-group[vertical] > .mu-checkbox {\r\n  display: flex;\r\n  margin-left: 0;\r\n}";
+  var css_248z$9 = ".mu-input {\r\n  position: relative;\r\n  z-index: 1;\r\n  width: 200px;\r\n  padding: 5px 10px;\r\n  outline: 0;\r\n  border: 1px solid #d6d6d6;\r\n  border-radius: 2px;\r\n  line-height: 20px;\r\n  background-color: #fff;\r\n  font-size: 1rem;\r\n  color: #666;\r\n}\r\n.mu-input::-moz-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input:-ms-input-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input::-ms-input-placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input::placeholder {\r\n  color: #bbb;\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-input:focus,\r\n.mu-input[focus] {\r\n  z-index: 2;\r\n  text-align: left!important;\r\n  box-shadow: 0 0 0 2px rgba(24,144,255,.15);\r\n  box-shadow: 0 0 0 2px var(--mu-primary-shadow-color);\r\n}\r\n.mu-input:hover {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-input[readonly] {\r\n  cursor: default;\r\n  background-color: #ffd;\r\n}\r\n.mu-input[disabled] {\r\n  background-color: #e6e6e6;\r\n  border-color: #d6d6d6;\r\n  color: #999;\r\n  box-shadow: none;\r\n}\r\n.mu-input::-ms-clear {\r\n  display: none;\r\n}\r\n.mu-input[invalid],\r\n[invalid] .mu-input {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n}\r\n.mu-input[invalid]:focus,\r\n.mu-input[invalid][focus],\r\n[invalid] .mu-input:focus,\r\n[invalid] .mu-input[focus] {\r\n  border-color: #cf1322;\r\n  border-color: var(--mu-danger-plus-color);\r\n  box-shadow: 0 0 0 2px rgba(245,34,45,.15);\r\n  box-shadow: 0 0 0 2px var(--mu-danger-shadow-color);\r\n}\r\n.mu-input[invalid]:hover,\r\n[invalid] .mu-input:hover {\r\n  border-color: #ff4d4f;\r\n  border-color: var(--mu-danger-minus-color);\r\n}\r\ninput.mu-input {\r\n  height: 32px;\r\n  padding-top: 0;\r\n  padding-bottom: 0;\r\n}\r\ntextarea.mu-input {\r\n  min-height: 80px;\r\n  resize: none;\r\n}\r\n.mu-input[input-shape=round],\r\n[input-shape=round] > .mu-input {\r\n  border-radius: 16px;\r\n}\r\n.mu-radio {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  line-height: 1.7rem;\r\n  cursor: pointer;\r\n}\r\n.mu-radio + .mu-radio {\r\n  margin-left: 16px;\r\n}\r\n.mu-radio > .mu-radio_fake {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  width: 1rem;\r\n  padding: 2px;\r\n  margin-right: 5px;\r\n  border: 1px solid #666;\r\n  border-radius: .5rem;\r\n}\r\n.mu-radio:hover > .mu-radio_fake {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-radio > input {\r\n  position: absolute;\r\n  z-index: -1;\r\n  opacity: 0;\r\n}\r\n.mu-radio > input:checked + .mu-radio_fake {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-radio > input:checked + .mu-radio_fake:before {\r\n  box-sizing: border-box;\r\n  display: block;\r\n  height: 100%;\r\n  width: 100%;\r\n  content: '';\r\n  border-radius: 50%;\r\n  background-color: #40a9ff;\r\n  background-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-radio[disabled] > input + .mu-radio_fake {\r\n  border-color: #e6e6e6;\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-radio[disabled] > input:checked + .mu-radio_fake {\r\n  background-color: inherit;\r\n  border-color: #bbb;\r\n}\r\n.mu-radio[disabled] > input:checked + .mu-radio_fake:before {\r\n  background-color: #bbb;\r\n}\r\n.mu-radio-group[vertical] > .mu-radio {\r\n  display: flex;\r\n  margin-left: 0;\r\n}\r\n.mu-checkbox {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  line-height: 1.7rem;\r\n  cursor: pointer;\r\n}\r\n.mu-checkbox + .mu-checkbox {\r\n  margin-left: 16px;\r\n}\r\n.mu-checkbox > .mu-checkbox_fake {\r\n  display: inline-block;\r\n  height: 1rem;\r\n  width: 1rem;\r\n  padding: 2px;\r\n  margin-right: 5px;\r\n  border: 1px solid #666;\r\n  border-radius: 2px;\r\n}\r\n.mu-checkbox:hover > .mu-checkbox_fake {\r\n  border-color: #40a9ff;\r\n  border-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-checkbox > input {\r\n  position: absolute;\r\n  z-index: -1;\r\n  opacity: 0;\r\n}\r\n.mu-checkbox > input:checked + .mu-checkbox_fake {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-checkbox > input:checked + .mu-checkbox_fake:before {\r\n  box-sizing: border-box;\r\n  display: block;\r\n  height: 100%;\r\n  width: 100%;\r\n  content: '';\r\n  background-color: #40a9ff;\r\n  background-color: var(--mu-primary-minus-color);\r\n}\r\n.mu-checkbox[disabled] > input + .mu-checkbox_fake {\r\n  border-color: #e6e6e6;\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-checkbox[disabled] > input:checked + .mu-checkbox_fake {\r\n  background-color: inherit;\r\n  border-color: #bbb;\r\n}\r\n.mu-checkbox[disabled] > input:checked + .mu-checkbox_fake:before {\r\n  background-color: #bbb;\r\n}\r\n.mu-checkbox-group[vertical] > .mu-checkbox {\r\n  display: flex;\r\n  margin-left: 0;\r\n}";
   styleInject(css_248z$9);
 
   var css_248z$a = ".mu-editor {\r\n  position: relative;\r\n  display: inline-block;\r\n  width: 200px;\r\n}\r\n.mu-editor:hover > .mu-input {\r\n  border-color: #1890ff;\r\n  border-color: var(--mu-primary-color);\r\n}\r\n.mu-editor > .mu-input[disabled],\r\n.mu-editor[disabled] > .mu-input {\r\n  border-color: #d6d6d6;\r\n}\r\n.mu-editor > .mu-input {\r\n  width: 100%;\r\n  vertical-align: middle;\r\n  padding-right: 30px;\r\n  background: #fff;\r\n}\r\n.mu-editor[buttons=\"0\"] > .mu-input {\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input {\r\n  padding-right: 60px;\r\n}\r\n.mu-editor[buttons=\"2\"] > input + .mu-icon {\r\n  right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + .mu-icon {\r\n  left: 30px;\r\n  right: auto;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child ~ input {\r\n  padding-left: 60px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 30px;\r\n}\r\n.mu-editor[buttons=\"2\"] > .mu-icon:first-child + input + .mu-icon {\r\n  right: 1px;\r\n}\r\n.mu-editor[readonly] > input {\r\n  background-color: #ffd;\r\n}\r\n.mu-editor[disabled] > input {\r\n  background-color: #e6e6e6;\r\n}\r\n.mu-editor[disabled] > input,\r\n.mu-editor[readonly] > input {\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor[disabled] > .mu-icon,\r\n.mu-editor[readonly] > .mu-icon {\r\n  display: none;\r\n}\r\n.mu-editor > .mu-icon {\r\n  position: absolute;\r\n  z-index: 3;\r\n  top: 1px;\r\n  bottom: 1px;\r\n  right: 1px;\r\n  display: inline-flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 30px;\r\n  font-size: 1rem;\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-editor > .mu-icon:first-child {\r\n  left: 1px;\r\n  right: auto;\r\n}\r\n.mu-editor > .mu-icon:first-child + input {\r\n  padding-left: 30px;\r\n  padding-right: 10px;\r\n}\r\n.mu-editor > .mu-icon[clickable] {\r\n  cursor: pointer;\r\n}\r\n.mu-editor > .mu-icon[clickable]:hover {\r\n  fill: #1890ff;\r\n  fill: var(--mu-primary-color);\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n}\r\n.mu-editor > .mu-icon[trigger-type=clear] {\r\n  color: #bbb;\r\n  fill: #bbb;\r\n}\r\n.mu-editor > .mu-icon[trigger-type=clear]:hover {\r\n  color: #777;\r\n  fill: #777;\r\n}\r\n.mu-editor[invalid] > .mu-input,\r\n[invalid] .mu-editor > .mu-input {\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n}\r\n.mu-editor[invalid] > [clickable]:hover,\r\n[invalid] .mu-editor > [clickable]:hover {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-search-box[value-mode=select] > input {\r\n  font-style: italic;\r\n  color: #bbb;\r\n}\r\n.mu-search-box[value-mode=select] > input::-moz-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input:-ms-input-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input::-ms-input-placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input::placeholder {\r\n  font-style: normal;\r\n}\r\n.mu-search-box[value-mode=select] > input:focus,\r\n.mu-search-box[value-mode=select][valid] > input {\r\n  font-style: normal;\r\n  color: #666;\r\n}\r\n.mu-date-range-editor_to {\r\n  width: 20px;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-left: 1px solid #e0e0e0;\r\n  border-right: 1px solid #e0e0e0;\r\n}";
@@ -74,7 +74,7 @@
   var css_248z$c = ".mu-form-field {\r\n  min-width: 80px;\r\n}\r\n.mu-form-field > label {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n  padding-right: 12px;\r\n  font-size: 1rem;\r\n}\r\n.mu-form-field > label:before {\r\n  position: absolute;\r\n  right: 0;\r\n  top: -3px;\r\n  display: inline-block;\r\n  visibility: hidden;\r\n  width: 10px;\r\n  text-align: left;\r\n  font-weight: 500;\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  content: \"*\";\r\n}\r\n.mu-form-field > label + span {\r\n  display: inline-block;\r\n  line-height: 32px;\r\n}\r\n.mu-form-field[required] > label:before {\r\n  visibility: visible;\r\n}\r\n.mu-form-field[invalid] > label {\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n}\r\n.mu-form-field > .mu-editor,\r\n.mu-form-field > .mu-input,\r\n.mu-form-field > span {\r\n  flex: 1 1 1px;\r\n  width: 1px;\r\n}\r\n.mu-form-row {\r\n  width: 100%;\r\n}\r\n.mu-form[form-style=table] {\r\n  border: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row + .mu-form-row {\r\n  border-top: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field {\r\n  align-items: center;\r\n  height: 40px;\r\n  border-right: 1px solid #d6d6d6;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field:last-child {\r\n  border-right: 0;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > label,\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > span {\r\n  overflow: hidden;\r\n  line-height: 20px;\r\n  white-space: nowrap;\r\n  text-overflow: ellipsis;\r\n  padding: 0 8px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > .mu-input {\r\n  margin: 0 4px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field .mu-input {\r\n  border-style: dashed;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field .mu-input:hover {\r\n  border-style: solid;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row > .mu-form-field > label:first-child {\r\n  display: inline-flex;\r\n  align-self: stretch;\r\n  align-items: center;\r\n  border-right: 1px solid #d6d6d6;\r\n  background-color: #e9e9e9;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field {\r\n  height: 32px;\r\n}\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table] > .mu-form-row[row-height=compact] > .mu-form-field > .mu-input,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field > .mu-editor,\r\n.mu-form[form-style=table][row-height=compact] > .mu-form-row > .mu-form-field > .mu-input {\r\n  margin: 0;\r\n}";
   styleInject(css_248z$c);
 
-  var css_248z$d = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 220px;\r\n  min-width: 240px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: 1px solid #d6d6d6;\r\n  overflow: hidden;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.14rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #777;\r\n  border-top: 1px solid var(--mu-primary-color);\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid var(--mu-primary-color);\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  content: '';\r\n  border-bottom: 8px solid var(--mu-danger-color);\r\n  border-right: 8px solid transparent;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #bbb;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  background: #ececec;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #faad14;\r\n  color: var(--mu-warning-color);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: #bbb;\r\n  background: #e6e6e6;\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}\r\n.mu-dropdown-panel .mu-calendar {\r\n  border: 0;\r\n}";
+  var css_248z$d = ".mu-calendar {\r\n  flex-direction: column;\r\n  min-height: 220px;\r\n  min-width: 240px;\r\n  font-size: .857rem;\r\n  background: #fff;\r\n  border: 1px solid #d6d6d6;\r\n  overflow: hidden;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  -ms-user-select: none;\r\n  user-select: none;\r\n}\r\n.mu-calendar,\r\n.mu-calendar .mu-calendar-cell,\r\n.mu-calendar .mu-calendar-row,\r\n.mu-calendar > .mu-calendar-grid,\r\n.mu-calendar > .mu-calendar-header,\r\n.mu-calendar > .mu-week-header {\r\n  display: flex;\r\n  align-items: stretch;\r\n}\r\n.mu-calendar > .mu-calendar-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  padding: 0 8px;\r\n}\r\n.mu-calendar > .mu-calendar-header > .mu-calendar-title {\r\n  margin-right: auto;\r\n  font-size: 1.14rem;\r\n  font-weight: 600;\r\n  color: #1890ff;\r\n  color: var(--mu-primary-color);\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-week-header {\r\n  align-items: center;\r\n  height: 32px;\r\n  font-weight: 600;\r\n  color: #777;\r\n  border-top: 1px solid #1890ff;\r\n  border-top: 1px solid var(--mu-primary-color);\r\n}\r\n.mu-calendar > .mu-week-header > * {\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  text-align: center;\r\n}\r\n.mu-calendar > .mu-calendar-grid {\r\n  flex-direction: column;\r\n  flex-grow: 1;\r\n  height: 1px;\r\n  border-top: 1px solid #1890ff;\r\n  border-top: 1px solid var(--mu-primary-color);\r\n  overflow: visible;\r\n}\r\n.mu-calendar > .mu-calendar-grid > .mu-calendar-row {\r\n  height: 1px;\r\n  flex-grow: 1;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell {\r\n  position: relative;\r\n  align-items: center;\r\n  justify-content: center;\r\n  flex-grow: 1;\r\n  width: 1px;\r\n  cursor: pointer;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[marked]:after {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 0;\r\n  height: 0;\r\n  content: '';\r\n  border-bottom: 8px solid #f5222d;\r\n  border-bottom: 8px solid var(--mu-danger-color);\r\n  border-right: 8px solid transparent;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[adjacent] {\r\n  color: #bbb;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell:hover {\r\n  color: #40a9ff;\r\n  color: var(--mu-primary-minus-color);\r\n  background: #ececec;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[present] {\r\n  font-weight: 600;\r\n  color: #faad14;\r\n  color: var(--mu-warning-color);\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[invalid] {\r\n  color: #bbb;\r\n  background: #e6e6e6;\r\n  cursor: default;\r\n}\r\n.mu-calendar > .mu-calendar-grid .mu-calendar-cell[active] {\r\n  z-index: 1;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  background: #1890ff;\r\n  background: var(--mu-primary-color);\r\n  box-shadow: 0 0 8px rgba(0,0,0,.17),0 0 4px rgba(0,0,0,.35);\r\n}\r\n.mu-dropdown-panel .mu-calendar {\r\n  border: 0;\r\n}";
   styleInject(css_248z$d);
 
   var css_248z$e = ".mu-bar > * {\r\n  margin-right: 8px;\r\n}\r\n.mu-bar > :last-child {\r\n  margin-right: 0;\r\n}\r\n.mu-bar.mu-toolbar {\r\n  height: 40px;\r\n  padding: 0 10px;\r\n}\r\n.mu-bar.mu-toolbar > label,\r\n.mu-bar.mu-toolbar > span {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  text-overflow: ellipsis;\r\n}";
@@ -98,7 +98,7 @@
   var css_248z$k = ".mu-drawer-wrapper {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  display: block;\r\n  overflow: visible;\r\n}\r\n.mu-drawer-wrapper > div {\r\n  position: absolute;\r\n  transition: all .2s ease-in-out;\r\n}\r\n.mu-drawer-wrapper[position=left] {\r\n  right: auto;\r\n}\r\n.mu-drawer-wrapper[position=left] > div {\r\n  top: 0;\r\n  bottom: 0;\r\n  left: 0;\r\n  transform: translateX(-100%);\r\n}\r\n.mu-drawer-wrapper[position=right] {\r\n  left: auto;\r\n}\r\n.mu-drawer-wrapper[position=right] > div {\r\n  top: 0;\r\n  bottom: 0;\r\n  right: 0;\r\n  transform: translateX(100%);\r\n}\r\n.mu-drawer-wrapper[position=top] {\r\n  bottom: auto;\r\n}\r\n.mu-drawer-wrapper[position=top] > div {\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  transform: translateY(-100%);\r\n}\r\n.mu-drawer-wrapper[position=bottom] {\r\n  top: auto;\r\n}\r\n.mu-drawer-wrapper[position=bottom] > div {\r\n  bottom: 0;\r\n  left: 0;\r\n  right: 0;\r\n  transform: translateY(100%);\r\n}\r\n.mu-drawer-wrapper.mu-modal-mask {\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n.mu-drawer-wrapper[popup] > div {\r\n  transform: translate(0,0);\r\n}\r\nbody > .mu-drawer-wrapper {\r\n  position: fixed;\r\n}\r\n.mu-drawer {\r\n  margin: auto;\r\n  background: #fff;\r\n  box-shadow: 0 6px 12px rgba(0,0,0,.23),0 10px 40px rgba(0,0,0,.19);\r\n}";
   styleInject(css_248z$k);
 
-  var css_248z$l = ".mu-message-box {\r\n  z-index: 998;\r\n}\r\n.mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-message-box > .mu-dialog .mu-button {\r\n  min-width: 55px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  z-index: 999;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: #fff;\r\n  border-left: 5px solid var(--mu-primary-color);\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > div[link-style]:hover {\r\n  text-decoration: underline;\r\n  cursor: pointer;\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  border-color: var(--mu-success-color);\r\n  color: #52c41a;\r\n  color: var(--mu-success-color);\r\n  fill: #52c41a;\r\n  fill: var(--mu-success-color);\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  border-color: var(--mu-warning-color);\r\n  color: #faad14;\r\n  color: var(--mu-warning-color);\r\n  fill: #faad14;\r\n  fill: var(--mu-warning-color);\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  transition: all .5s;\r\n}";
+  var css_248z$l = ".mu-message-box {\r\n  z-index: 998;\r\n}\r\n.mu-message-box > .mu-dialog {\r\n  min-width: 300px;\r\n}\r\n.mu-message-box > .mu-dialog > .mu-dialog-body > div {\r\n  padding: 16px;\r\n}\r\n.mu-message-box > .mu-dialog .mu-button {\r\n  min-width: 55px;\r\n}\r\n.mu-notifier {\r\n  position: fixed;\r\n  z-index: 999;\r\n  top: 0;\r\n  right: 0;\r\n  padding: 8px;\r\n  overflow: hidden;\r\n}\r\n.mu-notifier > div {\r\n  width: 300px;\r\n  font-size: 1rem;\r\n  line-height: 20px;\r\n  margin: 8px;\r\n  padding: 16px;\r\n  background: #fff;\r\n  border-left: 5px solid #1890ff;\r\n  border-left: 5px solid var(--mu-primary-color);\r\n  border-radius: 4px;\r\n  box-shadow: 0 1.5px 4px rgba(0,0,0,.24),0 1.5px 6px rgba(0,0,0,.12);\r\n}\r\n.mu-notifier > div[link-style]:hover {\r\n  text-decoration: underline;\r\n  cursor: pointer;\r\n}\r\n.mu-notifier > [notify-type=success] {\r\n  border-color: #52c41a;\r\n  border-color: var(--mu-success-color);\r\n  color: #52c41a;\r\n  color: var(--mu-success-color);\r\n  fill: #52c41a;\r\n  fill: var(--mu-success-color);\r\n}\r\n.mu-notifier > [notify-type=warning] {\r\n  border-color: #faad14;\r\n  border-color: var(--mu-warning-color);\r\n  color: #faad14;\r\n  color: var(--mu-warning-color);\r\n  fill: #faad14;\r\n  fill: var(--mu-warning-color);\r\n}\r\n.mu-notifier > [notify-type=error] {\r\n  border-color: #f5222d;\r\n  border-color: var(--mu-danger-color);\r\n  color: #f5222d;\r\n  color: var(--mu-danger-color);\r\n  fill: #f5222d;\r\n  fill: var(--mu-danger-color);\r\n}\r\n.mu-notifier-enter,\r\n.mu-notifier-leave-to {\r\n  opacity: 0;\r\n  transform: translateX(100px);\r\n}\r\n.mu-notifier-enter-active,\r\n.mu-notifier-leave-active,\r\n.mu-notifier-move {\r\n  transition: all .5s;\r\n}";
   styleInject(css_248z$l);
 
   var css_248z$m = ".mu-menu-group_header,\r\n.mu-menu-item {\r\n  position: relative;\r\n  padding: 0 16px 0 32px;\r\n  height: 32px;\r\n  line-height: 32px;\r\n  font-size: 1rem;\r\n  color: #666;\r\n  fill: #666;\r\n  cursor: pointer;\r\n}\r\n.mu-menu-group_header > .mu-icon,\r\n.mu-menu-item > .mu-icon {\r\n  position: absolute;\r\n  left: 0;\r\n  display: inline-block;\r\n  width: 32px;\r\n  text-align: center;\r\n}\r\n.mu-menu-group_header > .mu-icon[trigger-type],\r\n.mu-menu-item > .mu-icon[trigger-type] {\r\n  left: auto;\r\n  right: 0;\r\n}\r\n.mu-menu-group_body .mu-menu-group_header {\r\n  font-size: .857rem;\r\n  font-weight: 600;\r\n  color: #777;\r\n  fill: #777;\r\n  background: 0 0;\r\n  cursor: default;\r\n}\r\n.mu-menu-group .mu-menu-item {\r\n  display: block;\r\n}\r\n.mu-menu-group .mu-menu-group + .mu-menu-item {\r\n  border-top: 1px solid #e0e0e0;\r\n}\r\n.mu-sidebar .mu-menu-group_header,\r\n.mu-sidebar .mu-menu-item {\r\n  display: block;\r\n  height: 40px;\r\n  line-height: 40px;\r\n  padding-left: 40px;\r\n}\r\n.mu-sidebar .mu-menu-group_header > .mu-icon,\r\n.mu-sidebar .mu-menu-item > .mu-icon {\r\n  width: 40px;\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_header,\r\n.mu-sidebar_menu-wrapper > .mu-menu-group > .mu-menu-group_header {\r\n  padding-right: 40px;\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group > .mu-menu-group_body,\r\n.mu-sidebar_menu-wrapper > .mu-menu-group > .mu-menu-group_body {\r\n  position: relative;\r\n  visibility: hidden;\r\n  overflow: hidden;\r\n  max-height: 0;\r\n  transition: all .1s ease-in-out;\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group[expanded],\r\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] {\r\n  background: rgba(24,144,255,.05);\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_body,\r\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] > .mu-menu-group_body {\r\n  visibility: visible;\r\n  max-height: 2000px;\r\n}\r\n.mu-sidebar_body-container > .mu-menu-group[expanded] > .mu-menu-group_header,\r\n.mu-sidebar_menu-wrapper > .mu-menu-group[expanded] > .mu-menu-group_header {\r\n  background: #e9e9e9;\r\n}";
@@ -117,11 +117,11 @@
 
   function createCommonjsModule(fn, basedir, module) {
   	return module = {
-  	  path: basedir,
-  	  exports: {},
-  	  require: function (path, base) {
-        return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
-      }
+  		path: basedir,
+  		exports: {},
+  		require: function (path, base) {
+  			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+  		}
   	}, fn(module, module.exports), module.exports;
   }
 
@@ -1832,8 +1832,7 @@
       iconClass: String,
       triggerType: String,
       iconOnly: Boolean,
-      caption: String // stopPropagation: Boolean
-
+      caption: String
     },
     computed: {
       isIconOnly: function isIconOnly() {
@@ -1842,7 +1841,6 @@
     },
     methods: {
       onClick: function onClick(event) {
-        // if (this.stopPropagation) event.stopPropagation()
         this.$emit('click', event);
       }
     },
@@ -4142,6 +4140,23 @@
   module.exports = isDate;
   });
 
+  var $map = arrayIteration.map;
+
+
+
+  var HAS_SPECIES_SUPPORT$1 = arrayMethodHasSpeciesSupport('map');
+  // FF49- issue
+  var USES_TO_LENGTH$4 = arrayMethodUsesToLength('map');
+
+  // `Array.prototype.map` method
+  // https://tc39.github.io/ecma262/#sec-array.prototype.map
+  // with adding support of @@species
+  _export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT$1 || !USES_TO_LENGTH$4 }, {
+    map: function map(callbackfn /* , thisArg */) {
+      return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    }
+  });
+
   var ceil$1 = Math.ceil;
   var floor$1 = Math.floor;
 
@@ -4153,9 +4168,108 @@
     }
   });
 
-  function isZh(defaultLang) {
-    return (defaultLang || navigator.language || navigator.userLanguage).indexOf('zh') === 0;
+  // `Object.defineProperty` method
+  // https://tc39.github.io/ecma262/#sec-object.defineproperty
+  _export({ target: 'Object', stat: true, forced: !descriptors, sham: !descriptors }, {
+    defineProperty: objectDefineProperty.f
+  });
+
+  var en = {
+    Button: {
+      CANCEL: 'Cancel',
+      CLOSE: 'Close',
+      Delete: 'Delete',
+      OK: 'Ok',
+      NO: 'No',
+      SAVE: 'Save',
+      YES: 'Yes'
+    },
+    Dialog: {
+      ALERT: 'Alert',
+      CONFIRM: 'Confirm',
+      ERROR: 'Error',
+      WARN: 'Warning'
+    },
+    Calendar: {
+      JANUARY: 'Jan',
+      FEBRUARY: 'Feb',
+      MARCH: 'Mar',
+      APRIL: 'Apr',
+      MAY: 'May',
+      JUNE: 'Jun',
+      JULY: 'Jul',
+      AUGUST: 'Aug',
+      SEPTEMBER: 'Sep',
+      OCTOBER: 'Oct',
+      NOVEMBER: 'Nov',
+      DECEMBER: 'Dec',
+      SUNDAY: 'Su',
+      MONDAY: 'Mo',
+      TUESDAY: 'Tu',
+      WEDNESDAY: 'We',
+      THURSDAY: 'Th',
+      FRIDAY: 'Fr',
+      SATURDAY: 'Sa',
+      YEAR: '',
+      MONTH: '',
+      TODAY: 'Today'
+    }
+  };
+
+  var zh = {
+    Button: {
+      CANCEL: '取消',
+      CLOSE: '关闭',
+      Delete: '删除',
+      OK: '确定',
+      NO: '否',
+      SAVE: '保存',
+      YES: '是'
+    },
+    Dialog: {
+      ALERT: '提示',
+      CONFIRM: '确认提示',
+      ERROR: '错误',
+      WARN: '确认警告'
+    },
+    Calendar: {
+      JANUARY: '1 月',
+      FEBRUARY: '2 月',
+      MARCH: '3 月',
+      APRIL: '4 月',
+      MAY: '5 月',
+      JUNE: '6 月',
+      JULY: '7 月',
+      AUGUST: '8 月',
+      SEPTEMBER: '9 月',
+      OCTOBER: '10 月',
+      NOVEMBER: '11 月',
+      DECEMBER: '12 月',
+      SUNDAY: '日',
+      MONDAY: '一',
+      TUESDAY: '二',
+      WEDNESDAY: '三',
+      THURSDAY: '四',
+      FRIDAY: '五',
+      SATURDAY: '六',
+      YEAR: '年',
+      MONTH: '月',
+      TODAY: '今日'
+    }
+  };
+
+  function isZh() {
+    return ( navigator.language || navigator.userLanguage).indexOf('zh') === 0;
   }
+
+  var lang = {};
+  ['Button', 'Dialog', 'Calendar'].forEach(function (prop) {
+    Object.defineProperty(lang, prop, {
+      get: function get() {
+        return isZh() ? zh[prop] : en[prop];
+      }
+    });
+  });
 
   function fillGrid(rowCount, colCount, callbackFn) {
     var rows = [];
@@ -4194,11 +4308,7 @@
         month = _ref2.month;
     return new Date(year, month, 1).getDay();
   }
-  function getMonthName(month, isZh) {
-    var months = isZh ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months[month] + (isZh ? ' 月' : '');
-  }
-  function compare(a, b) {
+  function isEqual(a, b) {
     a = lodash_isdate(a) ? parseDate(a) : Object(a);
     b = lodash_isdate(b) ? parseDate(b) : Object(b);
     return a.year === b.year && a.month === b.month && a.date === b.date;
@@ -4246,12 +4356,6 @@
       value: [String, Date],
       rangeStart: Date,
       rangeEnd: Date,
-      language: {
-        type: String,
-        validator: function validator(v) {
-          return ['zh', 'en'].indexOf(v) !== -1;
-        }
-      },
       selectMode: {
         type: String,
         "default": 'date',
@@ -4278,18 +4382,24 @@
       };
     },
     computed: {
-      isChinese: function isChinese() {
-        return isZh(this.language);
-      },
       weekDays: function weekDays() {
-        return this.isChinese ? ['日', '一', '二', '三', '四', '五', '六'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        var Calendar = lang.Calendar;
+        return ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'].map(function (el) {
+          return Calendar[el];
+        });
+      },
+      monthNames: function monthNames() {
+        var Calendar = lang.Calendar;
+        return ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'].map(function (el) {
+          return Calendar[el];
+        });
       },
       title: function title() {
-        var isChinese = this.isChinese,
-            startYear = this.startYear,
+        var YEAR = lang.Calendar.YEAR;
+        var startYear = this.startYear,
             year = this.naviYear,
             month = this.naviMonth;
-        return this.tab === 'date' ? "".concat(year, " ").concat(isChinese ? '年' : '', " ").concat(getMonthName(month, isChinese)) : "".concat(startYear, " ~ ").concat(startYear + 9);
+        return this.tab === 'date' ? "".concat(year, " ").concat(YEAR, " ").concat(this.monthNames[month]) : "".concat(startYear, " ~ ").concat(startYear + 9);
       },
       monthRows: function monthRows() {
         var _this = this;
@@ -4298,7 +4408,7 @@
         return fillGrid(3, 4, function (row) {
           row.push({
             month: n,
-            monthName: getMonthName(n, _this.isChinese)
+            monthName: _this.monthNames[n]
           });
           n++;
         });
@@ -4327,7 +4437,7 @@
         var date = new Date(cell.year, cell.month, cell.date);
         var start = this.rangeStart,
             end = this.rangeEnd;
-        if (compare(cell, today)) cell.today = true;
+        if (isEqual(cell, today)) cell.today = true;
         if (marks.indexOf(cell.text) !== -1) cell.marked = true;
 
         if (start && date < start || end && date > end) {
@@ -4516,7 +4626,7 @@
         var value = new Date(year, month, date);
         if (invalid) return;
 
-        if (!this.value || !compare(cell, this.value)) {
+        if (!this.value || !isEqual(cell, this.value)) {
           this.dateText = "".concat(year, "-").concat(month + 1, "-").concat(date);
           this.$emit('change', value, year, month, date);
         }
@@ -5651,14 +5761,14 @@
   var FIND = 'find';
   var SKIPS_HOLES = true;
 
-  var USES_TO_LENGTH$4 = arrayMethodUsesToLength(FIND);
+  var USES_TO_LENGTH$5 = arrayMethodUsesToLength(FIND);
 
   // Shouldn't skip holes
   if (FIND in []) Array(1)[FIND](function () { SKIPS_HOLES = false; });
 
   // `Array.prototype.find` method
   // https://tc39.github.io/ecma262/#sec-array.prototype.find
-  _export({ target: 'Array', proto: true, forced: SKIPS_HOLES || !USES_TO_LENGTH$4 }, {
+  _export({ target: 'Array', proto: true, forced: SKIPS_HOLES || !USES_TO_LENGTH$5 }, {
     find: function find(callbackfn /* , that = undefined */) {
       return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
     }
@@ -5674,14 +5784,14 @@
   var FIND_INDEX = 'findIndex';
   var SKIPS_HOLES$1 = true;
 
-  var USES_TO_LENGTH$5 = arrayMethodUsesToLength(FIND_INDEX);
+  var USES_TO_LENGTH$6 = arrayMethodUsesToLength(FIND_INDEX);
 
   // Shouldn't skip holes
   if (FIND_INDEX in []) Array(1)[FIND_INDEX](function () { SKIPS_HOLES$1 = false; });
 
   // `Array.prototype.findIndex` method
   // https://tc39.github.io/ecma262/#sec-array.prototype.findindex
-  _export({ target: 'Array', proto: true, forced: SKIPS_HOLES$1 || !USES_TO_LENGTH$5 }, {
+  _export({ target: 'Array', proto: true, forced: SKIPS_HOLES$1 || !USES_TO_LENGTH$6 }, {
     findIndex: function findIndex(callbackfn /* , that = undefined */) {
       return $findIndex(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
     }
@@ -5700,23 +5810,6 @@
   _export({ target: 'Array', proto: true, forced: ES3_STRINGS || !STRICT_METHOD$3 }, {
     join: function join(separator) {
       return nativeJoin.call(toIndexedObject(this), separator === undefined ? ',' : separator);
-    }
-  });
-
-  var $map = arrayIteration.map;
-
-
-
-  var HAS_SPECIES_SUPPORT$1 = arrayMethodHasSpeciesSupport('map');
-  // FF49- issue
-  var USES_TO_LENGTH$6 = arrayMethodUsesToLength('map');
-
-  // `Array.prototype.map` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.map
-  // with adding support of @@species
-  _export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT$1 || !USES_TO_LENGTH$6 }, {
-    map: function map(callbackfn /* , thisArg */) {
-      return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
     }
   });
 
@@ -8274,9 +8367,6 @@
       }
     },
     watch: {
-      // popupVisible (value) {
-      //   this.params.modalVisible = value
-      // },
       buttons: {
         handler: function handler() {
           this.params.buttons = this.btns;
@@ -9351,6 +9441,79 @@
     staticRenderFns: __vue_staticRenderFns__$E
   }, __vue_inject_styles__$H, __vue_script__$H, __vue_scope_id__$H, __vue_is_functional_template__$H, __vue_module_identifier__$H, false, undefined, undefined, undefined);
 
+  var Buttons = {
+    OK: {
+      id: 'ok',
+      caption: lang.Button.OK,
+      action: 'close',
+      buttonType: 'primary'
+    },
+    CANCEL: {
+      id: 'cancel',
+      caption: lang.Button.CANCEL,
+      action: 'close'
+    }
+  };
+  function showMessage(options) {
+    var title = options.title,
+        message = options.message,
+        buttons = options.buttons,
+        danger = options.danger,
+        callback = options.callback;
+    return new Promise(function (resolve) {
+      var dialog = new Vue__default['default']({
+        "extends": __vue_component__$H,
+        title: title,
+        message: message,
+        danger: danger,
+        buttons: buttons
+      });
+      dialog.$once('hide', function (btn) {
+        callback === null || callback === void 0 ? void 0 : callback(btn);
+        resolve(btn);
+      });
+      dialog.show();
+    });
+  }
+  function alert(message, callback) {
+    return showMessage({
+      title: lang.Dialog.ALERT,
+      message: message,
+      buttons: [Buttons.OK],
+      callback: callback
+    });
+  }
+  function confirm(message, callback) {
+    return showMessage({
+      title: lang.Dialog.CONFIRM,
+      message: message,
+      buttons: [Buttons.CANCEL, Buttons.OK],
+      callback: callback
+    });
+  }
+  function error(message, callback) {
+    return showMessage({
+      title: lang.Dialog.ERROR,
+      message: message,
+      danger: true,
+      buttons: [_objectSpread2(_objectSpread2({}, Buttons.OK), {}, {
+        buttonType: 'danger'
+      })],
+      callback: callback
+    });
+  }
+  function warn(message, callback) {
+    return showMessage({
+      title: lang.Dialog.WARN,
+      message: message,
+      danger: true,
+      buttons: [Buttons.CANCEL, _objectSpread2(_objectSpread2({}, Buttons.OK), {}, {
+        buttonType: 'danger'
+      })],
+      callback: callback
+    });
+  }
+
   /**
    * Lodash (Custom Build) <https://lodash.com/>
    * Build: `lodash modularize exports="npm" -o ./`
@@ -9613,91 +9776,6 @@
     staticRenderFns: __vue_staticRenderFns__$F
   }, __vue_inject_styles__$I, __vue_script__$I, __vue_scope_id__$I, __vue_is_functional_template__$I, __vue_module_identifier__$I, false, undefined, undefined, undefined);
 
-  var alertTitle = isZh ? '提示' : 'Alert';
-  var errorTitle = isZh ? '错误' : 'Error';
-  var confirmTitle = isZh ? '确认提示' : 'Confirm';
-  var warnTitle = isZh ? '确认警告' : 'Warning';
-  var dialogButtons = {
-    ok: {
-      id: 'ok',
-      caption: isZh ? '确定' : 'OK',
-      action: 'close'
-    },
-    cancel: {
-      id: 'cancel',
-      caption: isZh ? '取消' : 'CANCEL',
-      action: 'close'
-    },
-    yes: {
-      id: 'yes',
-      caption: isZh ? '是' : 'YES',
-      action: 'close'
-    },
-    no: {
-      id: 'no',
-      caption: isZh ? '否' : 'NO',
-      action: 'close'
-    }
-  };
-  function showMessage(options) {
-    var title = options.title,
-        message = options.message,
-        buttons = options.buttons,
-        primaryButton = options.primaryButton,
-        danger = options.danger,
-        callback = options.callback;
-    return new Promise(function (resolve) {
-      var dialog = new Vue__default['default']({
-        "extends": __vue_component__$H,
-        title: title,
-        message: message,
-        danger: danger,
-        buttons: buttons.map(function (btn) {
-          return lodash_isstring(btn) ? dialogButtons[btn] || btn : btn;
-        }),
-        primaryButton: primaryButton === undefined ? buttons[0] : primaryButton
-      });
-      dialog.$once('hide', function (btn) {
-        if (callback) callback(btn);
-        resolve(btn);
-      });
-      dialog.show();
-    });
-  }
-  function alert(message, callback) {
-    return showMessage({
-      title: alertTitle,
-      buttons: ['ok'],
-      message: message,
-      callback: callback
-    });
-  }
-  function error(message, callback) {
-    return showMessage({
-      title: errorTitle,
-      buttons: ['ok'],
-      danger: true,
-      message: message,
-      callback: callback
-    });
-  }
-  function confirm(message, callback) {
-    return showMessage({
-      title: confirmTitle,
-      buttons: ['ok', 'cancel'],
-      message: message,
-      callback: callback
-    });
-  }
-  function warn(message, callback) {
-    return showMessage({
-      title: warnTitle,
-      buttons: ['ok', 'cancel'],
-      danger: true,
-      message: message,
-      callback: callback
-    });
-  }
   var notifier;
   function notify$2(notifyType, message, timeout, onClickHandler) {
     if (!notifier) {

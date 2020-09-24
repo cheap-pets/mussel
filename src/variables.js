@@ -1,4 +1,7 @@
 export default {
+  /* language */
+  /* lang = 'zh' */
+
   /* spacing */
   halfSpacingSize: '8px',
   unitSpacingSize: '16px',

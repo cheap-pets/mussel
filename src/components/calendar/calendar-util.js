@@ -43,20 +43,7 @@ export function getFirstDay ({ year, month }) {
   return (new Date(year, month, 1)).getDay()
 }
 
-export function getMonthName (month, isZh) {
-  const months = isZh
-    ? [
-      '1', '2', '3', '4', '5', '6',
-      '7', '8', '9', '10', '11', '12'
-    ]
-    : [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ]
-  return months[month] + (isZh ? ' 月' : '')
-}
-
-export function compare (a, b) {
+export function isEqual (a, b) {
   a = isDate(a) ? parseDate(a) : Object(a)
   b = isDate(b) ? parseDate(b) : Object(b)
   return a.year === b.year && a.month === b.month && a.date === b.date
