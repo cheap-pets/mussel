@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Menu</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+    .client-area {
+      background: rgba(0, 0, 0, .05);
+    }
+    .mu-sidebar_container, .shadow {
+      box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12);
+    }
+  </style>
+</head>
+
+<body class="mu-background-normal">
+  <div id="app">
+    <h2>Sidebar Menu Example</h2>
+    <hr>
+
+    <mu-h-box class="mc-page-body" style="height: 500px;">
+      <mu-sidebar-menu
+        class="sidebar-menu"
+        floatable
+        collapsed
+        collapsible
+        collapse-button-position="top">
+        <template #header>
+          <div align-self="center" style="padding: 0 10px;">Welcome</div>
+        </template>
+        <mu-menu-item title="Menu Item 1" icon="calendar" active>
+        </mu-menu-item>
+        <mu-menu-item title="Menu Item 2" icon="ok">
+        </mu-menu-item>
+        <mu-menu-item title="Menu Item 2" icon="clear">
+        </mu-menu-item>
+      </mu-sidebar-menu>
+      <div size="1" class="shadow" style="background: rgba(0,0,0,.05); margin-left: 10px;"></div>
+    </mu-h-box>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+      },
+      methods: {
+      }
+    });
+  </script>
+</body>
+
+</html>

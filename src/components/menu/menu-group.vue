@@ -16,7 +16,7 @@
         trigger-type="expander"
         :trigger-on="expanded" />
     </div>
-    <div class="mu-menu-group_body">
+    <div ref="body" class="mu-menu-group_body">
       <slot />
     </div>
   </div>
@@ -82,7 +82,7 @@
       },
       expand () {
         this.expanded = true
-        const el = this.$el.querySelector('.mu-menu-group_body')
+        const el = this.$refs.body
         if (el) {
           const h = el.scrollHeight || 2000
           el.style.maxHeight = h + 'px'
@@ -91,7 +91,7 @@
       },
       collapse () {
         this.expanded = false
-        const el = this.$el.querySelector('.mu-menu-group_body')
+        const el = this.$refs.body
         if (el) el.style.maxHeight = 0
       },
       toggleExpand () {
