@@ -1,4 +1,5 @@
 import vue from 'rollup-plugin-vue'
+import alias from '@rollup/plugin-alias'
 import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
@@ -24,6 +25,11 @@ export default {
   input: 'src/index.js',
   external: ['vue'],
   plugins: [
+    alias({
+      entries: [
+        { find: '@icons', replacement: 'tabler-icons/icons' }
+      ]
+    }),
     vue({
       css: false
     }),
