@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import d from './d'
+  import d from './tabler-icons'
 
   const triggerIcons = {
     close: 'close',
