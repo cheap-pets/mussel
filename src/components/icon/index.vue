@@ -4,20 +4,16 @@
     :icon="icon"
     :class="iconClass"
     :trigger-type="triggerType"
-    @click="onClick">
-    <span v-if="html" v-html="html" />
-    <svg v-else-if="paths" :viewBox="viewBox">
-      <path v-for="d in paths" :key="d" :d="d" />
-    </svg>
-  </span>
+    @click="onClick"
+    v-html="html" />
 </template>
 
 <script>
-  import d from './tabler-icons'
+  import icons from './tabler-icons'
 
   const triggerIcons = {
-    close: 'close',
-    clear: 'clear',
+    close: 'x',
+    clear: 'x',
     dropdown: 'key-down',
     expander: 'key-down'
   }
@@ -25,44 +21,14 @@
   export default {
     name: 'MusselIcon',
     props: {
-      svg: [String, Array],
+      svg: String,
       icon: String,
       iconClass: String,
-      triggerType: String,
-      viewBox: {
-        type: String,
-        default: '0 0 1024 1024'
-      }
+      triggerType: String
     },
     computed: {
-      iconName () {
-        return this.iconClass
-          ? undefined
-          : (
-            this.triggerType
-              ? triggerIcons[this.triggerType]
-              : this.icon
-          )
-      },
-      svgData () {
-        const { iconClass, iconName, svg } = this
-        return iconClass
-          ? undefined
-          : (iconName ? d[iconName] : svg)
-      },
       html () {
-        return String(this.svgData).indexOf('<svg') !== -1
-          ? this.svgData
-          : undefined
-      },
-      paths () {
-        const data = (this.iconClass || this.html)
-          ? undefined
-          : this.svgData
-
-        return data
-          ? (Array.isArray(data) ? data : [data])
-          : undefined
+        return this.svg || icons[triggerIcons[this.triggerType] || this.icon]
       }
     },
     methods: {

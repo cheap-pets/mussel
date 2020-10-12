@@ -31,12 +31,16 @@ export default {
     caption: String
   },
   computed: {
+    hasIcon () {
+      return this.icon || this.iconClass || this.triggerType
+    },
     isIconOnly () {
       return this.iconOnly ||
         (
           !this.$slots.default &&
           !this.caption &&
-          (this.icon || this.iconClass || this.triggerType))
+          this.hasIcon
+        )
     }
   },
   methods: {
@@ -54,7 +58,7 @@ export default {
         icon-only={ this.isIconOnly }
         onClick={ this.onClick }>
         {
-          this.icon || this.iconClass || this.triggerType
+          this.hasIcon
             ? <icon
               icon={ this.icon }
               icon-class={ this.iconClass }
@@ -64,7 +68,7 @@ export default {
         {
           this.$slots.default
             ? (
-              this.icon || this.iconClass || this.triggerType
+              this.hasIcon
                 ? <span>{ this.$slots.default }</span>
                 : this.$slots.default
             )
