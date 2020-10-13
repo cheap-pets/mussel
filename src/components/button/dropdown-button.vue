@@ -43,7 +43,7 @@
 
 <script>
   import Button from './button.jsx'
-  import Icon from '../icon/index.vue'
+  import Icon from '../icon/icon.vue'
   import SplitButton from './split-button.vue'
   import Dropdown from '../dropdown/dropdown.vue'
 

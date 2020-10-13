@@ -20,11 +20,11 @@
 
   export default {
     name: 'MusselPopupBoxWrapper',
-    inject: ['params', 'popupParams'],
     components: {
       'mu-editor-wrapper': BaseEditorWrapper,
       'mu-dropdown-panel': DropdownPanel
     },
+    inject: ['params', 'popupParams'],
     methods: {
       setPopupVisible (value) {
         this.popupParams.visible = value

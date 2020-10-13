@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  import Icon from '../icon/index.vue'
+  import Icon from '../icon/icon.vue'
 
   import { unsetOrFalse } from '../../utils/prop'
 

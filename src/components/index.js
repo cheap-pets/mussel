@@ -8,7 +8,7 @@ import VBox from './layout/flex-v-box'
 import Space from './layout/space.vue'
 import Splitter from './layout/splitter.vue'
 /* ICON */
-import Icon from './icon/index.vue'
+import Icon from './icon/icon.vue'
 import registerIcons from './icon/register'
 /* BUTTON */
 import Button from './button/button.jsx'
@@ -148,8 +148,6 @@ if (Vue) install(Vue)
 const { showMessage, alert, error, confirm, warn, notify } = MessageBox
 
 export {
-  install,
-  registerIcons,
   // Layout
   FlexBox,
   FlexItem,
@@ -214,17 +212,20 @@ export {
   DialogWrapper,
   // Drawer
   Drawer,
-  // message box
+  // Menu
+  SidebarMenu,
+  MenuGroup,
+  MenuItem,
+  // Mixins
+  PopupGroupMixin,
+  // message
   showMessage,
   alert,
   confirm,
   error,
   warn,
   notify,
-  // Menu
-  SidebarMenu,
-  MenuGroup,
-  MenuItem,
-  // Mixins
-  PopupGroupMixin
+  // register
+  install,
+  registerIcons
 }

@@ -20,16 +20,14 @@
       'mu-button': Button
     },
     props: {
+      caption: String,
       disabled: Boolean,
       buttonType: String,
       buttonStyle: String,
       buttonShape: String,
-      caption: String,
-      stopPropagation: Boolean,
       splitIcon: String,
       splitIconClass: String,
-      splitTriggerType: String,
-      splitSvgData: String
+      splitTriggerType: String
     },
     computed: {
       buttonParams () {
@@ -37,8 +35,7 @@
           caption: this.caption,
           disabled: this.disabled,
           buttonType: this.buttonType,
-          buttonStyle: this.buttonStyle,
-          stopPropagation: this.stopPropagation
+          buttonStyle: this.buttonStyle
         }
       },
       splitParams () {
@@ -56,8 +53,7 @@
               : 'dropdown',
           svgData: this.splitSvgData,
           buttonType: this.buttonType,
-          buttonStyle: this.buttonStyle,
-          stopPropagation: this.stopPropagation
+          buttonStyle: this.buttonStyle
         }
       }
     },
