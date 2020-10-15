@@ -65,10 +65,8 @@
       if (
         !this.icon &&
         !this.iconClass &&
-        !this.triggerType &&
         !this.isDropdownStyle
       ) {
-        this.params.triggerType = undefined
         this.params.icon = 'search'
       }
     },

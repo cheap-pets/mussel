@@ -5,7 +5,6 @@
   padding: $listItemPadding;
   overflow: hidden;
   color: $normalTextColor;
-  fill: $normalTextColor;
 
   & > .mu-icon {
     display: inline-block;
@@ -16,36 +15,30 @@
 .mu-list-group-header {
   font-size: 0.85em;
   color: $normalSubtitleTextColor;
-  fill: $normalSubtitleTextColor;
 }
 
 .mu-list-item {
   &[selected] {
     color: var(--mu-primary-color);
-    fill: var(--mu-primary-color);
     font-weight: 600;
   }
 
   &:hover {
     color: var(--mu-primary-color);
-    fill: var(--mu-primary-color);
     background: $normalHoverBackground;
   }
 
   &[danger] {
     color: var(--mu-danger-color);
-    fill: var(--mu-danger-color);
   }
 
   &[disabled] {
     color: $normalDisabledTextColor;
-    fill: $normalDisabledTextColor;
     background: none;
   }
 
   &[active] {
     color: $normalHighlightTextColor;
-    fill: $normalHighlightTextColor;
     background: var(--mu-primary-color);
   }
 

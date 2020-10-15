@@ -38,12 +38,8 @@ export default {
     }
   },
   created () {
-    if (
-      !this.icon &&
-      !this.iconClass &&
-      !this.triggerType
-    ) {
-      this.params.triggerType = 'expander'
-    }
+    this.params.icon = this.icon || (
+      this.iconClass ? undefined : 'dropdown'
+    )
   }
 }

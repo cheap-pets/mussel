@@ -19,9 +19,7 @@
           {{ params.title }}
         </mu-flex-item>
         <slot name="header" />
-        <mu-close-button
-          class="mu-text-color-subtitle"
-          @click="hide('$close')" />
+        <icon icon="x" @click="hide('$close')" />
       </mu-h-box>
       <mu-flex-item
         class="mu-dialog-body"
@@ -46,15 +44,15 @@
 
 <script>
   import VBox from '../layout/flex-v-box'
-  import CloseButton from '../button/close-button.vue'
+  import Icon from '../icon/icon.vue'
 
   import getClientRect from '../../utils/client-rect'
 
   export default {
     name: 'MusselDialogWrapper',
     components: {
-      'mu-v-box': VBox,
-      'mu-close-button': CloseButton
+      'icon': Icon,
+      'mu-v-box': VBox
     },
     inject: ['dialog', 'params'],
     data () {

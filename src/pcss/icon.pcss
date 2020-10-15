@@ -8,24 +8,8 @@
     width: 1em;
     height: 1em;
   }
-}
 
-.mu-icon {
-  &[trigger-type] {
-    cursor: pointer;
-    transition: transform .2s ease-in-out;
-  }
-
-  &[trigger-type="close"]:hover {
-    fill: var(--mu-danger-color);
-    color: var(--mu-danger-color);
+  &[icon="dropdown"][expanded] {
+    transform: rotate(180deg);
   }
 }
-
-.mu-editor[expanded] > [trigger-type="expander"],
-.mu-dropdown[expanded] [trigger-type="expander"],
-.mu-expander[expanded] [trigger-type="expander"],
-.mu-icon[trigger-type="expander"][trigger-on] {
-  transform: rotate(180deg);
-}
-

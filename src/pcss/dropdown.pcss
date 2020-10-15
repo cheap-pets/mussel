@@ -2,6 +2,10 @@
   position: relative;
   display: inline-block;
   vertical-align: top;
+
+  &[expanded] [dropdown-trigger][icon="dropdown"] {
+    transform: rotate(180deg);
+  }
 }
 
 .mu-dropdown-panel {
@@ -47,7 +51,6 @@
 [popup-style=dropdown-menu] > .mu-list-item {
   &:hover {
     color: $normalHighlightTextColor;
-    fill: $normalHighlightTextColor;
     background: var(--mu-primary-color);
   }
 }

@@ -56,7 +56,8 @@ const icons = {
   refresh,
   calendar,
   tree: sitemap,
-  ellipsis: dots
+  ellipsis: dots,
+  dropdown: chevronDown
 }
 
 Object.keys(icons).forEach(key => {

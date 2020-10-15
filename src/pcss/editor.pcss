@@ -80,7 +80,6 @@
     width: $inputIconSize;
     font-size: 1rem;
     color: $normalSubtitleTextColor;
-    fill: $normalSubtitleTextColor;
 
     &:first-child {
       left: 1px;
@@ -95,16 +94,13 @@
     &[clickable] {
       cursor: pointer;
       &:hover {
-        fill: var(--mu-primary-color);
         color: var(--mu-primary-color);
       }
     }
-    &[trigger-type="clear"] {
+    &[icon="x"] {
       color: $normalWeakTextColor;
-      fill: $normalWeakTextColor;
       &:hover {
         color: $normalSubtitleTextColor;
-        fill: $normalSubtitleTextColor;
       }
     }
   }
@@ -117,7 +113,6 @@
   }
   & > [clickable]:hover {
     color: var(--mu-danger-color);
-    fill: var(--mu-danger-color);
   }
 }
 
@@ -137,9 +132,6 @@
   }
 }
 
-/* .mu-date-range-editor {
-  width: 240px;
-} */
 .mu-date-range-editor_to {
   width: 20px;
   display: flex;

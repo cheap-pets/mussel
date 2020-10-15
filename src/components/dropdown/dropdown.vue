@@ -29,12 +29,12 @@
     components: {
       'mu-dropdown-panel': DropdownPanel
     },
+    mixins: [PopupGroupMixin],
     provide () {
       return {
         dropdown: this
       }
     },
-    mixins: [PopupGroupMixin],
     props: {
       disabled: Boolean,
       triggerAction: {

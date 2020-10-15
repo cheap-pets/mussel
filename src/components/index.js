@@ -13,7 +13,6 @@ import registerIcons from './icon/register'
 /* BUTTON */
 import Button from './button/button.jsx'
 import IconButton from './button/icon-button'
-import CloseButton from './button/close-button.vue'
 import ButtonGroup from './button/button-group.vue'
 import SplitButton from './button/split-button.vue'
 import DropdownButton from './button/dropdown-button.vue'
@@ -88,7 +87,6 @@ function install ($Vue = Vue) {
 
   $Vue.component('mu-button', Button)
   $Vue.component('mu-icon-button', IconButton)
-  $Vue.component('mu-close-button', CloseButton)
   $Vue.component('mu-button-group', ButtonGroup)
   $Vue.component('mu-split-button', SplitButton)
   $Vue.component('mu-dropdown-button', DropdownButton)
@@ -160,7 +158,6 @@ export {
   // Button
   Button,
   IconButton,
-  CloseButton,
   ButtonGroup,
   SplitButton,
   DropdownButton,

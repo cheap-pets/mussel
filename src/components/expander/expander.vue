@@ -6,7 +6,7 @@
     <slot name="header">
       <div class="mu-expander-header" expand-trigger>
         {{ title }}
-        <mu-icon trigger-type="expander" style="margin-left: 8px;" />
+        <mu-icon icon="dropdown" :expanded="actualExpanded" />
       </div>
     </slot>
     <div

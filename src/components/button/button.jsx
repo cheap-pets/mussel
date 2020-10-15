@@ -26,13 +26,12 @@ export default {
     },
     icon: String,
     iconClass: String,
-    triggerType: String,
     iconOnly: Boolean,
     caption: String
   },
   computed: {
     hasIcon () {
-      return this.icon || this.iconClass || this.triggerType
+      return !!(this.icon || this.iconClass)
     },
     isIconOnly () {
       return this.iconOnly ||
@@ -61,8 +60,7 @@ export default {
           this.hasIcon
             ? <icon
               icon={ this.icon }
-              icon-class={ this.iconClass }
-              trigger-type={ this.triggerType } />
+              icon-class={ this.iconClass } />
             : undefined
         }
         {

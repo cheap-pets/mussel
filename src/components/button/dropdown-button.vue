@@ -26,7 +26,7 @@
       @click="onButtonClick">
       <slot>
         <span>{{ caption }}</span>
-        <mu-icon trigger-type="expander" />
+        <mu-icon icon="dropdown" :expanded="popupParams.visible" />
       </slot>
     </mu-button>
     <mu-dropdown-panel

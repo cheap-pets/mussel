@@ -19,10 +19,9 @@ export default {
         type: p.type,
         value: p.value,
         icon: p.icon,
-        iconClickable: p.iconClickable !== false,
         iconClass: p.iconClass,
         iconPosition: p.iconPosition,
-        triggerType: p.triggerType,
+        iconClickable: p.iconClickable !== false,
         readonly: p.readonly,
         disabled: p.disabled,
         editable: p.editable,
@@ -65,8 +64,7 @@ export default {
       type: Boolean,
       default: true
     },
-    autofocus: Boolean,
-    triggerType: String
+    autofocus: Boolean
   },
   watch: {
     value: {
@@ -92,9 +90,6 @@ export default {
     },
     iconPosition (value) {
       this.params.iconPosition = value
-    },
-    triggerType (value) {
-      this.params.triggerType = value
     },
     editable (value) {
       this.editable = value

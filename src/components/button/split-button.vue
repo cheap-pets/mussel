@@ -26,8 +26,7 @@
       buttonStyle: String,
       buttonShape: String,
       splitIcon: String,
-      splitIconClass: String,
-      splitTriggerType: String
+      splitIconClass: String
     },
     computed: {
       buttonParams () {
@@ -40,18 +39,11 @@
       },
       splitParams () {
         return {
-          icon: this.splitIcon,
+          icon: this.splitIcon || (
+            this.splitIconClass ? undefined : 'dropdown'
+          ),
           iconClass: this.splitIconClass,
           disabled: this.disabled,
-          triggerType:
-            (this.splitIcon ||
-              this.splitIconClass ||
-              this.splitTriggerType ||
-              this.splitSvgData
-            )
-              ? this.splitTriggerType
-              : 'dropdown',
-          svgData: this.splitSvgData,
           buttonType: this.buttonType,
           buttonStyle: this.buttonStyle
         }

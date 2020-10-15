@@ -13,8 +13,8 @@
       </slot>
       <mu-icon
         v-if="isExpander || isDropdown"
-        trigger-type="expander"
-        :trigger-on="expanded" />
+        icon="dropdown"
+        :expanded="expanded" />
     </div>
     <div ref="body" class="mu-menu-group_body">
       <slot />

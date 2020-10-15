@@ -1,6 +1,5 @@
 .mu-expander {
   color: $normalTextColor;
-  fill: $normalTextColor;
 
   & [expand-trigger] {
     cursor: pointer;
@@ -16,6 +15,10 @@
 
     &:hover {
       background: $normalHoverBackground;
+    }
+
+    & > [icon="dropdown"] {
+      margin-left: $halfSpacingSize;
     }
   }
   & > .mu-expand-panel {

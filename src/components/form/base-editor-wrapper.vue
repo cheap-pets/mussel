@@ -18,8 +18,8 @@
       @keypress.native="onKeyPress" />
     <mu-icon
       v-if="clearable"
+      icon="x"
       clickable
-      trigger-type="clear"
       @click="onClearClick" />
     <mu-icon
       v-if="iconPosition === 'right'"
@@ -47,7 +47,7 @@
       },
       iconPosition () {
         const p = this.params
-        return (p.icon || p.iconClass || p.triggerType)
+        return (p.icon || p.iconClass)
           ? p.iconPosition || 'right'
           : null
       },
@@ -60,8 +60,7 @@
           ? {
             icon: p.icon,
             iconClass: p.iconClass,
-            clickable: p.iconClickable,
-            triggerType: p.triggerType
+            clickable: p.iconClickable
           }
           : null
       },
