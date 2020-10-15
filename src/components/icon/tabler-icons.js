@@ -14,6 +14,7 @@ import chevronLeft from '@icons/chevron-left.svg'
 import chevronRight from '@icons/chevron-right.svg'
 
 import dots from '@icons/dots.svg'
+import menu from '@icons/menu-2.svg'
 import folder from '@icons/folder.svg'
 import search from '@icons/search.svg'
 import refresh from '@icons/refresh.svg'
@@ -51,6 +52,7 @@ const icons = {
   'key-left': chevronLeft,
   'key-right': chevronRight,
 
+  menu,
   search,
   folder,
   refresh,

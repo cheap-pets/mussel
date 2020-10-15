@@ -17,7 +17,7 @@
           class="mu-sidebar_collapse-button mu-button-like"
           @mouseover="onCollapseBtnMouseOver"
           @click="toggleCollapse">
-          <mu-icon icon="collapse" />
+          <mu-icon :icon="menuIcon" />
         </a>
         <slot v-if="!isCollapsed" name="header" />
       </div>
@@ -36,7 +36,7 @@
           class="mu-sidebar_collapse-button mu-button-like"
           @mouseover="onCollapseBtnMouseOver"
           @click="toggleCollapse">
-          <mu-icon icon="collapse" />
+          <mu-icon :icon="menuIcon" />
         </a>
         <slot v-if="!isCollapsed" name="footer" />
       </div>
@@ -74,6 +74,11 @@
       }
     },
     computed: {
+      menuIcon () {
+        return this.isCollapsed
+          ? 'menu'
+          : (this.floating ? 'pin' : 'pinned')
+      },
       collapseBtnPosition () {
         const { header, footer } = this.$slots
         return this.collapsible

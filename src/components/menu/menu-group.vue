@@ -6,9 +6,7 @@
       @mouseover="onMouseOver"
       @mouseleave="onMouseLeave">
       <slot name="header">
-        <mu-icon
-          :icon="icon"
-          :icon-class="iconClass" />
+        <mu-icon :icon="icon" :icon-class="iconClass" />
         {{ title }}
       </slot>
       <mu-icon

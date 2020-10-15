@@ -19,7 +19,7 @@
           {{ params.title }}
         </mu-flex-item>
         <slot name="header" />
-        <icon icon="x" @click="hide('$close')" />
+        <icon class="mu-dialog_close-btn" icon="x" @click="hide('$close')" />
       </mu-h-box>
       <mu-flex-item
         class="mu-dialog-body"

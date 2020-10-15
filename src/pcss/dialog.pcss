@@ -5,17 +5,20 @@
   background: $normalBackground;
   opacity: 0;
   box-shadow: $dialogShadow;
-  /* transform: translate3d(0, 200px, 0); */
   transition: all .2s ease-in-out;
 
   &[visible]{
     opacity: 1;
-    /* transform: translate3d(0); */
   }
 
   &[danger] > .mu-dialog-header {
     border-bottom-color: var(--mu-danger-color);
   }
+}
+
+.mu-dialog_close-btn:hover {
+  cursor: pointer;
+  color: $dangerColor;
 }
 
 .mu-dialog-header {
