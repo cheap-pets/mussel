@@ -1,29 +1,29 @@
 <template>
   <div
     class="mu-editor"
-    :buttons="buttons"
+    :clearable="clearable"
+    :icon-align="iconAlign"
     :readonly="params.readonly"
     :disabled="params.disabled">
-    <mu-icon
-      v-if="iconPosition === 'left'"
-      v-bind="iconParams"
-      @click="onButtonClick" />
     <mu-input
       v-bind="inputParams"
-      @input="onInput"
-      @click="onInputClick"
+      class="mu-editor_input"
       @blur="onBlur"
+      @click="onInputClick"
+      @input="onInput"
       @esckey="onEscKey"
       @enterkey="onEnterKey"
       @keypress.native="onKeyPress" />
     <mu-icon
       v-if="clearable"
+      class="mu-editor_eraser"
       icon="x"
       clickable
       @click="onClearClick" />
     <mu-icon
-      v-if="iconPosition === 'right'"
+      v-if="iconParams"
       v-bind="iconParams"
+      class="mu-editor_button"
       @click="onButtonClick" />
     <slot />
   </div>
@@ -45,24 +45,19 @@
         const p = this.params
         return p.clearable && (!!p.value || p.value === 0)
       },
-      iconPosition () {
+      iconAlign () {
         const p = this.params
-        return (p.icon || p.iconClass)
-          ? p.iconPosition || 'right'
-          : null
-      },
-      buttons () {
-        return 0 + (this.clearable ? 1 : 0) + (this.iconPosition ? 1 : 0)
+        return (p.icon || p.iconClass) ? (p.iconAlign || 'right') : null
       },
       iconParams () {
         const p = this.params
-        return this.iconPosition
+        return this.iconAlign
           ? {
             icon: p.icon,
             iconClass: p.iconClass,
             clickable: p.iconClickable
           }
-          : null
+          : undefined
       },
       inputParams () {
         const p = this.params
@@ -70,10 +65,10 @@
           type: p.type,
           value: p.value,
           focus: p.focus,
-          readonly: p.readonly || !p.editable,
           disabled: p.disabled,
           autofocus: p.autofocus,
-          placeholder: p.placeholder
+          placeholder: p.placeholder,
+          readonly: p.readonly || !p.editable
         }
       }
     },

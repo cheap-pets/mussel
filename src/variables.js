@@ -86,9 +86,6 @@ export default {
   inputDisabledTextColor: '#999',
   inputReadonlyBackground: '$normalInfoBackground',
 
-  inputIconSize: '30px',
-  inputIconSizeX2: '60px',
-
   /* calendar */
   calendarFontSize: '0.857rem',
   calendarTitleFontSize: '1.14rem',

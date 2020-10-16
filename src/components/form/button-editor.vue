@@ -1,5 +1,5 @@
 <template>
-  <mu-editor-wrapper />
+  <mu-editor-wrapper class="mu-button-editor" />
 </template>
 
 <script>

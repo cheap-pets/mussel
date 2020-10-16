@@ -3,48 +3,92 @@
   display: inline-block;
   width: 200px;
 
+  & > .mu-input {
+    width: 100%;
+    vertical-align: middle;
+    background: $normalBackground;
+    transition: padding ease-in-out .1s;
+  }
+
   &:hover > .mu-input {
     border-color: var(--mu-primary-color);
   }
 
-  &[disabled] > .mu-input,
-  & > .mu-input[disabled] {
-    border-color: $normalBorderColor;
-  }
+  & > .mu-icon {
+    position: absolute;
+    z-index: 3;
+    top: 1px;
+    bottom: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    font-size: 14px;
+    color: $normalSubtitleTextColor;
 
-  & > .mu-input {
-    width: 100%;
-    vertical-align: middle;
-    padding-right: $inputIconSize;
-    background: $normalBackground;
-  }
+    &[clickable] {
+      cursor: pointer;
 
-  &[buttons="0"] > .mu-input {
-    padding-right: $inputElementPaddingX;
-  }
-
-  &[buttons="2"] {
-    & > input {
-      padding-right: $inputIconSizeX2;
-      & + .mu-icon {
-        right: $inputIconSize;
+      &:hover {
+        color: var(--mu-primary-color);
       }
     }
-    & > .mu-icon:first-child {
-      & + .mu-icon {
-        left: $inputIconSize;
-        right: auto;
-      }
-      & ~ input {
-        padding-left: $inputIconSizeX2;
-        padding-right: $inputElementPaddingX;
-      }
-      & + input {
-        padding-left: $inputIconSize;
-        padding-right: $inputIconSize;
-        & + .mu-icon {
-          right: 1px;
-        }
+  }
+
+  & > .mu-editor_eraser {
+    display: none;
+    color: $normalWeakTextColor;
+    right: calc($inputElementHeight / 2 - 7px);
+
+    &.mu-icon:hover {
+      color: $normalSubtitleTextColor;
+    }
+  }
+
+  &.mu-button-editor {
+    & > .mu-editor_button {
+      right: calc($inputElementHeight / 2 - 7px);
+    }
+
+    & > .mu-editor_eraser {
+      right: calc($inputElementHeight / 2 + 15px);
+    }
+
+    & > input {
+      padding-right: calc($inputElementHeight - 2px);
+    }
+  }
+
+  &.mu-button-editor[icon-align=left] {
+    & > .mu-editor_button {
+      left: calc($inputElementHeight / 2 - 7px);
+      right: auto;
+    }
+
+    & > .mu-editor_eraser {
+      right: calc($inputElementHeight / 2 - 7px);
+      left: auto;
+    }
+
+    & > input {
+      padding-left: calc($inputElementHeight - 2px);
+      padding-right: $inputElementPaddingX;
+    }
+  }
+
+  &:hover > .mu-editor_eraser {
+    display: inline-flex;
+  }
+
+  &[clearable] {
+    &.mu-button-editor:hover > input {
+      padding-right: calc($inputElementHeight / 2 + 37px);
+    }
+    
+    &,
+    &[icon-align=left] {
+      &:hover > input {
+        padding-right: calc($inputElementHeight - 2px);
       }
     }
   }
@@ -57,51 +101,19 @@
     background-color: $normalDisabledBackground;
   }
 
+  &[disabled] > .mu-input,
+  & > .mu-input[disabled] {
+    border-color: $normalBorderColor;
+  }
+
   &[disabled],
   &[readonly] {
-    & > input {
+    & > input.mu-input {
       padding-left: $inputElementPaddingX;
       padding-right: $inputElementPaddingX;
     }
     & > .mu-icon {
-      display: none;
-    }
-  }
-
-  & > .mu-icon {
-    position: absolute;
-    z-index: 3;
-    top: 1px;
-    bottom: 1px;
-    right: 1px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: $inputIconSize;
-    font-size: 1rem;
-    color: $normalSubtitleTextColor;
-
-    &:first-child {
-      left: 1px;
-      right: auto;
-
-      & + input {
-        padding-left: $inputIconSize;
-        padding-right: $inputElementPaddingX;
-      }
-    }
-
-    &[clickable] {
-      cursor: pointer;
-      &:hover {
-        color: var(--mu-primary-color);
-      }
-    }
-    &[icon="x"] {
-      color: $normalWeakTextColor;
-      &:hover {
-        color: $normalSubtitleTextColor;
-      }
+      display: none !important;
     }
   }
 }
@@ -125,6 +137,7 @@
       font-style: normal;
     }
   }
+
   & > input:focus,
   &[valid] > input {
     font-style: normal;

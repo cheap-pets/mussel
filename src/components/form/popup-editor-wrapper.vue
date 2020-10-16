@@ -1,5 +1,6 @@
 <template>
   <mu-editor-wrapper
+    class="mu-button-editor mu-popup-editor"
     :expanded="popupParams.visible"
     :popup-style="popupParams.popupStyle">
     <mu-dropdown-panel

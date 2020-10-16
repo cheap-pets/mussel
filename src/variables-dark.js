@@ -83,9 +83,6 @@ export default {
   inputFocusShadow: '0 0 0 2px',
   inputReadonlyBackground: '$normalInfoBackground',
 
-  inputIconSize: '30px',
-  inputIconSizeX2: '60px',
-
   /* calendar */
   calendarFontSize: '0.857rem',
   calendarTitleFontSize: '1.14rem',

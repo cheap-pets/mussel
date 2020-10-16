@@ -20,7 +20,7 @@ export default {
         value: p.value,
         icon: p.icon,
         iconClass: p.iconClass,
-        iconPosition: p.iconPosition,
+        iconAlign: p.iconAlign,
         iconClickable: p.iconClickable !== false,
         readonly: p.readonly,
         disabled: p.disabled,
@@ -48,7 +48,7 @@ export default {
     },
     icon: String,
     iconClass: String,
-    iconPosition: {
+    iconAlign: {
       type: String,
       default: 'right',
       validator (value) {
@@ -88,8 +88,8 @@ export default {
     iconClass (value) {
       this.params.iconClass = value
     },
-    iconPosition (value) {
-      this.params.iconPosition = value
+    iconAlign (value) {
+      this.params.iconAlign = value
     },
     editable (value) {
       this.editable = value
