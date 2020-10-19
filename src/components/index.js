@@ -48,19 +48,24 @@ import Bar from './bar/bar.vue'
 import Tabs from './tabs/tabs.vue'
 import TabsHeader from './tabs/tabs-header.vue'
 import TabPanel from './tabs/tab-panel.vue'
-/* Dropdown */
+/* DROPDOWN */
 import Dropdown from './dropdown/dropdown.vue'
 import DropdownItem from './dropdown/dropdown-item'
 import DropdownPanel from './dropdown/dropdown-panel.vue'
 /* Expander */
 import Expander from './expander/expander.vue'
-/* LAYER */
-import BaseModal from './layer/base-modal.vue'
-import BaseDialog from './layer/base-dialog.vue'
-import Modal from './layer/modal.vue'
-import Dialog from './layer/dialog.vue'
-import DialogWrapper from './layer/dialog-wrapper.vue'
+/* MODAL */
+import BaseModal from './modal/base-modal.vue'
+import Modal from './modal/modal.vue'
+
+/* DIALOG */
+import DialogWrapper from './dialog/dialog-wrapper.vue'
+import BaseDialog from './dialog/base-dialog.vue'
+import Dialog from './dialog/dialog.vue'
+
+/* MESSAGE BOX */
 import * as MessageBox from './message'
+
 /* DRAWER */
 import Drawer from './drawer/drawer.vue'
 /* CALENDAR */

@@ -1,7 +1,7 @@
 <template>
   <div v-if="popupVisible"
     class="mu-drawer-wrapper"
-    :class="maskClass"
+    :class="{ 'mu-modal-mask': maskVisible }"
     :position="position"
     :popup="drawerPopup"
     @click.stop="onMaskClick">
@@ -16,22 +16,25 @@
 </template>
 
 <script>
-  import BaseModal from '../layer/base-modal.vue'
+  import BaseModal from '../modal/base-modal.vue'
 
-  import { isParentElement } from '../../utils/dom'
+  import { isParentElement, hasMaskParent } from '../../utils/dom'
   import { assignIfDefined } from '../../utils/assign-if-defined'
 
   export default {
     name: 'MusselDrawer',
     extends: BaseModal,
     props: {
-      mask: String,
       width: String,
       height: String,
       margin: String,
       drawerClass: null,
       drawerStyle: Object,
       slotWrapper: String,
+      mask: {
+        type: [String, Boolean],
+        default: true
+      },
       position: {
         type: String,
         default: 'right',
@@ -46,8 +49,8 @@
       }
     },
     computed: {
-      maskClass () {
-        return this.mask === 'none' ? undefined : 'mu-modal-mask'
+      maskVisible () {
+        return ['none', 'false'].indexOf(String(this.mask)) === -1
       },
       drawerStyles () {
         return assignIfDefined(
@@ -94,6 +97,7 @@
       },
       hideIf (triggerEl) {
         if (
+          !hasMaskParent(triggerEl) &&
           !isParentElement(triggerEl, this.$el) &&
           triggerEl.className.indexOf('mu-modal-mask') === -1
         ) this.hide()

@@ -1,17 +1,17 @@
 <template>
-  <mu-v-box
+  <v-box
     class="mu-modal-mask"
     flex-center
     :visible="params.modalVisible"
     @click.native="onMaskClick">
-    <mu-v-box
+    <v-box
       v-if="params.keepAlive || params.modalVisible"
       v-show="!params.keepAlive || params.modalVisible"
       class="mu-dialog"
       :style="style"
       :danger="params.danger"
       :visible="params.dialogVisible">
-      <mu-h-box
+      <h-box
         class="mu-dialog-header"
         align-items="center"
         @mousedown.native="onDragStart">
@@ -20,13 +20,13 @@
         </mu-flex-item>
         <slot name="header" />
         <icon class="mu-dialog_close-btn" icon="x" @click="hide('$close')" />
-      </mu-h-box>
-      <mu-flex-item
+      </h-box>
+      <flex-item
         class="mu-dialog-body"
         :size="params.height ? 'auto' : undefined">
         <slot />
-      </mu-flex-item>
-      <mu-h-box
+      </flex-item>
+      <h-box
         v-if="params.footer"
         class="mu-dialog-footer"
         align-items="center">
@@ -37,22 +37,28 @@
           :key="btn.caption || btn.icon || btn.iconClass"
           v-bind="btn"
           @click="onButtonClick(btn)" />
-      </mu-h-box>
-    </mu-v-box>
-  </mu-v-box>
+      </h-box>
+    </v-box>
+  </v-box>
 </template>
 
 <script>
-  import VBox from '../layout/flex-v-box'
   import Icon from '../icon/icon.vue'
+  import HBox from '../layout/flex-h-box'
+  import VBox from '../layout/flex-v-box'
+  import Button from '../button/button.jsx'
+  import FlexItem from '../layout/flex-item.vue'
 
   import getClientRect from '../../utils/client-rect'
 
   export default {
     name: 'MusselDialogWrapper',
     components: {
-      'icon': Icon,
-      'mu-v-box': VBox
+      Icon,
+      HBox,
+      VBox,
+      FlexItem,
+      'mu-button': Button
     },
     inject: ['dialog', 'params'],
     data () {

@@ -1,7 +1,7 @@
 <script>
   import isString from 'lodash.isstring'
 
-  import BaseModal from './base-modal.vue'
+  import BaseModal from '../modal/base-modal.vue'
   import DialogWrapper from './dialog-wrapper.vue'
 
   export default {

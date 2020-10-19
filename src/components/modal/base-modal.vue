@@ -1,6 +1,6 @@
 <script>
-  import RenderToBodyMixin from './mix-render-to-body'
-  import PopupVisibleMixin from './mix-popup-visible'
+  import RenderToBodyMixin from '../layer/mix-render-to-body'
+  import PopupVisibleMixin from '../layer/mix-popup-visible'
 
   export default {
     name: 'MusselBaseModal',

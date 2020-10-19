@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import BaseDialog from '../layer/base-dialog.vue'
+  import BaseDialog from '../dialog/base-dialog.vue'
 
   export default {
     name: 'MusselMessageBox',

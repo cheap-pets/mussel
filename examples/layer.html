@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Layer Event Playground</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+    .mu-drawer {
+      padding: 32px;
+    }
+  </style>
+</head>
+
+<body class="mu-background-normal">
+  <div id="app">
+    <div>
+      <mu-button @click="openDrawer1">Open Drawer (without-mask)</mu-button>
+      <mu-button @click="openDrawer2">Open Drawer (with-mask)</mu-button>
+    </div>
+    <mu-drawer v-model="draw1Visible" mask="none" position="right" width="400px" height="90%">
+      Drawer without Mask
+      <br>
+      <mu-button @click="openDrawer2">Open Drawer (with-mask)</mu-button>
+    </mu-drawer>
+    <mu-drawer v-model="draw2Visible" position="bottom" width="90%" height="400px">
+      Drawer with Mask
+      <br>
+      <mu-button @click="openDrawer1">Open Drawer (without-mask)</mu-button>
+      <mu-button @click="closeDrawer2">Close this Drawer</mu-button>
+    </mu-drawer>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        draw1Visible: false,
+        draw2Visible: false
+      },
+      methods: {
+        openDrawer1 () {
+          this.draw1Visible = true
+        },
+        openDrawer2 () {
+          this.draw2Visible = true
+        },
+        closeDrawer2 () {
+          this.draw2Visible = false
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
