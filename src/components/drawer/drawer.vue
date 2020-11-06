@@ -18,8 +18,8 @@
 <script>
   import BaseModal from '../modal/base-modal.vue'
 
-  import { isParentElement, hasMaskParent } from '../../utils/dom'
-  import { assignIfDefined } from '../../utils/assign-if-defined'
+  import { isParentElement, hasMaskParent } from '@utils/dom'
+  import { assignIfDefined } from '@utils/assign-if-defined'
 
   export default {
     name: 'MusselDrawer',

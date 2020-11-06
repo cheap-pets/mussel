@@ -27,7 +27,8 @@ export default {
   plugins: [
     alias({
       entries: [
-        { find: '@icons', replacement: 'tabler-icons/icons' }
+        { find: '@icons', replacement: 'tabler-icons/icons' },
+        { find: '@utils', replacement: path.resolve(__dirname, 'src/utils') }
       ]
     }),
     vue({

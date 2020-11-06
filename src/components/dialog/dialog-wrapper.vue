@@ -49,7 +49,7 @@
   import Button from '../button/button.jsx'
   import FlexItem from '../layout/flex-item.vue'
 
-  import getClientRect from '../../utils/client-rect'
+  import getClientRect from '@utils/client-rect'
 
   export default {
     name: 'MusselDialogWrapper',

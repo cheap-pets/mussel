@@ -33,7 +33,7 @@
   import BasePopupEditor from './base-popup-editor'
   import Calendar from '../calendar/calendar.vue'
 
-  import formatDate from '../../utils/format-date'
+  import formatDate from '@utils/format-date'
 
   export default {
     name: 'MusselDateRangeEditor',

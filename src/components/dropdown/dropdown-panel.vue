@@ -15,9 +15,10 @@
   import RenderToBodyMixin from '../layer/mix-render-to-body'
   import PopupVisibleMixin from '../layer/mix-popup-visible'
 
+  import getClientRect from '@utils/client-rect'
+
   import { hideIf } from '../layer/global-event-handler'
-  import { isParentElement } from '../../utils/dom'
-  import getClientRect from '../../utils/client-rect'
+  import { isParentElement } from '@utils/dom'
 
   function popOnTop (parentRect, height) {
     return parentRect.bottom + 4 + height > window.innerHeight &&

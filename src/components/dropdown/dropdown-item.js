@@ -1,6 +1,6 @@
 import ListItem from '../list/list-item.vue'
 
-import { unsetOrFalse } from '../../utils/prop'
+import { unsetOrFalse } from '@utils/prop'
 
 export default {
   name: 'MusselDropdownItem',

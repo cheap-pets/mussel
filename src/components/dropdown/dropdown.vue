@@ -22,7 +22,7 @@
   import PopupGroupMixin from '../layer/mix-popup-group'
   import DropdownPanel from './dropdown-panel.vue'
 
-  import { isParentElement } from '../../utils/dom'
+  import { isParentElement } from '@utils/dom'
 
   export default {
     name: 'MusselDropdown',
