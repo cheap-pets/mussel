@@ -5,7 +5,8 @@
     cursor: pointer;
   }
 
-  & > .mu-expander-header {
+  & > .mu-expander-header,
+  & > .mu-expander_header {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,15 +23,9 @@
     }
   }
 
-  & > .mu-expand-panel {
+  & > .mu-expander_wrapper {
     position: relative;
-    visibility: hidden;
-    max-height: 0;
     overflow: hidden;
-    transition: all .2s ease-in-out;
-  }
-  &[expanded] > .mu-expand-panel {
-    visibility: visible;
-    max-height: 2000px;
+    transition: height .2s linear;
   }
 }
