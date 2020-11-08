@@ -2,12 +2,17 @@
   <div
     class="mu-dropdown-panel"
     :class="popupClass"
-    :popup-style="popupStyle"
     :style="style"
+    :popup-style="popupStyle"
     :visible="popupVisible"
     @scroll.stop
     @mousewheel.stop>
-    <slot />
+    <div
+      ref="wrapper"
+      class="mu-dropdown-panel_wrapper"
+      :style="{ height, maxHeight }">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -20,16 +25,16 @@
   import { hideIf } from '../layer/global-event-handler'
   import { isParentElement } from '@utils/dom'
 
-  function popOnTop (parentRect, height) {
-    return parentRect.bottom + 4 + height > window.innerHeight &&
-      parentRect.top - height - 4 >= 0
+  function popOnTop (pRect, height) {
+    return (pRect.bottom + 4 + height > window.innerHeight) &&
+      (pRect.top - height - 4 >= 0)
   }
 
-  function popOnRight (parentRect, width) {
+  function popOnRight (pRect, width) {
     return (
-      width < parentRect.width ||
-      parentRect.left + width > window.innerWidth
-    ) && parentRect.right - width >= 0
+      width < pRect.width ||
+      pRect.left + width > window.innerWidth
+    ) && (pRect.right - width >= 0)
   }
 
   function getAbsolutePosition (isOnTop, isOnRight, pRect, height, width) {
@@ -61,14 +66,10 @@
     data () {
       return {
         style: {
-          visibility: 'hidden',
-          opacity: 0,
           top: undefined,
           left: undefined,
           right: undefined,
           bottom: undefined,
-          height: undefined,
-          maxHeight: undefined,
           width: undefined,
           minWidth: undefined
         }
@@ -76,9 +77,6 @@
     },
     mounted () {
       this.$emit('mounted', this.$el)
-    },
-    beforeDestroy () {
-      this.$emit('beforedestroy')
     },
     methods: {
       deactivate () {
@@ -89,19 +87,15 @@
         if (dd !== this) hideIf('dropdown', dd)
         window.__mussel_dropdown = this
         this.popupVisible = true
-        const w = this.width
+
+        const { width } = this
         Object.assign(
           this.style,
           {
-            width: w && w !== 'auto' && w !== 'inherit' && w !== 'fit-content'
-              ? w
-              : undefined,
-            height: this.height,
-            maxHeight: this.maxHeight
-          },
-          (!this.height && this.maxHeight)
-            ? { maxHeight: this.maxHeight }
-            : undefined
+            width: ['auto', 'inherit', 'fit-content'].indexOf(width) === -1
+              ? width
+              : undefined
+          }
         )
         this.$nextTick(this.setPosition)
         this.$emit('show')
@@ -109,9 +103,8 @@
       },
       hide () {
         this.deactivate()
-        this.style.opacity = 0
-        this.style.visibility = 'hidden'
         this.popupVisible = false
+
         this.$emit('hide')
         this.$emit('change', false)
       },
@@ -124,11 +117,11 @@
         }
       },
       setPosition () {
-        if (this.positionTimer) clearTimeout(this.positionTimer)
+        if (this.setPositionTimer) clearTimeout(this.setPositionTimer)
         this.setPositionTimer = setTimeout(() => {
           if (!this.popupVisible) return
 
-          const { offsetWidth, offsetHeight } = this.$el
+          const { offsetWidth, offsetHeight } = this.$refs.wrapper
           const pRect = getClientRect(this.$parent.$el)
 
           const width = !this.width || this.width === 'inherit'
@@ -156,13 +149,9 @@
                 isOnTop,
                 isOnRight,
                 pRect
-              ),
-            {
-              visibility: 'visible',
-              opacity: 1
-            }
+              )
           )
-        }, 50)
+        }, 0)
       }
     }
   }

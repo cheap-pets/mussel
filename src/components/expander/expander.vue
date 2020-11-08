@@ -11,9 +11,9 @@
     </slot>
     <div
       v-show="!disabled"
-      class="mu-expander_wrapper"
+      class="mu-expander_body"
       :style="{ height: wrapperHeight }">
-      <div class="mu-expander_panel" @click.stop>
+      <div ref="wrapper" @click.stop>
         <slot />
       </div>
     </div>
@@ -70,10 +70,10 @@
       toggleExpand () {
         this.actualExpanded = !this.actualExpanded
 
-        const panelEl = this.$el.querySelector('.mu-expander_panel')
+        const wrapperEl = this.$refs.wrapper
 
-        this.wrapperHeight = (this.actualExpanded && panelEl)
-          ? `${panelEl.offsetHeight}px`
+        this.wrapperHeight = (this.actualExpanded && wrapperEl)
+          ? `${wrapperEl.offsetHeight}px`
           : 0
 
         this.$emit('change', this.actualExpanded)

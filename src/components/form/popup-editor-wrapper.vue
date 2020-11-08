@@ -8,7 +8,7 @@
       v-bind="popupParams"
       @change="setPopupVisible"
       @mounted="onDropdownMounted"
-      @beforedestroy="beforeDropdownDestroy">
+      @hook:beforedestroy="beforeDropdownDestroy">
       <slot />
     </mu-dropdown-panel>
     <slot name="expert" />

@@ -1,5 +1,6 @@
 {
   "path-autocomplete.pathMappings": {
+    "@icon": "${folder}/node_modules/tabler-icons/icons",
     "@utils": "${folder}/src/utils"
   }
 }

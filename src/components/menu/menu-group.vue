@@ -2,9 +2,7 @@
   <div class="mu-menu-group" :expanded="expanded">
     <div
       class="mu-menu-group_header mu-button-like"
-      @click="onClick"
-      @mouseover="onMouseOver"
-      @mouseleave="onMouseLeave">
+      @click="onClick">
       <slot name="header">
         <mu-icon :icon="icon" :icon-class="iconClass" />
         {{ title }}
@@ -14,8 +12,10 @@
         icon="dropdown"
         :expanded="expanded" />
     </div>
-    <div ref="body" class="mu-menu-group_body">
-      <slot />
+    <div class="mu-menu-group_body" :style="{ height: wrapperHeight }">
+      <div ref="wrapper">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -46,7 +46,8 @@
     },
     data () {
       return {
-        expanded: false
+        expanded: false,
+        wrapperHeight: 0
       }
     },
     computed: {
@@ -72,25 +73,14 @@
         if (!this.isExpander) return
         this.toggleExpand()
       },
-      onMouseOver () {
-        // if (!this.isDropdown) return
-      },
-      onMouseLeave () {
-        // if (!this.isDropdown) return
-      },
       expand () {
         this.expanded = true
-        const el = this.$refs.body
-        if (el) {
-          const h = el.scrollHeight || 2000
-          el.style.maxHeight = h + 'px'
-        }
         this.menu?.setExpandedGroup(this)
+        this.wrapperHeight = `${this.$refs.wrapper.offsetHeight}px`
       },
       collapse () {
         this.expanded = false
-        const el = this.$refs.body
-        if (el) el.style.maxHeight = 0
+        this.wrapperHeight = 0
       },
       toggleExpand () {
         return this.expanded ? this.collapse() : this.expand()
