@@ -12,12 +12,7 @@
   position: absolute;
   z-index: 110;
   overflow: hidden;
-  background: $normalBackground;
   border-radius: $dropdownBorderRadius;
-
-  &[visible] > .mu-dropdown-panel_wrapper {
-    transform: translateY(0);
-  }
 }
 
 body > .mu-dropdown-panel {
@@ -27,12 +22,27 @@ body > .mu-dropdown-panel {
 .mu-dropdown-panel_wrapper {
   overflow: auto;
   border: 1px solid $normalBorderColor;
+  background: $normalBackground;
   box-shadow: $dropdownShadow;
-  transition: transform .2s linear;
-  transform: translateY(-100%);
 
   &:empty {
     display: none;
+  }
+
+  &[direction=up] {
+    transform: translateY(100%);
+  }
+
+  &[direction=down] {
+    transform: translateY(-100%);
+  }
+
+  &[slide] {
+    transition: transform .15s linear;
+  }
+
+  &[slide=in] {
+    transform: translateY(0);
   }
 
   & > .mu-list-item {

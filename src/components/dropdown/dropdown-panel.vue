@@ -11,7 +11,15 @@
     <div
       ref="wrapper"
       class="mu-dropdown-panel_wrapper"
-      :style="{ height, maxHeight, visibility }">
+      :style="{
+        visibility: wrapperVisibility,
+        minWidth: wrapperMinWidth,
+        width: wrapperWidth,
+        maxHeight,
+        height
+      }"
+      :slide="slide"
+      :direction="direction">
       <slot />
     </div>
   </div>
@@ -61,6 +69,7 @@
     props: {
       width: String,
       height: String,
+      minWidth: String,
       maxHeight: String,
       popupClass: String,
       popupStyle: String
@@ -71,49 +80,19 @@
           top: undefined,
           left: undefined,
           right: undefined,
-          bottom: undefined,
-          width: undefined,
-          minWidth: undefined
+          bottom: undefined
         },
-        visibility: 'hidden'
+        slide: false,
+        direction: undefined,
+        wrapperWidth: undefined,
+        wrapperMinWidth: undefined,
+        wrapperVisibility: false
       }
     },
     mounted () {
       this.$emit('mounted', this.$el)
     },
     methods: {
-      deactivate () {
-        if (window.__mussel_dropdown === this) window.__mussel_dropdown = null
-      },
-      async beforeVisibleChange (visible) {
-        if (visible) {
-          this.visibility = 'hidden'
-          const dd = window.__mussel_dropdown
-          if (dd !== this) hideIf('dropdown', dd)
-          window.__mussel_dropdown = this
-
-          const { width } = this
-          Object.assign(
-            this.style,
-            {
-              width: ['auto', 'inherit', 'fit-content'].indexOf(width) === -1
-                ? width
-                : undefined
-            }
-          )
-        } else {
-          this.deactivate()
-          await delay()
-        }
-      },
-      async afterVisibleChange (visible) {
-        await this.$nextTick()
-        if (visible) {
-          this.setPosition()
-          await delay(10)
-          this.visibility = 'visible'
-        }
-      },
       hideIf (triggerEl) {
         if (
           !isParentElement(triggerEl, this.$parent.$el) &&
@@ -122,42 +101,67 @@
           this.hide()
         }
       },
-      setPosition () {
-        if (this.setPositionTimer) clearTimeout(this.setPositionTimer)
-        this.setPositionTimer = setTimeout(() => {
-          if (!this.popupVisible) return
+      deactivate () {
+        if (window.__mussel_dropdown === this) {
+          window.__mussel_dropdown = null
+        }
+      },
+      async beforeVisibleChange (visible) {
+        if (visible) {
+          this.wrapperVisibility = 'hidden'
+          this.slide = false
+          const dd = window.__mussel_dropdown
+          if (dd !== this) hideIf('dropdown', dd)
+          window.__mussel_dropdown = this
+        } else {
+          this.deactivate()
+          this.slide = 'out'
+          await delay(100)
+          this.wrapperVisibility = 'hidden'
+        }
+      },
+      async afterVisibleChange (visible) {
+        await this.$nextTick()
+        if (visible) {
+          await this.setPosition()
+        }
+      },
+      async setPosition () {
+        if (!this.popupVisible) return
+        const el = this.$refs.wrapper
+        const pRect = getClientRect(this.$parent.$el)
 
-          const { offsetWidth, offsetHeight } = this.$refs.wrapper
-          const pRect = getClientRect(this.$parent.$el)
+        this.wrapperWidth = (!this.width || this.width === 'inherit')
+          ? (pRect.width + 'px')
+          : (this.width === 'auto' ? undefined : this.width)
 
-          const width = !this.width || this.width === 'inherit'
-            ? pRect.width
-            : (
-              this.width === 'auto' && offsetWidth < pRect.width
-                ? pRect.width
-                : null
+        this.wrapperMinWidth = this.minWidth || (pRect.width + 'px')
+        await delay()
+
+        const isOnTop = popOnTop(pRect, el.offsetHeight)
+        const isOnRight = popOnRight(pRect, el.offsetWidth)
+        this.direction = isOnTop ? 'up' : 'down'
+
+        Object.assign(
+          this.style,
+          this.renderToBody
+            ? getAbsolutePosition(
+              isOnTop,
+              isOnRight,
+              pRect,
+              el.offsetHeight,
+              el.offsetWidth
             )
-          const isOnTop = popOnTop(pRect, offsetHeight)
-          const isOnRight = popOnRight(pRect, width || offsetWidth)
+            : getRelativePosition(
+              isOnTop,
+              isOnRight,
+              pRect
+            )
+        )
+        await delay()
 
-          Object.assign(
-            this.style,
-            width ? { width: width + 'px' } : {},
-            this.renderToBody
-              ? getAbsolutePosition(
-                isOnTop,
-                isOnRight,
-                pRect,
-                offsetHeight,
-                width || offsetWidth
-              )
-              : getRelativePosition(
-                isOnTop,
-                isOnRight,
-                pRect
-              )
-          )
-        }, 0)
+        this.wrapperVisibility = 'visible'
+        this.slide = 'in'
       }
     }
   }
