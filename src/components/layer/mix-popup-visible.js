@@ -10,29 +10,42 @@ export default {
   },
   data () {
     return {
+      rendered: false,
       popupVisible: false
     }
   },
   watch: {
     visible: {
       handler (value) {
-        if (!!value === !this.popupVisible) {
-          return value ? this.show() : this.hide(true)
-        }
+        if (!value === !this.popupVisible) return
+
+        if (value) this.show()
+        else this.hide()
       },
       immediate: true
     }
   },
   methods: {
+    async setPopupVisible (value) {
+      if (
+        !value === !this.popupVisible ||
+        await this.beforeVisibleChange?.(value) === false
+      ) return
+
+      this.popupVisible = value
+      await this.afterVisibleChange?.(value)
+
+      if (value) this.$emit('show')
+      else this.$emit('hide')
+
+      this.$emit('change', value)
+    },
     show () {
-      this.popupVisible = true
-      this.$emit('show')
-      this.$emit('change', true)
+      this.rendered = true
+      this.setPopupVisible(true)
     },
     hide () {
-      this.popupVisible = false
-      this.$emit('hide')
-      this.$emit('change', false)
+      this.setPopupVisible(false)
     }
   }
 }

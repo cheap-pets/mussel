@@ -12,16 +12,11 @@
   position: absolute;
   z-index: 110;
   overflow: hidden;
-  visibility: hidden;
   background: $normalBackground;
   border-radius: $dropdownBorderRadius;
 
-  &[visible] {
-    visibility: visible;
-
-    & > .mu-dropdown-panel_wrapper {
-      transform: translateY(0);
-    }
+  &[visible] > .mu-dropdown-panel_wrapper {
+    transform: translateY(0);
   }
 }
 

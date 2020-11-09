@@ -1,16 +1,17 @@
 <template>
   <div
+    v-if="rendered"
+    v-show="popupVisible"
     class="mu-dropdown-panel"
     :class="popupClass"
     :style="style"
     :popup-style="popupStyle"
-    :visible="popupVisible"
     @scroll.stop
     @mousewheel.stop>
     <div
       ref="wrapper"
       class="mu-dropdown-panel_wrapper"
-      :style="{ height, maxHeight }">
+      :style="{ height, maxHeight, visibility }">
       <slot />
     </div>
   </div>
@@ -21,6 +22,7 @@
   import PopupVisibleMixin from '../layer/mix-popup-visible'
 
   import getClientRect from '@utils/client-rect'
+  import delay from '@utils/delay'
 
   import { hideIf } from '../layer/global-event-handler'
   import { isParentElement } from '@utils/dom'
@@ -72,7 +74,8 @@
           bottom: undefined,
           width: undefined,
           minWidth: undefined
-        }
+        },
+        visibility: 'hidden'
       }
     },
     mounted () {
@@ -82,31 +85,34 @@
       deactivate () {
         if (window.__mussel_dropdown === this) window.__mussel_dropdown = null
       },
-      show () {
-        const dd = window.__mussel_dropdown
-        if (dd !== this) hideIf('dropdown', dd)
-        window.__mussel_dropdown = this
-        this.popupVisible = true
+      async beforeVisibleChange (visible) {
+        if (visible) {
+          this.visibility = 'hidden'
+          const dd = window.__mussel_dropdown
+          if (dd !== this) hideIf('dropdown', dd)
+          window.__mussel_dropdown = this
 
-        const { width } = this
-        Object.assign(
-          this.style,
-          {
-            width: ['auto', 'inherit', 'fit-content'].indexOf(width) === -1
-              ? width
-              : undefined
-          }
-        )
-        this.$nextTick(this.setPosition)
-        this.$emit('show')
-        this.$emit('change', true)
+          const { width } = this
+          Object.assign(
+            this.style,
+            {
+              width: ['auto', 'inherit', 'fit-content'].indexOf(width) === -1
+                ? width
+                : undefined
+            }
+          )
+        } else {
+          this.deactivate()
+          await delay()
+        }
       },
-      hide () {
-        this.deactivate()
-        this.popupVisible = false
-
-        this.$emit('hide')
-        this.$emit('change', false)
+      async afterVisibleChange (visible) {
+        await this.$nextTick()
+        if (visible) {
+          this.setPosition()
+          await delay(10)
+          this.visibility = 'visible'
+        }
       },
       hideIf (triggerEl) {
         if (
