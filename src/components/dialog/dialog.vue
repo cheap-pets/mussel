@@ -1,5 +1,5 @@
 <template>
-  <mu-dialog-wrapper>
+  <mu-dialog-wrapper v-if="rendered">
     <slot />
     <template #header>
       <slot name="header" />

@@ -26,6 +26,7 @@
         }
       },
       show () {
+        this.rendered = true
         window.__mussel_modal = this
         this.popupVisible = true
         this.$emit('show')

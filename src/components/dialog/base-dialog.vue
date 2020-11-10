@@ -1,6 +1,8 @@
 <script>
   import isString from 'lodash.isstring'
 
+  import delay from '@utils/delay'
+
   import BaseModal from '../modal/base-modal.vue'
   import DialogWrapper from './dialog-wrapper.vue'
 
@@ -46,11 +48,11 @@
         params: {
           modalVisible: false,
           dialogVisible: false,
+          btns: this.btns,
+          title: this.title || o.title,
           width: this.width || o.width,
           height: this.height || o.height,
           danger: this.danger || o.danger,
-          title: this.title || o.title,
-          btns: this.btns,
           keepAlive: this.keepAlive || o.keepAlive,
           footer: this.footer !== false && o.footer !== false,
           primaryButton: this.primaryButton || o.primaryButton,
@@ -62,11 +64,13 @@
       btns () {
         const buttons = this.buttons || this.$options.buttons
         const { primaryButton } = this.params
+
         return Array.isArray(buttons)
           ? buttons.map(button => {
             const btn = isString(button)
               ? { caption: button, _rawData: button }
               : { ...button }
+
             if (primaryButton && !btn.buttonType &&
               ([btn.id, btn.caption].indexOf(primaryButton) !== -1)) {
               btn.buttonType = this.params.danger ? 'danger' : 'primary'
@@ -117,56 +121,66 @@
         this.params.primaryButton = value
         this.params.buttons = this.btns
       },
-      clearHideTimer () {
-        if (this.hideTimer) {
-          clearTimeout(this.hideTimer)
-          this.hideTimer = null
-        }
+      cancelHide () {
+        this.hideDelayer?.stop()
+        delete this.hideDelayer
       },
       show () {
-        window.__mussel_modal = this
-        this.clearHideTimer()
+        this.cancelHide()
+
+        this.rendered = true
         this.popupVisible = true
+        this.params.modalVisible = true
+        window.__mussel_modal = this
+
         if (!this.$el) {
           this.$mount()
           document.body.appendChild(this.$el)
         }
-        this.params.modalVisible = true
-        setTimeout(() => {
+
+        delay().then(() => {
           this.params.dialogVisible = true
-        }, 10)
+        })
+
         this.$emit('show')
         this.$emit('change', true)
       },
-      actualHide (button) {
-        this.clearHideTimer()
+      tryHide (trigger) {
+        if (this.modelControl === 'external') {
+          this.$emit('change', false, trigger)
+        } else if (this.$options.beforeClose?.() !== false) {
+          this.hide(trigger)
+        }
+      },
+      hide (trigger) {
+        if (this.hideDelayer) return
+
         this.popupVisible = false
         this.params.dialogVisible = false
         this.deactivate()
-        this.$hideTimer = setTimeout(() => {
-          this.params.modalVisible = false
-        }, 200)
-        this.$emit('hide', button)
+
+        this.hideDelayer = delay(200)
+        this
+          .hideDelayer
+          .then(() => {
+            this.params.modalVisible = false
+            delete this.hideDelayer
+          })
+          .catch(Function.prototype)
+
         if (this.visible !== false) {
-          this.$emit('change', false, button)
-        }
-      },
-      hide (force, button) {
-        if (!force && this.$options.beforeClose) {
-          this.$options.beforeClose(this.actualHide, button)
-        } else if (!force && this.modelControl === 'external') {
-          this.$emit('change', false, button)
-        } else {
-          this.actualHide(button)
+          this.$emit('hide', trigger)
+          this.$emit('change', false, trigger)
         }
       },
       onButtonClick (btn) {
         const { action, _rawData } = Object(btn)
         const button = _rawData || btn
-        if (['hide', 'close'].indexOf(action) !== -1) {
-          this.hide(false, button)
-        }
         this.$emit('buttonclick', button, this)
+
+        if (['hide', 'close'].indexOf(action) !== -1) {
+          this.tryHide(button)
+        }
       }
     }
   }

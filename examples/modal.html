@@ -117,11 +117,12 @@
           dialog2.show()
         },
         onButtonClick: function (btn, win) {
+          console.log(btn)
           win.hide()
         },
         onDialog1VisibleChange: function (v, btn) {
           this.dialog1Visible = v
-          console.log(btn)
+          // console.log(btn)
         }
       }
     });

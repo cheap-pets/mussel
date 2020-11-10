@@ -52,10 +52,10 @@ function calcSaturation (hsv, i, isLight) {
         isLight
           ? hsv.s - saturationStep * i
           : (
-            i === darkColorCount
-              ? hsv.s + saturationStep
-              : hsv.s + saturationStep2 * i
-          ),
+              i === darkColorCount
+                ? hsv.s + saturationStep
+                : hsv.s + saturationStep2 * i
+            ),
         6
       ),
       i === isLight && lightColorCount ? 10 : 100
@@ -104,10 +104,10 @@ function convert2rgb (color) {
   const rgb = hex2rgb(color) || rgbExp.exec(color)
   return Array.isArray(rgb)
     ? {
-      r: rgb[1],
-      g: rgb[2],
-      b: rgb[3]
-    }
+        r: rgb[1],
+        g: rgb[2],
+        b: rgb[3]
+      }
     : rgb
 }
 

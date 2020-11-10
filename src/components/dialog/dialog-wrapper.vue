@@ -19,7 +19,10 @@
           {{ params.title }}
         </mu-flex-item>
         <slot name="header" />
-        <icon class="mu-dialog_close-btn" icon="x" @click="hide('$close')" />
+        <icon
+          class="mu-dialog_close-btn"
+          icon="x"
+          @click="onCloseButtonClick" />
       </h-box>
       <flex-item
         class="mu-dialog-body"
@@ -49,6 +52,7 @@
   import Button from '../button/button.jsx'
   import FlexItem from '../layout/flex-item.vue'
 
+  import delay from '@utils/delay'
   import getClientRect from '@utils/client-rect'
 
   export default {
@@ -70,13 +74,13 @@
     },
     computed: {
       style () {
-        const { dialogVisible: visible, width, height } = this.params
+        const { dialogVisible, width, height } = this.params
         let {
           translateX: tx,
           translateY: ty,
           transitionDuration
         } = this
-        ty = visible ? ty : ty + 200
+        ty = dialogVisible ? ty : ty + 200
         return {
           width,
           height,
@@ -89,8 +93,8 @@
       onMaskClick (event) {
         if (!this.dragState) this.dialog.onMaskClick(event)
       },
-      hide (btn) {
-        this.dialog.hide(false, btn)
+      onCloseButtonClick () {
+        this.dialog.tryHide()
       },
       onButtonClick (btn) {
         this.dialog.onButtonClick(btn)
@@ -137,12 +141,14 @@
       },
       onDragEnd (event) {
         if (!this.dragState) return
+
         window.removeEventListener('mousemove', this.onDragMove)
         window.removeEventListener('mouseup', this.onDragEnd)
         this.transitionDuration = '.2s'
-        setTimeout(() => {
+
+        delay().then(() => {
           delete this.dragState
-        }, 50)
+        })
       }
     }
   }

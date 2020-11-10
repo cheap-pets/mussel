@@ -6,7 +6,6 @@ export default {
         width: this.popupWidth,
         height: this.popupHeight,
         maxHeight: this.popupMaxHeight,
-        popupClass: this.popupClass,
         popupStyle: this.popupStyle,
         iconIndent: this.popupIconIndent,
         renderToBody: this.popupRenderToBody
@@ -19,7 +18,6 @@ export default {
     }
   },
   props: {
-    popupClass: String,
     popupStyle: String,
     popupWidth: {
       type: String,
