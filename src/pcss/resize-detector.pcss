@@ -1,0 +1,21 @@
+.mu-resize-detector,
+.mu-resize-detector_grow
+.mu-resize-detector_grow > div,
+.mu-resize-detector_shrink,
+.mu-resize-detector_shrink:before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  display: block;
+  height: 100%;
+  width: 100%;
+  visibility: hidden;
+  overflow: auto;
+}
+
+.mu-resize-detector_shrink:before {
+  content: '';
+  width: 200%;
+  height: 200%;
+}

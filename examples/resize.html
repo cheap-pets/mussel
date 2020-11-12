@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Example</title>
+    <script
+      type="text/javascript"
+      src="../node_modules/vue/dist/vue.js"
+    ></script>
+    <script type="text/javascript" src="../dist/mussel.js"></script>
+    <style>
+      .resize-triggers {
+        visibility: hidden;
+        opacity: 0;
+      }
+
+      .resize-triggers,
+      .resize-triggers > div,
+      .contract-trigger:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .resize-triggers > div {
+        overflow: auto;
+      }
+
+      .contract-triggers:before {
+        width: 200%;
+        height: 200%;
+      }
+    </style>
+  </head>
+
+  <body style="position: absolute; top: 0; left:0; right: 0; bottom: 0;">
+    <div class="resize-triggers">
+      <div class="expand-trigger">
+        <div></div>
+      </div>
+      <div class="contract-trigger"></div>
+    </div>
+
+    <script type="text/javascript">
+      const resetTrigger = function (element) {
+        const trigger = element.__resizeTrigger__ // 要重置的触发器
+        const expand = trigger.firstElementChild // 第一个子元素，用来监听变大
+        const contract = trigger.lastElementChild // 最后一个子元素，用来监听变小
+        const expandChild = expand.firstElementChild // 第一个子元素的第一个子元素，用来监听变大
+
+        contract.scrollLeft = contract.scrollWidth // 滚动到最右
+        contract.scrollTop = contract.scrollHeight // 滚动到最下
+        expandChild.style.width = expand.offsetWidth + 1 + 'px' // 保持宽度多1px
+        expandChild.style.height = expand.offsetHeight + 1 + 'px' // 保持高度多1px
+        expand.scrollLeft = expand.scrollWidth // 滚动到最右
+        expand.scrollTop = expand.scrollHeight // 滚动到最下
+      }
+      const checkTriggers = function (element) {
+        // 宽度或高度不一致就返回true
+        return (
+          element.offsetWidth !== element.__resizeLast__.width ||
+          element.offsetHeight !== element.__resizeLast__.height
+        )
+      }
+
+      const addResizeListener = function (element, fn) {
+        if (isServer) return // 服务器端直接返回
+        if (attachEvent) {
+          // 处理低版本ie
+          element.attachEvent('onresize', fn)
+        } else {
+          if (!element.__resizeTrigger__) {
+            // 如果没有触发器
+            if (getComputedStyle(element).position === 'static') {
+              element.style.position = 'relative' // 将static改为relative
+            }
+            createStyles()
+            element.__resizeLast__ = {} // 初始化触发器最后的状态
+            element.__resizeListeners__ = [] // 初始化触发器的监听器
+
+            const resizeTrigger = (element.__resizeTrigger__ = document.createElement(
+              'div'
+            )) // 创建触发器
+            resizeTrigger.className = 'resize-triggers'
+            resizeTrigger.innerHTML =
+              '<div class="expand-trigger"><div></div></div><div class="contract-trigger"></div>'
+            element.appendChild(resizeTrigger) // 添加触发器
+
+            resetTrigger(element) // 重置触发器
+            element.addEventListener('scroll', scrollListener, true) // 监听滚动事件
+
+            /* Listen for a css animation to detect element display/re-attach */
+            // 监听CSS动画来检测元素显示或者重新添加
+
+            resizeTrigger.addEventListener('animationstart', function (event) {
+              // 增加动画开始的事件监听
+              if (event.animationName === RESIZE_ANIMATION_NAME) {
+                // 如果是大小改变事件
+                resetTrigger(element) // 重置触发器
+              }
+            })
+          }
+          element.__resizeListeners__.push(fn) // 加入该回调
+        }
+      }
+
+      const removeResizeListener = function (element, fn) {
+        if (attachEvent) {
+          // 处理ie
+          element.detachEvent('onresize', fn)
+        } else {
+          element.__resizeListeners__.splice(
+            element.__resizeListeners__.indexOf(fn),
+            1
+          ) // 移除对应的回调函数
+          if (!element.__resizeListeners__.length) {
+            // 如果全部时间被移除
+            element.removeEventListener('scroll', scrollListener) // 移除滚动监听
+            element.__resizeTrigger__ = !element.removeChild(
+              element.__resizeTrigger__
+            ) // 移除对应的触发器，但保存下来
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
