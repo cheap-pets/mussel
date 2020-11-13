@@ -138,22 +138,20 @@
           document.body.appendChild(this.$el)
         }
 
+        this.$emit('show')
+        this.$emit('change', true)
+
         delay().then(() => {
           this.params.dialogVisible = true
         })
-
-        this.$emit('show')
-        this.$emit('change', true)
-      },
-      tryHide (trigger) {
-        if (this.modelControl === 'external') {
-          this.$emit('change', false, trigger)
-        } else if (this.$options.beforeClose?.() !== false) {
-          this.hide(trigger)
-        }
       },
       hide (trigger) {
         if (this.hideDelayer) return
+
+        if (this.popupVisible !== false) {
+          this.$emit('hide', trigger)
+          this.$emit('change', false, trigger)
+        }
 
         this.popupVisible = false
         this.params.dialogVisible = false
@@ -167,10 +165,12 @@
             delete this.hideDelayer
           })
           .catch(Function.prototype)
-
-        if (this.visible !== false) {
-          this.$emit('hide', trigger)
+      },
+      tryHide (trigger) {
+        if (this.modelControl === 'external') {
           this.$emit('change', false, trigger)
+        } else if (this.$options.beforeClose?.() !== false) {
+          this.hide(trigger)
         }
       },
       onButtonClick (btn) {

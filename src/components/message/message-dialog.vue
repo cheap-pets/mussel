@@ -5,21 +5,23 @@
 </template>
 
 <script>
+  import delay from '@utils/delay'
   import BaseDialog from '../dialog/base-dialog.vue'
 
   export default {
     name: 'MusselMessageBox',
     extends: BaseDialog,
     methods: {
-      hide (force, button) {
-        this.actualHide(button)
-        setTimeout(() => {
+      tryHide (trigger) {
+        this.hide(trigger)
+
+        delay(500).then(() => {
           this.$el.parentNode.removeChild(this.$el)
           this.$destroy()
-        }, 500)
+        })
       },
       onButtonClick (button) {
-        this.hide(null, button.id || button)
+        this.tryHide(button.id || button)
       }
     }
   }
