@@ -18,10 +18,15 @@ function hack (prototype) {
 hack(Element.prototype)
 hack(Document.prototype)
 
-export function register (type, interceptor) {
+function register (type, interceptor) {
   registeredInterceptors[type] = interceptor
 }
 
-export function unregister (type) {
+function unregister (type) {
   delete registeredInterceptors[type]
+}
+
+export default {
+  register,
+  unregister
 }

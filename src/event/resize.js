@@ -1,54 +1,35 @@
+import ResizeObserver from 'resize-observer-polyfill'
+
 import emit from './emit'
-import { register } from './interceptor'
-import delay from '@utils/delay'
+import interceptor from './interceptor'
 
-function setInitialPosition (el) {
-  const growEl = el.querySelector('.mu-resize-detector_grow')
-  const growChild = growEl.querySelector('div')
+const GLOBAL_OBSERVER_NAME = '__mussel_resize_observer'
+const LISTENER_COUNT_PROP_NAME = '__mussel_resize_listener_count'
 
-  growChild.style.width = growEl.offsetWidth + 1 + 'px'
-  growChild.style.height = growEl.offsetHeight + 1 + 'px'
-  growEl.scrollLeft = growEl.scrollWidth
-  growEl.scrollTop = growEl.scrollHeight
-
-  const shrinkEl = el.querySelector('.mu-resize-detector_shrink')
-  shrinkEl.scrollLeft = shrinkEl.scrollWidth
-  shrinkEl.scrollTop = shrinkEl.scrollHeight
-}
-
-function renderDetector (parent) {
-  if (window.getComputedStyle?.(parent).position === 'static') {
-    parent.style.position = 'relative'
-  }
-
-  const el = document.createElement('div')
-  el.className = 'mu-resize-detector'
-  el.innerHTML =
-    '<div class="mu-resize-detector_grow"><div></div></div>' +
-    '<div class="mu-resize-detector_shrink"></div>'
-  parent.appendChild(el)
-
-  delay(10).then(() => {
-    setInitialPosition(el)
-
-    el.addEventListener('scroll', function () {
-      emit(parent, 'sizechange')
-      setInitialPosition()
+function getResizeObserver () {
+  if (!window[GLOBAL_OBSERVER_NAME]) {
+    window[GLOBAL_OBSERVER_NAME] = new ResizeObserver(entries => {
+      entries.forEach(entry => emit(entry.target, 'sizechange'))
     })
-  })
-}
-
-function interceptorAdd (type, handler) {
-  if (!this.querySelector('.mu-resize-detector')) {
-    renderDetector(this)
   }
+  return window[GLOBAL_OBSERVER_NAME]
 }
 
-function interceptorRemove (type, handler) {
+function interceptorAdd () {
+  const count = this[LISTENER_COUNT_PROP_NAME] || 0
+  if (!count) getResizeObserver().observe(this)
 
+  this[LISTENER_COUNT_PROP_NAME] = count + 1
 }
 
-register('sizechange', {
+function interceptorRemove () {
+  const count = this[LISTENER_COUNT_PROP_NAME] || 0
+  this[LISTENER_COUNT_PROP_NAME] = count ? count - 1 : 0
+
+  if (!count) getResizeObserver().unobserve(this)
+}
+
+interceptor.register('sizechange', {
   add: interceptorAdd,
   remove: interceptorRemove
 })

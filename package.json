@@ -54,6 +54,7 @@
     "postcss-nested": "^4.2.3",
     "postcss-simple-vars": "^5.0.2",
     "postcss-unprefix": "^2.1.4",
+    "resize-observer-polyfill": "^1.5.1",
     "rollup": "^2.33.1",
     "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-string": "^3.0.0",
