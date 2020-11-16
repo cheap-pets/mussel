@@ -25,7 +25,6 @@ function interceptorAdd () {
 function interceptorRemove () {
   const count = this[LISTENER_COUNT_PROP_NAME] || 0
   this[LISTENER_COUNT_PROP_NAME] = count ? count - 1 : 0
-
   if (!count) getResizeObserver().unobserve(this)
 }
 

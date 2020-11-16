@@ -21,7 +21,10 @@
       onMaskClick (event) {
         if (event.target === this.$el) {
           const action = this.$options.maskAction || this.maskAction
-          if (action === 'close') this.hide(false, '$mask')
+          if (action === 'close') {
+            if (this.tryHide) this.tryHide('$mask')
+            else this.hide('$mask')
+          }
           this.$emit('maskclick')
         }
       },

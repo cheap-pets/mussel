@@ -10,18 +10,16 @@ function hideIf (name, force) {
   return name === 'dropdown'
     ? callbackIf('dropdown', dropdown => dropdown.hide())
     : (
-      name === 'modal'
-        ? callbackIf(
-          'modal',
-          modal =>
-            (
-              modal.$options.maskAction ||
-              modal.maskAction
-            ) === 'close' &&
-            modal.hide(force)
-        )
-        : undefined
-    )
+        name === 'modal'
+          ? callbackIf(
+              'modal',
+              modal => {
+                const action = modal.$options.maskAction || modal.maskAction
+                if (action === 'close') modal.hide()
+              }
+            )
+          : undefined
+      )
 }
 
 function setPositionIf () {
