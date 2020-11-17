@@ -38,6 +38,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^7.1.0",
+    "gemini-scrollbar": "^1.5.3",
     "lodash.isdate": "^4.0.1",
     "lodash.isfunction": "^3.0.9",
     "lodash.isplainobject": "^4.0.6",

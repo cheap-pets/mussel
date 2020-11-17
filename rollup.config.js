@@ -1,3 +1,5 @@
+import path from 'path'
+
 import vue from 'rollup-plugin-vue'
 import alias from '@rollup/plugin-alias'
 import babel from '@rollup/plugin-babel'
@@ -12,6 +14,7 @@ import postcssAutoprefixer from 'autoprefixer'
 import postcssCalc from 'postcss-calc'
 import postcssClean from 'postcss-clean'
 import postcssConditionals from 'postcss-conditionals'
+import postcssCustomProps from './build/postcss-custom-properties-polyfill'
 import postcssFor from 'postcss-for'
 import postcssEach from 'postcss-each'
 import postcssImport from 'postcss-import'
@@ -44,6 +47,9 @@ export default {
         postcssEach,
         postcssFor,
         postcssVars({ variables }),
+        postcssCustomProps({
+          importFrom: path.resolve(__dirname, 'src/pcss/root-variables.pcss')
+        }),
         postcssCalc,
         postcssNested,
         postcssConditionals,
