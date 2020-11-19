@@ -47,7 +47,7 @@
     data () {
       return {
         expanded: false,
-        wrapperHeight: 0
+        wrapperHeight: this.isExpander ? 0 : undefined
       }
     },
     computed: {
