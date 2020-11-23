@@ -16,12 +16,11 @@
   }
 
   & > .mu-button {
-    z-index : 0;
     float: left;
     box-shadow: none;
 
-    &[active]:not([disabled]),
-    &:hover:not([disabled]) {
+    &:hover,
+    &[active] {
       z-index : 1;
     }
 
