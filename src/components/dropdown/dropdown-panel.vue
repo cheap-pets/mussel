@@ -10,6 +10,7 @@
     @mousewheel.stop>
     <div
       ref="wrapper"
+      class="mu-dropdown-panel_wrapper"
       :direction="direction"
       :style="{
         minWidth: wrapperMinWidth,
@@ -57,6 +58,7 @@
         : { left: `${left}px` }
     }
   }
+
   function getRelativePosition (isOnTop, isOnRight, pRect) {
     return {
       top: isOnTop ? undefined : `${pRect.height + 4}px`,

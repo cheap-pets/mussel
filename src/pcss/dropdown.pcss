@@ -16,7 +16,7 @@
   border-radius: $dropdownBorderRadius;
   box-shadow: $dropdownShadow;
 
-  & > div {
+  & > .mu-dropdown-panel_wrapper {
     overflow: auto;
     border: 1px solid $normalBorderColor;
     background: $normalBackground;
@@ -59,7 +59,7 @@
     }
   }
 
-  &[slide=in] > div {
+  &[slide=in] > .mu-dropdown-panel_wrapper {
     transform: translateY(0);
   }
 
