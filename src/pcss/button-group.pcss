@@ -8,7 +8,7 @@
   &[button-type="primary"] {
     box-shadow: $buttonShadow var(--mu-primary-shadow-color);
   }
-  &[button-type="success"] {
+  &[button-type="submit"] {
     box-shadow: $buttonShadow var(--mu-success-shadow-color);
   }
   &[button-type="danger"] {
@@ -25,16 +25,19 @@
       z-index : 1;
     }
 
-    & + .mu-button {
+    &:not(:first-child) {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
-      &[button-type]:not([button-type="normal"]):not(:hover):not([active]) {
-        &:not([button-style]),
-        &[button-style="normal"] {
+
+      &[button-type="primary"],
+      &[button-type="submit"],
+      &[button-type="danger"] {
+        &:not(:hover):not([active]) {
           border-left-color: $buttonDividerColor;
         }
       }
     }
+
     &:not(:last-child) {
       margin-right: -1px;
       border-top-right-radius: 0;
