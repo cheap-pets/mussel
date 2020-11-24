@@ -88,7 +88,7 @@
           right: undefined,
           bottom: undefined
         },
-        slide: false,
+        slide: undefined,
         direction: undefined,
         wrapperWidth: undefined,
         wrapperMinWidth: undefined

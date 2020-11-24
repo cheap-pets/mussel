@@ -21,6 +21,7 @@
     visibility: hidden;
     border-radius: $dropdownBorderRadius;
     box-shadow: $dropdownShadow;
+    opacity: 0;
 
     &:empty {
       display: none;
@@ -52,14 +53,17 @@
 
   &[slide]  > .mu-dropdown-panel_wrapper {
     visibility: visible;
-    transition: transform .15s linear;
+    transition-property: transform, opacity;
+    transition-timing-function: ease-in;
+    transition-duration: .15s;
   }
 
   &[slide=in] > .mu-dropdown-panel_wrapper {
     transform: translateY(0);
+    opacity: 1;
   }
 
-  &[slide=out] .mu-list-item:hover {
+  &[slide=out] > .mu-list-item:hover {
     background: inherit;
   }
 }
