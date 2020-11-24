@@ -45,26 +45,28 @@
     ) && (pRect.right - width >= 0)
   }
 
-  function getAbsolutePosition (isOnTop, isOnRight, pRect, height, width) {
+  function getAbsolutePosition (isOnTop, isOnRight, pRect) {
     const { top, bottom, left, right } = pRect
     const { innerHeight, innerWidth } = window
 
     return {
       ...isOnTop
-        ? { bottom: `${innerHeight - top + 4}px` }
-        : { top: `${bottom + 4}px` },
+        ? { bottom: `${innerHeight - top + 4 - 10}px` }
+        : { top: `${bottom + 4 - 10}px` },
       ...isOnRight
-        ? { right: `${innerWidth - right}px` }
-        : { left: `${left}px` }
+        ? { right: `${innerWidth - right - 10}px` }
+        : { left: `${left - 10}px` }
     }
   }
 
   function getRelativePosition (isOnTop, isOnRight, pRect) {
     return {
-      top: isOnTop ? undefined : `${pRect.height + 4}px`,
-      bottom: isOnTop ? `${pRect.height + 4}px` : undefined,
-      left: isOnRight ? undefined : '0',
-      right: isOnRight ? '0' : undefined
+      ...isOnTop
+        ? { bottom: `${pRect.height + 4 - 10}px` }
+        : { top: `${pRect.height + 4 - 10}px` },
+      ...isOnRight
+        ? { right: '-10px' }
+        : { left: '-10px' }
     }
   }
 
@@ -81,7 +83,6 @@
     data () {
       return {
         rect: {
-          height: 0,
           top: undefined,
           left: undefined,
           right: undefined,
@@ -117,13 +118,11 @@
 
         this.deactivate()
         this.slide = 'out'
-        this.rect.height = undefined
 
         delay(100)
           .then(() => {
             this.popupVisible = false
             this.slide = undefined
-            this.rect = undefined
 
             this.$emit('hide')
             this.$emit('change', false)
@@ -176,7 +175,6 @@
             return delay()
           })
           .then(() => {
-            this.rect.height = el.offsetHeight + 'px'
             this.slide = 'in'
           })
       }

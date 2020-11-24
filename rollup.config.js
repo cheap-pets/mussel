@@ -47,9 +47,7 @@ export default {
         postcssEach,
         postcssFor,
         postcssVars({ variables }),
-        postcssCustomProps({
-          importFrom: path.resolve(__dirname, 'src/pcss/root-variables.pcss')
-        }),
+        postcssCustomProps(),
         postcssCalc,
         postcssNested,
         postcssConditionals,

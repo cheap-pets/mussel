@@ -11,16 +11,16 @@
 .mu-dropdown-panel {
   position: absolute;
   z-index: 110;
-  height: 0;
+  padding: 10px;
   overflow: hidden;
-  border-radius: $dropdownBorderRadius;
-  box-shadow: $dropdownShadow;
 
   & > .mu-dropdown-panel_wrapper {
     overflow: auto;
     border: 1px solid $normalBorderColor;
     background: $normalBackground;
     visibility: hidden;
+    border-radius: $dropdownBorderRadius;
+    box-shadow: $dropdownShadow;
 
     &:empty {
       display: none;
@@ -50,13 +50,9 @@
     }
   }
 
-  &[slide] {
-    transition: height .15s linear;
-
-    & > div {
-      visibility: visible;
-      transition: transform .15s linear;
-    }
+  &[slide]  > .mu-dropdown-panel_wrapper {
+    visibility: visible;
+    transition: transform .15s linear;
   }
 
   &[slide=in] > .mu-dropdown-panel_wrapper {
