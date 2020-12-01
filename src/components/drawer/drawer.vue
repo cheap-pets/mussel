@@ -18,6 +18,8 @@
 <script>
   import BaseModal from '../modal/base-modal.vue'
 
+  import './drawer.pcss'
+
   import { isParentElement, hasMaskParent } from '@utils/dom'
   import { assignIfDefined } from '@utils/assign-if-defined'
 

@@ -3,6 +3,8 @@
 </template>
 
 <script>
+  import './space.pcss'
+
   import FlexItem from './flex-item.vue'
 
   export default {

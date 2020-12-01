@@ -16,6 +16,8 @@
 </template>
 
 <script>
+  import './list.pcss'
+
   import Icon from '../icon/icon.vue'
 
   import { unsetOrFalse } from '@utils/prop'

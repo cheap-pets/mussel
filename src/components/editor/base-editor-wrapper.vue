@@ -30,6 +30,8 @@
 </template>
 
 <script>
+  import './editor.pcss'
+
   import Input from './input.vue'
   import Icon from '../icon/icon.vue'
 

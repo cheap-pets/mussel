@@ -16,6 +16,8 @@
 </template>
 
 <script>
+  import './search-box.pcss'
+
   import isPlainObject from 'lodash.isplainobject'
   import BasePopupEditor from './base-popup-editor'
   import Option from './option.js'

@@ -15,6 +15,8 @@
 </template>
 
 <script>
+  import './radio.pcss'
+
   export default {
     name: 'MusselRadio',
     inject: {

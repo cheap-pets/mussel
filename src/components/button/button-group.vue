@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import './button-group.pcss'
+
   export default {
     name: 'MusselButtonGroup'
   }

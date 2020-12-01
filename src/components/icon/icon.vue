@@ -8,6 +8,8 @@
 </template>
 
 <script>
+  import './icon.pcss'
+
   import icons from './tabler-icons'
 
   export default {

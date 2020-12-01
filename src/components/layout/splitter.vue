@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import './splitter.pcss'
+
   function getOnlyResizableElement (prevEl, nextEl) {
     return prevEl && !prevEl.getAttribute('size')
       ? prevEl

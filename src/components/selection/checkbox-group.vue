@@ -7,6 +7,11 @@
 <script>
   export default {
     name: 'MusselCheckboxGroup',
+    provide () {
+      return {
+        checkboxGroup: this
+      }
+    },
     model: {
       prop: 'value',
       event: 'change'
@@ -15,11 +20,6 @@
       value: Array,
       disabled: Boolean,
       itemWidth: String
-    },
-    provide () {
-      return {
-        checkboxGroup: this
-      }
     },
     methods: {
       toggleOption (v) {

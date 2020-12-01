@@ -21,6 +21,8 @@
 </template>
 
 <script>
+  import './expander.pcss'
+
   import { isParentElement } from '@utils/dom'
 
   export default {

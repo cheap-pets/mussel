@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import './bar.pcss'
+
   import HBox from '../layout/flex-h-box'
 
   export default {

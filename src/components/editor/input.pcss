@@ -1,0 +1,73 @@
+.mu-input {
+  position: relative;
+  z-index: 1;
+  width: 200px;
+  padding: $inputElementPadding;
+  outline: none;
+  border: 1px solid $normalBorderColor;
+  border-radius: $inputElementBorderRadius;
+  line-height: $normalLineHeight;
+  background-color: $normalBackground;
+  font-size: $inputFontSize;
+  color: $normalTextColor;
+
+  &::placeholder {
+    color: $normalWeakTextColor;
+  }
+
+  &:focus,
+  &[focus] {
+    border-color: var(--mu-primary-color);
+  }
+  &:focus,
+  &[focus] {
+    z-index: 2;
+    text-align: left !important;
+    box-shadow: $inputFocusShadow var(--mu-primary-shadow-color);
+  }
+  &:hover {
+    border-color: var(--mu-primary-minus-color);
+  }
+  &[readonly] {
+    cursor: default;
+    background-color: $inputReadonlyBackground;
+  }
+  &[disabled] {
+    background-color: $normalDisabledBackground;
+    border-color: $normalBorderColor;
+    color: $inputDisabledTextColor;
+    box-shadow: none;
+  }
+  &::-ms-clear {
+    display: none;
+  }
+}
+
+[invalid] .mu-input,
+.mu-input[invalid] {
+  color: var(--mu-danger-color);
+  border-color: var(--mu-danger-color);
+  &:focus,
+  &[focus] {
+    border-color: var(--mu-danger-plus-color);
+    box-shadow: $inputFocusShadow var(--mu-danger-shadow-color);
+  }
+  &:hover {
+    border-color: var(--mu-danger-minus-color);
+  }
+}
+input.mu-input {
+  height: $inputElementHeight;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+textarea.mu-input {
+  min-height: 80px;
+  resize: none;
+}
+
+.mu-input[input-shape="round"],
+[input-shape="round"] > .mu-input {
+  border-radius: $inputElementRoundRadius;
+}

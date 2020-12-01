@@ -83,6 +83,8 @@
 </template>
 
 <script>
+  import './calendar.pcss'
+
   import isDate from 'lodash.isdate'
   import isString from 'lodash.isstring'
 

@@ -13,6 +13,8 @@
 </template>
 
 <script>
+  import './input.pcss'
+
   export default {
     name: 'MusselInput',
     model: {

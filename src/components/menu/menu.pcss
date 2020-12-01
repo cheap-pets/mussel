@@ -39,38 +39,3 @@
 .mu-menu-group .mu-menu-group + .mu-menu-item {
   border-top: 1px solid $normalDividerColor;
 }
-
-.mu-sidebar {
-  & .mu-menu-item,
-  & .mu-menu-group_header {
-    display: block;
-    height: $sidebarMenuItemHeight;
-    line-height: $sidebarMenuItemHeight;
-    padding-left: $sidebarMenuItemHeight;
-    
-    & > .mu-icon {
-      width: $sidebarMenuItemHeight;
-    }
-  }
-}
-
-.mu-sidebar_body-container > .mu-menu-group,
-.mu-sidebar_menu-wrapper > .mu-menu-group {
-  & > .mu-menu-group_header {
-    padding-right: $sidebarMenuItemHeight;
-  }
-
-  & > .mu-menu-group_body {
-    position: relative;
-    overflow: hidden;
-    transition: height .2s ease-in-out;
-  }
-
-  &[expanded] {
-    background: rgba(24, 144, 255, .05);
-
-    & > .mu-menu-group_header {
-      background: $normalGreyBackground;
-    }
-  }
-}

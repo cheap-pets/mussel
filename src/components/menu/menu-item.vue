@@ -14,6 +14,8 @@
 </template>
 
 <script>
+  import './menu.pcss'
+
   export default {
     name: 'MusselMenuItem',
     inject: {

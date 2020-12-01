@@ -1,0 +1,16 @@
+.mu-search-box[value-mode=select] {
+  & > input {
+    font-style: italic;
+    color: $normalWeakTextColor;
+
+    &::placeholder {
+      font-style: normal;
+    }
+  }
+
+  & > input:focus,
+  &[valid] > input {
+    font-style: normal;
+    color: $normalTextColor;
+  }
+}

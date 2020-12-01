@@ -45,6 +45,8 @@
 </template>
 
 <script>
+  import './sidebar.pcss'
+
   export default {
     name: 'MusselSidebar',
     provide () {

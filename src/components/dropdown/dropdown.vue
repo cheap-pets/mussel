@@ -19,6 +19,8 @@
 </template>
 
 <script>
+  import './dropdown.pcss'
+
   import PopupGroupMixin from '../layer/mix-popup-group'
   import DropdownPanel from './dropdown-panel.vue'
 

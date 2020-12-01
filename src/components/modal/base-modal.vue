@@ -1,4 +1,6 @@
 <script>
+  import './modal.pcss'
+
   import RenderToBodyMixin from '../layer/mix-render-to-body'
   import PopupVisibleMixin from '../layer/mix-popup-visible'
 

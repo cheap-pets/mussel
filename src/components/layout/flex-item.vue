@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import './layout.pcss'
+
   export default {
     name: 'MusselFlexItem',
     inject: {

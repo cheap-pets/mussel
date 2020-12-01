@@ -10,6 +10,8 @@
 </template>
 
 <script>
+  import './form.pcss'
+
   import FlexItem from '../layout/flex-item.vue'
 
   export default {

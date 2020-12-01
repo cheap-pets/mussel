@@ -94,12 +94,14 @@
         wrapperMinWidth: undefined
       }
     },
-    mounted () {
-      this.$emit('mounted', this.$el)
-    },
     methods: {
       show () {
-        this.rendered = true
+        if (!this.rendered) {
+          this.rendered = true
+          delay().then(() => {
+            this.$emit('mounted', this.$el)
+          })
+        }
         if (this.popupVisible) return
 
         const dd = window.__mussel_dropdown

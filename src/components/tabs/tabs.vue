@@ -20,6 +20,8 @@
 </template>
 
 <script>
+  import './tabs.pcss'
+
   import TabsHeader from './tabs-header.vue'
 
   export default {

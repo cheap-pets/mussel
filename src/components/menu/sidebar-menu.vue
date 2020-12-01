@@ -1,6 +1,8 @@
 <script>
   import SideBar from '../sidebar/sidebar.vue'
 
+  import './sidebar-menu.pcss'
+
   export default {
     name: 'MusselSidebarMenu',
     extends: SideBar,

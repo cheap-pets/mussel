@@ -17,10 +17,10 @@ export function parseDate (v) {
   try {
     v = v
       ? (
-        isDate(v)
-          ? v
-          : (isString(v) ? new Date(Date.parse(v)) : null)
-      )
+          isDate(v)
+            ? v
+            : (isString(v) ? new Date(Date.parse(v)) : null)
+        )
       : null
   } catch (e) {
   }

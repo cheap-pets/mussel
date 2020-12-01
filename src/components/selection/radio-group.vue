@@ -7,6 +7,11 @@
 <script>
   export default {
     name: 'MusselRadioGroup',
+    provide () {
+      return {
+        radioGroup: this
+      }
+    },
     model: {
       prop: 'value',
       event: 'change'
@@ -16,11 +21,6 @@
       'disabled',
       'itemWidth'
     ],
-    provide () {
-      return {
-        radioGroup: this
-      }
-    },
     methods: {
       changeValue (v) {
         this.$emit('change', v)

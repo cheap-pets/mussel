@@ -46,6 +46,8 @@
 </template>
 
 <script>
+  import './dialog.pcss'
+
   import Icon from '../icon/icon.vue'
   import HBox from '../layout/flex-h-box'
   import VBox from '../layout/flex-v-box'

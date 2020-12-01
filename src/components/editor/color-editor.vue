@@ -22,6 +22,8 @@
 </template>
 
 <script>
+  import './color-editor.pcss'
+
   import BasePopupEditor from './base-popup-editor'
 
   const Colors = []

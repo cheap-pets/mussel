@@ -5,10 +5,10 @@ export function getOptionValue (value, option, fields) {
 
   return value === undefined
     ? (
-      isPlainObject(option)
-        ? (valueField in option ? option[valueField] : option.key)
-        : option
-    )
+        isPlainObject(option)
+          ? (valueField in option ? option[valueField] : option.key)
+          : option
+      )
     : value
 }
 

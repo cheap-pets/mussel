@@ -11,7 +11,7 @@
     .mu-color-picker input[readonly] {
       background: #fff;
     }
-    .mu-dropdown-panel[popup-style="color-picker"] {
+    .mu-dropdown-panel[popup-style="color-picker"] > .mu-dropdown-panel_wrapper {
       overflow: hidden;
     }
     .mu-dropdown-panel .a-color-picker {
@@ -44,7 +44,7 @@
       class="mu-color-picker"
       @dropdownmounted="initPicker"
       @beforedropdowndestroy="destroyPicker">
-      <div></div>
+      <div id="acp"></div>
       <div class="mu-color-picker-footer mu-background-hover" @click="hidePopup">
         <mu-icon icon="ok"></mu-icon>
       </div>
@@ -88,7 +88,7 @@
         initPicker: function (el) {
           el.style.overflow = 'hidden'
           this.colorPicker = AColorPicker
-            .from(el.querySelector('div'), {
+            .from(el.querySelector('#acp'), {
               showHSL: false,
               showRGB: false,
               color: this.value

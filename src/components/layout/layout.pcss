@@ -84,82 +84,12 @@
   bottom: 0;
 }
 
-.mu-splitter {
-  position: relative;
-  background: $splitterColor;
-  border-radius: $splitterSize;
-  user-select: none;
-
-  &[draggable] > div {
-    position: absolute;
-    z-index: 100;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, .01);
-
-    &:hover {
-      background: $splitterHoverColor;
-    }
-  }
-
-  &:first-child,
-  &:last-child {
-    display: none;
-  }
-}
-
-[direction="row"] > .mu-splitter {
-  width: $splitterSize;
-  margin-left: 0;
-  margin-right: 0;
-
-  &[draggable] {
-    cursor: 'col-resize';
-
-    & > div:hover {
-      left: -1px;
-      right: -1px;
-    }
-  }
-}
-
-[direction="column"] > .mu-splitter[draggable] {
-  height: $splitterSize;
-  margin-top: 0;
-  margin-bottom: 0;
-
-  &[draggable] {
-    cursor: 'row-resize';
-
-    & > div:hover {
-      top: -1px;
-      bottom: -1px;
-    }
-  }
-}
-
-.mu-space {
-  flex: 1 1 0%;
-}
-
-[direction="row"][flex-wrap] > .mu-space {
-  flex: none;
-  width: 100%;
-}
-
 [cell-spacing], [cellspacing] {
   margin: $halfSpacingSize;
 }
 
 [cell-padding], [cellpadding] {
   padding: $halfSpacingSize;
-
-  & > .mu-splitter {
-    margin: $halfSpacingSize;
-  }
 
   & > .mu-absolute-fit {
     top: $halfSpacingSize;

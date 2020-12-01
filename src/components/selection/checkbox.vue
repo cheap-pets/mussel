@@ -15,6 +15,8 @@
 </template>
 
 <script>
+  import './checkbox.pcss'
+
   export default {
     name: 'MusselCheckbox',
     inject: {

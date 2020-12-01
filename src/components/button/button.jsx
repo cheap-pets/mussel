@@ -1,3 +1,5 @@
+import './button.pcss'
+
 import Icon from '../icon/icon.vue'
 
 export default {
@@ -66,15 +68,15 @@ export default {
         {
           this.$slots.default
             ? (
-              this.hasIcon
-                ? <span>{ this.$slots.default }</span>
-                : this.$slots.default
-            )
+                this.hasIcon
+                  ? <span>{ this.$slots.default }</span>
+                  : this.$slots.default
+              )
             : (
-              this.caption
-                ? <span>{ this.caption }</span>
-                : undefined
-            )
+                this.caption
+                  ? <span>{ this.caption }</span>
+                  : undefined
+              )
         }
       </button>
     )

@@ -17,6 +17,8 @@
 </template>
 
 <script>
+  import './toggle.pcss'
+
   export default {
     name: 'MusselToggle',
     model: {
