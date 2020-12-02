@@ -21,6 +21,8 @@
 </template>
 
 <script>
+  import delay from '@utils/delay'
+
   export default {
     name: 'MusselMenuGroup',
     provide () {
@@ -47,7 +49,7 @@
     data () {
       return {
         expanded: false,
-        wrapperHeight: this.isExpander ? 0 : undefined
+        wrapperHeight: 0
       }
     },
     computed: {
@@ -68,6 +70,9 @@
         if (v && v !== this && this.expanded) this.collapse()
       }
     },
+    mounted () {
+      this.wrapperHeight = this.isExpander && !this.expanded ? 0 : undefined
+    },
     methods: {
       onClick () {
         if (!this.isExpander) return
@@ -79,8 +84,13 @@
         this.wrapperHeight = `${this.$refs.wrapper.offsetHeight}px`
       },
       collapse () {
-        this.expanded = false
-        this.wrapperHeight = 0
+        if (this.wrapperHeight === undefined) {
+          this.wrapperHeight = `${this.$refs.wrapper.offsetHeight}px`
+        }
+        delay(1).then(() => {
+          this.expanded = false
+          this.wrapperHeight = 0
+        })
       },
       toggleExpand () {
         return this.expanded ? this.collapse() : this.expand()
