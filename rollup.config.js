@@ -16,7 +16,6 @@ import postcssClean from 'postcss-clean'
 import postcssConditionals from 'postcss-conditionals'
 import postcssCustomProps from './build/postcss-custom-properties-polyfill'
 import postcssFor from 'postcss-for'
-import postcssEach from 'postcss-each'
 import postcssImport from 'postcss-import'
 import postcssNested from 'postcss-nested'
 import postcssVars from 'postcss-simple-vars'
@@ -24,13 +23,60 @@ import postcssUnprefix from 'postcss-unprefix'
 
 import variables from './src/variables'
 
+const isDevEnv = process.env.dev
+
+const output = [
+  {
+    file: 'dist/mussel.js',
+    format: 'umd',
+    name: 'mussel',
+    globals: {
+      vue: 'Vue'
+    },
+    sourcemap: false
+  }
+].concat(
+  isDevEnv
+    ? undefined
+    : [
+        {
+          file: 'dist/mussel.esm.js',
+          format: 'esm',
+          globals: {
+            vue: 'Vue'
+          },
+          sourcemap: false
+        },
+        {
+          file: 'dist/mussel.min.js',
+          format: 'umd',
+          name: 'mussel',
+          plugins: isDevEnv ? undefined : [terser()],
+          globals: {
+            vue: 'Vue'
+          },
+          sourcemap: false
+        },
+        {
+          file: 'dist/mussel.esm.min.js',
+          format: 'esm',
+          plugins: isDevEnv ? undefined : [terser()],
+          globals: {
+            vue: 'Vue'
+          },
+          sourcemap: false
+        }
+      ]
+)
+
 export default {
   input: 'src/index.js',
+  output,
   external: ['vue'],
   plugins: [
     alias({
       entries: [
-        { find: '@icons', replacement: 'tabler-icons/icons' },
+        { find: '@icons', replacement: '@tabler/icons/icons' },
         { find: '@utils', replacement: path.resolve(__dirname, 'src/utils') },
         { find: '@mixins', replacement: path.resolve(__dirname, 'src/mixins') },
         { find: '@events', replacement: path.resolve(__dirname, 'src/events') }
@@ -46,7 +92,6 @@ export default {
       plugins: [
         postcssImport,
         postcssUnprefix,
-        postcssEach,
         postcssFor,
         postcssVars({ variables }),
         postcssCustomProps(),
@@ -54,7 +99,32 @@ export default {
         postcssNested,
         postcssConditionals,
         postcssAutoprefixer,
-        postcssClean
+        postcssClean(
+          isDevEnv
+            ? {
+              format: {
+                breaks: {
+                  afterAtRule: true,
+                  afterBlockBegins: true,
+                  afterBlockEnds: true,
+                  afterComment: true,
+                  afterProperty: true,
+                  afterRuleBegins: true,
+                  afterRuleEnds: true,
+                  beforeBlockEnds: true,
+                  betweenSelectors: true
+                },
+                spaces: {
+                  aroundSelectorRelation: true,
+                  beforeBlockBegins: true,
+                  beforeValue: true
+                },
+                semicolonAfterLastProperty: true,
+                indentBy: 2
+              }
+            }
+            : undefined
+        )
       ]
     }),
     resolve({
@@ -75,47 +145,5 @@ export default {
     if (input) console.warn('[!]', '...', '[input]', input.file || input)
     if (message) console.warn('[!]', '...', '[message]', message)
     if (text) console.warn('[!]', '...', '[message]', text)
-  },
-  output: [
-    {
-      file: 'dist/mussel.js',
-      format: 'umd',
-      name: 'mussel',
-      globals: {
-        vue: 'Vue'
-      },
-      sourcemap: true
-    },
-    {
-      file: 'dist/mussel.esm.js',
-      format: 'esm',
-      globals: {
-        vue: 'Vue'
-      },
-      sourcemap: true
-    },
-    {
-      file: 'dist/mussel.min.js',
-      format: 'umd',
-      name: 'mussel',
-      plugins: [
-        terser()
-      ],
-      globals: {
-        vue: 'Vue'
-      },
-      sourcemap: true
-    },
-    {
-      file: 'dist/mussel.esm.min.js',
-      format: 'esm',
-      plugins: [
-        terser()
-      ],
-      globals: {
-        vue: 'Vue'
-      },
-      sourcemap: true
-    }
-  ]
+  }
 }

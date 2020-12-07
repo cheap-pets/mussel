@@ -144,12 +144,17 @@ function setColorVariables (option) {
 export function setTheme (option = {}) {
   if (isString(option)) option = { primaryColor: option }
 
-  const validOption = Object.keys(option).reduce((o, key) => {
-    let p = paramCase(key)
-    if (p.indexOf('mu') !== 0) p = '--mu-' + p
-    if (props.indexOf(p) !== -1) o[p] = option[key]
-    return o
-  }, {})
+  const validOption = Object
+    .keys(option)
+    .reduce(
+      (o, key) => {
+        let p = paramCase(key)
+        if (p.indexOf('mu') !== 0) p = '--mu-' + p
+        if (props.indexOf(p) !== -1) o[p] = option[key]
+        return o
+      },
+      {}
+    )
 
   setColorVariables(validOption)
 

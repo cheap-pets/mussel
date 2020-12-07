@@ -74,13 +74,13 @@ export default {
   buttonActiveShadow: '0 0 0 0',
   buttonHoverShadow: '0 0 0 2px',
   buttonDividerColor: 'rgba(0, 0, 0, .5)',
-  normalButtonTextColor: 'rgba(255, 255, 255, .7)',
 
   /* toggle */
   toggleButtonWidth: '40px',
 
   inputFontSize: '1rem',
   inputFocusShadow: '0 0 0 2px',
+  inputDisabledTextColor: '#999',
   inputReadonlyBackground: '$normalInfoBackground',
 
   /* calendar */
@@ -107,7 +107,7 @@ export default {
   dialogHeaderBackground: '$normalBackground',
   dialogHeaderBorderBottom: '2px solid $primaryColor',
   dialogFooterHeight: '50px',
-  dialogFooterBackground: '$normalGreyBackground',
+  dialogFooterBackground: 'transparent',
   dialogShadow:
   '0 6px 12px rgba(255, 255, 255, 0.23), 0 10px 40px rgba(255, 255, 255, 0.19)',
 
@@ -116,7 +116,7 @@ export default {
   notifyShadow: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
 
   /* layout & splitter */
-  splitterSize: '4px',
+  splitterSize: '1px',
   splitterColor: '$normalDividerColor',
   splitterHoverColor: '$normalBorderColor',
 

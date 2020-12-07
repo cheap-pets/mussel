@@ -1,5 +1,5 @@
-import data from './d'
+import icons from './tabler-icons'
 
-export default function register (icons) {
-  Object.assign(data, icons)
+export default function register (incoming) {
+  Object.assign(icons, incoming)
 }

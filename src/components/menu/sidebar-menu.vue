@@ -24,9 +24,9 @@
     },
     methods: {
       setActiveItem (item) {
-        if (this.$activeItem !== item) {
-          this.$activeItem?.unselect()
-          this.$activeItem = item
+        if (this.activeItem !== item) {
+          this.activeItem?.unselect()
+          this.activeItem = item
         }
       },
       setExpandedGroup (group) {
