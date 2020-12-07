@@ -30,7 +30,7 @@
   import getClientRect from '@utils/client-rect'
   import delay from '@utils/delay'
 
-  import { hideIf } from '@events/layer-event-handlers'
+  import { hideIf } from '@events/global-layer-events'
   import { isParentElement } from '@utils/dom'
 
   function popOnTop (pRect, height) {

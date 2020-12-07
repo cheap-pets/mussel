@@ -1,4 +1,4 @@
-import '@events/layer-event-handlers'
+import '@events/global-layer-events'
 
 export default {
   model: {
