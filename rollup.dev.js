@@ -28,7 +28,10 @@ export default {
     alias({
       entries: [
         { find: '@icons', replacement: 'tabler-icons/icons' },
-        { find: '@utils', replacement: path.resolve(__dirname, 'src/utils') }
+        { find: '@utils', replacement: path.resolve(__dirname, 'src/utils') },
+        { find: '@mixins', replacement: path.resolve(__dirname, 'src/mixins') },
+        { find: '@events', replacement: path.resolve(__dirname, 'src/events') }
+        
       ]
     }),
     vue({

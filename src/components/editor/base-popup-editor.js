@@ -1,5 +1,5 @@
 import BaseEditor from './base-editor'
-import PopupGroupMixin from '../layer/mix-popup-group'
+import PopupGroupMixin from '@mixins/mix-popup-group'
 import PopupEditorWrapper from './popup-editor-wrapper.vue'
 
 export default {

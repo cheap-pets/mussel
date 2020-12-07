@@ -24,13 +24,13 @@
 </template>
 
 <script>
-  import RenderToBodyMixin from '../layer/mix-render-to-body'
-  import PopupVisibleMixin from '../layer/mix-popup-visible'
+  import RenderToBodyMixin from '@mixins/mix-render-to-body'
+  import PopupVisibleMixin from '@mixins/mix-popup-visible'
 
   import getClientRect from '@utils/client-rect'
   import delay from '@utils/delay'
 
-  import { hideIf } from '../layer/global-event-handler'
+  import { hideIf } from '@events/layer-event-handlers'
   import { isParentElement } from '@utils/dom'
 
   function popOnTop (pRect, height) {

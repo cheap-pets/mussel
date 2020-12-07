@@ -21,7 +21,7 @@
 <script>
   import './dropdown.pcss'
 
-  import PopupGroupMixin from '../layer/mix-popup-group'
+  import PopupGroupMixin from '@mixins/mix-popup-group'
   import DropdownPanel from './dropdown-panel.vue'
 
   import { isParentElement } from '@utils/dom'

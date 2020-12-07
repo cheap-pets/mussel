@@ -84,7 +84,7 @@ import MenuGroup from './menu/menu-group.vue'
 import MenuItem from './menu/menu-item.vue'
 
 /* MIXINS */
-import PopupGroupMixin from './layer/mix-popup-group'
+import PopupGroupMixin from '@mixins/mix-popup-group'
 
 /* MESSAGE BOX */
 export * from './message'

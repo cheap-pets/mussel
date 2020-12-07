@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "es2020",
+    "baseUrl": "./",
+    "paths": {
+      "@utils/*": ["src/utils/*"],
+      "@mixins/*": ["src/mixins/*"],
+      "@events/*": ["src/events/*"],
+      "@icon/*": ["node_modules/tabler-icons/icons/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
