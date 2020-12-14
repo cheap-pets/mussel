@@ -2,58 +2,55 @@
   position: relative;
   overflow: hidden !important;
 
-  & > .mu-scrollbar_x-rail,
-  & > .mu-scrollbar_y-rail,
-  & .mu-scrollbar_x-thumb,
-  & .mu-scrollbar_y-thumb {
+  & > * {
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
-    background: rgba(0, 0, 0, .1);
   }
+}
 
-  & > .mu-scrollbar_x-rail {
+.mu-scrollbar_rail {
+  background: rgba(0, 0, 0, .01);
+  opacity: 0;
+  transition: opacity .3s linear;
+
+  &[axis=x] {
     left: 4px;
     right: 14px;
     bottom: 4px;
     height: 6px;
 
-    & > .mu-scrollbar_x-thumb {
+    & > .mu-scrollbar_thumb {
       height: 100%;
     }
   }
 
-  & > .mu-scrollbar_y-rail {
+  &[axis=y] {
     top: 4px;
     right: 4px;
     bottom: 4px;
     width: 6px;
 
-    & > .mu-scrollbar_y-thumb {
+    & > .mu-scrollbar_thumb {
       width: 100%;
     }
   }
 
+  &[hidden] {
+    display: none;
+
+    & + [axis=x] {
+      right: 4px;
+    }
+  }
+
   &[activated] {
-    & > .mu-scrollbar_x-rail,
-    & > .mu-scrollbar_y-rail {
-      opacity: 1;
+    & > .mu-scrollbar_thumb {
+      background: rgba(0, 0, 0, .3);
     }
   }
+}
 
-  & > .mu-scrollbar_x-rail,
-  & > .mu-scrollbar_y-rail {
-    opacity: 0;
-    transition: opacity .3s linear;
-
-    & > div:hover {
-      background: rgba(0, 0, 0, .2);
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, .1);
-      cursor: pointer;
-    }
-
-    &[hidden] {
-      display: none;
-    }
-  }
+.mu-scrollbar_thumb {
+  background: rgba(0, 0, 0, .1);
 }

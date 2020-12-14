@@ -49,9 +49,8 @@
       }
     },
     mounted () {
-      this.triggerElements = Array.prototype.slice.call(
-        this.$el.querySelectorAll('[expand-trigger]'),
-        0
+      this.triggerElements = Array.from(
+        this.$el.querySelectorAll('[expand-trigger]')
       )
     },
     methods: {

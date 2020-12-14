@@ -50,9 +50,8 @@
       }
     },
     mounted () {
-      this.triggerElements = Array.prototype.slice.call(
-        this.$el.querySelectorAll('[dropdown-trigger]'),
-        0
+      this.triggerElements = Array.from(
+        this.$el.querySelectorAll('[dropdown-trigger]')
       )
     },
     methods: {
