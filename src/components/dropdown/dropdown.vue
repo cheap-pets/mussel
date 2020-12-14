@@ -24,8 +24,6 @@
   import PopupGroupMixin from '@mixins/mix-popup-group'
   import DropdownPanel from './dropdown-panel.vue'
 
-  import { isParentElement } from '@utils/dom'
-
   export default {
     name: 'MusselDropdown',
     components: {
@@ -71,7 +69,7 @@
       },
       findTrigger (target) {
         return this.triggerElements.reduce(
-          (result, el) => result || isParentElement(target, el, true),
+          (result, el) => result || el === target || el.contains(target),
           false
         )
       },

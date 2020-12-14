@@ -20,7 +20,7 @@
 
   import './drawer.pcss'
 
-  import { isParentElement, hasMaskParent } from '@utils/dom'
+  import { hasMaskParent } from '@utils/dom'
   import { assignIfDefined } from '@utils/assign-if-defined'
 
   export default {
@@ -100,7 +100,7 @@
       hideIf (triggerEl) {
         if (
           !hasMaskParent(triggerEl) &&
-          !isParentElement(triggerEl, this.$el) &&
+          !this.$el.contains(triggerEl) &&
           triggerEl.className.indexOf('mu-modal-mask') === -1
         ) this.hide()
       }

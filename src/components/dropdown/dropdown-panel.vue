@@ -31,7 +31,6 @@
   import delay from '@utils/delay'
 
   import { hideIf } from '@events/global-layer-events'
-  import { isParentElement } from '@utils/dom'
 
   function popOnTop (pRect, height) {
     return (pRect.bottom + 4 + height > window.innerHeight) &&
@@ -132,8 +131,11 @@
       },
       hideIf (triggerEl) {
         if (
-          !isParentElement(triggerEl, this.$parent.$el) &&
-          (!this.renderToBody || !isParentElement(triggerEl, this.$el, true))
+          !this.$parent.$el.contains(triggerEl) &&
+          (
+            !this.renderToBody ||
+            !(triggerEl === this.$el || this.$el.contains(triggerEl))
+          )
         ) {
           this.hide()
         }

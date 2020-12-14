@@ -6,15 +6,6 @@ function whileParentElement (element, includeSelf, callback) {
   }
 }
 
-function isParentElement (element, parentElement, includeSelf) {
-  let result = false
-  whileParentElement(element, includeSelf, (el) => {
-    result = el === parentElement
-    return !result
-  })
-  return result
-}
-
 function hasMaskParent (element) {
   let result = false
   whileParentElement(element, true, (el) => {
@@ -26,6 +17,5 @@ function hasMaskParent (element) {
 
 export {
   whileParentElement,
-  isParentElement,
   hasMaskParent
 }

@@ -23,8 +23,6 @@
 <script>
   import './expander.pcss'
 
-  import { isParentElement } from '@utils/dom'
-
   export default {
     name: 'MusselExpander',
     model: {
@@ -59,7 +57,7 @@
     methods: {
       findTrigger (target) {
         return this.triggerElements.reduce(
-          (result, el) => result || isParentElement(target, el, true),
+          (result, el) => result || el === target || el.contains(target),
           false
         )
       },
