@@ -1,3 +1,6 @@
+import methods from './methods'
+import bindEvents from './events'
+
 const ELEMENT_CLASS = 'mu-scrollbar'
 
 const SCROLLBAR_HTML = /* html */`
@@ -9,19 +12,21 @@ const SCROLLBAR_HTML = /* html */`
   </div>`
 
 function renderElements (el) {
+  el.classList.add(ELEMENT_CLASS)
   el.insertAdjacentHTML('afterbegin', SCROLLBAR_HTML)
 
   const rails = Array
     .from(el.childNodes)
-    .find(node => node.classList.contains('mu_scrollbar-rail'))
+    .filter(node => node.classList?.contains('mu-scrollbar_rail'))
 
   const railY = rails?.find(node => node.getAttribute('axis') === 'y')
   const railX = rails?.find(node => node.getAttribute('axis') === 'x')
 
-  const thumbY = railY?.querySelector('mu-scrollbar_thumb')
-  const thumbX = railX?.querySelector('mu-scrollbar_thumb')
+  const thumbY = railY?.querySelector('.mu-scrollbar_thumb')
+  const thumbX = railX?.querySelector('.mu-scrollbar_thumb')
 
   return {
+    el,
     railX,
     railY,
     thumbX,
@@ -32,8 +37,9 @@ function renderElements (el) {
 export default function attach (el, options) {
   if (el.__mussel_scrollbar) return
 
-  el.classList.add(ELEMENT_CLASS)
-  el.__mussel_scrollbar = {
-    ...renderElements(el)
+  const ctx = el.__mussel_scrollbar = {
+    ...renderElements(el),
+    ...methods
   }
+  bindEvents.call(ctx)
 }

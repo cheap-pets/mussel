@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Bar Example</title>
+  <title>Scrollbar Example</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
   <style>
@@ -15,16 +15,23 @@
       right: 0;
       bottom: 0;
     }
-    .scroll-box {
+    .scroll-container {
       width: 500px;
       height: 500px;
       border: 1px solid silver;
+    }
+    .scroll-element {
+      width: 600px;
+      height: 1000px;
     }
   </style>
 </head>
 
 <body>
-  <div id="app" class="scroll-box" v-mu-scrollbar>
+  <div id="app" class="scroll-container" v-mu-scrollbar>
+    <div class="scroll-element">
+
+    </div>
   </div>
 
   <script type="text/javascript">
