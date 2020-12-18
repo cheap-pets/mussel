@@ -1,7 +1,9 @@
+import show from './show'
 import hide from './hide'
-import setPosition from './set-position'
+import updatePosition from './update-position'
 
 export default {
+  show,
   hide,
-  setPosition
+  updatePosition
 }

@@ -1,3 +1,3 @@
-export default function setPosition () {
+export default function show () {
   this.el.setAttribute('activated', '')
 }

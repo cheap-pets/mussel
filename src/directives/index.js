@@ -1,7 +1,7 @@
 import MusselScrollbar from './scrollbar'
 
 function installDirectives (Vue) {
-  Vue.directive('mu-scrollbar', MusselScrollbar)
+  Vue.directive('mussel-scrollbar', MusselScrollbar)
 }
 
 export {

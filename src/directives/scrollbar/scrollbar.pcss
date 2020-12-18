@@ -2,15 +2,29 @@
   position: relative;
   overflow: hidden !important;
 
-  & > * {
+  & .mu-scrollbar_rail,
+  & .mu-scrollbar_thumb {
     position: absolute;
     box-sizing: border-box;
-    border-radius: 4px;
+  }
+
+  &[activated] {
+    & > .mu-scrollbar_rail {
+      opacity: 1;
+    }
   }
 }
 
 .mu-scrollbar_rail {
   opacity: 0;
+  background: rgba(0, 0, 0, .01);
+  transition: opacity .5s ease-in-out;
+
+  & > .mu-scrollbar_thumb {
+    background: rgba(0, 0, 0, .25);
+    border-radius: 4px;
+    cursor: pointer;
+  }
 
   &[axis=x] {
     left: 4px;
@@ -39,12 +53,6 @@
 
     & + [axis=x] {
       right: 4px;
-    }
-  }
-
-  &[activated] {
-    & > .mu-scrollbar_thumb {
-      background: rgba(0, 0, 0, .3);
     }
   }
 }
