@@ -1,8 +1,6 @@
 import methods from './methods'
 import bindEvents from './events'
 
-const ELEMENT_CLASS = 'mu-scrollbar'
-
 const SCROLLBAR_HTML = /* html */`
   <div class="mu-scrollbar_rail" axis="y">
     <div class="mu-scrollbar_thumb"></div>
@@ -12,7 +10,7 @@ const SCROLLBAR_HTML = /* html */`
   </div>`
 
 function renderElements (el) {
-  el.classList.add(ELEMENT_CLASS)
+  el.classList.add('mu-scrollbar')
   el.insertAdjacentHTML('afterbegin', SCROLLBAR_HTML)
 
   const rails = Array
@@ -34,10 +32,11 @@ function renderElements (el) {
   }
 }
 
-export default function attach (el, options) {
+export default function attach (el, binding) {
   if (el.__mussel_scrollbar) return
 
   const ctx = el.__mussel_scrollbar = {
+    options: binding.value || {},
     ...renderElements(el),
     ...methods
   }
