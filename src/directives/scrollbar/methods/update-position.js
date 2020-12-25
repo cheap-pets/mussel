@@ -32,11 +32,29 @@ function updateThumbY () {
 }
 
 function updateThumbX () {
-  const thumbWidth = Math.max(
-    parseInt(this.railX.offsetWidth ** 2 / this.el.scrollWidth),
+  const { el, railX, thumbX } = this
+
+  const elStyle = window.getComputedStyle(el)
+  const blw = parseInt(elStyle.borderLeftWidth)
+  const brw = parseInt(elStyle.borderRightWidth)
+
+  Object.assign(railX.style, {
+    left: el.scrollLeft + 4 + 'px',
+    bottom: 4 - el.scrollTop + 'px',
+    width: el.offsetHeight - 8 - blw - brw + 'px'
+  })
+
+  const width = Math.max(
+    parseInt(railX.clientWidth ** 2 / el.scrollWidth),
     10
   )
-  this.thumbX.style.width = thumbWidth + 'px'
+  const left = el.scrollLeft *
+    (railX.clientWidth - width) / (el.scrollWidth - el.clientWidth)
+
+  Object.assign(thumbX.style, {
+    width: width + 'px',
+    left: left + 'px'
+  })
 }
 
 async function updatePosition () {

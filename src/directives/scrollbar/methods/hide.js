@@ -3,5 +3,5 @@ export default function hide () {
 
   this.hideTimer = setTimeout(() => {
     if (!this.scrolling && !this.hover) this.el.removeAttribute('activated')
-  }, 3000)
+  }, 2000)
 }

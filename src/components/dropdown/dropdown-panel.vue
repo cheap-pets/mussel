@@ -7,7 +7,7 @@
     :slide="slide"
     :style="rect"
     @scroll.stop
-    @mousewheel.stop>
+    @wheel.stop>
     <div
       ref="wrapper"
       class="mu-dropdown-panel_wrapper"
