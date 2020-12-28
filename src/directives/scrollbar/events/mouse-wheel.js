@@ -1,11 +1,16 @@
 export function onMouseWheel (event) {
+  if (this.scrolling) {
+    event.preventDefault()
+    return
+  }
+
   const magnification = event.deltaMode === 1 ? 10 : 1
 
-  const deltaY = event.deltaY * magnification
-  const deltaX = event.deltaX * magnification
+  const x = event.deltaX * magnification
+  const y = event.deltaY * magnification
 
-  if (!this.hiddenY) this.el.scrollTop += event.shiftKey ? deltaX : deltaY
-  if (!this.hiddenX) this.el.scrollLeft += event.shiftKey ? deltaY : deltaX
+  const deltaX = this.hiddenX ? null : (event.shiftKey ? y : x)
+  const deltaY = this.hiddenY ? null : (event.shiftKey ? x : y)
 
-  this.updatePosition()
+  this.scrollBy(deltaX, deltaY, event)
 }

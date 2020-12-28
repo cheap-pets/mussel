@@ -27,9 +27,9 @@
   import RenderToBodyMixin from '@mixins/mix-render-to-body'
   import PopupVisibleMixin from '@mixins/mix-popup-visible'
 
-  import getClientRect from '@utils/client-rect'
   import delay from '@utils/delay'
 
+  import { getClientRect } from '@utils/client-rect'
   import { hideIf } from '@events/global-layer-events'
 
   function popOnTop (pRect, height) {

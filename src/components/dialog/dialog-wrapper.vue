@@ -55,7 +55,8 @@
   import FlexItem from '../layout/flex-item.vue'
 
   import delay from '@utils/delay'
-  import getClientRect from '@utils/client-rect'
+
+  import { getClientRect } from '@utils/client-rect'
 
   export default {
     name: 'MusselDialogWrapper',

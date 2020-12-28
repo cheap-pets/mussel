@@ -19,10 +19,11 @@
       width: 500px;
       height: 500px;
       border: 1px solid silver;
+      overflow: auto;
     }
     .scroll-element {
       width: 600px;
-      height: 1000px;
+      height: 3000px;
       background-image: linear-gradient(yellow, red, yellow);
     }
   </style>
@@ -31,7 +32,11 @@
 <body>
   <div id="app" class="scroll-container" v-mussel-scrollbar="{ scrollbarX: true, scrollbarY: true }">
     <div class="scroll-element">
+    </div>
+  </div>
 
+  <div class="scroll-container">
+    <div class="scroll-element">
     </div>
   </div>
 

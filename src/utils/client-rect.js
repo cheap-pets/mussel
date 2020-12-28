@@ -1,4 +1,4 @@
-export default function getClientRect (el) {
+export function getClientRect (el) {
   const {
     top,
     bottom,
@@ -7,6 +7,7 @@ export default function getClientRect (el) {
     width: w,
     height: h
   } = el.getBoundingClientRect()
+
   return {
     top,
     bottom,
@@ -15,4 +16,13 @@ export default function getClientRect (el) {
     width: w || right - left,
     height: h || bottom - top
   }
+}
+
+export function pointInElementRect (point, el) {
+  const rect = getClientRect(el)
+
+  return point.clientX >= rect.left &&
+    point.clientX <= rect.right &&
+    point.clientY >= rect.top &&
+    point.clientY <= rect.bottom
 }
