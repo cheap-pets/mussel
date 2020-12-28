@@ -22,8 +22,10 @@ function updateThumbX () {
     parseInt(railX.clientWidth ** 2 / el.scrollWidth),
     10
   )
+
   this.ratioX = (railX.clientWidth - thumbWidth) /
     (el.scrollWidth - el.clientWidth)
+
   const left = el.scrollLeft * this.ratioX
 
   Object.assign(thumbX.style, {

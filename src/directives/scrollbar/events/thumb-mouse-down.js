@@ -1,16 +1,30 @@
+import { getClientRect } from '@utils/client-rect'
+
+function outOfRect (point, rail, isYAxis) {
+  const { top, bottom, left, right } = getClientRect(rail)
+
+  return (isYAxis && (point.y < top || point.y > bottom)) ||
+    (!isYAxis && (point.x < left || point.x > right))
+}
+
 export function onThumbMouseDown (event) {
-  const isYAxis = event.target.parentNode.getAttribute('axis') === 'y'
+  const rail = event.target.parentNode
+  const isYAxis = rail.getAttribute('axis') === 'y'
 
   let { clientX, clientY } = event
 
   const onMouseMove = e => {
-    const deltaX = isYAxis ? null : (e.clientX - clientX) / this.ratioX
-    const deltaY = isYAxis ? (e.clientY - clientY) / this.ratioY : null
+    const { clientX: x, clientY: y } = e
 
-    this.scrollBy(deltaX, deltaY)
+    if (outOfRect({ x, y }, rail, isYAxis)) return
 
-    clientX = e.clientX
-    clientY = e.clientY
+    const deltaX = isYAxis ? null : parseInt((x - clientX) / this.ratioX)
+    const deltaY = isYAxis ? parseInt((y - clientY) / this.ratioY) : null
+
+    if (deltaX || deltaY) this.scrollBy(deltaX, deltaY)
+
+    clientX = x
+    clientY = y
   }
 
   const onMouseUp = e => {
@@ -23,4 +37,5 @@ export function onThumbMouseDown (event) {
   window.addEventListener('mouseup', onMouseUp)
 
   event.stopPropagation()
+  this.scrolling = true
 }
