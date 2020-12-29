@@ -1,4 +1,4 @@
-export function onMouseWheel (event) {
+export default function onMouseWheel (event) {
   if (this.scrolling) {
     event.preventDefault()
     return

@@ -23,7 +23,7 @@ function scrollIf (target, clientX, clientY) {
   return false
 }
 
-export function onRailMouseDown (event) {
+export default function onRailMouseDown (event) {
   console.log('sss')
   const { target } = event
 

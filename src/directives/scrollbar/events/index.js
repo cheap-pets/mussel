@@ -1,13 +1,18 @@
+import onKeyDown from './key-down'
+import onMouseOver from './mouse-over'
+import onMouseWheel from './mouse-wheel'
+import onRailMouseDown from './rail-mouse-down'
+import onThumbMouseDown from './thumb-mouse-down'
 import { onMouseEnter, onMouseLeave } from './mouse-enter-leave'
-import { onMouseWheel } from './mouse-wheel'
-import { onRailMouseDown } from './rail-mouse-down'
-import { onThumbMouseDown } from './thumb-mouse-down'
+
+window.addEventListener('keydown', onKeyDown, true)
 
 export default function bindEvents () {
+  this.el.addEventListener('scroll', () => this.updatePosition())
   this.el.addEventListener('mouseenter', onMouseEnter.bind(this))
   this.el.addEventListener('mouseleave', onMouseLeave.bind(this))
+  this.el.addEventListener('mouseover', onMouseOver.bind(this))
   this.el.addEventListener('wheel', onMouseWheel.bind(this))
-  this.el.addEventListener('scroll', () => this.updatePosition())
 
   this.railX.addEventListener('mousedown', onRailMouseDown.bind(this))
   this.railY.addEventListener('mousedown', onRailMouseDown.bind(this))

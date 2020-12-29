@@ -1,11 +1,12 @@
 import show from './show'
 import hide from './hide'
-import scrollBy from './scroll-by'
 import updatePosition from './update-position'
+import { scrollBy, scrollTo } from './scroll'
 
 export default {
   show,
   hide,
   scrollBy,
+  scrollTo,
   updatePosition
 }

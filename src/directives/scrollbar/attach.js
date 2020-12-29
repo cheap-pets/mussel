@@ -33,9 +33,9 @@ function renderElements (el) {
 }
 
 export default function attach (el, binding) {
-  if (el.__mussel_scrollbar) return
+  if (el.__mussel_scroller) return
 
-  const ctx = el.__mussel_scrollbar = {
+  const ctx = el.__mussel_scroller = {
     options: binding.value || {},
     ...renderElements(el),
     ...methods

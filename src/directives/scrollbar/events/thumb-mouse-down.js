@@ -7,7 +7,7 @@ function outOfRect (point, rail, isYAxis) {
     (!isYAxis && (point.x < left || point.x > right))
 }
 
-export function onThumbMouseDown (event) {
+export default function onThumbMouseDown (event) {
   const rail = event.target.parentNode
   const isYAxis = rail.getAttribute('axis') === 'y'
 
