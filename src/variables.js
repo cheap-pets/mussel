@@ -92,7 +92,7 @@ export default {
 
   /* dropdown */
   dropdownBorderRadius: 0,
-  dropdownShadow: 'none',
+  dropdownShadow: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
   dropdownListPadding: '4px 0',
   dropdownItemPadding: '5px 16px',
 
@@ -111,8 +111,7 @@ export default {
   dialogHeaderBorderBottom: '2px solid $primaryColor',
   dialogFooterHeight: '50px',
   dialogFooterBackground: 'transparent',
-  dialogShadow:
-  '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
+  dialogShadow: '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
 
   /* message */
   notifyWidth: '300px',
