@@ -21,6 +21,9 @@ import refresh from '@icons/refresh.svg'
 import sitemap from '@icons/sitemap.svg'
 import calendar from '@icons/calendar-event.svg'
 
+import bulb from '@icons/bulb.svg'
+import info from '@icons/info-circle.svg'
+
 function removeAttributes (s) {
   const startIdx = s.indexOf('<svg')
   const endIdx = startIdx === -1 ? -1 : s.indexOf('>', startIdx)
@@ -42,6 +45,9 @@ const icons = {
 
   expand,
   collapse,
+
+  bulb,
+  info,
 
   pin,
   pinned,

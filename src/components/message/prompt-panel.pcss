@@ -1,0 +1,37 @@
+  .mu-prompt-panel {
+    & > .mu__icon {
+      margin-left: auto;
+      font-size: 100px;
+      color: $normalWeakTextColor;
+    }
+
+    & > div {
+      margin-right: auto;
+    }
+
+    &[direction="column"] {
+      & > .mu__icon {
+        margin: auto 0 0;
+      }
+      & > div {
+        margin: 0 0 auto;
+
+        & > * {
+          text-align: center;
+        }
+      }
+    }
+
+    & .mu__headline {
+      font-size: 1.67rem;
+    }
+
+    & .mu__message {
+      font-size: 1.25rem;
+      color: $normalSubtitleTextColor;
+    }
+
+    & .mu-button + .mu-button {
+      margin-left: $halfSpacingSize;
+    }
+  }

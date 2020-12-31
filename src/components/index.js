@@ -87,6 +87,7 @@ import MenuItem from './menu/menu-item.vue'
 import PopupGroupMixin from '@mixins/mix-popup-group'
 
 /* MESSAGE BOX */
+import PromptPanel from './message/prompt-panel.vue'
 export * from './message'
 
 function installComponents (Vue) {
@@ -147,6 +148,8 @@ function installComponents (Vue) {
   Vue.component('mu-dialog', Dialog)
   Vue.component('mu-dialog-wrapper', DialogWrapper)
   Vue.component('mu-drawer', Drawer)
+
+  Vue.component('mu-prompt-panel', PromptPanel)
 
   Vue.component('mu-calendar', Calendar)
 
@@ -217,6 +220,8 @@ export {
   Modal,
   Dialog,
   DialogWrapper,
+  // Message
+  PromptPanel,
   // Drawer
   Drawer,
   // Menu
