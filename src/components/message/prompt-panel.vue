@@ -4,15 +4,17 @@
     align-items="center"
     content-spacing
     :direction="iconPosition === 'top' ? 'column' : 'row'">
-    <icon class="mu__icon" :icon="icon" :icon-class="iconClass" />
+    <icon :icon="icon" :icon-class="iconClass" />
     <div content-spacing="between">
-      <div v-if="headline" class="mu__headline">
+      <div v-if="headline" class="mu-prompt-panel_headline">
         {{ headline }}
       </div>
-      <div v-if="message" class="mu__message">
+      <div v-if="message" class="mu-prompt-panel_message">
         {{ message }}
       </div>
-      <div><slot /></div>
+      <div>
+        <slot />
+      </div>
     </div>
   </div>
 </template>
