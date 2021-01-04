@@ -52,6 +52,7 @@ import ListDivider from './list/list-divider.vue'
 
 /* BAR */
 import Bar from './bar/bar.vue'
+import PagingBar from './bar/paging-bar.vue'
 
 /* TABS */
 import Tabs from './tabs/tabs.vue'
@@ -131,6 +132,7 @@ function installComponents (Vue) {
   Vue.component('mu-list-divider', ListDivider)
 
   Vue.component('mu-bar', Bar)
+  Vue.component('mu-paging-bar', PagingBar)
 
   Vue.component('mu-tabs', Tabs)
   Vue.component('mu-tabs-header', TabsHeader)
@@ -202,6 +204,7 @@ export {
   ListDivider,
   // Bar
   Bar,
+  PagingBar,
   // Tabs
   Tabs,
   TabsHeader,

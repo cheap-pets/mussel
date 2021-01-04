@@ -20,7 +20,7 @@
     <hr>
     <div>
       <h3>Simple</h3>
-      <mu-v-box style="height: 500px;" cellpadding bordered>
+      <mu-v-box style="height: 500px;" content-spacing bordered>
         <mu-bar cellspacing>
           <mu-button button-type="primary">create</mu-button>
           <mu-button button-type="normal">modify</mu-button>
@@ -28,12 +28,10 @@
           <mu-space></mu-space>
           <mu-combo-box editable :options="[1,2,3]"></mu-combo-box>
         </mu-bar>
-        <mu-h-box size="auto">
-          <mu-flex-item size="20%" cellspacing class="client-area" bordered></mu-flex-item>
-          <mu-flex-item size="20%" cellspacing class="client-area" bordered></mu-flex-item>
-          <mu-flex-item size="30%" cellspacing class="client-area" bordered></mu-flex-item>
-          <mu-flex-item size="30%" cellspacing class="client-area" bordered></mu-flex-item>
-        </mu-h-box>
+        <mu-v-box size="1">
+          <div size="1" class="client-area" bordered></div>
+          <mu-paging-bar :page-index="8000"></mu-paging-bar>
+        </mu-v-box>
       </mu-v-box>
     </div>
   </div>

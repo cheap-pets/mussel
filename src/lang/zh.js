@@ -1,4 +1,7 @@
 export default {
+  Bar: {
+    CURRENT_PAGE: '第 %s 页'
+  },
   Button: {
     CANCEL: '取消',
     CLOSE: '关闭',

@@ -13,7 +13,7 @@ function isZh () {
 
 const lang = {}
 
-;['Button', 'Dialog', 'Calendar'].forEach(prop => {
+;['Bar', 'Button', 'Dialog', 'Calendar'].forEach(prop => {
   Object.defineProperty(lang, prop, {
     get: () => isZh() ? zh[prop] : en[prop]
   })

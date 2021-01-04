@@ -1,4 +1,7 @@
 export default {
+  Bar: {
+    CURRENT_PAGE: 'Page %s'
+  },
   Button: {
     CANCEL: 'Cancel',
     CLOSE: 'Close',
