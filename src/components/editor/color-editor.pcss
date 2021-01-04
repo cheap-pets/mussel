@@ -8,8 +8,14 @@
     z-index: 2;
     top: 50%;
     left: 10px;
-    padding: 0 10px;
+    padding: 0 5px;
+    line-height: 20px;
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, .1);
     transform: translateY(-50%);
+
+    &:empty {
+      box-shadow: none;
+    }
   }
 }
 
@@ -18,9 +24,15 @@
   overflow: hidden;
   text-align: center;
   font-size: 0;
-  & > div + div {
+
+  & > div {
     margin-top: 2px;
+
+    &:first-child {
+      margin-top: 0;
+    }
   }
+
   & .mu-color-palette-cell {
     display: inline-block;
     width: 12px;
