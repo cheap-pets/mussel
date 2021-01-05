@@ -36,7 +36,7 @@ export default {
 
   /* normal control vars */
 
-  // text
+  /* text color */
   normalTextColor: '#666',
   normalWeakTextColor: '#bbb',
   normalTitleTextColor: '#555',
@@ -44,11 +44,11 @@ export default {
   normalDisabledTextColor: '#bbb',
   normalHighlightTextColor: '#fff',
 
-  // line
+  /* line color */
   normalBorderColor: '#d6d6d6',
   normalDividerColor: '#e0e0e0',
 
-  // background
+  /* background */
   normalBackground: '#fff',
   normalGreyBackground: '#e9e9e9',
   normalHoverBackground: '#ececec',
@@ -56,12 +56,16 @@ export default {
   normalDisabledBackground: '#e6e6e6',
   normalInfoBackground: '#ffd',
 
-  normalShadowColor: 'rgba(0, 0, 0, .05)',
-
+  /* element size */
   normalBarHeight: '40px',
   compactBarHeight: '32px',
   normalLineHeight: '20px',
   normalIconWidth: '20px',
+
+  /* shadow */
+  boxShadowLevel1: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
+  boxShadowLevel2: '0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)',
+  boxShadowLevel3: '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
 
   /* input & button */
   inputElementHeight: '32px',
@@ -92,9 +96,9 @@ export default {
 
   /* dropdown */
   dropdownBorderRadius: 0,
-  dropdownShadow: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
   dropdownListPadding: '4px 0',
   dropdownItemPadding: '5px 16px',
+  dropdownShadow: '$boxShadowLevel1',
 
   /* expander */
   expanderHeaderFontSize: '1rem',
@@ -102,7 +106,7 @@ export default {
   /* form */
   formLabelFontSize: '1rem',
 
-  /* modal & dialog */
+  /* modal */
   maskBackground: 'rgba(0, 0, 0, .5)',
 
   dialogHeaderHeight: '50px',
@@ -111,11 +115,13 @@ export default {
   dialogHeaderBorderBottom: '2px solid $primaryColor',
   dialogFooterHeight: '50px',
   dialogFooterBackground: 'transparent',
-  dialogShadow: '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
+  dialogShadow: '$boxShadowLevel3',
+
+  drawerShadow: '$boxShadowLevel3',
 
   /* message */
   notifyWidth: '300px',
-  notifyShadow: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
+  notifyShadow: '$boxShadowLevel2',
 
   /* layout & splitter */
   splitterSize: '1px',

@@ -126,6 +126,7 @@ export default {
             : undefined
         )
       ]
+      // extract: path.resolve(__dirname, 'dist/mussel.css')
     }),
     resolve({
       mainFields: ['module', 'main', 'browser']

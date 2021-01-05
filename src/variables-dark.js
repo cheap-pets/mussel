@@ -33,7 +33,7 @@ export default {
 
   /* normal control vars */
 
-  // text
+  /* text color */
   normalTextColor: 'rgba(255, 255, 255, .7)',
   normalWeakTextColor: 'rgba(255, 255, 255, .3)',
   normalTitleTextColor: 'rgba(255, 255, 255, .85)',
@@ -41,11 +41,11 @@ export default {
   normalDisabledTextColor: 'rgba(255, 255, 255, .4)',
   normalHighlightTextColor: '#000',
 
-  // line
+  /* line color */
   normalBorderColor: 'rgba(255, 255, 255, .25)',
   normalDividerColor: 'rgba(255, 255, 255, .18)',
 
-  // background
+  /* background */
   normalBackground: '#19192B',
   normalGreyBackground: 'rgba(255, 255, 255, .1)',
   normalHoverBackground: 'rgba(255, 255, 255, .1)',
@@ -53,12 +53,16 @@ export default {
   normalDisabledBackground: 'rgba(255, 255, 255, .15)',
   normalInfoBackground: 'rgba(255, 255, 0, .1)',
 
-  normalShadowColor: 'rgba(255, 255, 255, .15)',
-
+  /* element size */
   normalBarHeight: '40px',
   compactBarHeight: '32px',
   normalLineHeight: '20px',
   normalIconWidth: '20px',
+
+  /* shadow */
+  boxShadowLevel1: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
+  boxShadowLevel2: '0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)',
+  boxShadowLevel3: '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
 
   /* input & button */
   inputElementHeight: '32px',
@@ -89,9 +93,9 @@ export default {
 
   /* dropdown */
   dropdownBorderRadius: 0,
-  dropdownShadow: 'none',
   dropdownListPadding: '4px 0',
   dropdownItemPadding: '5px 16px',
+  dropdownShadow: '$boxShadowLevel1',
 
   /* expander */
   expanderHeaderFontSize: '1rem',
@@ -99,7 +103,7 @@ export default {
   /* form */
   formLabelFontSize: '1rem',
 
-  /* modal & dialog */
+  /* modal */
   maskBackground: 'rgba(0, 0, 0, .17)',
 
   dialogHeaderHeight: '50px',
@@ -108,12 +112,13 @@ export default {
   dialogHeaderBorderBottom: '2px solid $primaryColor',
   dialogFooterHeight: '50px',
   dialogFooterBackground: 'transparent',
-  dialogShadow:
-  '0 6px 12px rgba(255, 255, 255, 0.23), 0 10px 40px rgba(255, 255, 255, 0.19)',
+  dialogShadow: '$boxShadowLevel3',
+
+  drawerShadow: '$boxShadowLevel3',
 
   /* message */
   notifyWidth: '300px',
-  notifyShadow: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
+  notifyShadow: '$boxShadowLevel2',
 
   /* layout & splitter */
   splitterSize: '1px',
