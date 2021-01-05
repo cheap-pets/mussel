@@ -63,9 +63,9 @@ export default {
   normalIconWidth: '20px',
 
   /* shadow */
-  boxShadowLevel1: '0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
-  boxShadowLevel2: '0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)',
-  boxShadowLevel3: '0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19)',
+  boxShadowLevel1: '0 1.5px 3px rgba(0, 0, 0, 0.25), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
+  boxShadowLevel2: '0 3px 6px rgba(0, 0, 0, 0.25), 0 3px 12px rgba(0, 0, 0, 0.15)',
+  boxShadowLevel3: '0 6px 12px rgba(0, 0, 0, 0.25), 0 6px 24px rgba(0, 0, 0, 0.18)',
 
   /* input & button */
   inputElementHeight: '32px',
