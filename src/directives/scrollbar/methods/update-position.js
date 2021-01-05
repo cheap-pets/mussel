@@ -15,7 +15,7 @@ function updateThumbX () {
   Object.assign(railX.style, {
     left: el.scrollLeft + 4 + 'px',
     bottom: 4 - el.scrollTop + 'px',
-    width: el.offsetHeight - 8 - blw - brw + 'px'
+    width: el.offsetWidth - 8 - blw - brw + 'px'
   })
 
   const thumbWidth = Math.max(
