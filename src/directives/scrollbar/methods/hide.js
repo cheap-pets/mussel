@@ -12,5 +12,5 @@ export default function hide () {
     } else if (this.hover) {
       clearInterval(this.hiderTimer)
     }
-  }, 2000)
+  }, 1000)
 }

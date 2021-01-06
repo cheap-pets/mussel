@@ -24,6 +24,7 @@
       <div class="mu-sidebar_body" size="1">
         <div
           v-show="!isCollapsed"
+          v-mussel-scrollbar
           class="mu-sidebar_body-container mu-absolute-fit">
           <slot />
         </div>

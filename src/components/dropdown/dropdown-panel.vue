@@ -10,6 +10,7 @@
     @wheel.stop>
     <div
       ref="wrapper"
+      v-mussel-scrollbar
       class="mu-dropdown-panel_wrapper"
       :direction="direction"
       :style="{

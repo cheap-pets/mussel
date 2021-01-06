@@ -1,36 +1,36 @@
 export function scrollBy (deltaX, deltaY, event) {
-  let preventDefault
+  let propagation = this.options.propagation === true
 
   if (deltaX) {
-    const last = this.el.scrollLeft
+    const edge = this.el.scrollLeft
     this.el.scrollLeft += deltaX
-    preventDefault = this.el.scrollLeft !== last
+    propagation = propagation && this.el.scrollLeft >= edge
   }
   if (deltaY) {
-    const last = this.el.scrollTop
+    const edge = this.el.scrollTop
     this.el.scrollTop += deltaY
-    preventDefault = preventDefault || this.el.scrollTop !== last
+    propagation = propagation && this.el.scrollTop >= edge
   }
-  if (event && preventDefault) {
+  if (event && !propagation) {
     event.stopPropagation()
     event.preventDefault()
   }
 }
 
 export function scrollTo (x, y, event) {
-  let preventDefault
+  let propagation = this.options.propagation === true
 
   if (!isNaN(x)) {
-    const last = this.el.scrollLeft
+    const edge = this.el.scrollLeft
     this.el.scrollLeft = x
-    preventDefault = this.el.scrollLeft !== last
+    propagation = propagation && this.el.scrollLeft >= edge
   }
   if (!isNaN(y)) {
-    const last = this.el.scrollTop
+    const edge = this.el.scrollTop
     this.el.scrollTop = y
-    preventDefault = preventDefault || this.el.scrollTop !== last
+    propagation = propagation && this.el.scrollTop >= edge
   }
-  if (event && preventDefault) {
+  if (event && !propagation) {
     event.stopPropagation()
     event.preventDefault()
   }
