@@ -64,6 +64,8 @@ function updateThumbY () {
 }
 
 async function updatePosition () {
+  if (this.el.getAttribute('activated') === null) return
+
   const { scrollbarX, scrollbarY } = this.options
   const { scrollHeight, scrollWidth, clientHeight, clientWidth } = this.el
 

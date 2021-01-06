@@ -1,3 +1,5 @@
+import emit from '@events/emit'
+
 import methods from './methods'
 import bindEvents from './events'
 
@@ -32,6 +34,15 @@ function renderElements (el) {
   }
 }
 
+function observeMutation (el) {
+  if (!window.MutationObserver) return
+
+  const observer = new window.MutationObserver(mutations => {
+    emit(el, 'domchange')
+  })
+  observer.observe(el, { attributes: true, childList: true, subtree: true })
+}
+
 export default function attach (el, binding) {
   if (el.__mussel_scroller) return
 
@@ -40,5 +51,6 @@ export default function attach (el, binding) {
     ...renderElements(el),
     ...methods
   }
+  observeMutation(el)
   bindEvents.call(ctx)
 }
