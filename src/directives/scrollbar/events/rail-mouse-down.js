@@ -24,7 +24,6 @@ function scrollIf (target, clientX, clientY) {
 }
 
 export default function onRailMouseDown (event) {
-  console.log('sss')
   const { target } = event
 
   let { clientX, clientY } = event
