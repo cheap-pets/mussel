@@ -13,23 +13,27 @@ export default {
   },
   data () {
     const p = this
-    return {
-      params: {
-        focus: false,
-        type: p.type,
-        value: p.value,
-        icon: p.icon,
-        iconClass: p.iconClass,
-        iconAlign: p.iconAlign,
-        iconClickable: p.iconClickable !== false,
-        readonly: p.readonly,
-        disabled: p.disabled,
-        editable: p.editable,
-        clearable: p.clearable,
-        placeholder: p.placeholder,
-        autofocus: p.autofocus
-      }
+    if (p.iconPosition) {
+      console.warn(
+        'property "icon-position" is deprecated, use "icon-align" instead!'
+      )
     }
+    const params = {
+      focus: false,
+      type: p.type,
+      value: p.value,
+      icon: p.icon,
+      iconClass: p.iconClass,
+      iconAlign: p.iconPosition || p.iconAlign,
+      iconClickable: p.iconClickable !== false,
+      readonly: p.readonly,
+      disabled: p.disabled,
+      editable: p.editable,
+      clearable: p.clearable,
+      placeholder: p.placeholder,
+      autofocus: p.autofocus
+    }
+    return { params }
   },
   model: {
     prop: 'value',

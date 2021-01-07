@@ -45,21 +45,19 @@
     }
   }
 
-  &.mu-button-editor {
-    & > .mu-editor_button {
-      right: calc($inputElementHeight / 2 - 7px);
-    }
-
-    & > .mu-editor_eraser {
-      right: calc($inputElementHeight / 2 + 15px);
-    }
-
-    & > input {
-      padding-right: calc($inputElementHeight - 2px);
-    }
+  & > .mu-editor_button {
+    right: calc($inputElementHeight / 2 - 7px);
   }
 
-  &.mu-button-editor[icon-align=left] {
+  & > .mu-editor_eraser {
+    right: calc($inputElementHeight / 2 + 15px);
+  }
+
+  & > input {
+    padding-right: calc($inputElementHeight - 2px);
+  }
+
+  &[icon-align=left] {
     & > .mu-editor_button {
       left: calc($inputElementHeight / 2 - 7px);
       right: auto;
