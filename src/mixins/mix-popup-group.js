@@ -8,7 +8,8 @@ export default {
         maxHeight: this.popupMaxHeight,
         popupStyle: this.popupStyle,
         iconIndent: this.popupIconIndent,
-        renderToBody: this.popupRenderToBody
+        renderToBody: this.popupRenderToBody,
+        overflow: this.popupOverflow
       }
     }
   },
@@ -25,6 +26,7 @@ export default {
     },
     popupHeight: String,
     popupMaxHeight: String,
+    popupOverflow: String,
     popupIconIndent: null,
     popupRenderToBody: {
       type: Boolean,
@@ -43,6 +45,9 @@ export default {
     },
     popupRenderToBody (value) {
       this.popupParams.renderToBody = value
+    },
+    popupOverflow (value) {
+      this.popupParams.overflow = value
     }
   },
   methods: {

@@ -10,7 +10,7 @@
     @wheel.stop>
     <div
       ref="wrapper"
-      v-mussel-scrollbar
+      v-mussel-scrollbar="{ overflow }"
       class="mu-dropdown-panel_wrapper"
       :direction="direction"
       :style="{
@@ -73,12 +73,21 @@
   export default {
     name: 'MusselDropdownPanel',
     mixins: [RenderToBodyMixin, PopupVisibleMixin],
+    inject: {
+      editor: {
+        default: null
+      }
+    },
     props: {
       width: String,
       height: String,
       minWidth: String,
       maxHeight: String,
-      popupStyle: String
+      popupStyle: String,
+      overflow: {
+        type: String,
+        default: 'auto'
+      }
     },
     data () {
       return {
@@ -94,14 +103,16 @@
         wrapperMinWidth: undefined
       }
     },
+    mounted () {
+      if (this.editor) this.setRendered()
+    },
     methods: {
+      setRendered () {
+        this.rendered = true
+        delay().then(() => this.$emit('mounted', this.$el))
+      },
       show () {
-        if (!this.rendered) {
-          this.rendered = true
-          delay().then(() => {
-            this.$emit('mounted', this.$el)
-          })
-        }
+        if (!this.rendered) this.setRendered()
         if (this.popupVisible) return
 
         const dd = window.__mussel_dropdown

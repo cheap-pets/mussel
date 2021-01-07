@@ -44,10 +44,11 @@ function observeMutation (el) {
 }
 
 export default function attach (el, binding) {
-  if (el.__mussel_scroller) return
+  const options = binding.value || {}
+  if (el.__mussel_scroller || options.overflow === 'hidden') return
 
   const ctx = el.__mussel_scroller = {
-    options: binding.value || {},
+    options,
     ...renderElements(el),
     ...methods
   }
