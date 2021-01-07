@@ -26,8 +26,8 @@ export default function bindEvents () {
   this.el.addEventListener('mouseleave', onMouseLeave.bind(this))
   this.el.addEventListener('mouseover', onMouseOver.bind(this))
   this.el.addEventListener('wheel', onMouseWheel.bind(this))
-  this.el.addEventListener('domchange', debounceUpdate)
   this.el.addEventListener('sizechange', debounceUpdate)
+  this.el.addEventListener('domchange', debounceUpdate)
 
   this.railX.addEventListener('mousedown', onRailMouseDown.bind(this))
   this.railY.addEventListener('mousedown', onRailMouseDown.bind(this))
