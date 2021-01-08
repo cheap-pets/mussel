@@ -49,12 +49,16 @@
     right: calc($inputElementHeight / 2 - 7px);
   }
 
-  & > .mu-editor_eraser {
-    right: calc($inputElementHeight / 2 + 15px);
-  }
+  
 
-  & > input {
-    padding-right: calc($inputElementHeight - 2px);
+  &[icon-align] {
+    & > input {
+      padding-right: calc($inputElementHeight - 2px);
+    }
+
+    & > .mu-editor_eraser {
+      right: calc($inputElementHeight / 2 + 15px);
+    }
   }
 
   &[icon-align=left] {
@@ -79,7 +83,7 @@
   }
 
   &[clearable] {
-    &.mu-button-editor:hover > input {
+    &[icon-align]:hover > input {
       padding-right: calc($inputElementHeight / 2 + 37px);
     }
     
