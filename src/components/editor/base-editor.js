@@ -52,6 +52,7 @@ export default {
     },
     icon: String,
     iconClass: String,
+    iconPosition: String,
     iconAlign: {
       type: String,
       default: 'right',
