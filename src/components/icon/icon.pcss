@@ -1,7 +1,14 @@
 .mu-icon {
   display: inline-block;
-  font-size: 1.15rem;
+  font-size: 0;
+  line-height: 1;
   transition: all .2s ease-in-out;
+
+  &::before,
+  &::after,
+  & > * {
+    font-size: 1.15rem;
+  }
 
   & svg {
     vertical-align: -0.15em;
