@@ -94,6 +94,7 @@
   import {
     isEqual,
     fillGrid,
+    str2Date,
     parseDate,
     getMaxDays,
     getFirstDay,
@@ -271,7 +272,7 @@
             ? (
               isDate(value)
                 ? value
-                : (isString(value) ? new Date(Date.parse(value)) : null)
+                : (isString(value) ? str2Date(value) : null)
             )
             : null
         } catch (e) {

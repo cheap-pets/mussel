@@ -13,8 +13,9 @@
 
   import BasePopupEditor from './base-popup-editor'
   import Calendar from '../calendar/calendar.vue'
-
   import formatDate from '@utils/format-date'
+
+  import { str2Date } from '../calendar/calendar-util'
 
   export default {
     name: 'MusselDateEditor',
@@ -86,12 +87,15 @@
           try {
             value = isDate(value)
               ? value
-              : (isString(value) ? new Date(Date.parse(value)) : null)
-          } catch (e) {}
+              : (isString(value) ? str2Date(value) : null)
+          } catch (e) {
+            value = null
+          }
         }
         this.params.value = value
           ? formatDate(value, this.dateFormat)
           : ''
+        console.log(this.params.value)
       },
       onSelect (value, year, month, date) {
         this.setValue(value)

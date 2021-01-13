@@ -13,13 +13,28 @@ export function fillGrid (rowCount, colCount, callbackFn) {
   return rows
 }
 
+export function str2Date (s) {
+  let i = Date.parse(s)
+  if (isNaN(i)) {
+    i = Date.parse(
+      s.indexOf('-') > 0
+        ? s.replace(/-/g, '/')
+        : (
+            s.indexOf('/') > 0 ? s.replace(/\//g, '-') : null
+          )
+    )
+  }
+  if (isNaN(i)) throw new Error(`${s} isn't a valid Date string.`)
+  return new Date(i)
+}
+
 export function parseDate (v) {
   try {
     v = v
       ? (
           isDate(v)
             ? v
-            : (isString(v) ? new Date(Date.parse(v)) : null)
+            : (isString(v) ? str2Date(v) : null)
         )
       : null
   } catch (e) {
