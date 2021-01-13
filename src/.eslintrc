@@ -31,12 +31,18 @@
       2,
       { "baseIndent": 1, "switchCase": 1 }
     ],
+    "vue/no-v-html": 0,
     "vue/require-prop-types": 0,
     "vue/require-default-prop": 0,
     "vue/max-attributes-per-line": 0,
-    "vue/html-closing-bracket-newline": 0,
     "vue/component-definition-name-casing": 0,
-    "vue/no-v-html": 0,
+    "vue/html-closing-bracket-newline": [
+      "error",
+      {
+        "singleline": "never",
+        "multiline": "never"
+      }
+    ],
     "complexity": [ 1, 10 ],
     "max-len": [
       "warn",
@@ -57,7 +63,8 @@
     {
       "files": ["*.vue"],
       "rules": {
-        "indent": "off"
+        "indent": "off",
+        "template-curly-spacing": "off"
       }
     }
   ]

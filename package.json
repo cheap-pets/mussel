@@ -13,6 +13,7 @@
     "docs": "concurrently \"node open-docs.js\" \"serve docs\"",
     "pub": "npm run build && npm publish"
   },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
