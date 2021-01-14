@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Table Example</title>
+  <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+  <script type="text/javascript" src="../dist/mussel.js"></script>
+  <style>
+
+  </style>
+</head>
+
+<body class="mu-background-normal">
+  <div id="app">
+    <h2>Table Example</h2>
+    <hr>
+    <div>
+      <h3>Simple</h3>
+      <mu-table>
+        <mu-table-column label="f1" field="f1"></mu-table-column>
+        <mu-table-column label="f2" field="f2"></mu-table-column>
+      </mu-table>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+      },
+      methods: {
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+.table {
+  width: 100%;
+  display: table;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: rgba(255, 255, 255, .85);
+  cursor: default;
+}
+.table tr {
+  border-bottom: 1px solid #e0e0e0
+}
+.table thead > tr:last-child {
+  border-bottom: 2px solid $primary;
+}
+.table[gridline="none"] tr {
+  border-bottom: 0;
+}
+.table[gridline="all"] td:not(:last-child) {
+  border-right: 1px solid #e0e0e0
+}
+.table-cell {
+  display: table-cell;
+}
+.table td,
+.table th,
+.table-cell {
+  color: #333;
+  padding: 10px;
+  line-height: 20px;
+  vertical-align: top;
+}
+.table > thead th,
+.table > thead td {
+  color: #666;
+  font-weight: 600;
+  @mixin text-ellipsis;
+}
+.table.compact > td,
+.table.compact > th {
+  padding: 8px 10px;
+}
+
+td.center {
+  text-align: center;
+}
+table.nowrap td {
+  @mixin text-ellipsis;
+}
+
+.alternant > tbody > tr:nth-child(even),
+.alternant > tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, .025);
+}
+
+.hover > tbody > tr:hover,
+.hover > tr:hover {
+  background-color: rgba(0, 0, 0, .075);
+}
+
+.table > tbody > tr.active,
+.table > tr.active {
+  background-color: mixc($primary, .85);
+}
+.table tr.active * {
+  color: #fff
+}
+

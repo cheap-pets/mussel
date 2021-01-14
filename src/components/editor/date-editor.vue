@@ -95,7 +95,6 @@
         this.params.value = value
           ? formatDate(value, this.dateFormat)
           : ''
-        console.log(this.params.value)
       },
       onSelect (value, year, month, date) {
         this.setValue(value)

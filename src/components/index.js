@@ -84,6 +84,10 @@ import SidebarMenu from './menu/sidebar-menu.vue'
 import MenuGroup from './menu/menu-group.vue'
 import MenuItem from './menu/menu-item.vue'
 
+/* Table */
+import Table from './table/table.vue'
+import TableColumn from './table/columns/column.js'
+
 /* MIXINS */
 import PopupGroupMixin from '@mixins/mix-popup-group'
 
@@ -158,6 +162,9 @@ function installComponents (Vue) {
   Vue.component('mu-sidebar-menu', SidebarMenu)
   Vue.component('mu-menu-group', MenuGroup)
   Vue.component('mu-menu-item', MenuItem)
+
+  Vue.component('mu-table', Table)
+  Vue.component('mu-table-column', TableColumn)
 }
 
 export {
@@ -231,6 +238,9 @@ export {
   SidebarMenu,
   MenuGroup,
   MenuItem,
+  // Table
+  Table,
+  TableColumn,
   // Mixins
   PopupGroupMixin,
   // register
