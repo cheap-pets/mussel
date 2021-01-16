@@ -71,7 +71,8 @@
           class="mu-calendar-row">
           <div
             v-for="(cell, cellIdx) in row"
-            :key="cellIdx" class="mu-calendar-cell"
+            :key="cellIdx"
+            class="mu-calendar-cell"
             :active="cell.month === naviMonth"
             @click="onMonthCellClick(cell)">
             {{ cell.monthName }}
@@ -89,7 +90,7 @@
   import isString from 'lodash.isstring'
 
   import lang from '../../lang'
-  import IconButton from '../button/icon-button'
+  import IconButton from '../button/icon-button.jsx'
 
   import {
     isEqual,

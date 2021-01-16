@@ -28,20 +28,17 @@ export default {
     },
     icon: String,
     iconClass: String,
-    iconOnly: Boolean,
     caption: String
   },
   computed: {
     hasIcon () {
       return !!(this.icon || this.iconClass)
     },
-    isIconOnly () {
-      return this.iconOnly ||
-        (
-          !this.$slots.default &&
-          !this.caption &&
-          this.hasIcon
-        )
+    iconOnly () {
+      return !this.$slots.default && !this.caption && this.hasIcon
+    },
+    buttonClass () {
+      return 'mu-button' + (this.iconOnly ? ' mu-icon-button' : '')
     }
   },
   methods: {
@@ -50,13 +47,17 @@ export default {
     }
   },
   render (h) {
+    if (this.iconOnly) {
+      console.warn(
+        'use MusselIconButton instead of MusselButton which contains a solo icon.'
+      )
+    }
     return (
       <button
-        class="mu-button mu-text-ellipsis"
+        class={ this.buttonClass }
         button-type={ this.buttonType }
         button-style={ this.buttonStyle }
         button-shape={ this.buttonShape }
-        icon-only={ this.isIconOnly }
         onClick={ this.onClick }>
         {
           this.hasIcon

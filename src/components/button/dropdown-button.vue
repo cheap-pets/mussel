@@ -14,7 +14,7 @@
         @click="onButtonClick">
         <slot />
       </mu-button>
-      <mu-button
+      <mu-icon-button
         dropdown-trigger
         v-bind="splitParams"
         @click="onSplitButtonClick" />

@@ -12,8 +12,11 @@
   
   <link rel="stylesheet" href="./iconfont.css">
   <style>
-    .mu-button:not(:empty):not([icon-only]):not([button-style=link]) {
+    .mu-button {
       min-width: 120px;
+    }
+    .mu-icon-button {
+      min-width: 0;
     }
     .mu-color-editor {
       width: 120px;
@@ -84,7 +87,7 @@
     <div>
       <h3>Round Shape</h3>
       <mu-button button-type="primary" button-shape="round">PRIMARY</mu-button>
-      <mu-icon-button button-type="danger" button-shape="round" icon="close"></mu-icon-button>
+      <mu-icon-button button-type="danger" button-shape="round" icon="x"></mu-icon-button>
     </div>
     <div>
       <h3>Icon & Content</h3>
@@ -134,9 +137,7 @@
       <h5>Split Button</h5>
       <mu-button-group>
         <mu-button button-type="primary">Split Button</mu-button>
-        <mu-button button-type="primary" icon-only>
-          <mu-icon icon="key-down"></mu-icon>
-        </mu-button>
+        <mu-icon-button button-type="primary" icon="key-down"></mu-icon-button>
       </mu-button-group>
       <mu-split-button>Real Split Button</mu-split-button>
     </div>

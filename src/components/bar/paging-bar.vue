@@ -1,16 +1,16 @@
 <template>
   <h-box class="mu-bar mu-paging-bar" align-items="center">
-    <mu-button
+    <mu-icon-button
       icon="key-left"
       :disabled="disabled || !pageIndex"
       @click="goPrev" />
     <label>{{ currentPageCaption }}</label>
-    <mu-button
+    <mu-icon-button
       icon="key-right"
       :disabled="disabled || eof"
       @click="goNext" />
     <mu-space />
-    <mu-button
+    <mu-icon-button
       v-if="reload"
       icon="refresh"
       :disabled="disabled"
@@ -25,13 +25,13 @@
 
   import HBox from '../layout/flex-h-box'
   import Space from '../layout/space.vue'
-  import Button from '../button/button.jsx'
+  import IconButton from '../button/icon-button.jsx'
 
   export default {
     components: {
       HBox,
       'mu-space': Space,
-      'mu-button': Button
+      'mu-icon-button': IconButton
     },
     props: {
       pageIndex: {

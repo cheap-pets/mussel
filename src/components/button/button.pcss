@@ -12,11 +12,14 @@ h1 {
   border: 1px solid $normalBorderColor;
   border-radius: $inputElementBorderRadius;
   line-height: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   background: $normalBackground;
   /* vertical-align: middle; */
+  font-size: $buttonFontSize;
   text-decoration: none;
   text-align: center;
-  font-size: $buttonFontSize;
   color: $normalTextColor;
   cursor: pointer;
   box-shadow: $buttonShadow $normalGreyBackground;
@@ -209,22 +212,16 @@ h1 {
     }
   }
 
-  &[icon-only],
+  &.mu-icon-button,
   &:empty {
     width: $inputElementHeight;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0;
   }
 
   & > .mu-icon + span,
   & > span + .mu-icon {
     margin-left: 4px;
   }
-}
-
-button.mu-button {
-  padding-top: 0;
-  padding-bottom: 0;
 }
 
 [button-shape="round"],

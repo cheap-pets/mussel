@@ -12,7 +12,7 @@ import registerIcons from './icon/register'
 
 /* BUTTON */
 import Button from './button/button.jsx'
-import IconButton from './button/icon-button'
+import IconButton from './button/icon-button.jsx'
 import ButtonGroup from './button/button-group.vue'
 import SplitButton from './button/split-button.vue'
 import DropdownButton from './button/dropdown-button.vue'

@@ -5,7 +5,7 @@
       @click="onButtonClick">
       <slot />
     </mu-button>
-    <mu-button
+    <mu-icon-button
       v-bind="splitParams"
       @click="onSplitButtonClick" />
   </div>
