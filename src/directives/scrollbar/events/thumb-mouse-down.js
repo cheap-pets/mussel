@@ -1,3 +1,4 @@
+import throttle from 'lodash.throttle'
 import { getClientRect } from '@utils/client-rect'
 
 function outOfRect (point, rail, isYAxis) {
@@ -27,13 +28,19 @@ export default function onThumbMouseDown (event) {
     clientY = y
   }
 
+  const throttleMove = throttle(
+    onMouseMove,
+    20,
+    { leading: true, trailing: true }
+  )
+
   const onMouseUp = e => {
     this.scrolling = false
-    window.removeEventListener('mousemove', onMouseMove)
+    window.removeEventListener('mousemove', throttleMove)
     window.removeEventListener('mouseup', onMouseUp)
   }
 
-  window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('mousemove', throttleMove)
   window.addEventListener('mouseup', onMouseUp)
 
   event.stopPropagation()

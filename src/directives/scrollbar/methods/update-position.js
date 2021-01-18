@@ -63,8 +63,6 @@ function updateThumbY () {
   })
 }
 
-let t1 = new Date()
-
 function compareState (last, current) {
   return Object.keys(current).reduce((result, key) => {
     return result && current[key] === last[key]
