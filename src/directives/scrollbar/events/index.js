@@ -8,6 +8,7 @@ import { onMouseEnter, onMouseLeave } from './mouse-enter-leave'
 window.addEventListener('keydown', onKeyDown, true)
 
 function debounceUpdatePosition () {
+  if (this.scrolling) return
   if (this.updateTimer) clearTimeout(this.updateTimer)
   this.updateTimer = setTimeout(
     () => {

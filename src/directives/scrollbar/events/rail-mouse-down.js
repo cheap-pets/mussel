@@ -33,7 +33,7 @@ export default function onRailMouseDown (event) {
 
   const timer = setInterval(() => {
     suspend = suspend || !doScroll()
-  }, 100)
+  }, 300)
 
   const onMouseMove = e => {
     suspend = false

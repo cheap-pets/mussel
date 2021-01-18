@@ -63,20 +63,38 @@ function updateThumbY () {
   })
 }
 
-async function updatePosition () {
-  if (this.el.getAttribute('activated') === null) return
+let t1 = new Date()
 
-  const { scrollbarX, scrollbarY } = this.options
-  const { scrollHeight, scrollWidth, clientHeight, clientWidth } = this.el
+function compareState (last, current) {
+  return Object.keys(current).reduce((result, key) => {
+    return result && current[key] === last[key]
+  }, true)
+}
 
-  this.hiddenX = scrollbarX === false || scrollWidth - clientWidth < 1
-  this.hiddenY = scrollbarY === false || scrollHeight - clientHeight < 1
+async function updatePosition (skipWhenSameSize) {
+  if (!this.activated) return
 
-  setRailHidden(this.railX, this.hiddenX)
-  setRailHidden(this.railY, this.hiddenY)
+  const {
+    scrollTop: st, scrollLeft: sl,
+    scrollHeight: sh, scrollWidth: sw,
+    clientHeight: ch, clientWidth: cw
+  } = this.el
 
-  if (!this.hiddenX) updateThumbX.call(this)
-  if (!this.hiddenY) updateThumbY.call(this)
+  const current = { st, sl, sh, sw, ch, cw }
+
+  if (!this.state || !compareState(this.state, current)) {
+    const { scrollbarX, scrollbarY } = this.options
+
+    this.state = current
+    this.hiddenX = scrollbarX === false || sw - cw < 1
+    this.hiddenY = scrollbarY === false || sh - ch < 1
+
+    setRailHidden(this.railX, this.hiddenX)
+    setRailHidden(this.railY, this.hiddenY)
+
+    if (!this.hiddenX) updateThumbX.call(this)
+    if (!this.hiddenY) updateThumbY.call(this)
+  }
 }
 
 export default updatePosition
