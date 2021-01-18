@@ -20,7 +20,7 @@ function updateThumbX () {
 
   const thumbWidth = Math.max(
     parseInt(railX.clientWidth ** 2 / el.scrollWidth),
-    10
+    20
   )
 
   this.ratioX = (railX.clientWidth - thumbWidth) /
@@ -49,7 +49,7 @@ function updateThumbY () {
 
   const thumbHeight = Math.max(
     parseInt(railY.clientHeight ** 2 / el.scrollHeight),
-    10
+    20
   )
 
   this.ratioY = (railY.clientHeight - thumbHeight) /
