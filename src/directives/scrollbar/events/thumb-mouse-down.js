@@ -31,7 +31,7 @@ export default function onThumbMouseDown (event) {
   const throttleMove = throttle(
     onMouseMove,
     20,
-    { leading: true, trailing: true }
+    { leading: false, trailing: true }
   )
 
   const onMouseUp = e => {
