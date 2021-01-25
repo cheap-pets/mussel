@@ -102,6 +102,9 @@
           right: 0,
           top: this.rowHeight * (this.data.length) + 'px'
         }
+      },
+      cacheAll () {
+        return !this.rowHeight || this.data.length <= 500
       }
     },
     watch: {
@@ -158,21 +161,18 @@
       onRightTableResize (e) {
         this.rightTableSize = e.target.clientWidth
       },
-      onScroll (e) {
-        if (!this.rowHeight || this.data.length <= 500) return
-        this.scrollDirection = Math.sign(e.target.scrollTop - this.scrollTop)
-        this.scrollTop = e.target.scrollTop
-        this.throttleCacheData()
-      },
-      throttleCacheData: throttle(
-        function () {
+      onScroll: throttle(
+        function (e) {
+          if (this.cacheAll) return
+          this.scrollDirection = Math.sign(e.target.scrollTop - this.scrollTop)
+          this.scrollTop = e.target.scrollTop
           this.cacheData()
         },
         500,
         { leading: false, trailing: true }
       ),
       cacheData () {
-        if (this.rowHeight && this.data.length > 500) {
+        if (!this.cacheAll) {
           if (!this.scrollDirection) return
 
           const down = this.scrollDirection > 0 ? 75 : 25
