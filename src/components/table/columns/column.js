@@ -1,11 +1,10 @@
-let ai = 0
-
 export default {
   inject: ['table'],
-  template: '<div v-show="false"></div>',
+  template: '<div></div>',
   props: {
     field: String,
     label: String,
+    fixed: String,
     editor: null,
     content: null,
     cellClass: null,
@@ -15,11 +14,10 @@ export default {
     this.registerColumn()
   },
   beforeDestroy () {
-    this.table.unregisterColumn(this._columnId)
+    this.table.unregisterColumn(this._uid)
   },
   methods: {
     registerColumn () {
-      this._columnId = '#f_' + (ai++)
       this.table.registerColumn(this)
     }
   }

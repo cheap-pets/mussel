@@ -138,7 +138,7 @@
         ]
       },
       methods: {
-        onTabChange (tabName) {
+        onTabChange: function (tabName) {
           var tabs = this
           mussel.confirm('switch tab ?', function (btn) {
             if (btn === 'ok') tabs.activeTabName = tabName

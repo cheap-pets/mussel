@@ -69,7 +69,7 @@ function compareState (last, current) {
   }, true)
 }
 
-async function updatePosition (skipWhenSameSize) {
+async function updatePosition () {
   if (!this.activated) return
 
   const {
