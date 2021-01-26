@@ -5,16 +5,20 @@
       :key="item.idx"
       :style="rowStyle(item.idx)"
       class="mu-table_row">
-      <div v-for="col in columns" :key="col._uid" class="mu-table_cell">
-        {{ item.data[col.field] }}
+      <div
+        v-for="col in columns"
+        :key="col._uid"
+        :style="{ width: col.width }"
+        class="mu-table_cell">
+        <div>
+          {{ item.data[col.field] }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  // import { assignIfDefined } from '@utils/assign-if-defined'
-
   export default {
     inject: ['table'],
     props: {
@@ -26,22 +30,24 @@
     computed: {
       tableStyle () {
         return this.width
-          ? {
-            width: this.width + 'px'
-          }
+          ? { width: this.width + 'px' }
           : undefined
       }
     },
     methods: {
       rowStyle (idx) {
         const height = this.table.rowHeight
-        return height
-          ? {
+        return this.table.cacheAll
+          ? (
+            height
+              ? { height: height + 'px' }
+              : undefined
+          )
+          : {
             position: 'absolute',
             height: height + 'px',
             top: height * idx + 'px'
           }
-          : undefined
       }
     }
   }

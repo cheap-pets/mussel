@@ -18,20 +18,34 @@
     .scroll-container {
       width: 500px;
       height: 500px;
-      border: 1px solid silver;
       overflow: auto;
     }
     .scroll-element {
-      width: 700px;
-      height: 13000px;
+      width: 1000px;
+      height: 3000px;
       background-image: linear-gradient(45deg, yellow, red, yellow);
+    }
+    .side-panel {
+      position: absolute;
+      z-index: 5;
+      width: 100px;
+      top: 0;
+      height: 3000px;
+      background-image: linear-gradient(45deg, red, yellow, red);
     }
   </style>
 </head>
 
 <body>
-  <div id="app" class="scroll-container" v-mussel-scrollbar="{ scrollbarX: true, scrollbarY: true }">
-    <div class="scroll-element">
+  <div id="app" style="position: relative; display: inline-block; overflow: hidden;">
+    <div class="side-panel" style="left: 0;"></div>
+    <div class="side-panel" style="right: 0;"></div>
+    <div
+      v-mussel-scrollbar="{ scrollbarX: true, scrollbarY: true }"
+      class="scroll-container"
+      style="padding: 0 100px;">
+      <div class="scroll-element">
+      </div>
     </div>
   </div>
 

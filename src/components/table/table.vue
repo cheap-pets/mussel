@@ -13,7 +13,8 @@
         <table-head
           v-if="columnGroups.center"
           :columns="columnGroups.center"
-          size="auto" />
+          style="overflow: hidden;"
+          size="1" />
         <table-head
           v-if="columnGroups.right"
           :columns="columnGroups.right"
@@ -21,13 +22,11 @@
           @sizechange.native="onRightTableResize" />
       </h-box>
       <h-box
-        v-mussel-scrollbar
+        v-mussel-scrollbar="{ enable: enableScrollbar }"
         class="mu-table_center"
         size="auto"
         @scroll.native="onScroll">
-        <div
-          v-if="rowHeight && data.length"
-          :style="scrollHolderStyle" />
+        <div v-if="!cacheAll" :style="scrollHolderStyle" />
         <table-body
           v-if="columnGroups.left"
           table-fixed="left"
@@ -36,7 +35,7 @@
           :data="cachedData" />
         <table-body
           v-if="columnGroups.center"
-          size="auto"
+          size="1"
           :columns="columnGroups.center"
           :data="cachedData" />
         <table-body
@@ -61,6 +60,7 @@
   import './table.pcss'
 
   export default {
+    name: 'MusselTable',
     components: {
       VBox,
       HBox,
@@ -95,16 +95,20 @@
       }
     },
     computed: {
+      cacheAll () {
+        return !this.rowHeight || this.data.length <= 500
+      },
+      enableScrollbar () {
+        return true
+      },
       scrollHolderStyle () {
         return {
+          position: 'absolute',
           width: '1px',
           height: '1px',
           right: 0,
           top: this.rowHeight * (this.data.length) + 'px'
         }
-      },
-      cacheAll () {
-        return !this.rowHeight || this.data.length <= 500
       }
     },
     watch: {
@@ -120,7 +124,7 @@
       this.columnGroups = { left: [], center: [], right: [] }
     },
     methods: {
-      composeColumns () {
+      setColumnGroups () {
         this.ready = false
 
         if (this._composeTimer) clearTimeout(this._composeTimer)
@@ -128,9 +132,13 @@
           const groups = { left: [], center: [], right: [] }
 
           this.columns.forEach(col => {
-            const group = col.fixed !== undefined
-              ? (col.fixed === 'right' ? groups.right : groups.left)
-              : groups.center
+            const group = col.fixed === undefined
+              ? groups.center
+              : (
+                col.fixed === 'right'
+                  ? groups.right
+                  : groups.left
+              )
             group.push(col)
           })
 
@@ -146,13 +154,13 @@
       },
       registerColumn (column) {
         this.columns.push(column)
-        this.composeColumns()
+        this.setColumnGroups()
       },
       unregisterColumn (columnId) {
         const idx = this.columns.findIndex(col => col._uid === columnId)
         if (idx >= 0) {
           this.columns.splice(idx)
-          this.composeColumns()
+          this.setColumnGroups()
         }
       },
       onLeftTableResize (e) {
@@ -172,22 +180,20 @@
         { leading: false, trailing: true }
       ),
       cacheData () {
-        if (!this.cacheAll) {
-          if (!this.scrollDirection) return
-
-          const down = this.scrollDirection > 0 ? 75 : 25
+        if (this.cacheAll) {
+          this.cachedData = this
+            .data
+            .map((rec, idx) => ({ idx, data: rec }))
+        } else if (this.scrollDirection) {
           const i = parseInt(this.scrollTop / this.rowHeight)
-          const start = Math.max(i - 100 + down, 0)
+          const down = this.scrollDirection > 0 ? 50 : 20
+          const start = Math.max(i - 70 + down, 0)
           const end = Math.min(i + down, this.data.length - 1) + 1
 
           this.cachedData = this
             .data
             .slice(start, end)
             .map((rec, idx) => ({ idx: idx + start, data: rec }))
-        } else {
-          this.cachedData = this
-            .data
-            .map((rec, idx) => ({ idx, data: rec }))
         }
       }
     }

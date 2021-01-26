@@ -8,8 +8,7 @@
     @input="onInput"
     @blur="onBlur"
     @click="onClick"
-    @keydown="onKeyDown"
-  >
+    @keydown="onKeyDown">
 </template>
 
 <script>

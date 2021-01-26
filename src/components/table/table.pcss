@@ -1,46 +1,42 @@
 .mu-table {
-  display: inline-flex;
-  width: 100%;
   border: 1px solid $normalBorderColor;
 
   & .mu-table_head,
   & .mu-table_body {
     position: relative;
   }
+  & [size],
+  & .mu-table_body {
+    & > .mu-table_row {
+      width: 100%;
+    }
+  }
 
   & .mu-table_row {
     display: table;
-    width: 100%;
+    table-layout: fixed;
   }
 
   & .mu-table_cell {
     display: table-cell;
-    padding: 10px;
-    height: 40px;
-    line-height: 20px;
-    vertical-align: middle;
+    padding: 10px 0;
     min-width: 40px;
-    border: 0 solid $normalBorderColor;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  & th, & td {
-    box-sizing: content-box;
-    padding: 10px;
-    height: 20px;
-    line-height: 20px;
     vertical-align: middle;
-    min-width: 20px;
     border: 0 solid $normalBorderColor;
     border-right-width: 1px;
     border-bottom-width: 1px;
+
+    & > div {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0 10px;
+      overflow: hidden;
+      line-height: 20px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
 }
 
-.mu-absolute-fit.mu-table {
-  width: auto;
-}
+/* .mu-absolute-fit.mu-table {
+} */

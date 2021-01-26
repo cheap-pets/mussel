@@ -1,5 +1,7 @@
 export function scrollBy (deltaX, deltaY, event) {
-  let propagation = this.options.propagation === true
+  let propagation = (deltaX || deltaY)
+    ? this.options.propagation === true
+    : this.options.propagation !== false
 
   if (deltaX) {
     const edge = this.el.scrollLeft

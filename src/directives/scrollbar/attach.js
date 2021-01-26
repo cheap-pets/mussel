@@ -11,8 +11,14 @@ const SCROLLBAR_HTML = /* html */`
     <div class="mu-scrollbar_thumb"></div>
   </div>`
 
-function renderElements (el) {
+function renderElements (el, options) {
+  const { scrollbarX, scrollbarY } = options
+  const overflowX = scrollbarX === false ? 'visible' : 'hidden'
+  const overflowY = scrollbarY === false ? 'visible' : 'hidden'
+
   el.classList.add('mu-scrollbar')
+  el.style.overflow = `${overflowX} ${overflowY}`
+  console.log(el.style.overflow)
   el.insertAdjacentHTML('afterbegin', SCROLLBAR_HTML)
 
   const rails = Array
@@ -45,11 +51,11 @@ function observeMutation (el) {
 
 export default function attach (el, binding) {
   const options = binding.value || {}
-  if (el.__mussel_scroller || options.overflow === 'hidden') return
+  if (options.enable === false || el.__mussel_scroller) return
 
   const ctx = el.__mussel_scroller = {
     options,
-    ...renderElements(el),
+    ...renderElements(el, options),
     ...methods
   }
   observeMutation(el)

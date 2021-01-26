@@ -1,10 +1,19 @@
 export default {
+  name: 'MusselTableColumn',
   inject: ['table'],
   template: '<div></div>',
   props: {
     field: String,
     label: String,
     fixed: String,
+    width: {
+      type: String,
+      default () {
+        return this.fixed === undefined
+          ? undefined
+          : '100px'
+      }
+    },
     editor: null,
     content: null,
     cellClass: null,
