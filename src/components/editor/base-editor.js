@@ -114,6 +114,7 @@ export default {
       this.params.value = value
     },
     onInput (value) {
+      if (!this.editable && !value) return
       this.setValue(value)
       this.$emit('input', value)
       this.$emit('change', value)
