@@ -1,16 +1,16 @@
 <template>
-  <div v-if="data.length" class="mu-table_body" :style="tableStyle">
+  <div v-if="data.length" :style="tableStyle">
     <div
       v-for="item in data"
       :key="item.idx"
       :style="rowStyle(item.idx)"
-      class="mu-table_row">
+      class="mu-table_row mu-table_body-row">
       <div
         v-for="col in columns"
         :key="col._uid"
         :style="{ width: col.width }"
         class="mu-table_cell">
-        <div>
+        <div style="cellDivStyle">
           {{ item.data[col.field] }}
         </div>
       </div>
@@ -22,7 +22,6 @@
   export default {
     inject: ['table'],
     props: {
-      tableFixed: String,
       columns: Array,
       width: Number,
       data: Array
@@ -36,18 +35,18 @@
     },
     methods: {
       rowStyle (idx) {
-        const height = this.table.rowHeight
+        const height = this.table.rowOffsetHeight
         return this.table.cacheAll
-          ? (
-            height
-              ? { height: height + 'px' }
-              : undefined
-          )
+          ? undefined
           : {
             position: 'absolute',
-            height: height + 'px',
             top: height * idx + 'px'
           }
+      },
+      cellDivStyle () {
+        return this.table.rowHeight
+          ? { height: this.table.rowHeight + 'px' }
+          : undefined
       }
     }
   }

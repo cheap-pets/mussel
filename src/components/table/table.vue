@@ -1,47 +1,61 @@
 <template>
-  <v-box class="mu-table">
+  <v-box
+    class="mu-table"
+    :width="width"
+    :style="tableStyle"
+    :gridline="gridline">
     <div v-show="false">
       <slot />
     </div>
     <template v-if="ready">
-      <h-box class="mu-table_top">
-        <table-head
+      <h-box class="mu-table_head">
+        <table-head-group
           v-if="columnGroups.left"
-          :columns="columnGroups.left"
+          class="mu-table_head-left"
           table-fixed="left"
+          :columns="columnGroups.left"
           @sizechange.native="onLeftTableResize" />
-        <table-head
+        <table-head-group
           v-if="columnGroups.center"
           :columns="columnGroups.center"
-          style="overflow: hidden;"
-          size="1" />
-        <table-head
+          :size="centerSize"
+          class="mu-table_head-center"
+          style="overflow: hidden;" />
+        <table-head-group
           v-if="columnGroups.right"
-          :columns="columnGroups.right"
+          class="mu-table_head-right"
           table-fixed="right"
+          :columns="columnGroups.right"
           @sizechange.native="onRightTableResize" />
       </h-box>
       <h-box
-        v-mussel-scrollbar="{ enable: enableScrollbar }"
-        class="mu-table_center"
+        v-mussel-scrollbar="scrollbarYOptions"
+        class="mu-table_body"
         size="auto"
-        @scroll.native="onScroll">
-        <div v-if="!cacheAll" :style="scrollHolderStyle" />
-        <table-body
+        @scroll.native="onRowScroll">
+        <table-body-group
           v-if="columnGroups.left"
+          class="mu-table_body-left"
           table-fixed="left"
           :columns="columnGroups.left"
+          :style="bodyGroupStyle"
           :width="leftTableSize"
           :data="cachedData" />
-        <table-body
+        <table-body-group
           v-if="columnGroups.center"
-          size="1"
+          v-mussel-scrollbar="scrollbarXOptions"
+          class="mu-table_body-center"
+          :size="centerSize"
           :columns="columnGroups.center"
-          :data="cachedData" />
-        <table-body
+          :style="bodyGroupStyle"
+          :data="cachedData"
+          @scroll.native="onColScroll" />
+        <table-body-group
           v-if="columnGroups.right"
-          table-fixed="left"
+          class="mu-table_body-right"
+          table-fixed="right"
           :columns="columnGroups.right"
+          :style="bodyGroupStyle"
           :width="rightTableSize"
           :data="cachedData" />
       </h-box>
@@ -54,8 +68,8 @@
 
   import VBox from '../layout/flex-v-box'
   import HBox from '../layout/flex-h-box'
-  import TableHead from './table-head.vue'
-  import TableBody from './table-body.vue'
+  import TableHeadGroup from './table-head-group.vue'
+  import TableBodyGroup from './table-body-group.vue'
 
   import './table.pcss'
 
@@ -64,8 +78,8 @@
     components: {
       VBox,
       HBox,
-      TableHead,
-      TableBody
+      TableHeadGroup,
+      TableBodyGroup
     },
     provide () {
       return {
@@ -73,9 +87,18 @@
       }
     },
     props: {
+      width: String,
+      height: String,
       rowHeight: {
         type: Number,
         default: 40
+      },
+      gridline: {
+        type: String,
+        default: 'row',
+        validator (v) {
+          return ['none', 'row', 'column', 'both'].indexOf(v) !== -1
+        }
       },
       data: {
         type: Array,
@@ -98,17 +121,45 @@
       cacheAll () {
         return !this.rowHeight || this.data.length <= 500
       },
-      enableScrollbar () {
-        return true
-      },
-      scrollHolderStyle () {
+      tableStyle () {
         return {
-          position: 'absolute',
-          width: '1px',
-          height: '1px',
-          right: 0,
-          top: this.rowHeight * (this.data.length) + 'px'
+          height: (this.height && this.height !== 'auto')
+            ? this.height
+            : undefined,
+          width: (this.width && this.width !== 'auto')
+            ? this.width
+            : undefined
         }
+      },
+      centerSize () {
+        return this.width === 'auto' ? undefined : 1
+      },
+      bodyGroupStyle () {
+        return this.rowHeight
+          ? { height: this.rowOffsetHeight * this.data.length + 'px' }
+          : undefined
+      },
+      scrollbarYOptions () {
+        return {
+          enable: this.height !== 'auto',
+          scrollbarX: false
+        }
+      },
+      scrollbarXOptions () {
+        return {
+          enable: this.width !== 'auto',
+          scrollbarY: false,
+          stickToParent: true
+        }
+      },
+      rowOffsetHeight () {
+        const borderWidth =
+          ['row', 'both'].indexOf(this.gridline) === -1
+            ? 0
+            : 1
+        return this.rowHeight
+          ? this.rowHeight + borderWidth
+          : undefined
       }
     },
     watch: {
@@ -132,7 +183,7 @@
           const groups = { left: [], center: [], right: [] }
 
           this.columns.forEach(col => {
-            const group = col.fixed === undefined
+            const group = (col.fixed === undefined || this.width === 'auto')
               ? groups.center
               : (
                 col.fixed === 'right'
@@ -150,7 +201,7 @@
           this.ready = true
 
           delete this._composeTimer
-        }, 100)
+        }, 50)
       },
       registerColumn (column) {
         this.columns.push(column)
@@ -169,7 +220,7 @@
       onRightTableResize (e) {
         this.rightTableSize = e.target.clientWidth
       },
-      onScroll: throttle(
+      onRowScroll: throttle(
         function (e) {
           if (this.cacheAll) return
           this.scrollDirection = Math.sign(e.target.scrollTop - this.scrollTop)
@@ -179,6 +230,10 @@
         500,
         { leading: false, trailing: true }
       ),
+      onColScroll (e) {
+        const headEl = this.$el.querySelector('.mu-table_head-center')
+        if (headEl) headEl.scrollLeft = e.target.scrollLeft
+      },
       cacheData () {
         if (this.cacheAll) {
           this.cachedData = this

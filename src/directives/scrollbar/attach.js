@@ -11,14 +11,8 @@ const SCROLLBAR_HTML = /* html */`
     <div class="mu-scrollbar_thumb"></div>
   </div>`
 
-function renderElements (el, options) {
-  const { scrollbarX, scrollbarY } = options
-  const overflowX = scrollbarX === false ? 'visible' : 'hidden'
-  const overflowY = scrollbarY === false ? 'visible' : 'hidden'
-
+function renderElements (el) {
   el.classList.add('mu-scrollbar')
-  el.style.overflow = `${overflowX} ${overflowY}`
-  console.log(el.style.overflow)
   el.insertAdjacentHTML('afterbegin', SCROLLBAR_HTML)
 
   const rails = Array

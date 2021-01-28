@@ -1,13 +1,23 @@
 .mu-table {
-  border: 1px solid $normalBorderColor;
 
-  & .mu-table_head,
-  & .mu-table_body {
-    position: relative;
+  &[width=auto] {
+    display: 'inline-flex';
+    clear: 'both'
   }
-  & [size],
-  & .mu-table_body {
-    & > .mu-table_row {
+
+  .mu-table_head {
+    border-bottom: 2px solid $primaryColor;
+    color: #999;
+    font-weight: 600;
+  }
+
+  .mu-table_head-center {
+    overflow: hidden;
+  }
+
+  .mu-table_head-center,
+  .mu-table_body {
+    & .mu-table_row {
       width: 100%;
     }
   }
@@ -15,28 +25,55 @@
   & .mu-table_row {
     display: table;
     table-layout: fixed;
+    border-bottom: 0 solid $normalDividerColor;
+  }
+
+  &[stripe] .mu-table_body-row:nth-child(odd) {
+    background: #f7f7f7;
   }
 
   & .mu-table_cell {
     display: table-cell;
-    padding: 10px 0;
     min-width: 40px;
     vertical-align: middle;
-    border: 0 solid $normalBorderColor;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
+    border-right: 0 solid $normalDividerColor;
 
     & > div {
       box-sizing: border-box;
       width: 100%;
-      padding: 0 10px;
-      overflow: hidden;
+      padding: 10px;
       line-height: 20px;
+      overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
   }
-}
 
-/* .mu-absolute-fit.mu-table {
-} */
+  &[gridline='both'],
+  &[gridline='row'] {
+    & .mu-table_row {
+      border-bottom-width: 1px;
+    }
+  }
+
+  & .mu-table_head .mu-table_row:last-child {
+    border-bottom-width: 0;
+  }
+
+  & [table-fixed] .mu-table_cell,
+  & .mu-table_cell:last-child {
+    border-right-width: 0;
+  }
+
+  &[gridline='both'],
+  &[gridline='column'] {
+    & .mu-table_cell,
+    & [table-fixed=left] .mu-table_cell {
+      border-right-width: 1px;
+    }
+
+    & [table-fixed=right] .mu-table_cell:first-child {
+      border-left: 1px solid $normalDividerColor;
+    }
+  }
+}

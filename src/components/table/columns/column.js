@@ -8,11 +8,7 @@ export default {
     fixed: String,
     width: {
       type: String,
-      default () {
-        return this.fixed === undefined
-          ? undefined
-          : '100px'
-      }
+      default: '100px'
     },
     editor: null,
     content: null,

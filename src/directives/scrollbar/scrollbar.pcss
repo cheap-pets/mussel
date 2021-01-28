@@ -1,5 +1,6 @@
 .mu-scrollbar {
   position: relative;
+  overflow: hidden;
   outline: none;
 
   & .mu-scrollbar_rail,
@@ -30,9 +31,6 @@
   }
 
   &[axis=x] {
-    /* left: 4px;
-    right: 14px;
-    bottom: 4px; */
     height: 6px;
 
     & > .mu-scrollbar_thumb {
@@ -41,11 +39,7 @@
   }
 
   &[axis=y] {
-    /* top: 4px;
-    right: 4px;
-    bottom: 4px; */
     width: 6px;
-    /* height: 100%; */
 
     & > .mu-scrollbar_thumb {
       width: 100%;

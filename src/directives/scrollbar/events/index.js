@@ -35,4 +35,8 @@ export default function bindEvents () {
 
   this.thumbX.addEventListener('mousedown', onThumbMouseDown.bind(this))
   this.thumbY.addEventListener('mousedown', onThumbMouseDown.bind(this))
+
+  if (this.stickToParent) {
+    this.el.parentNode.addEventListener('scroll', () => this.updatePosition())
+  }
 }

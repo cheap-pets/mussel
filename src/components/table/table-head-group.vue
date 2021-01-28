@@ -1,6 +1,6 @@
 <template>
-  <div class="mu-table_head">
-    <div class="mu-table_row">
+  <div>
+    <div class="mu-table_row mu-table_head-row">
       <div
         v-for="col in columns"
         :key="col._uid"
@@ -17,7 +17,6 @@
 <script>
   export default {
     props: {
-      tableFixed: String,
       columns: Array
     }
   }

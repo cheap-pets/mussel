@@ -18,15 +18,16 @@
     <hr>
     <div>
       <h3>Simple</h3>
-      <mu-table :data="records" style="height: 500px;">
+      <mu-table bordered :data="records" height="500px" gridline="row" stripe>
         <mu-table-column label="f1" field="f1" fixed width="40px"></mu-table-column>
-        <mu-table-column label="f2" field="f2" width="300px"></mu-table-column>
-        <mu-table-column label="f2_shadow" field="f2" width="500px"></mu-table-column>
+        <mu-table-column label="f2" field="f2" width="500px"></mu-table-column>
+        <mu-table-column label="text column 1" field="f2" width="500px"></mu-table-column>
+        <mu-table-column label="text column 2" field="f2" width="500px"></mu-table-column>
+        <mu-table-column label="text column 3" field="f2" width="500px"></mu-table-column>
         <mu-table-column label="f3" field="f3" fixed="right"></mu-table-column>
       </mu-table>
     </div>
   </div>
-  <div style="height: 1000px"></div>
   <!-- <mu-table>
     <mu-check-column
       fixed="left"
@@ -71,7 +72,7 @@
 
   <script type="text/javascript">
     var records = []
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < 100; i++) {
       records.push({
         f1: i,
         f2: 'some text value',

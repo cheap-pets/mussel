@@ -9,6 +9,8 @@ export default function onMouseWheel (event) {
   const x = event.deltaX * magnification
   const y = event.deltaY * magnification
 
+  console.log(y, magnification)
+
   const deltaX = this.hiddenX ? null : (event.shiftKey ? y : x)
   const deltaY = this.hiddenY ? null : (event.shiftKey ? x : y)
 
