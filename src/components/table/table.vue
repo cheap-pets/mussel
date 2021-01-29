@@ -119,7 +119,7 @@
     },
     computed: {
       cacheAll () {
-        return !this.rowHeight || this.data.length <= 500
+        return !this.rowHeight || this.data.length <= 100
       },
       tableStyle () {
         return {
@@ -235,20 +235,29 @@
         if (headEl) headEl.scrollLeft = e.target.scrollLeft
       },
       cacheData () {
-        if (this.cacheAll) {
-          this.cachedData = this
-            .data
-            .map((rec, idx) => ({ idx, data: rec }))
-        } else if (this.scrollDirection) {
-          const i = parseInt(this.scrollTop / this.rowHeight)
-          const down = this.scrollDirection > 0 ? 50 : 20
-          const start = Math.max(i - 70 + down, 0)
+        const { cacheAll, cachedData, scrollDirection: direction } = this
+
+        if (cacheAll) {
+          this.cachedData = this.data.map(
+            (rec, idx) => ({ rec, idx })
+          )
+        } else if (direction) {
+          const i = parseInt(this.scrollTop / this.rowOffsetHeight)
+
+          const up = direction > 0 ? 20 : 50
+          const down = 70 - up
+          const start = Math.max(i - up - (i & 1), 0)
           const end = Math.min(i + down, this.data.length - 1) + 1
+
+          // if (cachedData.length) {
+          //   const first = cachedData[0].idx
+          //   const last = first + cachedData.length - 1
+          // }
 
           this.cachedData = this
             .data
             .slice(start, end)
-            .map((rec, idx) => ({ idx: idx + start, data: rec }))
+            .map((rec, idx) => ({ rec, idx: idx + start }))
         }
       }
     }

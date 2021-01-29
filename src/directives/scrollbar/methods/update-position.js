@@ -5,7 +5,7 @@ function setRailHidden (rail, hidden) {
   else rail.removeAttribute('hidden')
 }
 
-function updateThumbX () {
+function updateThumbX (offset) {
   const { el, railX, thumbX } = this
 
   const elStyle = window.getComputedStyle(el)
@@ -14,7 +14,7 @@ function updateThumbX () {
 
   Object.assign(railX.style, {
     left: el.scrollLeft + 4 + 'px',
-    bottom: 4 - el.scrollTop + 'px',
+    bottom: 4 - el.scrollTop - offset.y + 'px',
     width: el.offsetWidth - 8 - blw - brw + 'px'
   })
 
@@ -34,7 +34,7 @@ function updateThumbX () {
   })
 }
 
-function updateThumbY () {
+function updateThumbY (offset) {
   const { el, railY, thumbY } = this
 
   const elStyle = window.getComputedStyle(el)
@@ -63,24 +63,31 @@ function updateThumbY () {
   })
 }
 
-function compareState (last, current) {
-  return Object.keys(current).reduce((result, key) => {
-    return result && current[key] === last[key]
-  }, true)
+function isStateChanged (old, current) {
+  return !old ||
+    Object.keys(current).reduce((result, key) => {
+      return result || current[key] !== old[key]
+    }, false)
 }
 
 async function updatePosition () {
   if (!this.activated) return
 
   const {
+    parentNode,
     scrollTop: st, scrollLeft: sl,
     scrollHeight: sh, scrollWidth: sw,
     clientHeight: ch, clientWidth: cw
   } = this.el
 
-  const current = { st, sl, sh, sw, ch, cw }
+  const {
+    scrollTop: pst, scrollLeft: psl,
+    clientHeight: pch, clientWidth: pcw
+  } = this.options.stickToParent ? parentNode : {}
 
-  if (!this.state || !compareState(this.state, current)) {
+  const current = { st, sl, sh, sw, ch, cw, pst, psl, pch, pcw }
+
+  if (isStateChanged(this.state, current)) {
     const { scrollbarX, scrollbarY } = this.options
 
     this.state = current
@@ -90,8 +97,13 @@ async function updatePosition () {
     setRailHidden(this.railX, this.hiddenX)
     setRailHidden(this.railY, this.hiddenY)
 
-    if (!this.hiddenX) updateThumbX.call(this)
-    if (!this.hiddenY) updateThumbY.call(this)
+    const offset = {
+      x: pcw ? pcw - (cw - psl) : 0,
+      y: pch ? pch - (ch - pst) : 0
+    }
+
+    if (!this.hiddenX) updateThumbX.call(this, offset)
+    if (!this.hiddenY) updateThumbY.call(this, offset)
   }
 }
 

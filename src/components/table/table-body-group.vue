@@ -11,7 +11,7 @@
         :style="{ width: col.width }"
         class="mu-table_cell">
         <div style="cellDivStyle">
-          {{ item.data[col.field] }}
+          {{ item.rec[col.field] }}
         </div>
       </div>
     </div>

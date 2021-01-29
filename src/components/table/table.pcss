@@ -1,4 +1,5 @@
 .mu-table {
+  background: $normalBackground;
 
   &[width=auto] {
     display: 'inline-flex';
@@ -22,13 +23,19 @@
     }
   }
 
+  .mu-table_body-left,
+  .mu-table_body-center,
+  .mu-table_body-right {
+    min-height: 100%;
+  }
+
   & .mu-table_row {
     display: table;
     table-layout: fixed;
     border-bottom: 0 solid $normalDividerColor;
   }
 
-  &[stripe] .mu-table_body-row:nth-child(odd) {
+  &[stripe] .mu-table_body-row:nth-child(even) {
     background: #f7f7f7;
   }
 

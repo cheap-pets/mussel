@@ -46,7 +46,6 @@ function observeMutation (el) {
 export default function attach (el, binding) {
   const options = binding.value || {}
   if (options.enable === false || el.__mussel_scroller) return
-
   const ctx = el.__mussel_scroller = {
     options,
     ...renderElements(el, options),
