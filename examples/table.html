@@ -18,13 +18,13 @@
     <hr>
     <div>
       <h3>Simple</h3>
-      <mu-table bordered :data="records" height="500px" gridline="both" stripe>
-        <mu-table-column label="f1" field="f1" fixed width="80px"></mu-table-column>
-        <mu-table-column label="f2" field="f2" width="500px"></mu-table-column>
-        <mu-table-column label="text column 1" field="f2" width="500px"></mu-table-column>
-        <mu-table-column label="text column 2" field="f2" width="500px"></mu-table-column>
-        <mu-table-column label="text column 3" field="f2" width="500px"></mu-table-column>
-        <mu-table-column label="f3" field="f3" fixed="right"></mu-table-column>
+      <mu-table bordered hover-mode="row" :data="records" height="500px" gridline="both" stripe>
+        <mu-table-column label="f1" field="f1" fixed width="m"></mu-table-column>
+        <mu-table-column label="f2" field="f2" width="xl"></mu-table-column>
+        <mu-table-column label="text column 1" field="f2" width="xl"></mu-table-column>
+        <mu-table-column label="text column 2" field="f2" width="xl"></mu-table-column>
+        <mu-table-column label="text column 3" field="f2"></mu-table-column>
+        <mu-table-column label="f3" field="f3" fixed="right" width="s"></mu-table-column>
       </mu-table>
     </div>
   </div>
@@ -69,10 +69,11 @@
         @buttonclick="removeItem" />
     </mu-column-group>
   </mu-table> -->
+  <div style="height: 60px;"></div>
 
   <script type="text/javascript">
     var records = []
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < 100; i++) {
       records.push({
         f1: i,
         f2: 'some text value',

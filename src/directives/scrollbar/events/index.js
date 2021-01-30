@@ -1,11 +1,11 @@
 import onKeyDown from './key-down'
-import onMouseOver from './mouse-over'
+// import onMouseOver from './mouse-over'
 import onMouseWheel from './mouse-wheel'
 import onRailMouseDown from './rail-mouse-down'
 import onThumbMouseDown from './thumb-mouse-down'
 import { onMouseEnter, onMouseLeave } from './mouse-enter-leave'
 
-window.addEventListener('keydown', onKeyDown, true)
+// window.addEventListener('keydown', onKeyDown, true)
 
 function debounceUpdatePosition () {
   if (this.scrolling) return
@@ -25,8 +25,9 @@ export default function bindEvents () {
   this.el.addEventListener('scroll', () => this.updatePosition())
   this.el.addEventListener('mouseenter', onMouseEnter.bind(this))
   this.el.addEventListener('mouseleave', onMouseLeave.bind(this))
-  this.el.addEventListener('mouseover', onMouseOver.bind(this))
+  // this.el.addEventListener('mouseover', onMouseOver.bind(this))
   this.el.addEventListener('wheel', onMouseWheel.bind(this))
+  this.el.addEventListener('keydown', onKeyDown.bind(this))
   this.el.addEventListener('sizechange', debounceUpdate)
   this.el.addEventListener('domchange', debounceUpdate)
 

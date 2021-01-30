@@ -3,7 +3,8 @@
     class="mu-table"
     :width="width"
     :style="tableStyle"
-    :gridline="gridline">
+    :gridline="gridline"
+    :hover-mode="hoverMode">
     <div v-show="false">
       <slot />
     </div>
@@ -32,7 +33,8 @@
         v-mussel-scrollbar="scrollbarYOptions"
         class="mu-table_body"
         size="auto"
-        @scroll.native="onRowScroll">
+        @scroll.native="onRowScroll"
+        @mouseleave.native="onBodyMouseLeave">
         <table-body-group
           v-if="columnGroups.left"
           class="mu-table_body-left"
@@ -100,6 +102,13 @@
           return ['none', 'row', 'column', 'both'].indexOf(v) !== -1
         }
       },
+      hoverMode: {
+        type: String,
+        default: 'row',
+        validator (v) {
+          return ['none', 'row', 'column', 'cross', 'cell'].indexOf(v) !== -1
+        }
+      },
       data: {
         type: Array,
         default () {
@@ -114,6 +123,8 @@
         scrollDirection: 1,
         leftTableSize: 0,
         rightTableSize: 0,
+        hoverRow: null,
+        hoverCol: null,
         cachedData: []
       }
     },
@@ -234,8 +245,12 @@
         const headEl = this.$el.querySelector('.mu-table_head-center')
         if (headEl) headEl.scrollLeft = e.target.scrollLeft
       },
+      onBodyMouseLeave () {
+        this.hoverRow = null
+        this.hoverCol = null
+      },
       cacheData () {
-        const { cacheAll, cachedData, scrollDirection: direction } = this
+        const { cacheAll, scrollDirection: direction } = this // cachedData
 
         if (cacheAll) {
           this.cachedData = this.data.map(

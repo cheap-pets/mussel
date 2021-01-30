@@ -4,7 +4,7 @@
       <div
         v-for="col in columns"
         :key="col._uid"
-        :style="{ width: col.width }"
+        :style="{ width: col.columnWidth }"
         class="mu-table_cell">
         <div>
           {{ col.label }}

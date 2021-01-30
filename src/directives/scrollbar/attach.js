@@ -13,6 +13,7 @@ const SCROLLBAR_HTML = /* html */`
 
 function renderElements (el) {
   el.classList.add('mu-scrollbar')
+  el.setAttribute('tabindex', 0)
   el.insertAdjacentHTML('afterbegin', SCROLLBAR_HTML)
 
   const rails = Array

@@ -1,3 +1,5 @@
+import { convertColumnWidth } from './width'
+
 export default {
   name: 'MusselTableColumn',
   inject: ['table'],
@@ -8,12 +10,19 @@ export default {
     fixed: String,
     width: {
       type: String,
-      default: '100px'
+      default () {
+        return this.fixed ? '100' : undefined
+      }
     },
     editor: null,
     content: null,
     cellClass: null,
     cellStyle: null
+  },
+  computed: {
+    columnWidth () {
+      return convertColumnWidth(this.width)
+    }
   },
   created () {
     this.registerColumn()

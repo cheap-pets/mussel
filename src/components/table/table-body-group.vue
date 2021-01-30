@@ -4,12 +4,15 @@
       v-for="item in data"
       :key="item.idx"
       :style="rowStyle(item.idx)"
-      class="mu-table_row mu-table_body-row">
+      class="mu-table_row mu-table_body-row"
+      @mouseover="onRowMouseEnter(item.idx)">
       <div
         v-for="col in columns"
         :key="col._uid"
-        :style="{ width: col.width }"
-        class="mu-table_cell">
+        :style="{ width: col.columnWidth }"
+        :hover="table.hoverCol === col._uid || table.hoverRow === item.idx"
+        class="mu-table_cell"
+        @mouseover="onColMouseEnter(col._uid)">
         <div style="cellDivStyle">
           {{ item.rec[col.field] }}
         </div>
@@ -47,6 +50,16 @@
         return this.table.rowHeight
           ? { height: this.table.rowHeight + 'px' }
           : undefined
+      },
+      onRowMouseEnter (idx) {
+        if (['row', 'cross'].indexOf(this.table.hoverMode) !== -1) {
+          this.table.hoverRow = idx
+        }
+      },
+      onColMouseEnter (id) {
+        if (['column', 'cross'].indexOf(this.table.hoverMode) !== -1) {
+          this.table.hoverCol = id
+        }
       }
     }
   }

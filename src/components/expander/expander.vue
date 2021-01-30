@@ -37,7 +37,7 @@
     data () {
       return {
         actualExpanded: false,
-        wrapperHeight: 0
+        wrapperHeight: this.expanded ? undefined : 0
       }
     },
     watch: {

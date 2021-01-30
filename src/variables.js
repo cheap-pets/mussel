@@ -10,7 +10,7 @@ export default {
   primaryColor: '#1890ff',
   primaryPlusColor: '#096dd9',
   primaryMinusColor: '#40a9ff',
-  primaryTinyColor: '#bae7ff',
+  primaryTinyColor: 'rgba(24, 144, 255, .1)',
   primaryShadowColor: 'rgba(24, 144, 255, .15)',
 
   /* success colors */

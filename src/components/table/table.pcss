@@ -39,9 +39,18 @@
     background: #f7f7f7;
   }
 
+  &[stripe] .mu-table_body-row:nth-child(even) {
+    background: #f7f7f7;
+  }
+
+  &[hover-mode=cell] .mu-table_cell:hover,
+  & .mu-table_cell[hover] {
+    background: $primaryTinyColor;
+  }
+
   & .mu-table_cell {
     display: table-cell;
-    min-width: 40px;
+    overflow: hidden;
     vertical-align: middle;
     border-right: 0 solid $normalDividerColor;
 
@@ -53,6 +62,7 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      text-align: center;
     }
   }
 

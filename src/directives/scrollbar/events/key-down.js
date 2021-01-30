@@ -29,21 +29,19 @@ function getDeltaByKey (keyCode) {
 }
 
 export default function onKeyDown (event) {
-  const scroller = window.__mussel_scroller
-
-  if (!scroller || isEditableElement(event.target)) return
+  if (isEditableElement(event.target)) return
 
   const { deltaX, deltaY } = getDeltaByKey.call(this, event.code)
 
-  if (!scroller.hiddenY) {
-    if (deltaY) scroller.scrollBy(null, deltaY, event)
-    else if (event.code === 'Home') scroller.scrollTo(null, 0, event)
+  if (!this.hiddenY) {
+    if (deltaY) this.scrollBy(null, deltaY, event)
+    else if (event.code === 'Home') this.scrollTo(null, 0, event)
     else if (event.code === 'End') {
-      scroller.scrollTo(null, scroller.el.scrollHeight, event)
+      this.scrollTo(null, this.el.scrollHeight, event)
     }
   }
 
-  if (!scroller.hiddenX) {
-    if (deltaX) scroller.scrollBy(deltaX, null, event)
+  if (!this.hiddenX) {
+    if (deltaX) this.scrollBy(deltaX, null, event)
   }
 }
