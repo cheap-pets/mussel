@@ -14,6 +14,14 @@ export default {
         return this.fixed ? '100' : undefined
       }
     },
+    align: {
+      type: String,
+      default: 'left'
+    },
+    headerAlign: {
+      type: String,
+      default: 'center'
+    },
     editor: null,
     content: null,
     cellClass: null,

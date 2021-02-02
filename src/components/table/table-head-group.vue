@@ -4,9 +4,15 @@
       <div
         v-for="col in columns"
         :key="col._uid"
-        :style="{ width: col.columnWidth }"
+        :style="{ width: col.columnWidth, textAlign: col.headerAlign }"
         class="mu-table_cell">
-        <div>
+        <template v-if="col.$options.headerComponent">
+          <component
+            :is="col.$options.headerComponent"
+            :value="col.field ? table.headerValues[col.field] : null"
+            @change="col.onHeaderChange(arguments[0], col)" />
+        </template>
+        <div v-else>
           {{ col.label }}
         </div>
       </div>
@@ -16,6 +22,7 @@
 
 <script>
   export default {
+    inject: ['table'],
     props: {
       columns: Array
     }

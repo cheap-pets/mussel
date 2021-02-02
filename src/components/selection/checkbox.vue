@@ -8,7 +8,7 @@
       :disabled="isDisabled"
       @change="onChange">
     <span class="mu-checkbox_fake" />
-    <slot>
+    <slot v-if="labelText">
       <span>{{ labelText }}</span>
     </slot>
   </label>

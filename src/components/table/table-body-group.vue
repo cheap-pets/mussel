@@ -9,11 +9,18 @@
       <div
         v-for="col in columns"
         :key="col._uid"
-        :style="{ width: col.columnWidth }"
+        :style="{ width: col.columnWidth, textAlign: col.align }"
         :hover="table.hoverCol === col._uid || table.hoverRow === item.idx"
         class="mu-table_cell"
         @mouseover="onColMouseEnter(col._uid)">
-        <div style="cellDivStyle">
+        <template v-if="col.$options.cellComponent">
+          <component
+            :is="col.$options.cellComponent"
+            :value="item.rec[col.field]"
+            style="cellDivStyle"
+            @change="col.onCellChange(arguments[0], item.rec, col)" />
+        </template>
+        <div v-else style="cellDivStyle">
           {{ item.rec[col.field] }}
         </div>
       </div>
@@ -26,14 +33,16 @@
     inject: ['table'],
     props: {
       columns: Array,
-      width: Number,
-      data: Array
+      width: Number
     },
     computed: {
       tableStyle () {
         return this.width
           ? { width: this.width + 'px' }
           : undefined
+      },
+      data () {
+        return this.table.cachedData
       }
     },
     methods: {

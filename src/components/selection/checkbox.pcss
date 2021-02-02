@@ -1,11 +1,16 @@
 .mu-checkbox {
   display: inline-flex;
   align-items: center;
+  vertical-align: -0.15em;
   line-height: 1.7rem;
   cursor: pointer;
 
   & + .mu-checkbox {
     margin-left: $unitSpacingSize;
+  }
+
+  & > input {
+    margin: 0;
   }
 
   & > .mu-checkbox_fake {
@@ -14,7 +19,7 @@
     width: 1rem;
     padding: 2px;
     margin-right: 5px;
-    border: 1px solid $normalTextColor;
+    border: 1px solid $normalBorderColor;
     border-radius: 2px;
   }
 

@@ -18,7 +18,19 @@
     <hr>
     <div>
       <h3>Simple</h3>
-      <mu-table bordered hover-mode="row" :data="records" height="500px" gridline="both" stripe>
+      <mu-table
+        :data="records"
+        :selected="selected"
+        stripe
+        bordered
+        height="500px"
+        gridline="both"
+        hover-mode="row">
+        <mu-table-check-column
+          fixed
+          @headerChange="onCheckColumnHeaderChange"
+          @CellChange="onCheckColumnCellChange">
+        </mu-table-check-column>
         <mu-table-column label="f1" field="f1" fixed width="m"></mu-table-column>
         <mu-table-column label="f2" field="f2" width="xl"></mu-table-column>
         <mu-table-column label="text column 1" field="f2" width="xl"></mu-table-column>
@@ -28,52 +40,10 @@
       </mu-table>
     </div>
   </div>
-  <!-- <mu-table>
-    <mu-check-column
-      fixed="left"
-      allow-check-all
-      @change="toggleItemCheck" />
-    <mu-column
-      label="名称"
-      fixed="left"
-      field="name"
-      editor="text"
-      @change="updateRec" />
-    <mu-combo-column
-      label="状态"
-      fixed="left"
-      field="status"
-      :icon="getStatusIcon"
-      :options="statusDict"
-      :cell-style="getStatusStyle"
-      @change="updateRec" />
-    <mu-column
-      label="说明"
-      content="<div>${rec.xxx}</div>" />
-    <mu-column
-      label="说明2"
-      :content="getContent2" />
-    <mu-column-group fixed="right" label="操作">
-      <mu-button-column
-        label="管理"
-        :buttons="[
-          { type: 'danger', style: 'link', caption: '停用', visable: !isStop },
-          { type: 'primary', style: 'link', caption: '启用', visable: isStop }
-        ]"
-        @buttonclick="removeItem" />
-      <mu-button-column
-        label="删除"
-        :buttons="[
-          { type: 'danger', style: 'link', caption: '删除', disabled: itemRemovable }
-        ]"
-        @buttonclick="removeItem" />
-    </mu-column-group>
-  </mu-table> -->
-  <div style="height: 60px;"></div>
 
   <script type="text/javascript">
     var records = []
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 10000; i++) {
       records.push({
         f1: i,
         f2: 'some text value',
@@ -83,9 +53,16 @@
     var app = new Vue({
       el: '#app',
       data: {
-        records: records
+        records: records,
+        selected: []
       },
       methods: {
+        onCheckColumnHeaderChange: function () {
+          console.log(arguments)
+        },
+        onCheckColumnCellChange: function () {
+          console.log(arguments)
+        }
       }
     });
   </script>

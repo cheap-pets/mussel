@@ -34,15 +34,15 @@
         class="mu-table_body"
         size="auto"
         @scroll.native="onRowScroll"
-        @mouseleave.native="onBodyMouseLeave">
+        @mouseleave.native="onBodyMouseLeave"
+        @sizechange.native="onBodyResize">
         <table-body-group
           v-if="columnGroups.left"
           class="mu-table_body-left"
           table-fixed="left"
           :columns="columnGroups.left"
           :style="bodyGroupStyle"
-          :width="leftTableSize"
-          :data="cachedData" />
+          :width="leftTableSize" />
         <table-body-group
           v-if="columnGroups.center"
           v-mussel-scrollbar="scrollbarXOptions"
@@ -50,7 +50,6 @@
           :size="centerSize"
           :columns="columnGroups.center"
           :style="bodyGroupStyle"
-          :data="cachedData"
           @scroll.native="onColScroll" />
         <table-body-group
           v-if="columnGroups.right"
@@ -58,8 +57,7 @@
           table-fixed="right"
           :columns="columnGroups.right"
           :style="bodyGroupStyle"
-          :width="rightTableSize"
-          :data="cachedData" />
+          :width="rightTableSize" />
       </h-box>
     </template>
   </v-box>
@@ -114,24 +112,24 @@
         default () {
           return []
         }
+      },
+      selectedField: {
+        type: String,
+        default: '_selected'
       }
     },
     data () {
       return {
         ready: false,
-        scrollTop: 0,
-        scrollDirection: 1,
         leftTableSize: 0,
         rightTableSize: 0,
         hoverRow: null,
         hoverCol: null,
-        cachedData: []
+        cachedData: [],
+        headerValues: {}
       }
     },
     computed: {
-      cacheAll () {
-        return !this.rowHeight || this.data.length <= 100
-      },
       tableStyle () {
         return {
           height: (this.height && this.height !== 'auto')
@@ -174,16 +172,15 @@
       }
     },
     watch: {
-      data: {
-        handler (v) {
-          this.cacheData()
-        },
-        immediate: true
+      data (v) {
+        this.cacheData()
       }
     },
     beforeCreate () {
       this.columns = []
       this.columnGroups = { left: [], center: [], right: [] }
+      this.scrollTop = 0
+      this.scrollDirection = 1
     },
     methods: {
       setColumnGroups () {
@@ -231,12 +228,24 @@
       onRightTableResize (e) {
         this.rightTableSize = e.target.clientWidth
       },
+      onBodyResize: throttle(
+        function (e) {
+          this.visibleRowCount = this.rowOffsetHeight
+            ? Math.ceil(e.target.clientHeight / this.rowOffsetHeight)
+            : 0
+          this.cacheData()
+        },
+        500,
+        { leading: true, trailing: true }
+      ),
       onRowScroll: throttle(
         function (e) {
-          if (this.cacheAll) return
+          if (!this.rowHeight) return
           this.scrollDirection = Math.sign(e.target.scrollTop - this.scrollTop)
-          this.scrollTop = e.target.scrollTop
-          this.cacheData()
+          if (this.scrollDirection) {
+            this.scrollTop = e.target.scrollTop
+            this.cacheData()
+          }
         },
         500,
         { leading: false, trailing: true }
@@ -250,30 +259,66 @@
         this.hoverCol = null
       },
       cacheData () {
-        const { cacheAll, scrollDirection: direction } = this // cachedData
+        // const t = new Date()
+        if (this.rowHeight) {
+          const i = parseInt(this.scrollTop / this.rowOffsetHeight)
+          const up = this.visibleRowCount * (this.scrollDirection > 0 ? 1 : 2)
+          const start = Math.max(i - up - (i & 1), 0)
+          const count = start + this.visibleRowCount * 4
 
-        if (cacheAll) {
+          const data = this
+            .data
+            .slice(start, count)
+            .map((rec, idx) => ({ rec, idx: idx + start }))
+
+          const end = start + count
+          const len = this.cachedData.length
+          const oldStart = len ? this.cachedData[0].idx : 0
+          const oldEnd = len ? this.cachedData[len - 1].idx : 0
+
+          console.log(oldStart, oldEnd, start, end)
+
+          if (this.cachedData.length && oldEnd > start && oldStart < end) {
+            if (oldEnd > end) {
+              console.log('spliceEnd', oldEnd, end)
+              this.cachedData.splice(len - oldEnd + end, oldEnd - end)
+            }
+            if (oldStart < start) {
+              console.log('spliceStart', oldStart, start)
+              this.cachedData.splice(0, start - oldStart)
+            }
+            const newStart = this.cachedData[0].idx
+            const newEnd = this.cachedData[this.cachedData.length - 1].idx
+            data.forEach(item => {
+              if (item.idx < newStart) {
+                console.log('unshift', item.idx)
+                this.cachedData.unshift(item)
+              } else if (item.idx > newEnd) {
+                console.log('push', item.idx)
+                this.cachedData.push(item)
+              }
+            })
+          } else {
+            console.log('set all')
+            this.cachedData = data
+          }
+        } else {
           this.cachedData = this.data.map(
             (rec, idx) => ({ rec, idx })
           )
-        } else if (direction) {
-          const i = parseInt(this.scrollTop / this.rowOffsetHeight)
-
-          const up = direction > 0 ? 20 : 50
-          const down = 70 - up
-          const start = Math.max(i - up - (i & 1), 0)
-          const end = Math.min(i + down, this.data.length - 1) + 1
-
-          // if (cachedData.length) {
-          //   const first = cachedData[0].idx
-          //   const last = first + cachedData.length - 1
-          // }
-
-          this.cachedData = this
-            .data
-            .slice(start, end)
-            .map((rec, idx) => ({ rec, idx: idx + start }))
         }
+
+        // console.log(new Date() - t)
+      },
+      selectAll () {
+        this.data.forEach(rec => {
+          this.$set(rec, this.selectedField, true)
+        })
+      },
+      unselectAll () {
+        this.data.forEach(rec => {
+          this.$set(rec, this.selectedField, false)
+        })
       }
     }
   }
