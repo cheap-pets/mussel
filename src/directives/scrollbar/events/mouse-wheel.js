@@ -10,7 +10,6 @@ export default function onMouseWheel (event) {
 
   const deltaX = this.hiddenX ? null : (event.shiftKey ? y : x)
   const deltaY = this.hiddenY ? null : (event.shiftKey ? x : y)
-  console.log(deltaY)
 
   this.scrollBy(deltaX, deltaY, event)
 }
