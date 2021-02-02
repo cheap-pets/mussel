@@ -39,6 +39,24 @@
         <mu-table-column label="f3" field="f3" fixed="right" width="s"></mu-table-column>
       </mu-table>
     </div>
+    <mu-h-box v-if="false" v-mussel-scrollbar style="height: 400px;">
+      <table style="width: 100%;" border="1" size="1">
+        <tr v-for="(rec,idx) in records">
+          <td>{{ rec.f1 }}</td>
+          <td>{{ rec.f2 }}</td>
+          <td>{{ rec.f2 }}</td>
+          <td>{{ rec.f2 }}</td>
+          <td>{{ rec.f3 }}</td>
+          <td>{{ rec.f3 }}</td>
+          <td>{{ rec.f1 }}</td>
+          <td>{{ rec.f2 }}</td>
+          <td>{{ rec.f2 }}</td>
+          <td>{{ rec.f2 }}</td>
+          <td>{{ rec.f3 }}</td>
+          <td>{{ rec.f3 }}</td>
+        </tr>
+      </table>
+    </mu-h-box>
   </div>
 
   <script type="text/javascript">

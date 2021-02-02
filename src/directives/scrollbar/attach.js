@@ -39,6 +39,7 @@ function observeMutation (el) {
   if (!window.MutationObserver) return
 
   const observer = new window.MutationObserver(mutations => {
+    console.log('shit')
     emit(el, 'domchange')
   })
   observer.observe(el, { attributes: true, childList: true, subtree: true })
@@ -47,11 +48,14 @@ function observeMutation (el) {
 export default function attach (el, binding) {
   const options = binding.value || {}
   if (options.enable === false || el.__mussel_scroller) return
+
   const ctx = el.__mussel_scroller = {
     options,
     ...renderElements(el, options),
     ...methods
   }
-  observeMutation(el)
+  if (options.observeMutation !== false) observeMutation(el)
+  if (isNaN(options.wheelSpeed)) options.wheelSpeed = 1
+
   bindEvents.call(ctx)
 }

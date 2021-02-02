@@ -71,6 +71,8 @@
   import TableHeadGroup from './table-head-group.vue'
   import TableBodyGroup from './table-body-group.vue'
 
+  import updateCache from './update-cache'
+
   import './table.pcss'
 
   export default {
@@ -151,14 +153,18 @@
       scrollbarYOptions () {
         return {
           enable: this.height !== 'auto',
-          scrollbarX: false
+          wheelSpeed: 0.5,
+          scrollbarX: false,
+          observeMutation: false
         }
       },
       scrollbarXOptions () {
         return {
           enable: this.width !== 'auto',
+          wheelSpeed: 0.5,
           scrollbarY: false,
-          stickToParent: true
+          stickToParent: true,
+          observeMutation: false
         }
       },
       rowOffsetHeight () {
@@ -173,7 +179,7 @@
     },
     watch: {
       data (v) {
-        this.cacheData()
+        this.updateCache()
       }
     },
     beforeCreate () {
@@ -183,6 +189,7 @@
       this.scrollDirection = 1
     },
     methods: {
+      updateCache,
       setColumnGroups () {
         this.ready = false
 
@@ -233,7 +240,7 @@
           this.visibleRowCount = this.rowOffsetHeight
             ? Math.ceil(e.target.clientHeight / this.rowOffsetHeight)
             : 0
-          this.cacheData()
+          this.updateCache()
         },
         500,
         { leading: true, trailing: true }
@@ -244,7 +251,7 @@
           this.scrollDirection = Math.sign(e.target.scrollTop - this.scrollTop)
           if (this.scrollDirection) {
             this.scrollTop = e.target.scrollTop
-            this.cacheData()
+            this.updateCache()
           }
         },
         500,
@@ -258,64 +265,18 @@
         this.hoverRow = null
         this.hoverCol = null
       },
-      cacheData () {
-        // const t = new Date()
-        if (this.rowHeight) {
-          const i = parseInt(this.scrollTop / this.rowOffsetHeight)
-          const up = this.visibleRowCount * (this.scrollDirection > 0 ? 1 : 2)
-          const start = Math.max(i - up - (i & 1), 0)
-          const count = start + this.visibleRowCount * 4
-
-          const data = this
-            .data
-            .slice(start, count)
-            .map((rec, idx) => ({ rec, idx: idx + start }))
-
-          const end = start + count
-          const len = this.cachedData.length
-          const oldStart = len ? this.cachedData[0].idx : 0
-          const oldEnd = len ? this.cachedData[len - 1].idx : 0
-
-          console.log(oldStart, oldEnd, start, end)
-
-          if (this.cachedData.length && oldEnd > start && oldStart < end) {
-            if (oldEnd > end) {
-              console.log('spliceEnd', oldEnd, end)
-              this.cachedData.splice(len - oldEnd + end, oldEnd - end)
-            }
-            if (oldStart < start) {
-              console.log('spliceStart', oldStart, start)
-              this.cachedData.splice(0, start - oldStart)
-            }
-            const newStart = this.cachedData[0].idx
-            const newEnd = this.cachedData[this.cachedData.length - 1].idx
-            data.forEach(item => {
-              if (item.idx < newStart) {
-                console.log('unshift', item.idx)
-                this.cachedData.unshift(item)
-              } else if (item.idx > newEnd) {
-                console.log('push', item.idx)
-                this.cachedData.push(item)
-              }
-            })
-          } else {
-            console.log('set all')
-            this.cachedData = data
-          }
-        } else {
-          this.cachedData = this.data.map(
-            (rec, idx) => ({ rec, idx })
-          )
-        }
-
-        // console.log(new Date() - t)
-      },
       selectAll () {
+        // this.cachedData.forEach(item => {
+        //   this.$set(item.rec, this.selectedField, true)
+        // })
         this.data.forEach(rec => {
           this.$set(rec, this.selectedField, true)
         })
       },
       unselectAll () {
+        // this.cachedData.forEach(item => {
+        //   this.$set(item.rec, this.selectedField, false)
+        // })
         this.data.forEach(rec => {
           this.$set(rec, this.selectedField, false)
         })
