@@ -84,6 +84,7 @@ export default {
       ]
     }),
     vue({
+      normalizer: '~vue-runtime-helpers/dist/normalize-component.js',
       css: false
     }),
     string({
