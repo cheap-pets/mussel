@@ -6,15 +6,14 @@
         :key="col._uid"
         :style="{ width: col.columnWidth, textAlign: col.headerAlign }"
         class="mu-table_cell">
-        <template v-if="col.$options.headerComponent">
-          <component
-            :is="col.$options.headerComponent"
-            :value="col.field ? table.headerValues[col.field] : null"
-            @change="col.onHeaderChange(arguments[0], col)" />
-        </template>
-        <div v-else>
+        <div v-if="col.label !== undefined" class="mu-table_cell-label">
           {{ col.label }}
         </div>
+        <component
+          :is="col.$options.headerComponent"
+          v-else
+          :value="col.field ? table.headerValues[col.field] : null"
+          @change="col.onHeaderChange(arguments[0], col)" />
       </div>
     </div>
   </div>

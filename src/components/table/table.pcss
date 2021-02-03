@@ -35,6 +35,10 @@
     border-bottom: 0 solid $normalDividerColor;
   }
 
+  & .mu-table_head-row {
+    height: 40px;
+  }
+
   &[stripe] .mu-table_body-row:nth-child(even) {
     background: #f7f7f7;
   }
@@ -54,10 +58,10 @@
     vertical-align: middle;
     border-right: 0 solid $normalDividerColor;
 
-    & > div {
+    & > .mu-table_cell-label {
       box-sizing: border-box;
       width: 100%;
-      padding: 10px;
+      padding: 5px 10px;
       line-height: 20px;
       overflow: hidden;
       white-space: nowrap;

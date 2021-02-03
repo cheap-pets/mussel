@@ -16,7 +16,7 @@ function setCellStatus (cell, marks, start, end, today) {
   if ((start && date < start) || (end && date > end)) cell.invalid = true
 }
 
-export default function fillMonthGrid (year, month, marked, start, end, today) {
+function fillMonthGrid (year, month, marked, start, end, today) {
   const maxDays = getMonthDays(year, month)
   const firstDay = getMonthFirstDay(year, month)
   const prev = getSiblingMonth(year, month, -1)
@@ -57,3 +57,5 @@ export default function fillMonthGrid (year, month, marked, start, end, today) {
     row.push(cell)
   })
 }
+
+export default fillMonthGrid

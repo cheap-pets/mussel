@@ -39,7 +39,6 @@ function observeMutation (el) {
   if (!window.MutationObserver) return
 
   const observer = new window.MutationObserver(mutations => {
-    console.log('shit')
     emit(el, 'domchange')
   })
   observer.observe(el, { attributes: true, childList: true, subtree: true })

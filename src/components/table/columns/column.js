@@ -6,8 +6,8 @@ export default {
   template: '<div></div>',
   props: {
     field: String,
-    label: String,
     fixed: String,
+    label: String,
     width: {
       type: String,
       default () {

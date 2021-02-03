@@ -21,16 +21,16 @@ export default {
   methods: {
     onHeaderChange (value, column) {
       if (column.field === '_selected') {
-        this.$set(this.table.headerValues, '_selected', value)
+        this.table.setHeaderValue(column.field, value)
         if (value) this.table.selectAll()
         else this.table.unselectAll()
       }
       this.$emit('headerchange', value)
     },
     onCellChange (value, record, column) {
-      if (column.field === '_selected') {
-        this.$set(record, '_selected', value)
-        if (!value) this.table.headerValues._selected = false
+      this.table.setRecordValue(record, column.field, value)
+      if (this.label === undefined) {
+        this.table.setHeaderValue(column.field, false)
       }
       this.$emit('cellchange', value)
     }

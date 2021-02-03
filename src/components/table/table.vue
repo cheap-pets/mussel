@@ -93,7 +93,10 @@
       height: String,
       rowHeight: {
         type: Number,
-        default: 40
+        default: 40,
+        validator (v) {
+          return !v || (v >= 30 && v <= 80)
+        }
       },
       gridline: {
         type: String,
@@ -219,6 +222,9 @@
         }, 50)
       },
       registerColumn (column) {
+        if (column.field === '_selected') {
+          this.multiSelect = true
+        }
         this.columns.push(column)
         this.setColumnGroups()
       },
@@ -280,6 +286,12 @@
         this.data.forEach(rec => {
           this.$set(rec, this.selectedField, false)
         })
+      },
+      setRecordValue (record, field, value) {
+        this.$set(record, field, value)
+      },
+      setHeaderValue (field, value) {
+        this.$set(this.headerValues, field, value)
       }
     }
   }
