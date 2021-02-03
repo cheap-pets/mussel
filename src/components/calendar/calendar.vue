@@ -4,18 +4,9 @@
       <div class="mu-calendar-title" @click="onTitleClick">
         {{ title }}
       </div>
-      <icon-button
-        button-style="link"
-        icon="key-up"
-        @click="goPrev" />
-      <icon-button
-        button-style="link"
-        icon="calendar"
-        @click="goNow" />
-      <icon-button
-        button-style="link"
-        icon="key-down"
-        @click="goNext" />
+      <icon-button button-style="link" icon="key-up" @click="goPrev" />
+      <icon-button button-style="link" icon="calendar" @click="goNow" />
+      <icon-button button-style="link" icon="key-down" @click="goNext" />
     </div>
     <template v-if="tab === 'date'">
       <div class="mu-week-header">
@@ -86,22 +77,18 @@
 <script>
   import './calendar.pcss'
 
-  import isDate from 'lodash.isdate'
-  import isString from 'lodash.isstring'
-
   import lang from '../../lang'
   import IconButton from '../button/icon-button.jsx'
 
+  import { fillGrid } from '@utils/array'
+  import fillMonthGrid from './fill-month-grid'
+
   import {
     isEqual,
-    fillGrid,
-    str2Date,
-    parseDate,
-    getMaxDays,
-    getFirstDay,
+    date2Obj,
     getSiblingMonth,
-    getFilteredMarks
-  } from './calendar-util'
+    convertToDateObj
+  } from '@utils/date'
 
   export default {
     components: {
@@ -142,7 +129,6 @@
     },
     computed: {
       weekDays () {
-        const Calendar = lang.Calendar
         return [
           'SUNDAY',
           'MONDAY',
@@ -151,7 +137,7 @@
           'THURSDAY',
           'FRIDAY',
           'SATURDAY'
-        ].map(el => Calendar[el])
+        ].map(el => lang.Calendar[el])
       },
       monthNames () {
         const Calendar = lang.Calendar
@@ -203,54 +189,16 @@
       this.update(this.value)
     },
     methods: {
-      setDateCellStatus (cell, marks, today) {
-        const date = new Date(cell.year, cell.month, cell.date)
-        const { rangeStart: start, rangeEnd: end } = this
-        if (isEqual(cell, today)) cell.today = true
-        if (marks.indexOf(cell.text) !== -1) cell.marked = true
-        if ((start && date < start) || (end && date > end)) {
-          cell.invalid = true
-        }
-      },
       updateDateCells () {
-        const { naviYear: year, naviMonth: month, markedDates } = this
-        const today = parseDate()
-        const firstDay = getFirstDay({ year, month })
-        const maxDays = getMaxDays({ year, month })
-        const prev = getSiblingMonth({ year, month, step: -1 })
-        const prevMaxDays = getMaxDays(prev)
-        const next = getSiblingMonth({ year, month, step: 1 })
-        const marks = getFilteredMarks(markedDates, year, month)
-        let n = 1
-        this.dateRows = fillGrid(7, 7, (row, i, j) => {
-          const isPrevMonth = i === 0 && j < firstDay
-          const isNextMonth = n > maxDays
-          const cell = isPrevMonth
-            ? {
-              year: prev.year,
-              month: prev.month,
-              date: prevMaxDays - firstDay + j + 1,
-              adjacent: true
-            }
-            : (
-              isNextMonth
-                ? {
-                  year: next.year,
-                  month: next.month,
-                  date: n - maxDays,
-                  adjacent: true
-                }
-                : {
-                  year: year,
-                  month: month,
-                  date: n
-                }
-            )
-          cell.text = `${cell.year}-${cell.month + 1}-${cell.date}`
-          if (!isPrevMonth) n++
-          this.setDateCellStatus(cell, marks, today)
-          row.push(cell)
-        })
+        const {
+          naviYear: year,
+          naviMonth: month,
+          rangeStart: start,
+          rangeEnd: end,
+          markedDates: marked,
+          today
+        } = this
+        this.dateRows = fillMonthGrid(year, month, marked, start, end, today)
         this.$emit('updatecells', { year, month })
         this.$emit('navigate', { year, month })
       },
@@ -261,27 +209,22 @@
           if (n < this.startYear || n > this.startYear + 9) {
             cell.adjacent = true
           }
-          if (n === parseDate().year) cell.present = true
+          if (n === this.today.year) cell.present = true
           row.push(cell)
           n++
         })
       },
       update (value) {
-        let v
-        try {
-          v = value
-            ? (
-              isDate(value)
-                ? value
-                : (isString(value) ? str2Date(value) : null)
-            )
-            : null
-        } catch (e) {
-        }
+        const today = date2Obj(new Date())
+        const {
+          year = today.year,
+          month = today.month,
+          date
+        } = convertToDateObj(value) || {}
 
-        const { year, month, date } = parseDate(v)
-        this.dateText = v ? `${year}-${month + 1}-${date}` : ''
+        this.dateText = date ? `${year}-${month + 1}-${date}` : ''
         this.startYear = Math.trunc(year / 10) * 10
+        this.today = today
 
         if (this.naviYear !== year || this.naviMonth !== month) {
           this.naviYear = year
@@ -291,34 +234,23 @@
         if (this.tab === 'year') this.updateYearCells()
       },
       goMonth (step) {
-        const { year, month } = getSiblingMonth({
-          year: this.naviYear,
-          month: this.naviMonth,
-          step
-        })
-        this.naviYear = year
-        this.naviMonth = month
+        const target = getSiblingMonth(this.naviYear, this.naviMonth, step)
+        this.naviYear = target.year
+        this.naviMonth = target.month
         this.updateDateCells()
       },
       goNow () {
-        return this.tab === 'date'
-          ? this.goThisMonth()
-          : this.goThisYear()
+        return this.tab === 'date' ? this.goThisMonth() : this.goThisYear()
       },
       goPrev () {
-        return this.tab === 'date'
-          ? this.goMonth(-1)
-          : this.goPrevYears()
+        return this.tab === 'date' ? this.goMonth(-1) : this.goPrevYears()
       },
       goNext () {
-        return this.tab === 'date'
-          ? this.goMonth(1)
-          : this.goNextYears()
+        return this.tab === 'date' ? this.goMonth(1) : this.goNextYears()
       },
       goThisMonth () {
-        const { year, month } = parseDate()
-        this.naviYear = year
-        this.naviMonth = month
+        this.naviYear = this.today.year
+        this.naviMonth = this.today.month
         this.updateDateCells()
       },
       goPrevYears () {
@@ -343,11 +275,7 @@
       onYearCellClick (cell) {
         this.naviYear = cell.year
         if (this.selectMode === 'year') {
-          this.$emit(
-            'change',
-            new Date(this.naviYear, 1, 1),
-            this.naviYear
-          )
+          this.$emit('change', new Date(this.naviYear, 1, 1), this.naviYear)
         }
       },
       onMonthCellClick (cell) {

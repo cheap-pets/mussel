@@ -8,14 +8,10 @@
 </template>
 
 <script>
-  import isDate from 'lodash.isdate'
-  import isString from 'lodash.isstring'
-
   import BasePopupEditor from './base-popup-editor'
   import Calendar from '../calendar/calendar.vue'
-  import formatDate from '@utils/format-date'
 
-  import { str2Date } from '../calendar/calendar-util'
+  import { convertToDate, formatDate } from '@utils/date'
 
   export default {
     name: 'MusselDateEditor',
@@ -83,15 +79,8 @@
     },
     methods: {
       setValue (value) {
-        if (value) {
-          try {
-            value = isDate(value)
-              ? value
-              : (isString(value) ? str2Date(value) : null)
-          } catch (e) {
-            value = null
-          }
-        }
+        value = convertToDate(value)
+
         this.params.value = value
           ? formatDate(value, this.dateFormat)
           : ''
