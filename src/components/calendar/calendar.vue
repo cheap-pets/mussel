@@ -278,16 +278,17 @@
             : null
         } catch (e) {
         }
+
         const { year, month, date } = parseDate(v)
         this.dateText = v ? `${year}-${month + 1}-${date}` : ''
         this.startYear = Math.trunc(year / 10) * 10
+
         if (this.naviYear !== year || this.naviMonth !== month) {
           this.naviYear = year
           this.naviMonth = month
-          return this.tab === 'year'
-            ? this.updateYearCells()
-            : this.updateDateCells()
+          if (this.tab === 'date') this.updateDateCells()
         }
+        if (this.tab === 'year') this.updateYearCells()
       },
       goMonth (step) {
         const { year, month } = getSiblingMonth({
