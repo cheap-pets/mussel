@@ -8,6 +8,7 @@
     
     & > .mu-icon {
       width: $sidebarMenuItemHeight;
+      line-height: $sidebarMenuItemHeight;
     }
   }
 }
@@ -21,11 +22,11 @@
   & > .mu-menu-group_body {
     position: relative;
     overflow: hidden;
-    transition: height .15s ease-in-out;
+    transition: height .1s ease-in-out;
   }
 
   &[expanded] {
-    background: rgba(24, 144, 255, .05);
+    /* background: rgba(24, 144, 255, .05); */
 
     & > .mu-menu-group_header {
       background: $normalGreyBackground;

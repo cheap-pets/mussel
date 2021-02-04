@@ -29,16 +29,17 @@
   overflow: hidden;
   background: $normalBackground;
   transition: width .1s ease-in-out;
+
+  & .mu-sidebar_header,
+  & .mu-sidebar_footer {
+    overflow: hidden;
+    height: $normalBarHeight;
+    box-sizing: content-box;
+  }
 }
 
 .mu-sidebar_body {
   position: relative;
-}
-
-.mu-sidebar_header,
-.mu-sidebar_footer {
-  overflow: hidden;
-  height: $normalBarHeight;
 }
 
 .mu-sidebar_header {
@@ -56,8 +57,4 @@
   text-align: center;
   border-right: 1px solid $normalDividerColor;
   color: var(--mu-primary-color);
-
-  & > .mu-icon {
-    transition: transform .2s ease-in-out;
-  }
 }

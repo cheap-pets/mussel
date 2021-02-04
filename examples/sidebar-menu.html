@@ -17,31 +17,46 @@
   </style>
 </head>
 
-<body class="mu-background-normal">
-  <div id="app">
-    <h2>Sidebar Menu Example</h2>
-    <hr>
+<body>
+  <mu-v-box id="app" class="mu-absolute-fit" cell-padding>
+    <div>
+      <h2>Sidebar Menu Example</h2>
+      <hr>
+    </div>
 
-    <mu-h-box class="mc-page-body" style="height: 500px;">
+    <mu-h-box size="1">
       <mu-sidebar-menu
         class="sidebar-menu"
         floatable
-        collapsed
+        
         collapsible
         collapse-button-position="top">
         <template #header>
           <div align-self="center" style="padding: 0 10px;">Welcome</div>
         </template>
-        <mu-menu-item title="Menu Item 1" icon="calendar" active>
-        </mu-menu-item>
-        <mu-menu-item title="Menu Item 2" icon="ok">
-        </mu-menu-item>
-        <mu-menu-item title="Menu Item 2" icon="clear">
-        </mu-menu-item>
+        <mu-menu-group title="Menu Group 1" icon="ok">
+          <mu-menu-item title="Menu Item 1" icon="calendar" active></mu-menu-item>
+          <mu-menu-item title="Menu Item 2" icon="ok"></mu-menu-item>
+          <mu-menu-item title="Menu Item 3" icon="folder"></mu-menu-item>
+          <mu-menu-item title="Menu Item 4" icon="refresh"></mu-menu-item>
+          <mu-menu-item title="Menu Item 5" icon="info"></mu-menu-item>
+          <mu-menu-item title="Menu Item 6" icon="ellipsis"></mu-menu-item>
+          <mu-menu-item title="Menu Item 7" icon="tree"></mu-menu-item>
+        </mu-menu-group>
+        <mu-menu-group title="Menu Group 2" icon="x">
+          <mu-menu-item title="Menu Item 8" icon="calendar" active></mu-menu-item>
+          <mu-menu-item title="Menu Item 9" icon="ok"></mu-menu-item>
+          <mu-menu-item title="Menu Item A" icon="folder"></mu-menu-item>
+          <mu-menu-item title="Menu Item B" icon="refresh"></mu-menu-item>
+          <mu-menu-item title="Menu Item C" icon="info"></mu-menu-item>
+          <mu-menu-item title="Menu Item D" icon="ellipsis"></mu-menu-item>
+          <mu-menu-item title="Menu Item E" icon="tree"></mu-menu-item>
+        </mu-menu-group>
+        <mu-menu-item title="Menu Item F" icon="bulb"></mu-menu-item>
       </mu-sidebar-menu>
       <div size="1" class="shadow" style="background: rgba(0,0,0,.05); margin-left: 10px;"></div>
     </mu-h-box>
-  </div>
+  </mu-v-box>
 
   <script type="text/javascript">
     var app = new Vue({

@@ -17,14 +17,14 @@ export default {
   successColor: '#52c41a',
   successPlusColor: '#389e0d',
   successMinusColor: '#73d13d',
-  successTinyColor: '#d9f7be',
+  successTinyColor: 'rgba(82, 196, 26, .1)',
   successShadowColor: 'rgba(82, 196, 26, .15)',
 
   /* danger colors */
   dangerColor: '#f5222d',
   dangerPlusColor: '#cf1322',
   dangerMinusColor: '#ff4d4f',
-  dangerTinyColor: '#ffccc7',
+  dangerTinyColor: 'rgba(245, 34, 45, .1)',
   dangerShadowColor: 'rgba(245, 34, 45, .15)',
 
   /* warning colors */

@@ -24,7 +24,7 @@
         :selected="selected"
         stripe
         bordered
-        height="500px"
+        height="auto"
         gridline="both"
         hover-mode="row">
         <mu-table-check-column
@@ -36,7 +36,7 @@
         <mu-table-column label="f2" field="f2" width="xl"></mu-table-column>
         <mu-table-column label="text column 1" field="f2" width="xl"></mu-table-column>
         <mu-table-column label="text column 2" field="f2" width="xl"></mu-table-column>
-        <mu-table-column label="text column 3" field="f2"></mu-table-column>
+        <mu-table-column label="text column 3" field="f2" width="xl"></mu-table-column>
         <mu-table-column label="f3" field="f3" fixed="right" width="s"></mu-table-column>
       </mu-table>
     </div>
@@ -62,7 +62,7 @@
 
   <script type="text/javascript">
     var records = []
-    for (var i = 0; i < 10000; i++) {
+    for (var i = 0; i < 3; i++) {
       records.push({
         f1: i,
         f2: 'some text value',

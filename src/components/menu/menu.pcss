@@ -13,6 +13,7 @@
     left: 0;
     display: inline-block;
     width: $menuItemHeight;
+    line-height: $menuItemHeight;
     text-align: center;
 
     &[icon="dropdown"]:last-child {
@@ -23,6 +24,8 @@
 }
 
 .mu-menu-group_body {
+  position: relative;
+
   & .mu-menu-group_header {
     font-size: 0.857rem;
     font-weight: 600;

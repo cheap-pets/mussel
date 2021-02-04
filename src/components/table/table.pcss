@@ -2,45 +2,12 @@
   background: $normalBackground;
 
   &[width=auto] {
-    display: 'inline-flex';
-    clear: 'both'
-  }
+    display: inline-flex;
+    clear: 'both';
 
-  .mu-table_head {
-    border-bottom: 2px solid $primaryColor;
-    color: #999;
-    font-weight: 600;
-  }
-
-  .mu-table_head-center {
-    overflow: hidden;
-  }
-
-  .mu-table_head-center,
-  .mu-table_body {
-    & .mu-table_row {
-      width: 100%;
+    & .mu-table_head-center .mu-table_row {
+      width: auto;
     }
-  }
-
-  .mu-table_body-left,
-  .mu-table_body-center,
-  .mu-table_body-right {
-    min-height: 100%;
-  }
-
-  & .mu-table_row {
-    display: table;
-    table-layout: fixed;
-    border-bottom: 0 solid $normalDividerColor;
-  }
-
-  & .mu-table_head-row {
-    height: 40px;
-  }
-
-  &[stripe] .mu-table_body-row:nth-child(even) {
-    background: #f7f7f7;
   }
 
   &[stripe] .mu-table_body-row:nth-child(even) {
@@ -52,33 +19,11 @@
     background: $primaryTinyColor;
   }
 
-  & .mu-table_cell {
-    display: table-cell;
-    overflow: hidden;
-    vertical-align: middle;
-    border-right: 0 solid $normalDividerColor;
-
-    & > .mu-table_cell-label {
-      box-sizing: border-box;
-      width: 100%;
-      padding: 5px 10px;
-      line-height: 20px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      text-align: center;
-    }
-  }
-
   &[gridline='both'],
   &[gridline='row'] {
     & .mu-table_row {
       border-bottom-width: 1px;
     }
-  }
-
-  & .mu-table_head .mu-table_row:last-child {
-    border-bottom-width: 0;
   }
 
   & [table-fixed] .mu-table_cell,
@@ -97,6 +42,61 @@
       border-left: 1px solid $normalDividerColor;
     }
   }
+}
+
+.mu-table_head {
+  border-bottom: 2px solid $primaryColor;
+  color: #999;
+  font-weight: 600;
+
+  & .mu-table_row:last-child {
+    border-bottom-width: 0;
+  }
+}
+
+.mu-table_head-center {
+  overflow: hidden;
+}
+
+.mu-table_head-center,
+.mu-table_body {
+  & .mu-table_row {
+    width: 100%;
+  }
+}
+
+.mu-table_body-left,
+.mu-table_body-center,
+.mu-table_body-right {
+  min-height: 100%;
+}
+
+.mu-table_row {
+  display: table;
+  table-layout: fixed;
+  border-bottom: 0 solid $normalDividerColor;
+}
+
+.mu-table_head-row {
+  height: 40px;
+}
+
+.mu-table_cell {
+  display: table-cell;
+  overflow: hidden;
+  vertical-align: middle;
+  border-right: 0 solid $normalDividerColor;
+}
+
+.mu-table_cell-label {
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+  padding: 4px 10px;
+  line-height: 16px;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .mu-table_checkbox {

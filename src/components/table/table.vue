@@ -1,6 +1,7 @@
 <template>
-  <v-box
-    class="mu-table"
+  <div
+    class="mu-flex-box mu-table"
+    direction="column"
     :width="width"
     :style="tableStyle"
     :gridline="gridline"
@@ -9,7 +10,7 @@
       <slot />
     </div>
     <template v-if="ready">
-      <h-box class="mu-table_head">
+      <div class="mu-flex-box mu-table_head">
         <table-head-group
           v-if="columnGroups.left"
           class="mu-table_head-left"
@@ -28,14 +29,14 @@
           table-fixed="right"
           :columns="columnGroups.right"
           @sizechange.native="onRightTableResize" />
-      </h-box>
-      <h-box
+      </div>
+      <div
         v-mussel-scrollbar="scrollbarYOptions"
-        class="mu-table_body"
+        class="mu-flex-box mu-table_body"
         size="auto"
-        @scroll.native="onRowScroll"
-        @mouseleave.native="onBodyMouseLeave"
-        @sizechange.native="onBodyResize">
+        @scroll="onRowScroll"
+        @sizechange="onBodyResize"
+        @mouseleave="onBodyMouseLeave">
         <table-body-group
           v-if="columnGroups.left"
           class="mu-table_body-left"
@@ -58,16 +59,14 @@
           :columns="columnGroups.right"
           :style="bodyGroupStyle"
           :width="rightTableSize" />
-      </h-box>
+      </div>
     </template>
-  </v-box>
+  </div>
 </template>
 
 <script>
   import throttle from 'lodash.throttle'
 
-  import VBox from '../layout/flex-v-box'
-  import HBox from '../layout/flex-h-box'
   import TableHeadGroup from './table-head-group.vue'
   import TableBodyGroup from './table-body-group.vue'
 
@@ -78,8 +77,6 @@
   export default {
     name: 'MusselTable',
     components: {
-      VBox,
-      HBox,
       TableHeadGroup,
       TableBodyGroup
     },

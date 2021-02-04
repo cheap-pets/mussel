@@ -19,7 +19,7 @@ function appendFresh (cache, data) {
 }
 
 export default function updateCache () {
-  if (this.rowHeight) {
+  if (this.rowHeight && this.height !== 'auto') {
     const i = parseInt(this.scrollTop / this.rowOffsetHeight)
     const up = this.visibleRowCount * (this.scrollDirection > 0 ? 1 : 2)
     const start = Math.max(i - up - (i & 1), 0)

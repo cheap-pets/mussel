@@ -30,12 +30,12 @@ function removeAttributes (s) {
   const ss = endIdx === -1 ? null : s.substring(startIdx, endIdx + 1)
   return ss
     ? s.replace(
-        ss,
-        ss
-          .replace(/\swidth=".*?"/, '')
-          .replace(/\sheight=".*?"/, '')
-          .replace(/\sclass=".*?"/, '')
-      )
+      ss,
+      ss
+        .replace(/\swidth=".*?"/, '')
+        .replace(/\sheight=".*?"/, '')
+        .replace(/\sclass=".*?"/, '')
+    )
     : s
 }
 
