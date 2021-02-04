@@ -90,7 +90,7 @@ import TableColumn from './table/columns/column.js'
 import TableCheckColumn from './table/columns/check-column.js'
 
 /* MIXINS */
-import PopupGroupMixin from '@mixins/mix-popup-group'
+import PopupGroupMixin from '@/mixins/mix-popup-group'
 
 /* MESSAGE BOX */
 import PromptPanel from './message/prompt-panel.vue'

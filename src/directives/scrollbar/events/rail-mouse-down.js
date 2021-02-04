@@ -1,4 +1,4 @@
-import { getClientRect, pointInElementRect } from '@utils/client-rect'
+import { getClientRect, pointInElementRect } from '@/utils/client-rect'
 
 function scrollIf (target, clientX, clientY) {
   if (pointInElementRect({ clientX, clientY }, target)) {

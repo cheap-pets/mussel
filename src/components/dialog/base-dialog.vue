@@ -1,7 +1,7 @@
 <script>
   import isString from 'lodash.isstring'
 
-  import delay from '@utils/delay'
+  import delay from '@/utils/delay'
 
   import BaseModal from '../modal/base-modal.vue'
   import DialogWrapper from './dialog-wrapper.vue'

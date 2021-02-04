@@ -21,7 +21,7 @@
 <script>
   import './paging-bar.pcss'
 
-  import lang from '../../lang'
+  import lang from '@/lang'
 
   import HBox from '../layout/flex-h-box'
   import Space from '../layout/space.vue'

@@ -1,3 +1,4 @@
+import DeprecatedCheckMixin from '@/mixins/deprecated-check'
 import BaseEditorWrapper from './base-editor-wrapper.vue'
 
 export default {
@@ -5,6 +6,7 @@ export default {
   components: {
     'mu-editor-wrapper': BaseEditorWrapper
   },
+  mixins: [DeprecatedCheckMixin],
   provide () {
     return {
       editor: this,
@@ -13,25 +15,20 @@ export default {
   },
   data () {
     const p = this
-    if (p.iconPosition) {
-      console.warn(
-        'property "icon-position" is deprecated, use "icon-align" instead!'
-      )
-    }
     const params = {
       focus: false,
       type: p.type,
       value: p.value,
       icon: p.icon,
-      iconClass: p.iconClass,
-      iconAlign: p.iconPosition || p.iconAlign,
-      iconClickable: p.iconClickable !== false,
       readonly: p.readonly,
       disabled: p.disabled,
       editable: p.editable,
       clearable: p.clearable,
+      autofocus: p.autofocus,
       placeholder: p.placeholder,
-      autofocus: p.autofocus
+      iconClass: p.iconClass,
+      iconAlign: p.iconPosition || p.iconAlign,
+      iconClickable: p.iconClickable !== false
     }
     return { params }
   },
@@ -52,7 +49,11 @@ export default {
     },
     icon: String,
     iconClass: String,
-    iconPosition: String,
+    iconPosition: {
+      type: String,
+      deprecated: true,
+      replacement: 'icon-align'
+    },
     iconAlign: {
       type: String,
       default: 'right',

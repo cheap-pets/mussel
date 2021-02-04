@@ -20,7 +20,7 @@
 
   import Icon from '../icon/icon.vue'
 
-  import { unsetOrFalse } from '@utils/prop'
+  import { unsetOrFalse } from '@/utils/prop'
 
   export default {
     name: 'MusselListItem',

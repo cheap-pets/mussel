@@ -77,23 +77,26 @@
 <script>
   import './calendar.pcss'
 
-  import lang from '../../lang'
-  import IconButton from '../button/icon-button.jsx'
+  import { fillGrid } from '@/utils/array'
+  import lang from '@/lang'
+  import DeprecatedCheckMixin from '@/mixins/deprecated-check'
 
-  import { fillGrid } from '@utils/array'
   import fillMonthGrid from './fill-month-grid'
+  import IconButton from '../button/icon-button.jsx'
 
   import {
     isEqual,
     date2Obj,
     getSiblingMonth,
     convertToDateObj
-  } from '@utils/date'
+  } from '@/utils/date'
 
   export default {
+    name: 'MusselCalendar',
     components: {
       IconButton
     },
+    mixins: [DeprecatedCheckMixin],
     model: {
       prop: 'value',
       event: 'change'
@@ -109,11 +112,11 @@
           return ['year', 'month', 'date'].indexOf(v) !== -1
         }
       },
+      marked: Array,
       markedDates: {
         type: Array,
-        default () {
-          return []
-        }
+        deprecated: true,
+        replacement: 'marked'
       }
     },
     data () {
@@ -180,6 +183,9 @@
       rangeEnd () {
         this.updateDateCells()
       },
+      marked () {
+        this.updateDateCells()
+      },
       markedDates () {
         this.updateDateCells()
       }
@@ -195,9 +201,11 @@
           naviMonth: month,
           rangeStart: start,
           rangeEnd: end,
-          markedDates: marked,
+          markedDates,
           today
         } = this
+        const marked = this.marked || markedDates || []
+
         this.dateRows = fillMonthGrid(year, month, marked, start, end, today)
         this.$emit('updatecells', { year, month })
         this.$emit('navigate', { year, month })

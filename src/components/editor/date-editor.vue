@@ -11,7 +11,7 @@
   import BasePopupEditor from './base-popup-editor'
   import Calendar from '../calendar/calendar.vue'
 
-  import { convertToDate, formatDate } from '@utils/date'
+  import { convertToDate, formatDate } from '@/utils/date'
 
   export default {
     name: 'MusselDateEditor',
@@ -34,6 +34,7 @@
       rangeEnd: Date,
       language: String,
       selectMode: String,
+      marked: Array,
       markedDates: Array
     },
     data () {
@@ -45,6 +46,7 @@
           rangeEnd: p.rangeEnd,
           language: p.language,
           selectMode: p.selectMode,
+          marked: p.marked,
           markedDates: p.markedDates
         }
       }
@@ -72,6 +74,9 @@
       },
       rangeEnd (value) {
         this.calendarParams.rangeEnd = value
+      },
+      marked (value) {
+        this.calendarParams.marked = value
       },
       markedDates (value) {
         this.calendarParams.markedDates = value

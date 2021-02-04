@@ -1,5 +1,5 @@
 import throttle from 'lodash.throttle'
-import { getClientRect } from '@utils/client-rect'
+import { getClientRect } from '@/utils/client-rect'
 
 function outOfRect (point, rail, isYAxis) {
   const { top, bottom, left, right } = getClientRect(rail)

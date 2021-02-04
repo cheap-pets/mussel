@@ -4,10 +4,8 @@
     "module": "commonjs",
     "baseUrl": "./",
     "paths": {
-      "@utils/*": ["src/utils/*"],
-      "@mixins/*": ["src/mixins/*"],
-      "@events/*": ["src/events/*"],
-      "@icon/*": ["node_modules/@tabler/icons/icons/*"]
+      "@/*": ["src/*"],
+      "~icon/*": ["node_modules/@tabler/icons/icons/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

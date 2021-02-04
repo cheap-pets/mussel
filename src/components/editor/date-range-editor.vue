@@ -6,9 +6,10 @@
         :value="start"
         :language="language"
         :select-mode="selectMode"
-        :marked-dates="markedDates"
         :range-start="rangeStart"
         :range-end="rangeEnd"
+        :marked="marked"
+        :marked-dates="markedDates"
         @change="onSelectStart" />
       <div class="mu-date-range-editor_to">
         ~
@@ -18,9 +19,10 @@
         :value="end"
         :language="language"
         :select-mode="selectMode"
-        :marked-dates="markedDates"
         :range-start="start || rangeStart"
         :range-end="rangeEnd"
+        :marked="marked"
+        :marked-dates="markedDates"
         @change="onSelectEnd" />
     </mu-h-box>
   </mu-popup-editor-wrapper>
@@ -30,7 +32,7 @@
   import BasePopupEditor from './base-popup-editor'
   import Calendar from '../calendar/calendar.vue'
 
-  import { convertToDate, formatDate } from '@utils/date'
+  import { convertToDate, formatDate } from '@/utils/date'
 
   export default {
     name: 'MusselDateRangeEditor',
@@ -53,9 +55,10 @@
       rangeEnd: Date,
       language: String,
       selectMode: String,
-      markedDates: Array,
       endDate: [String, Date],
-      startDate: [String, Date]
+      startDate: [String, Date],
+      marked: Array,
+      markedDates: Array
     },
     computed: {
       dateFormat () {
@@ -95,12 +98,6 @@
           this.setValue(this.startDate, value)
         },
         immediate: true
-      },
-      rangeStart (value) {
-        this.calendarParams.rangeStart = value
-      },
-      rangeEnd (value) {
-        this.calendarParams.rangeEnd = value
       }
     },
     methods: {

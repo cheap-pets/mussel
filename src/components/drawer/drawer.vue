@@ -20,8 +20,8 @@
 
   import './drawer.pcss'
 
-  import { hasMaskParent } from '@utils/dom'
-  import { assignIfDefined } from '@utils/assign-if-defined'
+  import { hasMaskParent } from '@/utils/dom'
+  import { assignIfDefined } from '@/utils/assign-if-defined'
 
   export default {
     name: 'MusselDrawer',

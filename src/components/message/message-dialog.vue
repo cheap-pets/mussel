@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import delay from '@utils/delay'
+  import delay from '@/utils/delay'
   import BaseDialog from '../dialog/base-dialog.vue'
 
   export default {

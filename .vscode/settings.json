@@ -1,8 +1,6 @@
 {
   "path-autocomplete.pathMappings": {
-    "@icon": "${folder}/node_modules/@tabler/icons/icons",
-    "@utils": "${folder}/src/utils",
-    "@mixins": "${folder}/src/mixins",
-    "@events": "${folder}/src/events"
+    "~icon": "${folder}/node_modules/@tabler/icons/icons",
+    "@": "${folder}/src"
   }
 }

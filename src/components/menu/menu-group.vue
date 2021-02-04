@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import delay from '@utils/delay'
+  import delay from '@/utils/delay'
 
   export default {
     name: 'MusselMenuGroup',

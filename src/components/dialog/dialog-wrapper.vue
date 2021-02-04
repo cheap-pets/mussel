@@ -54,9 +54,9 @@
   import Button from '../button/button.jsx'
   import FlexItem from '../layout/flex-item.vue'
 
-  import delay from '@utils/delay'
+  import delay from '@/utils/delay'
 
-  import { getClientRect } from '@utils/client-rect'
+  import { getClientRect } from '@/utils/client-rect'
 
   export default {
     name: 'MusselDialogWrapper',

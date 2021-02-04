@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-import lang from '../../lang'
+import lang from '@/lang'
 import MessageDialog from './message-dialog.vue'
 
 const Buttons = {

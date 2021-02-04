@@ -1,4 +1,4 @@
-import emit from '@events/emit'
+import emit from '@/events/emit'
 
 import methods from './methods'
 import bindEvents from './events'

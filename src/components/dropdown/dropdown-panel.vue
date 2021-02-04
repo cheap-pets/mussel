@@ -25,13 +25,13 @@
 </template>
 
 <script>
-  import RenderToBodyMixin from '@mixins/mix-render-to-body'
-  import PopupVisibleMixin from '@mixins/mix-popup-visible'
+  import RenderToBodyMixin from '@/mixins/mix-render-to-body'
+  import PopupVisibleMixin from '@/mixins/mix-popup-visible'
 
-  import delay from '@utils/delay'
+  import delay from '@/utils/delay'
 
-  import { getClientRect } from '@utils/client-rect'
-  import { hideIf } from '@events/global-layer-events'
+  import { getClientRect } from '@/utils/client-rect'
+  import { hideIf } from '@/events/global-layer-events'
 
   function popOnTop (pRect, height) {
     return (pRect.bottom + 4 + height > window.innerHeight) &&

@@ -1,4 +1,4 @@
-// import delay from '@utils/delay'
+// import delay from '@/utils/delay'
 
 function setRailHidden (rail, hidden) {
   if (hidden) rail.setAttribute('hidden', '')

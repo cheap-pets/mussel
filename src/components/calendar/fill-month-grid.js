@@ -4,9 +4,9 @@ import {
   filterByMonth,
   getSiblingMonth,
   getMonthFirstDay
-} from '@utils/date'
+} from '@/utils/date'
 
-import { fillGrid } from '@utils/array'
+import { fillGrid } from '@/utils/array'
 
 function setCellStatus (cell, marks, start, end, today) {
   const date = new Date(cell.year, cell.month, cell.date)
