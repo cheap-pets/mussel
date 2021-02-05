@@ -22,7 +22,9 @@ const props = [
   '--mu-danger-tiny-color',
   '--mu-danger-shadow-color',
 
-  '--mu-warning-color'
+  '--mu-warning-color',
+
+  '--mu-dark-background'
 ]
 
 const hueStep = 2
@@ -130,7 +132,7 @@ function setColorVariables (option) {
             option[prop] = palettes[4]
             break
           case 'tiny':
-            option[prop] = palettes[1]
+            option[prop] = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, .1)` // palettes[1]
             break
           case 'shadow':
             option[prop] = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, .15)`
@@ -138,6 +140,11 @@ function setColorVariables (option) {
         }
       }
     })
+
+    if (key === 'primary' && !option['--mu-dark-background']) {
+      option['--mu-dark-background'] = palettes[9]
+      console.log(palettes[9])
+    }
   })
 }
 

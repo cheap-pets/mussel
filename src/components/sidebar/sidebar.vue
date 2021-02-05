@@ -1,6 +1,7 @@
 <template>
   <div
     class="mu-sidebar"
+    :dark-mode="darkMode"
     :floating="isFloating"
     :collapsed="isCollapsed"
     :style="sidebarStyle">
@@ -57,9 +58,12 @@
       }
     },
     props: {
+      darkMode: Boolean,
       border: {
         type: String,
-        default: 'right'
+        default () {
+          return this.darkMode ? 'right' : undefined
+        }
       },
       floatable: Boolean,
       collapsed: Boolean,
@@ -67,7 +71,7 @@
       collapseButtonPosition: {
         type: String,
         validator (v) {
-          return ['header', 'footer'].indexOf(v) !== -1
+          return ['top', 'bottom'].indexOf(v) !== -1
         }
       },
       width: {
@@ -96,7 +100,7 @@
         return this.collapsible
           ? (
             this.collapseButtonPosition ||
-            (footer || !header ? 'footer' : 'header')
+            (footer || !header ? 'bottom' : 'top')
           )
           : ''
       },

@@ -41,8 +41,7 @@
 
   &[expanded] {
     & > .mu-menu-group_header {
-      font-weight: 600;
-      background-color: rgba(0, 0, 0, .03);
+      background-color: rgba(0, 0, 0, .05);
     }
 
     & > .mu-menu-group_body::before {
@@ -64,19 +63,39 @@
   }
 }
 
+.mu-menu-group_header {
+  font-weight: 600;
+}
 
 .mu-menu-group_body {
   position: relative;
 
   & .mu-menu-group_header {
     font-size: 0.857rem;
-    font-weight: 600;
     color: $normalSubtitleTextColor;
     background: transparent;
     cursor: default;
   }
 }
 
-/* .mu-menu-group .mu-menu-group + .mu-menu-item {
-  border-top: 1px solid $normalDividerColor;
-} */
+
+[dark-mode] {
+  & .mu-menu-group_header,
+  & .mu-menu-item {
+    color: rgba(255, 255, 255, .8);
+
+    &[active] {
+      color: #fff;
+    }
+  }
+
+  & [expanded] {
+    & > .mu-menu-group_header {
+      background-color: rgba(255, 255, 255, .05);
+    }
+
+    & + .mu-menu-item {
+      border-top: 1px dashed rgba(255, 255, 255, .25);
+    }
+  }
+}

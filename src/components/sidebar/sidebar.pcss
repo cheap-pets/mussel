@@ -63,3 +63,23 @@
   border-right: 1px solid $normalDividerColor;
   color: var(--mu-primary-color);
 }
+
+.mu-sidebar[dark-mode] {
+  color: rgba(255, 255, 255, .8);
+
+  & .mu-sidebar_container {
+    background-color: var(--mu-dark-background);
+  }
+
+  & .mu-sidebar_header, {
+    border-bottom: 1px solid rgba(255, 255, 255, .25);
+  }
+
+  & .mu-sidebar_footer {
+    border-top: 1px solid rgba(255, 255, 255, .25);
+  }
+
+  & .mu-sidebar_collapse-button {
+    border-right: 1px solid rgba(255, 255, 255, .25);
+  }
+}

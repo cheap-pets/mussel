@@ -50,6 +50,7 @@ export default {
 
   /* background */
   normalBackground: '#fff',
+  normalDarkBackground: '#002766',
   normalGreyBackground: '#e9e9e9',
   normalHoverBackground: '#ececec',
   normalDarkGreyBackground: '#a6a6a6',
