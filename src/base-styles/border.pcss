@@ -1,5 +1,27 @@
-.mu-bordered,
-[class^="mu-"][bordered],
-[class^="mu-"] > [bordered] {
+.mu-bordered, [class^="mu-"] {
+  &[border] {
+    border: 0 solid $normalBorderColor;
+  }
+
+  &[border~="top"] {
+    border-top-width: 1px;
+  }
+
+  &[border~="left"] {
+    border-left-width: 1px;
+  }
+
+  &[border~="right"] {
+    border-right-width: 1px;
+  }
+
+  &[border~="bottom"] {
+    border-bottom-width: 1px;
+  }
+}
+
+.mu-bordered:not([border]),
+[class^="mu-"][border=""],
+[class^="mu-"][bordered] {
   border: 1px solid $normalBorderColor;
 }

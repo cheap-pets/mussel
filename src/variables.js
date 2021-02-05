@@ -40,7 +40,7 @@ export default {
   normalTextColor: '#666',
   normalWeakTextColor: '#bbb',
   normalTitleTextColor: '#555',
-  normalSubtitleTextColor: '#777',
+  normalSubtitleTextColor: '#999',
   normalDisabledTextColor: '#bbb',
   normalHighlightTextColor: '#fff',
 

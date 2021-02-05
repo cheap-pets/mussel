@@ -1,6 +1,6 @@
 <template>
   <a
-    class="mu-menu-item mu-button-like"
+    class="mu-menu-item"
     :disabled="disabled"
     :active="selected"
     @click="onClick">

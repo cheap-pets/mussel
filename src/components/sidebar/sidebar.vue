@@ -1,14 +1,15 @@
 <template>
   <div
     class="mu-sidebar"
-    :floating="floating"
+    :floating="isFloating"
     :collapsed="isCollapsed"
-    :style="{ width: sidebarWidth }">
+    :style="sidebarStyle">
     <div
       class="mu-sidebar_container mu-absolute-fit mu-flex-box"
       direction="column"
+      :border="border"
       :style="{ width: contentWidth }"
-      @mouseleave="onCollapseBtnMouseLeave">
+      @mouseleave="onSidebarMouseLeave">
       <div
         v-if="headerVisible"
         class="mu-sidebar_header mu-flex-box">
@@ -56,13 +57,17 @@
       }
     },
     props: {
+      border: {
+        type: String,
+        default: 'right'
+      },
       floatable: Boolean,
       collapsed: Boolean,
       collapsible: Boolean,
       collapseButtonPosition: {
         type: String,
         validator (v) {
-          return ['top', 'bottom'].indexOf(v) !== -1
+          return ['header', 'footer'].indexOf(v) !== -1
         }
       },
       width: {
@@ -72,7 +77,7 @@
     },
     data () {
       return {
-        floating: this.collapsed,
+        isFloating: this.collapsed,
         isCollapsed: this.collapsed
       }
     },
@@ -80,14 +85,18 @@
       menuIcon () {
         return this.isCollapsed
           ? 'menu'
-          : (this.floating ? 'pin' : 'pinned')
+          : (
+            this.floatable
+              ? (this.isFloating ? 'pin' : 'pinned')
+              : 'key-left'
+          )
       },
       collapseBtnPosition () {
         const { header, footer } = this.$slots
         return this.collapsible
           ? (
             this.collapseButtonPosition ||
-            (footer || !header ? 'bottom' : 'top')
+            (footer || !header ? 'footer' : 'header')
           )
           : ''
       },
@@ -99,8 +108,10 @@
         return this.$slots.footer ||
           (this.collapsible && this.collapseBtnPosition === 'bottom')
       },
-      sidebarWidth () {
-        return (this.floating || this.isCollapsed) ? undefined : this.width
+      sidebarStyle () {
+        return (this.isFloating || this.isCollapsed)
+          ? undefined
+          : { width: this.width }
       },
       contentWidth () {
         return this.isCollapsed ? undefined : this.width
@@ -109,7 +120,7 @@
     methods: {
       toggleCollapse () {
         if (this.floatable) {
-          this.floating = !this.floating
+          this.isFloating = !this.isFloating
         } else {
           this.isCollapsed = !this.isCollapsed
         }
@@ -126,14 +137,16 @@
         }, 300)
       },
       onCollapseBtnMouseOver () {
-        if (!this.floating) return
-        this.clearHoverTimer()
-        this.isCollapsed = false
+        if (this.isFloating) {
+          this.clearHoverTimer()
+          this.isCollapsed = false
+        }
       },
-      onCollapseBtnMouseLeave () {
-        if (!this.floating) return
-        this.clearHoverTimer()
-        this.delayCollapse()
+      onSidebarMouseLeave () {
+        if (this.isFloating) {
+          this.clearHoverTimer()
+          this.delayCollapse()
+        }
       }
     }
   }

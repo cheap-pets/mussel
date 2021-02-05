@@ -1,8 +1,6 @@
 <template>
   <div class="mu-menu-group" :expanded="expanded">
-    <div
-      class="mu-menu-group_header mu-button-like"
-      @click="onClick">
+    <div class="mu-menu-group_header" @click="onClick">
       <slot name="header">
         <mu-icon :icon="icon" :icon-class="iconClass" />
         {{ title }}

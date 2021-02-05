@@ -11,9 +11,9 @@
     .client-area {
       background: rgba(0, 0, 0, .05);
     }
-    .mu-sidebar_container, .shadow {
+    /* .mu-sidebar_container, .shadow {
       box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12);
-    }
+    } */
   </style>
 </head>
 
@@ -28,7 +28,6 @@
       <mu-sidebar-menu
         class="sidebar-menu"
         floatable
-        
         collapsible
         collapse-button-position="top">
         <template #header>
@@ -47,10 +46,15 @@
           <mu-menu-item title="Menu Item 8" icon="calendar" active></mu-menu-item>
           <mu-menu-item title="Menu Item 9" icon="ok"></mu-menu-item>
           <mu-menu-item title="Menu Item A" icon="folder"></mu-menu-item>
-          <mu-menu-item title="Menu Item B" icon="refresh"></mu-menu-item>
-          <mu-menu-item title="Menu Item C" icon="info"></mu-menu-item>
-          <mu-menu-item title="Menu Item D" icon="ellipsis"></mu-menu-item>
-          <mu-menu-item title="Menu Item E" icon="tree"></mu-menu-item>
+          <mu-menu-group title="Menu Group 2-1">
+            <mu-menu-item title="Menu Item B" icon="refresh"></mu-menu-item>
+            <mu-menu-item title="Menu Item C" icon="info"></mu-menu-item>
+            <mu-menu-item title="Menu Item D" icon="ellipsis"></mu-menu-item>
+            <mu-menu-item title="Menu Item E" icon="tree"></mu-menu-item>
+            <mu-menu-item title="Menu Item F" icon="info"></mu-menu-item>
+            <mu-menu-item title="Menu Item G" icon="ellipsis"></mu-menu-item>
+            <mu-menu-item title="Menu Item H" icon="tree"></mu-menu-item>
+          </mu-menu-group>
         </mu-menu-group>
         <mu-menu-item title="Menu Item F" icon="bulb"></mu-menu-item>
       </mu-sidebar-menu>
