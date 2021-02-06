@@ -10,7 +10,7 @@ export default {
   primaryColor: '#1890ff',
   primaryPlusColor: '#096dd9',
   primaryMinusColor: '#40a9ff',
-  primaryTinyColor: 'rgba(24, 144, 255, .1)',
+  primaryTinyColor: 'rgba(24, 144, 255, .07)',
   primaryShadowColor: 'rgba(24, 144, 255, .15)',
 
   /* success colors */
@@ -37,9 +37,9 @@ export default {
   /* normal control vars */
 
   /* text color */
-  normalTextColor: '#666',
+  normalTextColor: '#555',
   normalWeakTextColor: '#bbb',
-  normalTitleTextColor: '#555',
+  normalTitleTextColor: '#444',
   normalSubtitleTextColor: '#999',
   normalDisabledTextColor: '#bbb',
   normalHighlightTextColor: '#fff',
@@ -52,10 +52,10 @@ export default {
   normalBackground: '#fff',
   normalDarkBackground: '#002766',
   normalGreyBackground: '#e9e9e9',
-  normalHoverBackground: '#ececec',
   normalDarkGreyBackground: '#a6a6a6',
-  normalDisabledBackground: '#e6e6e6',
+  normalDisabledBackground: '#eee',
   normalInfoBackground: '#ffd',
+  normalTinyBackground: 'rgba(0, 0, 0, .05)',
 
   /* element size */
   normalBarHeight: '40px',

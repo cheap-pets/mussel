@@ -27,7 +27,7 @@
   position: relative;
 
   &:hover {
-    background: var(--mu-primary-tiny-color);
+    background: $normalTinyBackground;
   }
 
   &[active] {
@@ -41,7 +41,7 @@
 
   &[expanded] {
     & > .mu-menu-group_header {
-      background-color: rgba(0, 0, 0, .05);
+      background: var(--mu-primary-tiny-color);
     }
 
     & > .mu-menu-group_body::before {
@@ -80,18 +80,30 @@
 
 
 [dark-mode] {
-  & .mu-menu-group_header,
+  & .mu-menu-group_header {
+    color: rgba(255, 255, 255, .8);
+  }
+
   & .mu-menu-item {
     color: rgba(255, 255, 255, .8);
 
+    &:hover {
+      background: rgba(255, 255, 255, .05);
+    }
+
     &[active] {
       color: #fff;
+      background: var(--mu-primary-color);
     }
   }
 
   & [expanded] {
+    &.mu-menu-group {
+      background: var(--mu-primary-tiny-color);
+    }
+
     & > .mu-menu-group_header {
-      background-color: rgba(255, 255, 255, .05);
+      background-color: rgba(255, 255, 255, .1);
     }
 
     & + .mu-menu-item {

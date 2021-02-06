@@ -57,9 +57,9 @@
       height: 1px;
       flex-grow: 1;
 
-      & + .mu-calendar-row {
-        /* border-top: 1px solid $normalDividerColor; */
-      }
+      /* & + .mu-calendar-row {
+        border-top: 1px solid $normalDividerColor;
+      } */
     }
     & .mu-calendar-cell {
       position: relative;
@@ -69,9 +69,9 @@
       width: 1px;
       cursor: pointer;
 
-      & + .mu-calendar-cell {
-        /* border-left: 1px solid $normalDividerColor; */
-      }
+      /* & + .mu-calendar-cell {
+        border-left: 1px solid $normalDividerColor;
+      } */
 
       &[marked]:after {
         position: absolute;
@@ -88,7 +88,7 @@
       }
       &:hover {
         color: var(--mu-primary-minus-color);
-        background: $normalHoverBackground;
+        background: $normalTinyBackground;
       }
       &[present] {
         font-weight: 600;

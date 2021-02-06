@@ -48,7 +48,7 @@ export default {
   /* background */
   normalBackground: '#19192B',
   normalGreyBackground: 'rgba(255, 255, 255, .1)',
-  normalHoverBackground: 'rgba(255, 255, 255, .1)',
+  normalTinyBackground: 'rgba(255, 255, 255, .1)',
   normalDarkGreyBackground: 'rgba(255, 255, 255, .35)',
   normalDisabledBackground: 'rgba(255, 255, 255, .15)',
   normalInfoBackground: 'rgba(255, 255, 0, .1)',

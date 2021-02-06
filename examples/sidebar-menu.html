@@ -7,28 +7,26 @@
   <title>Menu</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
-  <style>
-    .client-area {
-      background: rgba(0, 0, 0, .05);
-    }
-    /* .mu-sidebar_container, .shadow {
-      box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12);
-    } */
-  </style>
 </head>
 
 <body>
   <mu-v-box id="app" class="mu-absolute-fit" cell-padding>
     <div>
-      <h2>Sidebar Menu Example</h2>
+      <h2>
+        Sidebar Menu Example
+        <span style="float: right; font-size: 12px; font-weight: 500;">
+          Dark Mode
+          &nbsp;
+          <mu-toggle v-model="darkMode"></mu-toggle>
+        </span>
+      </h2>
       <hr>
     </div>
 
     <mu-h-box size="1">
       <mu-sidebar-menu
         class="sidebar-menu"
-        border
-        dark-mode
+        :dark-mode="darkMode"
         floatable
         collapsible
         collapse-button-position="top">
@@ -68,6 +66,7 @@
     var app = new Vue({
       el: '#app',
       data: {
+        darkMode: false
       },
       methods: {
       }

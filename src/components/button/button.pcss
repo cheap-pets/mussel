@@ -238,10 +238,19 @@ h1 {
 
   &:hover {
     color: var(--mu-primary-color);
-    background: $normalHoverBackground;
+    background: $normalTinyBackground;
   }
   &[active] {
     color: $normalHighlightTextColor;
     background: var(--mu-primary-color);
+  }
+}
+
+[dark-mode] .mu-button-like {
+  color: rgba(255, 255, 255, .8);
+
+  &:hover {
+    color: var(--mu-primary-color);
+    background: $normalTinyBackground;
   }
 }

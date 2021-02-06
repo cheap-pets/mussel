@@ -62,7 +62,7 @@
       border: {
         type: String,
         default () {
-          return this.darkMode ? 'right' : undefined
+          return this.darkMode ? undefined : 'right'
         }
       },
       floatable: Boolean,
