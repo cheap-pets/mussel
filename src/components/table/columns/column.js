@@ -8,28 +8,18 @@ export default {
     field: String,
     fixed: String,
     label: String,
-    width: {
-      type: String,
-      default () {
-        return this.fixed ? '100' : undefined
-      }
-    },
-    align: {
-      type: String,
-      default: 'left'
-    },
-    headerAlign: {
-      type: String,
-      default: 'center'
-    },
-    editor: null,
-    content: null,
+    width: String,
+    align: String,
+    headerAlign: String,
+    getText: null,
+    getStyle: null,
     cellClass: null,
-    cellStyle: null
+    cellStyle: null,
+    cellValue: null
   },
   computed: {
     columnWidth () {
-      return convertColumnWidth(this.width)
+      return convertColumnWidth(this.width || (this.fixed ? 100 : undefined))
     }
   },
   created () {
@@ -41,6 +31,14 @@ export default {
   methods: {
     registerColumn () {
       this.table.registerColumn(this)
+    },
+    getCellText (record) {
+      return this.getText
+        ? this.getText(this.record)
+        : record[this.field]
+    },
+    getCellStyle (record) {
+
     }
   }
 }

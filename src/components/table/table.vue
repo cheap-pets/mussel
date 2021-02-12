@@ -127,6 +127,7 @@
         rightTableSize: 0,
         hoverRow: null,
         hoverCol: null,
+        editingCell: null,
         cachedData: [],
         headerValues: {}
       }
@@ -153,7 +154,7 @@
       scrollbarYOptions () {
         return {
           enable: this.height !== 'auto',
-          wheelSpeed: 0.5,
+          wheelSpeed: 1,
           scrollbarX: false,
           observeMutation: false
         }
@@ -161,7 +162,7 @@
       scrollbarXOptions () {
         return {
           enable: this.width !== 'auto',
-          wheelSpeed: 0.5,
+          wheelSpeed: 1,
           scrollbarY: false,
           stickToParent: true,
           observeMutation: false

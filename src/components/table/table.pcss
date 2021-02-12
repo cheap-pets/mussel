@@ -75,6 +75,7 @@
   display: table;
   table-layout: fixed;
   border-bottom: 0 solid $normalDividerColor;
+  background: $normalBackground;
 }
 
 .mu-table_head-row {
@@ -83,20 +84,45 @@
 
 .mu-table_cell {
   display: table-cell;
+  padding: 5px;
   overflow: hidden;
+  text-align: center;
   vertical-align: middle;
   border-right: 0 solid $normalDividerColor;
+
+  &[editable] {
+    & > .mu-table_cell-label {
+      height: 100%;
+      padding: 4px;
+      border: 1px dashed $normalBorderColor;
+
+      &:hover {
+        border-color: var(--mu-primary-minus-color);
+      }
+    }
+  }
+
+  & .mu-editor {
+    height: 100%;
+    width: 100%;
+  }
 }
 
 .mu-table_cell-label {
-  box-sizing: border-box;
-  width: 100%;
-  overflow: hidden;
-  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 16px;
-  text-align: center;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+
+  & > span {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
 
 .mu-table_checkbox {

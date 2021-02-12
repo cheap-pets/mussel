@@ -55,7 +55,7 @@ export default {
   normalDarkGreyBackground: '#a6a6a6',
   normalDisabledBackground: '#eee',
   normalInfoBackground: '#ffd',
-  normalTinyBackground: 'rgba(0, 0, 0, .05)',
+  normalTinyBackground: 'rgba(0, 0, 0, .02)',
 
   /* element size */
   normalBarHeight: '40px',

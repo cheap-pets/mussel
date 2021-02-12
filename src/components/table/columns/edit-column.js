@@ -8,12 +8,22 @@ export default {
     width: {
       type: String,
       default: 'L'
+    },
+    editable: {
+      type: null,
+      default: true
     }
   },
   methods: {
+    getComponentParams () {
+      return {
+        autofocus: true
+      }
+    },
     onCellChange (value, record, column) {
-
+      this.table.setRecordValue(record, column.field, value)
+      this.$emit('cellchange', value)
     }
   },
-  editorComponent: Editor
+  editComponent: Editor
 }

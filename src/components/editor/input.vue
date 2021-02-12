@@ -4,7 +4,6 @@
     :type="type"
     :value="value"
     :disabled="disabled"
-    :autofocus="autofocus"
     @input="onInput"
     @blur="onBlur"
     @click="onClick"
@@ -28,6 +27,9 @@
       value: [String, Number],
       disabled: Boolean,
       autofocus: Boolean
+    },
+    mounted () {
+      if (this.autofocus) this.$el.focus()
     },
     methods: {
       onInput (event) {

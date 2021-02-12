@@ -6,29 +6,23 @@
       :style="rowStyle(item.idx)"
       class="mu-table_row mu-table_body-row"
       @mouseover="onRowMouseEnter(item.idx)">
-      <div
+      <table-cell
         v-for="col in columns"
         :key="col._uid"
-        :style="{ width: col.columnWidth, textAlign: col.align }"
-        :hover="table.hoverCol === col._uid || table.hoverRow === item.idx"
-        class="mu-table_cell"
-        @mouseover="onColMouseEnter(col._uid)">
-        <component
-          :is="col.$options.cellComponent"
-          v-if="col.$options.cellComponent"
-          :value="item.rec[col.field]"
-          style="cellDivStyle"
-          @change="col.onCellChange(arguments[0], item.rec, col)" />
-        <div v-else class="mu-table_cell-label" style="cellDivStyle">
-          {{ item.rec[col.field] }}
-        </div>
-      </div>
+        :column="col"
+        :record="item.rec"
+        :record-idx="item.idx" />
     </div>
   </div>
 </template>
 
 <script>
+  import TableCell from './table-body-cell.vue'
+
   export default {
+    components: {
+      TableCell
+    },
     inject: ['table'],
     props: {
       columns: Array,
@@ -55,19 +49,9 @@
             top: height * idx + 'px'
           }
       },
-      cellDivStyle () {
-        return this.table.rowHeight
-          ? { height: this.table.rowHeight + 'px' }
-          : undefined
-      },
       onRowMouseEnter (idx) {
         if (['row', 'cross'].indexOf(this.table.hoverMode) !== -1) {
           this.table.hoverRow = idx
-        }
-      },
-      onColMouseEnter (id) {
-        if (['column', 'cross'].indexOf(this.table.hoverMode) !== -1) {
-          this.table.hoverCol = id
         }
       }
     }
