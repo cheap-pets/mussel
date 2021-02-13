@@ -25,7 +25,7 @@
         stripe
         border="all"
         height="400px"
-        gridline="none"
+        gridline="both"
         hover-mode="row"
         @cellchange="setRecordValue">
         <mu-table-check-column
@@ -34,7 +34,7 @@
           @CellChange="onCheckColumnCellChange">
         </mu-table-check-column>
         <mu-table-column
-          label="Name"
+          label="ID"
           field="f1"
           width="m"
           fixed>
@@ -48,20 +48,25 @@
         <mu-table-combo-column
           label="Combo column"
           field="f3"
-          width="m"
           :get-style="getF3Style"
           :options="f3Options">
         </mu-table-combo-column>
         <mu-table-search-column
           label="Search Column"
           field="f3"
-          width="m"
+          placeholder="search & select"
           :get-text="getF3Text"
           :options="searchOptions"
           @search="onSearch">
         </mu-table-search-column>
         <mu-table-column label="text column 3" field="f2" width="xl"></mu-table-column>
-        <mu-table-column label="f3" field="f3" fixed="right" width="s"></mu-table-column>
+        <mu-table-button-column
+          label="button"
+          field="f3"
+          width="l"
+          fixed="right"
+          :buttons="[{ caption: 'remove', type: 'danger' }]">
+        </mu-table-button-column>
       </mu-table>
     </div>
     <mu-h-box v-if="false" v-mussel-scrollbar style="height: 400px;">
@@ -135,6 +140,7 @@
           })
         },
         setRecordValue: function (record, field, value) {
+          console.log('x')
           record[field] = value
         }
       }

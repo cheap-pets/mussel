@@ -11,6 +11,11 @@
         :icon-indent="popupIconIndent"
         :option="option"
         :fields="fields" />
+      <div
+        v-if="placeholder && !options.length"
+        class="mu-search-box_placeholder mu-text-ellipsis mu-text-weak">
+        {{ placeholder }}
+      </div>
     </template>
   </mu-popup-editor-wrapper>
 </template>
@@ -37,6 +42,7 @@
       valueMode: String,
       popupStyle: String,
       editable: { type: Boolean, default: true },
+      emitNullOnInput: { type: Boolean, default: true },
       popupMaxHeight: { type: String, default: '300px' }
     },
     data () {
@@ -103,7 +109,9 @@
           this.setValue(value)
           this.$emit('search', value)
           if (this.isDropdownStyle) {
-            if (this.value !== null) this.$emit('change', null)
+            if (this.value !== null && this.emitNullOnInput) {
+              this.$emit('change', null)
+            }
             this.showPopup()
           }
         }, 500)

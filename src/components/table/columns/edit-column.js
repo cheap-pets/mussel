@@ -12,13 +12,15 @@ export default {
     editable: {
       type: null,
       default: true
-    }
+    },
+    placeholder: String
   },
   methods: {
     getComponentParams (record) {
       return {
         autofocus: true,
-        value: record[this.field]
+        value: record[this.field],
+        placeholder: this.placeholder
       }
     },
     onCellChange (value, record, column) {

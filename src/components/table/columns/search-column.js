@@ -20,6 +20,8 @@ export default {
         autofocus: true,
         valueMode: 'select',
         options: this.options,
+        emitNullOnInput: false,
+        placeholder: this.placeholder,
         value: {
           value: record[this.field],
           label: this.getCellText(record)
