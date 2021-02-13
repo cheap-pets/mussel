@@ -6,6 +6,7 @@
     :disabled="disabled"
     @input="onInput"
     @blur="onBlur"
+    @focus="onFocus"
     @click="onClick"
     @keydown="onKeyDown">
 </template>
@@ -42,6 +43,9 @@
       },
       onClick (event) {
         if (!this.disabled) this.$emit('click', event)
+      },
+      onFocus () {
+        this.$emit('focus', this)
       },
       onBlur () {
         this.$emit('blur', this)

@@ -41,5 +41,8 @@ export default {
     this.params.icon = this.icon || (
       this.iconClass ? undefined : 'dropdown'
     )
+  },
+  mounted () {
+    if (this.autofocus) this.popupParams.visible = true
   }
 }

@@ -9,6 +9,7 @@
       v-bind="inputParams"
       class="mu-editor_input"
       @blur="onBlur"
+      @focus="onFocus"
       @click="onInputClick"
       @input="onInput"
       @esckey="onEscKey"
@@ -98,6 +99,9 @@
       },
       onBlur () {
         this.editor.onBlur()
+      },
+      onFocus () {
+        this.editor.onFocus()
       }
     }
   }

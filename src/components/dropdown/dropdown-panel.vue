@@ -6,8 +6,9 @@
     :popup-style="popupStyle"
     :slide="slide"
     :style="rect"
+    @wheel.stop
     @scroll.stop
-    @wheel.stop>
+    @mousedown.stop>
     <div
       ref="wrapper"
       v-mussel-scrollbar="{ overflow }"

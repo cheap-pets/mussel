@@ -88,8 +88,9 @@ import MenuItem from './menu/menu-item.vue'
 import Table from './table/table.vue'
 import TableColumn from './table/columns/column.js'
 import TableEditColumn from './table/columns/edit-column.js'
-import TableComboColumn from './table/columns/combo-column.js'
 import TableCheckColumn from './table/columns/check-column.js'
+import TableComboColumn from './table/columns/combo-column.js'
+import TableSearchColumn from './table/columns/search-column.js'
 
 /* MIXINS */
 import PopupGroupMixin from '@/mixins/mix-popup-group'
@@ -171,6 +172,7 @@ function installComponents (Vue) {
   Vue.component('mu-table-edit-column', TableEditColumn)
   Vue.component('mu-table-combo-column', TableComboColumn)
   Vue.component('mu-table-check-column', TableCheckColumn)
+  Vue.component('mu-table-search-column', TableSearchColumn)
 }
 
 export {
@@ -250,6 +252,7 @@ export {
   TableEditColumn,
   TableComboColumn,
   TableCheckColumn,
+  TableSearchColumn,
   // Mixins
   PopupGroupMixin,
   // register

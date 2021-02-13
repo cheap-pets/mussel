@@ -4,20 +4,18 @@
     :hover="hovering"
     :editable="editable"
     class="mu-table_cell"
-    @mouseover="onColMouseEnter">
+    @mouseover="onColMouseEnter"
+    @click="onCellClick">
     <component
       :is="cellComponent"
       v-if="cellComponent"
       v-bind="cellComponentParams"
       :value="cellValue"
-      @change="onCellChange"
-      @blur="onCellBlur" />
+      @change="onCellChange" />
     <div
       v-else
-      class="mu-table_cell-label"
-      :style="cellDivStyle"
-      @click="onLabelClick">
-      <span>{{ cellText }}</span>
+      class="mu-table_cell-label">
+      <span :style="cellLabelStyle">{{ cellText }}</span>
     </div>
   </div>
 </template>
@@ -63,7 +61,7 @@
           width: this.column.columnWidth
         }
       },
-      cellDivStyle () {
+      cellLabelStyle () {
         return {
           ...this.column.getStyle?.(this.record),
           textAlign: this.column.align
@@ -79,14 +77,13 @@
       onCellChange (value) {
         this.column.onCellChange(value, this.record, this.column)
       },
-      onLabelClick () {
-        this.table.editingCell =
-          this.editable && this.column.$options.editComponent
-            ? this
-            : undefined
-      },
-      onCellBlur () {
-        // this.table.editingCell = undefined
+      onCellClick () {
+        if (this.editingCell !== this) {
+          this.table.editingCell =
+            this.editable && this.column.$options.editComponent
+              ? this
+              : undefined
+        }
       }
     }
   }

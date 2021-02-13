@@ -140,6 +140,9 @@ export default {
     onEnterKey () {
       this.$emit('enterkey', this)
     },
+    onFocus () {
+      this.$emit('focus', this)
+    },
     onBlur () {
       this.$emit('blur', this)
     },

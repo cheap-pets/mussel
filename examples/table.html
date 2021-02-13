@@ -25,8 +25,8 @@
         stripe
         border="all"
         height="400px"
-        gridline="both"
-        hover-mode="cell">
+        gridline="none"
+        hover-mode="row">
         <mu-table-check-column
           fixed
           @headerChange="onCheckColumnHeaderChange"
@@ -41,17 +41,23 @@
         <mu-table-edit-column
           label="f2"
           field="f2"
+          align="left"
           :editable="f2Editable">
         </mu-table-edit-column>
         <mu-table-combo-column
-          label="text column 1"
+          label="column 1"
           field="f3"
           width="m"
           :get-text="getF3Text"
           :get-style="getF3Style"
           :options="f3Options">
         </mu-table-combo-column>
-        <mu-table-column label="text column 2" field="f2" width="xl"></mu-table-column>
+        <mu-table-search-column
+          label="column 2"
+          field="f3"
+          width="m"
+          :options="f3Options">
+        </mu-table-search-column>
         <mu-table-column label="text column 3" field="f2" width="xl"></mu-table-column>
         <mu-table-column label="f3" field="f3" fixed="right" width="s"></mu-table-column>
       </mu-table>

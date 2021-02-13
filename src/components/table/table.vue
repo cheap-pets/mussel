@@ -189,6 +189,12 @@
       this.scrollTop = 0
       this.scrollDirection = 1
     },
+    mounted () {
+      document.addEventListener('mousedown', this.cancelEditing)
+    },
+    beforeDestroy () {
+      document.removeEventListener('mousedown', this.cancelEditing)
+    },
     methods: {
       updateCache,
       setColumnGroups () {
@@ -290,6 +296,9 @@
       },
       setHeaderValue (field, value) {
         this.$set(this.headerValues, field, value)
+      },
+      cancelEditing (event) {
+        if (!this.$el.contains(event.target)) this.editingCell = undefined
       }
     }
   }

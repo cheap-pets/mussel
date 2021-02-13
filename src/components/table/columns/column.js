@@ -36,9 +36,6 @@ export default {
       return this.getText
         ? this.getText(this.record)
         : record[this.field]
-    },
-    getCellStyle (record) {
-
     }
   }
 }

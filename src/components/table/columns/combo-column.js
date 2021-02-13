@@ -17,6 +17,7 @@ export default {
   methods: {
     getComponentParams () {
       return {
+        autofocus: true,
         options: this.options
       }
     },
