@@ -14,8 +14,7 @@ export default {
     getText: null,
     getStyle: null,
     cellClass: null,
-    cellStyle: null,
-    cellValue: null
+    cellStyle: null
   },
   computed: {
     columnWidth () {
@@ -29,6 +28,11 @@ export default {
     this.table.unregisterColumn(this._uid)
   },
   methods: {
+    getComponentParams (record) {
+      return {
+        value: record[this.field]
+      }
+    },
     registerColumn () {
       this.table.registerColumn(this)
     },

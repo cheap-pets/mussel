@@ -28,7 +28,7 @@ export default {
       this.$emit('headerchange', value)
     },
     onCellChange (value, record, column) {
-      this.table.setRecordValue(record, column.field, value)
+      this.table.onCellChange(record, column.field, value)
       if (this.label === undefined) {
         this.table.setHeaderValue(column.field, false)
       }

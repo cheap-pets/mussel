@@ -8,9 +8,9 @@
     @click="onCellClick">
     <component
       :is="cellComponent"
-      v-if="cellComponent"
       v-bind="cellComponentParams"
-      :value="cellValue"
+      v-if="cellComponent"
+      @search="onSearch"
       @change="onCellChange" />
     <div
       v-else
@@ -41,7 +41,7 @@
           : this.column.$options.cellComponent
       },
       cellComponentParams () {
-        return this.column.getComponentParams?.()
+        return this.column.getComponentParams?.(this.record)
       },
       hovering () {
         return this.table.hoverCol === this.column._uid ||
@@ -84,6 +84,9 @@
               ? this
               : undefined
         }
+      },
+      onSearch (value) {
+        this.column.onSearch?.(value)
       }
     }
   }

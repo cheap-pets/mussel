@@ -291,8 +291,9 @@
           this.$set(rec, this.selectedField, false)
         })
       },
-      setRecordValue (record, field, value) {
-        this.$set(record, field, value)
+      onCellChange (record, field, value) {
+        this.$emit('cellchange', record, field, value)
+        // this.$set(record, field, value)
       },
       setHeaderValue (field, value) {
         this.$set(this.headerValues, field, value)

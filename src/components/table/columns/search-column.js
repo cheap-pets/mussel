@@ -15,11 +15,15 @@ export default {
     }
   },
   methods: {
-    getComponentParams () {
+    getComponentParams (record) {
       return {
         autofocus: true,
         valueMode: 'select',
-        options: this.options
+        options: this.options,
+        value: {
+          value: record[this.field],
+          label: this.getCellText(record)
+        }
       }
     },
     getCellText (record) {

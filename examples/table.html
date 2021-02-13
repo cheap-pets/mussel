@@ -26,7 +26,8 @@
         border="all"
         height="400px"
         gridline="none"
-        hover-mode="row">
+        hover-mode="row"
+        @cellchange="setRecordValue">
         <mu-table-check-column
           fixed
           @headerChange="onCheckColumnHeaderChange"
@@ -39,24 +40,25 @@
           fixed>
         </mu-table-column>
         <mu-table-edit-column
-          label="f2"
+          label="Edit Column"
           field="f2"
           align="left"
           :editable="f2Editable">
         </mu-table-edit-column>
         <mu-table-combo-column
-          label="column 1"
+          label="Combo column"
           field="f3"
           width="m"
-          :get-text="getF3Text"
           :get-style="getF3Style"
           :options="f3Options">
         </mu-table-combo-column>
         <mu-table-search-column
-          label="column 2"
+          label="Search Column"
           field="f3"
           width="m"
-          :options="f3Options">
+          :get-text="getF3Text"
+          :options="searchOptions"
+          @search="onSearch">
         </mu-table-search-column>
         <mu-table-column label="text column 3" field="f2" width="xl"></mu-table-column>
         <mu-table-column label="f3" field="f3" fixed="right" width="s"></mu-table-column>
@@ -103,7 +105,8 @@
           { value: 2, label: '已完成' },
           { value: 3, label: '已终止' },
           { value: 4, label: '已暂停' }
-        ]
+        ],
+        searchOptions: []
       },
       methods: {
         onCheckColumnHeaderChange: function () {
@@ -125,6 +128,14 @@
           if (record.f3 > 2) return {
             color: 'red'
           }
+        },
+        onSearch: function (text) {
+          this.searchOptions = this.f3Options.filter(function (el) {
+            return el.label.indexOf(text) !== -1
+          })
+        },
+        setRecordValue: function (record, field, value) {
+          record[field] = value
         }
       }
     });

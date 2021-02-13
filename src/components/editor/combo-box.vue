@@ -138,8 +138,8 @@
         this.delaySetValue(true)
         this.focus()
 
-        this.$emit('optionclick', value, option)
-        this.$emit('change', this.comboValue)
+        this.$emit('optionclick', value, label, option)
+        this.$emit('change', this.comboValue, option)
       },
       onClearClick () {
         this.comboValue = this.multiple ? [] : null

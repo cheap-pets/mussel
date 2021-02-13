@@ -15,10 +15,11 @@ export default {
     getText: null
   },
   methods: {
-    getComponentParams () {
+    getComponentParams (record) {
       return {
         autofocus: true,
-        options: this.options
+        options: this.options,
+        value: record[this.field]
       }
     },
     getCellText (record) {

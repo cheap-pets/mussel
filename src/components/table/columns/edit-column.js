@@ -15,13 +15,14 @@ export default {
     }
   },
   methods: {
-    getComponentParams () {
+    getComponentParams (record) {
       return {
-        autofocus: true
+        autofocus: true,
+        value: record[this.field]
       }
     },
     onCellChange (value, record, column) {
-      this.table.setRecordValue(record, column.field, value)
+      this.table.onCellChange(record, column.field, value)
       this.$emit('cellchange', value)
     }
   },
