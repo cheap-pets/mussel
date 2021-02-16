@@ -24,7 +24,7 @@
         :selected="selected"
         stripe
         border="all"
-        height="400px"
+        height="500px"
         gridline="both"
         hover-mode="row"
         @cellchange="setRecordValue">
@@ -36,7 +36,7 @@
         <mu-table-column
           label="ID"
           field="f1"
-          width="m"
+          width="s"
           fixed>
         </mu-table-column>
         <mu-table-edit-column
@@ -59,13 +59,17 @@
           :options="searchOptions"
           @search="onSearch">
         </mu-table-search-column>
-        <mu-table-column label="text column 3" field="f2" width="xl"></mu-table-column>
+        <mu-table-column
+          label="Text Column"
+          field="f2"
+          width="xl">
+        </mu-table-column>
         <mu-table-button-column
-          label="button"
-          field="f3"
-          width="l"
+          label="Button"
+          width="100"
           fixed="right"
-          :buttons="[{ caption: 'remove', type: 'danger' }]">
+          :buttons="getButtons"
+          @buttonclick="onButtonClick">
         </mu-table-button-column>
       </mu-table>
     </div>
@@ -91,10 +95,10 @@
 
   <script type="text/javascript">
     var records = []
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 10000; i++) {
       records.push({
         f1: i,
-        f2: 'some text value',
+        f2: 'some text value some text value some text value some text value',
         f3: i % 5
       })
     }
@@ -140,8 +144,18 @@
           })
         },
         setRecordValue: function (record, field, value) {
-          console.log('x')
           record[field] = value
+        },
+        onButtonClick (record, button) {
+          mussel.notify(
+            button.type || 'primary',
+            record.f1 + '_' + (button.caption || button.icon || button))
+        },
+        getButtons (record) {
+          return [
+            { icon: 'pin' },
+            { icon: 'x', type: 'danger', disabled: record.f3 > 2 }
+          ]
         }
       }
     });

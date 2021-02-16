@@ -13,6 +13,7 @@
 </template>
 
 <script>
+  import isString from 'lodash.isstring'
   import isFunction from 'lodash.isfunction'
 
   export default {
@@ -25,7 +26,7 @@
     },
     methods: {
       notify (notifyType, message, timeout = 3000, onClickHandler) {
-        if (!isNaN(message) || (!message && !timeout)) {
+        if (isString(notifyType) && !isString(message)) {
           onClickHandler = isFunction(timeout) ? timeout : null
           timeout = isNaN(message) ? 3000 : message
           message = notifyType

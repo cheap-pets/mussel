@@ -11,8 +11,8 @@ export default {
     width: String,
     align: String,
     headerAlign: String,
-    getText: null,
-    getStyle: null,
+    cellHtml: null,
+    cellText: null,
     cellClass: null,
     cellStyle: null
   },

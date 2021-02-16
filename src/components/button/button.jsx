@@ -47,11 +47,11 @@ export default {
     }
   },
   render (h) {
-    if (this.iconOnly) {
-      console.warn(
-        'use MusselIconButton instead of MusselButton which contains a solo icon.'
-      )
-    }
+    // if (this.iconOnly) {
+    //   console.warn(
+    //     'use MusselIconButton instead of MusselButton which contains a solo icon.'
+    //   )
+    // }
     return (
       <button
         class={ this.buttonClass }

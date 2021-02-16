@@ -1,3 +1,5 @@
+import isFunction from 'lodash.isfunction'
+
 import Column from './edit-column'
 import Editor from '../../editor/combo-box.vue'
 
@@ -5,21 +7,18 @@ export default {
   name: 'MusselTableComboColumn',
   extends: Column,
   props: {
-    options: {
-      type: Array,
-      default () {
-        return []
-      }
-    },
     displayField: String,
+    options: null,
     getText: null
   },
   methods: {
     getComponentParams (record) {
       return {
         autofocus: true,
-        options: this.options,
-        value: record[this.field]
+        value: record[this.field],
+        options: isFunction(this.options)
+          ? this.options(record)
+          : this.options || []
       }
     },
     getCellText (record) {

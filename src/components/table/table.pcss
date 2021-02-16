@@ -83,16 +83,23 @@
 }
 
 .mu-table_cell {
+  position: relative;
   display: table-cell;
   padding: 5px;
   overflow: hidden;
   text-align: center;
   vertical-align: middle;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   border-right: 0 solid $normalDividerColor;
 
   &[editable] {
     & > .mu-table_cell-label {
-      height: 100%;
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
       padding: 4px;
       border: 1px dashed $normalBorderColor;
 
@@ -148,6 +155,24 @@
       width: 100%;
       content: '';
       background-color: var(--mu-primary-minus-color);
+    }
+  }
+}
+
+.mu-table_cell-buttons {
+  height: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+
+  & .mu-button {
+    height: 30px;
+
+    &[button-style=link]:hover {
+      text-decoration: underline;
+    }
+
+    & + .mu-button {
+      margin-left: 5px;
     }
   }
 }

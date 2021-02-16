@@ -11,12 +11,16 @@
       v-bind="cellComponentParams"
       v-if="cellComponent"
       @search="onSearch"
-      @change="onCellChange" />
+      @change="onCellChange"
+      @buttonclick="onButtonClick" />
     <div
-      v-else
+      v-else-if="editable"
       class="mu-table_cell-label">
       <span :style="cellLabelStyle">{{ cellText }}</span>
     </div>
+    <template v-else>
+      {{ cellText }}
+    </template>
   </div>
 </template>
 
@@ -87,6 +91,9 @@
       },
       onSearch (value) {
         this.column.onSearch?.(value)
+      },
+      onButtonClick (button) {
+        this.column.onButtonClick?.(this.record, button)
       }
     }
   }
