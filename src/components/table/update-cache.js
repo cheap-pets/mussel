@@ -28,7 +28,7 @@ export default function updateCache () {
     const data = this
       .data
       .slice(start, start + this.visibleRowCount * 4)
-      .map((rec, idx) => ({ rec, idx: idx + start }))
+      .map((record, idx) => ({ record, idx: idx + start }))
 
     if (oldLen) {
       const oldStart = oldLen ? this.cachedData[0].idx : 0
@@ -45,7 +45,7 @@ export default function updateCache () {
     this.cachedData = data
   } else {
     this.cachedData = this.data.map(
-      (rec, idx) => ({ rec, idx })
+      (record, idx) => ({ record, idx })
     )
   }
 }

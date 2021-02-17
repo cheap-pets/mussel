@@ -23,8 +23,8 @@ export default {
         placeholder: this.placeholder
       }
     },
-    onCellChange (value, record, column) {
-      this.table.onCellChange(record, column.field, value)
+    onCellChange (value, record) {
+      this.table.onCellChange(record, this.field, value)
       this.$emit('cellchange', value)
     }
   },

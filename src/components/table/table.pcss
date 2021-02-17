@@ -83,7 +83,6 @@
 }
 
 .mu-table_cell {
-  position: relative;
   display: table-cell;
   padding: 5px;
   overflow: hidden;
@@ -91,40 +90,33 @@
   vertical-align: middle;
   white-space: nowrap;
   text-overflow: ellipsis;
+  background: $normalBackground;
   border-right: 0 solid $normalDividerColor;
 
-  &[editable] {
-    & > .mu-table_cell-label {
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      right: 5px;
-      bottom: 5px;
-      padding: 4px;
-      border: 1px dashed $normalBorderColor;
-
-      &:hover {
-        border-color: var(--mu-primary-minus-color);
-      }
-    }
-  }
-
   & .mu-editor {
+    min-height: 30px;
     height: 100%;
     width: 100%;
   }
 }
 
-.mu-table_cell-label {
+.mu-table_cell-editable {
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 16px;
+  min-height: 30px;
+  height: 100%;
+  padding: 4px;
+  border: 1px dashed $normalBorderColor;
+
+  &:hover {
+    border-color: var(--mu-primary-minus-color);
+  }
 
   & > span {
     display: block;
     width: 100%;
-    min-width: 0;
     overflow: hidden;
     text-align: center;
     white-space: nowrap;
@@ -161,6 +153,7 @@
 
 .mu-table_cell-buttons {
   height: 100%;
+  min-height: 30px;
   overflow: hidden;
   white-space: nowrap;
 

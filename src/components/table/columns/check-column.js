@@ -19,18 +19,18 @@ export default {
     }
   },
   methods: {
-    onHeaderChange (value, column) {
-      if (column.field === '_selected') {
-        this.table.setHeaderValue(column.field, value)
+    onHeaderChange (value) {
+      if (this.field === '_selected') {
+        this.table.setHeaderValue(this.field, value)
         if (value) this.table.selectAll()
         else this.table.unselectAll()
       }
       this.$emit('headerchange', value)
     },
-    onCellChange (value, record, column) {
-      this.table.onCellChange(record, column.field, value)
+    onCellChange (value, record) {
+      this.table.onCellChange(record, this.field, value)
       if (this.label === undefined) {
-        this.table.setHeaderValue(column.field, false)
+        this.table.setHeaderValue(this.field, false)
       }
       this.$emit('cellchange', value)
     }

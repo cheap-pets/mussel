@@ -26,7 +26,7 @@
         border="all"
         height="500px"
         gridline="both"
-        hover-mode="row"
+        hover-mode="none"
         @cellchange="setRecordValue">
         <mu-table-check-column
           fixed
@@ -48,14 +48,14 @@
         <mu-table-combo-column
           label="Combo column"
           field="f3"
-          :get-style="getF3Style"
+          :cell-style="getF3Style"
           :options="f3Options">
         </mu-table-combo-column>
         <mu-table-search-column
           label="Search Column"
           field="f3"
           placeholder="search & select"
-          :get-text="getF3Text"
+          :cell-text="getF3Text"
           :options="searchOptions"
           @search="onSearch">
         </mu-table-search-column>
@@ -146,12 +146,12 @@
         setRecordValue: function (record, field, value) {
           record[field] = value
         },
-        onButtonClick (record, button) {
+        onButtonClick: function (record, button) {
           mussel.notify(
             button.type || 'primary',
             record.f1 + '_' + (button.caption || button.icon || button))
         },
-        getButtons (record) {
+        getButtons: function (record) {
           return [
             { icon: 'pin' },
             { icon: 'x', type: 'danger', disabled: record.f3 > 2 }

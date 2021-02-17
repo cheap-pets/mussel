@@ -37,8 +37,8 @@ export default {
               : record[this.field]
           )
     },
-    onSearch (value) {
-      this.$emit('search', value)
+    onSearch (value, record) {
+      this.$emit('search', value, record)
     }
   },
   editComponent: Editor

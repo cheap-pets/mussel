@@ -2,18 +2,18 @@
   <div>
     <div class="mu-table_row mu-table_head-row">
       <div
-        v-for="col in columns"
-        :key="col._uid"
-        :style="{ width: col.columnWidth, textAlign: col.headerAlign }"
+        v-for="column in columns"
+        :key="column._uid"
+        :style="{ width: column.columnWidth, textAlign: column.headerAlign }"
         class="mu-table_cell">
-        <div v-if="col.label !== undefined" class="mu-table_cell-label">
-          {{ col.label }}
+        <div v-if="column.label !== undefined" class="mu-table_cell-label">
+          {{ column.label }}
         </div>
         <component
-          :is="col.$options.headerComponent"
+          :is="column.$options.headerComponent"
           v-else
-          :value="col.field ? table.headerValues[col.field] : null"
-          @change="col.onHeaderChange(arguments[0], col)" />
+          :value="column.field ? table.headerValues[column.field] : null"
+          @change="column.onHeaderChange(arguments[0])" />
       </div>
     </div>
   </div>

@@ -1,3 +1,5 @@
+import isFunction from 'lodash.isfunction'
+
 import { convertColumnWidth } from './width'
 
 export default {
@@ -37,9 +39,21 @@ export default {
       this.table.registerColumn(this)
     },
     getCellText (record) {
-      return this.getText
-        ? this.getText(this.record)
+      return this.cellText
+        ? (
+            isFunction(this.cellText) ? this.cellText(record) : this.cellText
+          )
         : record[this.field]
+    },
+    getCellStyle (record) {
+      return isFunction(this.cellStyle)
+        ? this.cellStyle(record)
+        : this.cellStyle
+    },
+    getCellClass (record) {
+      return isFunction(this.cellClass)
+        ? this.cellClass(record)
+        : this.cellClass
     }
   }
 }

@@ -154,18 +154,24 @@
       scrollbarYOptions () {
         return {
           enable: this.height !== 'auto',
-          wheelSpeed: 1,
           scrollbarX: false,
-          observeMutation: false
+          observeMutation: false,
+          maxWheelDistance:
+            this.rowOffsetHeight
+              ? this.rowOffsetHeight
+              : 50
         }
       },
       scrollbarXOptions () {
         return {
           enable: this.width !== 'auto',
-          wheelSpeed: 1,
           scrollbarY: false,
           stickToParent: true,
-          observeMutation: false
+          observeMutation: false,
+          maxWheelDistance:
+            this.rowOffsetHeight
+              ? this.rowOffsetHeight
+              : 50
         }
       },
       rowOffsetHeight () {
@@ -299,7 +305,7 @@
         this.$set(this.headerValues, field, value)
       },
       cancelEditing (event) {
-        if (!this.$el.contains(event.target)) this.editingCell = undefined
+        this.editingCell = undefined
       }
     }
   }
