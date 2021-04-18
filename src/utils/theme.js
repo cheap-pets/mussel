@@ -24,7 +24,9 @@ const props = [
 
   '--mu-warning-color',
 
-  '--mu-dark-background'
+  '--mu-dark-background',
+
+  '--mu-block-border-radius'
 ]
 
 const hueStep = 2
@@ -143,7 +145,6 @@ function setColorVariables (option) {
 
     if (key === 'primary' && !option['--mu-dark-background']) {
       option['--mu-dark-background'] = palettes[9]
-      console.log(palettes[9])
     }
   })
 }

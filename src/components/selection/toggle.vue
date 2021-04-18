@@ -1,18 +1,47 @@
 <template>
-  <div class="mu-toggle" :active="value === activeValue" :disabled="disabled">
-    <label
-      v-if="label || inactiveLabel"
-      :class="labelClass"
-      @click="onLeftLabelClick">
-      {{ label || inactiveLabel }}
-    </label>
-    <div class="mu-toggle-slide-bar" @click="changeValue()" />
-    <label
-      v-if="activeLabel"
-      :class="activeLabelClass"
-      @click="onRightLabelClick">
-      {{ activeLabel }}
-    </label>
+  <div
+    class="mu-toggle"
+    :button-style="buttonStyle"
+    :active="isActive"
+    :disabled="disabled">
+    <label v-if="label" class="mu-label">{{ label }}</label>
+    <template v-if="isOutsideLabel">
+      <span
+        v-if="inactiveLabel"
+        class="mu-text-color-subtitle"
+        @click="onInactiveLabelClick">
+        {{ inactiveLabel }}
+      </span>
+      <span class="mu-toggle_slide-bar" @click="toggleValue" />
+      <span
+        v-if="activeLabel"
+        :class="activeLabelClass"
+        @click="onActiveLabelClick">
+        {{ activeLabel }}
+      </span>
+    </template>
+    <template v-else-if="buttonStyle">
+      <span
+        class="mu-toggle_active-button"
+        :active="isActive"
+        :style="{ width: buttonWidth }"
+        @click="onActiveLabelClick">
+        {{ activeLabel }}
+      </span>
+      <span
+        class="mu-toggle_inactive-button"
+        :active="!isActive"
+        :style="{ width: buttonWidth }"
+        @click="onInactiveLabelClick">
+        {{ inactiveLabel }}
+      </span>
+    </template>
+    <span
+      v-else
+      class="mu-toggle_slide-bar"
+      @click="toggleValue">
+      {{ toggleLabel }}
+    </span>
   </div>
 </template>
 
@@ -27,6 +56,18 @@
     },
     props: {
       value: null,
+      label: String,
+      disabled: Boolean,
+      buttonStyle: Boolean,
+      activeLabel: String,
+      inactiveLabel: String,
+      activeLabelPosition: {
+        type: String,
+        default: 'inside',
+        validator (v) {
+          return ['inside', 'outside'].indexOf(v) !== -1
+        }
+      },
       activeValue: {
         type: null,
         default: true
@@ -35,62 +76,35 @@
         type: null,
         default: false
       },
-      label: String,
-      disabled: Boolean,
-      activeLabel: String,
-      inactiveLabel: String
-    },
-    data () {
-      return {
-        active: false
-      }
+      buttonWidth: String
     },
     computed: {
-      leftLabel () {
-        return this.label || this.inactiveLabel
+      isActive () {
+        return this.value === this.activeValue
       },
-      labelClass () {
-        return this.activeLabel
-          ? (
-            this.value === this.activeValue
-              ? 'mu-text-color-subtitle'
-              : 'mu-text-color-title'
-          )
-          : 'mu-text-color-normal'
+      isOutsideLabel () {
+        return !this.buttonStyle && this.activeLabelPosition === 'outside'
       },
       activeLabelClass () {
-        return this.value === this.activeValue
-          ? 'mu-text-color-success'
-          : 'mu-text-color-subtitle'
+        return this.isActive ? 'mu-text-color-success' : 'mu-text-color-subtitle'
+      },
+      toggleLabel () {
+        return this.isActive ? this.activeLabel : this.inactiveLabel
       }
     },
     methods: {
       changeValue (value) {
-        if (this.disabled) return
-        this.$emit(
-          'change',
-          arguments.length
-            ? value
-            : (
-              this.value === this.activeValue
-                ? this.inactiveValue
-                : this.activeValue
-            )
-        )
+        if (this.disabled || value === this.value) return
+        this.$emit('change', value)
       },
-      onLeftLabelClick () {
-        if (this.activeLabel) {
-          if (this.value === this.activeValue) {
-            this.changeValue(this.inactiveValue)
-          }
-        } else {
-          this.changeValue()
-        }
+      toggleValue () {
+        this.changeValue(this.isActive ? this.inactiveValue : this.activeValue)
       },
-      onRightLabelClick () {
-        if (this.value === this.inactiveValue) {
-          this.changeValue(this.activeValue)
-        }
+      onInactiveLabelClick () {
+        this.changeValue(this.inactiveValue)
+      },
+      onActiveLabelClick () {
+        this.changeValue(this.activeValue)
       }
     }
   }

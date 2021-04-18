@@ -1,8 +1,9 @@
 export function onMouseEnter () {
-  if (this.hideTimer) clearTimeout(this.hideTimer)
-
-  if (!this.hover && !this.scrolling) this.show()
   this.hover = true
+  if (!this.scrolling && this.options.scrollbarVisible === 'enter') {
+    this.show()
+    this.updatePosition()
+  }
 }
 
 export function onMouseLeave () {

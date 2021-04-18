@@ -16,11 +16,11 @@
       prop: 'value',
       event: 'change'
     },
-    props: [
-      'value',
-      'disabled',
-      'itemWidth'
-    ],
+    props: {
+      value: null,
+      itemWidth: String,
+      disabled: Boolean
+    },
     methods: {
       changeValue (v) {
         this.$emit('change', v)

@@ -12,12 +12,12 @@ function hideIf (name, force) {
     : (
         name === 'modal'
           ? callbackIf(
-              'modal',
-              modal => {
-                const action = modal.$options.maskAction || modal.maskAction
-                if (action === 'close') modal.hide()
-              }
-            )
+            'modal',
+            modal => {
+              const action = modal.$options.maskAction || modal.maskAction
+              if (action === 'close') modal.hide()
+            }
+          )
           : undefined
       )
 }

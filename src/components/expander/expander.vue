@@ -23,6 +23,8 @@
 <script>
   import './expander.pcss'
 
+  import delay from '@/utils/delay'
+
   export default {
     name: 'MusselExpander',
     model: {
@@ -43,12 +45,13 @@
     watch: {
       expanded: {
         handler (value) {
-          this.actualExpanded = value
+          if (this.actualExpanded === !value) this.toggleExpand()
         },
-        immediate: true
+        immediate: false
       }
     },
     mounted () {
+      this.actualExpanded = this.expanded
       this.triggerElements = Array.from(
         this.$el.querySelectorAll('[expand-trigger]')
       )
@@ -66,15 +69,23 @@
           this.toggleExpand()
         }
       },
-      toggleExpand () {
-        this.actualExpanded = !this.actualExpanded
-
+      async toggleExpand () {
         const wrapperEl = this.$refs.wrapper
 
+        if (this.actualExpanded && !this.wrapperHeight) {
+          this.wrapperHeight = `${wrapperEl.offsetHeight}px`
+          await delay(1)
+        }
+        this.actualExpanded = !this.actualExpanded
         this.wrapperHeight = (this.actualExpanded && wrapperEl)
           ? `${wrapperEl.offsetHeight}px`
           : 0
 
+        if (this.actualExpanded) {
+          delay(150).then(() => {
+            if (this.actualExpanded) this.wrapperHeight = undefined
+          })
+        }
         this.$emit('change', this.actualExpanded)
       }
     }

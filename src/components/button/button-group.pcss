@@ -2,7 +2,7 @@
   position: relative;
   display: inline-block;
   vertical-align: top;
-  border-radius: $inputElementBorderRadius;
+  border-radius: var(--mu-block-border-radius);
   box-shadow: $buttonShadow $normalGreyBackground;
 
   &[button-type="primary"] {
@@ -18,11 +18,6 @@
   & > .mu-button {
     float: left;
     box-shadow: none;
-
-    &:hover,
-    &[active] {
-      z-index : 1;
-    }
 
     &:not(:first-child) {
       border-top-left-radius: 0;

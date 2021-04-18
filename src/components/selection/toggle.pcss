@@ -2,19 +2,22 @@
   display: inline-flex;
   align-items: center;
   height: $inputElementHeight;
-  vertical-align: middle;
 
-  & > * {
+  & > span {
     cursor: pointer;
+    user-select: none;
   }
 
-  & > .mu-toggle-slide-bar {
+  & > .mu-toggle_slide-bar {
     position: relative;
-    width: $toggleButtonWidth;
+    min-width: 40px;
     height: 20px;
+    padding: 0 10px 0 20px;
+    line-height: 20px;
     border-radius: 10px;
     background-color: $normalDarkGreyBackground;
     transition: background 0.2s ease-in-out;
+    color: $normalHighlightTextColor;
 
     &:after {
       position: absolute;
@@ -26,20 +29,17 @@
       background-color: #fff;
       border-radius: 7px;
       content: '';
-      transition: all 0.2s ease-in-out;
+      transition: left 0.2s ease-in-out;
     }
   }
 
-  &[active] > .mu-toggle-slide-bar {
+  &[active] > .mu-toggle_slide-bar {
+    padding: 0 20px 0 10px;
     background-color: var(--mu-success-color);
+    
     &:after {
-      left: 100%;
-      transform: translateX(-17px);
+      left: calc(100% - 17px);
     }
-  }
-
-  & > * + * {
-    margin-left: 5px;
   }
 
   &[disabled] {
@@ -47,11 +47,74 @@
       color: $normalDisabledTextColor;
       cursor: default;
     }
-    & > .mu-toggle-slide-bar {
+    & > .mu-toggle_slide-bar {
       background-color: $normalDisabledBackground;
 
       &:after {
         background-color: $normalDisabledTextColor;
+      }
+    }
+  }
+
+  & > * + * {
+    margin-left: 4px;
+  }
+
+  &[button-style] {
+    background: $normalDarkGreyBackground;
+    border-radius: var(--mu-block-border-radius);
+    padding: 4px;
+
+    & > span {
+      display: inline-block;
+      height: calc($inputElementHeight - 8px);
+      overflow: hidden;
+      padding: 0 $halfSpacingSize;
+      line-height: calc($inputElementHeight - 8px);
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: $normalHighlightTextColor;
+      border-radius: var(--mu-block-border-radius);
+    }
+
+    & > .mu-toggle_active-button {
+      font-weight: 600;
+
+      &[active] {
+        background: #fff;
+        color: var(--mu-primary-color);
+      }
+    }
+
+    & > .mu-toggle_inactive-button {
+      background: transparent;
+        color: $normalHighlightTextColor;
+
+      &[active] {
+        background: #fff;
+        color: $normalSubtitleTextColor;
+      }
+    }
+
+    &[active] {
+      background-color: var(--mu-primary-color);
+    }
+
+    &[disabled] {
+      background-color: $normalDisabledBackground;
+
+      & > span {
+        color: $normalDisabledTextColor;
+      }
+    }
+
+    &:not([disabled]) {
+      & > span:hover {
+        background-color: rgba(255, 255, 255, .15);
+      }
+      & > [active]:hover {
+        background-color: rgba(255, 255, 255, .85);
       }
     }
   }

@@ -40,6 +40,11 @@
   &[active] {
     color: $normalHighlightTextColor;
     background: var(--mu-primary-color);
+
+    & .mu-text-color-subtitle,
+    & .mu-text-subtitle {
+      color: rgba(255, 255, 255, .75);
+    }
   }
 
   &:not([multi-lines]) {

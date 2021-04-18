@@ -5,6 +5,7 @@ export default {
   /* spacing */
   halfSpacingSize: '8px',
   unitSpacingSize: '16px',
+  doubleSpacingSize: '32px',
 
   /* primary colors */
   primaryColor: '#1890ff',
@@ -32,30 +33,31 @@ export default {
 
   /* font */
   documentFontSize: '14px',
-  documentFontWeight: '400',
+  documentFontWeight: '500',
 
   /* normal control vars */
 
   /* text color */
-  normalTextColor: '#555',
+  normalTextColor: '#333',
   normalWeakTextColor: '#bbb',
-  normalTitleTextColor: '#444',
-  normalSubtitleTextColor: '#999',
+  normalTitleTextColor: '#333',
+  normalSubtitleTextColor: '#777',
   normalDisabledTextColor: '#bbb',
   normalHighlightTextColor: '#fff',
 
   /* line color */
-  normalBorderColor: '#d6d6d6',
-  normalDividerColor: '#e0e0e0',
+  normalBorderColor: '#d9d9d9',
+  normalDividerColor: '#ebecf0',
 
   /* background */
   normalBackground: '#fff',
   normalDarkBackground: '#002766',
   normalGreyBackground: '#e9e9e9',
   normalDarkGreyBackground: '#a6a6a6',
+  normalLightGreyBackground: '#f6f6f6',
   normalDisabledBackground: '#eee',
   normalInfoBackground: '#ffd',
-  normalTinyBackground: 'rgba(0, 0, 0, .02)',
+  normalTinyBackground: 'rgba(0, 0, 0, .03)',
 
   /* element size */
   normalBarHeight: '40px',
@@ -63,17 +65,17 @@ export default {
   normalLineHeight: '20px',
   normalIconWidth: '20px',
 
+  normalBlockBorderRadius: '4px',
+
   /* shadow */
-  boxShadowLevel1: '0 1.5px 3px rgba(0, 0, 0, 0.25), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
+  boxShadowLevel1: '0 0 3px 1px rgba(0, 0, 0, .15)',
+  // boxShadowLevel1: '0 1.5px 3px rgba(0, 0, 0, 0.25), 0 1.5px 6px rgba(0, 0, 0, 0.12)',
   boxShadowLevel2: '0 3px 6px rgba(0, 0, 0, 0.25), 0 3px 12px rgba(0, 0, 0, 0.15)',
   boxShadowLevel3: '0 6px 12px rgba(0, 0, 0, 0.25), 0 6px 24px rgba(0, 0, 0, 0.18)',
 
   /* input & button */
   inputElementHeight: '32px',
   inputElementPaddingX: '10px',
-  inputElementPadding: '5px 10px',
-  inputElementRoundRadius: '16px',
-  inputElementBorderRadius: '2px',
 
   buttonGradient: false,
   buttonFontSize: '1rem',
@@ -82,9 +84,6 @@ export default {
   buttonActiveShadow: '0 0 0 0',
   buttonHoverShadow: '0 0 0 2px',
   buttonDividerColor: 'rgba(255, 255, 255, .5)',
-
-  /* toggle */
-  toggleButtonWidth: '40px',
 
   inputFontSize: '1rem',
   inputFocusShadow: '0 0 0 2px',
@@ -96,7 +95,6 @@ export default {
   calendarTitleFontSize: '1.14rem',
 
   /* dropdown */
-  dropdownBorderRadius: 0,
   dropdownListPadding: '4px 0',
   dropdownItemPadding: '5px 16px',
   dropdownShadow: '$boxShadowLevel1',
@@ -105,15 +103,21 @@ export default {
   expanderHeaderFontSize: '1rem',
 
   /* form */
-  formLabelFontSize: '1rem',
+  labelFontSize: '1rem',
+  labelColor: '$normalSubtitleTextColor',
+
+  /* card */
+  cardBorder: '0',
+  cardBorderRadius: '16px',
+  cardShadow: 'none',
 
   /* modal */
   maskBackground: 'rgba(0, 0, 0, .5)',
 
   dialogHeaderHeight: '50px',
-  dialogTitleFontSize: '1rem',
+  dialogTitleFontSize: '1.167rem',
   dialogHeaderBackground: '$normalBackground',
-  dialogHeaderBorderBottom: '2px solid $primaryColor',
+  dialogHeaderBorderBottom: '2px solid $normalDividerColor',
   dialogFooterHeight: '50px',
   dialogFooterBackground: 'transparent',
   dialogShadow: '$boxShadowLevel3',
@@ -135,7 +139,7 @@ export default {
   listDividerHeight: '1px',
 
   /* tab */
-  tabCardBackground: '$normalGreyBackground',
+  tabCardBackground: '$normalLightGreyBackground',
 
   /* menu */
   menuItemHeight: '32px',

@@ -4,6 +4,7 @@
   min-height: 100px;
   background: $normalBackground;
   opacity: 0;
+  border-radius: var(--mu-block-border-radius);
   box-shadow: $dialogShadow;
   transition: all .2s ease-in-out;
 
@@ -24,8 +25,9 @@
 .mu-dialog-header {
   height: $dialogHeaderHeight;
   padding: 0 $unitSpacingSize;
-  background: $dialogHeaderBackground;
   border-bottom: $dialogHeaderBorderBottom;
+  border-radius: var(--mu-block-border-radius) var(--mu-block-border-radius) 0 0;
+  background: $dialogHeaderBackground;
 
   & > .mu-dialog-title {
     font-size: $dialogTitleFontSize;

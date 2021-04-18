@@ -8,8 +8,7 @@
           class="mu-color-palette-cell"
           :style="{ background: color }"
           @click="setColor(color)"
-          @mouseover="onMouseOver($event, color)"
-        />
+          @mouseover="onMouseOver($event, color)" />
       </div>
     </div>
     <div class="mu-footer-button mu-text-color-success" @click="hidePopup">

@@ -1,7 +1,8 @@
 .mu-scrollbar {
   position: relative;
-  overflow: hidden;
+  overflow: hidden !important;
   outline: none;
+  will-change: scroll-position;
 
   & .mu-scrollbar_rail,
   & .mu-scrollbar_thumb {
@@ -13,14 +14,14 @@
 
   &[activated] {
     & > .mu-scrollbar_rail {
-      opacity: 1;
+      visibility: visible
     }
   }
 }
 
 .mu-scrollbar_rail {
   z-index: 10;
-  opacity: 0;
+  visibility: hidden;
   background: rgba(0, 0, 0, .01);
   transition: opacity .5s ease-in-out;
 
@@ -43,14 +44,6 @@
 
     & > .mu-scrollbar_thumb {
       width: 100%;
-    }
-  }
-
-  &[hidden] {
-    display: none;
-
-    & + [axis=x] {
-      right: 4px;
     }
   }
 }

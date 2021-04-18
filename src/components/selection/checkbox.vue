@@ -1,5 +1,9 @@
 <template>
-  <label class="mu-checkbox" :disabled="isDisabled" :style="{ width }">
+  <label
+    class="mu-checkbox"
+    :checked="isChecked"
+    :disabled="isDisabled"
+    :style="{ width: boxWidth }">
     <input
       type="checkbox"
       :name="name"
@@ -8,9 +12,11 @@
       :disabled="isDisabled"
       @change="onChange">
     <span class="mu-checkbox_fake" />
-    <slot v-if="labelText">
-      <span>{{ labelText }}</span>
-    </slot>
+    <span>
+      <slot>
+        {{ labelText }}
+      </slot>
+    </span>
   </label>
 </template>
 
@@ -30,7 +36,9 @@
     },
     props: {
       name: String,
+      label: String,
       option: null,
+      width: null,
       checked: Boolean,
       disabled: Boolean
     },
@@ -52,8 +60,8 @@
           ? this.checkedValue.indexOf(this.optionValue) !== -1
           : !!this.checkedValue
       },
-      width () {
-        return this.checkboxGroup?.itemWidth
+      boxWidth () {
+        return this.checkboxGroup?.itemWidth || this.width
       }
     },
     methods: {

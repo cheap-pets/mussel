@@ -28,6 +28,14 @@
     justify-content: center;
   }
 
+  &[justify-content="start"] {
+    justify-content: flex-start;
+  }
+
+  &[justify-content="end"] {
+    justify-content: flex-end;
+  }
+
   &[align-items="flex-start"] {
     align-items: flex-start;
   }
@@ -76,12 +84,39 @@
   }
 }
 
+[class^="mu-"] {
+  & > [flex-size="auto"] {
+    flex: 1 1 auto;
+  }
+  @for $i from 1 to 8 {
+    & > [flex-size="$i"] {
+      flex: $i $i $(i)px;
+    }
+  }
+}
+
 .mu-absolute-fit {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.mu-absolute-top {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.mu-absolute-bottom {
+  position: absolute;
+  z-index: 10;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 [cell-spacing], [cellspacing] {

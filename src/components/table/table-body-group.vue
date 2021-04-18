@@ -9,30 +9,27 @@
       <div
         v-for="column in columns"
         :key="column._uid"
+        :class="getCellClass(item.record, column)"
         :style="getCellStyle(item.record, column)"
         :hover="hoverCol === column.uid || hoverRow === item.idx"
         class="mu-table_cell"
         @mousedown.stop="cancelEditing(item.idx, column)"
-        @mouseover="onColMouseEnter(column)">
+        @mouseover="onColMouseEnter(column)"
+        @click="onCellClick(item.record, column)">
         <component
           :is="getCellComponent(item.idx, column)"
-          v-bind="getCellComponentParams(item.record, column)"
           v-if="getCellComponent(item.idx, column)"
+          v-bind="getCellComponentParams(item.record, column)"
           @search="onSearch(arguments[0], item.record, column)"
           @change="onCellChange(arguments[0], item.record, column)"
           @buttonclick="onButtonClick(arguments[0], item.record, column)" />
         <div
-          v-else-if="getCellEditable(item.record, column)"
-          class="mu-table_cell-editable"
+          v-else
+          :class="getCellContentClass(item.record, column)"
           @mousedown.stop
           @click="setEditingCell(item.idx, column)">
-          <span>
-            {{ getCellText(item.record, column) }}
-          </span>
-        </div>
-        <template v-else>
           {{ getCellText(item.record, column) }}
-        </template>
+        </div>
       </div>
     </div>
   </div>
@@ -88,6 +85,9 @@
             height: height + 'px'
           }
       },
+      getCellClass (record, column) {
+        return column.getCellClass(record)
+      },
       getCellStyle (record, column) {
         return {
           ...column.getCellStyle(record),
@@ -108,11 +108,11 @@
       getCellComponentParams (record, column) {
         return column.getComponentParams?.(record)
       },
-      getCellEditable (record, column) {
-        const editable = column.editable
-        return isFunction(editable)
-          ? editable(record, column)
-          : editable
+      getCellContentClass (record, column) {
+        const editable = isFunction(column.editable)
+          ? column.editable(record, column)
+          : column.editable
+        return editable ? 'mu-table_cell-editable' : undefined
       },
       onRowMouseEnter (idx) {
         if (['row', 'cross'].indexOf(this.table.hoverMode) !== -1) {
@@ -139,6 +139,9 @@
       },
       onSearch (record, column, value) {
         column.onSearch?.(value, record)
+      },
+      onCellClick (record, column) {
+        column.onCellClick(record, column)
       },
       onButtonClick (button, record, column) {
         column.onButtonClick?.(record, button)

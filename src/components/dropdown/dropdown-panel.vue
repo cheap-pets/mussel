@@ -11,7 +11,7 @@
     @mousedown.stop>
     <div
       ref="wrapper"
-      v-mussel-scrollbar="{ overflow }"
+      v-mussel-scrollbar="scrollbarOptions"
       class="mu-dropdown-panel_wrapper"
       :direction="direction"
       :style="{
@@ -102,6 +102,16 @@
         direction: undefined,
         wrapperWidth: undefined,
         wrapperMinWidth: undefined
+      }
+    },
+    computed: {
+      scrollbarOptions () {
+        const options = {
+          none: { enable: false },
+          x: { scrollbarY: false },
+          y: { scrollbarX: false }
+        }
+        return options[this.overflow]
       }
     },
     mounted () {

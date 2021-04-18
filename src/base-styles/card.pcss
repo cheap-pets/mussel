@@ -1,0 +1,29 @@
+.mu-card {
+  background: $normalBackground;
+  border: $cardBorder;
+  border-radius: $cardBorderRadius;
+  box-shadow: $cardShadow;
+}
+
+.mu-square {
+  position: relative;
+  overflow: hidden;
+
+  & > *:only-child {
+    position: absolute;
+    top: $halfSpacingSize;
+    left: $halfSpacingSize;
+    right: $halfSpacingSize;
+    bottom: $halfSpacingSize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  &::after {
+    display: block;
+    margin-top: 100%;
+    content: '';
+  }
+}

@@ -2,7 +2,7 @@
   <a
     class="mu-menu-item"
     :disabled="disabled"
-    :active="selected"
+    :active="isActive"
     @click="onClick">
     <slot>
       <mu-icon
@@ -43,11 +43,19 @@
         selected: false
       }
     },
+    computed: {
+      isActive () {
+        return this.menu?.selectMode === 'auto'
+          ? this.selected
+          : this.active
+      }
+    },
     watch: {
       active: {
         handler (v) {
           if (!v === !this.selected) return
-          return v ? this.select() : this.unselect()
+          if (v) this.select()
+          else this.unselect()
         },
         immediate: true
       }
@@ -67,12 +75,16 @@
         }
       },
       select () {
-        this.selected = true
-        this.menu?.setActiveItem(this)
+        if (this.menu?.selectMode === 'auto') {
+          this.selected = true
+          this.menu?.setActiveItem(this)
+        }
         if (!this.active) this.$emit('change', true)
       },
       unselect () {
-        this.selected = false
+        if (this.menu?.selectMode === 'auto') {
+          this.selected = false
+        }
         if (this.active) this.$emit('change', false)
       }
     }

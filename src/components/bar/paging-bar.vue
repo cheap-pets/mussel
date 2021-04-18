@@ -9,12 +9,10 @@
       icon="key-right"
       :disabled="disabled || eof"
       @click="goNext" />
-    <mu-space />
-    <mu-icon-button
-      v-if="reload"
-      icon="refresh"
-      :disabled="disabled"
-      @click="doReload" />
+    <template v-if="reload">
+      <mu-space />
+      <mu-icon-button icon="refresh" :disabled="disabled" @click="doReload" />
+    </template>
   </h-box>
 </template>
 

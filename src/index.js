@@ -1,14 +1,14 @@
 import Vue from 'vue'
 
-import './base-styles'
+import variables from '@/variables'
 
 import { installDirectives } from './directives'
 import { installComponents } from './components'
 
-import variables from '@/variables'
-
 export * from './events'
 export * from './components'
+export * from './base-styles'
+
 export { setTheme } from '@/utils/theme'
 export { variables }
 

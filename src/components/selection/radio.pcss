@@ -1,7 +1,8 @@
 .mu-radio {
   display: inline-flex;
   align-items: center;
-  line-height: 1.7rem;
+  height: 20px;
+  /* line-height: 1.7rem; */
   cursor: pointer;
 
   & + .mu-radio {
@@ -62,5 +63,74 @@
   & > .mu-radio {
     display: flex;
     margin-left: 0;
+  }
+}
+
+.mu-radio-group[button-style] {
+  display: inline-flex;
+  align-items: stretch;
+  height: $inputElementHeight;
+  padding: 4px;
+  background: var(--mu-primary-color);
+  border-radius: var(--mu-block-border-radius);
+
+  & > .mu-radio {
+    position: relative;
+    height: auto;
+    justify-content: center;
+    margin-left: 0;
+    padding: 0 8px;
+    color: #fff;
+  }
+
+  & .mu-radio_fake {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    border: none;
+    border-radius: var(--mu-block-border-radius);
+
+    &:before {
+      display: none !important;
+    }
+
+    & + span {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  & input:checked {
+    & + .mu-radio_fake {
+      background: #fff;
+    }
+
+    & ~ span {
+      font-weight: 600;
+      color: var(--mu-primary-color);
+    }
+  }
+
+  &[vertical] {
+    display: inline-block;
+    height: auto;
+
+    & > .mu-radio {
+      display: flex;
+      height: 24px;
+    }
+  }
+
+  &[disabled] {
+    background: $normalDisabledBackground;
+
+    & span {
+      color: $normalDisabledTextColor;
+    }
   }
 }

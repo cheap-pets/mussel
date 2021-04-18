@@ -1,21 +1,22 @@
 <template>
-  <div
-    class="mu-tabs-header mu-flex-box"
-    :tab-position="tabPosition"
-    :direction="direction">
+  <div class="mu-tabs-header" :tab-position="tabPosition">
     <slot name="header-prefix" />
-    <div
-      v-for="item in items"
-      :key="item.name"
-      class="mu-tab-item"
-      :title="item.label || item.name"
-      :disabled="item.disabled"
-      :active="activeName === item.name"
-      @click="onTabClick(item)">
-      <span class="mu-tab-label mu-text-ellipsis">
-        {{ item.label || item.name }}
-      </span>
-    </div>
+    <h-box
+      v-mussel-scrollbar="{ scrollbarVisible: false }"
+      class="mu-tabs-header_tab-wrapper">
+      <div
+        v-for="item in items"
+        :key="item.name"
+        :disabled="item.disabled"
+        :title="item.title || item.label || item.name"
+        :active="activeName === item.name"
+        class="mu-tab-item"
+        @click="onTabClick(item)">
+        <span class="mu-tab-label mu-text-ellipsis">
+          {{ item.label || item.name }}
+        </span>
+      </div>
+    </h-box>
     <slot name="header-suffix" />
   </div>
 </template>
@@ -23,8 +24,13 @@
 <script>
   import isString from 'lodash.isstring'
 
+  import HBox from '../layout/flex-h-box'
+
   export default {
     name: 'MusselTabsHeader',
+    components: {
+      HBox
+    },
     inject: {
       tabs: {
         default: null
@@ -58,11 +64,6 @@
       }
     },
     computed: {
-      direction () {
-        return this.tabPosition === 'top' || this.tabPosition === 'bottom'
-          ? 'row'
-          : 'column'
-      },
       items () {
         return this.tabItems
           ? this.tabItems.map(item => isString(item) ? { name: item } : item)

@@ -1,0 +1,22 @@
+.mu-link {
+  color: $normalTextColor;
+  cursor: pointer;
+
+  &[link-type=primary] {
+    color: var(--mu-primary-color);
+  }
+
+  &:hover {
+     color: var(--mu-primary-minus-color);
+     text-decoration: underline;
+  }
+
+  &[link-type=danger] {
+    color: var(--mu-primary-color);
+
+    &:hover {
+      color: var(--mu-danger-minus-color);
+      text-decoration: underline;
+    }
+  }
+}

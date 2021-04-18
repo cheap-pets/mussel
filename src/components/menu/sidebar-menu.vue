@@ -12,7 +12,14 @@
       }
     },
     props: {
-      accordion: Boolean
+      accordion: Boolean,
+      selectMode: {
+        type: String,
+        default: 'auto',
+        validator (value) {
+          return ['auto', 'manual'].indexOf(value) !== -1
+        }
+      }
     },
     data () {
       return {

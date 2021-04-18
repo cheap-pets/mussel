@@ -11,12 +11,13 @@
   }
 
   &[stripe] .mu-table_body-row:nth-child(even) {
-    background: $normalTinyBackground;
+    background: $normalLightGreyBackground;
   }
 
   &[hover-mode=cell] .mu-table_cell:hover,
   & .mu-table_cell[hover] {
-    background: var(--mu-primary-tiny-color);
+    color: var(--mu-primary-color);
+    background: $normalTinyBackground;
   }
 
   &[gridline='both'],
@@ -45,9 +46,11 @@
 }
 
 .mu-table_head {
+  background: inherit;
   border-bottom: 2px solid var(--mu-primary-color);
   color: $normalSubtitleTextColor;
   font-weight: 600;
+  background: inherit;
 
   & .mu-table_row:last-child {
     border-bottom-width: 0;
@@ -65,17 +68,21 @@
   }
 }
 
+.mu-table_body {
+  background: inherit;
+}
+
 .mu-table_body-left,
 .mu-table_body-center,
 .mu-table_body-right {
   min-height: 100%;
+  background: inherit;
 }
 
 .mu-table_row {
-  display: table;
-  table-layout: fixed;
+  display: flex;
+  align-items: stretch;
   border-bottom: 0 solid $normalDividerColor;
-  background: $normalBackground;
 }
 
 .mu-table_head-row {
@@ -83,20 +90,19 @@
 }
 
 .mu-table_cell {
-  display: table-cell;
+  display: flex;
+  align-items: center;
   padding: 5px;
   overflow: hidden;
   text-align: center;
   vertical-align: middle;
   white-space: nowrap;
   text-overflow: ellipsis;
-  background: $normalBackground;
   border-right: 0 solid $normalDividerColor;
 
-  & .mu-editor {
-    min-height: 30px;
-    height: 100%;
+  & > * {
     width: 100%;
+    overflow: hidden;
   }
 }
 
@@ -104,6 +110,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
   line-height: 16px;
   min-height: 30px;
   height: 100%;

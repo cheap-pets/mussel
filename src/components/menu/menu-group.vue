@@ -1,14 +1,21 @@
 <template>
   <div class="mu-menu-group" :expanded="expanded">
-    <div class="mu-menu-group_header" @click="onClick">
+    <div
+      class="mu-menu-group_header"
+      :selectable="selectable"
+      :active="isActive"
+      @click="onClick">
       <slot name="header">
-        <mu-icon :icon="icon" :icon-class="iconClass" />
+        <mu-icon
+          :icon="icon"
+          :icon-class="iconClass" />
         {{ title }}
       </slot>
       <mu-icon
         v-if="isExpander || isDropdown"
         icon="dropdown"
-        :expanded="expanded" />
+        :expanded="expanded"
+        @click.native.stop="onIconClick" />
     </div>
     <div class="mu-menu-group_body" :style="{ height: wrapperHeight }">
       <div ref="wrapper">
@@ -42,15 +49,23 @@
     props: {
       icon: String,
       iconClass: String,
-      title: String
+      title: String,
+      selectable: Boolean,
+      active: Boolean
     },
     data () {
       return {
         expanded: false,
+        selected: false,
         wrapperHeight: 0
       }
     },
     computed: {
+      isActive () {
+        return this.menu?.selectMode === 'auto'
+          ? this.selected
+          : this.active
+      },
       isExpander () {
         return this.sidebar && !this.menuGroup
       },
@@ -66,6 +81,14 @@
     watch: {
       expandedSilbling (v) {
         if (v && v !== this && this.expanded) this.collapse()
+      },
+      active: {
+        handler (v) {
+          if (!v === !this.selected) return
+          if (v) this.select()
+          else this.unselect()
+        },
+        immediate: true
       }
     },
     mounted () {
@@ -73,8 +96,17 @@
     },
     methods: {
       onClick () {
-        if (!this.isExpander) return
-        this.toggleExpand()
+        if (this.selectable) {
+          if (!this.disabled) {
+            this.$emit('click')
+            this.select()
+          }
+        } else if (this.isExpander) {
+          this.toggleExpand()
+        }
+      },
+      onIconClick () {
+        if (this.isExpander) this.toggleExpand()
       },
       expand () {
         this.expanded = true
@@ -92,6 +124,19 @@
       },
       toggleExpand () {
         return this.expanded ? this.collapse() : this.expand()
+      },
+      select () {
+        if (this.menu?.selectMode === 'auto') {
+          this.selected = true
+          this.menu?.setActiveItem(this)
+        }
+        if (!this.active) this.$emit('change', true)
+      },
+      unselect () {
+        if (this.menu?.selectMode === 'auto') {
+          this.selected = false
+        }
+        if (this.active) this.$emit('change', false)
       }
     }
   }

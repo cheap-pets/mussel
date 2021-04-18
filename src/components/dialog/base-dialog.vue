@@ -2,6 +2,7 @@
   import isString from 'lodash.isstring'
 
   import delay from '@/utils/delay'
+  import { duplicateFromPropOrOptions } from '@/utils/prop'
 
   import BaseModal from '../modal/base-modal.vue'
   import DialogWrapper from './dialog-wrapper.vue'
@@ -49,14 +50,12 @@
           modalVisible: false,
           dialogVisible: false,
           btns: this.btns,
-          title: this.title || o.title,
-          width: this.width || o.width,
-          height: this.height || o.height,
-          danger: this.danger || o.danger,
-          keepAlive: this.keepAlive || o.keepAlive,
           footer: this.footer !== false && o.footer !== false,
-          primaryButton: this.primaryButton || o.primaryButton,
-          draggable: !(this.draggable === false || o.draggable === false)
+          draggable: !(this.draggable === false || o.draggable === false),
+          ...duplicateFromPropOrOptions(
+            this,
+            ['title', 'width', 'height', 'danger', 'keepAlive', 'primaryButton']
+          )
         }
       }
     },
@@ -144,6 +143,13 @@
         delay().then(() => {
           this.params.dialogVisible = true
         })
+      },
+      actualHide (trigger) {
+        console.warn(
+          '[MusselBaseDialog]',
+          'method "actualHide" is deprecated, use "hide" instead!'
+        )
+        this.hide(trigger)
       },
       hide (trigger) {
         if (this.hideDelayer) return

@@ -10,7 +10,7 @@ h1 {
   padding: 0 $inputElementPaddingX;
   outline: none;
   border: 1px solid $normalBorderColor;
-  border-radius: $inputElementBorderRadius;
+  border-radius: var(--mu-block-border-radius);
   line-height: 1;
   overflow: hidden;
   white-space: nowrap;
@@ -39,6 +39,11 @@ h1 {
     padding-left: 0;
     padding-right: 0;
     box-shadow: none !important;
+  }
+
+  &:hover,
+  &[active] {
+    z-index: 2;
   }
 
   &[active] {
@@ -227,7 +232,7 @@ h1 {
 
 [button-shape="round"],
 [button-shape="round"] > .mu-button {
-  border-radius: $inputElementRoundRadius;
+  border-radius: 100px;
 }
 
 .mu-button-like {

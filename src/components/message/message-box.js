@@ -13,7 +13,8 @@ const Buttons = {
   CANCEL: {
     id: 'cancel',
     caption: lang.Button.CANCEL,
-    action: 'close'
+    action: 'close',
+    buttonStyle: 'text'
   }
 }
 

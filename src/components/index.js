@@ -1,3 +1,5 @@
+
+
 /* LAYOUT */
 import FlexBox from './layout/flex-box.vue'
 import FlexItem from './layout/flex-item.vue'
@@ -29,6 +31,7 @@ import ButtonEditor from './editor/button-editor.vue'
 import ColorEditor from './editor/color-editor.vue'
 import PopupEditor from './editor/popup-editor.vue'
 import DateEditor from './editor/date-editor.vue'
+import TimeEditor from './editor/time-editor.vue'
 import DateRangeEditor from './editor/date-range-editor.vue'
 import ComboBox from './editor/combo-box.vue'
 import Option from './editor/option.js'
@@ -98,6 +101,11 @@ import PopupGroupMixin from '@/mixins/mix-popup-group'
 
 /* MESSAGE BOX */
 import PromptPanel from './message/prompt-panel.vue'
+
+/* SCROLLBAR */
+import * as scrollbar from './scrollbar'
+
+/* Message */
 export * from './message'
 
 function installComponents (Vue) {
@@ -122,6 +130,7 @@ function installComponents (Vue) {
   Vue.component('mu-popup-editor', PopupEditor)
   Vue.component('mu-color-editor', ColorEditor)
   Vue.component('mu-date-editor', DateEditor)
+  Vue.component('mu-time-editor', TimeEditor)
   Vue.component('mu-date-range-editor', DateRangeEditor)
   Vue.component('mu-combo-box', ComboBox)
   Vue.component('mu-option', Option)
@@ -202,6 +211,7 @@ export {
   PopupEditor,
   ColorEditor,
   DateEditor,
+  TimeEditor,
   DateRangeEditor,
   ComboBox,
   Option,
@@ -256,6 +266,8 @@ export {
   TableCheckColumn,
   TableSearchColumn,
   TableButtonColumn,
+  // Scrollbar
+  scrollbar,
   // Mixins
   PopupGroupMixin,
   // register

@@ -1,16 +1,20 @@
 <template>
-  <label class="mu-radio" :disabled="isDisabled" :style="{ width }">
+  <label
+    class="mu-radio "
+    :disabled="isDisabled"
+    :style="{ width }"
+    :checked="isChecked">
     <input
       type="radio"
       :name="name"
       :value="optionValue"
-      :checked="checkedValue === optionValue"
+      :checked="isChecked"
       :disabled="isDisabled"
       @change="onChange">
     <span class="mu-radio_fake" />
-    <slot>
-      <span>{{ labelText }}</span>
-    </slot>
+    <span class="mu-text-ellipsis">
+      <slot>{{ labelText }}</slot>
+    </span>
   </label>
 </template>
 
@@ -33,17 +37,21 @@
       'value',
       'label',
       'option',
-      'disabled'
+      'disabled',
+      'radioStyle'
     ],
     computed: {
       optionValue () {
         return this.option ?? this.label
       },
-      labelText () {
-        return this.label ?? this.option
-      },
       checkedValue () {
         return this.value ?? this.radioGroup?.value
+      },
+      isChecked () {
+        return this.checkedValue === this.optionValue
+      },
+      labelText () {
+        return this.label ?? this.option
       },
       isDisabled () {
         return this.disabled || this.radioGroup?.disabled

@@ -97,7 +97,7 @@
         if (!this.dragState) this.dialog.onMaskClick(event)
       },
       onCloseButtonClick () {
-        this.dialog.tryHide('$closeButton')
+        this.dialog.tryHide('$close')
       },
       onButtonClick (btn) {
         this.dialog.onButtonClick(btn)

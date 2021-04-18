@@ -28,7 +28,7 @@
       labelAlign: {
         type: String,
         validator (value) {
-          return ['right', 'left'].indexOf(value) !== -1
+          return ['right', 'left', 'center'].indexOf(value) !== -1
         }
       },
       cellpadding: {

@@ -19,11 +19,13 @@ function appendFresh (cache, data) {
 }
 
 export default function updateCache () {
-  if (this.rowHeight && this.height !== 'auto') {
+  if (!this.data?.length) {
+    this.cachedData = null
+  } else if (this.rowHeight && this.height !== 'auto') {
     const i = parseInt(this.scrollTop / this.rowOffsetHeight)
     const up = this.visibleRowCount * (this.scrollDirection > 0 ? 1 : 2)
     const start = Math.max(i - up - (i & 1), 0)
-    const oldLen = this.cachedData.length
+    const oldLen = this.cachedData?.length || 0
 
     const data = this
       .data
@@ -31,8 +33,8 @@ export default function updateCache () {
       .map((record, idx) => ({ record, idx: idx + start }))
 
     if (oldLen) {
-      const oldStart = oldLen ? this.cachedData[0].idx : 0
-      const oldEnd = oldLen ? this.cachedData[oldLen - 1].idx : 0
+      const oldStart = this.cachedData[0].idx
+      const oldEnd = this.cachedData[oldLen - 1].idx
       const end = data[data.length - 1].idx
 
       if (oldEnd > start && oldStart < end) {
@@ -44,7 +46,7 @@ export default function updateCache () {
 
     this.cachedData = data
   } else {
-    this.cachedData = this.data.map(
+    this.cachedData = this.data?.map(
       (record, idx) => ({ record, idx })
     )
   }

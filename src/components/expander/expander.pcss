@@ -4,28 +4,29 @@
   & [expand-trigger] {
     cursor: pointer;
   }
+}
 
-  & > .mu-expander-header,
-  & > .mu-expander_header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: $normalBarHeight;
-    text-align: center;
-    font-size: $expanderHeaderFontSize;
+/* .mu-expander-header, */
+.mu-expander_header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: $normalBarHeight;
+  text-align: center;
+  font-size: $expanderHeaderFontSize;
+  background: $normalBackground;
 
-    &:hover {
-      background: $normalTinyBackground;
-    }
-
-    & > [icon="dropdown"] {
-      margin-left: $halfSpacingSize;
-    }
+  &:hover {
+    background: $normalTinyBackground;
   }
 
-  & > .mu-expander_body {
-    position: relative;
-    overflow: hidden;
-    transition: height .15s linear;
+  & > [icon="dropdown"] {
+    margin-left: $halfSpacingSize;
   }
+}
+
+.mu-expander_body {
+  position: relative;
+  overflow: hidden;
+  transition: height .15s linear;
 }

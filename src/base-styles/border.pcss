@@ -1,4 +1,5 @@
-.mu-bordered, [class^="mu-"] {
+.mu-bordered,
+[class^="mu-"] {
   &[border] {
     border: 0 solid $normalBorderColor;
   }
@@ -6,7 +7,7 @@
   &[border~="all"] {
     border-width: 1px;
 
-    &[border~="thick"] {
+    &[border~="x2"] {
       border-width: 2px;
     }
   }
@@ -14,7 +15,7 @@
   &[border~="top"] {
     border-top-width: 1px;
 
-    &[border~="thick"] {
+    &[border~="x2"] {
       border-top-width: 2px;
     }
   }
@@ -22,7 +23,7 @@
   &[border~="left"] {
     border-left-width: 1px;
 
-    &[border~="thick"] {
+    &[border~="x2"] {
       border-left-width: 2px;
     }
   }
@@ -30,7 +31,7 @@
   &[border~="right"] {
     border-right-width: 1px;
 
-    &[border~="thick"] {
+    &[border~="x2"] {
       border-right-width: 2px;
     }
   }
@@ -38,7 +39,7 @@
   &[border~="bottom"] {
     border-bottom-width: 1px;
 
-    &[border~="thick"] {
+    &[border~="x2"] {
       border-bottom-width: 2px;
     }
   }
@@ -49,6 +50,10 @@
 
   &[border~="danger"] {
     border-color: var(--mu-danger-color);
+  }
+
+  &[border~="light"] {
+    border-color: $normalDividerColor;
   }
 
   &[border~="dashed"] {
@@ -68,4 +73,24 @@
 [class^="mu-"][border=""],
 [class^="mu-"][bordered] {
   border: 1px solid $normalBorderColor;
+}
+
+.mu-divider,
+.mu-list-divider {
+  display: block;
+  width: 100%;
+
+  &::before {
+    content: '';
+    display: block;
+    border-top: 1px solid $normalDividerColor;
+  }
+
+  &[dashed]::before {
+    border-top-style: dashed;
+  }
+
+  &[dotted]::before {
+    border-top-style: dotted;
+  }
 }

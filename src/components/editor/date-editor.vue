@@ -28,6 +28,10 @@
         type: String,
         default: '225px'
       },
+      icon: {
+        type: String,
+        default: 'calendar'
+      },
       value: [String, Date],
       format: String,
       rangeStart: Date,
@@ -80,6 +84,9 @@
       },
       markedDates (value) {
         this.calendarParams.markedDates = value
+      },
+      selectMode (value) {
+        this.calendarParams.selectMode = value
       }
     },
     methods: {

@@ -7,7 +7,7 @@
     @mouseleave="onMouseLeave">
     <slot />
     <mu-dropdown-panel
-      v-show="!disabled"
+      v-show="!disabled && popupParams.visible"
       v-bind="popupParams"
       @change="setPopupVisible"
       @mouseover.native.stop="clearHoverTimer"

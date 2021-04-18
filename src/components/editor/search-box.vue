@@ -92,7 +92,7 @@
       toggleSelection (value, label, option) {
         this.hidePopup()
         this.setValue(label, true)
-        this.$emit('change', value, label, option)
+        this.$emit('change', value, option || { label, value })
         this.$emit('optionclick', value, label, option)
         this.$el.querySelector('input').focus()
         this.focus()

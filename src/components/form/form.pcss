@@ -1,3 +1,8 @@
+.mu-label {
+  font-size: $labelFontSize;
+  color: $labelColor;
+}
+
 .mu-form-field {
   min-width: 80px;
 
@@ -5,7 +10,7 @@
     display: inline-block;
     line-height: $inputElementHeight;
     padding-right: 12px;
-    font-size: $formLabelFontSize;
+    font-size: $labelFontSize;
 
     &:before {
       position: absolute;
@@ -15,7 +20,6 @@
       visibility: hidden;
       width: 10px;
       text-align: left;
-      font-weight: 500;
       color: var(--mu-danger-color);
       content: "*";
     }
@@ -87,7 +91,9 @@
           align-self: stretch;
           align-items: center;
           border-right: 1px solid $normalBorderColor;
-          background-color: $normalGreyBackground;
+          background-color: $normalLightGreyBackground;
+          font-weight: 600;
+          color: $normalSubtitleTextColor;
         }
       }
     }

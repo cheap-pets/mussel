@@ -1,4 +1,4 @@
 export default function onMouseOver (event) {
-  window.__mussel_scroller = this
+  window.__mussel_scrollbar = this
   event.stopPropagation()
 }

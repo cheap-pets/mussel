@@ -54,6 +54,9 @@ export default {
       return isFunction(this.cellClass)
         ? this.cellClass(record)
         : this.cellClass
+    },
+    onCellClick (record, column) {
+      this.$emit('cellclick', record)
     }
   }
 }

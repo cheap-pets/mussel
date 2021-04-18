@@ -14,7 +14,7 @@ function updateThumbX (offset) {
 
   Object.assign(railX.style, {
     left: el.scrollLeft + 4 + 'px',
-    bottom: 4 - el.scrollTop - offset.y + 'px',
+    bottom: 4 - el.scrollTop - offset + 'px',
     width: el.offsetWidth - 8 - blw - brw + 'px'
   })
 
@@ -43,7 +43,7 @@ function updateThumbY (offset) {
 
   Object.assign(railY.style, {
     top: el.scrollTop + 4 + 'px',
-    right: 4 - el.scrollLeft + 'px',
+    right: 4 - el.scrollLeft - offset + 'px',
     height: el.offsetHeight - 8 - btw - bbw + 'px'
   })
 
@@ -70,40 +70,50 @@ function isStateChanged (old, current) {
     }, false)
 }
 
-async function updatePosition () {
-  if (!this.activated) return
+function getPositionState ({ activated, el, options }) {
+  if (options.stickToParent && !el.parentNode) return
 
   const {
-    parentNode,
     scrollTop: st, scrollLeft: sl,
     scrollHeight: sh, scrollWidth: sw,
     clientHeight: ch, clientWidth: cw
-  } = this.el
+  } = el
 
   const {
     scrollTop: pst, scrollLeft: psl,
     clientHeight: pch, clientWidth: pcw
-  } = this.options.stickToParent ? parentNode : {}
+  } = options.stickToParent ? el.parentNode : {}
 
-  const current = { st, sl, sh, sw, ch, cw, pst, psl, pch, pcw }
+  return { st, sl, sh, sw, ch, cw, pst, psl, pch, pcw }
+}
 
-  if (isStateChanged(this.state, current)) {
-    const { scrollbarX, scrollbarY } = this.options
+function activateScrollbar () {
+  if (this.state && !this.activated) this.show(true)
+}
+
+function updatePosition () {
+  if (this.options.scrollbarVisible === false) return
+
+  const current = getPositionState(this)
+
+  if (current && isStateChanged(this.state, current)) {
+    activateScrollbar.call(this)
+
+    const { sh, sw, ch, cw, pst, psl, pch, pcw } = current
 
     this.state = current
-    this.hiddenX = scrollbarX === false || sw - cw < 1
-    this.hiddenY = scrollbarY === false || sh - ch < 1
 
-    setRailHidden(this.railX, this.hiddenX)
-    setRailHidden(this.railY, this.hiddenY)
-
-    const offset = {
-      x: pcw ? pcw - (cw - psl) : 0,
-      y: pch ? pch - (ch - pst) : 0
+    if (this.railX) {
+      this.hiddenX = sw - cw < 1
+      setRailHidden(this.railX, this.hiddenX)
+      if (!this.hiddenX) updateThumbX.call(this, pch ? pch - (ch - pst) : 0)
     }
 
-    if (!this.hiddenX) updateThumbX.call(this, offset)
-    if (!this.hiddenY) updateThumbY.call(this, offset)
+    if (this.railY) {
+      this.hiddenY = sh - ch < 1
+      setRailHidden(this.railY, this.hiddenY)
+      if (!this.hiddenY) updateThumbY.call(this, pcw ? pcw - (cw - psl) : 0)
+    }
   }
 }
 

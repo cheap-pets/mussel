@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mu-flex-box mu-table"
+    class="mu-table mu-flex-box"
     direction="column"
     :width="width"
     :style="tableStyle"
@@ -10,7 +10,7 @@
       <slot />
     </div>
     <template v-if="ready">
-      <div class="mu-flex-box mu-table_head">
+      <div class="mu-table_head mu-flex-box">
         <table-head-group
           v-if="columnGroups.left"
           class="mu-table_head-left"
@@ -38,14 +38,14 @@
         @sizechange="onBodyResize"
         @mouseleave="onBodyMouseLeave">
         <table-body-group
-          v-if="columnGroups.left"
+          v-if="columnGroups.left && cachedData"
           class="mu-table_body-left"
           table-fixed="left"
           :columns="columnGroups.left"
           :style="bodyGroupStyle"
           :width="leftTableSize" />
         <table-body-group
-          v-if="columnGroups.center"
+          v-if="columnGroups.center && cachedData"
           v-mussel-scrollbar="scrollbarXOptions"
           class="mu-table_body-center"
           :size="centerSize"
@@ -53,7 +53,7 @@
           :style="bodyGroupStyle"
           @scroll.native="onColScroll" />
         <table-body-group
-          v-if="columnGroups.right"
+          v-if="columnGroups.right && cachedData"
           class="mu-table_body-right"
           table-fixed="right"
           :columns="columnGroups.right"
@@ -65,6 +65,7 @@
 </template>
 
 <script>
+  import debounce from 'lodash.debounce'
   import throttle from 'lodash.throttle'
 
   import TableHeadGroup from './table-head-group.vue'
@@ -128,7 +129,7 @@
         hoverRow: null,
         hoverCol: null,
         editingCell: null,
-        cachedData: [],
+        cachedData: null,
         headerValues: {}
       }
     },
@@ -155,11 +156,11 @@
         return {
           enable: this.height !== 'auto',
           scrollbarX: false,
-          observeMutation: false,
-          maxWheelDistance:
-            this.rowOffsetHeight
-              ? this.rowOffsetHeight
-              : 50
+          observeMutation: false
+          // maxWheelDistance:
+          //   this.rowOffsetHeight
+          //     ? this.rowOffsetHeight
+          //     : 50
         }
       },
       scrollbarXOptions () {
@@ -167,11 +168,11 @@
           enable: this.width !== 'auto',
           scrollbarY: false,
           stickToParent: true,
-          observeMutation: false,
-          maxWheelDistance:
-            this.rowOffsetHeight
-              ? this.rowOffsetHeight
-              : 50
+          observeMutation: false
+          // maxWheelDistance:
+          //   this.rowOffsetHeight
+          //     ? this.rowOffsetHeight
+          //     : 50
         }
       },
       rowOffsetHeight () {
@@ -186,7 +187,12 @@
     },
     watch: {
       data (v) {
-        this.updateCache()
+        this.cachedData = null
+        if (this.$el) {
+          const bodyEl = this.$el.querySelector('.mu-table_body')
+          if (bodyEl) bodyEl.scrollTop = 0
+          this.updateCache()
+        }
       }
     },
     beforeCreate () {
@@ -203,44 +209,39 @@
     },
     methods: {
       updateCache,
-      setColumnGroups () {
-        this.ready = false
+      setColumnGroups: debounce(function () {
+        const groups = { left: [], center: [], right: [] }
 
-        if (this._composeTimer) clearTimeout(this._composeTimer)
-        this._composeTimer = setTimeout(() => {
-          const groups = { left: [], center: [], right: [] }
+        this.columns.forEach(col => {
+          const group = (col.fixed === undefined || this.width === 'auto')
+            ? groups.center
+            : (
+              col.fixed === 'right'
+                ? groups.right
+                : groups.left
+            )
+          group.push(col)
+        })
 
-          this.columns.forEach(col => {
-            const group = (col.fixed === undefined || this.width === 'auto')
-              ? groups.center
-              : (
-                col.fixed === 'right'
-                  ? groups.right
-                  : groups.left
-              )
-            group.push(col)
-          })
+        Object.keys(groups).forEach(key => {
+          if (!groups[key].length) delete groups[key]
+        })
 
-          Object.keys(groups).forEach(key => {
-            if (!groups[key].length) delete groups[key]
-          })
-
-          this.columnGroups = groups
-          this.ready = true
-
-          delete this._composeTimer
-        }, 50)
-      },
+        this.columnGroups = groups
+        this.ready = true
+      }, 50, { leading: false, trailing: true }),
       registerColumn (column) {
         if (column.field === '_selected') {
           this.multiSelect = true
         }
+        this.ready = false
         this.columns.push(column)
         this.setColumnGroups()
       },
       unregisterColumn (columnId) {
         const idx = this.columns.findIndex(col => col._uid === columnId)
         if (idx >= 0) {
+          this.ready = false
           this.columns.splice(idx)
           this.setColumnGroups()
         }
@@ -253,13 +254,14 @@
       },
       onBodyResize: throttle(
         function (e) {
+          if (!e.target || !e.target.clientHeight) return
           this.visibleRowCount = this.rowOffsetHeight
             ? Math.ceil(e.target.clientHeight / this.rowOffsetHeight)
             : 0
           this.updateCache()
         },
-        500,
-        { leading: true, trailing: true }
+        300,
+        { leading: false, trailing: true }
       ),
       onRowScroll: throttle(
         function (e) {
@@ -270,7 +272,7 @@
             this.updateCache()
           }
         },
-        500,
+        300,
         { leading: false, trailing: true }
       ),
       onColScroll (e) {
@@ -285,17 +287,21 @@
         // this.cachedData.forEach(item => {
         //   this.$set(item.rec, this.selectedField, true)
         // })
-        this.data.forEach(rec => {
-          this.$set(rec, this.selectedField, true)
-        })
+        if (this.data) {
+          this.data.forEach(rec => {
+            this.$set(rec, this.selectedField, true)
+          })
+        }
       },
       unselectAll () {
         // this.cachedData.forEach(item => {
         //   this.$set(item.rec, this.selectedField, false)
         // })
-        this.data.forEach(rec => {
-          this.$set(rec, this.selectedField, false)
-        })
+        if (this.data) {
+          this.data.forEach(rec => {
+            this.$set(rec, this.selectedField, false)
+          })
+        }
       },
       onCellChange (record, field, value) {
         this.$emit('cellchange', record, field, value)
