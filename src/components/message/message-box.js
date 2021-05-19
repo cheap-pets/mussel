@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import isString from 'lodash.isstring'
 
 import lang from '@/lang'
 import MessageDialog from './message-dialog.vue'
@@ -15,6 +16,18 @@ const Buttons = {
     caption: lang.Button.CANCEL,
     action: 'close',
     buttonStyle: 'text'
+  },
+  YES: {
+    id: 'yes',
+    caption: lang.Button.YES,
+    action: 'close',
+    buttonType: 'primary'
+  },
+  NO: {
+    id: 'no',
+    caption: lang.Button.NO,
+    action: 'close',
+    buttonStyle: 'text'
   }
 }
 
@@ -27,7 +40,11 @@ export function showMessage (options) {
       title,
       message,
       danger,
-      buttons
+      buttons: buttons.map(el => {
+        const btn = isString(el) ? (Buttons[el.toUpperCase()] || el) : { ...el }
+        if (btn.buttonType === 'primary' && danger) btn.buttonType = 'danger'
+        return btn
+      })
     })
     dialog.$once('hide', btn => {
       callback?.(btn)

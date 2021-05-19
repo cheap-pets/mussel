@@ -88,7 +88,7 @@
     computed: {
       menuIcon () {
         return this.isCollapsed
-          ? 'menu'
+          ? (this.floatable ? 'menu' : 'key-right')
           : (
             this.floatable
               ? (this.isFloating ? 'pin' : 'pinned')

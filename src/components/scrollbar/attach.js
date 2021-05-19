@@ -18,8 +18,11 @@ function renderElements (el, options) {
   el.classList.add('mu-scrollbar')
   el.setAttribute('tabindex', 0)
 
-  if (scrollbarX !== false) el.insertAdjacentHTML('afterbegin', railTemplate`x`)
-  if (scrollbarY !== false) el.insertAdjacentHTML('afterbegin', railTemplate`y`)
+  this.hiddenX = scrollbarX === false
+  this.hiddenY = scrollbarY === false
+
+  if (!this.hiddenX) el.insertAdjacentHTML('afterbegin', railTemplate`x`)
+  if (!this.hiddenY) el.insertAdjacentHTML('afterbegin', railTemplate`y`)
 
   return Array
     .from(el.childNodes)
@@ -77,7 +80,7 @@ export default function attach (el, options = {}) {
   }
 
   if (!isRailExist(el)) {
-    Object.assign(ctx, renderElements(el, ctx.options))
+    Object.assign(ctx, renderElements.call(ctx, el, ctx.options))
     if (ctx.options.observeMutation !== false) observeMutation(ctx)
 
     bindEvents.call(ctx)

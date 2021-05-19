@@ -12,9 +12,8 @@ export function duplicateFromPropOrOptions (vueInstance, props) {
   const result = {}
 
   props = props || Object.keys(options.props)
-
   props.forEach(
-    key => { result[key] = vueInstance[key] ?? options[key] }
+    key => { result[key] = vueInstance[key] || options[key] }
   )
   return result
 }

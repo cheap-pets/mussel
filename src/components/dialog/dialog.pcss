@@ -1,3 +1,7 @@
+.mu-dialog-mask {
+  flex-direction: column;
+}
+
 .mu-dialog {
   position: relative;
   min-width: 200px;
@@ -17,7 +21,7 @@
   }
 }
 
-.mu-dialog_close-btn:hover {
+.mu-dialog_close-button:hover {
   cursor: pointer;
   color: $dangerColor;
 }
@@ -29,7 +33,7 @@
   border-radius: var(--mu-block-border-radius) var(--mu-block-border-radius) 0 0;
   background: $dialogHeaderBackground;
 
-  & > .mu-dialog-title {
+  & > .mu-dialog_title {
     font-size: $dialogTitleFontSize;
     font-weight: 600;
   }

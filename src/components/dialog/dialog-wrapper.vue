@@ -1,34 +1,32 @@
 <template>
-  <v-box
-    class="mu-modal-mask"
-    flex-center
+  <div
     :visible="params.modalVisible"
+    class="mu-modal-mask mu-dialog-mask"
     @click.native="onMaskClick">
-    <v-box
+    <div
       v-if="params.keepAlive || params.modalVisible"
       v-show="!params.keepAlive || params.modalVisible"
-      class="mu-dialog"
-      :style="style"
+      class="mu-dialog mu-flex-box"
+      direction="column"
+      :style="dialogStyle"
       :danger="params.danger"
       :visible="params.dialogVisible">
-      <h-box
-        class="mu-dialog-header"
+      <div
+        class="mu-dialog-header mu-flex-box"
         align-items="center"
         @mousedown.native="onDragStart">
-        <mu-flex-item class="mu-dialog-title mu-text-ellipsis" size="auto">
+        <label class="mu-dialog_title mu-text-ellipsis" size="auto">
           {{ params.title }}
-        </mu-flex-item>
+        </label>
         <slot name="header" />
         <icon
-          class="mu-dialog_close-btn"
+          class="mu-dialog_close-button"
           icon="x"
           @click="onCloseButtonClick" />
-      </h-box>
-      <flex-item
-        class="mu-dialog-body"
-        :size="params.height ? 'auto' : undefined">
+      </div>
+      <div class="mu-dialog-body" :size="params.height ? 1 : undefined">
         <slot />
-      </flex-item>
+      </div>
       <h-box
         v-if="params.footer"
         class="mu-dialog-footer"
@@ -41,8 +39,8 @@
           v-bind="btn"
           @click="onButtonClick(btn)" />
       </h-box>
-    </v-box>
-  </v-box>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -50,9 +48,7 @@
 
   import Icon from '../icon/icon.vue'
   import HBox from '../layout/flex-h-box'
-  import VBox from '../layout/flex-v-box'
   import Button from '../button/button.jsx'
-  import FlexItem from '../layout/flex-item.vue'
 
   import delay from '@/utils/delay'
 
@@ -63,8 +59,6 @@
     components: {
       Icon,
       HBox,
-      VBox,
-      FlexItem,
       'mu-button': Button
     },
     inject: ['dialog', 'params'],
@@ -76,7 +70,7 @@
       }
     },
     computed: {
-      style () {
+      dialogStyle () {
         const { dialogVisible, width, height } = this.params
         let {
           translateX: tx,

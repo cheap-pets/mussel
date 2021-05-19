@@ -15,13 +15,13 @@
       tryHide (trigger) {
         this.hide(trigger)
 
-        delay(500).then(() => {
+        delay(300).then(() => {
           this.$el.parentNode.removeChild(this.$el)
           this.$destroy()
         })
       },
       onButtonClick (button) {
-        this.tryHide(button.id || button)
+        this.tryHide(button.id || button._rawData || button)
       }
     }
   }

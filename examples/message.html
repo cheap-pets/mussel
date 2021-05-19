@@ -56,10 +56,10 @@
           mussel.showMessage({
             title: 'My Message',
             message: 'Yes or no ?',
-            buttons: ['yes', 'no'],
+            buttons: ['yes', 'd', { caption: 'x' }],
             danger: true,
             callback: function (btn) {
-              if (btn === 'yes') console.log('"yes" button been pressed !')
+              console.log('"' + (btn.caption || btn) + '" button been pressed !')
             }
           })
         },

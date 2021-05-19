@@ -76,7 +76,7 @@ export default {
   plugins: [
     alias({
       entries: [
-        { find: '~icons', replacement: '@tabler/icons/icons' },
+        { find: '~icons', replacement: path.resolve(__dirname, 'node_modules/@tabler/icons/icons') },
         { find: '@', replacement: path.resolve(__dirname, 'src') }
       ]
     }),
