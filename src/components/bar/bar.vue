@@ -1,18 +1,13 @@
 <template>
-  <h-box class="mu-bar" align-items="center">
+  <div class="mu-flex-box mu-bar" align-items="center">
     <slot />
-  </h-box>
+  </div>
 </template>
 
 <script>
   import './bar.pcss'
 
-  import HBox from '../layout/flex-h-box'
-
   export default {
-    name: 'MusselBar',
-    components: {
-      HBox
-    }
+    name: 'MusselBar'
   }
 </script>

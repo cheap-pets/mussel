@@ -1,6 +1,7 @@
 export default {
   Bar: {
-    CURRENT_PAGE: '第 %s 页'
+    CURRENT_PAGE: '第 %s 页',
+    TOTAL_PAGES: '共 %s 页'
   },
   Button: {
     CANCEL: '取消',

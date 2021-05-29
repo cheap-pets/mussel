@@ -1,6 +1,7 @@
 export default {
   Bar: {
-    CURRENT_PAGE: 'Page %s'
+    CURRENT_PAGE: 'Page %s',
+    TOTAL_PAGES: 'of %s'
   },
   Button: {
     CANCEL: 'Cancel',
