@@ -1,66 +1,51 @@
 <template>
   <div
-    class="mu-table mu-flex-box"
-    direction="column"
-    :width="width"
-    :style="tableStyle"
-    :gridline="gridline"
-    :hover-mode="hoverMode">
+    class="mu-table"
+    :style="{ width, height }"
+    :hover-mode="hoverMode"
+    :gridline="gridline">
     <div v-show="false">
       <slot />
     </div>
-    <template v-if="ready">
-      <div class="mu-table_head mu-flex-box">
-        <table-head-group
-          v-if="columnGroups.left"
-          class="mu-table_head-left"
-          table-fixed="left"
-          :columns="columnGroups.left"
-          @sizechange.native="onLeftTableResize" />
-        <table-head-group
-          v-if="columnGroups.center"
-          :columns="columnGroups.center"
-          :size="centerSize"
-          class="mu-table_head-center"
-          style="overflow: hidden;" />
-        <table-head-group
-          v-if="columnGroups.right"
-          class="mu-table_head-right"
-          table-fixed="right"
-          :columns="columnGroups.right"
-          @sizechange.native="onRightTableResize" />
-      </div>
-      <div
-        v-mussel-scrollbar="scrollbarYOptions"
-        class="mu-flex-box mu-table_body"
-        size="auto"
-        @scroll="onRowScroll"
-        @sizechange="onBodyResize"
-        @mouseleave="onBodyMouseLeave">
-        <table-body-group
-          v-if="columnGroups.left && cachedData"
-          class="mu-table_body-left"
-          table-fixed="left"
-          :columns="columnGroups.left"
-          :style="bodyGroupStyle"
-          :width="leftTableSize" />
-        <table-body-group
-          v-if="columnGroups.center && cachedData"
-          v-mussel-scrollbar="scrollbarXOptions"
-          class="mu-table_body-center"
-          :size="centerSize"
-          :columns="columnGroups.center"
-          :style="bodyGroupStyle"
-          @scroll.native="onColScroll" />
-        <table-body-group
-          v-if="columnGroups.right && cachedData"
-          class="mu-table_body-right"
-          table-fixed="right"
-          :columns="columnGroups.right"
-          :style="bodyGroupStyle"
-          :width="rightTableSize" />
-      </div>
-    </template>
+    <div v-if="ready" class="mu-table_head">
+      <table-head-group
+        v-if="columnGroups.left"
+        fixed-area="left"
+        :style="leftHeadStyle"
+        :columns="columnGroups.left"
+        @sizechange.native="onLeftTableResize" />
+      <table-head-group
+        v-if="columnGroups.center"
+        :style="centerHeadStyle"
+        :columns="columnGroups.center" />
+      <table-head-group
+        v-if="columnGroups.right"
+        fixed-area="right"
+        :style="rightHeadStyle"
+        :columns="columnGroups.right"
+        @sizechange.native="onRightTableResize" />
+    </div>
+    <div
+      v-if="ready && cachedData"
+      v-mussel-scrollbar="{ observeMutation: false }"
+      class="mu-table_body"
+      @scroll="onBodyScroll"
+      @sizechange="onBodyResize"
+      @mouseleave="onBodyMouseLeave">
+      <table-body-group
+        v-if="columnGroups.left"
+        fixed-area="left"
+        :style="leftBodyStyle"
+        :columns="columnGroups.left" />
+      <table-body-group
+        :style="centerBodyStyle"
+        :columns="columnGroups.center" />
+      <table-body-group
+        v-if="columnGroups.right"
+        fixed-area="right"
+        :style="rightBodyStyle"
+        :columns="columnGroups.right" />
+    </div>
   </div>
 </template>
 
@@ -93,7 +78,7 @@
         type: Number,
         default: 40,
         validator (v) {
-          return !v || (v >= 30 && v <= 80)
+          return v >= 30 && v <= 100
         }
       },
       gridline: {
@@ -124,8 +109,9 @@
     data () {
       return {
         ready: false,
-        leftTableSize: 0,
-        rightTableSize: 0,
+        leftTableWidth: null,
+        rightTableWidth: null,
+        scrollLeft: 0,
         hoverRow: null,
         hoverCol: null,
         editingCell: null,
@@ -134,55 +120,46 @@
       }
     },
     computed: {
-      tableStyle () {
+      bodyHeight () {
+        return this.rowHeight * this.data.length + 'px'
+      },
+      centerHeadStyle () {
+        const { left, right } = this.columnGroups
+
         return {
-          height: (this.height && this.height !== 'auto')
-            ? this.height
-            : undefined,
-          width: (this.width && this.width !== 'auto')
-            ? this.width
-            : undefined
+          paddingLeft: left.length ? this.leftTableWidth : undefined,
+          paddingRight: right.length ? this.rightTableWidth : undefined
         }
       },
-      centerSize () {
-        return this.width === 'auto' ? undefined : 1
-      },
-      bodyGroupStyle () {
-        return this.rowHeight
-          ? { height: this.rowOffsetHeight * this.data.length + 'px' }
-          : undefined
-      },
-      scrollbarYOptions () {
+      leftHeadStyle () {
         return {
-          enable: this.height !== 'auto',
-          scrollbarX: false,
-          observeMutation: false
-          // maxWheelDistance:
-          //   this.rowOffsetHeight
-          //     ? this.rowOffsetHeight
-          //     : 50
+          width: this.leftTableWidth,
+          left: this.scrollLeft + 'px'
         }
       },
-      scrollbarXOptions () {
+      rightHeadStyle () {
         return {
-          enable: this.width !== 'auto',
-          scrollbarY: false,
-          stickToParent: true,
-          observeMutation: false
-          // maxWheelDistance:
-          //   this.rowOffsetHeight
-          //     ? this.rowOffsetHeight
-          //     : 50
+          width: this.rightTableWidth,
+          right: -this.scrollLeft + 'px'
         }
       },
-      rowOffsetHeight () {
-        const borderWidth =
-          ['row', 'both'].indexOf(this.gridline) === -1
-            ? 0
-            : 1
-        return this.rowHeight
-          ? this.rowHeight + borderWidth
-          : undefined
+      centerBodyStyle () {
+        return {
+          ...this.centerHeadStyle,
+          height: this.bodyHeight
+        }
+      },
+      leftBodyStyle () {
+        return {
+          ...this.leftHeadStyle,
+          height: this.bodyHeight
+        }
+      },
+      rightBodyStyle () {
+        return {
+          ...this.rightHeadStyle,
+          height: this.bodyHeight
+        }
       }
     },
     watch: {
@@ -247,46 +224,48 @@
         }
       },
       onLeftTableResize (e) {
-        this.leftTableSize = e.target.clientWidth
+        this.leftTableWidth = e.target.clientWidth + 'px'
       },
       onRightTableResize (e) {
-        this.rightTableSize = e.target.clientWidth
+        this.rightTableWidth = e.target.clientWidth + 'px'
       },
       onBodyResize: throttle(
         function (e) {
           if (!e.target || !e.target.clientHeight) return
-          this.visibleRowCount = this.rowOffsetHeight
-            ? Math.ceil(e.target.clientHeight / this.rowOffsetHeight)
+          this.visibleRowCount = this.rowHeight
+            ? Math.ceil(e.target.clientHeight / this.rowHeight)
             : 0
           this.updateCache()
         },
         300,
         { leading: false, trailing: true }
       ),
-      onRowScroll: throttle(
-        function (e) {
-          if (!this.rowHeight) return
-          this.scrollDirection = Math.sign(e.target.scrollTop - this.scrollTop)
+      afterScroll: throttle(
+        function (scrollTop) {
+          this.scrollDirection = Math.sign(scrollTop - this.scrollTop)
           if (this.scrollDirection) {
-            this.scrollTop = e.target.scrollTop
+            this.scrollTop = scrollTop
             this.updateCache()
           }
         },
         300,
         { leading: false, trailing: true }
       ),
-      onColScroll (e) {
-        const headEl = this.$el.querySelector('.mu-table_head-center')
-        if (headEl) headEl.scrollLeft = e.target.scrollLeft
+      onBodyScroll (e) {
+        const { scrollTop, scrollLeft } = e.target
+
+        this.scrollLeft = scrollLeft
+
+        const headEl = this.$el.querySelector('.mu-table_head')
+        if (headEl) headEl.scrollLeft = scrollLeft
+
+        this.afterScroll(scrollTop)
       },
       onBodyMouseLeave () {
         this.hoverRow = null
         this.hoverCol = null
       },
       selectAll () {
-        // this.cachedData.forEach(item => {
-        //   this.$set(item.rec, this.selectedField, true)
-        // })
         if (this.data) {
           this.data.forEach(rec => {
             this.$set(rec, this.selectedField, true)
@@ -294,9 +273,6 @@
         }
       },
       unselectAll () {
-        // this.cachedData.forEach(item => {
-        //   this.$set(item.rec, this.selectedField, false)
-        // })
         if (this.data) {
           this.data.forEach(rec => {
             this.$set(rec, this.selectedField, false)
@@ -305,7 +281,6 @@
       },
       onCellChange (record, field, value) {
         this.$emit('cellchange', record, field, value)
-        // this.$set(record, field, value)
       },
       setHeaderValue (field, value) {
         this.$set(this.headerValues, field, value)

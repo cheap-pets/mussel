@@ -1,5 +1,5 @@
 <template>
-  <div v-if="data.length" :style="tableStyle">
+  <div v-if="data.length">
     <div
       v-for="item in data"
       :key="item.idx"
@@ -41,15 +41,9 @@
   export default {
     inject: ['table'],
     props: {
-      columns: Array,
-      width: Number
+      columns: Array
     },
     computed: {
-      tableStyle () {
-        return this.width
-          ? { width: this.width + 'px' }
-          : undefined
-      },
       hoverCol () {
         return this.table.hoverCol
       },
@@ -76,14 +70,9 @@
         return (current.row === rowIdx && current.col === column._uid)
       },
       getRowStyle (idx) {
-        const height = this.table.rowOffsetHeight
-        return this.table.cacheAll
-          ? undefined
-          : {
-            position: 'absolute',
-            top: height * idx + 'px',
-            height: height + 'px'
-          }
+        return {
+          height: this.table.rowHeight + 'px'
+        }
       },
       getCellClass (record, column) {
         return column.getCellClass(record)

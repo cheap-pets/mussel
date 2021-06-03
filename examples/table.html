@@ -73,29 +73,11 @@
         </mu-table-button-column>
       </mu-table>
     </div>
-    <mu-h-box v-if="false" v-mussel-scrollbar style="height: 400px;">
-      <table style="width: 100%;" border="1" size="1">
-        <tr v-for="(rec,idx) in records">
-          <td>{{ rec.f1 }}</td>
-          <td>{{ rec.f2 }}</td>
-          <td>{{ rec.f2 }}</td>
-          <td>{{ rec.f2 }}</td>
-          <td>{{ rec.f3 }}</td>
-          <td>{{ rec.f3 }}</td>
-          <td>{{ rec.f1 }}</td>
-          <td>{{ rec.f2 }}</td>
-          <td>{{ rec.f2 }}</td>
-          <td>{{ rec.f2 }}</td>
-          <td>{{ rec.f3 }}</td>
-          <td>{{ rec.f3 }}</td>
-        </tr>
-      </table>
-    </mu-h-box>
   </div>
 
   <script type="text/javascript">
     var records = []
-    for (var i = 0; i < 10000; i++) {
+    for (var i = 0; i < 100; i++) {
       records.push({
         f1: i,
         f2: 'some text value some text value some text value some text value',
