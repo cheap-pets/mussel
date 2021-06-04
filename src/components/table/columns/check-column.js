@@ -11,7 +11,10 @@ export default {
     },
     width: {
       type: String,
-      default: '40'
+      default: '40px'
+    },
+    flex: {
+      flex: 'none'
     },
     align: {
       type: String,

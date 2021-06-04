@@ -1,6 +1,6 @@
 import isFunction from 'lodash.isfunction'
 
-import { convertColumnWidth } from './width'
+const WidthRegExp = /^(auto|([1-9]\d*(px|%)))$/
 
 export default {
   name: 'MusselTableColumn',
@@ -10,9 +10,30 @@ export default {
     field: String,
     fixed: String,
     label: String,
-    width: String,
-    align: String,
-    headerAlign: String,
+    width: {
+      type: [Number, String],
+      validator (value) {
+        return value === undefined || WidthRegExp.test(value)
+      }
+    },
+    flex: {
+      type: String,
+      default: 'auto'
+    },
+    align: {
+      type: String,
+      default: 'center',
+      validator (value) {
+        return ['left', 'center', 'right'].indexOf(value) !== -1
+      }
+    },
+    headerAlign: {
+      type: String,
+      default: 'center',
+      validator (value) {
+        return ['left', 'center', 'right'].indexOf(value) !== -1
+      }
+    },
     cellHtml: null,
     cellText: null,
     cellClass: null,
@@ -20,7 +41,12 @@ export default {
   },
   computed: {
     columnWidth () {
-      return convertColumnWidth(this.width || (this.fixed ? 100 : undefined))
+      return (
+        (this.fixed === undefined || this.width !== 'auto') &&
+        WidthRegExp.test(this.width)
+      )
+        ? this.width
+        : '100px'
     }
   },
   created () {

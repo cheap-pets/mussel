@@ -80,6 +80,7 @@
       getCellStyle (record, column) {
         return {
           ...column.getCellStyle(record),
+          flex: column.flex,
           width: column.columnWidth,
           textAlign: column.align
         }

@@ -74,6 +74,7 @@
     props: {
       width: String,
       height: String,
+      virtualRender: Boolean,
       rowHeight: {
         type: Number,
         default: 40,

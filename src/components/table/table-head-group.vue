@@ -4,7 +4,7 @@
       <div
         v-for="column in columns"
         :key="column._uid"
-        :style="{ width: column.columnWidth, textAlign: column.headerAlign }"
+        :style="getCellStyle(column)"
         class="mu-table_cell">
         <div v-if="column.label !== undefined" class="mu-table_cell-label">
           {{ column.label }}
@@ -24,6 +24,15 @@
     inject: ['table'],
     props: {
       columns: Array
+    },
+    methods: {
+      getCellStyle (column) {
+        return {
+          flex: column.flex,
+          width: column.columnWidth,
+          textAlign: column.headerAlign
+        }
+      }
     }
   }
 </script>
