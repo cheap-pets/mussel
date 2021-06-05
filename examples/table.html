@@ -28,11 +28,11 @@
         gridline="both"
         hover-mode="none"
         @cellchange="setRecordValue">
-        <mu-table-check-column
+        <mu-table-select-column
           fixed
           @headerChange="onCheckColumnHeaderChange"
           @CellChange="onCheckColumnCellChange">
-        </mu-table-check-column>
+        </mu-table-select-column>
         <mu-table-column
           label="ID"
           field="f1"
@@ -42,7 +42,7 @@
           label="Edit Column"
           field="f2"
           align="left"
-          width="xl"
+          width="200px"
           :editable="f2Editable">
         </mu-table-edit-column>
         <mu-table-combo-column
@@ -62,11 +62,11 @@
         <mu-table-column
           label="Text Column"
           field="f2"
-          width="xl">
+          width="200px">
         </mu-table-column>
         <mu-table-button-column
           label="Button"
-          width="100"
+          width="100px"
           fixed="right"
           :buttons="getButtons"
           @buttonclick="onButtonClick">
@@ -101,10 +101,10 @@
       },
       methods: {
         onCheckColumnHeaderChange: function () {
-          console.log(arguments)
+          // console.log(arguments)
         },
         onCheckColumnCellChange: function () {
-          console.log(arguments)
+          // console.log(arguments)
         },
         f2Editable: function (record) {
           return true

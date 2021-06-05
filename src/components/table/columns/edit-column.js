@@ -4,6 +4,7 @@ import Editor from '../../editor/editor.vue'
 export default {
   name: 'MusselTableEditorColumn',
   extends: Column,
+  editComponent: Editor,
   props: {
     width: {
       type: String,
@@ -27,6 +28,5 @@ export default {
       this.table.onCellChange(record, this.field, value)
       this.$emit('cellchange', value)
     }
-  },
-  editComponent: Editor
+  }
 }

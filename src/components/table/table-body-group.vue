@@ -1,34 +1,31 @@
 <template>
-  <div v-if="data.length">
+  <div>
     <div
-      v-for="item in data"
-      :key="item.idx"
-      :style="getRowStyle(item.idx)"
-      class="mu-table_row mu-table_body-row"
-      @mouseover="onRowMouseEnter(item.idx)">
+      v-for="(record, idx) in data"
+      :key="idx"
+      :style="{ height: rowHeight }"
+      class="mu-table_row">
       <div
         v-for="column in columns"
         :key="column._uid"
-        :class="getCellClass(item.record, column)"
-        :style="getCellStyle(item.record, column)"
-        :hover="hoverCol === column.uid || hoverRow === item.idx"
+        :class="getCellClass(record, column)"
+        :style="getCellStyle(record, column)"
         class="mu-table_cell"
-        @mousedown.stop="cancelEditing(item.idx, column)"
-        @mouseover="onColMouseEnter(column)"
-        @click="onCellClick(item.record, column)">
+        @mousedown.stop="cancelEditing(idx, column)"
+        @click="onCellClick(record, column)">
         <component
-          :is="getCellComponent(item.idx, column)"
-          v-if="getCellComponent(item.idx, column)"
-          v-bind="getCellComponentParams(item.record, column)"
-          @search="onSearch(arguments[0], item.record, column)"
-          @change="onCellChange(arguments[0], item.record, column)"
-          @buttonclick="onButtonClick(arguments[0], item.record, column)" />
+          :is="getCellComponent(idx, column)"
+          v-if="getCellComponent(idx, column)"
+          v-bind="getCellComponentParams(record, column)"
+          @search="onSearch(arguments[0], record, column)"
+          @change="onCellChange(arguments[0], record, column)"
+          @buttonclick="onButtonClick(arguments[0], record, column)" />
         <div
           v-else
-          :class="getCellContentClass(item.record, column)"
+          :class="getCellContentClass(record, column)"
           @mousedown.stop
-          @click="setEditingCell(item.idx, column)">
-          {{ getCellText(item.record, column) }}
+          @click="setEditingCell(idx, column)">
+          {{ getCellText(record, column) }}
         </div>
       </div>
     </div>
@@ -44,35 +41,20 @@
       columns: Array
     },
     computed: {
-      hoverCol () {
-        return this.table.hoverCol
-      },
-      hoverRow () {
-        return this.table.hoverRow
-      },
-      shouldUpdateHoverCol () {
-        return (['column', 'cross'].indexOf(this.table.hoverMode) !== -1)
-      },
       data () {
-        return this.table.cachedData
-      },
-      hovering () {
-        return this.table.hoverCol === this.column._uid ||
-          this.table.hoverRow === this.recordIdx
+        return this.table.data
       },
       editing () {
         return this.table.editingCell === this
+      },
+      rowHeight () {
+        return this.table.rowHeight + 'px'
       }
     },
     methods: {
       isCurrentEditingCell (rowIdx, column) {
         const current = this.table.editingCell || {}
         return (current.row === rowIdx && current.col === column._uid)
-      },
-      getRowStyle (idx) {
-        return {
-          height: this.table.rowHeight + 'px'
-        }
       },
       getCellClass (record, column) {
         return column.getCellClass(record)
@@ -103,14 +85,6 @@
           ? column.editable(record, column)
           : column.editable
         return editable ? 'mu-table_cell-editable' : undefined
-      },
-      onRowMouseEnter (idx) {
-        if (['row', 'cross'].indexOf(this.table.hoverMode) !== -1) {
-          this.table.hoverRow = idx
-        }
-      },
-      onColMouseEnter (column) {
-        if (this.shouldUpdateHoverCol) this.table.hoverCol = column._uid
       },
       onCellChange (value, record, column) {
         column.onCellChange(value, record)

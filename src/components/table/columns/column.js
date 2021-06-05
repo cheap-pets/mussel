@@ -11,23 +11,23 @@ export default {
     fixed: String,
     label: String,
     width: {
-      type: [Number, String],
+      type: String,
       validator (value) {
         return value === undefined || WidthRegExp.test(value)
       }
     },
     flex: {
       type: String,
-      default: 'auto'
+      default: '1 0 auto'
     },
-    align: {
+    headAlign: {
       type: String,
       default: 'center',
       validator (value) {
         return ['left', 'center', 'right'].indexOf(value) !== -1
       }
     },
-    headerAlign: {
+    cellAlign: {
       type: String,
       default: 'center',
       validator (value) {

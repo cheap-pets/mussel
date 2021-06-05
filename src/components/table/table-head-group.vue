@@ -10,10 +10,10 @@
           {{ column.label }}
         </div>
         <component
-          :is="column.$options.headerComponent"
+          :is="column.$options.headComponent"
           v-else
-          :value="column.field ? table.headerValues[column.field] : null"
-          @change="column.onHeaderChange(arguments[0])" />
+          :value="column.field ? table.headValues[column.field] : null"
+          @change="column.onHeadChange(arguments[0])" />
       </div>
     </div>
   </div>
@@ -30,7 +30,7 @@
         return {
           flex: column.flex,
           width: column.columnWidth,
-          textAlign: column.headerAlign
+          textAlign: column.headAlign
         }
       }
     }

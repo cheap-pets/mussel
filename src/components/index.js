@@ -1,5 +1,3 @@
-
-
 /* LAYOUT */
 import FlexBox from './layout/flex-box.vue'
 import FlexItem from './layout/flex-item.vue'
@@ -91,8 +89,8 @@ import MenuItem from './menu/menu-item.vue'
 import Table from './table/table.vue'
 import TableColumn from './table/columns/column.js'
 import TableEditColumn from './table/columns/edit-column.js'
-import TableCheckColumn from './table/columns/check-column.js'
 import TableComboColumn from './table/columns/combo-column.js'
+import TableSelectColumn from './table/columns/select-column.js'
 import TableSearchColumn from './table/columns/search-column.js'
 import TableButtonColumn from './table/columns/button-column.js'
 
@@ -181,7 +179,7 @@ function installComponents (Vue) {
   Vue.component('mu-table-column', TableColumn)
   Vue.component('mu-table-edit-column', TableEditColumn)
   Vue.component('mu-table-combo-column', TableComboColumn)
-  Vue.component('mu-table-check-column', TableCheckColumn)
+  Vue.component('mu-table-select-column', TableSelectColumn)
   Vue.component('mu-table-search-column', TableSearchColumn)
   Vue.component('mu-table-button-column', TableButtonColumn)
 }
@@ -263,7 +261,7 @@ export {
   TableColumn,
   TableEditColumn,
   TableComboColumn,
-  TableCheckColumn,
+  TableSelectColumn,
   TableSearchColumn,
   TableButtonColumn,
   // Scrollbar

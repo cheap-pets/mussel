@@ -26,12 +26,11 @@
         @sizechange.native="onRightTableResize" />
     </div>
     <div
-      v-if="ready && cachedData"
+      v-if="ready && data.length"
       v-mussel-scrollbar="{ observeMutation: false }"
       class="mu-table_body"
       @scroll="onBodyScroll"
-      @sizechange="onBodyResize"
-      @mouseleave="onBodyMouseLeave">
+      @sizechange="onBodyResize">
       <table-body-group
         v-if="columnGroups.left"
         fixed-area="left"
@@ -55,8 +54,6 @@
 
   import TableHeadGroup from './table-head-group.vue'
   import TableBodyGroup from './table-body-group.vue'
-
-  import updateCache from './update-cache'
 
   import './table.pcss'
 
@@ -101,36 +98,22 @@
         default () {
           return []
         }
-      },
-      selectedField: {
-        type: String,
-        default: '_selected'
       }
     },
     data () {
       return {
         ready: false,
+        scrollLeft: 0,
         leftTableWidth: null,
         rightTableWidth: null,
-        scrollLeft: 0,
-        hoverRow: null,
-        hoverCol: null,
         editingCell: null,
-        cachedData: null,
-        headerValues: {}
+        headValues: {},
+        footValues: {}
       }
     },
     computed: {
       bodyHeight () {
         return this.rowHeight * this.data.length + 'px'
-      },
-      centerHeadStyle () {
-        const { left, right } = this.columnGroups
-
-        return {
-          paddingLeft: left.length ? this.leftTableWidth : undefined,
-          paddingRight: right.length ? this.rightTableWidth : undefined
-        }
       },
       leftHeadStyle () {
         return {
@@ -144,10 +127,12 @@
           right: -this.scrollLeft + 'px'
         }
       },
-      centerBodyStyle () {
+      centerHeadStyle () {
+        const { left, right } = this.columnGroups
+
         return {
-          ...this.centerHeadStyle,
-          height: this.bodyHeight
+          paddingLeft: left.length ? this.leftTableWidth : undefined,
+          paddingRight: right.length ? this.rightTableWidth : undefined
         }
       },
       leftBodyStyle () {
@@ -161,15 +146,19 @@
           ...this.rightHeadStyle,
           height: this.bodyHeight
         }
+      },
+      centerBodyStyle () {
+        return {
+          ...this.centerHeadStyle,
+          height: this.bodyHeight
+        }
       }
     },
     watch: {
       data (v) {
-        this.cachedData = null
         if (this.$el) {
-          const bodyEl = this.$el.querySelector('.mu-table_body')
-          if (bodyEl) bodyEl.scrollTop = 0
-          this.updateCache()
+          const body = this.$el.querySelector('.mu-table_body')
+          if (body) body.scrollTop = 0
         }
       }
     },
@@ -186,7 +175,6 @@
       document.removeEventListener('mousedown', this.cancelEditing)
     },
     methods: {
-      updateCache,
       setColumnGroups: debounce(function () {
         const groups = { left: [], center: [], right: [] }
 
@@ -209,9 +197,6 @@
         this.ready = true
       }, 50, { leading: false, trailing: true }),
       registerColumn (column) {
-        if (column.field === '_selected') {
-          this.multiSelect = true
-        }
         this.ready = false
         this.columns.push(column)
         this.setColumnGroups()
@@ -232,59 +217,39 @@
       },
       onBodyResize: throttle(
         function (e) {
-          if (!e.target || !e.target.clientHeight) return
-          this.visibleRowCount = this.rowHeight
-            ? Math.ceil(e.target.clientHeight / this.rowHeight)
-            : 0
-          this.updateCache()
-        },
-        300,
-        { leading: false, trailing: true }
-      ),
-      afterScroll: throttle(
-        function (scrollTop) {
-          this.scrollDirection = Math.sign(scrollTop - this.scrollTop)
-          if (this.scrollDirection) {
-            this.scrollTop = scrollTop
-            this.updateCache()
-          }
+          // if (!e.target || !e.target.clientHeight) return
+          // todo
         },
         300,
         { leading: false, trailing: true }
       ),
       onBodyScroll (e) {
-        const { scrollTop, scrollLeft } = e.target
+        const { scrollLeft } = e.target
 
         this.scrollLeft = scrollLeft
 
         const headEl = this.$el.querySelector('.mu-table_head')
         if (headEl) headEl.scrollLeft = scrollLeft
-
-        this.afterScroll(scrollTop)
       },
-      onBodyMouseLeave () {
-        this.hoverRow = null
-        this.hoverCol = null
-      },
-      selectAll () {
+      selectAll (field = '_selected') {
         if (this.data) {
           this.data.forEach(rec => {
-            this.$set(rec, this.selectedField, true)
+            this.$set(rec, field, true)
           })
         }
       },
-      unselectAll () {
+      unselectAll (field = '_selected') {
         if (this.data) {
           this.data.forEach(rec => {
-            this.$set(rec, this.selectedField, false)
+            this.$set(rec, field, false)
           })
         }
       },
       onCellChange (record, field, value) {
         this.$emit('cellchange', record, field, value)
       },
-      setHeaderValue (field, value) {
-        this.$set(this.headerValues, field, value)
+      setHeadValue (field, value) {
+        this.$set(this.headValues, field, value)
       },
       cancelEditing (event) {
         this.editingCell = undefined

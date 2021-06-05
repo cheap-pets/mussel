@@ -4,6 +4,7 @@ import Editor from '../../editor/search-box.vue'
 export default {
   name: 'MusselTableSearchColumn',
   extends: Column,
+  editComponent: Editor,
   props: {
     displayField: String,
     getText: null,
@@ -40,6 +41,5 @@ export default {
     onSearch (value, record) {
       this.$emit('search', value, record)
     }
-  },
-  editComponent: Editor
+  }
 }

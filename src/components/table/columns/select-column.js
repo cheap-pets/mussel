@@ -2,8 +2,10 @@ import Column from './column'
 import CheckBox from './checkbox.vue'
 
 export default {
-  name: 'MusselTableCheckColumn',
+  name: 'MusselTableSelectColumn',
   extends: Column,
+  headComponent: CheckBox,
+  cellComponent: CheckBox,
   props: {
     field: {
       type: String,
@@ -22,22 +24,20 @@ export default {
     }
   },
   methods: {
-    onHeaderChange (value) {
-      if (this.field === '_selected') {
-        this.table.setHeaderValue(this.field, value)
-        if (value) this.table.selectAll()
-        else this.table.unselectAll()
-      }
-      this.$emit('headerchange', value)
+    onHeadChange (value) {
+      this.table.setHeadValue(this.field, value)
+
+      if (value) this.table.selectAll(this.field)
+      else this.table.unselectAll(this.field)
+
+      this.$emit('headchange', value)
     },
     onCellChange (value, record) {
       this.table.onCellChange(record, this.field, value)
       if (this.label === undefined) {
-        this.table.setHeaderValue(this.field, false)
+        this.table.setHeadValue(this.field, false)
       }
       this.$emit('cellchange', value)
     }
-  },
-  headerComponent: CheckBox,
-  cellComponent: CheckBox
+  }
 }

@@ -6,6 +6,7 @@ import Editor from '../../editor/combo-box.vue'
 export default {
   name: 'MusselTableComboColumn',
   extends: Column,
+  editComponent: Editor,
   props: {
     displayField: String,
     options: null,
@@ -32,6 +33,5 @@ export default {
         return option?.label || option
       }
     }
-  },
-  editComponent: Editor
+  }
 }
