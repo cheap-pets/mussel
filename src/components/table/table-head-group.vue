@@ -30,7 +30,7 @@
         return {
           flex: column.flex,
           width: column.columnWidth,
-          textAlign: column.headAlign
+          justifyContent: column.headAlign
         }
       }
     }

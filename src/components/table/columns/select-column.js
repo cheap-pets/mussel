@@ -17,10 +17,6 @@ export default {
     },
     flex: {
       flex: 'none'
-    },
-    align: {
-      type: String,
-      default: 'center'
     }
   },
   methods: {

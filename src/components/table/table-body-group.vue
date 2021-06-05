@@ -64,7 +64,7 @@
           ...column.getCellStyle(record),
           flex: column.flex,
           width: column.columnWidth,
-          textAlign: column.align
+          justifyContent: column.cellAlign
         }
       },
       getCellText (record, column) {
