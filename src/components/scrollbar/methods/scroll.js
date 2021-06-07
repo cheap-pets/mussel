@@ -26,6 +26,7 @@ export function scrollTo (x, y, event) {
     this.el.scrollLeft = x
     propagation = propagation && this.el.scrollLeft !== oldX
   }
+
   if (!isNaN(y) && this.options.scrollbarY !== false) {
     const oldY = this.el.scrollTop
     this.el.scrollTop = y

@@ -1,11 +1,9 @@
-// import delay from '@/utils/delay'
-
 function setRailHidden (rail, hidden) {
   if (hidden) rail.setAttribute('hidden', '')
   else rail.removeAttribute('hidden')
 }
 
-function updateThumbX (offset) {
+function updateThumbX () {
   const { el, railX, thumbX } = this
 
   const elStyle = window.getComputedStyle(el)
@@ -14,7 +12,7 @@ function updateThumbX (offset) {
 
   Object.assign(railX.style, {
     left: el.scrollLeft + 4 + 'px',
-    bottom: 4 - el.scrollTop - offset + 'px',
+    bottom: 4 - el.scrollTop + 'px',
     width: el.offsetWidth - 8 - blw - brw + 'px'
   })
 
@@ -26,15 +24,13 @@ function updateThumbX (offset) {
   this.ratioX = (railX.clientWidth - thumbWidth) /
     (el.scrollWidth - el.clientWidth)
 
-  const left = el.scrollLeft * this.ratioX
-
   Object.assign(thumbX.style, {
     width: thumbWidth + 'px',
-    left: left + 'px'
+    left: el.scrollLeft * this.ratioX + 'px'
   })
 }
 
-function updateThumbY (offset) {
+function updateThumbY () {
   const { el, railY, thumbY } = this
 
   const elStyle = window.getComputedStyle(el)
@@ -43,7 +39,7 @@ function updateThumbY (offset) {
 
   Object.assign(railY.style, {
     top: el.scrollTop + 4 + 'px',
-    right: 4 - el.scrollLeft - offset + 'px',
+    right: 4 - el.scrollLeft + 'px',
     height: el.offsetHeight - 8 - btw - bbw + 'px'
   })
 
@@ -55,11 +51,9 @@ function updateThumbY (offset) {
   this.ratioY = (railY.clientHeight - thumbHeight) /
     (el.scrollHeight - el.clientHeight)
 
-  const top = el.scrollTop * this.ratioY
-
   Object.assign(thumbY.style, {
     height: thumbHeight + 'px',
-    top: top + 'px'
+    top: el.scrollTop * this.ratioY + 'px'
   })
 }
 
@@ -71,20 +65,13 @@ function isStateChanged (old, current) {
 }
 
 function getPositionState ({ activated, el, options }) {
-  if (options.stickToParent && !el.parentNode) return
-
   const {
     scrollTop: st, scrollLeft: sl,
     scrollHeight: sh, scrollWidth: sw,
     clientHeight: ch, clientWidth: cw
   } = el
 
-  const {
-    scrollTop: pst, scrollLeft: psl,
-    clientHeight: pch, clientWidth: pcw
-  } = options.stickToParent ? el.parentNode : {}
-
-  return { st, sl, sh, sw, ch, cw, pst, psl, pch, pcw }
+  return { st, sl, sh, sw, ch, cw }
 }
 
 function activateScrollbar () {
@@ -92,28 +79,32 @@ function activateScrollbar () {
 }
 
 function updatePosition () {
-  if (this.options.scrollbarVisible === false) return
+  if (this.options.scrollbarVisible !== false && !this.rafHandler) {
+    this.rafHandler = window.requestAnimationFrame(() => {
+      const state = getPositionState(this)
 
-  const current = getPositionState(this)
+      if (state && isStateChanged(this.state, state)) {
+        activateScrollbar.call(this)
 
-  if (current && isStateChanged(this.state, current)) {
-    activateScrollbar.call(this)
+        const { sh, sw, ch, cw } = state
 
-    const { sh, sw, ch, cw, pst, psl, pch, pcw } = current
+        this.state = state
 
-    this.state = current
+        if (this.railX) {
+          this.hiddenX = sw - cw < 1
+          setRailHidden(this.railX, this.hiddenX)
+          if (!this.hiddenX) updateThumbX.call(this)
+        }
 
-    if (this.railX) {
-      this.hiddenX = sw - cw < 1
-      setRailHidden(this.railX, this.hiddenX)
-      if (!this.hiddenX) updateThumbX.call(this, pch ? pch - (ch - pst) : 0)
-    }
+        if (this.railY) {
+          this.hiddenY = sh - ch < 1
+          setRailHidden(this.railY, this.hiddenY)
+          if (!this.hiddenY) updateThumbY.call(this)
+        }
+      }
 
-    if (this.railY) {
-      this.hiddenY = sh - ch < 1
-      setRailHidden(this.railY, this.hiddenY)
-      if (!this.hiddenY) updateThumbY.call(this, pcw ? pcw - (cw - psl) : 0)
-    }
+      this.rafHandler = undefined
+    })
   }
 }
 

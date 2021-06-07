@@ -10,16 +10,19 @@
     <div v-if="ready" class="mu-table_head">
       <table-head-group
         v-if="columnGroups.left"
+        class="mu-table_head-left"
         fixed-area="left"
         :style="leftHeadStyle"
         :columns="columnGroups.left"
         @sizechange.native="onLeftTableResize" />
       <table-head-group
         v-if="columnGroups.center"
+        class="mu-table_head-center"
         :style="centerHeadStyle"
         :columns="columnGroups.center" />
       <table-head-group
         v-if="columnGroups.right"
+        class="mu-table_head-right"
         fixed-area="right"
         :style="rightHeadStyle"
         :columns="columnGroups.right"
@@ -33,14 +36,17 @@
       @sizechange="onBodyResize">
       <table-body-group
         v-if="columnGroups.left"
+        class="mu-table_body-left"
         fixed-area="left"
         :style="leftBodyStyle"
         :columns="columnGroups.left" />
       <table-body-group
+        class="mu-table_body-center"
         :style="centerBodyStyle"
         :columns="columnGroups.center" />
       <table-body-group
         v-if="columnGroups.right"
+        class="mu-table_body-right"
         fixed-area="right"
         :style="rightBodyStyle"
         :columns="columnGroups.right" />
@@ -56,6 +62,12 @@
   import TableBodyGroup from './table-body-group.vue'
 
   import './table.pcss'
+
+  const ElementClasses = {
+    head: '.mu-table_head',
+    body: '.mu-table_body',
+    bodyCenter: '.mu-table_body-center'
+  }
 
   export default {
     name: 'MusselTable',
@@ -167,6 +179,7 @@
       this.columnGroups = { left: [], center: [], right: [] }
       this.scrollTop = 0
       this.scrollDirection = 1
+      this.cachedElements = {}
     },
     mounted () {
       document.addEventListener('mousedown', this.cancelEditing)
@@ -175,6 +188,9 @@
       document.removeEventListener('mousedown', this.cancelEditing)
     },
     methods: {
+      removeCachedElements () {
+        this.cachedElements = {}
+      },
       setColumnGroups: debounce(function () {
         const groups = { left: [], center: [], right: [] }
 
@@ -196,10 +212,12 @@
         this.columnGroups = groups
         this.ready = true
       }, 50, { leading: false, trailing: true }),
+
       registerColumn (column) {
         this.ready = false
         this.columns.push(column)
         this.setColumnGroups()
+        this.removeCachedElements()
       },
       unregisterColumn (columnId) {
         const idx = this.columns.findIndex(col => col._uid === columnId)
@@ -207,8 +225,17 @@
           this.ready = false
           this.columns.splice(idx)
           this.setColumnGroups()
+          this.removeCachedElements()
         }
       },
+
+      getCachedElements (key) {
+        if (!this.cachedElements[key]) {
+          this.cachedElements[key] = this.$el.querySelector(ElementClasses[key])
+        }
+        return this.cachedElements[key]
+      },
+
       onLeftTableResize (e) {
         this.leftTableWidth = e.target.clientWidth + 'px'
       },
@@ -217,19 +244,34 @@
       },
       onBodyResize: throttle(
         function (e) {
-          // if (!e.target || !e.target.clientHeight) return
-          // todo
+          const bodyCenterEl = this.getCachedElements('bodyCenter')
+
+          if (bodyCenterEl) {
+            const bodyEl = e.target
+            const maxLeft = Math.max(
+              bodyCenterEl.offsetWidth - bodyEl.clientWidth,
+              0
+            )
+
+            if (bodyEl.scrollLeft > maxLeft) bodyEl.scrollLeft = maxLeft
+          }
         },
-        300,
+        50,
         { leading: false, trailing: true }
       ),
+
       onBodyScroll (e) {
-        const { scrollLeft } = e.target
+        const scrollLeft = e.target.scrollLeft
 
-        this.scrollLeft = scrollLeft
+        if (!this.rafHandler && this.scrollLeft !== scrollLeft) {
+          this.rafHandler = window.requestAnimationFrame(() => {
+            const headEl = this.getCachedElements('head')
+            if (headEl) headEl.scrollLeft = scrollLeft
 
-        const headEl = this.$el.querySelector('.mu-table_head')
-        if (headEl) headEl.scrollLeft = scrollLeft
+            this.scrollLeft = scrollLeft
+            this.rafHandler = undefined
+          })
+        }
       },
       selectAll (field = '_selected') {
         if (this.data) {

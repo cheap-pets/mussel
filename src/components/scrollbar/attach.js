@@ -1,7 +1,8 @@
 import isPlainObject from 'lodash.isplainobject'
-import emit from '@/events/emit'
 
+import emit from '@/events/emit'
 import methods from './methods'
+
 import { bindEvents } from './events'
 import { isRailExist } from './utils'
 
@@ -47,9 +48,10 @@ function renderElements (el, options) {
 
 function observeMutation (ctx) {
   if (!window.MutationObserver) return
+  console.log('shit')
 
   const options = isPlainObject(ctx.options.observeMutation)
-    ? ctx.options
+    ? ctx.options.observeMutation
     : { attributes: true, childList: true, subtree: true }
 
   const observer = ctx.mutationObserver ||
@@ -62,10 +64,7 @@ function observeMutation (ctx) {
 }
 
 export default function attach (el, options = {}) {
-  if (
-    options.enable === false ||
-    (options.stickToParent && !el.parentNode)
-  ) return
+  if (options.enable === false) return
 
   const ctx = el.__mussel_scrollbar || { options }
 
@@ -76,6 +75,7 @@ export default function attach (el, options = {}) {
     Object.keys(methods).forEach(key => {
       ctx[key] = methods[key].bind(ctx)
     })
+
     el.__mussel_scrollbar = ctx
   }
 
