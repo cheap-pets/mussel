@@ -30,6 +30,7 @@ export default {
     },
     cellAlign: {
       type: String,
+      default: 'center',
       validator: alignValueValidator
     },
     cellHtml: null,
@@ -45,6 +46,15 @@ export default {
       )
         ? this.width
         : '100px'
+    },
+    headComponent () {
+      return this.$options.headComponent
+    },
+    cellComponent () {
+      return this.$options.cellComponent
+    },
+    editComponent () {
+      return this.$options.editComponent
     }
   },
   created () {
@@ -75,9 +85,16 @@ export default {
         : this.cellStyle
     },
     getCellClass (record) {
-      return isFunction(this.cellClass)
+      const result = ['mu-table_cell']
+
+      if (this.$options.cellClass) result.push(this.$options.cellClass)
+
+      const extraClass = isFunction(this.cellClass)
         ? this.cellClass(record)
         : this.cellClass
+      if (extraClass) result.push(extraClass)
+
+      return result
     },
     onCellClick (record, column) {
       this.$emit('cellclick', record)

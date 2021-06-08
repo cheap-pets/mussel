@@ -1,39 +1,40 @@
 .mu-table {
   display: flex;
+  overflow: hidden;
   flex-direction: column;
   background: $normalBackground;
 
-  &[stripe] > .mu-table_body > .mu-table_row:nth-child(even) {
+  &[stripe] .mu-table_row:nth-child(even) {
     background: $normalLightGreyBackground;
   }
 
-  &[hover-mode=cell] .mu-table_cell:hover,
-  & .mu-table_cell[hover] {
-    color: var(--mu-primary-color);
-    background: $normalTinyBackground;
-  }
-
-  &[gridline='both'],
-  &[gridline='row'] {
+  &[gridline="row"],
+  &[gridline="all"],
+  &[gridline="both"] {
     & .mu-table_row {
       border-bottom-width: 1px;
     }
   }
 
-  & [fixed-area] .mu-table_cell,
-  & .mu-table_cell:last-child {
-    border-right-width: 0;
-  }
-
-  &[gridline='both'],
-  &[gridline='column'] {
-    & .mu-table_cell,
-    & [fixed-area=left] .mu-table_cell {
+  &[gridline="column"],
+  &[gridline="all"],
+  &[gridline="both"] {
+    & .mu-table_cell {
       border-right-width: 1px;
+
+      &:last-child {
+        border-right-width: 0;
+      }
     }
 
-    & [fixed-area=right] .mu-table_cell:first-child {
-      border-left: 1px solid $normalDividerColor;
+    & .mu-table_head-left,
+    & .mu-table_body-left {
+      border-right: 1px solid $normalBorderColor;
+    }
+
+    & .mu-table_head-right,
+    & .mu-table_body-right {
+      border-left: 1px solid $normalBorderColor;
     }
   }
 }
@@ -42,34 +43,13 @@
 .mu-table_body {
   position: relative;
   overflow: hidden;
-
-  & > [fixed-area] {
-    position: absolute;
-    top: 0;
-    background: $normalBackground;
-  }
-
-  & > [fixed-area=left] {
-    left: 0;
-  }
-
-  & > [fixed-area=right] {
-    right: 0;
-  }
-
-  & > .mu-table_head-center,
-  & > .mu-table_body-center {
-    display: inline-block;
-    min-width: 100%;
-
-    & .mu-table_cell {
-      flex: 1 0 auto;
-    }
-  }
 }
 
 .mu-table_head {
   flex: none;
+  font-weight: 600;
+  color: $normalSubtitleTextColor;
+  border-bottom: 2px solid var(--mu-primary-color);
 
   & .mu-table_row {
     height: 40px;
@@ -80,64 +60,87 @@
   flex: 1 1 auto;
 }
 
-.mu-table_head {
-  overflow: hidden;
-  font-weight: 600;
-  background: inherit;
-  color: $normalSubtitleTextColor;
-  border-bottom: 2px solid var(--mu-primary-color);
-
-  & .mu-table_row:last-child {
-    border-bottom-width: 0;
-  }
+.mu-table_head-left,
+.mu-table_head-right,
+.mu-table_body-left,
+.mu-table_body-right {
+  position: absolute;
+  top: 0;
+  background: $normalBackground;
 }
 
 
+.mu-table_head-left,
+.mu-table_body-left {
+  left: 0;
+
+  &[shadow] {
+    box-shadow: 1px 0 1px 3px rgba(0, 0, 0, .3);
+  }
+}
+
+.mu-table_head-right,
+.mu-table_body-right {
+  right: 0;
+
+  &[shadow] {
+    box-shadow: -1px 0 1px 3px rgba(0, 0, 0, .3);
+  }
+}
+
+.mu-table_head-center,
+.mu-table_body-center {
+  display: inline-block;
+  min-width: 100%;
+  background: $normalBackground;
+
+  & .mu-table_cell {
+    flex: 1 0 auto;
+  }
+}
 
 .mu-table_row {
   display: flex;
   align-items: stretch;
-  border-bottom: 0 solid $normalDividerColor;
+  border: 0 solid $normalDividerColor;
 }
 
 .mu-table_cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
+  padding: 4px;
   overflow: hidden;
-  vertical-align: middle;
   white-space: nowrap;
-  text-overflow: ellipsis;
-  border-right: 0 solid $normalDividerColor;
-
-  & > * {
-    width: 100%;
-    overflow: hidden;
-  }
+  border: 0 solid $normalDividerColor;
 }
 
 .mu-table_cell-editable {
   display: flex;
+  align-self: stretch;
   align-items: center;
-  justify-content: center;
-  height: 100%;
-  line-height: 16px;
-  height: 100%;
-  padding: 4px;
+  width: 100%;
+  padding: 0 4px;
   border: 1px dashed $normalBorderColor;
 
   &:hover {
     border-color: var(--mu-primary-minus-color);
   }
+}
 
-  & > span {
-    display: block;
+.mu-table_cell-text {
+  display: block;
+  width: 100%;
+  padding: 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mu-table_cell {
+  & > .mu-editor,
+  & > .mu-input {
     width: 100%;
-    overflow: hidden;
-    text-align: center;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    height: 100%;
   }
 }
 
@@ -168,14 +171,15 @@
   }
 }
 
-.mu-table_cell-buttons {
-  height: 100%;
-  min-height: 30px;
-  overflow: hidden;
-  white-space: nowrap;
+.mu-table_buttons-cell {
+  padding: 0 5px;
+
+  & > div {
+    height: 100%;
+  }
 
   & .mu-button {
-    height: 30px;
+    height: 100%;
 
     &[button-style=link]:hover {
       text-decoration: underline;

@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-table_cell-buttons">
+  <div>
     <mu-button
       v-for="(btn, index) in btns"
       :key="+new Date() + '_' + index"
@@ -25,7 +25,6 @@
         return this.buttons.map(button => {
           const btn = isString(button) ? { caption: button } : button
           return {
-            button,
             caption: btn.caption,
             icon: btn.icon,
             iconClass: btn.iconClass,

@@ -6,6 +6,7 @@ import Buttons from './buttons.vue'
 export default {
   name: 'MusselTableButtonColumn',
   extends: Column,
+  cellClass: 'mu-table_buttons-cell',
   props: {
     buttons: null
   },

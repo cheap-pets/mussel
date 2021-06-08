@@ -1,3 +1,5 @@
+import requestAnimationFrame from '@/utils/request-animation-frame'
+
 function setRailHidden (rail, hidden) {
   if (hidden) rail.setAttribute('hidden', '')
   else rail.removeAttribute('hidden')
@@ -79,8 +81,8 @@ function activateScrollbar () {
 }
 
 function updatePosition () {
-  if (this.options.scrollbarVisible !== false && !this.rafHandler) {
-    this.rafHandler = window.requestAnimationFrame(() => {
+  if (this.options.scrollbarVisible !== false) {
+    requestAnimationFrame(() => {
       const state = getPositionState(this)
 
       if (state && isStateChanged(this.state, state)) {
@@ -102,9 +104,7 @@ function updatePosition () {
           if (!this.hiddenY) updateThumbY.call(this)
         }
       }
-
-      this.rafHandler = undefined
-    })
+    }, 'scrollbar.updatePosition')
   }
 }
 

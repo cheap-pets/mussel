@@ -11,8 +11,8 @@
       <table-head-group
         v-if="columnGroups.left"
         class="mu-table_head-left"
-        fixed-area="left"
         :style="leftHeadStyle"
+        :shadow="leftShadowVisible"
         :columns="columnGroups.left"
         @sizechange.native="onLeftTableResize" />
       <table-head-group
@@ -23,8 +23,8 @@
       <table-head-group
         v-if="columnGroups.right"
         class="mu-table_head-right"
-        fixed-area="right"
         :style="rightHeadStyle"
+        :shadow="rightShadowVisible"
         :columns="columnGroups.right"
         @sizechange.native="onRightTableResize" />
     </div>
@@ -37,8 +37,8 @@
       <table-body-group
         v-if="columnGroups.left"
         class="mu-table_body-left"
-        fixed-area="left"
         :style="leftBodyStyle"
+        :shadow="leftShadowVisible"
         :columns="columnGroups.left" />
       <table-body-group
         class="mu-table_body-center"
@@ -47,8 +47,8 @@
       <table-body-group
         v-if="columnGroups.right"
         class="mu-table_body-right"
-        fixed-area="right"
         :style="rightBodyStyle"
+        :shadow="rightShadowVisible"
         :columns="columnGroups.right" />
     </div>
   </div>
@@ -57,6 +57,8 @@
 <script>
   import debounce from 'lodash.debounce'
   import throttle from 'lodash.throttle'
+
+  import requestAnimationFrame from '@/utils/request-animation-frame'
 
   import TableHeadGroup from './table-head-group.vue'
   import TableBodyGroup from './table-body-group.vue'
@@ -95,7 +97,7 @@
         type: String,
         default: 'row',
         validator (v) {
-          return ['none', 'row', 'column', 'both'].indexOf(v) !== -1
+          return ['none', 'row', 'column', 'all', 'both'].indexOf(v) !== -1
         }
       },
       hoverMode: {
@@ -116,9 +118,12 @@
       return {
         ready: false,
         scrollLeft: 0,
+        keyField: null,
+        editingCell: null,
         leftTableWidth: null,
         rightTableWidth: null,
-        editingCell: null,
+        leftShadowVisible: false,
+        rightShadowVisible: false,
         headValues: {},
         footValues: {}
       }
@@ -129,13 +134,11 @@
       },
       leftHeadStyle () {
         return {
-          width: this.leftTableWidth,
           left: this.scrollLeft + 'px'
         }
       },
       rightHeadStyle () {
         return {
-          width: this.rightTableWidth,
           right: -this.scrollLeft + 'px'
         }
       },
@@ -149,13 +152,15 @@
       },
       leftBodyStyle () {
         return {
-          ...this.leftHeadStyle,
+          left: this.scrollLeft + 'px',
+          width: this.leftTableWidth,
           height: this.bodyHeight
         }
       },
       rightBodyStyle () {
         return {
-          ...this.rightHeadStyle,
+          right: -this.scrollLeft + 'px',
+          width: this.rightTableWidth,
           height: this.bodyHeight
         }
       },
@@ -167,11 +172,9 @@
       }
     },
     watch: {
-      data (v) {
-        if (this.$el) {
-          const body = this.$el.querySelector('.mu-table_body')
-          if (body) body.scrollTop = 0
-        }
+      data: {
+        handler: 'onRecordsChange',
+        immediate: true
       }
     },
     beforeCreate () {
@@ -188,6 +191,22 @@
       document.removeEventListener('mousedown', this.cancelEditing)
     },
     methods: {
+      onRecordsChange: throttle(
+        function (value, oldValue) {
+          if (this.$el && oldValue) {
+            const body = this.getCachedElements('body')
+            if (body) body.scrollTop = 0
+          }
+          if (value?.length) { // && !this.keyField
+            value.forEach((el, idx) => {
+              // if (!el._uid)
+              el._uid = +new Date() + '_' + idx
+            })
+          }
+        },
+        50,
+        { leading: false, trailing: true }
+      ),
       removeCachedElements () {
         this.cachedElements = {}
       },
@@ -237,10 +256,21 @@
       },
 
       onLeftTableResize (e) {
-        this.leftTableWidth = e.target.clientWidth + 'px'
+        this.leftTableWidth = e.target.offsetWidth + 'px'
       },
       onRightTableResize (e) {
-        this.rightTableWidth = e.target.clientWidth + 'px'
+        this.rightTableWidth = e.target.offsetWidth + 'px'
+      },
+
+      setFixedShadow () {
+        const bodyEl = this.getCachedElements('body')
+        const bodyCenterEl = this.getCachedElements('bodyCenter')
+
+        const { scrollLeft, clientWidth } = bodyEl
+
+        this.leftShadowVisible = scrollLeft > 0
+        this.rightShadowVisible =
+          scrollLeft + clientWidth < bodyCenterEl.offsetWidth
       },
       onBodyResize: throttle(
         function (e) {
@@ -254,6 +284,8 @@
             )
 
             if (bodyEl.scrollLeft > maxLeft) bodyEl.scrollLeft = maxLeft
+
+            this.setFixedShadow()
           }
         },
         50,
@@ -263,14 +295,14 @@
       onBodyScroll (e) {
         const scrollLeft = e.target.scrollLeft
 
-        if (!this.rafHandler && this.scrollLeft !== scrollLeft) {
-          this.rafHandler = window.requestAnimationFrame(() => {
+        if (this.scrollLeft !== scrollLeft) {
+          requestAnimationFrame(() => {
             const headEl = this.getCachedElements('head')
             if (headEl) headEl.scrollLeft = scrollLeft
 
+            this.setFixedShadow()
             this.scrollLeft = scrollLeft
-            this.rafHandler = undefined
-          })
+          }, 'table.onBodyScroll')
         }
       },
       selectAll (field = '_selected') {

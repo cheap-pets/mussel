@@ -16,16 +16,15 @@
   <div id="app">
     <h2>Table Example</h2>
     <hr>
-    <div>
+    <mu-v-box style="height: 500px;">
       <h3>Simple</h3>
       <mu-table
         :data="records"
         :row-height="40"
         :selected="selected"
-        _stripe
+        size="1"
+        stripex
         border="all"
-        height="500px"
-        gridline="both"
         hover-mode="none"
         @cellchange="setRecordValue">
         <mu-table-select-column
@@ -38,17 +37,21 @@
           field="f1"
           fixed>
         </mu-table-column>
+        <mu-table-column
+          label="Text Column"
+          field="f2"
+          width="100px">
+        </mu-table-column>
         <mu-table-edit-column
           label="Edit Column"
           field="f2"
-          align="left"
-          width="500px"
+          cell-align="right"
           :editable="f2Editable">
         </mu-table-edit-column>
         <mu-table-combo-column
           label="Combo column"
           field="f3"
-          width="500px"
+          width="100px"
           :cell-style="getF3Style"
           :options="f3Options">
         </mu-table-combo-column>
@@ -73,12 +76,15 @@
           @buttonclick="onButtonClick">
         </mu-table-button-column>
       </mu-table>
-    </div>
+    </mu-v-box>
+    <mu-button @click="add">
+      增加记录
+    </mu-button>
   </div>
 
   <script type="text/javascript">
     var records = []
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 50; i++) {
       records.push({
         f1: i,
         f2: 'some text value some text value some text value some text value',
@@ -139,6 +145,13 @@
             { icon: 'pin' },
             { icon: 'x', type: 'danger', disabled: record.f3 > 2 }
           ]
+        },
+        add: function () {
+          this.records.push({
+            f1: +new Date(),
+            f2: '' + new Date(),
+            f3: +new Date() % 5
+          })
         }
       }
     });

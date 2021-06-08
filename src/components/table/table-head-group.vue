@@ -6,12 +6,15 @@
         :key="column._uid"
         :style="getCellStyle(column)"
         class="mu-table_cell">
-        <div v-if="column.label !== undefined" class="mu-table_cell-label">
+        <span
+          v-if="column.label"
+          class="mu-table_cell-text"
+          :style="{ textAlign: column.cellAlign }">
           {{ column.label }}
-        </div>
+        </span>
         <component
-          :is="column.$options.headComponent"
-          v-else
+          :is="column.headComponent"
+          v-if="column.headComponent"
           :value="column.field ? table.headValues[column.field] : null"
           @change="column.onHeadChange(arguments[0])" />
       </div>

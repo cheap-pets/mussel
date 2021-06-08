@@ -48,7 +48,6 @@ function renderElements (el, options) {
 
 function observeMutation (ctx) {
   if (!window.MutationObserver) return
-  console.log('shit')
 
   const options = isPlainObject(ctx.options.observeMutation)
     ? ctx.options.observeMutation

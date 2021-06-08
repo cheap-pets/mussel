@@ -1,8 +1,8 @@
 <template>
   <div>
     <div
-      v-for="(record, idx) in data"
-      :key="idx"
+      v-for="record in data"
+      :key="record._uid"
       :style="{ height: rowHeight }"
       class="mu-table_row">
       <div
@@ -10,23 +10,32 @@
         :key="column._uid"
         :class="getCellClass(record, column)"
         :style="getCellStyle(record, column)"
-        class="mu-table_cell"
-        @mousedown.stop="cancelEditing(idx, column)"
+        @mousedown.stop="cancelEditing(record._uid, column)"
         @click="onCellClick(record, column)">
         <component
-          :is="getCellComponent(idx, column)"
-          v-if="getCellComponent(idx, column)"
+          :is="getCellComponent(record._uid, column)"
+          v-if="getCellComponent(record._uid, column)"
           v-bind="getCellComponentParams(record, column)"
           @search="onSearch(arguments[0], record, column)"
           @change="onCellChange(arguments[0], record, column)"
           @buttonclick="onButtonClick(arguments[0], record, column)" />
         <div
-          v-else
-          :class="getCellContentClass(record, column)"
-          @mousedown.stop
-          @click="setEditingCell(idx, column)">
-          {{ getCellText(record, column) }}
+          v-else-if="getCellEditable(record, column)"
+          class="mu-table_cell-editable"
+          @click="setEditingCell(record._uid, record, column)"
+          @mousedown.stop>
+          <span
+            class="mu-table_cell-text"
+            :style="{ textAlign: column.cellAlign }">
+            {{ getCellText(record, column) }}
+          </span>
         </div>
+        <span
+          v-else
+          class="mu-table_cell-text"
+          :style="{ textAlign: column.cellAlign }">
+          {{ getCellText(record, column) }}
+        </span>
       </div>
     </div>
   </div>
@@ -44,17 +53,14 @@
       data () {
         return this.table.data
       },
-      editing () {
-        return this.table.editingCell === this
-      },
       rowHeight () {
         return this.table.rowHeight + 'px'
       }
     },
     methods: {
-      isCurrentEditingCell (rowIdx, column) {
+      isCurrentEditingCell (rowId, column) {
         const current = this.table.editingCell || {}
-        return (current.row === rowIdx && current.col === column._uid)
+        return (current.row === rowId && current.col === column._uid)
       },
       getCellClass (record, column) {
         return column.getCellClass(record)
@@ -63,8 +69,7 @@
         return {
           ...column.getCellStyle(record),
           flex: column.flex,
-          width: column.columnWidth,
-          justifyContent: column.cellAlign
+          width: column.columnWidth
         }
       },
       getCellText (record, column) {
@@ -72,32 +77,34 @@
           ? column.getCellText(record)
           : record[column.field]
       },
-      getCellComponent (rowIdx, column) {
-        return (this.isCurrentEditingCell(rowIdx, column))
+      getCellEditable (record, column) {
+        return isFunction(column.editable)
+          ? column.editable(record, column)
+          : column.editable
+      },
+      getCellComponent (rowId, column) {
+        return (this.isCurrentEditingCell(rowId, column))
           ? column.$options.editComponent
           : column.$options.cellComponent
       },
       getCellComponentParams (record, column) {
         return column.getComponentParams?.(record)
       },
-      getCellContentClass (record, column) {
-        const editable = isFunction(column.editable)
-          ? column.editable(record, column)
-          : column.editable
-        return editable ? 'mu-table_cell-editable' : undefined
-      },
       onCellChange (value, record, column) {
         column.onCellChange(value, record)
       },
-      cancelEditing (rowIdx, column) {
-        if (!this.isCurrentEditingCell(rowIdx, column)) {
+      cancelEditing (rowId, column) {
+        if (!this.isCurrentEditingCell(rowId, column)) {
           this.table.editingCell = undefined
         }
       },
-      setEditingCell (rowIdx, column) {
-        if (!this.isCurrentEditingCell(rowIdx, column)) {
+      setEditingCell (rowId, record, column) {
+        if (
+          !this.isCurrentEditingCell(rowId, column) &&
+          this.getCellEditable(record, column)
+        ) {
           this.table.editingCell = column.$options.editComponent
-            ? { row: rowIdx, col: column._uid }
+            ? { row: rowId, col: column._uid }
             : undefined
         }
       },
