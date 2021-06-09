@@ -1,5 +1,5 @@
 export default function hide () {
-  if (!this.scrolling && !this.hover) {
+  if (!this.mouseInAction && !this.hover) {
     this.activated = false
 
     if (this.railX) this.railX.style.opacity = 0

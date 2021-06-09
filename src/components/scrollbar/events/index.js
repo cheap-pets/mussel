@@ -1,3 +1,4 @@
+import onScroll from './scroll'
 import onKeyDown from './key-down'
 import onDomChange from './dom-change'
 import onMouseWheel from './mouse-wheel'
@@ -7,6 +8,7 @@ import onRailMouseDown from './rail-mouse-down'
 import onThumbMouseDown from './thumb-mouse-down'
 
 function bindEvents () {
+  this.onScroll = onScroll.bind(this)
   this.onKeyDown = onKeyDown.bind(this)
   this.onDomChange = onDomChange.bind(this)
   this.onMouseEnter = onMouseEnter.bind(this)
@@ -15,7 +17,7 @@ function bindEvents () {
   this.onRailMouseDown = onRailMouseDown.bind(this)
   this.onThumbMouseDown = onThumbMouseDown.bind(this)
 
-  this.el.addEventListener('scroll', this.updatePosition)
+  this.el.addEventListener('scroll', this.onScroll)
 
   this.el.addEventListener('mouseenter', this.onMouseEnter)
   this.el.addEventListener('mouseleave', this.onMouseLeave)

@@ -13,6 +13,10 @@
   &[gridline="both"] {
     & .mu-table_row {
       border-bottom-width: 1px;
+
+      &:last-child {
+        border-bottom-width: 0;
+      }
     }
   }
 
@@ -46,6 +50,7 @@
 }
 
 .mu-table_head {
+  z-index: 1;
   flex: none;
   font-weight: 600;
   color: $normalSubtitleTextColor;
@@ -55,6 +60,10 @@
     height: 40px;
   }
 }
+
+/* .mu-table > .mu-table_head[shadow] {
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, .25);
+} */
 
 .mu-table_body {
   flex: 1 1 auto;
@@ -74,9 +83,9 @@
 .mu-table_body-left {
   left: 0;
 
-  &[shadow] {
-    box-shadow: 1px 0 1px 3px rgba(0, 0, 0, .3);
-  }
+  /* &[shadow] {
+    box-shadow: 1px 0 3px 1px rgba(0, 0, 0, .25);
+  } */
 }
 
 .mu-table_head-right,
@@ -84,7 +93,7 @@
   right: 0;
 
   &[shadow] {
-    box-shadow: -1px 0 1px 3px rgba(0, 0, 0, .3);
+    box-shadow: -1px 0 3px 1px rgba(0, 0, 0, .25);
   }
 }
 

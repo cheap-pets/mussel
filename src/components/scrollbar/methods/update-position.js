@@ -76,36 +76,30 @@ function getPositionState ({ activated, el, options }) {
   return { st, sl, sh, sw, ch, cw }
 }
 
-function activateScrollbar () {
-  if (this.state && !this.activated) this.show(true)
-}
-
 function updatePosition () {
-  if (this.options.scrollbarVisible !== false) {
-    requestAnimationFrame(() => {
-      const state = getPositionState(this)
+  if (!this.activated) return
 
-      if (state && isStateChanged(this.state, state)) {
-        activateScrollbar.call(this)
+  requestAnimationFrame(() => {
+    const state = getPositionState(this)
 
-        const { sh, sw, ch, cw } = state
+    if (state && isStateChanged(this.state, state)) {
+      const { sh, sw, ch, cw } = state
 
-        this.state = state
+      this.state = state
 
-        if (this.railX) {
-          this.hiddenX = sw - cw < 1
-          setRailHidden(this.railX, this.hiddenX)
-          if (!this.hiddenX) updateThumbX.call(this)
-        }
-
-        if (this.railY) {
-          this.hiddenY = sh - ch < 1
-          setRailHidden(this.railY, this.hiddenY)
-          if (!this.hiddenY) updateThumbY.call(this)
-        }
+      if (this.railY) {
+        this.hiddenY = sh - ch < 1
+        setRailHidden(this.railY, this.hiddenY)
+        if (!this.hiddenY) updateThumbY.call(this)
       }
-    }, 'scrollbar.updatePosition')
-  }
+
+      if (this.railX) {
+        this.hiddenX = sw - cw < 1
+        setRailHidden(this.railX, this.hiddenX)
+        if (!this.hiddenX) updateThumbX.call(this)
+      }
+    }
+  }, 'scrollbar.updatePosition', { cancelPrevious: true })
 }
 
 export default updatePosition

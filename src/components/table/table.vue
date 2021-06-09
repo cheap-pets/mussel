@@ -11,44 +11,46 @@
       <table-head-group
         v-if="columnGroups.left"
         class="mu-table_head-left"
-        :style="leftHeadStyle"
-        :shadow="leftShadowVisible"
+        :shadow="leftShadow"
         :columns="columnGroups.left"
         @sizechange.native="onLeftTableResize" />
       <table-head-group
         v-if="columnGroups.center"
         class="mu-table_head-center"
-        :style="centerHeadStyle"
+        :style="{ paddingLeft: leftWidth, paddingRight: rightWidth }"
         :columns="columnGroups.center" />
       <table-head-group
         v-if="columnGroups.right"
         class="mu-table_head-right"
-        :style="rightHeadStyle"
-        :shadow="rightShadowVisible"
+        :shadow="rightShadow"
         :columns="columnGroups.right"
         @sizechange.native="onRightTableResize" />
     </div>
     <div
       v-if="ready && data.length"
-      v-mussel-scrollbar="{ observeMutation: false }"
+      v-mussel-scrollbar="$options.scrollbarOptions"
       class="mu-table_body"
       @scroll="onBodyScroll"
       @sizechange="onBodyResize">
       <table-body-group
         v-if="columnGroups.left"
         class="mu-table_body-left"
-        :style="leftBodyStyle"
-        :shadow="leftShadowVisible"
+        :style="{ width: leftWidth, height: bodyHeight }"
+        :shadow="leftShadow"
         :columns="columnGroups.left" />
       <table-body-group
         class="mu-table_body-center"
-        :style="centerBodyStyle"
+        :style="{
+          paddingLeft: leftWidth,
+          paddingRight: rightWidth,
+          height: bodyHeight
+        }"
         :columns="columnGroups.center" />
       <table-body-group
         v-if="columnGroups.right"
         class="mu-table_body-right"
-        :style="rightBodyStyle"
-        :shadow="rightShadowVisible"
+        :style="{ width: rightWidth, height: bodyHeight }"
+        :shadow="rightShadow"
         :columns="columnGroups.right" />
     </div>
   </div>
@@ -59,6 +61,7 @@
   import throttle from 'lodash.throttle'
 
   import requestAnimationFrame from '@/utils/request-animation-frame'
+  import { isIE } from '@/utils/browser'
 
   import TableHeadGroup from './table-head-group.vue'
   import TableBodyGroup from './table-body-group.vue'
@@ -67,12 +70,18 @@
 
   const ElementClasses = {
     head: '.mu-table_head',
+    headLeft: '.mu-table_head-left',
+    headRight: '.mu-table_head-right',
+    headCenter: '.mu-table_head-center',
     body: '.mu-table_body',
+    bodyLeft: '.mu-table_body-left',
+    bodyRight: '.mu-table_body-right',
     bodyCenter: '.mu-table_body-center'
   }
 
   export default {
     name: 'MusselTable',
+    scrollbarOptions: { observeMutation: false, wheelSpeed: isIE ? 0.5 : 1 },
     components: {
       TableHeadGroup,
       TableBodyGroup
@@ -83,6 +92,7 @@
       }
     },
     props: {
+      data: Array,
       width: String,
       height: String,
       virtualRender: Boolean,
@@ -106,12 +116,6 @@
         validator (v) {
           return ['none', 'row', 'column', 'cross', 'cell'].indexOf(v) !== -1
         }
-      },
-      data: {
-        type: Array,
-        default () {
-          return []
-        }
       }
     },
     data () {
@@ -120,10 +124,11 @@
         scrollLeft: 0,
         keyField: null,
         editingCell: null,
-        leftTableWidth: null,
-        rightTableWidth: null,
-        leftShadowVisible: false,
-        rightShadowVisible: false,
+        leftWidth: null,
+        rightWidth: null,
+        // headShadow: false,
+        leftShadow: false,
+        rightShadow: false,
         headValues: {},
         footValues: {}
       }
@@ -131,44 +136,6 @@
     computed: {
       bodyHeight () {
         return this.rowHeight * this.data.length + 'px'
-      },
-      leftHeadStyle () {
-        return {
-          left: this.scrollLeft + 'px'
-        }
-      },
-      rightHeadStyle () {
-        return {
-          right: -this.scrollLeft + 'px'
-        }
-      },
-      centerHeadStyle () {
-        const { left, right } = this.columnGroups
-
-        return {
-          paddingLeft: left.length ? this.leftTableWidth : undefined,
-          paddingRight: right.length ? this.rightTableWidth : undefined
-        }
-      },
-      leftBodyStyle () {
-        return {
-          left: this.scrollLeft + 'px',
-          width: this.leftTableWidth,
-          height: this.bodyHeight
-        }
-      },
-      rightBodyStyle () {
-        return {
-          right: -this.scrollLeft + 'px',
-          width: this.rightTableWidth,
-          height: this.bodyHeight
-        }
-      },
-      centerBodyStyle () {
-        return {
-          ...this.centerHeadStyle,
-          height: this.bodyHeight
-        }
       }
     },
     watch: {
@@ -179,9 +146,7 @@
     },
     beforeCreate () {
       this.columns = []
-      this.columnGroups = { left: [], center: [], right: [] }
-      this.scrollTop = 0
-      this.scrollDirection = 1
+      this.columnGroups = { center: [] }
       this.cachedElements = {}
     },
     mounted () {
@@ -189,20 +154,21 @@
     },
     beforeDestroy () {
       document.removeEventListener('mousedown', this.cancelEditing)
+
+      delete this.cachedElements
+      delete this.columnGroups
+      delete this.columns
     },
     methods: {
       onRecordsChange: throttle(
         function (value, oldValue) {
-          if (this.$el && oldValue) {
+          if (oldValue !== value) {
             const body = this.getCachedElements('body')
             if (body) body.scrollTop = 0
           }
-          if (value?.length) { // && !this.keyField
-            value.forEach((el, idx) => {
-              // if (!el._uid)
-              el._uid = +new Date() + '_' + idx
-            })
-          }
+          value?.forEach((el, idx) => {
+            if (!el._uid) el._uid = +new Date() + '_' + idx
+          })
         },
         50,
         { leading: false, trailing: true }
@@ -249,61 +215,76 @@
       },
 
       getCachedElements (key) {
-        if (!this.cachedElements[key]) {
+        if (!this.cachedElements[key] && this.$el) {
           this.cachedElements[key] = this.$el.querySelector(ElementClasses[key])
         }
         return this.cachedElements[key]
       },
 
       onLeftTableResize (e) {
-        this.leftTableWidth = e.target.offsetWidth + 'px'
+        this.leftWidth = e.target.offsetWidth + 'px'
       },
       onRightTableResize (e) {
-        this.rightTableWidth = e.target.offsetWidth + 'px'
+        this.rightWidth = e.target.offsetWidth + 'px'
       },
 
-      setFixedShadow () {
-        const bodyEl = this.getCachedElements('body')
-        const bodyCenterEl = this.getCachedElements('bodyCenter')
+      setEdgeShadow () {
+        const bodyCenter = this.getCachedElements('bodyCenter')
 
-        const { scrollLeft, clientWidth } = bodyEl
+        if (bodyCenter) {
+          const { scrollLeft, clientWidth } = this.getCachedElements('body')
 
-        this.leftShadowVisible = scrollLeft > 0
-        this.rightShadowVisible =
-          scrollLeft + clientWidth < bodyCenterEl.offsetWidth
-      },
-      onBodyResize: throttle(
-        function (e) {
-          const bodyCenterEl = this.getCachedElements('bodyCenter')
-
-          if (bodyCenterEl) {
-            const bodyEl = e.target
-            const maxLeft = Math.max(
-              bodyCenterEl.offsetWidth - bodyEl.clientWidth,
-              0
-            )
-
-            if (bodyEl.scrollLeft > maxLeft) bodyEl.scrollLeft = maxLeft
-
-            this.setFixedShadow()
-          }
-        },
-        50,
-        { leading: false, trailing: true }
-      ),
-
-      onBodyScroll (e) {
-        const scrollLeft = e.target.scrollLeft
-
-        if (this.scrollLeft !== scrollLeft) {
-          requestAnimationFrame(() => {
-            const headEl = this.getCachedElements('head')
-            if (headEl) headEl.scrollLeft = scrollLeft
-
-            this.setFixedShadow()
-            this.scrollLeft = scrollLeft
-          }, 'table.onBodyScroll')
+          this.leftShadow = scrollLeft > 0
+          this.rightShadow = scrollLeft + clientWidth < bodyCenter.offsetWidth
         }
+      },
+      onBodyResize (e) {
+        const body = e.target
+
+        requestAnimationFrame(() => {
+          // this.headShadow = body.scrollTop > 0
+
+          const bodyCenter = this.getCachedElements('bodyCenter')
+
+          if (bodyCenter) {
+            const max = Math.max(bodyCenter.offsetWidth - body.clientWidth, 0)
+
+            if (body.scrollLeft > max) body.scrollLeft = max
+            else this.setEdgeShadow()
+          }
+        }, 'table.onBodyResize', { cancelPrevious: true })
+      },
+      onBodyScroll (e) {
+        requestAnimationFrame(() => {
+          const { scrollLeft } = e.target
+
+          // this.headShadow = scrollTop > 0
+
+          if (this.scrollLeft !== scrollLeft) {
+            this.scrollLeft = scrollLeft
+
+            const head = this.getCachedElements('head')
+            if (head) head.scrollLeft = scrollLeft
+
+            if (this.columnGroups.left) {
+              const headLeft = this.getCachedElements('headLeft')
+              const bodyLeft = this.getCachedElements('bodyLeft')
+
+              if (headLeft) headLeft.style.left = scrollLeft + 'px'
+              if (bodyLeft) bodyLeft.style.left = scrollLeft + 'px'
+            }
+
+            if (this.columnGroups.right) {
+              const headRight = this.getCachedElements('headRight')
+              const bodyRight = this.getCachedElements('bodyRight')
+
+              if (headRight) headRight.style.right = -scrollLeft + 'px'
+              if (bodyRight) bodyRight.style.right = -scrollLeft + 'px'
+            }
+
+            this.setEdgeShadow()
+          }
+        }, 'table.onBodyScroll', { cancelPrevious: true })
       },
       selectAll (field = '_selected') {
         if (this.data) {

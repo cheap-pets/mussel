@@ -8,17 +8,17 @@ function getDeltaByKey (keyCode) {
   let deltaX, deltaY
 
   switch (keyCode) {
-    case 'ArrowUp':
-      deltaY = -100
-      break
-    case 'ArrowLeft':
+    case 37: // 'ArrowLeft'
       deltaX = -100
       break
-    case 'ArrowDown':
-      deltaY = 100
+    case 38: // 'ArrowUp'
+      deltaY = -100
       break
-    case 'ArrowRight':
+    case 39: // 'ArrowRight'
       deltaX = 100
+      break
+    case 40: // 'ArrowDown'
+      deltaY = 100
       break
   }
 
@@ -31,17 +31,17 @@ function getDeltaByKey (keyCode) {
 export default function onKeyDown (event) {
   if (isEditableElement(event.target)) return
 
-  const { deltaX, deltaY } = getDeltaByKey.call(this, event.code)
+  const { deltaX, deltaY } = getDeltaByKey.call(this, event.keyCode)
 
   if (!this.hiddenY) {
-    if (deltaY) this.scrollBy(null, deltaY, event)
-    else if (event.code === 'Home') this.scrollTo(null, 0, event)
-    else if (event.code === 'End') {
-      this.scrollTo(null, this.el.scrollHeight, event)
+    if (deltaY) {
+      this.scrollBy(null, deltaY, event)
+    } else if (event.keyCode === 35) { // 'End'
+      this.scrollTo(null, this.el.scrollHeight - this.el.clientHeight, event)
+    } else if (event.keyCode === 36) { // 'Home'
+      this.scrollTo(null, 0, event)
     }
   }
 
-  if (!this.hiddenX) {
-    if (deltaX) this.scrollBy(deltaX, null, event)
-  }
+  if (!this.hiddenX && deltaX) this.scrollBy(deltaX, null, event)
 }

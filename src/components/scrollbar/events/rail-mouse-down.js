@@ -42,7 +42,7 @@ export default function onRailMouseDown (event) {
   }
 
   const onMouseUp = e => {
-    this.scrolling = false
+    this.mouseInAction = false
     clearInterval(timer)
     window.removeEventListener('mousemove', onMouseMove)
     window.removeEventListener('mouseup', onMouseUp)
@@ -51,6 +51,6 @@ export default function onRailMouseDown (event) {
   window.addEventListener('mousemove', onMouseMove)
   window.addEventListener('mouseup', onMouseUp)
 
-  this.scrolling = true
+  this.mouseInAction = true
   suspend = !doScroll()
 }

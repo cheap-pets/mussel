@@ -1,4 +1,6 @@
 export default function show (autoHide) {
+  if (this.options.scrollbarVisible === false) return
+
   this.activated = true
 
   if (this.options.scrollbarVisible !== false) {
@@ -8,7 +10,5 @@ export default function show (autoHide) {
   }
 
   if (this.hideTimer) clearTimeout(this.hideTimer)
-  if (autoHide) {
-    this.hideTimer = setTimeout(this.hide, 1000)
-  }
+  if (autoHide && !this.hover) this.hideTimer = setTimeout(this.hide, 1000)
 }

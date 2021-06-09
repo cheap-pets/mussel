@@ -35,7 +35,7 @@ export default function onThumbMouseDown (event) {
   )
 
   const onMouseUp = e => {
-    this.scrolling = false
+    this.mouseInAction = false
     window.removeEventListener('mousemove', throttleMove)
     window.removeEventListener('mouseup', onMouseUp)
   }
@@ -44,5 +44,5 @@ export default function onThumbMouseDown (event) {
   window.addEventListener('mouseup', onMouseUp)
 
   event.stopPropagation()
-  this.scrolling = true
+  this.mouseInAction = true
 }
