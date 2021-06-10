@@ -26,7 +26,7 @@
         stripe
         border
         gridline="all"
-        virtual-render
+        :virtual-render="false"
         hover-mode="none"
         @cellchange="setRecordValue">
         <mu-table-select-column
@@ -83,7 +83,7 @@
 
   <script type="text/javascript">
     var records = []
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < 150; i++) {
       records.push({
         f1: i,
         f2: 'some text value some text value some text value some text value',

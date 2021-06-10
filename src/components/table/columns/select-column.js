@@ -16,7 +16,8 @@ export default {
       default: '40px'
     },
     flex: {
-      flex: 'none'
+      type: String,
+      default: 'none'
     }
   },
   methods: {

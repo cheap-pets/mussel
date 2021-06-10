@@ -43,17 +43,20 @@
 .mu-table_body {
   position: relative;
   overflow: hidden;
+  background: $normalBackground;
 }
 
 .mu-table_head {
   z-index: 1;
   flex: none;
   font-weight: 600;
+  font-size: 0;
   color: $normalSubtitleTextColor;
   border-bottom: 2px solid var(--mu-primary-color);
 
   & .mu-table_row {
     height: 40px;
+    font-size: 1rem;
 
     &:last-child {
       border-bottom-width: 0;
