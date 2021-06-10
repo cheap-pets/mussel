@@ -27,7 +27,7 @@
         @sizechange.native="onRightTableResize" />
     </div>
     <div
-      v-if="ready && data.length"
+      v-if="ready"
       v-mussel-scrollbar="$options.scrollbarOptions"
       class="mu-table_body"
       @scroll="onBodyScroll"
@@ -35,7 +35,7 @@
       <table-body-group
         v-if="columnGroups.left"
         class="mu-table_body-left"
-        :style="{ width: leftWidth, height: bodyHeight }"
+        :style="{ width: leftWidth, height: bodyHeight, paddingTop }"
         :shadow="leftShadow"
         :columns="columnGroups.left" />
       <table-body-group
@@ -43,13 +43,14 @@
         :style="{
           paddingLeft: leftWidth,
           paddingRight: rightWidth,
-          height: bodyHeight
+          height: bodyHeight,
+          paddingTop
         }"
         :columns="columnGroups.center" />
       <table-body-group
         v-if="columnGroups.right"
         class="mu-table_body-right"
-        :style="{ width: rightWidth, height: bodyHeight }"
+        :style="{ width: rightWidth, height: bodyHeight, paddingTop }"
         :shadow="rightShadow"
         :columns="columnGroups.right" />
     </div>
@@ -67,6 +68,14 @@
   import TableBodyGroup from './table-body-group.vue'
 
   import './table.pcss'
+
+  let recId = 0
+
+  function prepareRecords (records) {
+    records?.forEach(rec => {
+      if (rec._uid === undefined) rec._uid = recId++
+    })
+  }
 
   const ElementClasses = {
     head: '.mu-table_head',
@@ -121,14 +130,14 @@
     data () {
       return {
         ready: false,
-        scrollLeft: 0,
         keyField: null,
-        editingCell: null,
         leftWidth: null,
         rightWidth: null,
-        // headShadow: false,
         leftShadow: false,
         rightShadow: false,
+        editingCell: null,
+        renderableData: [],
+        paddingTop: 0,
         headValues: {},
         footValues: {}
       }
@@ -139,15 +148,16 @@
       }
     },
     watch: {
-      data: {
-        handler: 'onRecordsChange',
-        immediate: true
+      data (newValue, oldValue) {
+        this.onDataChange(newValue, oldValue)
       }
     },
     beforeCreate () {
       this.columns = []
       this.columnGroups = { center: [] }
       this.cachedElements = {}
+
+      prepareRecords(this.$options.propsData.data)
     },
     mounted () {
       document.addEventListener('mousedown', this.cancelEditing)
@@ -155,20 +165,36 @@
     beforeDestroy () {
       document.removeEventListener('mousedown', this.cancelEditing)
 
-      delete this.cachedElements
-      delete this.columnGroups
       delete this.columns
+      delete this.columnGroups
+      delete this.cachedElements
     },
     methods: {
-      onRecordsChange: throttle(
-        function (value, oldValue) {
-          if (oldValue !== value) {
+      setRenderableData () {
+        const body = this.getCachedElements('body')
+        const data = this.data || []
+
+        if (body && this.virtualRender && data.length > 100) {
+          const i = parseInt(body.scrollTop / this.rowHeight)
+          const max = parseInt(body.clientHeight / this.rowHeight) + 1
+          const start = Math.max(i - 2 - (i & 1), 0)
+          const end = start + max - (max & 1) + 4
+
+          this.paddingTop = start * this.rowHeight + 'px'
+          this.renderableData = data.slice(start, end)
+        } else if (this.renderableData !== data) {
+          this.renderableData = data
+        }
+      },
+      onDataChange: throttle(
+        function (newValue, oldValue) {
+          if (oldValue !== newValue) {
             const body = this.getCachedElements('body')
             if (body) body.scrollTop = 0
           }
-          value?.forEach((el, idx) => {
-            if (!el._uid) el._uid = +new Date() + '_' + idx
-          })
+
+          prepareRecords(this.data)
+          this.setRenderableData()
         },
         50,
         { leading: false, trailing: true }
@@ -197,7 +223,6 @@
         this.columnGroups = groups
         this.ready = true
       }, 50, { leading: false, trailing: true }),
-
       registerColumn (column) {
         this.ready = false
         this.columns.push(column)
@@ -213,21 +238,18 @@
           this.removeCachedElements()
         }
       },
-
       getCachedElements (key) {
         if (!this.cachedElements[key] && this.$el) {
           this.cachedElements[key] = this.$el.querySelector(ElementClasses[key])
         }
         return this.cachedElements[key]
       },
-
       onLeftTableResize (e) {
         this.leftWidth = e.target.offsetWidth + 'px'
       },
       onRightTableResize (e) {
         this.rightWidth = e.target.offsetWidth + 'px'
       },
-
       setEdgeShadow () {
         const bodyCenter = this.getCachedElements('bodyCenter')
 
@@ -242,7 +264,7 @@
         const body = e.target
 
         requestAnimationFrame(() => {
-          // this.headShadow = body.scrollTop > 0
+          this.setRenderableData()
 
           const bodyCenter = this.getCachedElements('bodyCenter')
 
@@ -256,9 +278,7 @@
       },
       onBodyScroll (e) {
         requestAnimationFrame(() => {
-          const { scrollLeft } = e.target
-
-          // this.headShadow = scrollTop > 0
+          const { scrollLeft, scrollTop } = e.target
 
           if (this.scrollLeft !== scrollLeft) {
             this.scrollLeft = scrollLeft
@@ -284,21 +304,12 @@
 
             this.setEdgeShadow()
           }
+
+          if (this.scrollTop !== scrollTop) {
+            this.scrollTop = scrollTop
+            this.setRenderableData()
+          }
         }, 'table.onBodyScroll', { cancelPrevious: true })
-      },
-      selectAll (field = '_selected') {
-        if (this.data) {
-          this.data.forEach(rec => {
-            this.$set(rec, field, true)
-          })
-        }
-      },
-      unselectAll (field = '_selected') {
-        if (this.data) {
-          this.data.forEach(rec => {
-            this.$set(rec, field, false)
-          })
-        }
       },
       onCellChange (record, field, value) {
         this.$emit('cellchange', record, field, value)
@@ -308,6 +319,12 @@
       },
       cancelEditing (event) {
         this.editingCell = undefined
+      },
+      selectAll (field = '_selected') {
+        this.data?.forEach(rec => this.$set(rec, field, true))
+      },
+      unselectAll (field = '_selected') {
+        this.data?.forEach(rec => this.$set(rec, field, false))
       }
     }
   }

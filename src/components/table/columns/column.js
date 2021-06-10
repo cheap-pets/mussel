@@ -28,6 +28,7 @@ export default {
       type: String,
       validator: alignValueValidator
     },
+    headComponentHidden: Boolean,
     cellAlign: {
       type: String,
       default: 'center',
@@ -48,7 +49,7 @@ export default {
         : '100px'
     },
     headComponent () {
-      return this.$options.headComponent
+      return this.headComponentHidden ? null : this.$options.headComponent
     },
     cellComponent () {
       return this.$options.cellComponent

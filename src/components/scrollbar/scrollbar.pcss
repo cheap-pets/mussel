@@ -16,6 +16,10 @@
       visibility: visible
     }
   }
+
+  &[scrolling] > *:not(.mu-scrollbar_rail) {
+    pointer-events: none;
+  }
 }
 
 .mu-scrollbar_rail {

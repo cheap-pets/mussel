@@ -30,9 +30,10 @@ export default {
     },
     onCellChange (value, record) {
       this.table.onCellChange(record, this.field, value)
-      if (this.label === undefined) {
-        this.table.setHeadValue(this.field, false)
-      }
+
+      if (this.field === '_selected') record._selected = value
+      if (this.headComponent) this.table.setHeadValue(this.field, false)
+
       this.$emit('cellchange', value)
     }
   }

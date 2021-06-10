@@ -24,12 +24,13 @@ function scrollIf (target, clientX, clientY) {
 }
 
 export default function onRailMouseDown (event) {
-  const { target } = event
+  this.mouseInAction = true
+  this.setScrolling()
 
   let { clientX, clientY } = event
   let suspend = true
 
-  const doScroll = () => scrollIf.call(this, target, clientX, clientY)
+  const doScroll = () => scrollIf.call(this, event.target, clientX, clientY)
 
   const timer = setInterval(() => {
     suspend = suspend || !doScroll()
@@ -51,6 +52,5 @@ export default function onRailMouseDown (event) {
   window.addEventListener('mousemove', onMouseMove)
   window.addEventListener('mouseup', onMouseUp)
 
-  this.mouseInAction = true
   suspend = !doScroll()
 }

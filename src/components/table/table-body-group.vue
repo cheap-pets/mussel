@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="data.length">
     <div
       v-for="record in data"
       :key="record._uid"
@@ -51,7 +51,7 @@
     },
     computed: {
       data () {
-        return this.table.data
+        return this.table.renderableData
       },
       rowHeight () {
         return this.table.rowHeight + 'px'

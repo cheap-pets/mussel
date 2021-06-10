@@ -9,6 +9,9 @@ function outOfRect (point, rail, isYAxis) {
 }
 
 export default function onThumbMouseDown (event) {
+  this.mouseInAction = true
+  this.setScrolling()
+
   const rail = event.target.parentNode
   const isYAxis = rail.getAttribute('axis') === 'y'
 
@@ -44,5 +47,4 @@ export default function onThumbMouseDown (event) {
   window.addEventListener('mouseup', onMouseUp)
 
   event.stopPropagation()
-  this.mouseInAction = true
 }

@@ -4,13 +4,18 @@ import emit from '@/events/emit'
 import methods from './methods'
 
 import { bindEvents } from './events'
-import { isRailExist } from './utils'
 
 function railTemplate (axis) {
   return /* html */`
   <div class="mu-scrollbar_rail" axis="${axis[0]}">
     <div class="mu-scrollbar_thumb"></div>
   </div>`
+}
+
+function isRailExist (el) {
+  return !!Array
+    .from(el.childNodes)
+    .find(child => child.classList?.contains('mu-scrollbar_rail'))
 }
 
 function renderElements (el, options) {
@@ -51,14 +56,12 @@ function observeMutation (ctx) {
 
   const options = isPlainObject(ctx.options.observeMutation)
     ? ctx.options.observeMutation
-    : { attributes: true, childList: true, subtree: true }
+    : { attributes: true, childList: true, subtree: false }
 
   const observer = ctx.mutationObserver ||
-    new window.MutationObserver(mutations => {
-      emit(ctx.el, 'domchange')
-    })
-  observer.observe(ctx.el, options)
+    new window.MutationObserver(mutations => emit(ctx.el, 'domchange'))
 
+  observer.observe(ctx.el, options)
   ctx.mutationObserver = observer
 }
 
@@ -69,7 +72,7 @@ export default function attach (el, options = {}) {
 
   if (!el.__mussel_scrollbar) {
     options.scrollbarVisible = options.scrollbarVisible ?? 'enter'
-    if (isNaN(options.wheelSpeed)) options.wheelSpeed = 1
+    options.wheelSpeed = options.wheelSpeed || 1
 
     Object.keys(methods).forEach(key => {
       ctx[key] = methods[key].bind(ctx)
@@ -80,7 +83,10 @@ export default function attach (el, options = {}) {
 
   if (!isRailExist(el)) {
     Object.assign(ctx, renderElements.call(ctx, el, ctx.options))
-    if (ctx.options.observeMutation !== false) observeMutation(ctx)
+
+    if (options.observeMutation !== false && !ctx.mutationObserver) {
+      observeMutation(ctx)
+    }
 
     bindEvents.call(ctx)
   }

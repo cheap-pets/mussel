@@ -23,19 +23,19 @@
         :row-height="40"
         :selected="selected"
         size="1"
-        stripex
-        border="all"
+        stripe
+        border
+        gridline="all"
+        virtual-render
         hover-mode="none"
         @cellchange="setRecordValue">
         <mu-table-select-column
-          fixed
           @headerChange="onCheckColumnHeaderChange"
           @CellChange="onCheckColumnCellChange">
         </mu-table-select-column>
         <mu-table-column
           label="ID"
-          field="f1"
-          fixed>
+          field="f1">
         </mu-table-column>
         <mu-table-column
           label="Text Column"
@@ -71,13 +71,12 @@
         <mu-table-button-column
           label="Button"
           width="100px"
-          fixed="right"
           :buttons="getButtons"
           @buttonclick="onButtonClick">
         </mu-table-button-column>
       </mu-table>
     </mu-v-box>
-    <mu-button @click="add">
+    <mu-button margin="top" @click="add">
       增加记录
     </mu-button>
   </div>

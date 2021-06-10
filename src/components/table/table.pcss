@@ -13,10 +13,6 @@
   &[gridline="both"] {
     & .mu-table_row {
       border-bottom-width: 1px;
-
-      &:last-child {
-        border-bottom-width: 0;
-      }
     }
   }
 
@@ -58,6 +54,10 @@
 
   & .mu-table_row {
     height: 40px;
+
+    &:last-child {
+      border-bottom-width: 0;
+    }
   }
 }
 
