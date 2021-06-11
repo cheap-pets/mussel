@@ -1,23 +1,44 @@
 import { isIE } from './browser'
 
-const handles = {}
+const rafs = {}
+const lastCall = {}
 
 function requestAnimationFrame (callback, id, options = {}) {
-  const { cancelPrevious } = options
-  const previous = handles[id]
+  if (id) {
+    const { cancelPrevious } = options
+    const previous = rafs[id]
 
-  if (id && previous) {
-    if (cancelPrevious) window.cancelAnimationFrame(previous)
-    else return
+    if (isIE) {
+      if (previous) {
+        lastCall[id] = callback
+        return
+      }
+
+      rafs[id] = window.requestAnimationFrame(() => {
+        delete rafs[id]
+
+        const last = lastCall[id]
+        if (last) {
+          delete lastCall[id]
+          last()
+        }
+      })
+
+      callback()
+    } else {
+      if (previous) {
+        if (cancelPrevious) window.cancelAnimationFrame(previous)
+        else return
+      }
+
+      rafs[id] = window.requestAnimationFrame(() => {
+        delete rafs[id]
+        callback()
+      })
+    }
+  } else {
+    window.requestAnimationFrame(callback)
   }
-
-  const handle = window.requestAnimationFrame(() => {
-    delete handles[id]
-    if (!isIE) callback()
-  })
-
-  if (id) handles[id] = handle
-  if (isIE) callback()
 }
 
 export default requestAnimationFrame
