@@ -13,7 +13,7 @@
 
   &[activated] {
     & > .mu-scrollbar_rail {
-      visibility: visible
+      visibility: visible;
     }
   }
 
@@ -24,9 +24,17 @@
 
 .mu-scrollbar_rail {
   z-index: 10;
+  right: 2px;
+  bottom: 2px;
   visibility: hidden;
-  background: rgba(0, 0, 0, .01);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .1);
   transition: opacity .5s ease-in-out;
+  will-change: transform;
+
+  &[hidden] {
+    visibility: hidden !important;
+  }
 
   & > .mu-scrollbar_thumb {
     background: rgba(0, 0, 0, .25);
@@ -35,7 +43,8 @@
   }
 
   &[axis=x] {
-    height: 6px;
+    height: 8px;
+    left: 2px;
 
     & > .mu-scrollbar_thumb {
       height: 100%;
@@ -43,7 +52,13 @@
   }
 
   &[axis=y] {
-    width: 6px;
+    width: 8px;
+    top: 2px;
+
+    
+    &:not([hidden]) + [axis=x] {
+      right: 12px;
+    }
 
     & > .mu-scrollbar_thumb {
       width: 100%;

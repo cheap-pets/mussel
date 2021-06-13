@@ -8,19 +8,20 @@ function setRailHidden (rail, hidden) {
 function updateThumbX () {
   const { el, railX, thumbX } = this
 
-  const elStyle = window.getComputedStyle(el)
-  const blw = parseInt(elStyle.borderLeftWidth)
-  const brw = parseInt(elStyle.borderRightWidth)
+  // const elStyle = window.getComputedStyle(el)
+  // const blw = parseInt(elStyle.borderLeftWidth)
+  // const brw = parseInt(elStyle.borderRightWidth)
 
   Object.assign(railX.style, {
-    left: el.scrollLeft + 4 + 'px',
-    bottom: 4 - el.scrollTop + 'px',
-    width: el.offsetWidth - 8 - blw - brw + 'px'
+    // left: el.scrollLeft + 4 + 'px',
+    // bottom: 4 - el.scrollTop + 'px',
+    // width: el.offsetWidth - 8 - blw - brw + 'px',
+    transform: `translate3d(${el.scrollLeft}px, ${el.scrollTop}px, 0)`
   })
 
   const thumbWidth = Math.max(
     parseInt(railX.clientWidth ** 2 / el.scrollWidth),
-    20
+    40
   )
 
   this.ratioX = (railX.clientWidth - thumbWidth) /
@@ -35,19 +36,20 @@ function updateThumbX () {
 function updateThumbY () {
   const { el, railY, thumbY } = this
 
-  const elStyle = window.getComputedStyle(el)
-  const btw = parseInt(elStyle.borderTopWidth)
-  const bbw = parseInt(elStyle.borderBottomWidth)
+  // const elStyle = window.getComputedStyle(el)
+  // const btw = parseInt(elStyle.borderTopWidth)
+  // const bbw = parseInt(elStyle.borderBottomWidth)
 
   Object.assign(railY.style, {
-    top: el.scrollTop + 4 + 'px',
-    right: 4 - el.scrollLeft + 'px',
-    height: el.offsetHeight - 8 - btw - bbw + 'px'
+    // top: el.scrollTop + 4 + 'px',
+    // right: 4 - el.scrollLeft + 'px',
+    // height: el.offsetHeight - 8 - btw - bbw + 'px',
+    transform: `translate3d(${el.scrollLeft}px, ${el.scrollTop}px, 0)`
   })
 
   const thumbHeight = Math.max(
     parseInt(railY.clientHeight ** 2 / el.scrollHeight),
-    20
+    40
   )
 
   this.ratioY = (railY.clientHeight - thumbHeight) /

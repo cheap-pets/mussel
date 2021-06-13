@@ -8,6 +8,6 @@ export default function hide () {
     this.hideTimer = setTimeout(() => {
       this.el.removeAttribute('activated')
       delete this.hideTimer
-    }, 500)
+    }, 1000)
   }
 }
