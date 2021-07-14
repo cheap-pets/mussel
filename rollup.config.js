@@ -10,16 +10,12 @@ import { terser } from 'rollup-plugin-terser'
 import { string } from 'rollup-plugin-string'
 
 import postcss from 'rollup-plugin-postcss'
-import postcssAutoprefixer from 'autoprefixer'
+import cssnano from 'cssnano'
 import postcssCalc from 'postcss-calc'
-import postcssClean from 'postcss-clean'
-import postcssConditionals from 'postcss-conditionals'
-import postcssCustomProps from './build/postcss-custom-properties-polyfill'
-import postcssFor from 'postcss-for'
-import postcssImport from 'postcss-import'
+import autoprefixer from 'autoprefixer'
 import postcssNested from 'postcss-nested'
-import postcssVars from 'postcss-simple-vars'
-import postcssUnprefix from 'postcss-unprefix'
+import postcssAdvanced from 'postcss-advanced-variables'
+import postcssCustomProps from './build/postcss-custom-properties-polyfill'
 
 import variables from './src/variables'
 
@@ -88,44 +84,15 @@ export default {
       include: "**/*.svg",
     }),
     postcss({
+      minimize: true,
       plugins: [
-        postcssImport,
-        postcssUnprefix,
-        postcssFor,
-        postcssVars({ variables }),
-        postcssCustomProps(),
+        postcssAdvanced({ variables }),
+        postcssCustomProps,
         postcssCalc,
         postcssNested,
-        postcssConditionals,
-        postcssAutoprefixer,
-        postcssClean(
-          isDevEnv
-            ? {
-              format: {
-                breaks: {
-                  afterAtRule: true,
-                  afterBlockBegins: true,
-                  afterBlockEnds: true,
-                  afterComment: true,
-                  afterProperty: true,
-                  afterRuleBegins: true,
-                  afterRuleEnds: true,
-                  beforeBlockEnds: true,
-                  betweenSelectors: true
-                },
-                spaces: {
-                  aroundSelectorRelation: true,
-                  beforeBlockBegins: true,
-                  beforeValue: true
-                },
-                semicolonAfterLastProperty: true,
-                indentBy: 2
-              }
-            }
-            : undefined
-        )
-      ]
-      // extract: path.resolve(__dirname, 'dist/mussel.css')
+        autoprefixer
+      ],
+      extract: path.resolve(__dirname, 'dist/mussel.css')
     }),
     resolve({
       mainFields: ['module', 'main', 'browser']

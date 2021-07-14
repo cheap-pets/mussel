@@ -1,5 +1,3 @@
-import postcss from 'postcss'
-
 function transformDecl (decl, variables) {
   if (decl.prop.indexOf('--') === 0) variables[decl.prop] = decl.value
 
@@ -19,11 +17,17 @@ function transformDecl (decl, variables) {
 function plugin () {
   const variables = {}
 
-  return style => {
-    style.walkDecls(decl => {
+  return {
+    postcssPlugin: 'postcss-custom-properties-polyfill',
+    Once (root) {
+      // Calls once per file, since every file has single Root
+    },
+    Declaration (decl) {
       transformDecl(decl, variables)
-    })
-  }  
+    }
+  }
 }
 
-export default postcss.plugin('postcss-custom-properties-polyfill', plugin)
+plugin.postcss = true
+
+export default plugin
