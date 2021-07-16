@@ -1,4 +1,4 @@
-import { attach, detach } from '../components/scrollbar'
+import { attach, detach } from '../scrollbar'
 
 export default {
   inserted (el, binding) {

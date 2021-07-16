@@ -1,5 +1,7 @@
 function transformDecl (decl, variables) {
-  if (decl.prop.indexOf('--') === 0) variables[decl.prop] = decl.value
+  if (decl.prop.indexOf('--') === 0) {
+    variables[decl.prop] = decl.value
+  }
 
   const s = decl.value
   const startIdx = s.indexOf('var(')
@@ -14,9 +16,9 @@ function transformDecl (decl, variables) {
   }
 }
 
-function plugin () {
-  const variables = {}
+const _variables = {}
 
+function plugin (variables = _variables) {
   return {
     postcssPlugin: 'postcss-custom-properties-polyfill',
     Once (root) {

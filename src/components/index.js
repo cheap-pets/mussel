@@ -100,9 +100,6 @@ import PopupGroupMixin from '@/mixins/mix-popup-group'
 /* MESSAGE BOX */
 import PromptPanel from './message/prompt-panel.vue'
 
-/* SCROLLBAR */
-import * as scrollbar from './scrollbar'
-
 /* Message */
 export * from './message'
 
@@ -264,8 +261,6 @@ export {
   TableSelectColumn,
   TableSearchColumn,
   TableButtonColumn,
-  // Scrollbar
-  scrollbar,
   // Mixins
   PopupGroupMixin,
   // register

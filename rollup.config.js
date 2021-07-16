@@ -83,15 +83,15 @@ export default {
       include: "**/*.svg",
     }),
     postcss({
-      minimize: true,
+      minimize: false,
       plugins: [
         postcssAdvanced({ variables }),
         postcssCustomProps,
         postcssCalc,
         postcssNested,
         autoprefixer
-      ]
-      // extract: path.resolve(__dirname, 'dist/mussel.css')
+      ],
+      extract: path.resolve(__dirname, 'dist/mussel.css')
     }),
     resolve({
       mainFields: ['module', 'main', 'browser']

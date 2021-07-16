@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 import variables from '@/variables'
-
+import * as scrollbar from './scrollbar'
 import { installDirectives } from './directives'
 import { installComponents } from './components'
 
@@ -10,7 +10,7 @@ export * from './components'
 export * from './base-styles'
 
 export { setTheme } from '@/utils/theme'
-export { variables }
+export { scrollbar, variables }
 
 export function install ($Vue) {
   installDirectives($Vue)

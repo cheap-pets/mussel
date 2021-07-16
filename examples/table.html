@@ -7,9 +7,7 @@
   <title>Table Example</title>
   <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
   <script type="text/javascript" src="../dist/mussel.js"></script>
-  <style>
-
-  </style>
+  <link rel="stylesheet" href="../dist/mussel.css">
 </head>
 
 <body class="mu-background-normal">
@@ -26,7 +24,7 @@
         stripe
         border
         gridline="all"
-        :virtual-render="true"
+        :virtual-render="false"
         hover-mode="none"
         @cellchange="setRecordValue">
         <mu-table-select-column
