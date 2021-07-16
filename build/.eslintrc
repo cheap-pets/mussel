@@ -1,0 +1,29 @@
+{
+  "root": true,
+  "parser": "@babel/eslint-parser",
+  "extends": [
+    "standard"
+  ],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "rules": {
+    "prefer-const": "error",
+    "complexity": [ 1, 10 ],
+    "max-len": [
+      "warn",
+      {
+        "code": 80,
+        "tabWidth": 2,
+        "ignoreUrls": true,
+        "ignoreStrings": true,
+        "ignoreComments": true,
+        "ignoreTrailingComments": true,
+        "ignoreTemplateLiterals": true
+      }
+    ],
+    "no-shadow": "error",
+    "no-shadow-restricted-names": "error"
+  }
+}
