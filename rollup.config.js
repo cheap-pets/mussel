@@ -10,7 +10,6 @@ import { terser } from 'rollup-plugin-terser'
 import { string } from 'rollup-plugin-string'
 
 import postcss from 'rollup-plugin-postcss'
-import cssnano from 'cssnano'
 import postcssCalc from 'postcss-calc'
 import autoprefixer from 'autoprefixer'
 import postcssNested from 'postcss-nested'
@@ -91,8 +90,8 @@ export default {
         postcssCalc,
         postcssNested,
         autoprefixer
-      ],
-      extract: path.resolve(__dirname, 'dist/mussel.css')
+      ]
+      // extract: path.resolve(__dirname, 'dist/mussel.css')
     }),
     resolve({
       mainFields: ['module', 'main', 'browser']
