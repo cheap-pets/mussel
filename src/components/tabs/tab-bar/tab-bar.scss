@@ -1,0 +1,24 @@
+.mu-tab-bar {
+  flex: none;
+  background: var(--mu-bg-strong);
+
+  & > .mu-tab-bar_buttons {
+    display: flex;
+    gap: var(--mu-content-spacing);
+    align-items: center;
+    align-self: stretch;
+  }
+}
+
+.mu-tab-bar[tab-position=left],
+.mu-tab-bar[tab-position=right] {
+  flex-direction: column;
+  align-items: stretch;
+  height: unset;
+  padding: var(--mu-base-spacing);
+
+  & > .mu-tab-bar_buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

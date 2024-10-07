@@ -1,12 +1,15 @@
-import MusselScrollbar from './scrollbar'
-import MusselSticky from './sticky'
+import { attach, detach } from 'mussel-scrollbar'
 
-function installDirectives (Vue) {
-  Vue.directive('mussel-scrollbar', MusselScrollbar)
-  Vue.directive('mussel-sticky', MusselSticky)
-}
-
-export {
-  MusselScrollbar,
-  installDirectives
+export function install (app) {
+  app.directive('mu-scrollbar', {
+    mounted: (el, bindings) => {
+      if (
+        bindings.value !== false &&
+        bindings.value !== 'none'
+      ) {
+        attach(el)
+      }
+    },
+    beforeUnmount: detach
+  })
 }

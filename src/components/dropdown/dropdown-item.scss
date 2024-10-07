@@ -1,0 +1,21 @@
+.mu-dropdown-item {
+  user-select: none;
+  border-radius: var(--mu-common-border-radius);
+
+  &:hover {
+    background: var(--mu-bg-translucent-gray);
+  }
+}
+
+[reserve-icon-place] {
+  & > .mu-list-item,
+  & > .mu-list-divider {
+    & > label:first-child {
+      margin-left: 24px;
+    }
+
+    & > label:last-child {
+      margin-right: 24px;
+    }
+  }
+}

@@ -1,0 +1,93 @@
+.mu-root {
+  @each $v in (
+    "red", "pink", "grape", "violet", "indigo", "blue",
+    "cyan", "teal", "green", "lime", "yellow", "orange"
+  ) {
+    --mu-#{$v}: $#{$v};
+  }
+
+  @each $v in (primary, neutral, success, warning, danger, accent) {
+    --mu-#{$v}-color: $#{$v};
+
+    @for $i from 0 through 9 {
+      --mu-#{$v}-color-#{$i}: $#{$v}#{$i};
+    }
+  }
+
+  --mu-gray: var(--mu-neutral-color-5);
+
+  @for $i from 0 through 9 {
+    --mu-gray-#{$i}: var(--mu-neutral-color-#{$i});
+  }
+}
+
+.mu-root {
+  --mu-text-color-body: var(--mu-gray-8);
+  --mu-text-color-normal: var(--mu-gray-7);
+  --mu-text-color-soft: var(--mu-gray-5);
+  --mu-text-color-muted: var(--mu-gray-4);
+  --mu-text-color-subtle: var(--mu-gray-3);
+  --mu-text-color-placeholder: var(--mu-gray-2);
+  
+  --mu-translucent-alpha: 0.08;
+  --mu-bg-translucent-gray: rgba(0, 0, 0, .07);
+
+  @each $v in (primary, success, warning, danger, accent) {
+    --mu-bg-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / var(--mu-translucent-alpha));
+  }
+
+  --mu-bg-normal: #fff;
+  --mu-bg-strong: var(--mu-gray-0);
+  --mu-bg-disabled: var(--mu-gray-0);
+
+  --mu-bg-overlay: var(--mu-bg-normal);
+  --mu-bg-mask: rgba(0, 0, 0, .5);
+
+  --mu-border-color: var(--mu-gray-3);
+  --mu-border-color-muted: var(--mu-gray-1);
+}
+
+.mu-root {
+  --mu-z-index-float: 1;
+  --mu-z-index-layer: 10;
+  --mu-z-index-modal: 100;
+  --mu-z-index-popup: 1000;
+  --mu-z-index-ontop: 10000;
+
+  --mu-base-spacing: 8px;
+  --mu-content-spacing: 5px;
+
+  --mu-common-font-size: 14px;
+  --mu-common-line-height: 20px;
+
+  --mu-common-border-radius: 4px;
+  --mu-window-border-radius: 8px;
+
+  --mu-input-size: 32px;
+  --mu-input-size-small: 24px;
+  --mu-input-size-large: 40px;
+
+  --mu-shadow-focus: 0 0 0 2px;
+  --mu-shadow-float: 0 1px 2px rgba(0, 0, 0, 0.1), 0 2px 3px rgba(0, 0, 0, 0.06);
+  --mu-shadow-popup: 0 2px 4px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.08);
+  --mu-shadow-layer: 0 4px 8px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.12);
+  --mu-shadow-modal: 0 6px 12px rgba(0, 0, 0, 0.16), 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
+.mu-root {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  font-size: var(--mu-common-font-size);
+  color: var(--mu-text-color-body);
+  background-color: var(--mu-bg-normal);
+
+  & :fullscreen {
+    background-color: var(--mu-bg-normal);
+  }
+}

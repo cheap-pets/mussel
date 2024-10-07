@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Input Component Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="./style.css" />
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../dist/mussel.css" />
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../node_modules/@tabler/icons-webfont/dist/tabler-icons-outline.css" />
+
+    <style>
+      .mu-input {
+        width: 250px;
+      }
+
+      .mu-select {
+        max-width: 105px;
+      }
+
+      .mu-input-group {
+        width: 350px;
+      }
+    </style>
+</head>
+
+<body>
+  <defs>
+    <mask id="xMask">
+      <rect width="24" height="24" fill="white"/>
+      <path d="M9 9 L15 15 M15 9 L9 15" stroke="black" stroke-width="2" stroke-linecap="round"/>
+    </mask>
+  </defs>
+  <div id="app" class="mu-box mu-bg-normal" position="fixed fit">
+    <h2>
+      INPUT & INPUT-GROUP
+      <mu-switch
+        v-model="darkMode"
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+    </h2>
+    <div class="group">
+      <h3>Basic</h3>
+      <mu-input v-model.trim="value" placeholder="Input Text" @update:model-value="onChange"></mu-input>
+      <mu-input v-model="value" placeholder="Input Text" clear-button></mu-input>
+    </div>
+    <div class="group">
+      <h3>AFFIX：Icon, Text, Tool & Link</h3>
+      <mu-input v-model="value" prefix=":icon=search"></mu-input>
+      <mu-input v-model="value" clear-button suffix="Suffix"></mu-input>
+      <mu-input v-model="value" clear-button prefix=":tool=folderOpen"></mu-input>
+      <mu-input v-model="value" prefix=":tool=bug" suffix=":link=Link"></mu-input>
+    </div>
+    <div class="group">
+      <h3>Style & State</h3>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Normal" clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Underline" input-style="underline" clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Solid" input-style="solid" clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Round" round clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Round & Solid" round input-style="solid" clear-button></mu-input>
+      <div style="width: 100%;"></div>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid" invalid clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Underline" input-style="underline" invalid clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Solid" input-style="solid" invalid clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Round" round invalid clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Round & Solid" round input-style="solid" invalid clear-button></mu-input>
+      <div style="width: 100%;"></div>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Readonly" readonly></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Readonly & Underline" input-style="underline" readonly></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Readonly & Solid" input-style="solid" readonly></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Readonly & Round" round readonly></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Readonly & Round & Solid" input-style="solid" round readonly></mu-input>
+      <div style="width: 100%;"></div>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Disabled" disabled></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Disabled & Underline" input-style="underline" disabled></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Disabled & Solid" input-style="solid" disabled></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Disabled & Round" round disabled></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Disabled & Round & Solid" input-style="solid" round disabled></mu-input>
+    </div>
+
+    <div class="group">
+      <h3>Input Group</h3>
+      <div class="mu-input-group">
+        <span>http://</span>
+        <mu-input v-model="value" clear-button></mu-input>
+        <span>.com</span>
+      </div>
+      <div class="mu-input-group">
+        <a class="mu-link">Link</a>
+        <mu-input v-model="value" clear-button></mu-input>
+        <mu-tool-button icon="search"></mu-tool-button>
+        <mu-button class="mu-input-addon">Button</mu-button>
+      </div>
+      <div class="mu-input-group">
+        <mu-select
+          v-model="selectValue" :options="options"
+          class="mu-input-addon" placeholder="empty">
+        </mu-select>
+        <mu-input v-model="value" clear-button input-style="solid"></mu-input>
+        <span><mu-check label="Check"></mu-check></span>
+      </div>
+      <div style="width: 100%;"></div>
+      <div class="mu-input-group">
+        <span>http://</span>
+        <mu-input v-model="value" invalid placeholder="Invalid" input-style="underline"></mu-input>
+        <span>.com</span>
+      </div>
+      <div class="mu-input-group">
+        <span>http://</span>
+        <mu-input v-model="value" readonly placeholder="Readonly"></mu-input>
+        <span>.com</span>
+      </div>
+      <div class="mu-input-group" >
+        <span>http://</span>
+        <mu-input v-model="value" disabled placeholder="Disabled"></mu-input>
+        <span>.com</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+        const darkMode = Vue.ref(false)
+        const value = Vue.ref('')
+
+        const selectValue = Vue.ref()
+        const options = Vue.ref([
+          { value: 'Option A' },
+          { value: 'Option B' },
+          { value: 'Option C' },
+          { value: 'Option D', disabled: true  }
+        ])
+
+        function onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+
+        return {
+          darkMode,
+          value,
+          selectValue,
+          options,
+          onUIModeChange
+        }
+      },
+      methods: {
+        onChange (v) {
+          console.log(v)
+        }
+      }
+    })
+
+    mussel.install(app, {
+      icons: {
+        bug: 'ti ti-bug',
+        bolt: 'ti ti-bolt',
+        album: 'ti ti-album',
+        search: 'ti ti-search'
+      }
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+
+</html>

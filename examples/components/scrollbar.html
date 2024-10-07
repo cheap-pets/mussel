@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Scrollbar Example</title>
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../dist/mussel.css" />
+  <style>
+    .scroll-container {
+      position: relative;
+      width: 50%;
+      height: 500px;
+    }
+    .scroll-element {
+      width: 3000px;
+      height: 30000px;
+      background-image: linear-gradient(45deg, yellow, red, yellow);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div v-mu-scrollbar class="scroll-container" scrollbar-visible="always">
+      <div class="scroll-element">
+      </div>
+    </div>
+    <p>
+    <mu-button @click="resetHeight">Reset Height</mu-button>&nbsp;
+    <mu-button @click="setScrollTop">Set ScrollTop</mu-button>
+    </p>
+    <mu-scroll-box class="scroll-container">
+      <div class="scroll-element">
+      </div>
+    </mu-scroll-box>
+    <p></p>
+    <mu-scroll-box class="scroll-container mu-box" border>
+      <div style="position: sticky; left: 0; right: 0; top: 0;">
+        <div class="mu-box" border style="position: absolute; background-color: blue; left: 0; right: 0; top: 0; height: 40px;">1</div>
+        <div class="mu-box" border style="position: absolute; background-color: red; left: 0; width: 150px; height: 2000px;">1</div>
+        <div class="mu-box" border style="position: absolute; background-color: red; right: 0; width: 150px; height: 2000px;">3</div>
+      </div>
+      <div style="height: 5000px; width: 2000px; background-color: #eee; margin: 0 150px;">2</div>
+    </mu-scroll-box>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup (props, context) {
+        function resetHeight () {
+          const el = document.querySelector('.scroll-element')
+
+          el.style.height = '1000px'
+          el.style.width = '100px'
+        }
+
+        function setScrollTop () {
+          const el = document.querySelector('.scroll-container')
+          el.scrollTop = el.scrollTop + 500
+
+        }
+
+        return {
+          resetHeight,
+          setScrollTop
+        }
+      }
+    })
+
+    mussel.install(app)
+
+    app.mount('#app')
+
+    let h = 3000
+
+    setInterval(() => {
+      h += 1000
+      document.querySelector('.scroll-element').style.height = `${h}px`
+    }, 100000)
+  </script>
+</body>

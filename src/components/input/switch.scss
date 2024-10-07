@@ -1,0 +1,90 @@
+.mu-switch {
+  --mu-switch_height: 20px;
+  --mu-switch_ball-size: 12px;
+}
+
+.mu-switch {
+  cursor: pointer;
+
+  position: relative;
+
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 40px;
+  height: var(--mu-switch_height);
+  padding-right: 10px;
+  padding-left: var(--mu-switch_height);
+
+  font-size: var(--mu-common-font-size);
+  line-height: var(--mu-common-line-height);
+
+  background-color: var(--mu-gray-5);
+  border-radius: calc(var(--mu-switch_height) / 2);
+
+  transition: all 0.2s ease-in-out;
+
+  &::after {
+    content: '';
+
+    position: absolute;
+    left: calc((var(--mu-switch_height) - var(--mu-switch_ball-size)) / 2);
+
+    display: inline-block;
+
+    width: var(--mu-switch_ball-size);
+    height: var(--mu-switch_ball-size);
+
+    background-color: #fff;
+    border-radius: calc(var(--mu-switch_ball-size) / 2);
+
+    transition: all 0.1s ease-in-out;
+  }
+
+  &[label]::before {
+    content: attr(label);
+    color: #fff;
+  }
+
+  &:hover {
+    background-color: var(--mu-gray-4);
+  }
+
+  &[active] {
+    padding-right: var(--mu-switch_height);
+    padding-left: 10px;
+    background-color: var(--mu-primary-color);
+
+    &::after {
+      left: calc(100% - (var(--mu-switch_height) + var(--mu-switch_ball-size)) / 2);
+    }
+
+    &[success] {
+      background-color: var(--mu-success-color);
+    }
+  
+    &[danger] {
+      background-color: var(--mu-danger-color);
+    }
+  }
+
+  &[active]:hover {
+    background-color: var(--mu-primary-color-4);
+
+    &[success] {
+      background-color: var(--mu-success-color-4);
+    }
+  
+    &[danger] {
+      background-color: var(--mu-danger-color-4);
+    }
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    cursor: default;
+    opacity: .5;
+  }
+}

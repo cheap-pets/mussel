@@ -1,33 +1,23 @@
+<!-- eslint-disable vue/no-v-text-v-html-on-component -->
+
 <template>
-  <span
-    class="mu-icon"
+  <component
+    :is="componentTag"
+    :class="['mu-icon', data.cls]"
     :icon="icon"
-    :class="iconClass"
-    @click="onClick"
-    v-html="html" />
+    v-html="data.svg" />
 </template>
 
-<script>
-  import './icon.pcss'
+<script setup>
+  import './icon.scss'
 
-  import icons from './tabler-icons'
+  import { computed } from 'vue'
+  import { useIcon } from './icon'
 
-  export default {
-    name: 'MusselIcon',
-    props: {
-      svg: String,
-      icon: String,
-      iconClass: String
-    },
-    computed: {
-      html () {
-        return this.svg || icons[this.icon]
-      }
-    },
-    methods: {
-      onClick () {
-        this.$emit('click')
-      }
-    }
-  }
+  defineOptions({ name: 'MusselIcon' })
+
+  const props = defineProps({ icon: String, tag: String })
+  const data = useIcon(props).data
+
+  const componentTag = computed(() => props.tag === 'a' ? 'a' : 'span')
 </script>

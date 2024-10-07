@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Editor Component Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link
+    rel="stylesheet" type="text/css"
+    href="../../dist/mussel.css" />
+  <link
+    rel="stylesheet" type="text/css"
+    href="../../node_modules/@tabler/icons/iconfont/tabler-icons.css" />
+</head>
+
+<body>
+  <div id="app" class="mu-box" position="fixed fit" padding="2x">
+    <mu-form border="primary" label-width="60px" label-align="right">
+      <mu-form-field label="Text 1" width="100" flex="1 auto">
+        <mu-input value="Value 1"></mu-input>
+      </mu-form-field>
+      <mu-form-field label="Text 2" width="300" required  flex="1 auto">
+        <mu-input value="Value 2"></mu-input>
+      </mu-form-field>
+      <mu-form-row>
+        <mu-form-field flex="1" label="Text 3" invalid>
+          <mu-input value="Value 3"></mu-input>
+        </mu-form-field>
+        <mu-form-field flex="1" label="Text 4" invalid>
+          <mu-input underline value="Value 4"></mu-input>
+        </mu-form-field>
+        <mu-form-field flex="1" label="Text 5" invalid>
+          <mu-input solid value="Value 5"></mu-input>
+        </mu-form-field>
+      </mu-form-row>
+      <mu-form-field label="Text 6">
+        <input type="text" class="mu-input"></input>
+      </mu-form-field>
+      <mu-form-field label="Text 7" invalid>
+        <textarea class="mu-input" solid></textarea>
+      </mu-form-field>
+    </mu-form>
+    <mu-box height="200" border="primary" margin-top="2x">
+
+    </mu-box>
+  </div>
+
+  <script type="text/javascript">
+    Vue
+      .createApp()
+      .use(mussel, { darkMode: 'auto' })
+      .mount('#app')
+  </script>
+</body>
+
+</html>

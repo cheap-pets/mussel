@@ -1,0 +1,15 @@
+.mu-icon {
+  display: inline-block;
+  width: 1em;
+  font-size: calc(1em + 2px);
+
+  &::before, &::after {
+    display: block;
+  }
+
+  & > svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
+}

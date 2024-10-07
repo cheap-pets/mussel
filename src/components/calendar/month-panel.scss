@@ -1,0 +1,35 @@
+.mu-month-panel {
+  user-select: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  width: 100%;
+  
+  & > .mu-bar {
+    height: auto;
+    padding: 0;
+  }
+
+  & tr {
+    height: 50px;
+  }
+
+  & td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  & td[data-year]:before {
+    content: attr(data-year);
+  }
+
+  & td[data-month]:before {
+    content: attr(data-month);
+  }
+}
+
+.mu-month-panel_year-tr + .mu-month-panel_month-tr {
+  border-top: 2px solid var(--mu-primary-color);
+}

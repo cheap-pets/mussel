@@ -1,124 +1,88 @@
 <template>
-  <div
-    class="mu-tabs mu-flex-box"
-    :direction="direction"
-    :tab-position="tabPosition">
-    <tabs-header
-      :tab-items="items"
+  <div ref="thisEl" class="mu-tabs" :style="sizeStyle" :tab-position="tabPosition">
+    <mu-tab-bar
+      v-model:active-tab="activeTab"
+      v-bind="tabBar"
       :tab-style="tabStyle"
-      :active-tab="tabParams.activeName"
+      :tab-buttons="buttons"
       :tab-position="tabPosition">
-      <template #header-prefix>
-        <slot name="header-prefix" />
+      <template #prepend>
+        <slot name="tab-bar-prepend" />
       </template>
-      <template #header-suffix>
-        <slot name="header-suffix" />
+      <template #append>
+        <slot name="tab-bar-append" />
       </template>
-    </tabs-header>
+    </mu-tab-bar>
     <slot />
   </div>
 </template>
 
-<script>
-  import './tabs.pcss'
+<script setup>
+  import './tabs.scss'
 
-  import TabsHeader from './tabs-header.vue'
+  import { ref, shallowRef, computed, provide, onMounted, nextTick } from 'vue'
+  import { sizeProps, useSize } from '@/hooks/size'
 
-  export default {
-    name: 'MusselTabs',
-    components: {
-      TabsHeader
+  defineOptions({ name: 'MusselTabs' })
+
+  const activeTab = defineModel('activeTab', { type: String })
+
+  const props = defineProps({
+    tabBar: Object,
+    tabButtons: Array,
+    tabStyle: {
+      type: String,
+      default: 'button',
+      validator: v => ['button', 'small-button', 'simple', 'card', 'border-card'].includes(v)
     },
-    provide () {
-      return {
-        tabs: this,
-        tabParams: this.tabParams
-      }
+    tabPosition: {
+      type: String,
+      default: 'top',
+      validator: v => ['top', 'right', 'bottom', 'left'].includes(v)
     },
-    model: {
-      prop: 'activeTab',
-      event: 'change'
-    },
-    props: {
-      tabItems: Array,
-      tabPosition: {
-        type: String,
-        default: 'top',
-        validator (v) {
-          return ['top', 'bottom', 'left', 'right'].indexOf(v) !== -1
-        }
-      },
-      tabStyle: {
-        type: String,
-        default: 'simple',
-        validator (v) {
-          return ['simple', 'card'].indexOf(v) !== -1
-        }
-      },
-      modelControl: {
-        type: String,
-        default: 'both',
-        validator (v) {
-          return ['both', 'external'].indexOf(v) !== -1
-        }
-      },
-      activeTab: String
-    },
-    data () {
-      return {
-        tabParams: {
-          activeName: ''
-        },
-        mountedTabs: []
-      }
-    },
-    computed: {
-      direction () {
-        let v
-        switch (this.tabPosition) {
-          case 'left':
-            v = 'row'
-            break
-          case 'right':
-            v = 'row-reverse'
-            break
-          case 'bottom':
-            v = 'column-reverse'
-            break
-          default:
-            v = 'column'
-        }
-        return v
-      },
-      items () {
-        return this.tabItems || this.mountedTabs
-      }
-    },
-    watch: {
-      activeTab: {
-        handler (value) {
-          this.tabParams.activeName = value
-        },
-        immediate: true
-      }
-    },
-    methods: {
-      mountTab (tab) {
-        const idx = this.mountedTabs.findIndex(item => tab.name === item.name)
-        if (idx === -1) this.mountedTabs.push(tab)
-      },
-      unmountTab (tab) {
-        const idx = this.mountedTabs.findIndex(item => tab.name === item.name)
-        if (idx !== -1) this.mountedTabs.splice(idx, 1)
-      },
-      select (name) {
-        const { tabParams, modelControl } = this
-        if (modelControl !== 'external' &&
-          tabParams.activeName !== name) {
-          tabParams.activeName = name
-        }
-        this.$emit('change', name)
-      }
+    ...sizeProps
+  })
+
+  const thisEl = shallowRef()
+  const mountedButtons = ref(new WeakMap())
+
+  const buttons = computed(() =>
+    !thisEl.value || props.tabButtons
+      ? props.tabButtons
+      : Array
+        .from(thisEl.value.childNodes)
+        .filter(child => mountedButtons.value.has(child))
+        .map(child => mountedButtons.value.get(child))
+  )
+
+  const { sizeStyle } = useSize(props)
+
+  function mountTab (tabProps, tabElement) {
+    if (!props.tabButtons) {
+      mountedButtons.value.set(tabElement, tabProps)
     }
   }
+
+  function unmountTab (tabProps, tabElement) {
+    if (!props.tabButtons) {
+      mountedButtons.value.delete(tabElement)
+    }
+  }
+
+  function setActiveTab (tabName) {
+    activeTab.value = tabName
+  }
+
+  onMounted(() => nextTick(() => {
+    if (!props.activeTab && buttons.value.length) {
+      setActiveTab(buttons.value[0].name)
+    }
+  }))
+
+  provide('tabs', {
+    activeTab,
+    mountTab,
+    unmountTab,
+    setActiveTab
+  })
 </script>

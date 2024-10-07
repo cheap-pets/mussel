@@ -1,21 +1,39 @@
-function whileParentElement (element, includeSelf, callback) {
-  element = includeSelf ? element : Object(element).parentNode
-  while (Object(element).nodeType === 1) {
-    if (callback(element) === false) return
-    element = element.parentNode
+import { isString } from './type'
+
+export function findUp (el, callback) {
+  while (Object(el).nodeType === 1) {
+    const ret = callback(el)
+
+    if (ret) return el
+    else if (ret === false) break
+
+    el = el.parentNode
   }
 }
 
-function hasMaskParent (element) {
-  let result = false
-  whileParentElement(element, true, (el) => {
-    result = String(el.className).indexOf('mu-modal-mask') !== -1
-    return !result
-  })
-  return result
+export function resolveElement (el) {
+  return isString(el) ? document.querySelector(el) : el
 }
 
-export {
-  whileParentElement,
-  hasMaskParent
+export function isInputElement (el) {
+  return (
+    ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName.toUpperCase()) ||
+    el.hasAttribute('contenteditable')
+  )
+}
+
+export function resolveSafeHTML (html = '') {
+  return html
+    .replace(/\s+on\w+="[^"]*"/gi, '') // event bindings
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // <script> node
+}
+
+export function isElementInViewport (el) {
+  const { innerHeight, innerWidth } = window
+  const { top, left, height, width } = el.getBoundingClientRect()
+
+  const xInView = (left <= innerWidth) && ((left + width) >= 0)
+  const yInView = (top <= innerHeight) && ((top + height) >= 0)
+
+  return xInView && yInView
 }

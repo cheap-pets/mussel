@@ -1,6 +1,27 @@
 {
   "path-autocomplete.pathMappings": {
-    "~icon": "${folder}/node_modules/@tabler/icons/icons",
-    "@": "${folder}/src"
-  }
+    "@/": "${folder}/src",
+    "~icons/": "${folder}/node_modules/@tabler/icons/icons"
+  },
+  "cSpell.words": [
+    "colorette",
+    "itemclick",
+    "stylelint",
+    "tabler"
+  ],
+  "cSpell.ignoreWords": [
+    "panend",
+    "panmove",
+    "panstart",
+    "panx",
+    "panxend",
+    "panxmove",
+    "panxstart",
+    "pany",
+    "panyend",
+    "panymove",
+    "panystart",
+    "sizechange",
+    "timespan"
+  ]
 }

@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+}
+
+.group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  margin: 8px;
+  padding: 8px;
+}
+
+.group-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+h2 {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid currentColor;
+}
+
+h2 > .mu-switch {
+  margin-left: auto;
+}
+
+h3 {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  color: var(--mu-text-color-normal);
+}

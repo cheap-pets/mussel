@@ -1,107 +1,80 @@
-import Vue from 'vue'
-import isString from 'lodash.isstring'
+import { delay } from '@/utils/timer'
+import { isString } from '@/utils/type'
+import { MessageTypes } from './constant'
+import { createDynamicComponent } from '@/utils/vue'
 
-import lang from '@/lang'
-import MessageDialog from './message-dialog.vue'
+import MessageBox from './message-box.vue'
 
-const Buttons = {
-  OK: {
-    id: 'ok',
-    caption: lang.Button.OK,
-    action: 'close',
-    buttonType: 'primary'
-  },
-  CANCEL: {
-    id: 'cancel',
-    caption: lang.Button.CANCEL,
-    action: 'close',
-    buttonStyle: 'text'
-  },
-  YES: {
-    id: 'yes',
-    caption: lang.Button.YES,
-    action: 'close',
-    buttonType: 'primary'
-  },
-  NO: {
-    id: 'no',
-    caption: lang.Button.NO,
-    action: 'close',
-    buttonStyle: 'text'
-  }
-}
+export function pluginMessageBox (app) {
+  function showMessage (options) {
+    const type = (options.type || 'ALERT').toUpperCase()
 
-export function showMessage (options) {
-  const { title, message, buttons, danger, callback } = options
+    options = {
+      ...MessageTypes[type],
+      ...isString(options) ? { message: options } : options
+    }
 
-  return new Promise(resolve => {
-    const dialog = new Vue({
-      extends: MessageDialog,
-      title,
-      message,
-      danger,
-      buttons: buttons.map(el => {
-        const btn = isString(el) ? (Buttons[el.toUpperCase()] || el) : { ...el }
-        if (btn.buttonType === 'primary' && danger) btn.buttonType = 'danger'
-        return btn
+    return new Promise(resolve => {
+      let dispose
+
+      const callback = btn => {
+        options.callback?.(btn)
+        resolve(btn)
+
+        delay(300).then(() => {
+          dispose?.()
+          dispose = undefined
+        })
+      }
+
+      const { icon, title, message, buttons } = options
+
+      dispose = createDynamicComponent({
+        appContext: app._context,
+        container: app._container,
+        component: MessageBox,
+        props: { type, icon, title, message, buttons, callback }
       })
     })
-    dialog.$once('hide', btn => {
-      callback?.(btn)
-      resolve(btn)
+  }
+
+  function alert (message, callback) {
+    return showMessage({
+      type: 'alert',
+      message,
+      callback
     })
-    dialog.show()
-  })
-}
+  }
 
-export function alert (message, callback) {
-  return showMessage({
-    title: lang.Dialog.ALERT,
-    message,
-    buttons: [Buttons.OK],
-    callback
-  })
-}
+  function confirm (message, callback) {
+    return showMessage({
+      type: 'confirm',
+      message,
+      callback
+    })
+  }
 
-export function confirm (message, callback) {
-  return showMessage({
-    title: lang.Dialog.CONFIRM,
-    message,
-    buttons: [
-      Buttons.CANCEL,
-      Buttons.OK
-    ],
-    callback
-  })
-}
+  function error (message, callback) {
+    return showMessage({
+      type: 'error',
+      message,
+      callback
+    })
+  }
 
-export function error (message, callback) {
-  return showMessage({
-    title: lang.Dialog.ERROR,
-    message,
-    danger: true,
-    buttons: [
-      {
-        ...Buttons.OK,
-        buttonType: 'danger'
-      }
-    ],
-    callback
-  })
-}
+  function warn (message, callback) {
+    return showMessage({
+      type: 'warn',
+      message,
+      callback
+    })
+  }
 
-export function warn (message, callback) {
-  return showMessage({
-    title: lang.Dialog.WARN,
-    message,
-    danger: true,
-    buttons: [
-      Buttons.CANCEL,
-      {
-        ...Buttons.OK,
-        buttonType: 'danger'
-      }
-    ],
-    callback
-  })
+  return {
+    showMessage,
+    alert,
+    confirm,
+    error,
+    warn
+  }
 }

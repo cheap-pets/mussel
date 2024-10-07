@@ -1,0 +1,35 @@
+.mu-h-box,
+.mu-v-box,
+.mu-grid-box,
+.mu-box[layout=flex],
+.mu-box[layout=grid] {
+  @each $v in (
+    center, start, end, baseline, stretch,
+    flex-start, flex-end, unset, inherit
+  ) {
+    &[align-items="#{$v}"] {
+      align-items: $v;
+    }
+
+    & > [align-self="#{$v}"] {
+      align-self: $v;
+    }
+  }
+
+  @each $v in (
+    start, end, left, right, baseline, center, stretch,
+    flex-start, flex-end, space-around, space-between, space-evenly
+  ) {
+    &[justify-content="#{$v}"] {
+      justify-content: $v;
+    }
+  }
+
+  @for $i from 1 through 4 {
+    $v: calc($i * var(--mu-base-spacing));
+
+    &[gap="#{$i}x"] {
+      gap: $v;
+    }
+  }
+}

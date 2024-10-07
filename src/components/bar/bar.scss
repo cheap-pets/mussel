@@ -1,0 +1,19 @@
+.mu-bar {
+  position: relative;
+
+  display: flex;
+  gap: var(--mu-base-spacing);
+  align-items: center;
+
+  height: 40px;
+  padding: 0 var(--mu-base-spacing);
+
+  font-size: var(--mu-common-font-size);
+  line-height: var(--mu-common-line-height);
+}
+
+.mu-bar > .mu-divider {
+  align-self: center;
+  height: calc(1em + 2px);
+  margin: 0 var(--mu-base-spacing);
+}

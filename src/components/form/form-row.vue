@@ -1,14 +1,16 @@
 <template>
-  <div class="mu-flex-box mu-form-row">
+  <div class="mu-form-row" :style="style">
     <slot />
   </div>
 </template>
 
-<script>
-  import FlexBox from '../layout/flex-box.vue'
+<script setup>
+  import './form-row.scss'
 
-  export default {
-    name: 'MusselFormRow',
-    extends: FlexBox
-  }
+  import { sizeProps, useSize } from '@/hooks/size'
+
+  defineOptions({ name: 'MusselFormRow' })
+
+  const props = defineProps({ ...sizeProps })
+  const style = useSize(props).sizeStyle
 </script>

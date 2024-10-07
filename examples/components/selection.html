@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Selection Component Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+  
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="./style.css" />
+
+  <link rel="stylesheet" type="text/css" href="../../dist/mussel.css" />
+
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="app" class="mu-bg-normal mu-box" position="fixed fit">
+    <h2>
+      SWITCH, CHECK & RADIO
+      <mu-switch
+        v-model="darkMode"
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+    </h2>
+    <div class="group">
+      <h3>SWITCH</h3>
+      <mu-switch v-model="value1"></mu-switch>
+      <mu-switch v-model="value1" active-label="ON" inactive-label="OFF" success></mu-switch>
+      <mu-switch v-model="value1" label="CAUTION" danger disabled></mu-switch>
+    </div>
+    <div class="group">
+      <h3>CHECK</h3>
+      <mu-check v-model="check1" label="Check 1"></mu-check>
+      <mu-check v-model="check2" label="Check 2"></mu-check>
+      <mu-check v-model="checked" label="Check 3" value="3" disabled></mu-check>
+      <mu-check v-model="checked" label="Check 4" value="4"></mu-check>
+      <mu-check v-model="checked" label="Check 5" value="5" disabled></mu-check>
+    </div>
+    <div class="group">
+      <h3>RADIO</h3>
+      <mu-radio value="1" label="Radio 1" v-model="radioValue"></mu-radio>
+      <mu-radio value="2" label="Radio 2" v-model="radioValue"></mu-radio>
+      <mu-radio value="3" label="Radio 3" v-model="radioValue" disabled></mu-radio>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+        const darkMode = Vue.ref(false)
+        const value1 = Vue.ref(true)
+
+        const check1 = Vue.ref(true)
+        const check2 = Vue.ref(false)
+
+        const checked = Vue.ref(['3'])
+        const radioValue = Vue.ref('3')
+
+        function onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+
+        return { darkMode, value1, check1, check2, checked, radioValue, onUIModeChange }
+      }
+    })
+
+    mussel.install(app)
+
+    app.mount('#app')
+  </script>
+</body>
+
+</html>

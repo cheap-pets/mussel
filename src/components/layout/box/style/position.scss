@@ -1,0 +1,38 @@
+.mu-box {
+  position: relative;
+
+  &[position~=absolute] {
+    position: absolute;
+  }
+
+  &[position~=fixed] {
+    position: fixed;
+  }
+
+  &[position~=fit] {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  
+  &[position~=left] {
+    right: auto;
+    left: 0;
+  }
+  
+  &[position~=right] {
+    right: 0;
+    left: auto;
+  }
+  
+  &[position~=top] {
+    top: 0;
+    bottom: auto;
+  }
+  
+  &[position~=bottom] {
+    top: auto;
+    bottom: 0;
+  }
+}

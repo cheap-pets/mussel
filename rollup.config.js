@@ -1,115 +1,88 @@
 import path from 'path'
+import browserslist from 'browserslist'
 
-import vue from 'rollup-plugin-vue'
 import alias from '@rollup/plugin-alias'
-import babel from '@rollup/plugin-babel'
-import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
+// import commonjs from '@rollup/plugin-commonjs'
 
-import { terser } from 'rollup-plugin-terser'
+import swc from 'rollup-plugin-swc'
+import vue from 'unplugin-vue/rollup'
+import sass from '@cheap-pets/rollup-plugin-postcss-scss'
+
 import { string } from 'rollup-plugin-string'
 
-import postcss from 'rollup-plugin-postcss'
-import postcssCalc from 'postcss-calc'
-import autoprefixer from 'autoprefixer'
-import postcssNested from 'postcss-nested'
-import postcssAdvanced from 'postcss-advanced-variables'
-import postcssCustomProps from './build/postcss-custom-properties-polyfill'
-
-import variables from './src/variables'
+import { fileURLToPath } from 'url'
+import { generatePreCssVariables } from './src/theme.js'
 
 const isDevEnv = process.env.dev
+const scssVariables = generatePreCssVariables()
 
-const output = [
-  {
-    file: 'dist/mussel.js',
-    format: 'umd',
-    name: 'mussel',
-    globals: {
-      vue: 'Vue'
-    },
-    sourcemap: false
-  }
-].concat(
-  isDevEnv
-    ? undefined
-    : [
-        {
-          file: 'dist/mussel.esm.js',
-          format: 'esm',
-          globals: {
-            vue: 'Vue'
-          },
-          sourcemap: false
-        },
-        {
-          file: 'dist/mussel.min.js',
-          format: 'umd',
-          name: 'mussel',
-          plugins: isDevEnv ? undefined : [terser()],
-          globals: {
-            vue: 'Vue'
-          },
-          sourcemap: false
-        },
-        {
-          file: 'dist/mussel.esm.min.js',
-          format: 'esm',
-          plugins: isDevEnv ? undefined : [terser()],
-          globals: {
-            vue: 'Vue'
-          },
-          sourcemap: false
-        }
-      ]
-)
+function warn (...args) {
+  console.warn('\x1b[33m%s', ...args, '\x1b[0m')
+}
 
 export default {
   input: 'src/index.js',
-  output,
+  output: {
+    file: isDevEnv ? 'dist/mussel.js' : 'dist/mussel.min.js',
+    format: 'umd',
+    name: 'mussel',
+    assetFileNames: '[name].[ext]',
+    globals: {
+      vue: 'Vue'
+    },
+    sourcemap: true
+  },
   external: ['vue'],
   plugins: [
     alias({
       entries: [
-        { find: '~icons', replacement: path.resolve(__dirname, 'node_modules/@tabler/icons/icons') },
-        { find: '@', replacement: path.resolve(__dirname, 'src') }
+        {
+          find: '~icons',
+          replacement: path.resolve('node_modules/@tabler/icons/icons')
+        },
+        {
+          find: '@',
+          replacement: path.resolve('src')
+        }
       ]
     }),
     vue({
-      normalizer: '~vue-runtime-helpers/dist/normalize-component.js',
-      css: false
+      inlineTemplate: !isDevEnv
     }),
     string({
-      include: "**/*.svg",
+      include: '**/*.svg'
     }),
-    postcss({
-      minimize: true,
-      plugins: [
-        postcssAdvanced({ variables }),
-        postcssCustomProps,
-        postcssCalc,
-        postcssNested,
-        autoprefixer
-      ]
-      // extract: path.resolve(__dirname, 'dist/mussel.css')
+    sass({
+      extract: true,
+      minify: isDevEnv ? 0 : 1,
+      variables: scssVariables,
     }),
     resolve({
       mainFields: ['module', 'main', 'browser']
     }),
-    babel({
-      babelHelpers: 'bundled',
-      exclude: 'node_modules/**',
-      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
-    }),
-    commonjs()
+    swc.default({
+      jsc: {
+        minify: {
+          mangle: !isDevEnv
+        }
+      },
+      env: {
+        targets: browserslist.findConfig('.').defaults,
+        coreJs: 3
+      },
+      minify: !isDevEnv
+    })
+    // commonjs()
   ],
   onwarn: warning => {
-    const { code, plugin, id, input, message, text } = warning
-    console.warn('[!]', '[B]', code || warning)
-    if (plugin) console.warn('[!]', '...', '[plugin]', plugin)
-    if (id) console.warn('[!]', '...', '[id]', id)
-    if (input) console.warn('[!]', '...', '[input]', input.file || input)
-    if (message) console.warn('[!]', '...', '[message]', message)
-    if (text) console.warn('[!]', '...', '[message]', text)
+    const { code, plugin, id, input, message } = warning
+
+    warn(`[!] ${code || warning}`)
+
+    if (plugin) warn(`... Plugin: ${plugin}`)
+    if (id) warn(`... id: ${id}`)
+    if (input) warn(`... Input: ${input.file || input}`)
+    if (message) warn(`... message: ${message}`)
   }
 }

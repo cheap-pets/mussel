@@ -1,0 +1,20 @@
+.mu-dark {
+  --mu-text-color-body: var(--mu-gray-1);
+  --mu-text-color-normal: var(--mu-gray-2);
+  --mu-text-color-soft: var(--mu-gray-4);
+  --mu-text-color-muted: var(--mu-gray-5);
+  --mu-text-color-subtle: var(--mu-gray-6);
+  --mu-text-color-placeholder: var(--mu-gray-7);
+
+  --mu-translucent-alpha: 0.15;
+  --mu-bg-translucent-gray: rgba(255, 255, 255, .1);
+
+  --mu-bg-normal: var(--mu-gray-9);
+  --mu-bg-strong: var(--mu-gray-8);
+  --mu-bg-disabled: var(--mu-gray-8);
+  
+  --mu-bg-mask: rgba(255, 255, 255, .15);
+
+  --mu-border-color: var(--mu-gray-5);
+  --mu-border-color-muted: var(--mu-gray-7);
+}

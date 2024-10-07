@@ -1,63 +1,36 @@
 <template>
-  <div class="mu-form-field mu-flex-box" :cellpadding="cellpadding">
-    <label v-if="label" class="mu-text-ellipsis" :style="labelStyle">
+  <div class="mu-form-field" :style="style">
+    <label v-if="label" class="mu-text-ellipsis" :text-align="labelAlign" :style="labelStyle">
       {{ label }}
     </label>
-    <slot>
-      <span v-if="value || value === 0">{{ value }}</span>
-    </slot>
+    <slot />
   </div>
 </template>
 
-<script>
-  import './form.pcss'
+<script setup>
+  import './form-field.scss'
 
-  import FlexItem from '../layout/flex-item.vue'
+  import { computed, inject } from 'vue'
+  import { resolveSize } from '@/utils/size'
+  import { sizeProps, useSize } from '@/hooks/size'
 
-  export default {
-    name: 'MusselFormField',
-    extends: FlexItem,
-    inject: {
-      form: {
-        default: null
-      }
-    },
-    props: {
-      label: String,
-      labelWidth: String,
-      labelAlign: {
-        type: String,
-        validator (value) {
-          return ['right', 'left', 'center'].indexOf(value) !== -1
-        }
-      },
-      cellpadding: {
-        type: Boolean,
-        default () {
-          return this.form?.formStyle !== 'table'
-        }
-      },
-      value: null
-    },
-    computed: {
-      sizeValue () {
-        const layout = this.parentLayout || 'flow'
-        return this.size ||
-          this.$el?.getAttribute('size') ||
-          (
-            layout === 'flow'
-              ? '100%'
-              : undefined
-          )
-      },
-      labelStyle () {
-        const w = this.labelWidth || this.form?.labelWidth
-        return {
-          width: w,
-          minWidth: w,
-          textAlign: this.labelAlign || this.form?.labelAlign || 'right'
-        }
-      }
-    }
-  }
+  defineOptions({ name: 'MusselFormField' })
+
+  const props = defineProps({
+    ...sizeProps,
+    label: String,
+    labelWidth: String,
+    labelAlign: String
+  })
+
+  const form = inject('form', {})
+  const style = useSize(props).sizeStyle
+
+  const labelAlign = computed(() =>
+    props.labelAlign || form.labelAlign || null
+  )
+
+  const labelStyle = computed(() => ({
+    width: resolveSize(props.labelWidth || form.labelWidth)
+  }))
 </script>

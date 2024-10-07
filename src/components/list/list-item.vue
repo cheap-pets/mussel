@@ -1,73 +1,26 @@
 <template>
-  <div
-    class="mu-list-item"
-    :disabled="disabled"
-    :active="actualActive"
-    :selected="actualSelected"
-    :icon-indent="actualIconIndent"
-    @click="onClick">
-    <mu-icon
-      v-if="actualIcon || actualIconClass || actualIconIndent"
-      :icon="actualIcon"
-      :icon-class="actualIconClass"
-      @click="onIconClick" />
-    <slot>{{ actualLabel }}</slot>
-  </div>
+  <component :is="componentTag" class="mu-list-item">
+    <slot>
+      <mu-icon v-if="icon" class="mu-list-item_icon" :icon="icon" />
+      <label v-if="label" class="mu-list-item_label">{{ label }}</label>
+    </slot>
+  </component>
 </template>
 
-<script>
-  import './list.pcss'
+<script setup>
+  import './list-item.scss'
 
-  import Icon from '../icon/icon.vue'
+  import { computed } from 'vue'
 
-  import { unsetOrFalse } from '@/utils/prop'
+  defineOptions({
+    name: 'MusselListItem'
+  })
 
-  export default {
-    name: 'MusselListItem',
-    components: {
-      'mu-icon': Icon
-    },
-    props: {
-      value: null,
-      icon: String,
-      iconClass: String,
-      iconIndent: null,
-      label: String,
-      selected: null,
-      active: Boolean,
-      disabled: Boolean,
-      triggerIcon: String
-    },
-    computed: {
-      actualLabel () {
-        return this.label
-      },
-      actualIcon () {
-        return this.icon
-      },
-      actualIconClass () {
-        return this.iconClass
-      },
-      actualIconIndent () {
-        return !unsetOrFalse(this.iconIndent)
-      },
-      actualActive () {
-        return this.active
-      },
-      actualSelected () {
-        return !unsetOrFalse(this.selected)
-      },
-      actualTriggerIcon () {
-        return this.triggerIcon
-      }
-    },
-    methods: {
-      onClick () {
-        if (!this.disabled) this.$emit('click')
-      },
-      onIconClick () {
-        if (!this.disabled) this.$emit('iconclick')
-      }
-    }
-  }
+  const props = defineProps({
+    tag: String,
+    icon: String,
+    label: String
+  })
+
+  const componentTag = computed(() => props.tag === 'a' ? 'a' : 'div')
 </script>

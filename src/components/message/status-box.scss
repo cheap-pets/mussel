@@ -1,0 +1,34 @@
+.mu-status-box {
+  overflow: hidden;
+  padding: calc(var(--mu-base-spacing) * 2);
+  font-size: var(--mu-common-font-size);
+  color: var(--mu-text-color-normal);
+
+  & > * {
+    overflow: hidden;
+    max-width: 100%;
+
+    & + * {
+      margin-top: calc(var(--mu-base-spacing) * 2);
+    }
+  }
+
+  & .mu-status-box_icon {
+    font-size: 100px;
+    color: var(--mu-text-color-placeholder);
+  }
+
+  & .mu-status-box_title {
+    font-size: calc(1em * 1.25);
+    font-weight: 600;
+
+    & + .mu-status-box_message {
+      margin-top: var(--mu-base-spacing);
+    }
+  }
+
+  .mu-status-box_message {
+    line-height: 20px;
+    text-align: center;
+  }
+}

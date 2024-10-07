@@ -1,10 +1,5 @@
 export function unsetOrFalse (value) {
-  return (
-    value === undefined ||
-    value === null ||
-    value === false ||
-    value === 'false'
-  )
+  return value == null || String(value) === 'false'
 }
 
 export function duplicateFromPropOrOptions (vueInstance, props) {

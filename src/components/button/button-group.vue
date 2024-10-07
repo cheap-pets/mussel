@@ -4,10 +4,25 @@
   </div>
 </template>
 
-<script>
-  import './button-group.pcss'
+<script setup>
+  import './button-group.scss'
 
-  export default {
-    name: 'MusselButtonGroup'
-  }
+  import { provide } from 'vue'
+
+  const props = defineProps({
+    primary: Boolean,
+    danger: Boolean,
+    accent: Boolean,
+    xColor: [Boolean, String],
+    small: Boolean,
+    large: Boolean,
+    round: Boolean,
+    disabled: Boolean,
+    buttonStyle: {
+      type: String,
+      validator: v => ['normal', 'outline'].includes(v)
+    }
+  })
+
+  provide('buttonGroup', props)
 </script>

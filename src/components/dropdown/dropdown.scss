@@ -1,0 +1,48 @@
+.mu-dropdown-panel {
+  position: fixed;
+  z-index: var(--mu-z-index-popup);
+
+  overflow: auto;
+  display: block;
+
+  padding: 4px;
+
+  text-align: start;
+
+  background: var(--mu-bg-overlay);
+  border: 1px solid var(--mu-border-color-muted);
+  border-radius: var(--mu-common-border-radius);
+  box-shadow: var(--mu-shadow-popup);
+
+  transition-duration: .1s;
+
+  &[position="top"],
+  &[position="bottom"] {
+    transform: scaleY(0);
+    opacity: 0;
+    transition-property: transform, opacity;
+  }
+
+  &[position="bottom"] {
+    transform-origin: top;
+    margin-top: 4px;
+  }
+
+  &[position="top"] {
+    transform-origin: bottom;
+    margin-bottom: 4px;
+  }
+
+  &[expanded] {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.mu-dropdown-arrow {
+  transition: transform .1s ease-in-out;
+
+  &[expanded] {
+    transform: rotate(-180deg);
+  }
+}

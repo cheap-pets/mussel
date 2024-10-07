@@ -1,0 +1,73 @@
+.mu-box {
+  @for $i from 1 through 4 {
+    $v: calc($i * var(--mu-base-spacing));
+
+    &[padding="#{$i}x"] {
+      padding: $v;
+    }
+  }
+
+  &[padding="0"] {
+    padding: 0;
+  }
+
+  @for $i from 1 through 4 {
+    $v: calc($i * var(--mu-base-spacing));
+
+    &[padding-x="#{$i}x"] {
+      padding-right: $v;
+      padding-left: $v;
+    }
+
+    &[padding-y="#{$i}x"] {
+      padding-top: $v;
+      padding-bottom: $v;
+    }
+  }
+
+  &[padding-x="0"] {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  &[padding-y="0"] {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  @for $i from 1 through 4 {
+    $v: calc($i * var(--mu-base-spacing));
+    
+    &[padding-top="#{$i}x"] {
+      padding-top: $v;
+    }
+
+    &[padding-left="#{$i}x"] {
+      padding-left: $v;
+    }
+
+    &[padding-right="#{$i}x"] {
+      padding-right: $v;
+    }
+
+    &[padding-bottom="#{$i}x"] {
+      padding-bottom: $v;
+    }
+  }
+
+  &[padding-top="0"] {
+    padding-top: 0;
+  }
+
+  &[padding-left="0"] {
+    padding-left: 0;
+  }
+
+  &[padding-right="0"] {
+    padding-right: 0;
+  }
+
+  &[padding-bottom="0"] {
+    padding-bottom: 0;
+  }
+}

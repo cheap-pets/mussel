@@ -1,0 +1,16 @@
+.mu-bg-normal {
+  background-color: var(--mu-bg-normal);
+}
+
+.mu-bg-strong {
+  background-color: var(--mu-bg-strong);
+}
+
+.mu-bg-disabled {
+  background-color: var(--mu-bg-disabled);
+}
+
+.mu-masked {
+  pointer-events: none;
+  filter: blur(4px);
+}

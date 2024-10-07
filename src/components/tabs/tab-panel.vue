@@ -1,48 +1,28 @@
 <template>
-  <div v-show="visible" class="mu-tab-panel" size="1">
+  <div v-show="activeTab === name" ref="el" class="mu-tab-panel mu-box">
     <slot />
   </div>
 </template>
 
-<script>
-  export default {
-    name: 'MusselTabPanel',
-    inject: {
-      tabs: {
-        default: null
-      },
-      tabParams: {
-        default: null
-      }
-    },
-    props: {
-      name: String,
-      label: String
-    },
-    computed: {
-      visible () {
-        return this.tabParams?.activeName === this.name
-      }
-    },
-    watch: {
-      visible: {
-        handler (v) {
-          this.$emit(v ? 'activated' : 'deactivated', this.name)
-        },
-        immediate: true
-      }
-    },
-    mounted () {
-      this.tabs?.mountTab({
-        name: this.name,
-        label: this.label
-      })
-    },
-    beforeDestroy () {
-      this.tabs?.unmountTab({
-        name: this.name,
-        label: this.label
-      })
-    }
-  }
+<script setup>
+  import './tab-panel.scss'
+
+  import { shallowRef, computed, inject, onMounted, onBeforeUnmount } from 'vue'
+
+  defineOptions({ name: 'MusselTabPanel' })
+
+  const props = defineProps({
+    icon: String,
+    name: String,
+    title: String,
+    caption: String,
+    disabled: Boolean
+  })
+
+  const el = shallowRef()
+  const tabs = inject('tabs', {})
+  const activeTab = computed(() => tabs.activeTab?.value)
+
+  onMounted(() => tabs.mountTab?.(props, el.value))
+  onBeforeUnmount(() => tabs.unmountTab?.(props, el.value))
 </script>

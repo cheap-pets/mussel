@@ -1,0 +1,215 @@
+.mu-box {
+  &[border],
+  &[border-x],
+  &[border-left],
+  &[border-right],
+  &[border-y],
+  &[border-top],
+  &[border-bottom] {
+    border: 0 solid var(--mu-border-color);
+  }
+
+  &[border] {
+    border-width: 1px;
+  }
+
+  &[border="0"] {
+    border: 0;
+  }
+
+  &[border~="thin"] {
+    border-width: 1px;
+  }
+
+  &[border~="thick"] {
+    border-width: 2px;
+  }
+
+  &[border~="dashed"] {
+    border-style: dashed;
+  }
+
+  &[border~="dotted"] {
+    border-style: dotted;
+  }
+
+  &[border~="primary"] {
+    border-color: var(--mu-primary-color);
+  }
+
+  &[border~="danger"] {
+    border-color: var(--mu-danger-color);
+  }
+
+  &[border~="muted"] {
+    border-color: var(--mu-border-color-muted);
+  }
+
+  &[border-x],
+  &[border-left] {
+    border-left-width: 1px;
+  }
+
+  &[border-x="0"],
+  &[border-left="0"] {
+    border-left: 0;
+  }
+
+  &[border-x~="thick"],
+  &[border-left~="thick"] {
+    border-left-width: 2px;
+  }
+
+  &[border-x~="dashed"],
+  &[border-left~="dashed"] {
+    border-left-style: dashed;
+  }
+
+  &[border-x~="dotted"],
+  &[border-left~="dotted"] {
+    border-left-style: dotted;
+  }
+
+  &[border-x~="primary"],
+  &[border-left~="primary"] {
+    border-left-color: var(--mu-primary-color);
+  }
+
+  &[border-x~="danger"],
+  &[border-left~="danger"] {
+    border-left-color: var(--mu-danger-color);
+  }
+
+  &[border-x~="muted"],
+  &[border-left~="muted"] {
+    border-left-color: var(--mu-border-color-muted);
+  }
+
+  &[border-x],
+  &[border-right] {
+    border-right-width: 1px;
+  }
+
+  &[border-x="0"],
+  &[border-right="0"] {
+    border-right: 0;
+  }
+
+  &[border-x~="thick"],
+  &[border-right~="thick"] {
+    border-right-width: 2px;
+  }
+
+  &[border-x~="dashed"],
+  &[border-right~="dashed"] {
+    border-right-style: dashed;
+  }
+
+  &[border-x~="dotted"],
+  &[border-right~="dotted"] {
+    border-right-style: dotted;
+  }
+
+  &[border-x~="primary"],
+  &[border-right~="primary"] {
+    border-right-color: var(--mu-primary-color);
+  }
+
+  &[border-x~="danger"],
+  &[border-right~="danger"] {
+    border-right-color: var(--mu-danger-color);
+  }
+
+  &[border-x~="muted"],
+  &[border-right~="muted"] {
+    border-right-color: var(--mu-border-color-muted);
+  }
+
+  &[border-y],
+  &[border-top] {
+    border-top-width: 1px;
+  }
+
+  &[border-y="0"],
+  &[border-top="0"] {
+    border-top-width: 0;
+  }
+
+  &[border-y~="thick"],
+  &[border-top~="thick"] {
+    border-top-width: 2px;
+  }
+
+  &[border-y~="dashed"],
+  &[border-top~="dashed"] {
+    border-top-style: dashed;
+  }
+
+  &[border-y~="dotted"],
+  &[border-top~="dotted"] {
+    border-top-style: dotted;
+  }
+
+  &[border-y~="primary"],
+  &[border-top~="primary"] {
+    border-top-color: var(--mu-primary-color);
+  }
+
+  &[border-y~="danger"],
+  &[border-top~="danger"] {
+    border-top-color: var(--mu-danger-color);
+  }
+
+  &[border-y~="muted"],
+  &[border-top~="muted"] {
+    border-top-color: var(--mu-border-color-muted);
+  }
+
+  &[border-y],
+  &[border-bottom] {
+    border-bottom-width: 1px;
+  }
+
+  &[border-y="0"],
+  &[border-bottom="0"] {
+    border-bottom-width: 0;
+  }
+
+  &[border-y~="thick"],
+  &[border-bottom~="thick"] {
+    border-bottom-width: 2px;
+  }
+
+  &[border-y~="dashed"],
+  &[border-bottom~="dashed"] {
+    border-bottom-style: dashed;
+  }
+
+  &[border-y~="dotted"],
+  &[border-bottom~="dotted"] {
+    border-bottom-style: dotted;
+  }
+
+  &[border-y~="primary"],
+  &[border-bottom~="primary"] {
+    border-bottom-color: var(--mu-primary-color);
+  }
+
+  &[border-y~="danger"],
+  &[border-bottom~="danger"] {
+    border-bottom-color: var(--mu-danger-color);
+  }
+
+  &[border-y~="muted"],
+  &[border-bottom~="muted"] {
+    border-bottom-color: var(--mu-border-color-muted);
+  }
+
+  &[border-radius] {
+    border-radius: var(--mu-common-border-radius);
+  }
+
+  &[border-radius="window"] {
+    border-radius: var(--mu-window-border-radius);
+  }
+}

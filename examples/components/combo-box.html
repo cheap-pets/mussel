@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Combobox Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="./style.css" />
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../dist/mussel.css">
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../node_modules/@tabler/icons-webfont/dist/tabler-icons-outline.css">
+
+  <style>
+    .mu-combo-box {
+      width: 300px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="mu-box" position="fixed fit">
+    <h2>
+      COMBOBOX & SELECT
+      <mu-switch
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+    </h2>
+    <div class="group">
+      <div class="mu-input-group">
+        <mu-combo-box
+          v-model="artist"
+          clear-button
+          prefix="Artist: "
+          dropdown-host="$parent"
+          :options="artists"
+          @dropdown:show="onDropdownShow">
+        </mu-combo-box>
+        <mu-button caption="Add Option" class="mu-input-addon" @click="addOption"></mu-button>
+      </div>
+    </div>
+    <div class="group">
+      <mu-select
+        v-model="artist"
+        placeholder="choose an artist"
+        :options="artists"
+        @dropdown:show="onDropdownShow">
+      </mu-select>
+    </div>
+    <div class="group mu-box" position="fixed bottom left">
+      <mu-combo-box
+        v-model="artist"
+        :options="artistsCn"
+        :dropdown-panel="{ width: '600px' }">
+        <template #append>
+          <div class="mu-dropdown-placeholder"></div>
+        </template>
+      </mu-combo-box>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+        const artist = Vue.ref('Johann Baptist Strauss')
+
+        const artists = [
+          { is: '-', label: 'GROUP 1' },
+          { value: 'Ludwig van Beethoven' },
+          { value: 'Wolfgang Amadeus Mozart' },
+          { value: 'Frédéric François Chopin' },
+          { is: '-', label: 'GROUP 2' },
+          { value: 'Johann Baptist Strauss', disabled: true  }
+        ]
+
+        const artistsCn = [
+          { value: 'Ludwig van Beethoven', label: '贝多芬' },
+          { value: 'Wolfgang Amadeus Mozart', label: '莫扎特' },
+          { value: 'Frédéric François Chopin', label: '肖邦' },
+          '-',
+          { value: 'Johann Baptist Strauss', label: '斯特劳斯', disabled: true }
+        ]
+
+        
+
+        function addOption () {
+          artists.value.push({
+            value: new Date()
+          })
+        }
+
+        return { artist, artists, artistsCn, addOption }
+      },
+      methods: {
+        onDropdownShow () {
+          console.log('dropdown show')
+        },
+        onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+      }
+    })
+
+    mussel.install(app, {
+      icons: {
+        bug: 'ti ti-bug',
+        bolt: 'ti ti-bolt',
+        album: 'ti ti-album'
+      }
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+
+</html>

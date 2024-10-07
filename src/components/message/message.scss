@@ -1,0 +1,38 @@
+.mu-message {
+  font-size: var(--mu-common-font-size);
+}
+
+.mu-message_title {
+  display: flex;
+  gap: var(--mu-base-spacing);
+  align-items: center;
+  line-height: 32px;
+
+  & > .mu-message_icon {
+    flex: none;
+    font-size: 32px;
+    color: var(--mu-primary-color-4);
+  }
+
+  & > label {
+    flex: 1 1 0;
+    font-size: calc(1em + 2px);
+    font-weight: 600;
+  }
+}
+
+.mu-message {
+  &[type=success] .mu-message_icon {
+    color: var(--mu-success-color-4);
+  }
+
+  &[type=warn] .mu-message_icon,
+  &[type=error] .mu-message_icon {
+    color: var(--mu-danger-color-4);
+  }
+}
+
+.mu-message_content {
+  padding-left: calc(32px + var(--mu-base-spacing));
+  line-height: calc(1em * 1.75);
+}

@@ -1,0 +1,63 @@
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
+.mu-box {
+  &[width="auto"] {
+    width: auto;
+  }
+
+  &[height="auto"] {
+    height: auto;
+  }
+
+  &[min-width="auto"] {
+    width: auto;
+  }
+
+  &[min-height="auto"] {
+    height: auto;
+  }
+
+  @each $v in (0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000) {
+    &[width="#{$v}"] {
+      width: #{$v}px;
+    }
+
+    &[height="#{$v}"] {
+      height: #{$v}px;
+    }
+  }
+
+  @each $v in (0, 50, 100, 150, 200, 250, 300) {
+    &[min-width="#{$v}"] {
+      width: #{$v}px;
+    }
+
+    &[min-height="#{$v}"] {
+      height: #{$v}px;
+    }
+  }
+
+  @each $v in (10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100%) {
+    &[width="#{$v}"] {
+      width: $v;
+    }
+
+    &[height="#{$v}"] {
+      height: $v;
+    }
+  }
+
+  &[overflow="auto"] {
+    overflow: auto;
+  }
+
+  &[overflow="hidden"] {
+    overflow: hidden;
+  }
+
+  &[overflow="visible"] {
+    overflow: visible;
+  }
+}

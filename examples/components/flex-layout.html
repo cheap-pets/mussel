@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Flex Layout Component Example</title>
+
+  <link rel="stylesheet" type="text/css" href="../../dist/mussel.css" />
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <style>
+    .block {
+      padding: 20px;
+      overflow: hidden;
+      border: 1px solid var(--mu-border-color);
+      background-color: var(--mu-bg-strong);
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    #app {
+      position: fixed;
+      inset: 0;
+      background-color: var(--mu-bg-normal);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <mu-h-box position="fixed fit" padding="1x" gap="1x">
+      <div
+        class="block" flex="0" collapsible
+        style="min-width: 200px;"
+        recover-size="auto">
+        1
+        <div style="width: 500px">Content</div>
+      </div>
+      <mu-flex-splitter appearance="normal"></mu-flex-splitter>
+      <mu-v-box
+        flex="1" collapsible
+        style="overflow: hidden; min-width: 300px;">
+        <div class="block" flex="1">2A</div>
+        <mu-flex-splitter></mu-flex-splitter>
+        <div class="block" flex="1">2B</div>
+      </mu-v-box>
+      <mu-flex-splitter resizable="false"></mu-flex-splitter>
+      <div class="block" flex="1">3</div>
+    </mu-h-box>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+      }
+    })
+
+    mussel.install(
+      app,
+      {
+        darkMode: false,
+        splitter: {
+          handle: true,
+          appearance: 'slim'
+        }
+      }
+    )
+
+    app.mount('#app')
+  </script>
+</body>

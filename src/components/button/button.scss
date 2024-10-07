@@ -1,0 +1,162 @@
+.mu-button {
+  --mu-button_size: var(--mu-input-size);
+
+  cursor: pointer;
+  user-select: none;
+
+  position: relative;
+
+  display: inline-flex;
+  flex: none;
+  gap: var(--mu-content-spacing);
+  align-items: center;
+  justify-content: center;
+
+  min-width: var(--mu-button_size);
+  height: var(--mu-button_size);
+  padding: 0 15px;
+
+  font-family: inherit;
+  font-size: var(--mu-common-font-size);
+  font-weight: 500;
+  line-height: var(--mu-common-line-height);
+  text-decoration: none;
+  white-space: nowrap;
+
+  border-radius: var(--mu-common-border-radius);
+  outline: none;
+
+  & > .mu-icon {
+    font-size: calc(1em + 2px);
+  }
+
+  &[small] {
+    --mu-button_size: var(--mu-input-size-small);
+
+    padding: 0 7px;
+    font-size: 12px;
+  }
+
+  &[large] {
+    --mu-button_size: var(--mu-input-size-large);
+
+    padding: 0 23px;
+    font-size: 16px;
+  }
+
+  &[round] {
+    border-radius: calc(var(--mu-button_size) / 2);
+  }
+
+  &.mu-icon-button {
+    padding: 0;
+  }
+}
+
+.mu-button {
+  --mu-button_color: var(--mu-border-color);
+
+  color: var(--mu-text-color-normal);
+  background: var(--mu-bg-normal);
+  border: 1px solid var(--mu-button_color);
+
+  &[active] {
+    --mu-button_color: var(--mu-primary-color-6);
+
+    z-index: 1;
+    color: var(--mu-button_color);
+    background-color: rgb(from var(--mu-button_color) r g b / 0.1);
+  }
+
+  &:hover {
+    --mu-button_color: var(--mu-primary-color-4);
+
+    z-index: 2;
+    color: var(--mu-button_color);
+  }
+
+  &:focus {
+    box-shadow: var(--mu-shadow-focus) rgb(from var(--mu-button_color) r g b / 0.15);
+  }
+}
+
+.mu-button {
+  @each $v in (primary, accent, danger) {
+    &[#{$v}] {
+      --mu-button_color: var(--mu-#{$v}-color);
+
+      &[active] {
+        --mu-button_color: var(--mu-#{$v}-color-6);
+      }
+
+      &:hover {
+        --mu-button_color: var(--mu-#{$v}-color-4);
+      }
+    }
+  }
+
+  &[x-color] {
+    --mu-button_color: var(--mu-x-color);
+
+    &[active] {
+      --mu-button_color: var(--mu-x-color-dark);
+    }
+
+    &:hover {
+      --mu-button_color: var(--mu-x-color-light);
+    }
+  }
+
+  &[x-color],
+  &[primary],
+  &[accent],
+  &[danger] {
+    color: #fff;
+    background: var(--mu-button_color);
+    border-color: var(--mu-button_color);
+
+    &[button-style="text"],
+    &[button-style="link"],
+    &[button-style="outline"] {
+      color: var(--mu-button_color);
+    }
+  }
+}
+
+.mu-button {
+  &:disabled,
+  &[disabled] {
+    pointer-events: none;
+    color: var(--mu-text-color-subtle) !important;
+    background: var(--mu-bg-disabled);
+    border-color: var(--mu-border-color-muted);
+  }
+
+  &[button-style="link"] {
+    height: unset;
+    padding: 0;
+  }
+
+  &[button-style="text"],
+  &[button-style="link"],
+  &[button-style="outline"] {
+    background: transparent;
+  }
+
+  &[button-style="text"],
+  &[button-style="link"] {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  &[button-style="text"]:hover {
+    background: var(--mu-bg-translucent-gray);
+  }
+
+  &[button-style="text"],
+  &[button-style="outline"] {
+    &[active] {
+      background-color: rgb(from var(--mu-button_color) r g b / 0.1);
+    }
+  }
+}

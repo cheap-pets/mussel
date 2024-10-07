@@ -1,0 +1,52 @@
+.mu-text-color-normal {
+  color: var(--mu-text-color-normal);
+}
+
+.mu-text-color-body {
+  color: var(--mu-text-color-normal);
+}
+
+.mu-text-color-weak {
+  color: var(--mu-text-color-subtle);
+}
+
+.mu-text-color-placeholder {
+  color: var(--mu-text-color-placeholder);
+}
+
+.mu-text-color-primary {
+  color: var(--mu-primary-color);
+}
+
+.mu-text-color-accent {
+  color: var(--mu-accent-color);
+}
+
+.mu-text-color-success {
+  color: var(--mu-success-color);
+}
+
+.mu-text-color-warning {
+  color: var(--mu-warning-color);
+}
+
+.mu-text-color-danger {
+  color: var(--mu-danger-color);
+}
+
+.mu-text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mu-label {
+  overflow: hidden;
+
+  min-width: 20px;
+
+  font-weight: 500;
+  color: var(--mu-text-color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

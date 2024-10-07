@@ -1,0 +1,12 @@
+{
+  "exclude": ["node_modules/**/*.js"],
+  "jsc": {
+    "parser": {
+      "syntax": "ecmascript"
+    }
+  },
+  "module": {
+    "type": "es6"
+  },
+  "sourceMaps": true
+}

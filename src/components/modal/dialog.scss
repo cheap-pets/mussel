@@ -1,0 +1,97 @@
+.mu-dialog-mask {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition-duration: .2s;
+}
+
+.mu-dialog {
+  --mu-dialog-padding: 12px;
+
+  position: absolute;
+
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  min-width: 320px;
+  max-width: 100%;
+  min-height: 200px;
+  max-height: 100%;
+
+  font-size: var(--mu-common-font-size);
+  color: var(--mu-text-color-normal);
+
+  background: var(--mu-bg-normal);
+  border-radius: var(--mu-window-border-radius);
+  box-shadow: var(--mu-shadow-modal);
+
+  transition: transform .2s, opacity .2s;
+
+  &[dragging] {
+    opacity: .8;
+  }
+}
+
+.mu-dialog-enter-from,
+.mu-dialog-leave-to {
+  & > .mu-dialog {
+    transform: translateY(300px);
+    opacity: 0;
+  }
+}
+
+.mu-dialog_header,
+.mu-dialog_footer {
+  user-select: none;
+
+  display: flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+
+  padding: var(--mu-dialog-padding);
+
+  line-height: 20px;
+  color: var(--mu-text-color-normal);
+
+  & > .mu-divider {
+    align-self: center;
+    height: calc(1em + 2px);
+    margin: 0 var(--mu-base-spacing);
+  }
+}
+
+.mu-dialog_header + .mu-dialog_footer {
+  margin-top: auto;
+}
+
+.mu-dialog_footer {
+  justify-content: flex-end;
+}
+
+.mu-dialog_body {
+  flex: 1 1 auto;
+}
+
+.mu-dialog_icon {
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.mu-dialog_title {
+  pointer-events: none;
+  flex: 1 1 0;
+  font-size: calc(var(--mu-common-font-size) + 2px);
+  font-weight: 600;
+}
+
+.mu-tool-button.mu-close-button {
+  transition: all .1s ease-in-out;
+
+  &:hover {
+    transform: rotate(-180deg);
+    color: #fff;
+    background-color: var(--mu-danger-color);
+  }
+}

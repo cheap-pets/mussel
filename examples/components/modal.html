@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Modal Component Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../dist/mussel.css">
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../node_modules/@tabler/icons-webfont/dist/tabler-icons-outline.css">
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="./style.css" />
+
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="app" class="mu-box" position="fixed fit">
+    <h2>
+      Modal Dialog
+      <mu-switch
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+    </h2>
+    <div id="div1" class="group">
+      <mu-button caption="Open Dialog 1" @click="openDialog1"></mu-button>
+      <mu-button caption="Request Fullscreen" accent button-style="outline" @click="requestFullscreen('#div1')"></mu-button>
+    </div>
+    <div id="div2" class="group">
+      <mu-button caption="Open Drawer: Top" @click="openDrawer1('top')"></mu-button>
+      <mu-button caption="Open Drawer: Bottom" @click="openDrawer1('bottom')"></mu-button>
+      <mu-button caption="Open Drawer: Left" @click="openDrawer1('left')"></mu-button>
+      <mu-button caption="Open Drawer: Right" @click="openDrawer1('right')"></mu-button>
+      <mu-button caption="Request Fullscreen" accent button-style="outline" @click="requestFullscreen('#div2')"></mu-button>
+      <mu-switch v-model="maskVisible" label="Mask Visible"></mu-switch>
+      <mu-switch v-model="borderRadius" label="Border Radius"></mu-switch>
+    </div>
+    <mu-dialog
+      v-model:visible="dialog1Visible"
+      title="Modal Dialog 1"
+      width="800"
+      height="600"
+      easy-hide
+      keep-position
+      :lazy="false"
+      :icon="{ icon: 'box', style: 'color: var(--mu-accent-color)' }"
+      :buttons="['-', 'Find', ' ', 'CANCEL', 'OK']"
+      @update:visible="(...args) => onDialogVisibleChange('dialog1', ...args)"
+      @button-click="onButtonClick">
+      <template #header-append>
+        <mu-input placeholder="find your money" prefix=":icon=search" input-style="solid" round></mu-input>
+        <mu-dropdown-button
+          class="mu-icon-button"
+          button-style="text"
+          dropdown-trigger="click"
+          icon="dots"
+          :arrow="false"
+          :dropdown-items="menus">
+        </mu-dropdown>
+      </template>
+      <div v-mu-scrollbar class="mu-dialog_body mu-bg-strong" style="padding: 24px;">
+        <div style="height: 1000px; font-style: italic; font-size: 16px;">
+          A long time ago in a galaxy far, far away…
+        </div>
+      </div>
+      <template #footer-prepend>
+        <mu-input placeholder="where's your money?"></mu-input>
+      </template>
+    </mu-dialog>
+    <mu-drawer
+      v-model:visible="drawer1Visible"
+      :position="drawerPosition"
+      :mask="maskVisible"
+      :border-radius="borderRadius"
+      style="padding: 16px;"
+      width="50%"
+      easy-hide>
+      <label>I am a drawer.</label>
+    </mu-drawer>
+
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+        const $mussel = Vue.inject('$mussel')
+        const dialog1Visible = Vue.ref()
+        const drawer1Visible = Vue.ref()
+        const drawerPosition = Vue.ref()
+        const maskVisible = Vue.ref(true)
+        const borderRadius = Vue.ref(true)
+
+        const menus = [
+          { label: 'Open Recent Files' },
+          { label: 'New File' },
+          '-',
+          { label: 'Exit' }
+        ]
+
+        function openDialog1 () {
+          dialog1Visible.value = true
+        }
+
+        function openDrawer1 (position) {
+          drawerPosition.value = position
+          drawer1Visible.value = true
+        }
+        
+        function requestFullscreen (divId) {
+          document.querySelector(divId).requestFullscreen()
+        }
+
+        function onDialogVisibleChange (dialogName, value, action, btn) {
+          console.log(dialogName, value, action, btn)
+        }
+
+        function onButtonClick(button) {
+          if (button?.caption === 'Find') {
+            $mussel.messageBox.alert('Cannot find any !')
+          } else {
+            console.log(button?.caption)
+          }
+        }
+
+        function onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+
+        return {
+          dialog1Visible,
+          drawer1Visible,
+          drawerPosition,
+          maskVisible,
+          borderRadius,
+          menus,
+          openDialog1,
+          openDrawer1,
+          onDialogVisibleChange,
+          onButtonClick,
+          requestFullscreen,
+          onUIModeChange
+        }
+      }
+    })
+
+    mussel.install(app, {
+      icons: {
+        box: 'ti ti-box',
+        dots: 'ti ti-dots',
+        search: 'ti ti-search'
+      }
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+
+</html>

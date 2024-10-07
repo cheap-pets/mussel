@@ -1,0 +1,77 @@
+{
+  "root": true,
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "extends": [
+    "standard",
+    "plugin:vue/vue3-recommended"
+  ],
+  "plugins": [
+    "vue"
+  ],
+  "env": {
+    "browser": true,
+    "es6": true,
+    "vue/setup-compiler-macros": true
+  },
+  "rules": {
+    "vue/html-indent": [
+      "warn",
+      2,
+      {
+        "alignAttributesVertically": false
+      }
+    ],
+    "vue/script-indent": [
+      "error",
+      2,
+      { "baseIndent": 1, "switchCase": 1 }
+    ],
+    "vue/no-v-html": 0,
+    "vue/require-prop-types": 0,
+    "vue/require-default-prop": 0,
+    "vue/max-attributes-per-line": 0,
+    "vue/multi-word-component-names": 0,
+    "vue/html-closing-bracket-newline": [
+      "error",
+      {
+        "singleline": "never",
+        "multiline": "never"
+      }
+    ],
+    "complexity": [ 1, 10 ],
+    "max-len": [
+      "warn",
+      {
+        "code": 120,
+        "tabWidth": 2,
+        "ignoreUrls": true,
+        "ignoreStrings": true,
+        "ignoreComments": true,
+        "ignoreRegExpLiterals": true,
+        "ignoreTrailingComments": true,
+        "ignoreTemplateLiterals": true
+      }
+    ],
+    "no-shadow": "error",
+    "no-shadow-restricted-names": "error"
+  },
+  "overrides": [
+    {
+      "files": ["*.vue"],
+      "rules": {
+        "indent": "off",
+        "template-curly-spacing": "off"
+      }
+    },
+    {
+      "files": ["*.html"],
+      "rules": {
+        "vue/comment-directive": "off"
+      }
+    }
+  ]
+}

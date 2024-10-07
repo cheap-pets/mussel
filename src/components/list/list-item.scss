@@ -1,0 +1,61 @@
+.mu-list-item,
+.mu-list-divider {
+  cursor: default;
+
+  position: relative;
+
+  overflow: hidden;
+  display: flex;
+  gap: var(--mu-content-spacing);
+  align-items: center;
+
+  width: 100%;
+  padding: 6px 12px;
+
+  font-size: var(--mu-common-font-size);
+  line-height: var(--mu-common-line-height);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  & > .mu-icon {
+    flex: none;
+  }
+
+  & > label {
+    cursor: inherit;
+
+    overflow: hidden;
+    flex: 1 1 0;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.mu-list-item {
+  min-height: 32px;
+  color: var(--mu-text-color-normal);
+
+  @at-root a#{&} {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--mu-bg-translucent-gray);
+    }
+  }
+
+  &[active] {
+    color: #fff;
+    background-color: var(--mu-primary-color);
+
+    & .mu-text-color-weak {
+      color: rgba(255, 255, 255, .5);
+    }
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    color: var(--mu-text-color-subtle);
+    background: inherit;
+  }
+}

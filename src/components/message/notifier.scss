@@ -1,0 +1,27 @@
+.mu-notifier-group {
+  position: fixed;
+  z-index: var(--mu-z-index-ontop);
+  top: 0;
+  right: 0;
+}
+
+.mu-notifier-group-enter-from,
+.mu-notifier-group-leave-to {
+  transform: translateX(100px);
+  opacity: 0;
+}
+
+.mu-notifier {
+  cursor: pointer;
+
+  width: 320px;
+  margin: 16px;
+  padding: 8px;
+
+  background: var(--mu-bg-strong);
+  border: 1px solid var(--mu-border-color-muted);
+  border-radius: var(--mu-window-border-radius);
+  box-shadow: var(--mu-shadow-popup);
+
+  transition: transform .3s, opacity .3s;
+}

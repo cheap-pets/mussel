@@ -1,0 +1,19 @@
+.mu-tabs {
+  --mu-tab-bar_active-bar-width: 2px;
+
+  display: flex;
+  flex-direction: column;
+  background: var(--mu-bg-normal);
+
+  &[tab-position=bottom] {
+    flex-direction: column-reverse;
+  }
+
+  &[tab-position=left] {
+    flex-direction: row;
+  }
+
+  &[tab-position=right] {
+    flex-direction: row-reverse;
+  }
+}

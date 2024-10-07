@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
+
+  <title>Dropdown Component Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+  
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="./style.css" />
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../dist/mussel.css">
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../node_modules/@tabler/icons-webfont/dist/tabler-icons-outline.css">
+
+  <style>
+    .mu-dropdown-panel.sys-menu_mask {
+      pointer-events: none;
+      top: 56px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: var(--mu-bg-mask);
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .sys-menu {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 360px;
+      background-color: var(--mu-bg-strong);
+      opacity: 0;
+      transform: translateY(-100%);
+      transition: transform .2s, opacity .2s;
+      box-shadow: var(--mu-shadow-layer);
+    }
+
+    .sys-menu_mask[expanded] > .sys-menu {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="mu-box" position="fixed fit" style="overflow: auto;">
+    <h2>
+      Dropdown Components
+      <mu-switch
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+      <mu-dropdown-button
+        class="mu-icon-button"
+        accent icon="dotsVert" :arrow="false"
+        dropdown-class="sys-menu_mask"
+        dropdown-trigger="click"
+        dropdown-positioned>
+        <template #dropdown>
+          <div class="sys-menu"></div>
+        </template>
+      </mu-dropdown-button>
+    </h2>
+    <div class="group">
+      <mu-dropdown
+        style="display: inline-block;"
+        :dropdown-items="artists"
+        @dropdown:show="onShow"
+        @dropdown:itemclick="onItemClick">
+        <mu-button>{{ artist || 'Mouse Hover' }}</mu-button>
+      </mu-dropdown>
+      <mu-dropdown
+        style="display: inline-block;"
+        dropdown-trigger="click"
+        :dropdown-items="artists"
+        @dropdown:show="onShow"
+        @dropdown:itemclick="onItemClick">
+        <mu-button>Press me</mu-button>
+      </mu-dropdown>
+    </div>
+    <div class="group">
+      <mu-dropdown-button
+        danger
+        :dropdown-items="artists"
+        @dropdown:itemclick="onItemClick">
+        Dropdown Button A
+      </mu-dropdown-button>
+      <mu-dropdown-button
+        x-color="cyan"
+        split-button
+        caption="Split Button"
+        dropdown-trigger="click"
+        :dropdown-items="artists"
+        @click="onButtonClick"
+        @dropdown:itemclick="onItemClick">
+      </mu-dropdown-button>
+      <mu-dropdown-button
+        class="mu-icon-button"
+        icon="dots"
+        button-style="text"
+        :arrow="false"
+        :dropdown-items="artists"
+        @dropdown:itemclick="onItemClick">
+      </mu-dropdown-button>
+    </div>
+    <div class="group">
+      <mu-dropdown-button
+        split-button
+        x-color="grape"
+        caption="Check & Radio"
+        @dropdown:itemclick="onItemClick">
+        <template #dropdown>
+          <mu-dropdown-check-item
+            value="Ludwig van Beethoven"
+            v-model="checkedArtists">
+          </mu-dropdown-check-item>
+          <mu-dropdown-check-item
+            value="Wolfgang Amadeus Mozart"
+            v-model="checkedArtists">
+          </mu-dropdown-check-item>
+          <mu-list-divider></mu-list-divider>
+          <mu-dropdown-radio-item
+            value="Frédéric François Chopin"
+            v-model="checkedArtist">
+          </mu-dropdown-radio-item>
+          <mu-dropdown-radio-item
+            value="Johann Baptist Strauss"
+            v-model="checkedArtist">
+          </mu-dropdown-radio-item>
+        </template>
+      </mu-dropdown-button>
+    </div>
+    <div class="group">
+      <mu-dropdown
+        dropdown-trigger="click"
+        dropdown-style="max-height: 200px;"
+        dropdown-scrollbar
+        :dropdown-items="artists">
+        <mu-button>Mussel Scrollbar</mu-button>
+      </mu-dropdown>
+    </div>
+    <div id="divX" class="group">
+      <mu-dropdown-button
+        primary
+        split-button
+        button-style="outline"
+        caption="Request Fullscreen"
+        dropdown-trigger="click"
+        :dropdown-items="artists"
+        @click="requestFullscreen"
+        @dropdown:itemclick="onItemClick">
+      </mu-dropdown-button>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+        const artist = Vue.ref()
+        const artists = Vue.ref([
+          { is: '-', label: 'GROUP 1' },
+          { label: 'Ludwig van Beethoven', value: 1, icon: 'info'  },
+          { label: 'Wolfgang Amadeus Mozart', icon: 'question' },
+          '-',
+          { is: '-', label: 'GROUP 2' },
+          { is: '-', label: 'GROUP 3' },
+          { label: 'Frédéric François Chopin', icon: ' ' },
+          { label: 'Johann Baptist Strauss', icon: 'ok' }
+        ])
+        const checkedArtist = Vue.ref(null)
+        const checkedArtists = Vue.ref([])
+        const permission = Vue.ref(false)
+
+        function onShow () {
+          console.log('show')
+        }
+
+        function onItemClick (item) {
+          artist.value = item.value || item.label
+        }
+
+        function onButtonClick () {
+          console.log('button click')
+        }
+
+        function requestFullscreen () {
+          const divX = document.querySelector('#divX')
+
+          divX.requestFullscreen()
+        }
+
+        const stickyPanelVisible = Vue.ref(false)
+
+        function onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+
+        return {
+          artist,
+          artists,
+          checkedArtist,
+          checkedArtists,
+          stickyPanelVisible,
+          permission,
+          onShow,
+          onItemClick,
+          onButtonClick,
+          requestFullscreen,
+          onUIModeChange
+        }
+      }
+    })
+
+    mussel.install(app, {
+      icons: {
+        bug: 'ti ti-bug',
+        bolt: 'ti ti-bolt',
+        dots: 'ti ti-dots',
+        dotsVert: 'ti ti-dots-vertical'
+      }
+    })
+  
+    app.mount('#app')
+  </script>
+</body>

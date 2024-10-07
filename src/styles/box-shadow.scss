@@ -1,0 +1,23 @@
+.mu-shadow-float {
+  box-shadow: var(--mu-shadow-float);
+}
+
+.mu-shadow-popup {
+  box-shadow: var(--mu-shadow-popup);
+}
+
+.mu-shadow-layer {
+  box-shadow: var(--mu-shadow-layer);
+}
+
+.mu-shadow-modal {
+  box-shadow: var(--mu-shadow-modal);
+}
+
+.mu-shadow-focus:focus {
+  box-shadow: var(--mu-shadow-focus) rgb(from var(--mu-primary-color) r g b / 0.15);
+}
+
+.mu-shadow-focus-within:focus-within {
+  box-shadow: var(--mu-shadow-focus) rgb(from var(--mu-primary-color) r g b / 0.15);
+}

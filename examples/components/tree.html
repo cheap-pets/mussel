@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Tree Component Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="../../dist/mussel.css" />
+  <style>
+    body {
+      margin: 0;
+      min-width: 1200px;
+    }
+
+    h2 {
+      margin: 0;
+      padding: 16px 16px 0;
+    }
+
+    h3 {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      height: 40px;
+      margin: 0;
+      padding: 0 8px;
+      background-color: var(--mu-bg-strong);
+    }
+
+    h3 > .mu-button {
+      flex: none;
+      height: 28px;
+      margin-left: auto;
+      padding: 0 8px;
+    }
+
+    h3 > .mu-button + .mu-button {
+      margin-left: 0;
+    }
+
+    .demo-panel {
+      width: calc(50% - 10px);
+      border: 1px solid #ccc;
+    }
+
+    .mu-tree {
+      --mu-tree_node-height: 32px;
+
+      width: 100%;
+      height: 200px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Tree Examples</h2>
+  <div
+    id="app"
+    class="mu-box mu-bg-normal"
+    width="100%"
+    layout="flex"
+    flex-wrap
+    gap="2x"
+    padding="2x">
+    <div style="width: 100%;">
+      <mu-combo-box class="mu-box" width="400" v-model="demo" :options="demos"></mu-combo-box>
+      <mu-switch
+        v-model="darkMode"
+        style="margin-left: 16px;"
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+    </div>
+    <div v-if="!demo || demo === 1" class="demo-panel">
+      <h3>1. Basic Style</h3>
+      <mu-tree
+        :data="data"
+        :active-node="activeNode"
+        @node-click="onNodeClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 2" class="demo-panel">
+      <h3>2. Setup Data Props</h3>
+      <mu-tree
+        :data="data"
+        :active-node="activeNode"
+        :props="{ label: 'alias', title: 'label', icon: 'icon2' }"
+        @node-click="onNodeClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 3" class="demo-panel">
+      <h3>3. Hide Node Icon</h3>
+      <mu-tree
+        :data="data"
+        :active-node="activeNode"
+        :node-icons="false"
+        @node-click="onNodeClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 4" class="demo-panel">
+      <h3>4. Setup Default Node Icon</h3>
+      <mu-tree
+        :data="data"
+        :active-node="activeNode"
+        :node-icons="{ folder: 'ok', folderOpen: 'ok', leaf: 'x' }"
+        @node-click="onNodeClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 5" class="demo-panel">
+      <h3>5. Setup Expand Icon</h3>
+      <mu-tree
+        :data="data"
+        :active-node="activeNode"
+        :expand-icons="{ expanded: 'folderOpen', collapsed: 'folder', leaf: 'file' }"
+        :node-icons="{ folder: 'X', folderOpen: 'X', leaf: 'X' }"
+        @node-click="onNodeClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 6" class="demo-panel">
+      <h3>6. Hide Expand Icon (List Like)</h3>
+      <mu-tree
+        :data="data"
+        :active-node="activeNode"
+        :expand-icons="false"
+        :props="{ childNodes: '' }"
+        @node-click="onNodeClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 7" class="demo-panel">
+      <h3>7. Custom Node Template</h3>
+      <mu-tree
+        :data="data"
+        :active-node="activeNode"
+        @node-click="onNodeClick">
+        <template #default="scoped">
+          <mu-icon
+            icon="info"
+            :style="{ color: scoped.node.id % 5 === 0 ? 'red' : undefined }">
+          </mu-icon>
+          <label
+            class="mu-tree-node_label"
+            :style="{ color: scoped.node.id % 5 === 0 ? 'red' : undefined }">
+            Custom: {{ scoped.node.label }} (id: {{ scoped.node.id }})
+          </label>
+        </template>
+        <template #buttons="scoped">
+          <mu-icon
+            v-if="scoped.node.id % 3 > 0"
+            icon="x"
+            danger
+            hover
+            class="mu-icon-button mu-tree-node_button"
+            @click="tree.emit('nodeButtonClick', node, { title: 'Custom Button' })" />
+        </template>
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 8" class="demo-panel">
+      <h3>8. Node Buttons</h3>
+      <mu-tree
+        :data="data"
+        :buttons="buttons"
+        :active-node="activeNode"
+        @node-click="onNodeClick"
+        @node-button-click="onNodeButtonClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 9" class="demo-panel">
+      <h3>
+        9. Auto Expand Level
+        <mu-button @click="expandTree.expandAll()">Expand All</mu-button>
+        <mu-button @click="expandTree.collapseAll()">Collapse All</mu-button>
+      </h3>
+      <mu-tree
+        ref="expandTree"
+        :data="data"
+        :active-node="activeNode"
+        :auto-expand-level="3"
+        @node-click="onNodeClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 10" class="demo-panel">
+      <h3>
+        10. Expand Nodes
+        <mu-button @click="expandToActive">Expand To Active</mu-button>
+        <mu-button @click="expandNodes">Expand Random</mu-button>
+        <mu-button @click="expandTree2.collapseAll()">Collapse All</mu-button>
+      </h3>
+      <mu-tree
+        ref="expandTree2"
+        :data="data"
+        :active-node="activeNode"
+        @node-click="onNodeClick">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 11" class="demo-panel">
+      <h3>11. Context Menu (*Temporary)</h3>
+      <mu-tree
+        :data="data"
+        :active-node="activeNode"
+        @node-click="onNodeClick">
+        <template #default="{ node }">
+          <label class="mu-tree-node_label">
+            {{ node.label }}
+          </label>
+          <mu-dropdown
+            class="mu-tree-node_button"
+            dropdown-align="right"
+            dropdown-trigger="click"
+            :dropdown-style="{ minWidth: '150px' }"
+            :dropdown-items="contextMenus">
+            <mu-icon class="mu-icon-button" icon="dotsVert"></mu-icon>
+          </mu-dropdown>
+        </template>
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 12" class="demo-panel">
+      <h3>12. Checkbox with "checked" Node Prop</h3>
+      <mu-tree
+        checkbox
+        :data="data"
+        :active-node="activeNode"
+        :props="{ checked: 'checked' }"
+        @node-check-change="onUpdateNodeChecked">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 13" class="demo-panel">
+      <h3>
+        13. Checkbox with "checked-nodes-keys" Prop
+        <mu-button @click="checkedNodesKeys.clear()">Uncheck All</mu-button>
+      </h3>
+      <mu-tree
+        checkbox
+        :data="data"
+        :active-node="activeNode"
+        :checked-nodes-keys="checkedNodesKeys"
+        @node-check-change="onUpdateCheckedNodesKeys">
+      </mu-tree>
+    </div>
+    <div v-if="!demo || demo === 14" class="demo-panel">
+      <h3>14. Lazy Load</h3>
+      <mu-tree
+        checkbox
+        :data="data"
+        :active-node="activeNode"
+        :props="{ childNodes: 'children', isLeaf: 'isLeaf' }"
+        @node-expand="loadChildren">
+      </mu-tree>
+    </div>
+  </div>
+  <script type="text/javascript">
+    const demos = [
+      { value: 0, label: 'Show All', },
+      { value: 1, label: '01. Basic Style', },
+      { value: 2, label: '02. Setup Data Props', },
+      { value: 3, label: '03. Hide Node Icon', },
+      { value: 4, label: '04. Setup Default Node Icon', },
+      { value: 5, label: '05. Setup Expand Icon', },
+      { value: 6, label: '06. Hide Expand Icon (List Like)', },
+      { value: 7, label: '07. Custom Node Template', },
+      { value: 8, label: '08. Node Buttons', },
+      { value: 9, label: '09. Auto Expand Level', },
+      { value: 10, label: '10. Expand Nodes', },
+      { value: 11, label: '11. Context Menu', },
+      { value: 12, label: '12. Checkbox with "checked" Node Prop', },
+      { value: 13, label: '13. Checkbox with "checked-nodes-keys" Prop', },
+      { value: 14, label: '14. Lazy Load', }
+    ]
+
+    function getRandomInt (n) {
+      return Math.floor(Math.random() * n)
+    }
+
+    function generateRandomTree(maxCount, maxLevel) {
+      let count = 0
+
+      function createNode(level) {
+        const node = {
+          id: count,
+          icon: count % 5 === 0 && 'point',
+          icon2: 'x',
+          label: `Node ${count}`,
+          alias: `Node Alias ${count}`,
+          disabled: count % 7 === 0
+        }
+
+        count++
+
+        const childrenCount = Math.max(level ? 0 : 1, getRandomInt(10))
+
+        if (childrenCount && level < maxLevel && count < maxCount) {
+          node.childNodes = []
+
+          for (let i = 0; i < childrenCount; i++) {
+            node.childNodes.push(createNode(level + 1))
+          }
+        }
+        
+        return node;
+      }
+
+      return createNode(0)
+    }
+
+    const root = generateRandomTree(200, 5)
+
+    const contextMenus = [
+      { divider: true, label: 'File' },
+      { label: 'Copy' },
+      { label: 'Move' },
+      { label: 'Remove' },
+      { divider: true, label: 'Follow' },
+      { label: 'WeChat' },
+      { label: 'FaceBook' }
+    ]
+
+    const app = Vue.createApp({
+      setup () {
+        const data = Vue.ref(root.childNodes)
+        const activeNode = Vue.ref()
+        const expandTree = Vue.ref()
+        const expandTree2 = Vue.ref()
+
+        const demoIdx = Vue.ref(
+          parseInt(window.localStorage.getItem('tree_demo_index')) ||
+          0
+        )
+
+        const demo = Vue.computed({
+          get () {
+            return demoIdx.value
+          },
+          set (v) {
+            demoIdx.value = parseInt(v)
+            window.localStorage.setItem('tree_demo_index', v)
+          }
+        })
+
+        const buttons = [
+          {
+            icon: 'x',
+            title: 'button 1',
+            danger: true,
+            hover: true
+          },
+          {
+            icon: 'ok',
+            title: 'button 2',
+            success: true,
+            hover: true
+          },
+          {
+            icon: 'chevronRight'
+          }
+        ]
+
+        function onNodeClick (node) {
+          activeNode.value = node
+        }
+
+        function onNodeButtonClick (node, button) {
+          console.log('Button Clicked:', node.label, button.title)
+        }
+
+        function checkNodeRecursively (node) {
+          node.checked = true
+          
+          if (node.childNodes) {
+            node.childNodes.forEach(checkNodeRecursively)
+          }
+        }
+
+        function onUpdateNodeChecked (node, checked) {
+          node.checked = checked
+        }
+    
+        const checkedNodesKeys = Vue.ref(new Set())
+    
+        function onUpdateCheckedNodesKeys (node, checked) {
+          if (checked) checkedNodesKeys.value.add(node.id)
+          else checkedNodesKeys.value.delete(node.id)
+        }
+
+        function expandToActive () {
+          expandTree2.value.expandTo(activeNode.value)
+          // or expandTo(activeNode.value.id)
+        }
+
+        function expandNodes () {
+          const nodes = []
+
+          let childNodes = data.value.filter(el => el.childNodes)
+
+          while (childNodes?.length) {
+            const node = childNodes[getRandomInt(childNodes.length)]
+
+            nodes.push(node)
+            childNodes = node.childNodes.filter(el => el.childNodes)
+          }
+
+          if (nodes.length) expandTree2.value.expand(...nodes)
+        }
+    
+        function loadChildren (node) {
+          console.log('expand node:', node.id)
+
+          if (!node.children && !node.isLeaf) {
+            if (node.childNodes?.length) {
+              node.children = node.childNodes
+            } else {
+              node.isLeaf = true
+            }
+          }
+        }
+        
+        const darkMode = Vue.ref(false)
+
+        function onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+
+        return {
+          demos,
+          demo,
+          data,
+          activeNode,
+          buttons,
+          contextMenus,
+          expandTree,
+          expandTree2,
+          checkedNodesKeys,
+          onNodeClick,
+          onNodeButtonClick,
+          onUpdateNodeChecked,
+          onUpdateCheckedNodesKeys,
+          expandToActive,
+          expandNodes,
+          loadChildren,
+          darkMode,
+          onUIModeChange
+        }
+      }
+    })
+
+    mussel.install(app, {
+      darkMode: false,
+      tree: {
+        nodeIcons: {
+          leaf: 'ok'
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Message API Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../dist/mussel.css">
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../node_modules/@tabler/icons-webfont/dist/tabler-icons-outline.css">
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./style.css" />
+</head>
+
+<body>
+  <div id="app" class="mu-box mu-bg-normal" position="fixed fit">
+    <h2>
+      Message Components & API
+      <mu-switch
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+    </h2>
+    <div class="group">
+      <mu-button @click="alert">Alert</mu-button>
+      <mu-button @click="confirm">Confirm</mu-button>
+      <mu-button @click="error">Error</mu-button>
+      <mu-button @click="warn">Warn</mu-button>
+      <mu-button @click="showMessage">Show Message</mu-button>
+    </div>
+    <div class="group">
+      <mu-button @click="notifyInfo">Notify Info</mu-button>
+      <mu-button @click="notifySuccess">Notify Success</mu-button>
+      <mu-button @click="notifyWarning">Notify Warning</mu-button>
+      <mu-button @click="notifyError">Notify Error</mu-button>
+    </div>
+    <div class="group">
+      <mu-status-box
+        class="mu-bg-strong" width="500" height="300"
+        border="divider" border-radius="2x"
+        icon="bolt"
+        title="CAUTION !"
+        message="Something Wrong Here !">
+        <mu-button primary round>
+          Do Something ...
+        </mu-button>
+      </mu-status-box>
+    </div>
+    <div class="group">
+      <mu-status-box
+        class="mu-bg-strong" width="500" height="400"
+        border="divider" border-radius="2x"
+        title="NOT FOUND !"
+        message="Something Wrong Here ! Something Wrong Here ! Something Wrong Here ! Something Wrong Here ! Something Wrong Here !">
+        <template #icon>
+          <img style="margin-top: auto;" src="../images/a.jpg">
+        </template>
+        <div class="mu-box" layout="flex" margin-top="auto" align-self="stretch">
+          <mu-button primary round>
+            Create New ...
+          </mu-button>
+          <span flex="1"></span>
+          <mu-button round>
+            Dismiss
+          </mu-button>
+        </div>
+      </mu-status-box>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+        function onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+
+        return {
+          onUIModeChange
+        }
+      },
+      methods: {
+        alert () {
+          this
+            .$mussel
+            .messageBox
+            .alert('Hello World !')
+            .then(btn => console.log(btn))
+        },
+        confirm () {
+          this
+            .$mussel
+            .messageBox
+            .confirm('<div>Hello World !<div><p><img src="../images/a.jpg" onload="alert(1)">')
+            .then(btn => console.log(btn))
+        },
+        error () {
+          this
+            .$mussel
+            .messageBox
+            .error('糟了！敌人正在朝咱们的阵地进攻！糟了！敌人正在朝咱们的阵地进攻！糟了！敌人正在朝咱们的阵地进攻！糟了！敌人正在朝咱们的阵地进攻！糟了！敌人正在朝咱们的阵地进攻！糟了！敌人正在朝咱们的阵地进攻！<p>进入防御状态！</p>')
+            .then(btn => console.log(btn))
+        },
+        warn () {
+          this
+            .$mussel
+            .messageBox
+            .warn('Hello World !')
+            .then(btn => console.log(btn))
+        },
+        showMessage () {
+          this
+            .$mussel
+            .messageBox
+            .showMessage({
+              icon: 'bolt',
+              message:'Hello World !'
+            })
+            .then(btn => console.log(btn))
+        },
+        notifyInfo () {
+          this
+            .$mussel
+            .messageBox
+            .notify({
+              title: '提示',
+              message: '这是一个普通提示。',
+              type: 'alert'
+            })
+        },
+        notifySuccess () {
+          this
+            .$mussel
+            .messageBox
+            .notify({
+              title: '提示',
+              message: '数据保存成功。',
+              type: 'success'
+            })
+        },
+        notifyWarning () {
+          this
+            .$mussel
+            .messageBox
+            .notify({
+              type: 'warn',
+              title: '警告',
+              message: '这是一个做了危险操作的提示！'
+            })
+        },
+        notifyError () {
+          this
+            .$mussel
+            .messageBox
+            .notify({
+              type: 'error',
+              message: '这是一个出错的提示！'
+            })
+        }
+      }
+    })
+
+    mussel.install(app, {
+      theme: { commonFontSize: '12px' },
+      icons: { bolt: 'ti ti-bolt' }
+    })
+
+    app.mount('#app')
+  </script>
+</body>

@@ -1,0 +1,74 @@
+.mu-tool-button {
+  --mu-button_size: var(--mu-input-size);
+
+  cursor: pointer;
+  user-select: none;
+
+  position: relative;
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+
+  min-width: var(--mu-button_size);
+  height: var(--mu-button_size);
+  padding: 0;
+
+  font-size: 18px;
+  font-weight: 400;
+  line-height: var(--mu-common-line-height);
+  text-decoration: none;
+
+  border-radius: var(--mu-common-border-radius);
+  outline: none;
+
+  &[small] {
+    --mu-button_size: var(--mu-input-size-small);
+
+    font-size: 14px;
+  }
+
+  &[large] {
+    --mu-button_size: var(--mu-input-size-large);
+
+    font-size: 22px;
+  }
+
+  & > svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.mu-tool-button {
+  --mu-button_color: var(--mu-primary-color);
+
+  color: var(--mu-text-color-soft);
+
+  &[danger] {
+    --mu-button_color: var(--mu-danger-color);
+
+    &:hover {
+      --mu-button_color: var(--mu-danger-color-4);
+    }
+  }
+
+  &:hover {
+    color: var(--mu-button_color);
+    background-color: var(--mu-bg-translucent-gray);
+  }
+
+  &[active] {
+    background-color: rgb(from var(--mu-button_color) r g b / 0.1);
+    border:  1px solid var(--mu-button_color);
+  }
+
+  &[disabled] {
+    --mu-button_color: var(--mu-text-color-subtle);
+    
+    pointer-events: none;
+    color: var(--mu-button_color);
+  }
+}

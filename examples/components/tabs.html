@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Tabs Component Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="./style.css" />
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../dist/mussel.css" />
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../node_modules/@tabler/icons-webfont/dist/tabler-icons-outline.css" />
+
+  <style>
+    .mu-tabs {
+      height: 200px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="mu-box mu-bg-normal" position="fixed fit" layout="flex" direction="column">
+    <div class="mu-bar mu-box mu-bg-strong">
+      <label>Tap Position</label>
+      <mu-combo-box class="mu-box" :clear-button="false" style="width: 100px;"
+        v-model="tabPosition" :options="positions">
+      </mu-combo-box>
+      <label>Tap Style</label>
+      <mu-combo-box
+        class="mu-box" :clear-button="false" style="width: 125px;"
+        v-model="tabStyle" :options="styles">
+      </mu-combo-box>
+      <mu-switch
+        v-model="darkMode"
+        style="margin-left: auto;"
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+    </div>
+
+    <mu-tabs
+      v-model:active-tab="activeTab"
+      :tab-style="tabStyle"
+      :tab-position="tabPosition"
+      :tab-bar="{ width: ['left', 'right'].includes(tabPosition) ? '150px' : undefined }"
+      class="mu-box" margin="2x" padding="1x" border="dashed">
+      <mu-tab-panel name="Tab_1" caption="Tab Alpha" layout="flex" content-center>This is Tab 1</mu-tab-panel>
+      <mu-tab-panel name="Tab_2" caption="Tab Bravo" layout="flex" content-center>This is Tab 2</mu-tab-panel>
+      <mu-tab-panel name="Tab_3" caption="Tab Charlie" layout="flex" content-center>This is Tab 3</mu-tab-panel>
+      <mu-tab-panel name="Tab_4" caption="Tab Delta" disabled layout="flex" content-center>This is Tab 4</mu-tab-panel>
+    </mu-tabs>
+
+    <div class="mu-divider mu-box" margin-x="2x" thin></div>
+
+    <mu-tabs
+      v-model:active-tab="activeTab"
+      :tab-style="tabStyle"
+      class="mu-box" margin="2x" padding="1x" border="muted"
+      style="--mu-tab-bar_active-bar-width: 1px;">
+      <template #tab-bar-prepend>
+        <label class="mu-label">Customized Tab Bar</label>
+        <div class="mu-space"></div>
+        <div class="mu-divider"></div>
+      </template>
+      <template #tab-bar-append>
+        <div class="mu-divider"></div>
+        <div class="mu-space"></div>
+        <mu-dropdown-button class="mu-box" caption="artist" :dropdown-items="artists"></mu-dropdown-button>
+        <mu-input input-style="solid" prefix=":icon=search" placeholder="Search Something">
+        </mu-input>
+      </template>
+      <mu-tab-panel name="Tab_1" layout="flex" content-center>This is Tab 1</mu-tab-panel>
+      <mu-tab-panel name="Tab_2" layout="flex" content-center>This is Tab 2</mu-tab-panel>
+      <mu-tab-panel name="Tab_3" layout="flex" content-center>This is Tab 3</mu-tab-panel>
+      <mu-tab-panel name="Tab_4" disabled layout="flex" content-center>This is Tab 4</mu-tab-panel>
+    </mu-tabs>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+        const darkMode = Vue.ref(false)
+        const positions = [
+          { value: 'top' },
+          { value: 'bottom' },
+          { value: 'left' },
+          { value: 'right' }
+        ]
+
+        const styles = [
+          { value: 'button' },
+          { value: 'small-button' },
+          { value: 'simple' }
+        ]
+
+        const tabItems = [
+          { name: 'Tab_1' },
+          { name: 'Tab_2' },
+          { name: 'Tab_3' },
+          { name: 'Tab_4', disabled: true }
+        ]
+
+        const activeTab = Vue.ref()
+        const tabStyle = Vue.ref('simple')
+        const tabPosition = Vue.ref('top')
+
+        const artists = Vue.reactive([
+          { divider: true, label: 'GROUP 1' },
+          { label: 'Ludwig van Beethoven', value: 1 },
+          { label: 'Wolfgang Amadeus Mozart' },
+          '-',
+          { divider: true, label: 'GROUP 2' },
+          { label: 'Frédéric François Chopin' },
+          { label: 'Johann Baptist Strauss', disabled: true  }
+        ])
+
+        function onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+
+        return { 
+          darkMode,
+          positions,
+          styles,
+          tabItems,
+          activeTab,
+          tabStyle,
+          tabPosition,
+          artists,
+          onUIModeChange
+        }
+      }
+    })
+
+    mussel.install(app, {
+      icons: {
+        search: 'ti ti-search'
+      }
+    })
+
+    app.mount('#app')
+  </script>
+</body>

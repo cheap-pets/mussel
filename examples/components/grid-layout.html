@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Grid Layout Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="../../dist/mussel.css" />
+</head>
+
+<body>
+  <div id="app" class="mu-box" position="fixed fit" style="background: #000;">
+    <mu-grid-box width="480" height="270" padding="1x" style="background-color: rgba(0, 47, 167, .5);"
+      :columns="config.columns" :rows="config.rows">
+      <mu-grid-cell v-for="(cell, idx) in config.cells" :key="cell" :col-start="cell.colStart" :col-end="cell.colEnd"
+        :row-start="cell.rowStart" :row-end="cell.rowEnd" style="background-color: rgba(0, 47, 167, 1);" margin="1x">
+        {{ idx + 1 }}
+      </mu-grid-cell>
+    </mu-grid-box>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+        const config = {
+          "layout": "grid",
+          "rows": 5,
+          "columns": 7,
+          "cells": [
+            {
+              "colStart": 1,
+              "colEnd": 2,
+              "rowStart": 1,
+              "rowEnd": 2
+            },
+            {
+              "colStart": 3,
+              "colEnd": 7,
+              "rowStart": 1,
+              "rowEnd": 2
+            },
+            {
+              "colStart": 1,
+              "colEnd": 2,
+              "rowStart": 3,
+              "rowEnd": 5
+            },
+            {
+              "colStart": 3,
+              "colEnd": 5,
+              "rowStart": 3,
+              "rowEnd": 5
+            },
+            {
+              "colStart": 6,
+              "colEnd": 7,
+              "rowStart": 3,
+              "rowEnd": 5
+            },
+            {}
+          ]
+        }
+        return { config }
+      }
+    })
+
+    mussel.install(app, { darkMode: 'auto' })
+
+    app.mount('#app')
+  </script>
+</body>

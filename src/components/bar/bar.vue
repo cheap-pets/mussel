@@ -1,13 +1,11 @@
 <template>
-  <div class="mu-flex-box mu-bar" align-items="center">
+  <div class="mu-bar">
     <slot />
   </div>
 </template>
 
-<script>
-  import './bar.pcss'
+<script setup>
+  import './bar.scss'
 
-  export default {
-    name: 'MusselBar'
-  }
+  defineOptions({ name: 'MusselBar' })
 </script>

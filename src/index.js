@@ -1,20 +1,41 @@
-import Vue from 'vue'
+import './styles/index.scss'
 
-import variables from '@/variables'
+import { install as installTheme } from './theme.js'
+import { install as installIcons } from './icons/index.js'
+import { install as installDirectives } from './directives/index.js'
+import { install as installComponents } from './components/index.js'
 
-import { installDirectives } from './directives'
-import { installComponents } from './components'
+import { deprecated } from './utils/function.js'
+import { resolveElement } from './utils/dom.js'
 
-export * from './events'
-export * from './components'
-export * from './base-styles'
+const isSysDark = window.matchMedia('(prefers-color-scheme: dark)').matches
 
-export { setTheme } from '@/utils/theme'
-export { variables }
+function install (app, options = {}) {
+  const { root, darkMode, theme, icons, ...componentOptions } = options
 
-export function install ($Vue) {
-  installDirectives($Vue)
-  installComponents($Vue)
+  const rootElement = resolveElement(root) || document.body
+  const context = { rootElement, options: componentOptions }
+
+  app.provide('$mussel', context)
+  app.config.globalProperties.$mussel = context
+
+  installTheme(app, {
+    root: rootElement,
+    darkMode: (darkMode === true) || (darkMode === 'auto' && isSysDark),
+    variables: theme
+  })
+
+  installIcons(icons)
+  installDirectives(app)
+  installComponents(app)
 }
 
-if (Vue) install(Vue)
+const registerIcons = deprecated(
+  installIcons,
+  'Function "registerIcons" is deprecated and will be removed in future versions, use "installIcons" instead.'
+)
+
+export * as scrollbar from 'mussel-scrollbar'
+
+export { EventInterceptor } from './events'
+export { install, installIcons, registerIcons }

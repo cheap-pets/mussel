@@ -1,0 +1,89 @@
+.mu-tree {
+  --mu-tree_node-height: 32px;
+  --mu-tree_node-indent: 16px;
+
+  overflow: auto;
+}
+
+.mu-tree-node {
+  cursor: pointer;
+
+  position: relative;
+
+  overflow: visible;
+  display: flex;
+  gap: var(--mu-content-spacing);
+  align-items: center;
+
+  width: 100%;
+  min-height: var(--mu-tree_node-height);
+  padding: 4px 8px;
+
+  font-size: var(--mu-common-font-size);
+  line-height: var(--mu-common-line-height);
+  color: var(--mu-text-color-normal);
+
+  & > :first-child {
+    margin-left: 8px;
+  }
+
+  & > .mu-icon {
+    flex: none;
+    font-size: calc(1em + 2px);
+  }
+
+  & > .mu-tree-node_expand-icon {
+    pointer-events: auto;
+
+    &[icon="chevronRight"] {
+      transition: transform .1s ease-in-out;
+    }
+  }
+
+  & > .mu-tree-node_button {
+    width: 20px;
+    line-height: 0;
+    text-align: center;
+
+    &[hover] {
+      display: none;
+    }
+  }
+
+  & > .mu-tree-node_label {
+    cursor: inherit;
+    user-select: none;
+
+    overflow: hidden;
+    flex: 1 1 0;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    background: var(--mu-bg-translucent-gray);
+
+    & > .mu-tree-node_button[hover] {
+      display: inline-flex;
+    }
+  }
+
+  &[active] {
+    color: var(--mu-primary-color);
+    background: rgb(from var(--mu-primary-color) r g b / 0.1);
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    cursor: default;
+    color: var(--mu-text-color-subtle);
+    background: inherit;
+  }
+
+  &[expanded] {
+    & > .mu-tree-node_expand-icon[icon="chevronRight"] {
+      transform: rotate(90deg);
+    }
+  }
+}

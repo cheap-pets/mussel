@@ -1,0 +1,61 @@
+.mu-tab-button {
+  cursor: pointer;
+  user-select: none;
+
+  position: relative;
+
+  display: inline-flex;
+  flex: none;
+  gap: var(--mu-content-spacing);
+  align-items: center;
+  justify-content: center;
+
+  height: var(--mu-input-size);
+  padding: 0 12px;
+
+  font-size: var(--mu-common-font-size);
+  font-weight: 500;
+  line-height: var(--mu-common-line-height);
+  color: var(--mu-text-color-normal);
+  text-decoration: none;
+
+  border-radius: var(--mu-common-border-radius);
+  outline: none;
+
+  & > span {
+    display: block;
+  }
+
+  &:hover {
+    background: var(--mu-bg-translucent-gray);
+  }
+
+  &[active] {
+    color: #fff;
+    background: var(--mu-primary-color);
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    cursor: default;
+    color: var(--mu-text-color-subtle) !important;
+    background: unset !important;
+  }
+}
+
+.mu-tab-bar {
+  &[tab-position=left] .mu-tab-button {
+    justify-content: end;
+  }
+
+  &[tab-position=right] .mu-tab-button {
+    justify-content: start;
+  }
+}
+
+.mu-tab-bar[tab-style=small-button] {
+  & .mu-tab-button {
+    height: var(--mu-input-size-small);
+    padding: 0 8px;
+  }
+}

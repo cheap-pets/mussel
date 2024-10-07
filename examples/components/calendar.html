@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Combobox Example</title>
+
+  <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
+  <script type="text/javascript" src="../../dist/mussel.js"></script>
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="./style.css" />
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../dist/mussel.css">
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="../../node_modules/@tabler/icons-webfont/dist/tabler-icons-outline.css">
+
+  <style>
+    .mu-combo-box {
+      width: 300px;
+    }
+
+    .mu-calendar {
+      user-select: none;
+      width: 800px;
+      height: 600px;
+      border: 1px solid var(--mu-border-color);
+      padding: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="mu-box" position="fixed fit">
+    <h2>
+      CALENDAR
+      <mu-switch
+        active-label="Dark"
+        inactive-label="Light"
+        @update:model-value="onUIModeChange">
+      </mu-switch>
+    </h2>
+    <div class="group">
+      <mu-calendar format="yyyy-MM-dd"></mu-calendar>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    const app = Vue.createApp({
+      setup () {
+      },
+      methods: {
+        onUIModeChange (v) {
+          document.querySelector('.mu-root').classList.toggle('mu-dark')
+        }
+      }
+    })
+
+    mussel.install(app)
+    app.mount('#app')
+  </script>
+</body>
+
+</html>

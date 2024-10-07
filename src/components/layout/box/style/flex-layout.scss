@@ -1,0 +1,115 @@
+.mu-box[layout=flex],
+.mu-h-box,
+.mu-v-box {
+  display: flex;
+
+  &[inline] {
+    display: inline-flex;
+  }
+}
+
+.mu-h-box,
+.mu-box[layout=flex] {
+  flex-direction: row;
+
+  &[reverse] {
+    flex-direction: row-reverse;
+  }
+
+  &[flex-wrap] > .mu-space {
+    width: 100%;
+    height: 0;
+  }
+}
+
+.mu-v-box,
+.mu-box[layout=flex][direction="column"] {
+  flex-direction: column;
+
+  &[reverse] {
+    flex-direction: column-reverse;
+  }
+
+  &[flex-wrap] > .mu-space {
+    width: 0;
+    height: 100%;
+  }
+}
+
+.mu-h-box,
+.mu-v-box,
+.mu-box[layout=flex] {
+  // align-items: stretch;
+  
+  &[content-center] {
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:not([flex-wrap]) > .mu-space {
+    flex: 1 1 0;
+  }
+
+  &[flex-wrap] {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+}
+
+.mu-box,
+.mu-flex-item,
+.mu-h-box > *,
+.mu-v-box > *,
+.mu-box[layout=flex] > * {
+  &[flex="auto"] {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  &[flex="none"] {
+    flex: none;
+  }
+  
+  @for $i from 1 through 12 {
+    &[flex~="#{$i}"] {
+      flex: $i $i 0;
+    }
+  }
+
+  &[flex~="auto"] {
+    flex-basis: auto;
+  }
+
+  @each $v in (flex-start, flex-end, center, baseline, stretch) {
+    &[align-self="#{$v}"] {
+      align-self: $v;
+    }
+  }
+}
+
+.mu-divider {
+  display: block;
+  flex: 0 0 2px;
+  align-self: stretch;
+  background-color: var(--mu-border-color-muted);
+
+  &[thin] {
+    flex-basis: 1px;
+  }
+}
+
+.mu-space {
+  flex: 1 1 0;
+
+  @for $i from 1 through 4 {
+    $v: calc($i * var(--mu-base-spacing));
+
+    &[space="#{$i}x"] {
+      flex: 0 0 $v;
+    }
+  }
+
+  &[space="100%"] {
+    flex: 0 0 100%;
+  }
+}

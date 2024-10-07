@@ -1,107 +1,68 @@
 <template>
   <div
+    ref="wrapperRef"
     class="mu-dropdown"
-    :expanded="popupParams.visible"
-    @click="onClick"
-    @mouseover="onMouseOver"
-    @mouseleave="onMouseLeave">
+    @click="onTriggerClick"
+    @mouseover="onTriggerMouseOver"
+    @mouseleave="onTriggerMouseLeave">
     <slot />
-    <mu-dropdown-panel
-      v-show="!disabled && popupParams.visible"
-      v-bind="popupParams"
-      @change="setPopupVisible"
-      @mouseover.native.stop="clearHoverTimer"
-      @mouseleave.native.stop="onMouseLeave"
-      @click.native.stop="onDropdownClick">
-      <slot name="dropdown" />
-    </mu-dropdown-panel>
+    <Teleport v-if="dropdownReady" :to="dropdownContainer">
+      <div
+        ref="dropdownRef"
+        v-mu-scrollbar="dropdownScrollbar"
+        v-bind="dropdownBindings"
+        class="mu-dropdown-panel"
+        @click="onDropdownClick"
+        @mouseover.stop="onDropdownMouseOver"
+        @mouseleave.stop="onDropdownMouseLeave">
+        <slot name="dropdown">
+          <component
+            :is="el.is"
+            v-for="el in computedItems" :key="el.key"
+            v-bind="el.bindings" />
+        </slot>
+      </div>
+    </Teleport>
   </div>
 </template>
 
-<script>
-  import './dropdown.pcss'
+<script setup>
+  import './dropdown.scss'
 
-  import PopupGroupMixin from '@/mixins/mix-popup-group'
-  import DropdownPanel from './dropdown-panel.vue'
+  import { dropdownProps, dropdownEvents, useDropdown } from './hooks/dropdown'
+  import { useVForComponents } from '@/hooks/v-for-components'
 
-  export default {
-    name: 'MusselDropdown',
-    components: {
-      'mu-dropdown-panel': DropdownPanel
-    },
-    mixins: [PopupGroupMixin],
-    provide () {
-      return {
-        dropdown: this
-      }
-    },
-    props: {
-      disabled: Boolean,
-      triggerAction: {
-        type: String,
-        default: 'hover',
-        validator (value) {
-          return ['hover', 'click'].indexOf(value) !== -1
-        }
-      },
-      popupStyle: {
-        type: String,
-        default: 'dropdown-list'
-      }
-    },
-    mounted () {
-      this.triggerElements = Array.from(
-        this.$el.querySelectorAll('[dropdown-trigger]')
-      )
-    },
-    methods: {
-      clearHoverTimer () {
-        if (this.hoverTimer) {
-          clearTimeout(this.hoverTimer)
-          delete this.hoverTimer
-        }
-      },
-      delayHidePopup () {
-        this.hoverTimer = setTimeout(() => {
-          this.setPopupVisible(false)
-        }, 200)
-      },
-      findTrigger (target) {
-        return this.triggerElements.reduce(
-          (result, el) => result || el === target || el.contains(target),
-          false
-        )
-      },
-      onClick (event) {
-        if (this.disabled) return
-        if (this.triggerAction === 'click' &&
-          (!this.triggerElements.length || this.findTrigger(event.target))) {
-          this.clearHoverTimer()
-          this.togglePopup()
-        }
-      },
-      onMouseOver (event) {
-        if (this.disabled) return
-        this.clearHoverTimer()
-        const { target } = event
-        const triggerCount = this.triggerElements.length
-        if (this.triggerAction === 'hover' &&
-          (!triggerCount || this.findTrigger(target))) {
-          this.showPopup()
-        } else if (triggerCount && !this.findTrigger(target)) {
-          this.delayHidePopup()
-        }
-      },
-      onMouseLeave (event) {
-        this.clearHoverTimer()
-        this.delayHidePopup()
-      },
-      onDropdownClick () {
-      },
-      onItemClick (item) {
-        this.hidePopup()
-        this.$emit('itemclick', item)
-      }
+  defineOptions({ name: 'MusselDropdown' })
+
+  const props = defineProps({ dropdownItems: Array, ...dropdownProps })
+  const emit = defineEmits([...dropdownEvents])
+
+  const {
+    wrapperRef,
+    dropdownRef,
+    dropdownReady,
+    dropdownVisible,
+    dropdownBindings,
+    dropdownContainer,
+    hide: collapse,
+    onTriggerClick,
+    onTriggerMouseOver,
+    onTriggerMouseLeave,
+    onDropdownClick,
+    onDropdownMouseOver,
+    onDropdownMouseLeave
+  } = useDropdown(props, emit)
+
+  const { computedItems } = useVForComponents(
+    props,
+    {
+      itemsProp: 'dropdownItems',
+      defaultComponent: 'mu-dropdown-item'
     }
-  }
+  )
+
+  defineExpose({
+    dropdownVisible,
+    collapse
+  })
 </script>

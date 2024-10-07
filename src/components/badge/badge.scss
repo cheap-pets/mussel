@@ -1,0 +1,55 @@
+.mu-badge {
+  --mu-badge_height: 16px;
+  --mu-badge_padding: 0 8px;
+  --mu-badge_font-size: 12px;
+  --mu-badge_color: #fff;
+  --mu-badge_bg: var(--mu-gray-5);
+  --mu-badge_border-radius: calc(var(--mu-badge_height) / 2);
+
+  --mu-badge_dot-size: 8px;
+  --mu-badge_dot-radius: calc(var(--mu-badge_dot-size) / 2);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: var(--mu-badge_height);
+  height: var(--mu-badge_height);
+  padding: var(--mu-badge_padding);
+
+  font-size: var(--mu-badge_font-size);
+  color: var(--mu-badge_color);
+  white-space: nowrap;
+
+  background: var(--mu-badge_bg);
+  border-radius: var(--mu-badge_border-radius);
+
+  &:empty {
+    width: var(--mu-badge_dot-size);
+    height: var(--mu-badge_dot-size);
+    padding: 0;
+
+    background: var(--mu-danger-color);
+    border-radius: var(--mu-badge_dot-radius);
+  }
+
+  &[primary] {
+    background: var(--mu-primary-color);
+  }
+
+  &[accent] {
+    background: var(--mu-accent-color);
+  }
+
+  &[success] {
+    background: var(--mu-success-color);
+  }
+
+  &[warning] {
+    background: var(--mu-warning-color);
+  }
+
+  &[danger] {
+    background: var(--mu-danger-color);
+  }
+}

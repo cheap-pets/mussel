@@ -1,6 +1,4 @@
-import EventInterceptor from './interceptor'
 import './resize'
+import './touch'
 
-export {
-  EventInterceptor
-}
+export { EventInterceptor } from './interceptor'
