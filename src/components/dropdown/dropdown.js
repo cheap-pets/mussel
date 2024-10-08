@@ -15,10 +15,7 @@ export const dropdownProps = {
     default: 'hover',
     validator: v => ['hover', 'click'].includes(v)
   },
-  dropdownScrollbar: [
-    Boolean,
-    String
-  ],
+  dropdownScrollbar: [Boolean, String],
   dropdownPositioned: {
     type: [Boolean, String],
     validator: v => [true, false, 'top', 'bottom'].includes(v)
@@ -33,8 +30,8 @@ export const dropdownEvents = [
 
 export function useDropdown (props, emit, options = {}) {
   const {
-    wrapperRef = shallowRef(),
-    dropdownRef = shallowRef()
+    wrapper = shallowRef(),
+    dropdownPanel = shallowRef()
   } = options
 
   const rootEl = inject('$mussel').rootElement
@@ -44,8 +41,8 @@ export function useDropdown (props, emit, options = {}) {
   const dropdownReady = ref()
   const dropdownContainer = shallowRef(rootEl)
 
-  const dropdownBindings = computed(() => ({
-    class: props.dropdownClass,
+  const dropdownPanelAttrs = computed(() => ({
+    class: ['mu-dropdown-panel', props.dropdownClass],
     style: [
       props.dropdownStyle,
       activityStyle.value || { display: 'none' }
@@ -53,14 +50,14 @@ export function useDropdown (props, emit, options = {}) {
     ...props.dropdownAttrs
   }))
 
-  const dropdownArrowBindings = computed(() => ({
+  const dropdownArrowAttrs = computed(() => ({
     icon: 'chevronDown',
     class: 'mu-dropdown-arrow',
     expanded: expanded.value || null
   }))
 
   const hostEl = computed(() => {
-    const componentEl = wrapperRef.value?.$el || wrapperRef.value
+    const componentEl = wrapper.value?.$el || wrapper.value
     const host = props.dropdownHost
 
     return host
@@ -68,7 +65,7 @@ export function useDropdown (props, emit, options = {}) {
       : componentEl
   })
 
-  const dropdownEl = computed(() => dropdownRef.value?.$el || dropdownRef.value)
+  const dropdownEl = computed(() => dropdownPanel.value?.$el || dropdownPanel.value)
   const dropdownVisible = computed(() => expanded.value || null)
 
   usePopupManager(dropdownVisible, {
@@ -256,13 +253,13 @@ export function useDropdown (props, emit, options = {}) {
   })
 
   return {
-    wrapperRef,
-    dropdownRef,
+    wrapper,
+    dropdownPanel,
     dropdownReady,
     dropdownVisible,
-    dropdownBindings,
     dropdownContainer,
-    dropdownArrowBindings,
+    dropdownArrowAttrs,
+    dropdownPanelAttrs,
     show,
     hide,
     onTriggerClick,

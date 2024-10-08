@@ -2,10 +2,9 @@ import { computed } from 'vue'
 import { isString } from '@/utils/type'
 
 export const inputProps = {
-  label: String,
-  placeholder: String,
   readonly: Boolean,
   disabled: Boolean,
+  placeholder: String,
   clearButton: Boolean,
   prefix: [String, Object],
   suffix: [String, Object],
@@ -14,8 +13,7 @@ export const inputProps = {
 
 export const inputEvents = [
   'prefixClick',
-  'suffixClick',
-  'clear'
+  'suffixClick'
 ]
 
 export function useInput (model, props, emit) {
@@ -40,18 +38,20 @@ export function useInput (model, props, emit) {
 
   const AFFIX_PATTERN = /^:(?<type>icon|text|tool|link)?=(?<value>.+)?$/
 
-  function resolveAffixComponent (option) {
+  function resolveAffixComponent (affixType, option) {
     if (!option) return
 
     const { type = 'text', ...opts } = isString(option)
       ? AFFIX_PATTERN.exec(option)?.groups || { value: option }
       : Object(option)
 
-    return AffixResolver[type]?.(opts)
+    return AffixResolver[type]?.(
+      Object.assign(opts, { class: `mu-input_${affixType}` })
+    )
   }
 
-  const prefix = computed(() => resolveAffixComponent(props.prefix))
-  const suffix = computed(() => resolveAffixComponent(props.suffix))
+  const prefix = computed(() => resolveAffixComponent('prefix', props.prefix))
+  const suffix = computed(() => resolveAffixComponent('suffix', props.suffix))
 
   function onPrefixClick () {
     emit('prefixClick')
@@ -64,8 +64,7 @@ export function useInput (model, props, emit) {
   const clearButtonAttrs = {
     class: 'mu-input_clear-button',
     tag: 'a',
-    icon: 'x',
-    concealed: ''
+    icon: 'x'
   }
 
   const clearButtonVisible = computed(() =>
@@ -76,11 +75,6 @@ export function useInput (model, props, emit) {
     model.value !== ''
   )
 
-  function clear () {
-    model.value = null
-    emit('clear')
-  }
-
   return {
     wrapperAttrs,
     inputAttrs,
@@ -89,7 +83,6 @@ export function useInput (model, props, emit) {
     onPrefixClick,
     onSuffixClick,
     clearButtonVisible,
-    clearButtonAttrs,
-    clear
+    clearButtonAttrs
   }
 }

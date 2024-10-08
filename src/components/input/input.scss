@@ -7,10 +7,10 @@
 }
 
 .mu-input {
-  display: flex;
-
+  position: relative;
   width: 200px;
   height: var(--mu-input_height);
+  padding: 0 11px;
 
   font-size: var(--mu-common-font-size);
   line-height: var(--mu-common-line-height);
@@ -31,7 +31,6 @@
   @at-root {
     input#{&} {
       display: unset;
-      padding: 0 11px;
     }
 
     textarea#{&} {
@@ -61,13 +60,10 @@
 div.mu-input {
   user-select: none;
 
-  position: relative;
-
   overflow: hidden;
+  display: flex;
   gap: var(--mu-base-spacing);
   align-items: center;
-
-  padding: 0 11px;
 
   & > span, & > a {
     flex: none;
@@ -102,6 +98,10 @@ div.mu-input {
     &:read-only {
       cursor: default;
     }
+  }
+
+  & > .mu-input_clear-button {
+    display: none;
   }
 }
 
@@ -225,6 +225,10 @@ div.mu-input {
   &:hover, &:focus-within {
     border-color: var(--mu-input_border-color);
     border-radius: var(--mu-input_border-radius);
+
+    & > .mu-input_clear-button {
+      display: inline-block;
+    }
   }
 
   &:focus-within {

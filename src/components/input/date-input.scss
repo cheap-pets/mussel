@@ -1,0 +1,9 @@
+.mu-date-input_calendar.mu-calendar {
+  width: 360px;
+  height: 300px;
+
+  & th, & td {
+    text-align: center;
+    vertical-align: middle;
+  }
+}

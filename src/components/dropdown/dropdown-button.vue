@@ -1,32 +1,31 @@
 <template>
   <mu-button-group
     v-if="splitButton"
-    ref="wrapperRef" class="mu-dropdown" v-bind="$attrs">
+    ref="wrapper" class="mu-dropdown" v-bind="$attrs">
     <mu-button :icon="icon" :caption="caption" @click="collapse">
       <slot />
     </mu-button>
     <mu-button
       class="mu-button mu-icon-button" :active="dropdownVisible"
       @click.stop="onTriggerClick" @mouseover="onTriggerMouseOver" @mouseleave="onTriggerMouseLeave">
-      <mu-icon v-bind="dropdownArrowBindings" />
+      <mu-icon v-bind="dropdownArrowAttrs" />
     </mu-button>
   </mu-button-group>
   <mu-button
     v-else
-    ref="wrapperRef" class="mu-dropdown" v-bind="$attrs" :active="dropdownVisible"
+    ref="wrapper" class="mu-dropdown" v-bind="$attrs" :active="dropdownVisible"
     @click="onTriggerClick" @mouseover="onTriggerMouseOver" @mouseleave="onTriggerMouseLeave">
     <slot>
       <mu-icon v-if="icon" :icon="icon" />
       {{ caption }}
     </slot>
-    <mu-icon v-if="arrow" v-bind="dropdownArrowBindings" />
+    <mu-icon v-if="arrow" v-bind="dropdownArrowAttrs" />
   </mu-button>
   <Teleport v-if="dropdownReady" :to="dropdownContainer">
     <div
-      ref="dropdownRef"
+      ref="dropdownPanel"
       v-mu-scrollbar="dropdownScrollbar"
-      v-bind="dropdownBindings"
-      class="mu-dropdown-panel"
+      v-bind="dropdownPanelAttrs"
       @click="onDropdownClick"
       @mouseover.stop="onDropdownMouseOver"
       @mouseleave.stop="onDropdownMouseLeave">
@@ -41,7 +40,7 @@
 </template>
 
 <script setup>
-  import { dropdownProps, dropdownEvents, useDropdown } from './hooks/dropdown'
+  import { dropdownProps, dropdownEvents, useDropdown } from './dropdown'
   import { useVForComponents } from '@/hooks/v-for-components'
 
   defineOptions({ name: 'MusselDropdownButton', inheritAttrs: false })
@@ -58,13 +57,13 @@
   const emit = defineEmits([...dropdownEvents])
 
   const {
-    wrapperRef,
-    dropdownRef,
+    wrapper,
+    dropdownPanel,
     dropdownReady,
     dropdownVisible,
-    dropdownBindings,
     dropdownContainer,
-    dropdownArrowBindings,
+    dropdownArrowAttrs,
+    dropdownPanelAttrs,
     hide: collapse,
     onTriggerClick,
     onTriggerMouseOver,

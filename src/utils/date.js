@@ -21,6 +21,10 @@ export function toObject (value) {
 }
 
 export function toString (date, format = 'yyyy-MM-dd') {
+  date = resolveDate(date)
+
+  if (!date) return null
+
   let result = /(y+)/i.test(format)
     ? format.replace(RegExp.$1, ('' + date.getFullYear()).substr(4 - RegExp.$1.length))
     : format
@@ -72,18 +76,6 @@ export function getMonthDaysCount (year, month) {
 
 export function getMonthFirstDay (year, month) {
   return (new Date(year, month, 1)).getDay()
-}
-
-export function getPrevMonth (year, month) {
-  return month > 0
-    ? { year, month: month - 1 }
-    : { year: year - 1, month: 11 }
-}
-
-export function getNextMonth (year, month) {
-  return month < 11
-    ? { year, month: month + 1 }
-    : { year: year + 1, month: 0 }
 }
 
 export function filterDatesByMonth (dates, year, month) {

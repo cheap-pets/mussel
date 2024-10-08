@@ -1,36 +1,13 @@
-import { ref, computed, provide, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useVForComponents } from '@/hooks/v-for-components'
-import { useDropdown, dropdownEvents } from '../../dropdown/hooks/dropdown'
 
 export const selectProps = {
   displayValue: String,
-  dropdownHost: null,
-  dropdownClass: null,
-  dropdownStyle: null,
-  dropdownAttrs: Object,
-  dropdownScrollbar: [Boolean, String],
   options: Array,
   optionKey: { type: String, default: 'value' }
 }
 
-export const selectEvents = [
-  ...dropdownEvents
-]
-
-export function useSelect (model, props, emit) {
-  const {
-    wrapperRef,
-    dropdownRef,
-    dropdownReady,
-    dropdownBindings,
-    dropdownContainer,
-    dropdownArrowBindings,
-    show: showDropdown,
-    hide: hideDropdown,
-    onTriggerClick,
-    onDropdownClick
-  } = useDropdown(props, emit)
-
+export function useSelect (model, props) {
   const { computedItems: selectOptions } = useVForComponents(
     props,
     {
@@ -41,8 +18,6 @@ export function useSelect (model, props, emit) {
   )
 
   const optionLabels = ref({})
-
-  const expandable = computed(() => !props.disabled && !props.readonly)
 
   const value = computed({
     get () {
@@ -88,30 +63,10 @@ export function useSelect (model, props, emit) {
     }
   }
 
-  function onOptionClick (option) {
-    model.value = option.value
-    hideDropdown()
-  }
-
-  provide('select', {
-    mountOption,
-    unmountOption,
-    onOptionClick
-  })
-
   return {
     value,
-    expandable,
-    selectOptions,
-    wrapperRef,
-    dropdownRef,
-    dropdownReady,
-    dropdownBindings,
-    dropdownContainer,
-    dropdownArrowBindings,
-    showDropdown,
-    hideDropdown,
-    onTriggerClick,
-    onDropdownClick
+    mountOption,
+    unmountOption,
+    selectOptions
   }
 }

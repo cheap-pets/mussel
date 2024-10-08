@@ -29,12 +29,12 @@
       width: 300px;
     }
 
-    .mu-calendar {
+    .calendar1 {
       user-select: none;
       width: 800px;
       height: 600px;
-      border: 1px solid var(--mu-border-color);
       padding: 16px;
+      border: 1px solid var(--mu-border-color);
     }
   </style>
 </head>
@@ -50,7 +50,10 @@
       </mu-switch>
     </h2>
     <div class="group">
-      <mu-calendar format="yyyy-MM-dd"></mu-calendar>
+      <mu-calendar class="calendar1" format="yyyy-MM-dd"></mu-calendar>
+    </div>
+    <div class="group">
+      <mu-date-input format="yyyy-MM-dd"></mu-date-input>
     </div>
   </div>
 

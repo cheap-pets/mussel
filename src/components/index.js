@@ -8,12 +8,12 @@ import * as TabsComponents from './tabs'
 import * as BarComponents from './bar'
 import * as FormComponents from './form'
 import * as InputComponents from './input'
+import * as PickerComponents from './picker'
 import * as ModalComponents from './modal'
 import * as DropdownComponents from './dropdown'
 import * as MessageComponents from './message'
 
 import MuBadge from './badge/badge.vue'
-import MuCalendar from './calendar/calendar.vue'
 import MuScrollBox from './scrollbar/scroll-box.vue'
 
 import { kebabCase } from '@/utils/case'
@@ -38,13 +38,13 @@ export function install (app, options) {
   installComponents(BarComponents)
   installComponents(FormComponents)
   installComponents(InputComponents)
+  installComponents(PickerComponents)
   installComponents(ModalComponents)
   installComponents(DropdownComponents)
   installComponents(MessageComponents)
 
   installComponents({
     MuBadge,
-    MuCalendar,
     MuScrollBox
   })
 }

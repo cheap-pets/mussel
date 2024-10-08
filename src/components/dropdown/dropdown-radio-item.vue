@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-  import { dropdownItemProps, dropdownItemEvents, useDropdownItem } from './hooks/dropdown-item'
+  import { dropdownItemProps, dropdownItemEvents, useDropdownItem } from './dropdown-item'
 
   defineOptions({ name: 'MusselDropdownRadioItem' })
 

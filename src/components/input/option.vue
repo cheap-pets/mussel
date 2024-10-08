@@ -9,7 +9,7 @@
 
 <script setup>
   import { inject, computed, onMounted, onUnmounted } from 'vue'
-  import { dropdownItemProps, dropdownItemEvents } from '../dropdown/hooks/dropdown-item'
+  import { dropdownItemProps, dropdownItemEvents } from '../dropdown/dropdown-item'
 
   defineOptions({ name: 'MusselOption' })
 

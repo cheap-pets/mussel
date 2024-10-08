@@ -1,6 +1,6 @@
 <template>
   <div
-    ref="wrapperRef"
+    ref="wrapper"
     class="mu-dropdown"
     @click="onTriggerClick"
     @mouseover="onTriggerMouseOver"
@@ -8,10 +8,9 @@
     <slot />
     <Teleport v-if="dropdownReady" :to="dropdownContainer">
       <div
-        ref="dropdownRef"
+        ref="dropdownPanel"
         v-mu-scrollbar="dropdownScrollbar"
-        v-bind="dropdownBindings"
-        class="mu-dropdown-panel"
+        v-bind="dropdownPanelAttrs"
         @click="onDropdownClick"
         @mouseover.stop="onDropdownMouseOver"
         @mouseleave.stop="onDropdownMouseLeave">
@@ -29,7 +28,7 @@
 <script setup>
   import './dropdown.scss'
 
-  import { dropdownProps, dropdownEvents, useDropdown } from './hooks/dropdown'
+  import { dropdownProps, dropdownEvents, useDropdown } from './dropdown'
   import { useVForComponents } from '@/hooks/v-for-components'
 
   defineOptions({ name: 'MusselDropdown' })
@@ -38,12 +37,12 @@
   const emit = defineEmits([...dropdownEvents])
 
   const {
-    wrapperRef,
-    dropdownRef,
+    wrapper,
+    dropdownPanel,
     dropdownReady,
     dropdownVisible,
-    dropdownBindings,
     dropdownContainer,
+    dropdownPanelAttrs,
     hide: collapse,
     onTriggerClick,
     onTriggerMouseOver,

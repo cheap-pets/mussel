@@ -1,86 +1,54 @@
 <template>
-  <div ref="wrapperRef" class="mu-input mu-combo-box" v-bind="wrapperAttrs" :tabindex="tabindex">
-    <component :is="pre.is" v-if="pre" v-bind="pre.attrs" class="mu-input_prefix" @click="onPrefixClick">
-      {{ pre.content }}
-    </component>
-    <input v-model="value" v-bind="inputAttrs" @click="onTriggerClick">
-    <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click="onClear" />
-    <mu-icon v-if="expandable" tag="a" v-bind="dropdownArrowBindings" @click="onTriggerClick" />
-    <component :is="suf.is" v-if="suf" v-bind="suf.attrs" class="mu-input_suffix" @click="onSuffixClick">
-      {{ suf.content }}
-    </component>
-    <Teleport v-if="expandable && dropdownReady" :to="dropdownContainer">
-      <div
-        ref="dropdownRef"
-        v-mu-scrollbar="dropdownScrollbar"
-        v-bind="dropdownBindings"
-        class="mu-dropdown-panel"
-        @click="onDropdownClick">
-        <slot name="dropdown">
-          <component
-            :is="el.is"
-            v-for="el in selectOptions" :key="el.key"
-            v-bind="el.bindings" />
-        </slot>
-      </div>
-    </Teleport>
-  </div>
+  <input-wrapper
+    ref="wrapper"
+    v-model="model"
+    class="mu-combo-box">
+    <template #input="attrs">
+      <input v-model="value" v-bind="attrs" @click.stop="onInputClick">
+    </template>
+    <template #dropdown>
+      <slot name="dropdown">
+        <component
+          :is="el.is"
+          v-for="el in selectOptions" :key="el.key"
+          v-bind="el.bindings" />
+      </slot>
+    </template>
+  </input-wrapper>
 </template>
 
 <script setup>
-  import { inputProps, inputEvents, useInput } from './hooks/input'
-  import { selectProps, selectEvents, useSelect } from './hooks/select'
+  import { ref, provide } from 'vue'
+  import { selectProps, useSelect } from './select'
+
+  import InputWrapper from './dropdown-input-wrapper.vue'
 
   defineOptions({ name: 'MusselComboBox' })
 
   const model = defineModel()
-
-  const props = defineProps({
-    editable: Boolean,
-    ...inputProps,
-    ...selectProps
-  })
-
-  const emit = defineEmits([
-    ...inputEvents,
-    ...selectEvents
-  ])
-
-  const {
-    wrapperAttrs,
-    inputAttrs,
-    prefix: pre,
-    suffix: suf,
-    onPrefixClick,
-    onSuffixClick,
-    clearButtonVisible,
-    clearButtonAttrs,
-    clear
-  } = useInput(model, props, emit)
+  const props = defineProps({ ...selectProps })
 
   const {
     value,
-    expandable,
-    selectOptions,
-    wrapperRef,
-    dropdownRef,
-    dropdownReady,
-    dropdownBindings,
-    dropdownContainer,
-    dropdownArrowBindings,
-    showDropdown,
-    hideDropdown,
-    onTriggerClick,
-    onDropdownClick
-  } = useSelect(model, props, emit)
+    mountOption,
+    unmountOption,
+    selectOptions
+  } = useSelect(model, props)
 
-  function onClear () {
-    clear()
-    hideDropdown()
+  const wrapper = ref()
+
+  function onInputClick () {
+    wrapper.value.onTriggerClick()
   }
 
-  defineExpose({
-    showDropdown,
-    hideDropdown
+  function onOptionClick (option) {
+    model.value = option.value
+    wrapper.value.hideDropdown()
+  }
+
+  provide('select', {
+    mountOption,
+    unmountOption,
+    onOptionClick
   })
 </script>

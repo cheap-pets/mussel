@@ -1,4 +1,4 @@
-import { ref, computed, watchEffect } from 'vue'
+import { ref, shallowRef, computed, watchEffect } from 'vue'
 import { formatString } from '@/utils/string'
 
 import lang from '@/langs'
@@ -6,25 +6,36 @@ import lang from '@/langs'
 import {
   getMonthFirstDay,
   getMonthDaysCount,
-  getPrevMonth,
-  getNextMonth,
   toObject,
   toString,
   equals
-} from './utils'
+} from '@/utils/date'
+
+const { YEAR_AND_MONTH, MONTHS, DAYS_OF_WEEK, DAYS_OF_WEEK_SHORT } = lang.Calendar
 
 export const calendarProps = {
   range: Boolean,
   format: String,
   min: [Date, String],
-  max: [Date, String],
-  daysOfWeek: { type: Array, default: () => [...lang.Calendar.DAYS_OF_WEEK] }
+  max: [Date, String]
+}
+
+function getPrevMonth (year, month) {
+  return month > 0
+    ? { year, month: month - 1 }
+    : { year: year - 1, month: 11 }
+}
+
+function getNextMonth (year, month) {
+  return month < 11
+    ? { year, month: month + 1 }
+    : { year: year + 1, month: 0 }
 }
 
 export function useCalendar (model, props) {
-  const { YEAR_AND_MONTH, MONTHS } = lang.Calendar
-
   const current = ref()
+  const selectingMonth = ref()
+  const daysOfWeek = shallowRef(DAYS_OF_WEEK_SHORT)
 
   const today = computed(() => toObject(new Date()))
   const selected = computed(() => toObject(model.value))
@@ -100,6 +111,12 @@ export function useCalendar (model, props) {
       : v
   }
 
+  function onResize (event) {
+    daysOfWeek.value = event.target.clientWidth >= 480
+      ? DAYS_OF_WEEK
+      : DAYS_OF_WEEK_SHORT
+  }
+
   watchEffect(() => {
     const { year: y, month: m } = selected.value || today.value
 
@@ -107,14 +124,17 @@ export function useCalendar (model, props) {
   })
 
   return {
+    daysOfWeek,
     data,
     today,
     caption,
     current,
     selected,
+    selectingMonth,
     prevMonth,
     nextMonth,
     updateDate,
-    updateCurrent
+    updateCurrent,
+    onResize
   }
 }

@@ -14,7 +14,7 @@
 <script setup>
   import './input.scss'
 
-  import { inputProps, inputEvents, useInput } from './hooks/input'
+  import { inputProps, inputEvents, useInput } from './input'
 
   defineOptions({ name: 'MusselInput' })
 
@@ -30,7 +30,10 @@
     onPrefixClick,
     onSuffixClick,
     clearButtonVisible,
-    clearButtonAttrs,
-    clear
+    clearButtonAttrs
   } = useInput(model, props, emit)
+
+  function clear () {
+    model.value = null
+  }
 </script>

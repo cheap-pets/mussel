@@ -49,6 +49,7 @@
           prefix="Artist: "
           dropdown-host="$parent"
           :options="artists"
+          @prefix-click="onPrefixClick"
           @dropdown:show="onDropdownShow">
         </mu-combo-box>
         <mu-button caption="Add Option" class="mu-input-addon" @click="addOption"></mu-button>
@@ -79,14 +80,14 @@
       setup () {
         const artist = Vue.ref('Johann Baptist Strauss')
 
-        const artists = [
+        const artists = Vue.ref([
           { is: '-', label: 'GROUP 1' },
           { value: 'Ludwig van Beethoven' },
           { value: 'Wolfgang Amadeus Mozart' },
           { value: 'Frédéric François Chopin' },
           { is: '-', label: 'GROUP 2' },
           { value: 'Johann Baptist Strauss', disabled: true  }
-        ]
+        ])
 
         const artistsCn = [
           { value: 'Ludwig van Beethoven', label: '贝多芬' },
@@ -96,7 +97,9 @@
           { value: 'Johann Baptist Strauss', label: '斯特劳斯', disabled: true }
         ]
 
-        
+        function onPrefixClick () {
+          console.log('prefix clicked')
+        }
 
         function addOption () {
           artists.value.push({
@@ -104,7 +107,7 @@
           })
         }
 
-        return { artist, artists, artistsCn, addOption }
+        return { artist, artists, artistsCn, onPrefixClick, addOption }
       },
       methods: {
         onDropdownShow () {

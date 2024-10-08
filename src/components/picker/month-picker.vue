@@ -1,8 +1,8 @@
 <template>
-  <div class="mu-month-panel">
+  <div class="mu-month-picker">
     <table class="mu-calendar_table" cellpadding="0" cellspacing="0">
       <tbody>
-        <tr class="mu-month-panel_year-tr">
+        <tr class="mu-month-picker_year-tr">
           <td @click="current.year = firstYear - 1">
             <mu-icon icon="chevronLeft" />
           </td>
@@ -11,7 +11,7 @@
             v-bind="getYearBindings(firstYear + i - 1)"
             @click="current.year = firstYear + i - 1" />
         </tr>
-        <tr class="mu-month-panel_year-tr">
+        <tr class="mu-month-picker_year-tr">
           <td
             v-for="i in 5" :key="i"
             v-bind="getYearBindings(firstYear + i + 4)"
@@ -20,14 +20,14 @@
             <mu-icon icon="chevronRight" />
           </td>
         </tr>
-        <tr class="mu-month-panel_month-tr">
+        <tr class="mu-month-picker_month-tr">
           <td
             v-for="i in 6" :key="i"
             v-bind="getMonthBindings(i - 1)"
             @click="current.month = i - 1"
             @dblclick="updateModel" />
         </tr>
-        <tr class="mu-month-panel_month-tr">
+        <tr class="mu-month-picker_month-tr">
           <td
             v-for="i in 6" :key="i"
             v-bind="getMonthBindings(i + 5)"
@@ -46,16 +46,18 @@
 </template>
 
 <script setup>
-  import './month-panel.scss'
+  import './month-picker.scss'
 
   import { reactive, computed, watchEffect } from 'vue'
-  import { equals, toObject } from './utils'
+  import { equals, toObject } from '../../utils/date'
   import { ButtonPresets } from '../button/button-presets'
 
   import lang from '@/langs'
 
   const { MONTHS_SHORT, THIS_MONTH } = lang.Calendar
   const { OK: btnOk, CANCEL: btnCancel } = ButtonPresets
+
+  defineOptions({ name: 'MusselMonthPicker' })
 
   const emit = defineEmits(['done'])
   const model = defineModel({ type: Object })

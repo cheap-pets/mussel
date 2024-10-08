@@ -1,9 +1,9 @@
-.mu-month-panel {
+.mu-month-picker {
   user-select: none;
 
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--mu-base-spacing);
 
   width: 100%;
   
@@ -30,6 +30,6 @@
   }
 }
 
-.mu-month-panel_year-tr + .mu-month-panel_month-tr {
+.mu-month-picker_year-tr + .mu-month-picker_month-tr {
   border-top: 2px solid var(--mu-primary-color);
 }
