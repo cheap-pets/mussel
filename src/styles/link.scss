@@ -21,7 +21,6 @@ a.mu-icon,
 .mu-link, a.mu-icon {
   cursor: pointer;
   color: var(--mu-link_color);
-  text-decoration: none;
 
   &:hover {
     color: var(--mu-link_hover-color);
@@ -34,11 +33,13 @@ a.mu-icon,
 }
 
 .mu-link {
+  text-decoration: none;
+
   &[decoration="underline"], &:hover {
     text-decoration: underline;
   }
 
-  &[decoration="none"] {
+  &[decoration="none"], &.mu-icon {
     text-decoration: none;
   }
 }

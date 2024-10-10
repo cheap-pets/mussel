@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-input" v-bind="wrapperAttrs" :tabindex="tabindex">
+  <div class="mu-input" v-bind="wrapperAttrs">
     <component :is="pre.is" v-if="pre" v-bind="pre.attrs" class="mu-input_prefix" @click="onPrefixClick">
       {{ pre.content }}
     </component>

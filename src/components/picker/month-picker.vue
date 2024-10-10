@@ -1,100 +1,117 @@
 <template>
   <div class="mu-month-picker">
-    <table class="mu-calendar_table" cellpadding="0" cellspacing="0">
+    <table class="mu-calendar-grid" cellpadding="0" cellspacing="0">
       <tbody>
-        <tr class="mu-month-picker_year-tr">
-          <td @click="current.year = firstYear - 1">
+        <tr>
+          <td @click="setFirstYear(firstYear - 10)">
             <mu-icon icon="chevronLeft" />
           </td>
           <td
             v-for="i in 5" :key="i"
-            v-bind="getYearBindings(firstYear + i - 1)"
-            @click="current.year = firstYear + i - 1" />
+            v-bind="getYearCellAttrs(firstYear + i - 1)"
+            @click="selectYear(firstYear + i - 1)" />
         </tr>
-        <tr class="mu-month-picker_year-tr">
+        <tr>
           <td
             v-for="i in 5" :key="i"
-            v-bind="getYearBindings(firstYear + i + 4)"
-            @click="current.year = firstYear + i + 4" />
-          <td @click="current.year = firstYear + 10">
+            v-bind="getYearCellAttrs(firstYear + i + 4)"
+            @click="selectYear(firstYear + i + 4)" />
+          <td @click="setFirstYear(firstYear + 10)">
             <mu-icon icon="chevronRight" />
           </td>
         </tr>
-        <tr class="mu-month-picker_month-tr">
+      </tbody>
+    </table>
+    <div class="mu-divider" thin />
+    <table class="mu-calendar-grid" cellpadding="0" cellspacing="0">
+      <tbody>
+        <tr>
           <td
             v-for="i in 6" :key="i"
-            v-bind="getMonthBindings(i - 1)"
-            @click="current.month = i - 1"
-            @dblclick="updateModel" />
+            v-bind="getMonthCellAttrs(i - 1)"
+            @click="selectMonth(i - 1)" />
         </tr>
-        <tr class="mu-month-picker_month-tr">
+        <tr>
           <td
             v-for="i in 6" :key="i"
-            v-bind="getMonthBindings(i + 5)"
-            @click="current.month = i + 5"
-            @dblclick="updateModel" />
+            v-bind="getMonthCellAttrs(i + 5)"
+            @click="selectMonth(i + 5)" />
         </tr>
       </tbody>
     </table>
-    <div class="mu-bar">
-      <mu-button :caption="THIS_MONTH" button-style="text" accent small @click="updateCurrent(today)" />
-      <div class="mu-space" />
-      <mu-button v-bind="btnCancel" small @click="emit('done')" />
-      <mu-button v-bind="btnOk" button-style="text" small @click="updateModel" />
-    </div>
   </div>
 </template>
 
 <script setup>
   import './month-picker.scss'
 
-  import { reactive, computed, watchEffect } from 'vue'
-  import { equals, toObject } from '../../utils/date'
-  import { ButtonPresets } from '../button/button-presets'
+  import { ref, computed, watchEffect } from 'vue'
+  import { toObject } from '../../utils/date'
 
   import lang from '@/langs'
 
-  const { MONTHS_SHORT, THIS_MONTH } = lang.Calendar
-  const { OK: btnOk, CANCEL: btnCancel } = ButtonPresets
+  const { MONTHS_SHORT } = lang.Calendar
 
   defineOptions({ name: 'MusselMonthPicker' })
 
-  const emit = defineEmits(['done'])
   const model = defineModel({ type: Object })
 
-  const current = reactive({})
+  const currentYear = ref()
+  const firstYear = ref()
 
-  const firstYear = computed(() => current.year - current.year % 10)
   const today = computed(() => toObject(new Date()))
 
-  function getYearBindings (year) {
+  const isCurrentDecade = computed(() => {
+    const first = firstYear.value
+    const year = currentYear.value
+
+    return year && first <= year && first + 10 > year
+  })
+
+  function getYearCellAttrs (year) {
     return {
       'data-year': year,
-      selected: (year === current.year) || null,
-      present: (year === today.value.year) || null
+      present: (year === today.value.year) || null,
+      selected: (year === currentYear.value) || null
     }
   }
 
-  function getMonthBindings (month) {
+  function getMonthCellAttrs (month) {
     return {
       'data-month': MONTHS_SHORT[month],
-      selected: (month === current.month) || null,
-      present: (current.year === today.value.year && month === today.value.month) || null
+      present: (
+        currentYear.value === today.value.year &&
+        month === today.value.month
+      ) || null,
+      selected: (
+        isCurrentDecade.value &&
+        currentYear.value === model.value?.year &&
+        month === model.value?.month
+      ) || null
     }
   }
 
-  function updateCurrent ({ year, month }) {
-    current.year = year
-    current.month = month
+  function setFirstYear (value) {
+    firstYear.value = value
   }
 
-  function updateModel () {
-    if (!equals(model.value, current)) {
-      model.value = { ...current }
+  function selectYear (value) {
+    currentYear.value = value
+  }
+
+  function selectMonth (value) {
+    if (isCurrentDecade.value) {
+      model.value = { year: currentYear.value, month: value }
     }
-
-    emit('done')
   }
 
-  watchEffect(() => Object.assign(current, model.value))
+  watchEffect(() => {
+    currentYear.value = model.value?.year
+  })
+
+  watchEffect(() => {
+    firstYear.value =
+      parseInt((currentYear.value || today.value.year) / 10) * 10
+  })
+
 </script>

@@ -19,7 +19,7 @@
       <mu-icon v-if="icon" :icon="icon" />
       {{ caption }}
     </slot>
-    <mu-icon v-if="arrow" v-bind="dropdownArrowAttrs" />
+    <mu-icon v-if="dropdownArrow" v-bind="dropdownArrowAttrs" />
   </mu-button>
   <Teleport v-if="dropdownReady" :to="dropdownContainer">
     <div
@@ -46,12 +46,12 @@
   defineOptions({ name: 'MusselDropdownButton', inheritAttrs: false })
 
   const props = defineProps({
+    ...dropdownProps,
     icon: String,
     caption: String,
     splitButton: Boolean,
     dropdownItems: Array,
-    arrow: { type: Boolean, default: true },
-    ...dropdownProps
+    dropdownArrow: { type: Boolean, default: true }
   })
 
   const emit = defineEmits([...dropdownEvents])

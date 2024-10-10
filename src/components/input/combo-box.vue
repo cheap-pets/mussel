@@ -1,11 +1,5 @@
 <template>
-  <input-wrapper
-    ref="wrapper"
-    v-model="model"
-    class="mu-combo-box">
-    <template #input="attrs">
-      <input v-model="value" v-bind="attrs" @click.stop="onInputClick">
-    </template>
+  <input-wrapper ref="wrapper" v-model="value" class="mu-combo-box">
     <template #dropdown>
       <slot name="dropdown">
         <component
@@ -37,9 +31,9 @@
 
   const wrapper = ref()
 
-  function onInputClick () {
-    wrapper.value.onTriggerClick()
-  }
+  // function onInputClick () {
+  //   wrapper.value.toggleDropdown()
+  // }
 
   function onOptionClick (option) {
     model.value = option.value

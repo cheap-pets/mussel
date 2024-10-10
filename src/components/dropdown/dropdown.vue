@@ -33,7 +33,12 @@
 
   defineOptions({ name: 'MusselDropdown' })
 
-  const props = defineProps({ dropdownItems: Array, ...dropdownProps })
+  const props = defineProps({
+    ...dropdownProps,
+    dropdownItems: Array,
+    dropdownTrigger: { ...dropdownProps.dropdownTrigger, default: 'hover' }
+  })
+
   const emit = defineEmits([...dropdownEvents])
 
   const {

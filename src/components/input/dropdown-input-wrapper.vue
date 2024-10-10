@@ -1,14 +1,11 @@
 <template>
-  <div
-    ref="wrapper"
-    class="mu-input"
-    v-bind="wrapperAttrs"
-    :tabindex="tabindex"
-    @click="onTriggerClick">
+  <div ref="wrapper" class="mu-input" v-bind="wrapperAttrs" @click="toggleDropdown">
     <component :is="pre.is" v-if="pre" v-bind="pre.attrs" @click.stop="onPrefixClick">
       {{ pre.content }}
     </component>
-    <slot name="input" v-bind="inputAttrs" />
+    <slot name="input" v-bind="inputAttrs">
+      <input v-model="model" v-bind="inputAttrs" @click.stop="onInputClick">
+    </slot>
     <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click.stop="clear" />
     <mu-icon v-if="expandable" tag="a" v-bind="dropdownArrowAttrs" />
     <component :is="suf.is" v-if="suf" v-bind="suf.attrs" @click.stop="onSuffixClick">
@@ -67,7 +64,7 @@
     dropdownArrowAttrs,
     dropdownPanelAttrs,
     hide: hideDropdown,
-    onTriggerClick,
+    toggle: toggleDropdown,
     onDropdownClick
   } = useDropdown(props, emit)
 
@@ -78,8 +75,12 @@
     hideDropdown()
   }
 
+  function onInputClick () {
+    if (!props.readonly && props.editable === false) toggleDropdown()
+  }
+
   defineExpose({
     hideDropdown,
-    onTriggerClick
+    toggleDropdown
   })
 </script>

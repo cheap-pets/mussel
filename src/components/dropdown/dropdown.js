@@ -12,7 +12,7 @@ export const dropdownProps = {
   dropdownAttrs: Object,
   dropdownTrigger: {
     type: String,
-    default: 'hover',
+    default: 'click',
     validator: v => ['hover', 'click'].includes(v)
   },
   dropdownScrollbar: [Boolean, String],
@@ -67,6 +67,7 @@ export function useDropdown (props, emit, options = {}) {
 
   const dropdownEl = computed(() => dropdownPanel.value?.$el || dropdownPanel.value)
   const dropdownVisible = computed(() => expanded.value || null)
+  const isHoverTrigger = computed(() => props.dropdownTrigger === 'hover')
 
   usePopupManager(dropdownVisible, {
     hide,
@@ -76,10 +77,6 @@ export function useDropdown (props, emit, options = {}) {
   })
 
   let delayHideTimer
-
-  function isHoverTrigger () {
-    return props.dropdownTrigger === 'hover'
-  }
 
   function resetHideTimer () {
     if (delayHideTimer) {
@@ -179,25 +176,27 @@ export function useDropdown (props, emit, options = {}) {
   }
 
   function delayHide () {
-    if (isHoverTrigger()) {
+    if (isHoverTrigger.value) {
       clearTimeout(delayHideTimer)
       delayHideTimer = setTimeout(hide, 300)
     }
   }
 
-  function onTriggerClick () {
-    if (isHoverTrigger()) return
-
+  function toggle () {
     if (expanded.value) hide()
     else show()
   }
 
+  function onTriggerClick () {
+    if (!isHoverTrigger.value) toggle()
+  }
+
   function onTriggerMouseOver () {
-    if (isHoverTrigger()) show()
+    if (isHoverTrigger.value) show()
   }
 
   function onTriggerMouseLeave () {
-    if (isHoverTrigger()) delayHide()
+    if (isHoverTrigger.value) delayHide()
   }
 
   function onDropdownClick (event) {
@@ -223,7 +222,7 @@ export function useDropdown (props, emit, options = {}) {
   }
 
   function onCaptureEscKeyDown (event) {
-    if (expanded.value && !isHoverTrigger()) {
+    if (expanded.value && !isHoverTrigger.value) {
       hide()
     }
   }
@@ -262,6 +261,7 @@ export function useDropdown (props, emit, options = {}) {
     dropdownPanelAttrs,
     show,
     hide,
+    toggle,
     onTriggerClick,
     onTriggerMouseOver,
     onTriggerMouseLeave,

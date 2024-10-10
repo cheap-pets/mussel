@@ -78,6 +78,18 @@ export function getMonthFirstDay (year, month) {
   return (new Date(year, month, 1)).getDay()
 }
 
+export function getPrevMonth (year, month) {
+  return month > 0
+    ? { year, month: month - 1 }
+    : { year: year - 1, month: 11 }
+}
+
+export function getNextMonth (year, month) {
+  return month < 11
+    ? { year, month: month + 1 }
+    : { year: year + 1, month: 0 }
+}
+
 export function filterDatesByMonth (dates, year, month) {
   return dates.reduce((t, el) => {
     el = toObject(el)

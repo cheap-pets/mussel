@@ -18,6 +18,7 @@ export const inputEvents = [
 
 export function useInput (model, props, emit) {
   const wrapperAttrs = computed(() => ({
+    tabindex: props.tabindex,
     disabled: props.disabled || null,
     readonly: props.readonly || null
   }))

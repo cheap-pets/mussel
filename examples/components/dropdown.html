@@ -71,9 +71,9 @@
       </mu-switch>
       <mu-dropdown-button
         class="mu-icon-button"
-        accent icon="dotsVert" :arrow="false"
+        accent icon="dotsVert"
+        :dropdown-arrow="false"
         dropdown-class="sys-menu_mask"
-        dropdown-trigger="click"
         dropdown-positioned>
         <template #dropdown>
           <div class="sys-menu"></div>
@@ -108,7 +108,6 @@
         x-color="cyan"
         split-button
         caption="Split Button"
-        dropdown-trigger="click"
         :dropdown-items="artists"
         @click="onButtonClick"
         @dropdown:itemclick="onItemClick">
@@ -117,7 +116,8 @@
         class="mu-icon-button"
         icon="dots"
         button-style="text"
-        :arrow="false"
+        dropdown-trigger="hover"
+        :dropdown-arrow="false"
         :dropdown-items="artists"
         @dropdown:itemclick="onItemClick">
       </mu-dropdown-button>

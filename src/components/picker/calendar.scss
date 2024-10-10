@@ -8,7 +8,9 @@
   background-color: var(--mu-bg-normal);
 
   & > .mu-bar {
-    padding: 0;
+    height: auto;
+    padding: 4px;
+    background-color: var(--mu-bg-strong);
   }
 
   & .mu-button {
@@ -18,27 +20,28 @@
   & .mu-calendar_caption {
     margin-right: auto;
     font-size: calc(1em + 2px);
+    font-weight: 500;
   }
 }
 
-.mu-calendar_table {
+.mu-calendar-grid {
   table-layout: fixed;
+  border-spacing: 0;
   border-collapse: collapse;
   flex: 1 0 0;
+
   width: 100%;
 
   & th, & td {
     padding: 8px;
-
     font-weight: 500;
     line-height: 1;
     color: var(--mu-text-color-soft);
-    text-align: left;
   }
-
   
   & th {
     height: 40px;
+    color: var(--mu-text-color-muted);
   }
   
   & td {
@@ -47,8 +50,7 @@
     border: 1px solid var(--mu-border-color-muted);
 
     &[muted] {
-      color: var(--mu-text-color-muted);
-      background-color: var(--mu-bg-translucent-gray);
+      color: var(--mu-text-color-placeholder);
     }
 
     &[present] {
@@ -66,12 +68,17 @@
   }
 }
 
-.mu-dropdown-panel.mu-calendar_dropdown {
-  width: 360px;
-  padding: 8px;
-}
+.mu-dropdown-panel {
+  &.mu-calendar_dropdown {
+    width: 360px;
+    height: 240px;
+  }
 
-.mu-calendar > .mu-month-picker {
-  flex: 1 1 0;
-  margin-top: 4px;
+  & .mu-calendar-grid {
+    & th, & td {
+      text-align: center;
+      vertical-align: middle;
+      border: none;
+    }
+  }
 }

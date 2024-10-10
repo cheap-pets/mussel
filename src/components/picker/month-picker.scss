@@ -1,24 +1,11 @@
 .mu-month-picker {
-  user-select: none;
-
   display: flex;
   flex-direction: column;
-  gap: var(--mu-base-spacing);
-
-  width: 100%;
+  gap: 4px;
+  height: 100%;
   
   & > .mu-bar {
-    height: auto;
-    padding: 0;
-  }
-
-  & tr {
-    height: 50px;
-  }
-
-  & td {
-    text-align: center;
-    vertical-align: middle;
+    background-color: var(--mu-bg-strong);
   }
 
   & td[data-year]:before {
@@ -28,8 +15,4 @@
   & td[data-month]:before {
     content: attr(data-month);
   }
-}
-
-.mu-month-picker_year-tr + .mu-month-picker_month-tr {
-  border-top: 2px solid var(--mu-primary-color);
 }

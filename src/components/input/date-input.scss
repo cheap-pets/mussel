@@ -1,9 +1,13 @@
-.mu-date-input_calendar.mu-calendar {
+.mu-dropdown-panel.mu-date-input_dropdown {
   width: 360px;
   height: 300px;
 
-  & th, & td {
-    text-align: center;
-    vertical-align: middle;
+  & > .mu-calendar {
+    width: 100%;
+    height: 100%;
+  }
+
+  & .mu-month-picker {
+    margin-top: 4px;
   }
 }
