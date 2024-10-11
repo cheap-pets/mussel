@@ -7,7 +7,7 @@
       <input v-model="model" v-bind="inputAttrs" @click.stop="onInputClick">
     </slot>
     <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click.stop="clear" />
-    <mu-icon v-if="expandable" tag="a" v-bind="dropdownArrowAttrs" />
+    <mu-icon v-if="expandable" tag="a" v-bind="dropdownIconAttrs" />
     <component :is="suf.is" v-if="suf" v-bind="suf.attrs" @click.stop="onSuffixClick">
       {{ suf.content }}
     </component>
@@ -16,7 +16,7 @@
         ref="dropdownPanel"
         v-mu-scrollbar="dropdownScrollbar"
         v-bind="dropdownPanelAttrs"
-        class="mu-input_dropdown-panel"
+        class="mu-combo-box_dropdown-panel"
         @click="onDropdownClick">
         <slot name="dropdown" />
       </div>
@@ -26,23 +26,22 @@
 
 <script setup>
   import { computed } from 'vue'
+  import { pickBy } from '@/utils/object'
   import { inputProps, inputEvents, useInput } from './input'
-  import { useDropdown, dropdownEvents } from '../dropdown/dropdown'
+  import { dropdownProps, dropdownEvents, useDropdown } from '../dropdown/dropdown'
 
-  defineOptions({ name: 'MusselDropdownInputWrapper' })
+  defineOptions({ name: 'MusselComboWrapper' })
 
   const emit = defineEmits([...inputEvents, ...dropdownEvents])
   const model = defineModel()
 
   const props = defineProps({
     ...inputProps,
-    editable: Boolean,
-    displayValue: String,
-    dropdownHost: null,
-    dropdownClass: null,
-    dropdownStyle: null,
-    dropdownAttrs: Object,
-    dropdownScrollbar: [Boolean, String]
+    ...pickBy(
+      dropdownProps,
+      key => !['dropdownTrigger', 'dropdownPositioned'].includes(key)
+    ),
+    editable: Boolean
   })
 
   const {
@@ -61,7 +60,7 @@
     dropdownPanel,
     dropdownReady,
     dropdownContainer,
-    dropdownArrowAttrs,
+    dropdownIconAttrs,
     dropdownPanelAttrs,
     hide: hideDropdown,
     toggle: toggleDropdown,

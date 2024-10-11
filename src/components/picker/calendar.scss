@@ -49,8 +49,14 @@
     vertical-align: top;
     border: 1px solid var(--mu-border-color-muted);
 
+    &:hover {
+      background-color: var(--mu-bg-translucent-gray);
+    }
+
     &[muted] {
+      cursor: default;
       color: var(--mu-text-color-placeholder);
+      background: none;
     }
 
     &[present] {
@@ -61,16 +67,12 @@
       color: var(--mu-primary-color);
       background-color: var(--mu-bg-translucent-primary);
     }
-
-    &:hover {
-      background-color: var(--mu-bg-translucent-primary);
-    }
   }
 }
 
 .mu-dropdown-panel {
   &.mu-calendar_dropdown {
-    width: 360px;
+    width: 320px;
     height: 240px;
   }
 

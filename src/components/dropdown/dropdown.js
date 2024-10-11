@@ -10,6 +10,10 @@ export const dropdownProps = {
   dropdownClass: null,
   dropdownStyle: null,
   dropdownAttrs: Object,
+  dropdownIcon: {
+    type: String,
+    default: 'chevronDown'
+  },
   dropdownTrigger: {
     type: String,
     default: 'click',
@@ -50,9 +54,9 @@ export function useDropdown (props, emit, options = {}) {
     ...props.dropdownAttrs
   }))
 
-  const dropdownArrowAttrs = computed(() => ({
-    icon: 'chevronDown',
-    class: 'mu-dropdown-arrow',
+  const dropdownIconAttrs = computed(() => ({
+    icon: props.dropdownIcon,
+    class: props.dropdownIcon === 'chevronDown' ? 'mu-dropdown-arrow' : null,
     expanded: expanded.value || null
   }))
 
@@ -257,7 +261,7 @@ export function useDropdown (props, emit, options = {}) {
     dropdownReady,
     dropdownVisible,
     dropdownContainer,
-    dropdownArrowAttrs,
+    dropdownIconAttrs,
     dropdownPanelAttrs,
     show,
     hide,

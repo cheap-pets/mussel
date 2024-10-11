@@ -1,8 +1,9 @@
 <template>
-  <input-wrapper
+  <combo-wrapper
     ref="wrapper"
     v-model="value"
     class="mu-date-input"
+    dropdown-icon="calendar"
     dropdown-class="mu-date-input_dropdown"
     @dropdown:show="onExpand">
     <template #dropdown>
@@ -37,7 +38,7 @@
           @cell-click="onDateCellClick" />
       </div>
     </template>
-  </input-wrapper>
+  </combo-wrapper>
 </template>
 
 <script setup>
@@ -48,7 +49,7 @@
   import { calendarProps, useCalendar } from '../picker/calendar'
 
   import lang from '@/langs'
-  import InputWrapper from './dropdown-input-wrapper.vue'
+  import ComboWrapper from './combo-wrapper.vue'
   import CalendarGrid from '../picker/calendar-grid.vue'
   import MonthPicker from '../picker/month-picker.vue'
 

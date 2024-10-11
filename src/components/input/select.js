@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue'
+import { provide, ref, computed, watch } from 'vue'
 import { useVForComponents } from '@/hooks/v-for-components'
 
 export const selectProps = {
@@ -7,8 +7,8 @@ export const selectProps = {
   optionKey: { type: String, default: 'value' }
 }
 
-export function useSelect (model, props) {
-  const { computedItems: selectOptions } = useVForComponents(
+export function useSelect (comboBox, model, props) {
+  const { computedItems: optionItems } = useVForComponents(
     props,
     {
       itemsProp: 'options',
@@ -63,10 +63,19 @@ export function useSelect (model, props) {
     }
   }
 
-  return {
-    value,
+  function onOptionClick (option) {
+    model.value = option.value
+    comboBox.value.hideDropdown()
+  }
+
+  provide('select', {
     mountOption,
     unmountOption,
-    selectOptions
+    onOptionClick
+  })
+
+  return {
+    value,
+    optionItems
   }
 }

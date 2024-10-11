@@ -1,56 +1,28 @@
 <template>
-  <input-wrapper
-    ref="wrapper"
-    v-model="model"
-    class="mu-select">
-    <template #input="attrs">
-      <div
-        class="mu-select_value mu-text-ellipsis"
-        :placeholder="attrs.placeholder">
-        {{ value }}
-      </div>
-    </template>
+  <combo-wrapper ref="comboBox" v-model="value" class="mu-select">
     <template #dropdown>
       <slot name="dropdown">
         <component
           :is="el.is"
-          v-for="el in selectOptions" :key="el.key"
+          v-for="el in optionItems" :key="el.key"
           v-bind="el.bindings" />
       </slot>
     </template>
-  </input-wrapper>
+  </combo-wrapper>
 </template>
 
 <script setup>
-  import './select.scss'
-
-  import { ref, provide } from 'vue'
+  import { ref } from 'vue'
   import { selectProps, useSelect } from './select'
 
-  import InputWrapper from './dropdown-input-wrapper.vue'
+  import ComboWrapper from './combo-wrapper.vue'
 
   defineOptions({ name: 'MusselSelect' })
+
+  const comboBox = ref()
 
   const model = defineModel()
   const props = defineProps({ ...selectProps })
 
-  const {
-    value,
-    mountOption,
-    unmountOption,
-    selectOptions
-  } = useSelect(model, props)
-
-  const wrapper = ref()
-
-  function onOptionClick (option) {
-    model.value = option.value
-    wrapper.value.hideDropdown()
-  }
-
-  provide('select', {
-    mountOption,
-    unmountOption,
-    onOptionClick
-  })
+  const { value, optionItems } = useSelect(comboBox, model, props)
 </script>

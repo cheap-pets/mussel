@@ -49,16 +49,21 @@
       </mu-switch>
     </h2>
     <div class="group">
-      <mu-calendar class="calendar1" format="yyyy-MM-dd"></mu-calendar>
+      <mu-calendar class="calendar1" format="yyyy-MM-dd" v-model="date"></mu-calendar>
     </div>
     <div class="group">
-      <mu-date-input format="yyyy-MM-dd"></mu-date-input>
+      <mu-date-input format="yyyy-MM-dd" v-model="date"></mu-date-input>
     </div>
   </div>
 
   <script type="text/javascript">
     const app = Vue.createApp({
       setup () {
+        const date = Vue.ref(new Date())
+
+        return {
+          date
+        }
       },
       methods: {
         onUIModeChange (v) {

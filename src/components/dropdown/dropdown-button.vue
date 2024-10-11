@@ -8,7 +8,7 @@
     <mu-button
       class="mu-button mu-icon-button" :active="dropdownVisible"
       @click.stop="onTriggerClick" @mouseover="onTriggerMouseOver" @mouseleave="onTriggerMouseLeave">
-      <mu-icon v-bind="dropdownArrowAttrs" />
+      <mu-icon v-bind="dropdownIconAttrs" />
     </mu-button>
   </mu-button-group>
   <mu-button
@@ -19,7 +19,7 @@
       <mu-icon v-if="icon" :icon="icon" />
       {{ caption }}
     </slot>
-    <mu-icon v-if="dropdownArrow" v-bind="dropdownArrowAttrs" />
+    <mu-icon v-if="dropdownArrow" v-bind="dropdownIconAttrs" />
   </mu-button>
   <Teleport v-if="dropdownReady" :to="dropdownContainer">
     <div
@@ -62,7 +62,7 @@
     dropdownReady,
     dropdownVisible,
     dropdownContainer,
-    dropdownArrowAttrs,
+    dropdownIconAttrs,
     dropdownPanelAttrs,
     hide: collapse,
     onTriggerClick,

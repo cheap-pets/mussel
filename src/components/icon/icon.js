@@ -7,8 +7,8 @@ export function useIcon (props) {
     const { type, content } = Object(props.icon && icons[props.icon])
 
     return {
-      svg: (type === 'svg' && resolveSafeHTML(content)) || undefined,
-      cls: (type === 'cls' && content) || undefined
+      svg: (type === 'svg' && resolveSafeHTML(content)) || null,
+      cls: (type === 'cls' && content) || null
     }
   })
 

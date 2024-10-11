@@ -80,6 +80,7 @@
     return {
       'data-month': MONTHS_SHORT[month],
       present: (
+        isCurrentDecade.value &&
         currentYear.value === today.value.year &&
         month === today.value.month
       ) || null,
@@ -87,7 +88,8 @@
         isCurrentDecade.value &&
         currentYear.value === model.value?.year &&
         month === model.value?.month
-      ) || null
+      ) || null,
+      muted: !isCurrentDecade.value || null
     }
   }
 
