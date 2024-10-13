@@ -21,7 +21,7 @@
             <mu-button
               :caption="lang.Calendar.THIS_MONTH"
               primary button-style="text"
-              @click="updateCurrent(today)" />
+              @click="setCurrent(today)" />
             <mu-tool-button icon="chevronUp" @click="prevMonth" />
             <mu-tool-button icon="chevronDown" @click="nextMonth" />
           </template>
@@ -29,7 +29,8 @@
         <month-picker
           v-if="selectingMonth"
           v-model="current"
-          @update:model-value="selectingMonth = false" />
+          value-type="Object"
+          @month-cell-click="onMonthCellClick" />
         <calendar-grid
           v-else
           :year="year"
@@ -45,18 +46,28 @@
   import './date-input.scss'
 
   import { ref, computed } from 'vue'
-  import { toString } from '@/utils/date'
-  import { calendarProps, useCalendar } from '../picker/calendar'
+  import { toString, monthEquals } from '@/utils/date'
+  import { calendarProps, useCalendar } from '../calendar/calendar'
 
   import lang from '@/langs'
   import ComboWrapper from './combo-wrapper.vue'
-  import CalendarGrid from '../picker/calendar-grid.vue'
-  import MonthPicker from '../picker/month-picker.vue'
+  import MonthPicker from '../calendar/month-picker.vue'
+  import CalendarGrid from '../calendar/calendar-grid.vue'
 
   defineOptions({ name: 'MusselDateInput' })
 
-  const model = defineModel({ type: [Date, String, Array] })
-  const props = defineProps({ ...calendarProps })
+  const model = defineModel({
+    type: [Date, String, Object, Array]
+  })
+
+  const props = defineProps({
+    type: {
+      type: String,
+      default: 'date',
+      validator: v => ['date', 'month'].includes(v)
+    },
+    ...calendarProps
+  })
 
   const {
     year,
@@ -67,8 +78,9 @@
     selected,
     prevMonth,
     nextMonth,
-    updateDate,
-    updateCurrent
+    setCurrent,
+    updateModelValue,
+    onDateCellClick: _onDateCellClick
   } = useCalendar(model, props)
 
   const wrapper = ref()
@@ -84,11 +96,23 @@
   })
 
   function onExpand () {
-    selectingMonth.value = false
+    selectingMonth.value = props.type === 'month'
   }
 
   function onDateCellClick (cell) {
-    updateDate(cell)
+    _onDateCellClick(cell)
     wrapper.value.hideDropdown()
+  }
+
+  function onMonthCellClick () {
+    if (props.type === 'month') {
+      if (!monthEquals(current.value, selected.value)) {
+        updateModelValue(current.value)
+      }
+
+      wrapper.value.hideDropdown()
+    } else {
+      selectingMonth.value = false
+    }
   }
 </script>

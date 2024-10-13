@@ -1,28 +1,31 @@
-export function assignIf (target, ...sources) {
-  for (const source of sources) {
-    if (!source) continue
+import { isObject } from './type'
 
-    Object.keys(source).forEach(key => {
-      const v = source[key]
+export function pick (obj, keys = []) {
+  if (isObject(obj)) {
+    const result = {}
 
-      if (v != null) target[key] = v
+    keys.forEach(key => {
+      if (Object.hasOwn(obj, key)) {
+        result[key] = obj[key]
+      }
     })
-  }
 
-  return target
+    return result
+  }
 }
 
-export function pickBy (obj, fn) {
-  const result = {}
+export function pickBy (obj, shouldPick) {
+  if (isObject(obj)) {
+    const result = {}
 
-  Object.keys(obj).forEach(key => {
-    if (
-      Object.prototype.hasOwnProperty.call(obj, key) &&
-      fn(key, obj[key])
-    ) {
-      result[key] = obj[key]
-    }
-  })
+    Object.keys(obj).forEach(key => {
+      const value = obj[key]
 
-  return result
+      if (shouldPick(key, value)) {
+        result[key] = value
+      }
+    })
+
+    return result
+  }
 }

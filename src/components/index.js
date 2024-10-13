@@ -7,8 +7,8 @@ import * as TreeComponents from './tree'
 import * as TabsComponents from './tabs'
 import * as BarComponents from './bar'
 import * as FormComponents from './form'
+import * as CalendarComponents from './calendar'
 import * as InputComponents from './input'
-import * as PickerComponents from './picker'
 import * as ModalComponents from './modal'
 import * as DropdownComponents from './dropdown'
 import * as MessageComponents from './message'
@@ -37,8 +37,8 @@ export function install (app, options) {
   installComponents(TabsComponents)
   installComponents(BarComponents)
   installComponents(FormComponents)
+  installComponents(CalendarComponents)
   installComponents(InputComponents)
-  installComponents(PickerComponents)
   installComponents(ModalComponents)
   installComponents(DropdownComponents)
   installComponents(MessageComponents)

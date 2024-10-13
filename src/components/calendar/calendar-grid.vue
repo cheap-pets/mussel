@@ -37,6 +37,7 @@
 
   const { DAYS_OF_WEEK, DAYS_OF_WEEK_SHORT } = lang.Calendar
 
+  defineOptions({ name: 'MusselCalendarGrid' })
   defineEmits(['cellClick'])
 
   const props = defineProps({ year: Number, month: Number, selected: Object })

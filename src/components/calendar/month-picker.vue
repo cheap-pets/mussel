@@ -46,7 +46,9 @@
   import './month-picker.scss'
 
   import { ref, computed, watchEffect } from 'vue'
-  import { toObject } from '../../utils/date'
+  import { pick } from '@/utils/object'
+  import { monthEquals, toObject, toString } from '../../utils/date'
+  import { valueTypeProp } from './calendar'
 
   import lang from '@/langs'
 
@@ -56,14 +58,25 @@
 
   const model = defineModel({ type: Object })
 
-  const currentYear = ref()
-  const firstYear = ref()
+  const props = defineProps({
+    valueType: valueTypeProp,
+    format: { type: String, default: 'yyyy-MM' }
+  })
 
-  const today = computed(() => toObject(new Date()))
+  const emit = defineEmits([
+    'yearCellClick',
+    'monthCellClick'
+  ])
+
+  const firstYear = ref()
+  const chosenYear = ref()
+
+  const selected = computed(() => pick(toObject(model.value), ['year', 'month']))
+  const thisMonth = computed(() => pick(toObject(new Date()), ['year', 'month']))
 
   const isCurrentDecade = computed(() => {
     const first = firstYear.value
-    const year = currentYear.value
+    const year = chosenYear.value
 
     return year && first <= year && first + 10 > year
   })
@@ -71,49 +84,62 @@
   function getYearCellAttrs (year) {
     return {
       'data-year': year,
-      present: (year === today.value.year) || null,
-      selected: (year === currentYear.value) || null
+      present: (year === thisMonth.value.year) || null,
+      selected: (year === chosenYear.value) || null
     }
   }
 
   function getMonthCellAttrs (month) {
+    const year = chosenYear.value
+
     return {
       'data-month': MONTHS_SHORT[month],
-      present: (
-        isCurrentDecade.value &&
-        currentYear.value === today.value.year &&
-        month === today.value.month
-      ) || null,
-      selected: (
-        isCurrentDecade.value &&
-        currentYear.value === model.value?.year &&
-        month === model.value?.month
-      ) || null,
-      muted: !isCurrentDecade.value || null
+      ...(
+        isCurrentDecade.value
+          ? {
+            present: monthEquals({ year, month }, thisMonth.value) || null,
+            selected: monthEquals({ year, month }, selected.value) || null
+          }
+          : { muted: '' }
+      )
     }
   }
 
-  function setFirstYear (value) {
-    firstYear.value = value
+  function setFirstYear (year) {
+    firstYear.value = year
   }
 
-  function selectYear (value) {
-    currentYear.value = value
+  function selectYear (year) {
+    chosenYear.value = year
+
+    emit('yearCellClick', year)
   }
 
-  function selectMonth (value) {
-    if (isCurrentDecade.value) {
-      model.value = { year: currentYear.value, month: value }
+  function selectMonth (month) {
+    if (!isCurrentDecade.value) return
+
+    const year = chosenYear.value
+    const value = { year, month }
+
+    if (!monthEquals(value, selected.value)) {
+      const vType = props.valueType.toLowerCase()
+
+      model.value = vType === 'object'
+        ? value
+        : vType === 'date'
+          ? new Date(year, month)
+          : toString(value, props.format)
     }
+
+    emit('monthCellClick', year, month)
   }
 
   watchEffect(() => {
-    currentYear.value = model.value?.year
+    chosenYear.value = toObject(model.value)?.year
   })
 
   watchEffect(() => {
-    firstYear.value =
-      parseInt((currentYear.value || today.value.year) / 10) * 10
+    firstYear.value = parseInt((chosenYear.value || thisMonth.value.year) / 10) * 10
   })
 
 </script>

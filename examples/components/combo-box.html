@@ -34,7 +34,7 @@
 <body>
   <div id="app" class="mu-box" position="fixed fit">
     <h2>
-      COMBOBOX & SELECT
+      COMBOBOX
       <mu-switch
         active-label="Dark"
         inactive-label="Light"
@@ -54,14 +54,6 @@
         </mu-combo-box>
         <mu-button caption="Add Option" class="mu-input-addon" @click="addOption"></mu-button>
       </div>
-    </div>
-    <div class="group">
-      <mu-select
-        v-model="artist"
-        placeholder="choose an artist"
-        :options="artists"
-        @dropdown:show="onDropdownShow">
-      </mu-select>
     </div>
     <div class="group mu-box" position="fixed bottom left">
       <mu-combo-box

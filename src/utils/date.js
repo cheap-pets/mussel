@@ -1,9 +1,11 @@
 import { isString, isObject, isDate } from '@/utils/type'
 
 export function resolveDate (value) {
-  if (isString(value)) {
-    value = new Date(value)
-  }
+  value = isObject(value)
+    ? new Date(value.year, value.month || 0, value.date || 1)
+    : isString(value)
+      ? new Date(value)
+      : value
 
   return isDate(value) ? value : null
 }
@@ -106,5 +108,23 @@ export function equals (a, b) {
   a = toObject(a)
   b = toObject(b)
 
-  return a && b && a.year === b.year && a.month === b.month && a.date === b.date
+  return (
+    a?.year &&
+    b?.year &&
+    a.year === b.year &&
+    a.month === b.month &&
+    a.date === b.date
+  )
+}
+
+export function monthEquals (a, b) {
+  a = toObject(a)
+  b = toObject(b)
+
+  return (
+    a?.year &&
+    b?.year &&
+    a.year === b.year &&
+    a.month === b.month
+  )
 }

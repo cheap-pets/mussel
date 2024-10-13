@@ -70,9 +70,8 @@
         @update:model-value="onUIModeChange">
       </mu-switch>
       <mu-dropdown-button
-        class="mu-icon-button"
-        accent icon="dotsVert"
-        :dropdown-arrow="false"
+        class="mu-icon-button" accent
+        dropdown-icon="dotsVert"
         dropdown-class="sys-menu_mask"
         dropdown-positioned>
         <template #dropdown>
@@ -114,10 +113,9 @@
       </mu-dropdown-button>
       <mu-dropdown-button
         class="mu-icon-button"
-        icon="dots"
         button-style="text"
+        dropdown-icon="dots"
         dropdown-trigger="hover"
-        :dropdown-arrow="false"
         :dropdown-items="artists"
         @dropdown:itemclick="onItemClick">
       </mu-dropdown-button>
@@ -160,6 +158,7 @@
     </div>
     <div id="divX" class="group">
       <mu-dropdown-button
+        style="align-self: flex-start;"
         primary
         split-button
         button-style="outline"

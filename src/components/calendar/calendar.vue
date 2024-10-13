@@ -9,11 +9,14 @@
         class="mu-calendar_caption"
         dropdown-class="mu-calendar_dropdown">
         <template #dropdown>
-          <month-picker v-model="current" @update:model-value="monthDropdown.collapse()" />
+          <month-picker
+            v-model="current"
+            value-type="Object"
+            @month-cell-click="monthDropdown.collapse()" />
         </template>
       </mu-dropdown-button>
       <template v-if="!monthDropdown?.dropdownVisible">
-        <mu-button :caption="lang.Calendar.THIS_MONTH" primary button-style="text" @click="updateCurrent(today)" />
+        <mu-button :caption="lang.Calendar.THIS_MONTH" primary button-style="text" @click="setCurrent(today)" />
         <mu-tool-button icon="chevronUp" @click="prevMonth" />
         <mu-tool-button icon="chevronDown" @click="nextMonth" />
       </template>
@@ -24,7 +27,7 @@
       :year="year"
       :month="month"
       :selected="selected"
-      @cell-click="updateDate" />
+      @cell-click="onDateCellClick" />
   </div>
 </template>
 
@@ -35,12 +38,12 @@
   import { calendarProps, useCalendar } from './calendar'
 
   import lang from '@/langs'
-  import CalendarGrid from './calendar-grid.vue'
   import MonthPicker from './month-picker.vue'
+  import CalendarGrid from './calendar-grid.vue'
 
   defineOptions({ name: 'MusselCalendar' })
 
-  const model = defineModel({ type: [Date, String, Array] })
+  const model = defineModel({ type: [Date, String, Object, Array] })
   const props = defineProps({ ...calendarProps })
 
   const {
@@ -52,8 +55,8 @@
     selected,
     prevMonth,
     nextMonth,
-    updateDate,
-    updateCurrent
+    setCurrent,
+    onDateCellClick
   } = useCalendar(model, props)
 
   const monthDropdown = ref()

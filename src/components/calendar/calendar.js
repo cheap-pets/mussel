@@ -1,5 +1,6 @@
 import { ref, computed, watchEffect } from 'vue'
 import { formatString } from '@/utils/string'
+import { pick } from '@/utils/object'
 
 import lang from '@/langs'
 
@@ -13,9 +14,16 @@ import {
 
 const { YEAR_AND_MONTH, MONTHS } = lang.Calendar
 
+export const valueTypeProp = {
+  type: String,
+  default: 'date',
+  validator: v => ['date', 'string', 'object'].includes(v?.toLowerCase?.())
+}
+
 export const calendarProps = {
   range: Boolean,
   format: String,
+  valueType: valueTypeProp,
   min: [Date, String],
   max: [Date, String]
 }
@@ -33,32 +41,36 @@ export function useCalendar (model, props) {
     formatString(YEAR_AND_MONTH, year.value, MONTHS[month.value])
   )
 
-  function updateCurrent (value) {
+  function setCurrent (value) {
     Object.assign(current.value, { year: value.year, month: value.month })
   }
 
   function prevMonth () {
-    updateCurrent(getPrevMonth(year.value, month.value))
+    setCurrent(getPrevMonth(year.value, month.value))
   }
 
   function nextMonth () {
-    updateCurrent(getNextMonth(year.value, month.value))
+    setCurrent(getNextMonth(year.value, month.value))
   }
 
-  function updateDate (cell) {
-    if (model.value && equals(cell, model.value)) return
+  function updateModelValue (value) {
+    const vType = props.valueType.toLowerCase()
 
-    const v = new Date(cell.year, cell.month, cell.date)
+    model.value = vType === 'object'
+      ? value
+      : vType === 'date'
+        ? new Date(value.year, value.month, value.date)
+        : toString(value, props.format)
+  }
 
-    model.value = props.format
-      ? toString(v, props.format)
-      : v
+  function onDateCellClick (cell) {
+    if (!equals(cell, selected.value)) {
+      updateModelValue(pick(cell, ['year', 'month', 'date']))
+    }
   }
 
   watchEffect(() => {
-    const { year: y, month: m } = selected.value || today.value
-
-    current.value = { year: y, month: m }
+    current.value = pick(selected.value || today.value, ['year', 'month'])
   })
 
   return {
@@ -70,7 +82,8 @@ export function useCalendar (model, props) {
     selected,
     prevMonth,
     nextMonth,
-    updateDate,
-    updateCurrent
+    setCurrent,
+    onDateCellClick,
+    updateModelValue
   }
 }

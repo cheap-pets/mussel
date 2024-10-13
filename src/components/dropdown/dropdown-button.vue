@@ -19,7 +19,7 @@
       <mu-icon v-if="icon" :icon="icon" />
       {{ caption }}
     </slot>
-    <mu-icon v-if="dropdownArrow" v-bind="dropdownIconAttrs" />
+    <mu-icon v-bind="dropdownIconAttrs" />
   </mu-button>
   <Teleport v-if="dropdownReady" :to="dropdownContainer">
     <div
@@ -50,8 +50,7 @@
     icon: String,
     caption: String,
     splitButton: Boolean,
-    dropdownItems: Array,
-    dropdownArrow: { type: Boolean, default: true }
+    dropdownItems: Array
   })
 
   const emit = defineEmits([...dropdownEvents])
