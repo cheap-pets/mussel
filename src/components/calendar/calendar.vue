@@ -1,28 +1,27 @@
 <template>
   <div class="mu-calendar">
-    <div class="mu-bar">
+    <mu-toolbar>
       <mu-dropdown-button
         ref="monthDropdown"
         :caption="caption"
         icon="calendar"
-        button-style="text"
-        class="mu-calendar_caption"
+        class="mu-caption"
         dropdown-class="mu-calendar_dropdown">
         <template #dropdown>
           <month-picker
+            ref="monthSelector"
             v-model="current"
             value-type="Object"
             @month-cell-click="monthDropdown.collapse()" />
         </template>
       </mu-dropdown-button>
       <template v-if="!monthDropdown?.dropdownVisible">
-        <mu-button :caption="lang.Calendar.THIS_MONTH" primary button-style="text" @click="setCurrent(today)" />
+        <mu-button :caption="THIS_MONTH" primary @click="setCurrent(today)" />
         <mu-tool-button icon="chevronUp" @click="prevMonth" />
         <mu-tool-button icon="chevronDown" @click="nextMonth" />
       </template>
-    </div>
-    <!-- <div class="mu-divider" thin /> -->
-    <calendar-grid
+    </mu-toolbar>
+    <date-table
       :class="{ 'mu-masked': monthDropdown?.dropdownVisible }"
       :year="year"
       :month="month"
@@ -34,12 +33,15 @@
 <script setup>
   import './calendar.scss'
 
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
+  import { formatString } from '@/utils/string'
   import { calendarProps, useCalendar } from './calendar'
 
   import lang from '@/langs'
+  import DateTable from './date-table.vue'
   import MonthPicker from './month-picker.vue'
-  import CalendarGrid from './calendar-grid.vue'
+
+  const { YEAR_AND_MONTH, MONTHS, THIS_MONTH } = lang.Calendar
 
   defineOptions({ name: 'MusselCalendar' })
 
@@ -51,7 +53,6 @@
     month,
     today,
     current,
-    caption,
     selected,
     prevMonth,
     nextMonth,
@@ -60,4 +61,14 @@
   } = useCalendar(model, props)
 
   const monthDropdown = ref()
+  const monthSelector = ref()
+
+  const selectingMonth = computed(() => monthDropdown.value?.dropdownVisible)
+  const firstYear = computed(() => monthSelector.value?.firstYear)
+
+  const caption = computed(() =>
+    selectingMonth.value
+      ? `${firstYear.value} ~ ${firstYear.value + 9}`
+      : formatString(YEAR_AND_MONTH, year.value, MONTHS[month.value])
+  )
 </script>

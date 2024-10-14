@@ -1,13 +1,12 @@
-.mu-dropdown-panel.mu-date-input_dropdown {
+.mu-dropdown-panel.mu-calendar {
   width: 320px;
   height: 280px;
 
-  & > .mu-calendar {
-    width: 100%;
-    height: 100%;
+  & > .mu-bar {
+    border-radius: var(--mu-common-border-radius);
   }
 
-  & .mu-month-picker {
+  &  > .mu-month-picker {
     flex: 1 1 0;
     margin-top: 4px;
   }

@@ -5,7 +5,7 @@ export function pick (obj, keys = []) {
     const result = {}
 
     keys.forEach(key => {
-      if (Object.hasOwn(obj, key)) {
+      if (Object.hasOwn(obj, key) && obj[key] !== undefined) {
         result[key] = obj[key]
       }
     })
@@ -28,4 +28,18 @@ export function pickBy (obj, shouldPick) {
 
     return result
   }
+}
+
+export function defaults (target = {}, ...sources) {
+  for (const source of sources) {
+    if (isObject(source)) {
+      Object.keys(source).forEach(key => (
+        (source[key] !== undefined) &&
+        (target[key] === undefined) &&
+        (target[key] = source[key])
+      ))
+    }
+  }
+
+  return target
 }

@@ -1,6 +1,6 @@
 {
   "name": "mussel",
-  "version": "4.0.0-alpha.5",
+  "version": "4.0.0-alpha.8",
   "description": "UI Library for Vue@3",
   "main": "dist/mussel.js",
   "type": "module",
@@ -16,7 +16,7 @@
     "@cheap-pets/rollup-plugin-postcss-scss": "^1.0.2",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
-    "@swc/core": "^1.7.26",
+    "@swc/core": "^1.7.35",
     "@tabler/icons": "^3.19.0",
     "@tabler/icons-webfont": "^3.19.0",
     "browserslist": "^4.24.0",
@@ -29,7 +29,7 @@
     "throttle-debounce": "^5.0.2",
     "unplugin-vue": "^5.1.5",
     "vite": "^5.4.8",
-    "vue": "^3.5.11"
+    "vue": "^3.5.12"
   },
   "config": {
     "cz-customizable": {

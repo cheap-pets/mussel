@@ -4,40 +4,44 @@
     v-model="value"
     class="mu-date-input"
     dropdown-icon="calendar"
-    dropdown-class="mu-date-input_dropdown"
+    :dropdown-class="[dropdownClass, 'mu-calendar']"
     @dropdown:show="onExpand">
     <template #dropdown>
-      <div class="mu-calendar">
-        <div class="mu-bar">
-          <mu-button
-            class="mu-calendar_caption"
-            button-style="text"
-            :active="selectingMonth"
-            @click="selectingMonth = !selectingMonth">
-            {{ caption }}
-            <mu-icon icon="chevronDown" class="mu-dropdown-arrow" :expanded="selectingMonth || null" />
-          </mu-button>
-          <template v-if="!selectingMonth">
-            <mu-button
-              :caption="lang.Calendar.THIS_MONTH"
-              primary button-style="text"
-              @click="setCurrent(today)" />
-            <mu-tool-button icon="chevronUp" @click="prevMonth" />
-            <mu-tool-button icon="chevronDown" @click="nextMonth" />
-          </template>
+      <mu-toolbar>
+        <div v-if="type === 'month'" class="mu-caption">
+          {{ caption }}
         </div>
-        <month-picker
-          v-if="selectingMonth"
-          v-model="current"
-          value-type="Object"
-          @month-cell-click="onMonthCellClick" />
-        <calendar-grid
+        <mu-button
           v-else
-          :year="year"
-          :month="month"
-          :selected="selected"
-          @cell-click="onDateCellClick" />
-      </div>
+          class="mu-caption"
+          :active="selectingMonth"
+          @click="selectingMonth = !selectingMonth">
+          {{ caption }}
+          <mu-icon icon="chevronDown" class="mu-dropdown-arrow" :expanded="selectingMonth || null" />
+        </mu-button>
+        <template v-if="!selectingMonth">
+          <mu-button :caption="THIS_MONTH" primary @click="setCurrent(today)" />
+          <mu-tool-button icon="chevronUp" @click="prevMonth" />
+          <mu-tool-button icon="chevronDown" @click="nextMonth" />
+        </template>
+        <mu-button
+          v-else
+          :caption="THIS_YEAR"
+          primary button-style="text"
+          @click="monthSelector.setYear(today.year)" />
+      </mu-toolbar>
+      <month-picker
+        v-if="selectingMonth"
+        ref="monthSelector"
+        v-model="current"
+        value-type="Object"
+        @month-cell-click="onMonthCellClick" />
+      <calendar-grid
+        v-else
+        :year="year"
+        :month="month"
+        :selected="selected"
+        @cell-click="onDateCellClick" />
     </template>
   </combo-wrapper>
 </template>
@@ -46,13 +50,16 @@
   import './date-input.scss'
 
   import { ref, computed } from 'vue'
+  import { formatString } from '@/utils/string'
   import { toString, monthEquals } from '@/utils/date'
   import { calendarProps, useCalendar } from '../calendar/calendar'
 
   import lang from '@/langs'
   import ComboWrapper from './combo-wrapper.vue'
   import MonthPicker from '../calendar/month-picker.vue'
-  import CalendarGrid from '../calendar/calendar-grid.vue'
+  import CalendarGrid from '../calendar/date-table.vue'
+
+  const { YEAR_AND_MONTH, MONTHS, THIS_YEAR, THIS_MONTH } = lang.Calendar
 
   defineOptions({ name: 'MusselDateInput' })
 
@@ -61,6 +68,7 @@
   })
 
   const props = defineProps({
+    dropdownClass: null,
     type: {
       type: String,
       default: 'date',
@@ -74,7 +82,6 @@
     month,
     today,
     current,
-    caption,
     selected,
     prevMonth,
     nextMonth,
@@ -84,7 +91,16 @@
   } = useCalendar(model, props)
 
   const wrapper = ref()
+  const monthSelector = ref()
   const selectingMonth = ref()
+
+  const firstYear = computed(() => monthSelector.value?.firstYear)
+
+  const caption = computed(() =>
+    selectingMonth.value
+      ? `${firstYear.value} ~ ${firstYear.value + 9}`
+      : formatString(YEAR_AND_MONTH, year.value, MONTHS[month.value])
+  )
 
   const value = computed({
     get () {

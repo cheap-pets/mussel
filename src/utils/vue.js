@@ -1,4 +1,5 @@
 import { createApp /* , createVNode, render */ } from 'vue'
+import { kebabCase } from './case'
 
 export function createDynamicComponent (options) {
   const container = options.container || document.body
@@ -55,3 +56,17 @@ export function renderComponent (options) {
   }
 }
 */
+
+export function resolveAttrs (values, useKebabCase = true) {
+  const attrs = {}
+
+  Object
+    .entries(values)
+    .forEach(([key, value]) => {
+      if (value != null && value !== false) {
+        attrs[useKebabCase ? kebabCase(key) : key] = value === true ? '' : value
+      }
+    })
+
+  return attrs
+}

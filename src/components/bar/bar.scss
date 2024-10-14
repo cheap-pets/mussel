@@ -10,10 +10,15 @@
 
   font-size: var(--mu-common-font-size);
   line-height: var(--mu-common-line-height);
-}
 
-.mu-bar > .mu-divider {
-  align-self: center;
-  height: calc(1em + 2px);
-  margin: 0 var(--mu-base-spacing);
+  & > .mu-caption {
+    font-size: calc(1em + 2px);
+    font-weight: 500;
+  }
+
+  & > .mu-divider {
+    align-self: center;
+    height: calc(1em + 2px);
+    margin: 0 var(--mu-base-spacing);
+  }
 }

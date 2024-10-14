@@ -1,5 +1,10 @@
 <template>
-  <a :class="['mu-tool-button', data.cls]" :icon="icon" v-html="data.svg" />
+  <a
+    :class="['mu-tool-button', iconData.cls]"
+    :icon="icon"
+    :active="active || null"
+    @click="onClick"
+    v-html="iconData.svg" />
 </template>
 
 <script setup>
@@ -9,6 +14,12 @@
 
   defineOptions({ name: 'MusselToolButton' })
 
-  const props = defineProps({ icon: String })
-  const data = useIcon(props).data
+  const active = defineModel('active', { type: Boolean })
+  const props = defineProps({ icon: String, toggle: Boolean })
+
+  const iconData = useIcon(props).data
+
+  function onClick () {
+    if (props.toggle) active.value = !active.value
+  }
 </script>

@@ -2,10 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  
-  & > .mu-bar {
-    background-color: var(--mu-bg-strong);
-  }
 
   & td[data-year]:before {
     content: attr(data-year);
@@ -14,4 +10,8 @@
   & td[data-month]:before {
     content: attr(data-month);
   }
+}
+
+.mu-dropdown-panel > .mu-month-picker {
+  height: 100%;
 }

@@ -1,0 +1,12 @@
+.mu-toolbar {
+  padding: 0 4px;
+  background-color: var(--mu-bg-strong);
+
+  & > .mu-caption {
+    padding: 0 8px;
+  }
+  
+  & > .mu-button {
+    padding: 0 7px;
+  }
+}

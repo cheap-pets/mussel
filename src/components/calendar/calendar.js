@@ -1,8 +1,5 @@
 import { ref, computed, watchEffect } from 'vue'
-import { formatString } from '@/utils/string'
 import { pick } from '@/utils/object'
-
-import lang from '@/langs'
 
 import {
   equals,
@@ -11,8 +8,6 @@ import {
   getPrevMonth,
   getNextMonth
 } from '@/utils/date'
-
-const { YEAR_AND_MONTH, MONTHS } = lang.Calendar
 
 export const valueTypeProp = {
   type: String,
@@ -36,10 +31,6 @@ export function useCalendar (model, props) {
 
   const year = computed(() => current.value.year)
   const month = computed(() => current.value.month)
-
-  const caption = computed(() =>
-    formatString(YEAR_AND_MONTH, year.value, MONTHS[month.value])
-  )
 
   function setCurrent (value) {
     Object.assign(current.value, { year: value.year, month: value.month })
@@ -77,7 +68,6 @@ export function useCalendar (model, props) {
     year,
     month,
     today,
-    caption,
     current,
     selected,
     prevMonth,

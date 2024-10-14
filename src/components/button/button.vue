@@ -9,9 +9,11 @@
 <script setup>
   import './button.scss'
 
-  import { ref, inject, computed } from 'vue'
-  import { kebabCase } from '@/utils/case'
+  import { ref, isRef, inject, computed } from 'vue'
   import { getComputedXColor } from '@/theme'
+
+  import { resolveAttrs } from '@/utils/vue'
+  import { pickBy, defaults } from '@/utils/object'
   import { generateAdjacentColors } from '@/utils/color'
 
   defineOptions({ name: 'MusselButton' })
@@ -20,18 +22,15 @@
     icon: String,
     caption: String,
     active: Boolean,
-    primary: Boolean,
-    danger: Boolean,
-    accent: Boolean,
-    xColor: [Boolean, String],
     small: Boolean,
     large: Boolean,
     round: Boolean,
     disabled: Boolean,
-    type: {
-      type: String,
-      default: 'button'
-    },
+    primary: Boolean,
+    danger: Boolean,
+    accent: Boolean,
+    xColor: [Boolean, String],
+    type: { type: String, default: 'button' },
     buttonStyle: {
       type: String,
       validator: v => ['normal', 'outline', 'text', 'link'].includes(v)
@@ -39,17 +38,31 @@
   })
 
   const thisEl = ref()
-  const inheritedProps = inject('buttonGroup', {})
+
+  const forcedButtonOptions = inject('forcedButtonOptions', {})
+  const defaultButtonOptions = inject('defaultButtonOptions', {})
 
   const attrs = computed(() => {
     if (!thisEl.value) return
 
-    const { type, icon, caption, disabled, ...values } = props
-
-    Object.assign(
-      values,
-      inheritedProps,
-      { disabled: disabled || inheritedProps.disabled }
+    const values = defaults(
+      {
+        active: props.active,
+        ...(
+          isRef(forcedButtonOptions)
+            ? forcedButtonOptions.value
+            : forcedButtonOptions
+        )
+      },
+      pickBy(props, (key, value) =>
+        !['type', 'icon', 'caption', 'active'].includes(key) &&
+        value !== false
+      ),
+      (
+        isRef(defaultButtonOptions)
+          ? defaultButtonOptions.value
+          : defaultButtonOptions
+      )
     )
 
     if (values.xColor) {
@@ -68,19 +81,6 @@
       values.xColor = true
     }
 
-    Object
-      .keys(values)
-      .forEach(key => {
-        const kebabKey = kebabCase(key)
-        const value = values[key]
-
-        delete values[key]
-
-        if (value) {
-          values[kebabKey] = value === true ? '' : value
-        }
-      })
-
-    return values
+    return resolveAttrs(values)
   })
 </script>

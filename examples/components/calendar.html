@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Combobox Example</title>
+  <title>Calendar Example</title>
 
   <script type="text/javascript" src="../../node_modules/vue/dist/vue.global.js"></script>
   <script type="text/javascript" src="../../dist/mussel.js"></script>
@@ -48,7 +48,7 @@
         @update:model-value="onUIModeChange">
       </mu-switch>
     </h2>
-    <div class="group">
+    <div class="group" :class="[['test3'], 'test1', { test2: true }]">
       <mu-calendar class="calendar1" value-type="object" v-model="date"></mu-calendar>
     </div>
     <div class="group">

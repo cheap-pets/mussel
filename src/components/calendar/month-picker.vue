@@ -1,6 +1,6 @@
 <template>
   <div class="mu-month-picker">
-    <table class="mu-calendar-grid" cellpadding="0" cellspacing="0">
+    <table class="mu-month-picker_year-table mu-calendar-grid" cellpadding="0" cellspacing="0">
       <tbody>
         <tr>
           <td @click="setFirstYear(firstYear - 10)">
@@ -9,13 +9,13 @@
           <td
             v-for="i in 5" :key="i"
             v-bind="getYearCellAttrs(firstYear + i - 1)"
-            @click="selectYear(firstYear + i - 1)" />
+            @click="onYearCellClick(firstYear + i - 1)" />
         </tr>
         <tr>
           <td
             v-for="i in 5" :key="i"
             v-bind="getYearCellAttrs(firstYear + i + 4)"
-            @click="selectYear(firstYear + i + 4)" />
+            @click="onYearCellClick(firstYear + i + 4)" />
           <td @click="setFirstYear(firstYear + 10)">
             <mu-icon icon="chevronRight" />
           </td>
@@ -23,19 +23,19 @@
       </tbody>
     </table>
     <div class="mu-divider" thin />
-    <table class="mu-calendar-grid" cellpadding="0" cellspacing="0">
+    <table class="mu-month-picker_month-table mu-calendar-grid" cellpadding="0" cellspacing="0">
       <tbody>
         <tr>
           <td
             v-for="i in 6" :key="i"
             v-bind="getMonthCellAttrs(i - 1)"
-            @click="selectMonth(i - 1)" />
+            @click="onMonthCellClick(i - 1)" />
         </tr>
         <tr>
           <td
             v-for="i in 6" :key="i"
             v-bind="getMonthCellAttrs(i + 5)"
-            @click="selectMonth(i + 5)" />
+            @click="onMonthCellClick(i + 5)" />
         </tr>
       </tbody>
     </table>
@@ -106,16 +106,20 @@
   }
 
   function setFirstYear (year) {
-    firstYear.value = year
+    firstYear.value = parseInt(year / 10) * 10
   }
 
-  function selectYear (year) {
+  function setYear (year) {
+    setFirstYear(year)
     chosenYear.value = year
+  }
 
+  function onYearCellClick (year) {
+    chosenYear.value = year
     emit('yearCellClick', year)
   }
 
-  function selectMonth (month) {
+  function onMonthCellClick (month) {
     if (!isCurrentDecade.value) return
 
     const year = chosenYear.value
@@ -139,7 +143,11 @@
   })
 
   watchEffect(() => {
-    firstYear.value = parseInt((chosenYear.value || thisMonth.value.year) / 10) * 10
+    setFirstYear(chosenYear.value || thisMonth.value.year)
   })
 
+  defineExpose({
+    firstYear,
+    setYear
+  })
 </script>

@@ -21,6 +21,7 @@ export default {
   Calendar: {
     TODAY: '今日',
     THIS_MONTH: '本月',
+    THIS_YEAR: '本年',
     YEAR_AND_MONTH: '{0} 年 {1}',
 
     DAYS_OF_WEEK: [

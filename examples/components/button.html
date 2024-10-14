@@ -240,18 +240,18 @@
       <mu-tool-button small icon="chevronUp"></mu-tool-button>
       <mu-tool-button small icon="chevronRight" danger></mu-tool-button>
       <mu-tool-button small icon="chevronDown" disabled></mu-tool-button>
-      <mu-tool-button small icon="chevronLeft" active></mu-tool-button>
-      <mu-tool-button small icon="album" danger active></mu-tool-button>
+      <mu-tool-button small icon="chevronLeft" toggle v-model:active="active1"></mu-tool-button>
+      <mu-tool-button small icon="album" danger toggle v-model:active="active2"></mu-tool-button>
       <mu-tool-button icon="chevronUp"></mu-tool-button>
       <mu-tool-button icon="chevronRight" danger></mu-tool-button>
       <mu-tool-button icon="chevronDown" disabled></mu-tool-button>
-      <mu-tool-button icon="chevronLeft" active></mu-tool-button>
-      <mu-tool-button icon="album" danger active></mu-tool-button>
+      <mu-tool-button icon="chevronLeft" toggle v-model:active="active1"></mu-tool-button>
+      <mu-tool-button icon="album" danger toggle v-model:active="active2"></mu-tool-button>
       <mu-tool-button large icon="chevronUp"></mu-tool-button>
       <mu-tool-button large icon="chevronRight" danger></mu-tool-button>
       <mu-tool-button large icon="chevronDown" disabled></mu-tool-button>
-      <mu-tool-button large icon="chevronLeft" active></mu-tool-button>
-      <mu-tool-button large icon="album" danger active></mu-tool-button>
+      <mu-tool-button large icon="chevronLeft" toggle v-model:active="active1"></mu-tool-button>
+      <mu-tool-button large icon="album" danger toggle v-model:active="active2"></mu-tool-button>
     </div>
   </div>
 
@@ -260,7 +260,9 @@
       data () {
         return {
           darkMode: false,
-          activeItem: null
+          activeItem: null,
+          active1: true,
+          active2: true
         }
       },
       methods: {

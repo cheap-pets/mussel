@@ -1,5 +1,5 @@
 <template>
-  <table class="mu-calendar_date-grid mu-calendar-grid" @sizechange="onResize">
+  <table class="mu-calendar_date-table mu-calendar-grid" @sizechange="onResize">
     <thead>
       <th v-for="v in daysOfWeek" :key="v">
         {{ v }}
@@ -37,7 +37,6 @@
 
   const { DAYS_OF_WEEK, DAYS_OF_WEEK_SHORT } = lang.Calendar
 
-  defineOptions({ name: 'MusselCalendarGrid' })
   defineEmits(['cellClick'])
 
   const props = defineProps({ year: Number, month: Number, selected: Object })
