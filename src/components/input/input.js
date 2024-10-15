@@ -4,8 +4,8 @@ import { isString } from '@/utils/type'
 export const inputProps = {
   readonly: Boolean,
   disabled: Boolean,
+  clearable: Boolean,
   placeholder: String,
-  clearButton: Boolean,
   prefix: [String, Object],
   suffix: [String, Object],
   tabindex: { default: '-1' }
@@ -71,7 +71,7 @@ export function useInput (model, props, emit) {
   const clearButtonVisible = computed(() =>
     !props.disabled &&
     !props.readonly &&
-    props.clearButton &&
+    props.clearable &&
     model.value != null &&
     model.value !== ''
   )

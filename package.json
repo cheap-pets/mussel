@@ -28,7 +28,7 @@
     "rollup-plugin-swc": "^0.2.1",
     "throttle-debounce": "^5.0.2",
     "unplugin-vue": "^5.1.5",
-    "vite": "^5.4.8",
+    "vite": "^5.4.9",
     "vue": "^3.5.12"
   },
   "config": {

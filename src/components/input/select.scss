@@ -1,0 +1,9 @@
+.mu-select_selected-item {
+  flex: 1 1 0;
+  width: auto;
+}
+
+.mu-select_selected-item[placeholder]:empty:before {
+  content: attr(placeholder);
+  color: var(--mu-text-color-placeholder);
+}

@@ -1,25 +1,23 @@
-import * as svgIcons from './svg'
 import * as tablerIcons from './tabler-icons'
+import * as customIcons from './svg'
 
-import { isString, isSvgString } from '@/utils/type'
+import { isSVGString } from '@/utils/type'
+import { resolveSafeHTML } from '@/utils/dom'
 
 const icons = {}
 
-function install (data = {}, options) {
-  options = isString(options) ? { type: options } : { ...options }
+function install (data = {}, dataType) {
+  if (!['svg', 'cls'].includes(dataType)) dataType = null
 
-  if (!['svg', 'cls'].includes(options.type)) {
-    delete options.type
-  }
-
-  Object.entries(data).forEach(([key, content]) => {
-    const type = options.type || (isSvgString(content) ? 'svg' : 'cls')
-
-    icons[key] = { type, content }
+  Object.entries(data).forEach(([key, value]) => {
+    icons[key] =
+      dataType === 'svg' || isSVGString(value)
+        ? { svg: resolveSafeHTML(value) }
+        : { cls: value }
   })
 }
 
-install(svgIcons, 'svg')
 install(tablerIcons, 'svg')
+install(customIcons, 'svg')
 
 export { icons, install }

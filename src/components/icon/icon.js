@@ -1,15 +1,15 @@
 import { computed } from 'vue'
 import { icons } from '@/icons'
-import { resolveSafeHTML } from '@/utils/dom'
 
 export function useIcon (props) {
   const data = computed(() => {
-    const { type, content } = Object(props.icon && icons[props.icon])
+    const icon = props.icon && icons[props.icon]
 
-    return {
-      svg: (type === 'svg' && resolveSafeHTML(content)) || null,
-      cls: (type === 'cls' && content) || null
+    if (props.icon && !icon) {
+      console.warn(`Unregistered icon "${props.icon}" is detected.`)
     }
+
+    return { ...icon }
   })
 
   return { data }

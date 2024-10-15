@@ -39,8 +39,8 @@
 
   const thisEl = ref()
 
-  const forcedButtonOptions = inject('forcedButtonOptions', {})
-  const defaultButtonOptions = inject('defaultButtonOptions', {})
+  const forcedButtonOptions = inject('forcedButtonOptions', null)
+  const defaultButtonOptions = inject('defaultButtonOptions', null)
 
   const attrs = computed(() => {
     if (!thisEl.value) return

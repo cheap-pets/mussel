@@ -63,28 +63,28 @@
     <div class="group">
       <h3>Basic</h3>
       <mu-input v-model.trim="value" placeholder="Input Text" @update:model-value="onChange"></mu-input>
-      <mu-input v-model="value" placeholder="Input Text" clear-button></mu-input>
+      <mu-input v-model="value" placeholder="Input Text" clearable></mu-input>
     </div>
     <div class="group">
       <h3>AFFIX：Icon, Text, Tool & Link</h3>
       <mu-input v-model="value" prefix=":icon=search"></mu-input>
-      <mu-input v-model="value" clear-button suffix="Suffix"></mu-input>
-      <mu-input v-model="value" clear-button prefix=":tool=folderOpen"></mu-input>
+      <mu-input v-model="value" clearable suffix="Suffix"></mu-input>
+      <mu-input v-model="value" clearable prefix=":tool=folderOpen"></mu-input>
       <mu-input v-model="value" prefix=":tool=bug" suffix=":link=Link"></mu-input>
     </div>
     <div class="group">
       <h3>Style & State</h3>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Normal" clear-button></mu-input>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Underline" input-style="underline" clear-button></mu-input>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Solid" input-style="solid" clear-button></mu-input>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Round" round clear-button></mu-input>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Round & Solid" round input-style="solid" clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Normal" clearable></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Underline" input-style="underline" clearable></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Solid" input-style="solid" clearable></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Round" round clearable></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Round & Solid" round input-style="solid" clearable></mu-input>
       <div style="width: 100%;"></div>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid" invalid clear-button></mu-input>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Underline" input-style="underline" invalid clear-button></mu-input>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Solid" input-style="solid" invalid clear-button></mu-input>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Round" round invalid clear-button></mu-input>
-      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Round & Solid" round input-style="solid" invalid clear-button></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid" invalid clearable></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Underline" input-style="underline" invalid clearable></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Solid" input-style="solid" invalid clearable></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Round" round invalid clearable></mu-input>
+      <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Invalid & Round & Solid" round input-style="solid" invalid clearable></mu-input>
       <div style="width: 100%;"></div>
       <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Readonly" readonly></mu-input>
       <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Readonly & Underline" input-style="underline" readonly></mu-input>
@@ -103,12 +103,12 @@
       <h3>Input Group</h3>
       <div class="mu-input-group">
         <span>http://</span>
-        <mu-input v-model="value" clear-button></mu-input>
+        <mu-input v-model="value" clearable></mu-input>
         <span>.com</span>
       </div>
       <div class="mu-input-group">
         <a class="mu-link">Link</a>
-        <mu-input v-model="value" clear-button></mu-input>
+        <mu-input v-model="value" clearable></mu-input>
         <mu-tool-button icon="search"></mu-tool-button>
         <mu-button class="mu-input-addon">Button</mu-button>
       </div>
@@ -117,7 +117,7 @@
           v-model="selectValue" :options="options"
           class="mu-input-addon" placeholder="empty">
         </mu-select>
-        <mu-input v-model="value" clear-button input-style="solid"></mu-input>
+        <mu-input v-model="value" clearable input-style="solid"></mu-input>
         <span><mu-check label="Check"></mu-check></span>
       </div>
       <div style="width: 100%;"></div>

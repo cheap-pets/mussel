@@ -1,4 +1,4 @@
-import { provide, ref, computed, watch } from 'vue'
+import { provide, ref, computed, watchEffect } from 'vue'
 import { useVForComponents } from '@/hooks/v-for-components'
 
 export const selectProps = {
@@ -17,49 +17,49 @@ export function useSelect (comboBox, model, props) {
     }
   )
 
-  const optionLabels = ref({})
+  const displayValues = ref({})
 
   const value = computed({
     get () {
       const v = model.value
+      const values = displayValues.value
 
-      return props.displayValue === undefined
-        ? v in optionLabels.value
-          ? optionLabels.value[v]
-          : v
-        : props.displayValue
+      return props.editable
+        ? v
+        : props.displayValue === undefined
+          ? v in values
+            ? values[v]
+            : v
+          : props.displayValue
     },
     set (v) {
       model.value = v
     }
   })
 
-  watch(
-    () => props.options,
-    () => {
-      optionLabels.value =
-        props.options?.reduce(
-          (result, option) => Object.assign(result, {
-            [option.value]: option.label ?? option.value
-          }),
-          {}
-        ) || {}
-    },
-    {
-      deep: true,
-      immediate: true
+  watchEffect(() => {
+    const result = {}
+
+    if (!props.editable) {
+      props.options?.forEach(el => {
+        if (el.value != null) {
+          result[el.value] = el.label ?? el.value
+        }
+      })
     }
-  )
+
+    displayValues.value = result
+  })
 
   function mountOption (option) {
-    if (!props.options) {
-      optionLabels.value[option.value] = option.itemLabel
+    if (!props.options && !props.editable && option.value != null) {
+      displayValues.value[option.value] = option.label ?? option.value
     }
   }
 
   function unmountOption (option) {
-    if (!props.options) {
-      delete optionLabels.value[option.value]
+    if (!props.options && !props.editable) {
+      delete displayValues.value[option.value]
     }
   }
 

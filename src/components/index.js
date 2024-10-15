@@ -6,9 +6,9 @@ import * as ListComponents from './list'
 import * as TreeComponents from './tree'
 import * as TabsComponents from './tabs'
 import * as BarComponents from './bar'
-import * as FormComponents from './form'
 import * as CalendarComponents from './calendar'
 import * as InputComponents from './input'
+import * as FormComponents from './form'
 import * as ModalComponents from './modal'
 import * as DropdownComponents from './dropdown'
 import * as MessageComponents from './message'
@@ -19,31 +19,32 @@ import MuScrollBox from './scrollbar/scroll-box.vue'
 import { kebabCase } from '@/utils/case'
 
 export function install (app, options) {
-  function installComponents (components) {
-    Object.keys(components).forEach(key =>
-      key.startsWith('Mu') &&
-      app.component(kebabCase(key), components[key])
-    )
+  function _install (components) {
+    Object
+      .entries(components)
+      .forEach(([key, component]) =>
+        key.startsWith('Mu') && app.component(kebabCase(key), component)
+      )
 
     components.install?.(app, options)
   }
 
-  installComponents(SvgComponents)
-  installComponents(IconComponents)
-  installComponents(LayoutComponents)
-  installComponents(ButtonComponents)
-  installComponents(ListComponents)
-  installComponents(TreeComponents)
-  installComponents(TabsComponents)
-  installComponents(BarComponents)
-  installComponents(FormComponents)
-  installComponents(CalendarComponents)
-  installComponents(InputComponents)
-  installComponents(ModalComponents)
-  installComponents(DropdownComponents)
-  installComponents(MessageComponents)
+  _install(SvgComponents)
+  _install(IconComponents)
+  _install(LayoutComponents)
+  _install(ButtonComponents)
+  _install(ListComponents)
+  _install(TreeComponents)
+  _install(TabsComponents)
+  _install(BarComponents)
+  _install(CalendarComponents)
+  _install(InputComponents)
+  _install(FormComponents)
+  _install(ModalComponents)
+  _install(DropdownComponents)
+  _install(MessageComponents)
 
-  installComponents({
+  _install({
     MuBadge,
     MuScrollBox
   })

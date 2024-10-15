@@ -49,7 +49,7 @@ export function isString (value) {
 
 const SVG_PATTERN = /<svg(?=[\s>])('[^']*'|"[^"]*"|[^'">])*>[\s\S]*?<\/svg>/i
 
-export function isSvgString (value) {
+export function isSVGString (value) {
   return isString(value) && SVG_PATTERN.test(value)
 }
 

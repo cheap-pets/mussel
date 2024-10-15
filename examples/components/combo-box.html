@@ -34,7 +34,7 @@
 <body>
   <div id="app" class="mu-box" position="fixed fit">
     <h2>
-      COMBOBOX
+      COMBOBOX & SELECT
       <mu-switch
         active-label="Dark"
         inactive-label="Light"
@@ -45,24 +45,34 @@
       <div class="mu-input-group">
         <mu-combo-box
           v-model="artist"
-          clear-button
+          clearable
           prefix="Artist: "
           dropdown-host="$parent"
           :options="artists"
           @prefix-click="onPrefixClick"
           @dropdown:show="onDropdownShow">
         </mu-combo-box>
-        <mu-button caption="Add Option" class="mu-input-addon" @click="addOption"></mu-button>
+        <mu-button
+          caption="Add Option"
+          class="mu-input-addon"
+          @click="addOption">
+        </mu-button>
       </div>
+      <mu-combo-box v-model="artist" editable clearable :options="artists">
+      </mu-combo-box>
+    </div>
+    <div class="group">
+      <mu-select
+        v-model="artist"
+        show-value-tooltip
+        placeholder="select an artist"
+        :options="artists" />
     </div>
     <div class="group mu-box" position="fixed bottom left">
       <mu-combo-box
         v-model="artist"
         :options="artistsCn"
         :dropdown-panel="{ width: '600px' }">
-        <template #append>
-          <div class="mu-dropdown-placeholder"></div>
-        </template>
       </mu-combo-box>
     </div>
   </div>
