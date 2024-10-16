@@ -1,5 +1,5 @@
-import { provide, ref, computed, watchEffect } from 'vue'
-import { useVForComponents } from '@/hooks/v-for-components'
+import { provide, ref, toRef, computed, watchEffect } from 'vue'
+import { useListItems } from '../list/list-items'
 
 export const selectProps = {
   displayValue: String,
@@ -8,13 +8,9 @@ export const selectProps = {
 }
 
 export function useSelect (comboBox, model, props) {
-  const { computedItems: optionItems } = useVForComponents(
-    props,
-    {
-      itemsProp: 'options',
-      itemsKeyProp: 'optionKey',
-      defaultComponent: 'mu-option'
-    }
+  const { items: optionItems } = useListItems(
+    toRef(props, 'options'),
+    { defaultComponent: 'mu-option', key: props.optionKey }
   )
 
   const displayValues = ref({})

@@ -1,60 +1,78 @@
 import { isRef, computed } from 'vue'
-import { isString } from '@/utils/type'
-import { useKeyGen } from '../hooks/key-gen'
+import { useKeyGen } from '@/hooks/key-gen'
+
+import { isObject } from '@/utils/type'
+import { reverse } from '@/utils/object'
 
 const DEFAULT_SHORTCUTS = {
   '-': { is: 'mu-list-divider' }
 }
 
-const DEFAULT_ITEM_PROPS = {
-  key: 'id',
-  icon: 'icon',
-  label: 'label',
-  value: 'value',
-  disabled: 'disabled',
-  checked: undefined
-}
+const DEFAULT_KEY_PROP = 'id'
 
 export function useListItems (itemsRef, options = {}) {
-  const { props, defaultComponent = 'mu-list-item' } = options
   const { genKey, getObjectKey } = useKeyGen()
 
-  const shortcuts = {
-    ...DEFAULT_SHORTCUTS,
-    ...options.shortcuts
-  }
+  const {
+    defaultComponent = 'mu-list-item',
+    nonObjectSetToProp = 'label',
+    props = {}
+  } = options
 
-  const itemProps = computed(() => ({
-    ...DEFAULT_ITEM_PROPS,
-    ...(isRef(props) ? props.value : props)
-  }))
+  const shortcuts = { ...DEFAULT_SHORTCUTS, ...options.shortcuts }
+
+  const keyProp = computed(() => props.key || DEFAULT_KEY_PROP)
+  const propsMapping = computed(() => reverse(props))
+
+  function resolveItemProps (item) {
+    const { is = defaultComponent, ...values } = item
+
+    const result = {
+      is,
+      key: values[keyProp.value],
+      bindings: {}
+    }
+
+    Object
+      .entries(values)
+      .forEach(([key, value]) => {
+        key = propsMapping.value[key] ?? key
+        result.bindings[key] = value
+      })
+
+    return result
+  }
 
   const items = computed(() => {
     if (!Array.isArray(itemsRef.value)) return
 
     const result = []
 
+    itemsRef.value.forEach(el => {
+      if (el == null || el === '') return
 
+      if (el) {
+        const isObj = isObject(el)
 
-    return itemsRef.value.map(el => {
-      if (isString(el)) {
-        const shortcut = shortcuts[el]
+        const item = resolveItemProps(
+          isObj
+            ? el
+            : shortcuts[el]
+              ? { is: el }
+              : { [nonObjectSetToProp]: el }
+        )
 
-        return shortcut
-          ? { key: genKey(), ...shortcut }
-          : { is: el }
-      } else {
-        const { is = defaultComponent, ...bindings } = el
-        const shortcut = shortcuts[is]
+        item.key ??= isObj
+          ? getObjectKey(el)
+          : genKey()
 
-        return {
-          key: el[keyProp] ?? getObjectKey(el),
-          is,
-          ...shortcut,
-          bindings
-        }
+        Object.assign(item, shortcuts[item.is])
+
+        result.push(item)
       }
-    }).filter(Boolean)
+    })
+
+    return result
   })
 
   return {

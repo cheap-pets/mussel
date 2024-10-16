@@ -43,3 +43,9 @@ export function defaults (target = {}, ...sources) {
 
   return target
 }
+
+export function reverse (object) {
+  return Object.fromEntries(
+    Object.entries(object).map(([key, value]) => [value, key])
+  )
+}

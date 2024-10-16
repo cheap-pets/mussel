@@ -17,7 +17,7 @@
         <slot name="dropdown">
           <component
             :is="el.is"
-            v-for="el in computedItems" :key="el.key"
+            v-for="el in items" :key="el.key"
             v-bind="el.bindings" />
         </slot>
       </div>
@@ -28,8 +28,9 @@
 <script setup>
   import './dropdown.scss'
 
+  import { toRef } from 'vue'
+  import { useListItems } from '../list/list-items'
   import { dropdownProps, dropdownEvents, useDropdown } from './dropdown'
-  import { useVForComponents } from '@/hooks/v-for-components'
 
   defineOptions({ name: 'MusselDropdown' })
 
@@ -57,12 +58,9 @@
     onDropdownMouseLeave
   } = useDropdown(props, emit)
 
-  const { computedItems } = useVForComponents(
-    props,
-    {
-      itemsProp: 'dropdownItems',
-      defaultComponent: 'mu-dropdown-item'
-    }
+  const { items } = useListItems(
+    toRef(props, 'dropdownItems'),
+    { defaultComponent: 'mu-dropdown-item' }
   )
 
   defineExpose({

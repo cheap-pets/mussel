@@ -3,9 +3,10 @@ import { icons } from '@/icons'
 
 export function useIcon (props) {
   const data = computed(() => {
-    const icon = props.icon && icons[props.icon]
+    const name = props.icon?.trim()
+    const icon = name && icons[name]
 
-    if (props.icon && !icon) {
+    if (name && !icon) {
       console.warn(`Unregistered icon "${props.icon}" is detected.`)
     }
 
