@@ -6,18 +6,18 @@
 </template>
 
 <script setup>
-  import { dropdownItemProps, dropdownItemEvents, useDropdownItem } from './dropdown-item'
+  import {
+    dropdownItemProps,
+    dropdownItemEvents,
+    useDropdownItem
+  } from './dropdown-item'
 
   defineOptions({ name: 'MusselDropdownRadioItem' })
 
   const model = defineModel()
-  const emit = defineEmits([...dropdownItemEvents])
+  const props = defineProps({ ...dropdownItemProps, value: { required: true } })
 
-  const props = defineProps({
-    value: { required: true },
-    label: String,
-    ...dropdownItemProps
-  })
+  const emit = defineEmits([...dropdownItemEvents])
 
   const { onClick } = useDropdownItem(props, emit)
 </script>

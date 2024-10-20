@@ -17,9 +17,13 @@ export function resolveElement (el) {
     : el
 }
 
-export function isInputElement (el) {
+export function isEditableElement (el) {
   return (
-    ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName.toUpperCase()) ||
+    (
+      ['INPUT', 'TEXTAREA'].includes(el.tagName.toUpperCase()) &&
+      !el.hasAttribute('readonly') &&
+      !el.hasAttribute('disabled')
+    ) ||
     el.hasAttribute('contenteditable')
   )
 }

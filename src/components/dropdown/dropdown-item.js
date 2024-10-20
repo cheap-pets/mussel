@@ -3,7 +3,7 @@ import { inject } from 'vue'
 export const dropdownItemProps = {
   icon: String,
   label: String,
-  data: null
+  value: null
 }
 
 export const dropdownItemEvents = [

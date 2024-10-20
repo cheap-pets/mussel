@@ -1,4 +1,4 @@
-import { isRef, computed } from 'vue'
+import { computed } from 'vue'
 import { useKeyGen } from '@/hooks/key-gen'
 
 import { isObject } from '@/utils/type'
@@ -66,9 +66,9 @@ export function useListItems (itemsRef, options = {}) {
           ? getObjectKey(el)
           : genKey()
 
-        Object.assign(item, shortcuts[item.is])
-
-        result.push(item)
+        result.push(
+          Object.assign(item, shortcuts[item.is])
+        )
       }
     })
 

@@ -6,17 +6,16 @@
 </template>
 
 <script setup>
-  import { dropdownItemProps, dropdownItemEvents, useDropdownItem } from './dropdown-item'
+  import {
+    dropdownItemProps,
+    dropdownItemEvents,
+    useDropdownItem
+  } from './dropdown-item'
 
   defineOptions({ name: 'MusselDropdownCheckItem' })
 
   const model = defineModel({ type: [Boolean, Array] })
-
-  const props = defineProps({
-    ...dropdownItemProps,
-    value: null,
-    label: String
-  })
+  const props = defineProps({ ...dropdownItemProps })
 
   const emit = defineEmits([...dropdownItemEvents])
 

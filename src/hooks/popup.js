@@ -1,5 +1,5 @@
 import { watch, onUnmounted } from 'vue'
-import { isInputElement } from '@/utils/dom'
+import { isEditableElement } from '@/utils/dom'
 
 let activeModal
 let activePopup
@@ -23,7 +23,7 @@ window.addEventListener('mouseup', event => {
 }, true)
 
 window.addEventListener('keydown', event => {
-  if (event.keyCode === 27 && !isInputElement(event.target)) {
+  if (event.keyCode === 27 && !isEditableElement(event.target)) {
     if (activePopup) {
       activePopup.onCaptureEscKeyDown?.(event)
     } else if (activeModal) {

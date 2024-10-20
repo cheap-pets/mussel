@@ -15,6 +15,8 @@ export function useSelect (comboBox, model, props) {
 
   const displayValues = ref({})
 
+  const isMultiple = computed(() => Array.isArray(model.value))
+
   const value = computed({
     get () {
       const v = model.value
@@ -65,6 +67,7 @@ export function useSelect (comboBox, model, props) {
   }
 
   provide('select', {
+    isMultiple,
     mountOption,
     unmountOption,
     onOptionClick
@@ -72,6 +75,7 @@ export function useSelect (comboBox, model, props) {
 
   return {
     value,
+    isMultiple,
     optionItems
   }
 }
