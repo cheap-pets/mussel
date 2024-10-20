@@ -1,4 +1,4 @@
-import { generateUUID } from '@/utils/id'
+import { generateUUID } from '@/utils/crypto'
 
 export function useKeyGen () {
   const keys = new WeakMap()
