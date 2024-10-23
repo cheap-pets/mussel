@@ -1,3 +1,5 @@
+import './dropdown-item.scss'
+
 import { inject } from 'vue'
 
 export const dropdownItemProps = {
@@ -6,16 +8,11 @@ export const dropdownItemProps = {
   value: null
 }
 
-export const dropdownItemEvents = [
-  'click'
-]
-
-export function useDropdownItem (props, emit) {
-  const dropdown = inject('dropdown', {})
+export function useDropdownItem (props) {
+  const dropdown = inject('dropdown')
 
   function onClick (event) {
-    emit('click', event)
-    dropdown.onDropdownItemClick?.(props)
+    dropdown.onDropdownItemClick(props)
   }
 
   return {

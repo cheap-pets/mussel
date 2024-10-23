@@ -26,8 +26,6 @@
 </template>
 
 <script setup>
-  import './dropdown.scss'
-
   import { toRef } from 'vue'
   import { useListItems } from '../list/list-items'
   import { dropdownProps, dropdownEvents, useDropdown } from './dropdown'

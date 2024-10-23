@@ -7,7 +7,7 @@ export const MessageTypes = {
     buttons: ['OK']
   },
   SUCCESS: {
-    icon: 'check',
+    icon: 'ok',
     title: lang.Message.SUCCESS,
     buttons: ['OK']
   },

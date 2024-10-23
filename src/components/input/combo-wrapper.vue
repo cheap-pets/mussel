@@ -3,7 +3,7 @@
     <component :is="pre.is" v-if="pre" v-bind="pre.attrs" @click.stop="onPrefixClick">
       {{ pre.content }}
     </component>
-    <slot name="input" v-bind="inputAttrs">
+    <slot v-bind="inputAttrs">
       <input v-model="model" v-bind="inputAttrs" @click.stop="onInputClick">
     </slot>
     <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click.stop="clear" />
@@ -62,7 +62,7 @@
     dropdownContainer,
     dropdownIconAttrs,
     dropdownPanelAttrs,
-    hide: hideDropdown,
+    hide: collapse,
     toggle: toggleDropdown,
     onDropdownClick
   } = useDropdown(props, emit)
@@ -71,7 +71,7 @@
 
   function clear () {
     model.value = null
-    hideDropdown()
+    collapse()
   }
 
   function onInputClick () {
@@ -79,7 +79,7 @@
   }
 
   defineExpose({
-    hideDropdown,
+    collapse,
     toggleDropdown
   })
 </script>

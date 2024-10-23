@@ -1,7 +1,7 @@
 <template>
   <div class="mu-list-divider">
     <slot>
-      <mu-icon v-if="icon" :icon="icon" />
+      <mu-icon v-if="icon != null" :icon="icon" />
       <label v-if="label">{{ label }}</label>
     </slot>
   </div>

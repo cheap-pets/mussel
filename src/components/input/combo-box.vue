@@ -1,5 +1,5 @@
 <template>
-  <combo-wrapper ref="comboBox" v-model="value" class="mu-combo-box" :editable="editable">
+  <combo-wrapper v-model="value" class="mu-combo-box" :editable="editable">
     <template #dropdown>
       <slot name="dropdown">
         <component
@@ -12,17 +12,34 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
   import { selectProps, useSelect } from './select'
 
   import ComboWrapper from './combo-wrapper.vue'
 
   defineOptions({ name: 'MusselComboBox' })
 
-  const model = defineModel()
-  const props = defineProps({ ...selectProps, editable: Boolean })
+  const model = defineModel({
+    validator (v) {
+      if (Array.isArray(v)) {
+        console.warn(
+          '[MUSSEL:COMBO]',
+          'Prop "modelValue" cannot be specified as an array.'
+        )
 
-  const comboBox = ref()
+        return false
+      }
 
-  const { value, optionItems } = useSelect(comboBox, model, props)
+      return true
+    }
+  })
+
+  const props = defineProps({
+    ...selectProps,
+    editable: Boolean
+  })
+
+  const {
+    value,
+    optionItems
+  } = useSelect(model, props)
 </script>

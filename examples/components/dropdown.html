@@ -29,7 +29,6 @@
 
   <style>
     .mu-dropdown-panel.sys-menu_mask {
-      pointer-events: none;
       top: 56px;
       right: 0;
       bottom: 0;
@@ -72,7 +71,7 @@
       <mu-dropdown-button
         class="mu-icon-button" accent
         dropdown-icon="dotsVert"
-        dropdown-class="sys-menu_mask"
+        dropdown-class="sys-menu_mask mu-dropdown_collapse-trigger"
         dropdown-positioned>
         <template #dropdown>
           <div class="sys-menu"></div>
@@ -177,12 +176,12 @@
         const artist = Vue.ref()
         const artists = Vue.ref([
           { is: '-', label: 'GROUP 1' },
-          { label: 'Ludwig van Beethoven', value: 1, icon: 'info'  },
+          { label: 'Ludwig van Beethoven', icon: 'info'  },
           { label: 'Wolfgang Amadeus Mozart', icon: 'question' },
           '-',
           { is: '-', label: 'GROUP 2' },
           { is: '-', label: 'GROUP 3' },
-          { label: 'Frédéric François Chopin', icon: ' ' },
+          { label: 'Frédéric François Chopin', icon: '' },
           { label: 'Johann Baptist Strauss', icon: 'ok' }
         ])
         const checkedArtist = Vue.ref(null)

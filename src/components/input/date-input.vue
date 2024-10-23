@@ -117,7 +117,7 @@
 
   function onDateCellClick (cell) {
     _onDateCellClick(cell)
-    wrapper.value.hideDropdown()
+    wrapper.value.collapse()
   }
 
   function onMonthCellClick () {
@@ -126,7 +126,7 @@
         updateModelValue(current.value)
       }
 
-      wrapper.value.hideDropdown()
+      wrapper.value.collapse()
     } else {
       selectingMonth.value = false
     }

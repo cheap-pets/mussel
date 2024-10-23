@@ -7,12 +7,7 @@ export const selectProps = {
   optionKey: { type: String, default: 'value' }
 }
 
-export function useSelect (comboBox, model, props) {
-  const { items: optionItems } = useListItems(
-    toRef(props, 'options'),
-    { defaultComponent: 'mu-option', key: props.optionKey }
-  )
-
+export function useSelect (model, props) {
   const displayValues = ref({})
 
   const isMultiple = computed(() => Array.isArray(model.value))
@@ -34,6 +29,14 @@ export function useSelect (comboBox, model, props) {
       model.value = v
     }
   })
+
+  const { items: optionItems } = useListItems(
+    toRef(props, 'options'),
+    {
+      key: props.optionKey,
+      defaultComponent: 'mu-option'
+    }
+  )
 
   watchEffect(() => {
     const result = {}
@@ -63,7 +66,6 @@ export function useSelect (comboBox, model, props) {
 
   function onOptionClick (option) {
     model.value = option.value
-    comboBox.value.hideDropdown()
   }
 
   provide('select', {

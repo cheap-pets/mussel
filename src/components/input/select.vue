@@ -1,13 +1,11 @@
 <template>
-  <combo-wrapper ref="comboBox" v-model="value" class="mu-select" :editable="false">
-    <template #input="{ placeholder }">
-      <div
-        class="mu-select_selected-item mu-text-ellipsis"
-        :placeholder="placeholder"
-        :title="showValueTooltip ? value : null">
-        {{ value }}
-      </div>
-    </template>
+  <combo-wrapper v-model="value" class="mu-select" :editable="false">
+    <div
+      class="mu-select_value-box mu-text-ellipsis"
+      :placeholder="placeholder"
+      :title="showValueTooltip ? value : null">
+      {{ value }}
+    </div>
     <template #dropdown>
       <slot name="dropdown">
         <component
@@ -22,17 +20,14 @@
 <script setup>
   import './select.scss'
 
-  import { ref } from 'vue'
-  import { selectProps, useSelect } from './select'
-
   import ComboWrapper from './combo-wrapper.vue'
+
+  import { selectProps, useSelect } from './select'
 
   defineOptions({ name: 'MusselSelect' })
 
   const model = defineModel()
-  const props = defineProps({ ...selectProps, showValueTooltip: Boolean })
+  const props = defineProps({ ...selectProps, placeholder: String, showValueTooltip: Boolean })
 
-  const comboBox = ref()
-
-  const { value, optionItems } = useSelect(comboBox, model, props)
+  const { value, optionItems } = useSelect(model, props)
 </script>

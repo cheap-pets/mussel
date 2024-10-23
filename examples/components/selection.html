@@ -39,7 +39,7 @@
     </div>
     <div class="group">
       <h3>CHECK</h3>
-      <mu-check v-model="check1" label="Check 1"></mu-check>
+      <mu-check :model-value="check1" label="Check 1" @update:model-value="onCheck1Update"></mu-check>
       <mu-check v-model="check2" label="Check 2"></mu-check>
       <mu-check v-model="checked" label="Check 3" value="3" disabled></mu-check>
       <mu-check v-model="checked" label="Check 4" value="4"></mu-check>
@@ -69,7 +69,14 @@
           document.querySelector('.mu-root').classList.toggle('mu-dark')
         }
 
-        return { darkMode, value1, check1, check2, checked, radioValue, onUIModeChange }
+        function onCheck1Update (v) {
+          value1.value = v
+        }
+
+        return {
+          darkMode, value1, check1, check2, checked, radioValue,
+          onUIModeChange, onCheck1Update
+        }
       }
     })
 

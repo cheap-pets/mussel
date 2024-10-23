@@ -1,3 +1,5 @@
+import './modal-mask.scss'
+
 import { ref, shallowRef, inject, watch, onMounted } from 'vue'
 import { useModalManager } from '@/hooks/popup'
 import { delay } from '@/utils/timer'

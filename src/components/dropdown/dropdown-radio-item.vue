@@ -8,7 +8,6 @@
 <script setup>
   import {
     dropdownItemProps,
-    dropdownItemEvents,
     useDropdownItem
   } from './dropdown-item'
 
@@ -17,7 +16,5 @@
   const model = defineModel()
   const props = defineProps({ ...dropdownItemProps, value: { required: true } })
 
-  const emit = defineEmits([...dropdownItemEvents])
-
-  const { onClick } = useDropdownItem(props, emit)
+  const { onClick } = useDropdownItem(props)
 </script>

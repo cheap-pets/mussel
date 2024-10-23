@@ -1,3 +1,5 @@
+import './dropdown.scss'
+
 import { ref, shallowRef, computed, provide, inject } from 'vue'
 import { findUp, isElementInViewport } from '@/utils/dom'
 import { getTransitionDuration } from '@/utils/style'
@@ -208,7 +210,7 @@ export function useDropdown (props, emit, options = {}) {
 
   function onDropdownClick (event) {
     const trigger = findUp(event.target, parent => {
-      if (parent.hasAttribute('dropdown-hide-trigger')) return true
+      if (parent.classList.contains('mu-dropdown_collapse-trigger')) return true
       if (parent === dropdownElement.value) return false
     })
 
