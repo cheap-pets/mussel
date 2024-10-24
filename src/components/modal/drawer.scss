@@ -6,7 +6,6 @@
 
   &.mu-drawer-mask {
     z-index: var(--mu-z-index-layer);
-    backdrop-filter: none;
   }
 }
 
@@ -22,7 +21,7 @@
   font-size: var(--mu-common-font-size);
   color: var(--mu-text-color-normal);
 
-  background: var(--mu-bg-normal);
+  background: var(--mu-bg-overlay);
   box-shadow: var(--mu-shadow-layer);
 
   transition: transform .2s, opacity .2s;

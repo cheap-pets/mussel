@@ -13,7 +13,8 @@
   --mu-bg-strong: var(--mu-gray-8);
   --mu-bg-disabled: var(--mu-gray-8);
   
-  --mu-bg-mask: rgba(255, 255, 255, .15);
+  --mu-bg-overlay: var(--mu-bg-strong);
+  // --mu-bg-mask: rgba(255, 255, 255, .1);
 
   --mu-border-color: var(--mu-gray-5);
   --mu-border-color-muted: var(--mu-gray-7);
