@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { isString } from '@/utils/type'
+import { isString, isEmpty } from '@/utils/type'
 
 export const inputProps = {
   readonly: Boolean,
@@ -69,11 +69,10 @@ export function useInput (model, props, emit) {
   }
 
   const clearButtonVisible = computed(() =>
+    props.clearable &&
     !props.disabled &&
     !props.readonly &&
-    props.clearable &&
-    model.value != null &&
-    model.value !== ''
+    !isEmpty(model.value)
   )
 
   return {

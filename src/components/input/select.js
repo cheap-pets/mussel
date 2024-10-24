@@ -1,4 +1,4 @@
-import { provide, ref, toRef, computed, watchEffect } from 'vue'
+import { provide, ref, toRef, computed } from 'vue'
 import { useListItems } from '../list/list-items'
 
 export const selectProps = {
@@ -8,20 +8,36 @@ export const selectProps = {
 }
 
 export function useSelect (model, props) {
-  const displayValues = ref({})
+  const mountedOptions = ref(new Set())
 
   const isMultiple = computed(() => Array.isArray(model.value))
 
-  const value = computed({
+  const optionsLabels = computed(() => {
+    const result = {}
+
+    if (!props.editable) {
+      Array
+        .from(props.options || mountedOptions.value || [])
+        .forEach(el => {
+          if (el.value != null) {
+            result[el.value] = el.label ?? el.value
+          }
+        })
+    }
+
+    return {}
+  })
+
+  const comboValue = computed({
     get () {
       const v = model.value
-      const values = displayValues.value
+      const labels = optionsLabels.value
 
       return props.editable
         ? v
         : props.displayValue === undefined
-          ? v in values
-            ? values[v]
+          ? v in labels
+            ? labels[v]
             : v
           : props.displayValue
     },
@@ -38,29 +54,15 @@ export function useSelect (model, props) {
     }
   )
 
-  watchEffect(() => {
-    const result = {}
-
-    if (!props.editable) {
-      props.options?.forEach(el => {
-        if (el.value != null) {
-          result[el.value] = el.label ?? el.value
-        }
-      })
-    }
-
-    displayValues.value = result
-  })
-
   function mountOption (option) {
     if (!props.options && !props.editable && option.value != null) {
-      displayValues.value[option.value] = option.label ?? option.value
+      mountedOptions.value.add(option)
     }
   }
 
   function unmountOption (option) {
     if (!props.options && !props.editable) {
-      delete displayValues.value[option.value]
+      mountedOptions.value.delete(option)
     }
   }
 
@@ -76,8 +78,8 @@ export function useSelect (model, props) {
   })
 
   return {
-    value,
     isMultiple,
+    comboValue,
     optionItems
   }
 }

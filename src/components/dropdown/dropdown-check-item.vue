@@ -14,7 +14,7 @@
   defineOptions({ name: 'MusselDropdownCheckItem' })
 
   const model = defineModel({ type: [Boolean, Array] })
-  const props = defineProps({ ...dropdownItemProps })
+  const props = defineProps({ ...dropdownItemProps, value: null })
 
   const { onClick } = useDropdownItem(props)
 </script>

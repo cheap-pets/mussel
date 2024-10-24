@@ -1,5 +1,5 @@
 <template>
-  <combo-wrapper v-model="value" class="mu-combo-box" :editable="editable">
+  <combo-wrapper v-model="comboValue" class="mu-combo-box" :editable="editable">
     <template #dropdown>
       <slot name="dropdown">
         <component
@@ -33,13 +33,10 @@
     }
   })
 
-  const props = defineProps({
-    ...selectProps,
-    editable: Boolean
-  })
+  const props = defineProps({ ...selectProps, editable: Boolean })
 
   const {
-    value,
+    comboValue,
     optionItems
   } = useSelect(model, props)
 </script>

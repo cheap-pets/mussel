@@ -1,10 +1,10 @@
 <template>
-  <combo-wrapper v-model="value" class="mu-select" :editable="false">
+  <combo-wrapper v-model="comboValue" class="mu-select" :editable="false">
     <div
       class="mu-select_value-box mu-text-ellipsis"
       :placeholder="placeholder"
-      :title="showValueTooltip ? value : null">
-      {{ value }}
+      :title="showValueTooltip ? comboValue : null">
+      {{ comboValue }}
     </div>
     <template #dropdown>
       <slot name="dropdown">
@@ -29,5 +29,8 @@
   const model = defineModel()
   const props = defineProps({ ...selectProps, placeholder: String, showValueTooltip: Boolean })
 
-  const { value, optionItems } = useSelect(model, props)
+  const {
+    comboValue,
+    optionItems
+  } = useSelect(model, props)
 </script>

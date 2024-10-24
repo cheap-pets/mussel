@@ -58,6 +58,18 @@
           @click="addOption">
         </mu-button>
       </div>
+      <mu-combo-box
+        v-model="artist"
+        clearable
+        prefix="Artist: "
+        @prefix-click="onPrefixClick"
+        @dropdown:show="onDropdownShow">
+        <template #dropdown>
+          <mu-option value="Ludwig van Beethoven"></mu-option>
+          <mu-option value="Wolfgang Amadeus Mozart"></mu-option>
+          <mu-option value="Frédéric François Chopin"></mu-option>
+        </template>
+      </mu-combo-box>
       <mu-combo-box v-model="artist" editable clearable :options="artists">
       </mu-combo-box>
     </div>
@@ -108,6 +120,15 @@
             value: new Date()
           })
         }
+
+        
+        setInterval(() => {
+          if (artists.value.length > 3) {
+            artists.value.pop()
+          } else {
+            artists.value[1].label = 'shit' + new Date()
+          }
+        }, 3000)
 
         return { artist, artists, artistsCn, onPrefixClick, addOption }
       },

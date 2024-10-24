@@ -209,12 +209,14 @@ export function useDropdown (props, emit, options = {}) {
   }
 
   function onDropdownClick (event) {
-    const trigger = findUp(event.target, parent => {
-      if (parent.classList.contains('mu-dropdown_collapse-trigger')) return true
-      if (parent === dropdownElement.value) return false
-    })
-
-    if (trigger) hide()
+    if (
+      findUp(event.target, pEl => {
+        if (pEl.classList.contains('mu-dropdown_collapse-trigger')) return true
+        if (pEl === dropdownElement.value) return false
+      })
+    ) {
+      hide()
+    }
   }
 
   function onDropdownMouseOver () {
@@ -231,9 +233,7 @@ export function useDropdown (props, emit, options = {}) {
   }
 
   function onCaptureEscKeyDown (event) {
-    if (expanded.value && !isHoverTrigger.value) {
-      hide()
-    }
+    if (expanded.value && !isHoverTrigger.value) hide()
   }
 
   function onCaptureMouseDown (event) {

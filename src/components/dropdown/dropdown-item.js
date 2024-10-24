@@ -3,9 +3,9 @@ import './dropdown-item.scss'
 import { inject } from 'vue'
 
 export const dropdownItemProps = {
+  action: null,
   icon: String,
-  label: String,
-  value: null
+  label: String
 }
 
 export function useDropdownItem (props) {
