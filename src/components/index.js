@@ -15,6 +15,7 @@ import * as MessageComponents from './message'
 
 import MuTags from './tag/tags.vue'
 import MuBadge from './badge/badge.vue'
+import MuTableLite from './table/table-lite.vue'
 import MuScrollBox from './scrollbar/scroll-box.vue'
 
 import { kebabCase } from '@/utils/case'
@@ -48,6 +49,7 @@ export function install (app, options) {
   _install({
     MuTags,
     MuBadge,
+    MuTableLite,
     MuScrollBox
   })
 }
