@@ -1,0 +1,169 @@
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mu-table {
+  --row-height: 36;
+  --cell-padding: 8;
+  --cell-line-height: 18;
+  --hover-row-bg: rgba(0, 0, 0, .03);
+  --hover-col-bg: rgba(0, 0, 0, .03);
+  --active-bg: rgb(from var(--mu-primary-color) r g b / 0.1);
+  /* --cell-line-height: calc(var(--row-height) - var(--cell-padding) * 2 - 2); */
+
+  border: 1px solid var(--mu-border-color);
+}
+
+.mu-table > table {
+  table-layout: fixed;
+
+  width: fit-content;
+  min-width: 100%;
+  border-right: 1px solid var(--mu-border-color);
+  border-bottom: 1px solid var(--mu-border-color);
+
+  & > thead {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+  }
+
+  & tr {
+    height: calc(var(--row-height) * 1px);
+  }
+
+  &[table-y-scrolled] > thead {
+    box-shadow: 0 4px 4px -2px rgba(0, 0, 0, .5);
+  }
+
+  &[table-x-scrolled] .last-fixed-col {
+    border-right-color: #777;
+  }
+
+  & th, & td {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: calc(var(--cell-padding) * 1px);
+    border-top: 1px solid var(--mu-border-color-muted);
+    border-right: 1px solid var(--mu-border-color-muted);
+
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: calc(var(--cell-line-height) * 1px);
+    color: inherit;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.last-col {
+      border-right: none;
+    }
+
+    &.fixed-col {
+      position: sticky;
+      z-index: 1;
+    }
+  }
+
+  & th {
+    background-color: #f1f1f1;
+  }
+
+  & td {
+    vertical-align: middle;
+    background-color: #fff;
+
+    & > a,
+    & > div {
+      overflow: hidden;
+      max-width: 100%;
+      vertical-align: inherit;
+    }
+
+    & > a {
+      cursor: pointer;
+
+      display: block;
+
+      color: var(--mu-primary-color);
+      text-decoration: none;
+      text-underline-offset: 2px;
+      text-overflow: ellipsis;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  & tr {
+    &:first-child > th {
+      border-top: none;
+    }
+  }
+}
+
+.mu-table_hover-row {
+  & tbody > tr:hover {
+    background-color: var(--hover-row-bg);
+  }
+}
+
+.mu-table_hover-cell,
+.mu-table_hover-column {
+  & td:hover {
+    background-color: var(--hover-col-bg);
+  }
+}
+
+.mu-table_hover-indicator {
+  pointer-events: none;
+  width: 0;
+}
+
+.mu-table_hover-rows,
+.mu-table_hover-cross {
+  & > .mu-table_hover-indicator::before {
+    content: '';
+
+    position: absolute;
+    z-index: 1;
+    top: var(--hover-indicator-x-top);
+    left: 0;
+
+    width: var(--hover-indicator-x-width);
+    height: var(--hover-indicator-x-height);
+
+    background-color: var(--hover-row-bg);
+  }
+}
+
+.mu-table_hover-column,
+.mu-table_hover-cross {
+  & > .mu-table_hover-indicator::after {
+    content: '';
+
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: var(--hover-indicator-y-left);
+
+    width: var(--hover-indicator-y-width);
+    height: var(--hover-indicator-y-height);
+
+    background-color: var(--hover-col-bg);
+  }
+}
+
+.mu-table tr[selected] > td {
+  background-color: var(--active-bg);
+}
