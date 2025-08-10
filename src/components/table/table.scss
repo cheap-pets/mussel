@@ -1,36 +1,37 @@
-.text-left {
-  text-align: left;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-right {
-  text-align: right;
-}
-
 .mu-table {
   --row-height: 36;
   --cell-padding: 8;
   --cell-line-height: 18;
   --hover-row-bg: rgba(0, 0, 0, .03);
   --hover-col-bg: rgba(0, 0, 0, .03);
-  --active-bg: rgb(from var(--mu-primary-color) r g b / 0.1);
+  --head-border-bottom: 1px solid var(--mu-border-color);
+  --gridline-row: none;
+  --gridline-col: none;
+  --active-bg: var(--mu-primary-color-0);
   /* --cell-line-height: calc(var(--row-height) - var(--cell-padding) * 2 - 2); */
 
   border: 1px solid var(--mu-border-color);
 }
 
-.mu-table > table {
-  table-layout: fixed;
+.mu-table {
+  & > table {
+    table-layout: fixed;
 
-  width: fit-content;
-  min-width: 100%;
-  border-right: 1px solid var(--mu-border-color);
-  border-bottom: 1px solid var(--mu-border-color);
+    width: fit-content;
+    min-width: 100%;
+    border-right: 1px solid var(--mu-border-color);
+    border-bottom: 1px solid var(--mu-border-color);
 
-  & > thead {
+    &[table-y-scrolled] > thead {
+      box-shadow: 0 3px 3px -1.5px rgba(0, 0, 0, .5);
+    }
+
+    &[table-x-scrolled] .last-fixed-col {
+      border-right: 1px solid #777;
+    }
+  }
+
+  & thead {
     position: sticky;
     z-index: 2;
     top: 0;
@@ -40,12 +41,8 @@
     height: calc(var(--row-height) * 1px);
   }
 
-  &[table-y-scrolled] > thead {
-    box-shadow: 0 4px 4px -2px rgba(0, 0, 0, .5);
-  }
-
-  &[table-x-scrolled] .last-fixed-col {
-    border-right-color: #777;
+  & .even-row > td {
+    background-color: var(--mu-gray-0);
   }
 
   & th, & td {
@@ -54,8 +51,7 @@
     overflow: hidden;
 
     padding: calc(var(--cell-padding) * 1px);
-    border-top: 1px solid var(--mu-border-color-muted);
-    border-right: 1px solid var(--mu-border-color-muted);
+    border-right: var(--gridline-col);
 
     font-size: inherit;
     font-weight: inherit;
@@ -75,24 +71,23 @@
   }
 
   & th {
+    border-bottom: var(--head-border-bottom);
     background-color: #f1f1f1;
   }
 
   & td {
+    border-top: var(--gridline-row);
     vertical-align: middle;
     background-color: #fff;
 
-    & > a,
-    & > div {
-      overflow: hidden;
-      max-width: 100%;
-      vertical-align: inherit;
-    }
+    // & > div {
+    //   overflow: hidden;
+    //   max-width: 100%;
+    //   vertical-align: inherit;
+    // }
 
-    & > a {
+    &[cell-type="link"] {
       cursor: pointer;
-
-      display: block;
 
       color: var(--mu-primary-color);
       text-decoration: none;
@@ -103,25 +98,22 @@
         text-decoration: underline;
       }
     }
-  }
 
-  & tr {
-    &:first-child > th {
-      border-top: none;
+    &[cell-type="multiline"] > div {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp:
+        calc(
+          (var(--rowspan) * var(--row-height) - var(--cell-padding) * 2 - 2) / var(--cell-line-height)
+        );
+
+      white-space: pre-line;
     }
   }
-}
 
-.mu-table_hover-row {
-  & tbody > tr:hover {
-    background-color: var(--hover-row-bg);
-  }
-}
-
-.mu-table_hover-cell,
-.mu-table_hover-column {
-  & td:hover {
-    background-color: var(--hover-col-bg);
+  & tr:first-child > td {
+    border-top: none;
   }
 }
 
@@ -130,23 +122,24 @@
   width: 0;
 }
 
-.mu-table_hover-rows,
+.mu-table_hover-row,
 .mu-table_hover-cross {
   & > .mu-table_hover-indicator::before {
     content: '';
 
     position: absolute;
     z-index: 1;
-    top: var(--hover-indicator-x-top);
+    top: var(--hover-row-top);
     left: 0;
 
-    width: var(--hover-indicator-x-width);
-    height: var(--hover-indicator-x-height);
+    width: var(--hover-row-width);
+    height: var(--hover-row-height);
 
     background-color: var(--hover-row-bg);
   }
 }
 
+.mu-table_hover-cell,
 .mu-table_hover-column,
 .mu-table_hover-cross {
   & > .mu-table_hover-indicator::after {
@@ -154,11 +147,11 @@
 
     position: absolute;
     z-index: 1;
-    top: 0;
-    left: var(--hover-indicator-y-left);
+    top: var(--hover-col-top);
+    left: var(--hover-col-left);
 
-    width: var(--hover-indicator-y-width);
-    height: var(--hover-indicator-y-height);
+    width: var(--hover-col-width);
+    height: var(--hover-col-height);
 
     background-color: var(--hover-col-bg);
   }
@@ -166,4 +159,14 @@
 
 .mu-table tr[selected] > td {
   background-color: var(--active-bg);
+}
+
+.mu-table_gridlines-all,
+.mu-table_gridlines-row {
+  --gridline-row: 1px solid var(--mu-border-color-muted);
+}
+
+.mu-table_gridlines-all,
+.mu-table_gridlines-column {
+  --gridline-col: 1px solid var(--mu-border-color-muted);
 }

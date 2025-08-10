@@ -2,7 +2,7 @@
   <div
     v-mu-scrollbar
     class="mu-table"
-    :class="hoverClass"
+    :class="[hoverClass, gridlinesClass]"
     :style="hoverStyle"
     @scroll="onScroll"
     @sizechange="onResize">
@@ -47,17 +47,14 @@
 </template>
 
 <script setup>
-  import { shallowRef, reactive, computed, watchEffect, provide } from 'vue'
+  import { ref, shallowRef, reactive, computed, watchEffect, provide } from 'vue'
   import { isFunction, isPlainObject } from 'es-toolkit'
   import { throttle } from 'throttle-debounce'
 
+  import './mu-table.scss'
   import TableRow from './table-row.vue'
-  import './table.scss'
 
   defineOptions({ name: 'MusselTable' })
-
-  const emit = defineEmits(['cell-click', 'link-click'])
-  const selected = defineModel('selected')
 
   const props = defineProps({
     records: { type: Array, default: () => [] },
@@ -66,37 +63,44 @@
     detailsField: String,
     detailKeyField: String,
     fixedLeftColumns: Number,
+    striped: Boolean,
+    selected: [Object, Number, String],
     selectMode: {
       default: 'row',
-      validator: v => ['none', 'row', 'cell'].includes(v)
+      validator: v => ['none', 'row'].includes(v) // , 'cell'
     },
     hoverMode: {
       default: 'row',
       validator: v => ['none', 'row', 'column', 'cross', 'cell'].includes(v)
+    },
+    gridlines: {
+      default: 'all',
+      validator: v => ['none', 'all', 'row', 'column'].includes(v)
     }
   })
 
+  const emit = defineEmits(['cell-click', 'link-click', 'update:selected'])
+
+  const fixedColumnsWidth = ref(0)
   const tableElement = shallowRef()
 
   const hoverStyle = reactive({
-    '--hover-indicator-x-top': 0,
-    '--hover-indicator-x-width': 0,
-    '--hover-indicator-x-height': 0,
-    '--hover-indicator-y-left': 0,
-    '--hover-indicator-y-width': 0,
-    '--hover-indicator-y-height': 0
+    '--hover-row-top': 0,
+    '--hover-row-width': 0,
+    '--hover-row-height': 0,
+    '--hover-col-top': 0,
+    '--hover-col-left': 0,
+    '--hover-col-width': 0,
+    '--hover-col-height': 0
   })
 
-  const processedHoverMode = computed(() =>
-    props.hoverMode === 'row' && Boolean(props.detailsField)
-      ? 'rows'
-      : props.hoverMode
+  const hoverClass = computed(() =>
+    props.hoverMode === 'none' ? null : `mu-table_hover-${props.hoverMode}`
   )
 
-  const hoverClass = computed(() => {
-    const mode = processedHoverMode.value
-    return mode === 'none' ? null : `mu-table_hover-${mode}`
-  })
+  const gridlinesClass = computed(() =>
+    props.gridlines === 'none' ? null : `mu-table_gridlines-${props.gridlines}`
+  )
 
   const processedColumns = computed(() => {
     const fixed = props.fixedLeftColumns
@@ -124,6 +128,7 @@
       if (left != null) {
         el._class.push('fixed-col')
         el._style = { left: `${left}px` }
+        el._fixed = true
 
         if (px && idx < fixed) {
           left += px
@@ -146,7 +151,7 @@
   )
 
   const selectedKey = computed(() =>
-    isPlainObject(selected.value) ? selected.value._key : selected.value
+    props.selectMode === 'none' ? null : (props.selected?._key ?? props.selected)
   )
 
   const keyMap = new WeakMap()
@@ -177,8 +182,12 @@
     el.style.borderRightWidth = isXOverflowed ? 0 : '1px'
     el.style.borderBottomWidth = isYOverflowed ? 0 : '1px'
 
-    hoverStyle['--hover-indicator-x-width'] = `${pEl.scrollWidth}px`
-    hoverStyle['--hover-indicator-y-height'] = `${pEl.scrollHeight}px`
+    const th = el.querySelector('th.last-fixed-col')
+    fixedColumnsWidth.value = th ? th.offsetLeft + th.offsetWidth : 0
+
+    hideHoverIndicator()
+    hoverStyle['--hover-row-width'] = `${pEl.scrollWidth}px`
+    hoverStyle['--hover-col-height'] = `${pEl.scrollHeight}px`
   }, { noLeading: true })
 
   const onScroll = throttle(50, () => {
@@ -189,6 +198,10 @@
 
     if (el.parentNode.scrollTop) el.setAttribute('table-y-scrolled', '')
     else el.removeAttribute('table-y-scrolled')
+
+    if (props.hoverMode !== 'row') {
+      hideHoverIndicator()
+    }
   }, { noLeading: true })
 
   function getCellText (rec, col, recIdx, detailIdx = 0) {
@@ -230,8 +243,11 @@
         ? 'link-click'
         : 'cell-click'
 
-    if (rec._key !== selectedKey.value) {
-      selected.value = isPlainObject(props.selected) ? rec : rec._key
+    if (props.selectMode === 'row' && rec._key !== selectedKey.value) {
+      emit(
+        'update:selected',
+        props.keyField && !isPlainObject(props.selected) ? rec._key : rec
+      )
     }
 
     emit(clickEvent, rec, col, recIdx, detailIdx)
@@ -262,38 +278,57 @@
     }
 
     if (row.getAttribute('selected')) {
-      hoverStyle['--hover-row-bg'] = 'var(--active-bg)'
+      hoverStyle['--hover-row-bg'] = 'unset'
     } else {
       delete hoverStyle['--hover-row-bg']
     }
 
-    hoverStyle['--hover-indicator-x-top'] = `${first.offsetTop}px`
-    hoverStyle['--hover-indicator-x-height'] = `${last.offsetTop - first.offsetTop + last.offsetHeight}px`
+    hoverStyle['--hover-row-top'] = `${first.offsetTop}px`
+    hoverStyle['--hover-row-height'] = `${last.offsetTop - first.offsetTop + last.offsetHeight}px`
   }
 
   function setHoverColIndicator (cell, column) {
-    if (hoveringCol?.deref() === column) return
-    else hoveringCol = new WeakRef(column)
+    if (props.hoverMode !== 'cell' && hoveringCol?.deref() === column) return
 
-    hoverStyle['--hover-indicator-y-left'] = `${cell.offsetLeft}px`
-    hoverStyle['--hover-indicator-y-width'] = `${cell.offsetWidth}px`
+    const left = cell.offsetLeft
+    const fixedWidth = fixedColumnsWidth.value
+    const scrollLeft = tableElement.value.parentNode.scrollLeft
+
+    const offset = column._fixed || left >= fixedWidth + scrollLeft
+      ? 0
+      : scrollLeft
+
+    hoverStyle['--hover-col-left'] = `${left + offset}px`
+    hoverStyle['--hover-col-width'] = `${cell.offsetWidth - offset}px`
+
+    if (props.hoverMode === 'cell') {
+      hoverStyle['--hover-col-top'] = `${cell.offsetTop}px`
+      hoverStyle['--hover-col-height'] = `${cell.offsetHeight}px`
+    } else {
+      hoveringCol = new WeakRef(column)
+    }
   }
 
   function hideHoverIndicator () {
     hoveringCol = null
     hoveringRow = null
-    hoverStyle['--hover-indicator-y-width'] = 0
-    hoverStyle['--hover-indicator-x-height'] = 0
+    hoverStyle['--hover-col-width'] = 0
+    hoverStyle['--hover-row-height'] = 0
   }
 
   const setHoverIndicator = throttle(30, (cell, column) => {
-    const mode = processedHoverMode.value
+    const mode = props.hoverMode
 
-    if (!['rows', 'column', 'cross'].includes(mode)) return
+    if (mode === 'none') return
 
     if (cell) {
-      if (mode !== 'column') setHoverRowIndicator(cell.parentNode)
-      if (mode !== 'row') setHoverColIndicator(cell, column)
+      if (mode !== 'column' && mode !== 'cell') {
+        setHoverRowIndicator(cell.parentNode)
+      }
+
+      if (mode !== 'row') {
+        setHoverColIndicator(cell, column)
+      }
     } else {
       hideHoverIndicator()
     }
@@ -309,6 +344,7 @@
   )
 
   provide('table', {
+    tableOptions: props,
     getCellText,
     getCellStyle,
     getCellTooltip,
