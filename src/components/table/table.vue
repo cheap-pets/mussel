@@ -51,7 +51,7 @@
   import { isFunction, isPlainObject } from 'es-toolkit'
   import { throttle } from 'throttle-debounce'
 
-  import './mu-table.scss'
+  import './table.scss'
   import TableRow from './table-row.vue'
 
   defineOptions({ name: 'MusselTable' })

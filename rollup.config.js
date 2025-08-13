@@ -13,7 +13,7 @@ import sass from '@cheap-pets/rollup-plugin-postcss-scss'
 import { string } from 'rollup-plugin-string'
 
 import { fileURLToPath } from 'url'
-import { generatePreCssVariables } from './src/theme.js'
+import { generatePreCssVariables } from './src/colors.js'
 
 const pkgJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf-8'))
 const version = pkgJson.version

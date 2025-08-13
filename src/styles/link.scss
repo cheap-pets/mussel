@@ -8,8 +8,8 @@ a.mu-icon,
   }
 
   &[accent] {
-    --mu-link_color: var(--mu-accent-color);
-    --mu-link_hover-color: var(--mu-accent-color-4);
+    --mu-link_color: var(--mu-secondary-color);
+    --mu-link_hover-color: var(--mu-secondary-color-4);
   }
 
   &[danger] {

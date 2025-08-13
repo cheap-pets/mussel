@@ -1,6 +1,6 @@
 import './styles/index.scss'
 
-import { install as installTheme } from './theme.js'
+import { setupColors } from './colors.js'
 import { install as installIcons } from './icons/index.js'
 import { install as installDirectives } from './directives/index.js'
 import { install as installComponents } from './components/index.js'
@@ -10,7 +10,7 @@ import { resolveElement } from './utils/dom.js'
 const isSysDark = window.matchMedia('(prefers-color-scheme: dark)').matches
 
 function install (app, options = {}) {
-  const { root, darkMode, theme, icons, ...componentOptions } = options
+  const { root, darkMode, colors, icons, ...componentOptions } = options
 
   const rootElement = resolveElement(root) || document.body
   const context = { rootElement, options: componentOptions }
@@ -18,10 +18,10 @@ function install (app, options = {}) {
   app.provide('$mussel', context)
   app.config.globalProperties.$mussel = context
 
-  installTheme(app, {
+  setupColors({
     root: rootElement,
     darkMode: (darkMode === true) || (darkMode === 'auto' && isSysDark),
-    variables: theme
+    colors
   })
 
   installIcons(icons)

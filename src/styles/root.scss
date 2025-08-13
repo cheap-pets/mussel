@@ -6,7 +6,7 @@
     --mu-#{$v}: $#{$v};
   }
 
-  @each $v in (primary, success, warning, danger, accent) {
+  @each $v in (primary, secondary, success, warning, danger) {
     --mu-#{$v}-color: $#{$v};
 
     @for $i from 0 through 9 {
@@ -36,10 +36,10 @@
   --mu-bg-mask: rgba(0, 0, 0, .5);
   --mu-bg-overlay: var(--mu-bg-normal);
 
-  --mu-bg-translucent-gray: rgb(from var(--mu-gray) r g b / 0.1);
+  --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.1);
 
-  @each $v in (primary, success, warning, danger, accent) {
-    --mu-bg-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.1);
+  @each $v in (primary, secondary, success, warning, danger) {
+    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.1);
   }
 
   --mu-border-color: var(--mu-gray-2);

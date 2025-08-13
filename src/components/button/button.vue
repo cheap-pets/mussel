@@ -10,7 +10,7 @@
   import './button.scss'
 
   import { ref, isRef, inject, computed } from 'vue'
-  import { getComputedXColor } from '@/theme'
+  import { getComputedXColor } from '@/colors'
 
   import { resolveAttrs } from '@/utils/vue'
   import { pickBy, defaults } from '@/utils/object'

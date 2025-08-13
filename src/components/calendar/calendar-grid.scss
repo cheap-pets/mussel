@@ -24,7 +24,7 @@
     border: 1px solid var(--mu-border-color-muted);
 
     &:hover {
-      background-color: var(--mu-bg-translucent-gray);
+      background-color: var(--mu-translucent-gray);
     }
 
     &[muted] {
@@ -34,12 +34,12 @@
     }
 
     &[present] {
-      color: var(--mu-accent-color);
+      color: var(--mu-secondary-color);
     }
 
     &[selected] {
       color: var(--mu-primary-color);
-      background-color: var(--mu-bg-translucent-primary);
+      background-color: var(--mu-translucent-primary);
     }
   }
 }

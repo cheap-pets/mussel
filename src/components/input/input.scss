@@ -176,13 +176,13 @@ div.mu-input {
   &[readonly] {
     --mu-input_border-color: var(--mu-border-color-muted);
 
-    background-color: var(--mu-bg-translucent-primary) !important;
+    background-color: var(--mu-translucent-primary) !important;
   }
 
   &[invalid] {
     --mu-input_border-color: var(--mu-danger-color);
 
-    background-color: var(--mu-bg-translucent-danger) !important;
+    background-color: var(--mu-translucent-danger) !important;
   }
 
   &[disabled] {

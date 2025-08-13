@@ -17,10 +17,10 @@
   width: 320px;
   margin: 16px;
   padding: 8px;
-
-  background: var(--mu-bg-overlay);
   border: 1px solid var(--mu-border-color-muted);
   border-radius: var(--mu-window-border-radius);
+
+  background: var(--mu-bg-overlay);
   box-shadow: var(--mu-shadow-popup);
 
   transition: transform .3s, opacity .3s;

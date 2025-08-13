@@ -14,10 +14,10 @@
 
   --mu-bg-overlay: var(--mu-gray-7);
 
-  --mu-bg-translucent-gray: rgb(from var(--mu-gray) r g b / 0.2);
+  --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.2);
 
   @each $v in (primary, success, warning, danger, accent) {
-    --mu-bg-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
+    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
   }
 
   --mu-border-color: var(--mu-gray-5);
