@@ -1,0 +1,9 @@
+@each $v in ('inline', 'block', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'contents') {
+  .#{$v} {
+    display: #{$v};
+  }
+}
+
+.hidden {
+  display: none;
+}

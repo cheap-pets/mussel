@@ -1,0 +1,56 @@
+.mu-table__cell-check {
+  cursor: pointer;
+  user-select: none;
+
+  display: inline-block;
+
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--mu-border-color);
+  border-radius: 4px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 14px;
+  color: transparent;
+  text-align: center;
+
+  background-color: var(--mu-bg-normal);
+
+  &:hover {
+    color: var(--mu-text-color-weak);
+  }
+
+  &[data-checked] {
+    border-color: var(--mu-border-color-strong);
+    color: var(--mu-text-color-normal);
+  }
+
+  &[data-disabled] {
+    pointer-events: none;
+    border-color: var(--mu-border-color);
+    background-color: var(--mu-bg-strong);
+  }
+}
+
+.mu-table__cell-img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.mu-table__link-cell {
+  padding: calc(var(--cell-padding) - 2px);
+
+  & > .mu-link {
+    overflow: hidden;
+    margin: 2px;
+  }
+}
+
+.mu-table__tag-cell {
+  padding: calc(var(--cell-padding) - 2px);
+
+  & > .mu-tag {
+    margin: 2px;
+  }
+}

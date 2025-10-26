@@ -1,74 +1,88 @@
 <template>
   <div
+    ref="rootElement"
     v-mu-scrollbar
     class="mu-table"
-    :class="[hoverClass, gridlinesClass]"
-    :style="hoverStyle"
+    :class="[striped && 'mu-table--striped', gridlinesClass]"
+    :data-empty="!records?.length || null"
+    :data-x-overflowed="xOverflowed || null"
+    :data-y-overflowed="yOverflowed || null"
+    :data-x-scrolled="xScrolled || null"
+    :data-y-scrolled="yScrolled || null"
+    :data-y-scrolled-end="yScrolledEnd || null"
     @scroll="onScroll"
     @sizechange="onResize">
-    <table ref="tableElement" cellspacing="0" @sizechange="onResize">
+    <table
+      ref="tableElement"
+      cellspacing="0"
+      :style="{ width: tableWidth, minWidth: tableMinWidth }"
+      @sizechange="onResize">
       <colgroup>
-        <col v-for="col in processedColumns" :key="col._key" :style="col._colStyle">
+        <col
+          v-for="col in internalColumns"
+          :key="col._key"
+          :style="col._colStyle">
       </colgroup>
       <thead>
         <tr>
           <th
-            v-for="col in processedColumns"
+            v-for="col in internalColumns"
             :key="col._key"
-            :class="[col._class, col.headClass]"
-            :style="[col._style, col.headStyle]">
+            :class="['mu-table__th', col.sortable && 'mu-table__th--sortable', col._ctrlClass, col.headerClass]"
+            :style="[col._ctrlStyle, col.headerStyle]"
+            @click="onHeaderClick(col)">
+            <div
+              v-if="col.type === 'check' && col.field && col.headerCheckbox"
+              class="mu-table__cell-check"
+              :data-checked="headerChecked[col.field]"
+              @click.stop="onHeaderCheckChange(col, !headerChecked[col.field])">
+              ✓
+            </div>
             {{ col.caption }}
+            <mu-sort-icon v-if="col.sortable" :direction="sortDirection[col.field]" />
           </th>
         </tr>
       </thead>
       <tbody @mouseleave="setHoverIndicator()">
-        <template v-for="(rec, recIdx) in records" :key="rec._key">
-          <table-row
-            :record="rec"
-            :rec-idx="recIdx"
-            :columns="processedColumns"
-            :detail-len="rec[detailsField]?.length"
-            :selected="rec._key === selectedKey || null" />
-          <template v-if="detailsField && rec[detailsField]?.length > 1">
-            <table-row
-              v-for="(detail, idx) in rec[detailsField].slice(1)"
-              :key="getDetailRowKey(rec, detail, idx + 1)"
-              :record="rec"
-              :rec-idx="recIdx"
-              :columns="detailColumns"
-              :detail-idx="idx + 1"
-              :selected="rec._key === selectedKey || null" />
-          </template>
-        </template>
+        <table-row
+          v-for="(rec, recIdx) in records"
+          :key="getRecordKey(rec)"
+          :columns="internalColumns"
+          :record="rec"
+          :record-index="recIdx"
+          :record-number="recordsOffset + recIdx + 1"
+          :class="getRecordKey(rec) === selectedRecKey ? 'mu-table__tr--selected' : null" />
       </tbody>
     </table>
-    <div class="mu-table_hover-indicator" />
+    <div class="mu-table__hover-indicator" :data-mode="hoverMode" :style="hoverStyle" />
   </div>
 </template>
 
 <script setup>
-  import { ref, shallowRef, reactive, computed, watchEffect, provide } from 'vue'
-  import { isFunction, isPlainObject } from 'es-toolkit'
-  import { throttle } from 'throttle-debounce'
+  import { ref, shallowRef, reactive, computed, watch, provide, onBeforeUnmount } from 'vue'
+  import { autoIncrementKeyBuilder } from '@/utils/auto-key'
+  import { throttle, debounce } from 'throttle-debounce'
 
-  import './table.scss'
+  import { resolveColumnType } from './column-types'
+  import { ensureFn, getPixelNumber, getCellAlignClass } from './utils'
+
   import TableRow from './table-row.vue'
 
-  defineOptions({ name: 'MusselTable' })
+  import './table.scss'
 
   const props = defineProps({
     records: { type: Array, default: () => [] },
     columns: { type: Array, default: () => [] },
+    recordsOffset: { type: Number, default: 0 },
+    headers: Array,
+    headerChecked: Object,
     keyField: String,
-    detailsField: String,
-    detailKeyField: String,
     fixedLeftColumns: Number,
+    orderBy: String,
     striped: Boolean,
-    selected: [Object, Number, String],
-    selectMode: {
-      default: 'row',
-      validator: v => ['none', 'row'].includes(v) // , 'cell'
-    },
+    placeholder: String,
+    selectedRecord: Object,
+    selectedRecordKey: [String, Number],
     hoverMode: {
       default: 'row',
       validator: v => ['none', 'row', 'column', 'cross', 'cell'].includes(v)
@@ -76,13 +90,32 @@
     gridlines: {
       default: 'all',
       validator: v => ['none', 'all', 'row', 'column'].includes(v)
-    }
+    },
+    tableWidth: { default: 'fit-content' },
+    tableMinWidth: { default: '100%' }
   })
 
-  const emit = defineEmits(['cell-click', 'link-click', 'update:selected'])
+  const emit = defineEmits([
+    'header-click',
+    'cell-click',
+    'cell-item-click',
+    'update:header-checked',
+    'update:cell-value',
+    'update:selected-record',
+    'update:selected-record-key'
+  ])
+
+  const rootElement = shallowRef()
+  const tableElement = shallowRef()
 
   const fixedColumnsWidth = ref(0)
-  const tableElement = shallowRef()
+
+  const xScrolled = ref(false)
+  const yScrolled = ref(false)
+  const yScrolledEnd = ref(false)
+
+  const xOverflowed = ref(false)
+  const yOverflowed = ref(false)
 
   const hoverStyle = reactive({
     '--hover-row-top': 0,
@@ -94,172 +127,102 @@
     '--hover-col-height': 0
   })
 
-  const hoverClass = computed(() =>
-    props.hoverMode === 'none' ? null : `mu-table_hover-${props.hoverMode}`
+  const autoRecordKey = autoIncrementKeyBuilder()
+  const autoColumnKey = autoIncrementKeyBuilder()
+
+  function getRecordKey (rec) {
+    return props.keyField ? rec[props.keyField] : autoRecordKey(rec)
+  }
+
+  const sortDirection = computed(() => {
+    if (!props.orderBy) return {}
+
+    const [field, direction] =
+      props.orderBy.replace(':', ' ').split(' ')
+
+    return {
+      [field]: direction === 'desc' ? 'down' : 'up'
+    }
+  })
+
+  const selectedRecKey = computed(() =>
+    props.selectedRecordKey ?? props.selectedRecord?.[props.keyField || '_key']
   )
 
   const gridlinesClass = computed(() =>
-    props.gridlines === 'none' ? null : `mu-table_gridlines-${props.gridlines}`
+    `mu-table--gridlines-${props.gridlines}`
   )
 
-  const processedColumns = computed(() => {
+  const internalColumns = computed(() => {
     const fixed = props.fixedLeftColumns
-
-    function getPixelNumber (value) {
-      const v = String(value).match(/^(\d+(\.\d+)?)(px)?$/)?.[1]
-      return v && Number(v)
-    }
-
-    function getAlignClass (align, px) {
-      return ['left', 'center', 'right'].includes(align)
-        ? `text-${align}`
-        : px > 0 && px <= 100 ? 'text-center' : 'text-left'
-    }
 
     let left = fixed ? 0 : null
 
-    const columns = props.columns.map((col, idx) => {
-      const el = { ...col, _id: getKey(col) }
-      const px = getPixelNumber(col.width)
+    const columns = props.columns.map((el, idx) => {
+      const col = { ...el, _raw: el, _key: el.key ?? autoColumnKey(el) }
+      const type = resolveColumnType(el.type)
 
-      el._class = [getAlignClass(col.align, px)]
-      el._colStyle = col.width && { width: col.width }
+      const { width = type.width, align = type.align } = el
+
+      col._text = ensureFn(el.text)
+      col._value = ensureFn(el.value)
+      col._title = ensureFn(el.title)
+      col._class = ensureFn(el.class)
+      col._style = ensureFn(el.style)
+
+      col._colStyle = { width, minWidth: el.minWidth, maxWidth: el.maxWidth }
+      col._ctrlClass = [getCellAlignClass(align)]
+      col._render = type.compile ? type.compile(el) : (type.render || type)
 
       if (left != null) {
-        el._class.push('fixed-col')
-        el._style = { left: `${left}px` }
-        el._fixed = true
+        const widthPx = getPixelNumber(width)
 
-        if (px && idx < fixed) {
-          left += px
+        col._fixed = true
+        col._ctrlStyle = { left: `${left}px` }
+        col._ctrlClass.push('fixed-col')
+
+        if (widthPx && idx < fixed) {
+          left += widthPx
         } else {
           left = null
-          el._class.push('last-fixed-col')
+          col._ctrlClass.push('last-fixed-col')
         }
       }
 
-      return el
+      col.placeholder ??= props.placeholder
+
+      return col
     })
 
-    columns.at(-1)._class.push('last-col')
+    columns.at(-1)._ctrlClass.push('last-col')
 
     return columns
   })
 
-  const detailColumns = computed(() =>
-    processedColumns.value.filter(el => el.detail)
-  )
-
-  const selectedKey = computed(() =>
-    props.selectMode === 'none' ? null : (props.selected?._key ?? props.selected)
-  )
-
-  const keyMap = new WeakMap()
-  let keyIndex = 0
-
-  function getKey (obj, keyProp) {
-    let key = (keyProp && obj[keyProp]) ?? keyMap.get(obj)
-
-    if (!key) {
-      key = keyIndex++
-      keyMap.set(obj, key)
-    }
-
-    return key
-  }
-
-  function getDetailRowKey (rec, detail, detailIdx) {
-    return `${rec._key}__${isPlainObject(detail) ? getKey(detail, props.detailKeyField) : detailIdx}`
-  }
-
-  const onResize = throttle(100, () => {
-    const el = tableElement.value
-    const pEl = el.parentNode
-
-    const isXOverflowed = el.offsetWidth >= el.parentNode.clientWidth
-    const isYOverflowed = el.offsetHeight >= el.parentNode.clientHeight
-
-    el.style.borderRightWidth = isXOverflowed ? 0 : '1px'
-    el.style.borderBottomWidth = isYOverflowed ? 0 : '1px'
-
-    const th = el.querySelector('th.last-fixed-col')
-    fixedColumnsWidth.value = th ? th.offsetLeft + th.offsetWidth : 0
-
-    hideHoverIndicator()
-    hoverStyle['--hover-row-width'] = `${pEl.scrollWidth}px`
-    hoverStyle['--hover-col-height'] = `${pEl.scrollHeight}px`
-  }, { noLeading: true })
-
-  const onScroll = throttle(50, () => {
-    const el = tableElement.value
-
-    if (el.parentNode.scrollLeft) el.setAttribute('table-x-scrolled', '')
-    else el.removeAttribute('table-x-scrolled')
-
-    if (el.parentNode.scrollTop) el.setAttribute('table-y-scrolled', '')
-    else el.removeAttribute('table-y-scrolled')
-
-    if (props.hoverMode !== 'row') {
-      hideHoverIndicator()
-    }
-  }, { noLeading: true })
-
-  function getCellText (rec, col, recIdx, detailIdx = 0) {
-    const { text, field, detail } = col
-    const { detailsField } = props
-
-    if (text != null) {
-      return isFunction(text)
-        ? col.text(rec, col, recIdx, detailIdx)
-        : text
-    }
-
-    const details = field && detail && detailsField && rec[detailsField]
-
-    return (
-      details
-        ? field === '$'
-          ? details[detailIdx]
-          : details[detailIdx][field]
-        : field && rec[field]
-    ) ?? '-'
-  }
-
-  function getCellStyle (rec, col, recIdx, detailIdx = 0) {
-    return isFunction(col.style)
-      ? col.style(rec, col, recIdx, detailIdx)
-      : col.style
-  }
-
-  function getCellTooltip (rec, col, recIdx, detailIdx = 0) {
-    return isFunction(col.tooltip)
-      ? col.tooltip(rec, col, recIdx, detailIdx)
-      : col.tooltip === true && getCellText(rec, col, recIdx, detailIdx)
-  }
-
-  function onCellClick (event, rec, col, recIdx, detailIdx) {
-    const clickEvent =
-      col.type === 'link' && event.target.tagName?.toLowerCase() === 'a'
-        ? 'link-click'
-        : 'cell-click'
-
-    if (props.selectMode === 'row' && rec._key !== selectedKey.value) {
-      emit(
-        'update:selected',
-        props.keyField && !isPlainObject(props.selected) ? rec._key : rec
-      )
-    }
-
-    emit(clickEvent, rec, col, recIdx, detailIdx)
-  }
-
   let hoveringRow, hoveringCol
 
-  function setHoverRowIndicator (row) {
+  const setHoverSize = debounce(100, () => {
+    const table = tableElement.value
+    if (!table) return
+
+    hoverStyle['--hover-row-width'] = `${table.offsetWidth}px`
+    hoverStyle['--hover-col-height'] = `${table.offsetHeight}px`
+
+    hideHoverIndicator()
+  })
+
+  function hideHoverIndicator () {
+    hoveringCol = null
+    hoveringRow = null
+    hoverStyle['--hover-col-width'] = 0
+    hoverStyle['--hover-row-height'] = 0
+  }
+
+  function setRowHoverIndicator (row) {
     if (hoveringRow?.deref() === row) return
     else hoveringRow = new WeakRef(row)
 
-    const total = processedColumns.value.length
+    const total = internalColumns.value.length
 
     let prev = row
 
@@ -277,17 +240,11 @@
       next = next.nextElementSibling
     }
 
-    if (row.getAttribute('selected')) {
-      hoverStyle['--hover-row-bg'] = 'unset'
-    } else {
-      delete hoverStyle['--hover-row-bg']
-    }
-
     hoverStyle['--hover-row-top'] = `${first.offsetTop}px`
     hoverStyle['--hover-row-height'] = `${last.offsetTop - first.offsetTop + last.offsetHeight}px`
   }
 
-  function setHoverColIndicator (cell, column) {
+  function setColHoverIndicator (cell, column) {
     if (props.hoverMode !== 'cell' && hoveringCol?.deref() === column) return
 
     const left = cell.offsetLeft
@@ -309,46 +266,94 @@
     }
   }
 
-  function hideHoverIndicator () {
-    hoveringCol = null
-    hoveringRow = null
-    hoverStyle['--hover-col-width'] = 0
-    hoverStyle['--hover-row-height'] = 0
-  }
-
   const setHoverIndicator = throttle(30, (cell, column) => {
     const mode = props.hoverMode
 
     if (mode === 'none') return
+    if (!cell) return hideHoverIndicator()
 
-    if (cell) {
-      if (mode !== 'column' && mode !== 'cell') {
-        setHoverRowIndicator(cell.parentNode)
-      }
+    if (mode === 'row' || mode === 'cross') setRowHoverIndicator(cell.parentNode)
+    if (mode !== 'row') setColHoverIndicator(cell, column)
+  }, { noLeading: true })
 
-      if (mode !== 'row') {
-        setHoverColIndicator(cell, column)
-      }
-    } else {
+  const onResize = throttle(100, () => {
+    const el = rootElement.value
+    if (!el) return
+
+    const table = tableElement.value
+    const th = table.querySelector('th.last-fixed-col')
+
+    const x = table.offsetWidth - el.clientWidth
+    const y = table.offsetHeight - el.clientHeight
+
+    xOverflowed.value = x > 0.5
+    yOverflowed.value = y > 0.5
+
+    if (th) {
+      fixedColumnsWidth.value = th.offsetLeft + th.offsetWidth
+    }
+
+    setHoverSize()
+  }, { noLeading: true })
+
+  const onScroll = throttle(50, () => {
+    const el = rootElement.value
+    if (!el) return
+
+    const { scrollLeft, scrollTop, scrollHeight, clientHeight } = el
+
+    xScrolled.value = !!scrollLeft
+    yScrolled.value = !!scrollTop
+    yScrolledEnd.value = yScrolled.value && (scrollHeight - scrollTop - clientHeight < 1)
+
+    if (props.hoverMode !== 'row') {
       hideHoverIndicator()
     }
   }, { noLeading: true })
 
-  watchEffect(() =>
-    props.records?.forEach(rec =>
-      !rec._key && Object.defineProperty(rec, '_key', {
-        value: getKey(rec, props.keyField),
-        enumerable: false
-      })
-    )
+  function onHeaderClick (column) {
+    emit('header-click', column._raw)
+  }
+
+  function onHeaderCheckChange (column, value) {
+    emit('update:header-checked', column._raw, value)
+  }
+
+  function onCellClick (record, column, recordIndex) {
+    const key = getRecordKey(record)
+
+    if (key !== props.selectedRecordKey) {
+      emit('update:selected-record-key', key)
+    }
+
+    if (record !== props.selectedRecord) {
+      emit('update:selected-record', record)
+    }
+
+    emit('cell-click', { record, recordIndex, column })
+  }
+
+  watch(
+    () => props.records,
+    (newValue, oldValue) =>
+      (newValue !== oldValue) &&
+      rootElement.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   )
 
   provide('table', {
-    tableOptions: props,
-    getCellText,
-    getCellStyle,
-    getCellTooltip,
     setHoverIndicator,
-    onCellClick
+    onCellClick,
+    emit
   })
+
+  onBeforeUnmount(() => {
+    onResize.cancel()
+    onScroll.cancel()
+    setHoverSize.cancel()
+    setHoverIndicator.cancel()
+  })
+</script>
+
+<script>
+  export default { name: 'MusselTable' }
 </script>

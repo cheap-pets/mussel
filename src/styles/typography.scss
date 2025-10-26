@@ -1,0 +1,89 @@
+.mu-text-color-normal {
+  color: var(--mu-text-color-normal);
+}
+
+.mu-text-color-clear {
+  color: var(--mu-text-color-body);
+}
+
+.mu-text-color-muted {
+  color: var(--mu-text-color-muted);
+}
+
+.mu-text-color-weak {
+  color: var(--mu-text-color-weak);
+}
+
+.mu-text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mu-label {
+  overflow: hidden;
+
+  min-width: 20px;
+
+  font-weight: 500;
+  color: var(--mu-text-color-soft);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@each $v in (primary, secondary, success, warning, danger) {
+  .text-#{$v},
+  .mu-text-color-#{$v} {
+    color: var(--mu-#{$v}-color);
+  }
+}
+
+.mu-text-color-accent {
+  color: var(--mu-secondary-color);
+}
+
+@each $v in ('left', 'center', 'right') {
+  .text-#{$v} {
+    text-align: #{$v};
+  }
+}
+
+.text-ellipsis,
+.mu-text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@each $v in ('normal', 'nowrap', 'pre', 'pre-line', 'pre-wrap', 'break-spaces') {
+  .whitespace-#{$v} {
+    white-space: #{$v};
+  }
+}
+
+.line-clamp,
+.line-clamp1,
+.line-clamp-2,
+.line-clamp-3,
+.line-clamp-4,
+.line-clamp-5,
+.line-clamp-6,
+.line-clamp-7,
+.line-clamp-8,
+.line-clamp-9,
+.line-clamp-10 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: pre-line;
+}
+
+.line-clamp {
+  -webkit-line-clamp: var(--line-clamp);
+}
+
+@for $i from 1 through 10 {
+  .line-clamp-#{$i} {
+    -webkit-line-clamp: #{$i};
+  }
+}
