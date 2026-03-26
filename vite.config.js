@@ -42,6 +42,7 @@ function svg() {
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === 'development'
+  const isWatch = process.argv.includes('--watch')
 
   return {
     define: {
@@ -84,6 +85,14 @@ export default defineConfig(({ mode }) => {
           },
           assetFileNames: isDev ? '[name].[ext]' : '[name].min.[ext]',
           entryFileNames: isDev ? 'mussel.js' : 'mussel.min.js'
+        },
+        onwarn(warning, warn) {
+          // watch 模式下抑制文件覆盖警告
+          if (isWatch && warning.code === 'FILE_NAME_CONFLICT') {
+            return
+          }
+
+          warn(warning)
         }
       },
       sourcemap: true,

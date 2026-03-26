@@ -10,7 +10,8 @@
       "Bash(npm ls:*)",
       "Bash(npm rebuild:*)",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "WebSearch"
     ],
     "additionalDirectories": [
       "d:\\workshop\\cheap-pets\\mussel_n"
