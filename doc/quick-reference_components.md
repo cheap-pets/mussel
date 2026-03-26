@@ -64,13 +64,13 @@ Flex 布局子元素分隔条，可拖拽调整元素尺寸。
 
 | 属性名称           | 类型    | 说明                                                 |
 | ------------------ | ------- | ---------------------------------------------------- |
-| size               | String  | 尺寸选项：normal - 默认；slim - 细；concealed - 隐蔽 |
+| size               | String  | 尺寸选项：full - 默认；slim - 细；concealed - 隐蔽   |
 | shape              | String  | 形状：line - 线条；bubble - 气泡                     |
 | stripe             | Boolean | 是否显示装饰条纹，仅线条形状适用                     |
 | space-free         | Boolean | 是否不占用父容器空间，默认 false                     |
 | collapse-button    | Boolean | 是否显示收拢按钮，默认 false                         |
 | collapse-threshold | Number  | 收拢尺寸阈值， px 单位，默认 200                     |
-| resizable          | Boolean | 当为 "false" 时，不可拖拽调整尺寸                    |
+| resizable          | Boolean | 当为 false 时，不可拖拽调整尺寸，默认 true           |
 
 > [!NOTE]
 >
@@ -107,7 +107,7 @@ Flex 布局子元素分隔条，可拖拽调整元素尺寸。
 | 属性名称      | 类型   | 说明                                        |
 | ------------- | ------ | ------------------------------------------- |
 | active-tab    | String | 双向绑定属性，用于指定活动标签页的名称      |
-| tab-style     | String | button、small-button、simple                |
+| tab-style     | String | button、small-button、simple、card、border-card |
 | tab-buttons   | Array  | 页签按钮，默认按内部 tab-panel 组件自动生成 |
 | tab-position  | String | top、bottom、left、right                    |
 | tab-bar-attrs | Object | 绑定到内置 MuTabBar 的各种属性              |
@@ -121,6 +121,12 @@ Flex 布局子元素分隔条，可拖拽调整元素尺寸。
 
 
 
+| 事件        | 参数   | 说明           |
+| ----------- | ------ | -------------- |
+| button-click | name   | 页签按钮点击时 |
+
+
+
 ### MuTabBar
 
 独立使用的页签栏
@@ -128,16 +134,22 @@ Flex 布局子元素分隔条，可拖拽调整元素尺寸。
 | 属性名称   | 类型   | 说明                                   |
 | ---------- | ------ | -------------------------------------- |
 | active-tab | String | 双向绑定属性，用于指定活动标签页的名称 |
-| tab-style     | String | button、small-button、simple                |
-| tab-buttons   | Array  | 页签按钮 |
-| tab-position  | String | top、bottom、left、right                    |
+| tab-style  | String | button、small-button、simple           |
+| tab-buttons | Array  | 页签按钮                               |
+| tab-position | String | top、bottom、left、right               |
 
 
 
-| 插槽名称        | 说明                 |
-| --------------- | -------------------- |
-| prepend | 前置内容 |
-| append  | 后置内容 |
+| 插槽名称 | 说明     |
+| -------- | -------- |
+| prepend  | 前置内容 |
+| append   | 后置内容 |
+
+
+
+| 事件        | 参数 | 说明           |
+| ----------- | ---- | -------------- |
+| button-click | name | 页签按钮点击时 |
 
 
 
@@ -152,7 +164,7 @@ Flex 布局子元素分隔条，可拖拽调整元素尺寸。
 | caption   | String  | 对应页签栏按钮的标题                             |
 | title     | String  | 对应页签栏按钮的 tooltip 标题                    |
 | disabled  | Boolean | 对应页签的禁用状态                               |
-| tab-order | Number  | 手动指定的页签顺序，默认值为 0                   |
+| tab-order | Number  | 手动指定的页签顺序，默认值为 null                |
 
 
 
@@ -246,7 +258,7 @@ installIcons({
 | primary      | Boolean | 主色按钮                                          |
 | danger       | Boolean | 危险色按钮                                        |
 | accent       | Boolean | 强调色按钮                                        |
-| xColor       | String  | 指定特殊的按钮颜色，值可为标准颜色值或 CSS 变量值 |
+| x-color      | String  | 指定特殊的按钮颜色，值可为标准颜色值或 CSS 变量值 |
 
 
 
@@ -254,16 +266,16 @@ installIcons({
 
 按钮组。按钮组的某些外观设置将覆盖其中按钮的设置。
 
-| 属性名称    | 类型    | 说明                                         |
-| ----------- | ------- | -------------------------------------------- |
-| round       | Boolean | 左右圆弧形态                                 |
-| disabled    | Boolean | 禁用状态，若为 true， 其内部 Button 全部禁用 |
-| size        | String  | 同 MuButton，将覆盖内部 Button 属性          |
-| buttonStyle |         | 按钮风格：normal \| outline                  |
-| primary      | Boolean | 默认按钮颜色为主色                                 |
-| danger       | Boolean | 默认按钮颜色为危险色                               |
-| accent       | Boolean | 默认按钮颜色为强调色                                 |
-| xColor       | String  | 指定特殊的默认按钮颜色 |
+| 属性名称     | 类型    | 说明                                         |
+| ------------ | ------- | -------------------------------------------- |
+| round        | Boolean | 左右圆弧形态                                 |
+| disabled     | Boolean | 禁用状态，若为 true，其内部 Button 全部禁用  |
+| size         | String  | 同 MuButton，将覆盖内部 Button 属性          |
+| button-style | String  | 按钮风格：normal \| outline                  |
+| primary      | Boolean | 默认按钮颜色为主色                           |
+| danger       | Boolean | 默认按钮颜色为危险色                         |
+| accent       | Boolean | 默认按钮颜色为强调色                         |
+| x-color      | String  | 指定特殊的默认按钮颜色                       |
 
 
 
@@ -276,8 +288,8 @@ installIcons({
 | icon     | String  | 按钮图标                                                |
 | toggle   | Boolean | 是否开关按钮，若为 true，按下后将会选中或取消选中该按钮 |
 | active   | Boolean | 双向绑定属性，表示选中状态                              |
-| danger   | Boolean | 危险色按钮                                              |
-| disabled | Boolean | 禁用状态                                                |
+| size     | String  | 按钮尺寸：small \| normal \| large                      |
+| animation | String  | 动画效果                                                |
 
 
 
@@ -293,8 +305,9 @@ installIcons({
 | ---------------------- | ----------------- | ------------------------------------------- |
 | visible                | Boolean           | 可见状态                                    |
 | width                  | String \| Number  | 窗口宽度                                    |
-| height                 | String  \| Number | 窗口高度                                    |
+| height                 | String \| Number  | 窗口高度                                    |
 | title                  | String            | 对话框标题                                  |
+| icon                   | String \| Object  | 对话框图标                                  |
 | close-button           | Boolean           | 是否显示右上角关闭按钮，默认为 true         |
 | z-index                | String            | 窗口元素的垂直堆叠顺序                      |
 | mask-class             |                   | 遮罩元素 class                              |
@@ -302,7 +315,6 @@ installIcons({
 | easy-hide              | Boolean           | 是否允许快速关闭（点击遮罩、按下 ESC 等）   |
 | lazy                   | Boolean           | 为 true 时，仅当第一次打开时渲染对话框内容  |
 | keep-position          | Boolean           | 窗口再次打开时，是否使用上次关闭时的位置    |
-| ignore-button-action   | Boolean           | 是否忽略按钮的默认 Action（目前仅支持关闭） |
 | buttons                | Array             | 对话框底部的操作按钮                        |
 | maximize-button        | Boolean           | 是否显示最大化按钮                          |
 | maximize-to-fullscreen | Boolean           | 最大化时是否全屏显示                        |
@@ -314,6 +326,18 @@ installIcons({
 | update:visible | value - 变更值, <br />action - 触发事件, <br />trigger - 触发元素 | 可在事件中判断触发原因，进行表单检查等 |
 | show           |                                                              |                                        |
 | hide           |                                                              |                                        |
+| button-click   | button                                                       | 按钮点击时触发                          |
+
+
+
+| 插槽名称         | 说明                   |
+| ---------------- | ---------------------- |
+| header           | 自定义头部内容         |
+| header-prepend   | 头部前置内容           |
+| header-append    | 头部后置内容           |
+| footer           | 自定义底部内容         |
+| footer-prepend   | 底部前置内容           |
+| footer-append    | 底部后置内容           |
 
 
 
@@ -331,9 +355,9 @@ installIcons({
 | mask          | Boolean          | 是否显示遮罩，默认 true                        |
 | mask-class    |                  | 遮罩元素 class                                 |
 | mask-attrs    | Object           | 遮罩元素绑定属性                               |
-| position      | String           | 浮出位置。top \| right \| bottom \| left       |
+| position      | String           | 浮出位置，默认 bottom。top \| right \| bottom \| left |
 | border-radius | Boolean          | 是否为圆角                                     |
-| lazy          | Boolean          | 为 true 时，仅当第一次打开时渲染抽屉内容       |
+| z-index       | String           | 窗口元素的垂直堆叠顺序                         |
 
 
 
@@ -398,12 +422,8 @@ installIcons({
 | readonly     | Boolean          | 是否只读                                                     |
 | disabled     | Boolean          | 是否禁用                                                     |
 | prefix       | String \| Object | 前置文本或按钮                                               |
-| Suffix       | String \| Object | 后置文本或按钮                                               |
+| suffix       | String \| Object | 后置文本或按钮                                               |
 | tabindex     | String           | 元素 tab 聚焦顺序，默认为 -1                                 |
-| small        |                  | 小尺寸输入框                                                 |
-| round        |                  | 左右是圆边的输入框                                           |
-| invalid      |                  | 表示无效状态的样式                                           |
-| input-style  | String           | default \| solid \| underline                                |
 
 
 
@@ -460,7 +480,8 @@ installIcons({
 | max-tags    | Number      | 最大显示已选项标签数量，默认为 2，超出部分将合并省略显示     |
 | tag-shrink  | Boolean     | 已选标签是否可缩小，默认为 true                              |
 | tag-tooltip | Boolean     | 已选标签是否显示标题文字 tooltip，默认为 true                |
-| nowrap      | (attribute) | 已选结果不自动进行换行显示。默认多选项若超出选择框宽度将自动换行 |
+| disabled    | Boolean     | 是否禁用                                                     |
+| readonly    | Boolean     | 是否只读                                                     |
 | (其他)      |             | 包含全部 MuSelect 属性                                       |
 
 
@@ -514,9 +535,9 @@ installIcons({
 | modelValue     |        | 双向绑定的输入值         |
 | label          | String | 标签文字                 |
 | active-label   | String | 打开状态的标签文字       |
-| Inactive-label | String | 关闭状态的标签文字       |
+| inactive-label | String | 关闭状态的标签文字       |
 | active-value   |        | 打开状态值，默认为 true  |
-| Inactive-value |        | 关闭状态值，默认为 false |
+| inactive-value |        | 关闭状态值，默认为 false |
 
 
 
@@ -533,7 +554,7 @@ installIcons({
 | width          | String  | 面板宽度                                 |
 | height         | String  | 面板高度                                 |
 | scrollbar      | Boolean | 是否渲染 mussel 滚动条                   |
-| trigger        | String  | 显示触发方式：hover \| click             |
+| trigger        | String  | 显示触发方式，默认 click：hover \| click |
 | position       | String  | 弹出位置：auto \| fixed \| top \| bottom |
 | dropdown-items | Array   | 列表项                                   |
 
@@ -572,7 +593,7 @@ installIcons({
 | dropdown-disabled  | Boolean | 下拉面板禁用状态                                 |
 | dropdown-scrollbar | Boolean | 下拉面板是否渲染 Mussel 滚动条                   |
 | dropdown-items     | Array   | 下拉项列表                                       |
-| dropdown-trigger   | String  | 下拉面板弹出触发方式：click \| hover (默认)      |
+| dropdown-trigger   | String  | 下拉面板弹出触发方式，默认 hover：click \| hover |
 | dropdown-position  | String  | 下拉面板弹出位置：auto \| fixed \| top \| bottom |
 
 
@@ -636,17 +657,30 @@ installIcons({
 
 列表
 
+| 属性名称     | 类型    | 说明                                    |
+| ------------ | ------- | --------------------------------------- |
+| scrollbar    | Boolean | 是否显示滚动条                          |
+| items        | Array   | 列表项数据                              |
+| itemClass    | String  | 列表项 class                            |
+| itemTagName  | String  | 列表项标签名，默认 a，可选 a \| div     |
+
+
+
+| 事件        | 参数 | 说明         |
+| ----------- | ---- | ------------ |
+| item-click  | item | 列表项点击时 |
+
 
 
 ### MuListItem
 
 列表项，用于数据显示或导航，默认外观包含一个图标加标题
 
-| 属性名称 | 类型   | 说明                                  |
-| -------- | ------ | ------------------------------------- |
-| icon     | String | 注册的图标名称或者 icon-font class    |
-| label    | String | 标题                                  |
-| tag      | String | 渲染的图标 dom 的 tagName，默认是 div |
+| 属性名称 | 类型   | 说明                                      |
+| -------- | ------ | ----------------------------------------- |
+| icon     | String | 注册的图标名称或者 icon-font class         |
+| label    | String | 标题                                      |
+| tag      | String | 渲染元素的标签名，默认是 div，可选 a \| div |
 
 
 
@@ -698,7 +732,7 @@ installIcons({
 
 | 属性名称         | 类型    | 说明                                         |
 | ---------------- | ------- | -------------------------------------------- |
-| tags             | String  | 标签数据                                     |
+| tags             | Array   | 标签数据                                     |
 | max              | Number  | 最大显示标签个数                             |
 | removable        | Boolean | 是否可删除                                   |
 | expandable       | Boolean | 是否可下拉展开显示所有标签项                 |
@@ -717,11 +751,11 @@ installIcons({
 
 月历
 
-| 属性名称   | 类型                              | 说明                                                 |
-| ---------- | --------------------------------- | ---------------------------------------------------- |
-| modeValue  | Date \| String \| Object \| Array | 双向绑定的日期值                                     |
-| format     | String                            | String 类型下的日期格式，默认为 yyyy-MM-dd           |
-| value-type | String                            | 返回日期值的类型，可选 date (默认) \|string \|object |
+| 属性名称     | 类型                              | 说明                                                 |
+| ------------ | --------------------------------- | ---------------------------------------------------- |
+| model-value  | Date \| String \| Object \| Array | 双向绑定的日期值                                     |
+| format       | String                            | String 类型下的日期格式，默认为 yyyy-MM-dd           |
+| value-type   | String                            | 返回日期值的类型，可选 date (默认) \| string \| object |
 
 
 
@@ -770,19 +804,17 @@ installIcons({
 </script>
 ```
 
-
-
-
-
 ### MuStatusBox
 
 状态显示面板
 
-| 属性名称 | 类型   | 说明     |
-| -------- | ------ | -------- |
-| icon     | String | 状态图标 |
-| title    | String | 状态标题 |
-| message  | String | 消息内容 |
+| 属性名称 | 类型              | 说明     |
+| -------- | ----------------- | -------- |
+| icon     | String            | 状态图标 |
+| title    | String            | 状态标题 |
+| message  | String            | 消息内容 |
+| width    | String \| Number  | 宽度     |
+| height   | String \| Number  | 高度     |
 
 
 
@@ -790,4 +822,3 @@ installIcons({
 | -------- | ---------------------- |
 | default  | 自定义内容             |
 | icon     | 自定义图标（图片）内容 |
-

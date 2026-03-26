@@ -23,19 +23,19 @@
     width: var(--mu-check_size);
     height: var(--mu-check_size);
     margin: 0;
+    border: 1px solid var(--mu-border-color);
   
     appearance: none;
     background-color: var(--mu-bg-normal);
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    border: 1px solid var(--mu-border-color);
 
     transition: background-color .1s;
   
     &:checked {
-      background-color: var(--mu-primary-color);
       border-color: var(--mu-primary-color);
+      background-color: var(--mu-primary-color);
     }
   }
 
@@ -47,12 +47,12 @@
     }
 
     & > input {
-      background-color: var(--mu-bg-disabled);
       border-color: var(--mu-border-color-muted);
+      background-color: var(--mu-bg-disabled);
 
       &:checked{
-        background-color: var(--mu-text-color-weak);
         border-color: transparent;
+        background-color: var(--mu-text-color-weak);
       }
     }
   }

@@ -128,3 +128,46 @@ export function monthEquals (a, b) {
     a.month === b.month
   )
 }
+
+export function formatDate (date, format = 'yyyy-MM-dd') {
+  if (date == null) return date
+
+  date = isDate(date) ? date : new Date(date)
+
+  let result = /(y+)/i.test(format)
+    ? format.replace(
+      RegExp.$1,
+      ('' + date.getFullYear()).substr(4 - RegExp.$1.length)
+    )
+    : format
+
+  const patterns = {
+    '(M+)': date.getMonth() + 1,
+    '(d+)': date.getDate(),
+    '(h+)': date.getHours(),
+    '(m+)': date.getMinutes(),
+    '(s+)': date.getSeconds(),
+    '(S+)': date.getMilliseconds()
+  }
+
+  Object.keys(patterns).forEach(p => {
+    const re = new RegExp(p, (p === '(d+)' || p === '(h+)') ? 'i' : undefined)
+
+    if (re.test(result)) {
+      const len = RegExp.$1.length
+      const str = '' + patterns[p]
+      const from = str.length
+
+      result = result.replace(
+        RegExp.$1,
+        len === 2
+          ? ('00' + str).substr(from)
+          : len === 3
+            ? ('000' + str).substr(from)
+            : str
+      )
+    }
+  })
+
+  return result
+}

@@ -12,11 +12,11 @@
   width: 200px;
   height: var(--mu-input_height);
   padding: 5px 11px;
+  border-radius: var(--mu-input_border-radius);
 
   font-size: var(--mu-common-font-size);
   line-height: var(--mu-common-line-height);
 
-  border-radius: var(--mu-input_border-radius);
   outline: none;
 
   &[small] {
@@ -93,11 +93,11 @@ div.mu-input {
     width: 1px;
     height: 20px;
     padding: 0;
+    border: 0;
 
     font-size: 1em;
 
     background: none;
-    border: 0;
 
     &:read-only {
       cursor: default;
@@ -127,7 +127,6 @@ div.mu-input {
     height: var(--mu-input-size);
     margin-left: -1px;
     padding: 0 11px;
-
     border: 1px solid var(--mu-border-color);
     border-radius: 0 !important;
   }
@@ -169,9 +168,9 @@ div.mu-input {
 }
 
 .mu-input {
+  border: 1px solid var(--mu-input_border-color);
   color: var(--mu-text-color-normal);
   background-color: var(--mu-input_bg);
-  border: 1px solid var(--mu-input_border-color);
 
   &[readonly] {
     --mu-input_border-color: var(--mu-border-color-muted);

@@ -3,21 +3,21 @@
     "red", "pink", "grape", "violet", "indigo", "blue",
     "cyan", "teal", "green", "lime", "yellow", "orange"
   ) {
-    --mu-#{$v}: $#{$v};
+    --mu-#{$v}: #{map.get($colors, $v)};
   }
 
   @each $v in (primary, secondary, success, warning, danger) {
-    --mu-#{$v}-color: $#{$v};
+    --mu-#{$v}-color: #{map.get($colors, $v)};
 
     @for $i from 0 through 9 {
-      --mu-#{$v}-color-#{$i}: $#{$v}#{$i};
+      --mu-#{$v}-color-#{$i}: #{map.get($colors, #{$v}#{$i})};
     }
   }
 
-  --mu-gray: $neutral5;
+  --mu-gray: #{map.get($colors, neutral5)};
 
   @for $i from 0 through 9 {
-    --mu-gray-#{$i}: $neutral#{$i};
+    --mu-gray-#{$i}: #{map.get($colors, neutral#{$i})};
   }
 }
 
@@ -94,4 +94,30 @@
   & :fullscreen {
     background-color: var(--mu-bg-normal);
   }
+}
+
+.mu-dark {
+  --mu-gray: #{map.get($colors, neutral4)};
+
+  --mu-text-color-normal: var(--mu-gray-2);
+  --mu-text-color-clear: var(--mu-gray-1);
+  --mu-text-color-soft: var(--mu-gray-4);
+  --mu-text-color-muted: var(--mu-gray-5);
+  --mu-text-color-weak: var(--mu-gray-6);
+
+  --mu-bg-normal: var(--mu-gray-9);
+  --mu-bg-strong: rgba(255, 255, 255, .1);
+  --mu-bg-marked: rgba(255, 255, 255, .15);
+  --mu-bg-disabled: rgba(255, 255, 255, .15);
+
+  --mu-bg-overlay: var(--mu-gray-7);
+
+  --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.2);
+
+  @each $v in (primary, success, warning, danger, accent) {
+    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
+  }
+
+  --mu-border-color: var(--mu-gray-5);
+  --mu-border-color-muted: var(--mu-gray-6);
 }

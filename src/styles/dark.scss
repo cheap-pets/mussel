@@ -1,5 +1,5 @@
 .mu-dark {
-  --mu-gray: $neutral4;
+  --mu-gray: #{$neutral4};
 
   --mu-text-color-normal: var(--mu-gray-2);
   --mu-text-color-clear: var(--mu-gray-1);

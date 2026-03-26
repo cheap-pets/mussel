@@ -1,4 +1,4 @@
-import './styles/index.scss'
+import './styles/index.js'
 
 import { setupColors } from './colors.js'
 import { install as installIcons } from './icons/index.js'

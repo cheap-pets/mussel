@@ -1,4 +1,5 @@
 {
+  "stylelint.configBasedir": "/usr/local/lib/node_modules",
   "path-autocomplete.pathMappings": {
     "@/": "${folder}/src",
     "~icons/": "${folder}/node_modules/@tabler/icons/icons"
