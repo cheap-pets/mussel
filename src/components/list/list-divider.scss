@@ -1,8 +1,8 @@
 .mu-list-divider {
   margin-top: 4px;
   padding-top: 10px;
-  color: var(--mu-text-color-muted);
   border-top: 1px solid var(--mu-border-color-muted);
+  color: var(--mu-text-color-muted);
 
   &:empty {
     margin-bottom: 4px;

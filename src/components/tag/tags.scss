@@ -42,9 +42,9 @@
 .mu-tags_more {
   height: 20px;
   padding: 0 5px;
+  border-radius: 4px;
 
   background-color: var(--mu-bg-marked);
-  border-radius: 4px;
   outline: none;
 
   &:focus,

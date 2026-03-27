@@ -19,9 +19,9 @@
   
   & td {
     cursor: pointer;
+    border: 1px solid var(--mu-border-color-muted);
     color: var(--mu-text-color-normal);
     vertical-align: top;
-    border: 1px solid var(--mu-border-color-muted);
 
     &:hover {
       background-color: var(--mu-translucent-gray);
@@ -46,8 +46,8 @@
 
 .mu-dropdown-panel .mu-calendar-grid {
   & th, & td {
+    border: none;
     text-align: center;
     vertical-align: middle;
-    border: none;
   }
 }

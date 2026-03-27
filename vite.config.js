@@ -26,15 +26,13 @@ const colorMaps =
 function svg() {
   return {
     name: 'svg-plugin',
-    transform(code, id) {
+    enforce: 'pre',
+    load(id) {
       if (id.endsWith('.svg')) {
-        const svg = readFileSync(id, 'utf-8')
-        const optimized = optimize(svg).data
+        const content = readFileSync(id, 'utf-8')
+        const optimized = optimize(content).data
 
-        return {
-          code: `export default ${JSON.stringify(optimized)}`,
-          map: null
-        }
+        return `export default ${JSON.stringify(optimized)}`
       }
     }
   }
@@ -50,8 +48,8 @@ export default defineConfig(({ mode }) => {
       __env__: isDev ? '"development"' : '"production"'
     },
     plugins: [
-      vue(),
-      svg()
+      svg(),
+      vue()
     ],
     resolve: {
       alias: {
@@ -60,6 +58,14 @@ export default defineConfig(({ mode }) => {
       }
     },
     css: {
+      transformer: 'lightningcss',
+      lightningcss: {
+        targets: {
+          chrome: 100,
+          edge: 100,
+          firefox: 100
+        }
+      },
       preprocessorOptions: {
         scss: {
           additionalData: (source, filepath) => {
@@ -71,13 +77,14 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
+      target: ['chrome100', 'edge100', 'firefox100'],
       emptyOutDir: false,
       lib: {
         entry: resolve(__dirname, 'src/index.js'),
         name: 'mussel',
         formats: ['umd']
       },
-      rollupOptions: {
+      rolldownOptions: {
         external: ['vue'],
         output: {
           globals: {
@@ -87,18 +94,15 @@ export default defineConfig(({ mode }) => {
           entryFileNames: isDev ? 'mussel.js' : 'mussel.min.js'
         },
         onwarn(warning, warn) {
-          // watch 模式下抑制文件覆盖警告
-          if (isWatch && warning.code === 'FILE_NAME_CONFLICT') {
-            return
+          if (!isWatch || warning.code !== 'FILE_NAME_CONFLICT') {
+            warn(warning)
           }
-
-          warn(warning)
         }
       },
+      minify: !isDev,
       sourcemap: true,
-      minify: isDev ? false : undefined,
+      cssMinify: !isDev,
       cssCodeSplit: false,
-      cssMinify: !isDev
     }
   }
 })

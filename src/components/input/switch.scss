@@ -18,12 +18,12 @@
   height: var(--mu-switch_height);
   padding-right: 4px;
   padding-left: var(--mu-switch_height);
+  border-radius: calc(var(--mu-switch_height) / 2);
 
   font-size: 12px;
   line-height: var(--mu-common-line-height);
 
   background-color: var(--mu-gray-5);
-  border-radius: calc(var(--mu-switch_height) / 2);
 
   transition: all 0.2s ease-in-out;
 
@@ -37,9 +37,9 @@
 
     width: var(--mu-switch_ball-size);
     height: var(--mu-switch_ball-size);
+    border-radius: calc(var(--mu-switch_ball-size) / 2);
 
     background-color: #fff;
-    border-radius: calc(var(--mu-switch_ball-size) / 2);
 
     transition: all 0.1s ease-in-out;
   }

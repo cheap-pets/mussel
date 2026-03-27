@@ -1,11 +1,11 @@
 .mu-tab-bar[tab-style=simple] {
   box-sizing: content-box;
   padding: 0;
-
-  background: var(--mu-bg-normal);
   border-color: var(--mu-border-color-muted);
   border-style: solid;
   border-width: 0;
+
+  background: var(--mu-bg-normal);
 
   & > .mu-tab-bar_buttons {
     align-items: stretch;
@@ -13,9 +13,9 @@
 
   & .mu-tab-button {
     height: auto;
-    background: unset;
     border: 0 solid transparent;
     border-radius: 0;
+    background: unset;
 
     &::after {
       display: none;
@@ -27,8 +27,8 @@
     }
   
     &[active] {
-      color: var(--mu-primary-color);
       border-color: var(--mu-primary-color);
+      color: var(--mu-primary-color);
     }
   }
 

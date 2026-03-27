@@ -16,21 +16,21 @@
   min-width: var(--mu-badge_height);
   height: var(--mu-badge_height);
   padding: var(--mu-badge_padding);
+  border-radius: var(--mu-badge_border-radius);
 
   font-size: var(--mu-badge_font-size);
   color: var(--mu-badge_color);
   white-space: nowrap;
 
   background: var(--mu-badge_bg);
-  border-radius: var(--mu-badge_border-radius);
 
   &:empty {
     width: var(--mu-badge_dot-size);
     height: var(--mu-badge_dot-size);
     padding: 0;
+    border-radius: var(--mu-badge_dot-radius);
 
     background: var(--mu-danger-color);
-    border-radius: var(--mu-badge_dot-radius);
   }
 
   &[primary] {

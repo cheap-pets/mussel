@@ -12,6 +12,7 @@
 
   height: var(--mu-input-size);
   padding: 0 12px;
+  border-radius: var(--mu-common-border-radius);
 
   font-size: var(--mu-common-font-size);
   font-weight: 500;
@@ -19,7 +20,6 @@
   color: var(--mu-text-color-normal);
   text-decoration: none;
 
-  border-radius: var(--mu-common-border-radius);
   outline: none;
 
   & > span {

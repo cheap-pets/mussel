@@ -155,8 +155,9 @@
 
     position: absolute;
 
-    background-color: #FFF;
     border-radius: var(--mu-flex-splitter_full-size);
+
+    background-color: #FFF;
     box-shadow: 0 0 1px 1px rgba(0, 0, 0, .35);
 
     transition: all .3s;
