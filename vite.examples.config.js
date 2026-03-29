@@ -3,8 +3,37 @@ import vue from '@vitejs/plugin-vue'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { readdirSync, readFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs'
+import { optimize } from 'svgo'
+import { generatePreCssVariables } from './src/colors.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+
+// 读取 package.json 获取版本号
+const pkgJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
+const version = pkgJson.version
+
+const colorMaps =
+  '$colors: (\n' +
+  Object
+    .entries(generatePreCssVariables())
+    .map(([key, value]) => `  "${key}": ${value},`)
+    .join('\n') +
+  '\n);'
+
+// SVG 处理插件
+function svg() {
+  return {
+    name: 'svg-plugin',
+    enforce: 'pre',
+    load(id) {
+      if (id.endsWith('.svg')) {
+        const content = readFileSync(id, 'utf-8')
+        const optimized = optimize(content).data
+        return `export default ${JSON.stringify(optimized)}`
+      }
+    }
+  }
+}
 
 // 获取所有示例目录
 const examplesDir = resolve(__dirname, 'examples2/src')
@@ -44,7 +73,7 @@ function copyHtmlFiles() {
 
           // 添加 CSS 文件引用（在 </head> 之前）
           const cssLink = '    <link rel="stylesheet" type="text/css" href="./style.css" />\n'
-          if (!htmlContent.includes('style.css')) {
+          if (!htmlContent.includes('./style.css')) {
             htmlContent = htmlContent.replace('</head>', `${cssLink}</head>`)
           }
 
@@ -52,44 +81,6 @@ function copyHtmlFiles() {
           fs.writeFileSync(distHtml, htmlContent)
         }
       })
-
-      // 移动 assets 目录中的 CSS 文件到对应的示例目录
-      const assetsDir = resolve(__dirname, 'examples2/dist/assets')
-      if (existsSync(assetsDir)) {
-        const cssFiles = readdirSync(assetsDir).filter(f => f.endsWith('.css'))
-
-        cssFiles.forEach(cssFile => {
-          // 提取示例名称 - 匹配格式：prefix-hash.css，hash 可包含下划线
-          const match = cssFile.match(/^([a-z]+)-[a-z0-9_\-]+\.css$/i)
-          if (match) {
-            const prefix = match[1]
-            const exampleMap = {
-              'button': 'button',
-              'input': 'input',
-              'modal': 'modal',
-              'tabs': 'tabs',
-              'tree': 'tree',
-              'scrollbar': 'scrollbar',
-              'calendar': 'calendar',
-              'color': 'color',
-              'combo': 'combo-box',
-              'dropdown': 'dropdown',
-              'selection': 'selection',
-              'message': 'message',
-              'form': 'form',
-              'flex': 'flex-layout',
-              'grid': 'grid-layout'
-            }
-            const exampleName = exampleMap[prefix]
-            if (exampleName) {
-              const srcCss = resolve(__dirname, `examples2/dist/assets/${cssFile}`)
-              const destCss = resolve(__dirname, `examples2/dist/${exampleName}/style.css`)
-              // 移动文件
-              fs.renameSync(srcCss, destCss)
-            }
-          }
-        })
-      }
 
       // 复制根目录的 index.html
       const rootIndexHtml = resolve(__dirname, 'examples2/src/index.html')
@@ -110,11 +101,35 @@ function copyHtmlFiles() {
 }
 
 export default {
-  plugins: [vue(), copyHtmlFiles()],
+  define: {
+    __version__: JSON.stringify(version),
+    __env__: '"development"'
+  },
+  plugins: [svg(), vue(), copyHtmlFiles()],
   resolve: {
     alias: {
       '~icons': resolve(__dirname, 'node_modules/@tabler/icons/icons'),
-      '@': resolve(__dirname, 'src')
+      '@': resolve(__dirname, 'src'),
+      'mussel': resolve(__dirname, 'src/index.js')
+    }
+  },
+  css: {
+    transformer: 'lightningcss',
+    lightningcss: {
+      targets: {
+        chrome: 100,
+        edge: 100,
+        firefox: 100
+      }
+    },
+    preprocessorOptions: {
+      scss: {
+        additionalData: (source, filepath) => {
+          return filepath.includes('root.scss')
+            ? `@use "sass:map";\n${colorMaps}\n${source}`
+            : source
+        }
+      }
     }
   },
   build: {
@@ -129,44 +144,13 @@ export default {
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || ''
-          // 处理 CSS 文件 - 检查原始文件名
-          const originalNames = assetInfo.names || []
-          if (name.includes('.css') && originalNames.length > 0) {
-            const originalName = originalNames[0]
-            // 从原始路径中提取组件名称
-            // 格式类似: src/button/ButtonDemo.vue?vue&type=style&index=0&scoped.lang.css
-            const pathMatch = originalName.match(/src\/([a-z-]+)\/[^\/]+\.vue/i)
-            if (pathMatch) {
-              const componentName = pathMatch[1]
-              return `${componentName}/style.css`
-            }
-          }
 
-          // 备用方案：通过文件名前缀匹配
-          if (name.includes('.css')) {
-            const cssNameMatch = name.match(/^([a-z]+)-[a-z0-9\-]+\.css$/i)
-            if (cssNameMatch) {
-              const prefix = cssNameMatch[1]
-              const exampleMap = {
-                'button': 'button',
-                'input': 'input',
-                'modal': 'modal',
-                'tabs': 'tabs',
-                'tree': 'tree',
-                'scrollbar': 'scrollbar',
-                'calendar': 'calendar',
-                'color': 'color',
-                'combo': 'combo-box',
-                'dropdown': 'dropdown',
-                'selection': 'selection',
-                'message': 'message',
-                'form': 'form',
-                'flex': 'flex-layout',
-                'grid': 'grid-layout'
-              }
-              const exampleName = exampleMap[prefix] || prefix
-              return `${exampleName}/style.css`
-            }
+          // 处理 CSS 文件 - 文件名已经按示例命名好了
+          // 如: button.css, combo-box.css, flex-layout.css 等
+          if (name.endsWith('.css') && name !== 'src.css') {
+            // 直接用文件名（去掉.css）作为目录名，输出为 style.css
+            const exampleName = name.replace('.css', '')
+            return `${exampleName}/style.css`
           }
 
           // 其他资源保持原有路径

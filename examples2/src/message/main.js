@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { install } from '../../../dist/mussel.js'
+import { install } from 'mussel'
 
 import MessageDemo from './MessageDemo.vue'
 

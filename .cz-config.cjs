@@ -1,62 +1,16 @@
 module.exports = {
   types: [
-    {
-      value: '🎉',
-      name: ' - Initialize'
-    },
-    {
-      value: '✨',
-      name: ' - New Feature'
-    },
-    {
-      value: '🐛',
-      name: ' - Bug Fix'
-    },
-    {
-      value: '🔨',
-      name: ' - Refactor'
-    },
-    {
-      value: '💄',
-      name: ' - User Interface'
-    },
-    {
-      value: '✏️️️',
-      name: ' - Code Style'
-    },
-    {
-      value: '📝',
-      name: ' - Documentation'
-    },
-    {
-      value: '🔥',
-      name: ' - Remove Garbage'
-    },
-    {
-      value: '⏪',
-      name: ' - Revert'
-    },
-    {
-      value: '🔀',
-      name: ' - Branch Merge'
-    },
-    {
-      value: '✅',
-      name: ' - Test Code'
-    },
-    {
-      value: '🔧',
-      name: ' - Configuration Changes'
-    },
-    {
-      value: '📦',
-      name: ' - Destination Files'
-    }
+    { value: '✨', name: 'feat:     新功能' },
+    { value: '🐛', name: 'fix:      修复 Bug' },
+    { value: '🔨', name: 'refactor: 代码重构' },
+    { value: '💄', name: 'style:    样式/UI' },
+    { value: '📝', name: 'docs:     文档/示例' },
+    { value: '🔧', name: 'chore:    构建/配置' }
   ],
 
   subjectLimit: 80,
   skipQuestions: ['scope', 'body'],
-  
+
   allowCustomScopes: false,
-  allowBreakingChanges: ['feat', 'fix']
+  allowBreakingChanges: ['feat', 'fix', 'refactor']
 }
