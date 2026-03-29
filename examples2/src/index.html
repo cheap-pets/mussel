@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Mussel 4 组件演示示例</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 40px;
+      font-size: 1.1rem;
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .example-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .example-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .example-card h3 {
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .example-card p {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .example-icon {
+      font-size: 1.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #e0e7ff;
+      color: #4f46e5;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .info {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .info h2 {
+      margin-bottom: 10px;
+    }
+
+    .info code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .info ul {
+      margin-left: 20px;
+      line-height: 1.8;
+    }
+
+    .footer {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 40px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Mussel 4 组件演示</h1>
+    <p class="subtitle">Vue 3 组件库示例集合</p>
+
+    <div class="info">
+      <h2>📖 使用说明</h2>
+      <ul>
+        <li>点击下方卡片查看各个组件的演示页面</li>
+        <li>构建命令: <code>npm run build:examples</code></li>
+        <li>构建产物位于 <code>examples2/dist/</code> 目录</li>
+        <li>源代码使用 Vue 3 Composition API + Vite 构建</li>
+      </ul>
+    </div>
+
+    <div class="examples-grid">
+      <a href="dist/button/" class="example-card">
+        <h3>
+          <span class="example-icon">🔘</span>
+          Button
+          <span class="badge">基础</span>
+        </h3>
+        <p>按钮组件 - 支持多种样式、尺寸和状态</p>
+      </a>
+
+      <a href="dist/input/" class="example-card">
+        <h3>
+          <span class="example-icon">📝</span>
+          Input
+          <span class="badge">表单</span>
+        </h3>
+        <p>输入框组件 - 支持前缀、后缀和多种样式</p>
+      </a>
+
+      <a href="dist/form/" class="example-card">
+        <h3>
+          <span class="example-icon">📋</span>
+          Form
+          <span class="badge">表单</span>
+        </h3>
+        <p>表单布局 - 包含表单字段和表单行</p>
+      </a>
+
+      <a href="dist/modal/" class="example-card">
+        <h3>
+          <span class="example-icon">🪟</span>
+          Modal
+          <span class="badge">弹窗</span>
+        </h3>
+        <p>模态对话框和抽屉面板</p>
+      </a>
+
+      <a href="dist/tabs/" class="example-card">
+        <h3>
+          <span class="example-icon">📑</span>
+          Tabs
+          <span class="badge">导航</span>
+        </h3>
+        <p>标签页组件 - 支持多种样式</p>
+      </a>
+
+      <a href="dist/dropdown/" class="example-card">
+        <h3>
+          <span class="example-icon">📂</span>
+          Dropdown
+          <span class="badge">导航</span>
+        </h3>
+        <p>下拉菜单组件</p>
+      </a>
+
+      <a href="dist/combo-box/" class="example-card">
+        <h3>
+          <span class="example-icon">🔽</span>
+          Combo Box
+          <span class="badge">表单</span>
+        </h3>
+        <p>组合输入框 - 可输入也可下拉选择</p>
+      </a>
+
+      <a href="dist/selection/" class="example-card">
+        <h3>
+          <span class="example-icon">☑️</span>
+          Selection
+          <span class="badge">表单</span>
+        </h3>
+        <p>选择组件 - 复选框和单选框</p>
+      </a>
+
+      <a href="dist/calendar/" class="example-card">
+        <h3>
+          <span class="example-icon">📅</span>
+          Calendar
+          <span class="badge">表单</span>
+        </h3>
+        <p>日历组件</p>
+      </a>
+
+      <a href="dist/tree/" class="example-card">
+        <h3>
+          <span class="example-icon">🌲</span>
+          Tree
+          <span class="badge">数据</span>
+        </h3>
+        <p>树形组件</p>
+      </a>
+
+      <a href="dist/color/" class="example-card">
+        <h3>
+          <span class="example-icon">🎨</span>
+          Color
+          <span class="badge">工具</span>
+        </h3>
+        <p>颜色选择器和颜色系统</p>
+      </a>
+
+      <a href="dist/message/" class="example-card">
+        <h3>
+          <span class="example-icon">💬</span>
+          Message
+          <span class="badge">反馈</span>
+        </h3>
+        <p>消息提示和通知组件</p>
+      </a>
+
+      <a href="dist/flex-layout/" class="example-card">
+        <h3>
+          <span class="example-icon">📐</span>
+          Flex Layout
+          <span class="badge">布局</span>
+        </h3>
+        <p>Flex 布局和分隔条</p>
+      </a>
+
+      <a href="dist/grid-layout/" class="example-card">
+        <h3>
+          <span class="example-icon">🔲</span>
+          Grid Layout
+          <span class="badge">布局</span>
+        </h3>
+        <p>网格布局</p>
+      </a>
+
+      <a href="dist/scrollbar/" class="example-card">
+        <h3>
+          <span class="example-icon">↕️</span>
+          Scrollbar
+          <span class="badge">工具</span>
+        </h3>
+        <p>滚动条样式</p>
+      </a>
+    </div>
+
+    <div class="footer">
+      <p>Built with ❤️ using Mussel 4 • Vue 3 • Vite</p>
+      <p style="margin-top: 10px; opacity: 0.7;">
+        <a href="../examples/" style="color: white;">查看旧版示例</a> •
+        <a href="https://github.com/cheap-pets/mussel3" style="color: white;">GitHub</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

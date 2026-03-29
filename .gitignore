@@ -8,3 +8,6 @@ node_modules/
 # Output directories
 dist/
 .DS_Store
+
+# Claude Code 记忆文件（项目本地）
+.claude/memory/

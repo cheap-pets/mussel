@@ -10,6 +10,7 @@
   "scripts": {
     "build": "vite build --mode development && vite build --mode production",
     "build:dev": "vite build --mode development --watch",
+    "build:examples": "vite build --config vite.examples.config.js",
     "pub": "npm run build && npm publish"
   },
   "devDependencies": {
