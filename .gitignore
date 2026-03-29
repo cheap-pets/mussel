@@ -9,5 +9,6 @@ node_modules/
 dist/
 .DS_Store
 
-# Claude Code 记忆文件（项目本地）
+# Claude Code 本地配置与记忆文件（项目本地）
+.claude/settings.local.json
 .claude/memory/
