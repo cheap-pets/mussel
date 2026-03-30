@@ -2,7 +2,7 @@ import vue from '@vitejs/plugin-vue'
 
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
-import { readdirSync, readFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs'
 import { optimize } from 'svgo'
 import { generatePreCssVariables } from './src/colors.js'
 
@@ -37,6 +37,7 @@ function svg() {
 
 // 获取所有示例目录
 const examplesDir = resolve(__dirname, 'examples2/src')
+
 const examples = existsSync(examplesDir)
   ? readdirSync(examplesDir, { withFileTypes: true })
       .filter(dirent => dirent.isDirectory())
@@ -48,6 +49,7 @@ const input = {}
 
 examples.forEach(example => {
   const mainJs = resolve(__dirname, `examples2/src/${example}/main.js`)
+
   if (existsSync(mainJs)) {
     input[example] = mainJs
   }
@@ -58,44 +60,34 @@ function copyHtmlFiles() {
   return {
     name: 'copy-html-files',
     writeBundle() {
-      const fs = require('node:fs')
-      const path = require('node:path')
+      const assetsDir = resolve(__dirname, 'examples2/dist/assets')
+
+      const vueAppCss =
+        existsSync(assetsDir) &&
+        readdirSync(assetsDir).find(f => /^vue-app-.*\.css$/.test(f))
+
+      const templatePath = resolve(__dirname, 'examples2/src/common/template.html')
+
+      if (!existsSync(templatePath)) return
+
+      const template = readFileSync(templatePath, 'utf-8')
 
       examples.forEach(example => {
-        const srcHtml = resolve(__dirname, `examples2/src/${example}/index.html`)
+        if (!input[example]) return
+
         const distHtml = resolve(__dirname, `examples2/dist/${example}/index.html`)
+        mkdirSync(resolve(__dirname, `examples2/dist/${example}`), { recursive: true })
 
-        if (existsSync(srcHtml)) {
-          // 确保目标目录存在
-          mkdirSync(resolve(__dirname, `examples2/dist/${example}`), { recursive: true })
+        const title = example.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join(' ')
+        const html = template.replace('{{title}}', title).replace('%vue-app-css%', vueAppCss || '')
 
-          // 读取 HTML 内容并修复路径
-          let htmlContent = readFileSync(srcHtml, 'utf-8')
-
-          // 添加 CSS 文件引用（在 </head> 之前）
-          const cssLink = '    <link rel="stylesheet" type="text/css" href="./style.css" />\n'
-          if (!htmlContent.includes('./style.css')) {
-            htmlContent = htmlContent.replace('</head>', `${cssLink}</head>`)
-          }
-
-          // 写入修复后的 HTML
-          fs.writeFileSync(distHtml, htmlContent)
-        }
+        writeFileSync(distHtml, html)
       })
 
-      // 复制根目录的 index.html
       const rootIndexHtml = resolve(__dirname, 'examples2/src/index.html')
-      if (existsSync(rootIndexHtml)) {
-        let rootHtml = readFileSync(rootIndexHtml, 'utf-8')
-        // 修复导航页面中的路径: dist/button/ -> button/
-        rootHtml = rootHtml.replace(/href="dist\//g, 'href="')
-        fs.writeFileSync(resolve(__dirname, 'examples2/dist/index.html'), rootHtml)
-      }
 
-      // 复制 common.css (使用现有的 examples/style.css)
-      const commonCss = resolve(__dirname, 'examples/style.css')
-      if (existsSync(commonCss)) {
-        copyFileSync(commonCss, resolve(__dirname, 'examples2/dist/common.css'))
+      if (existsSync(rootIndexHtml)) {
+        copyFileSync(rootIndexHtml, resolve(__dirname, 'examples2/dist/index.html'))
       }
     }
   }
@@ -146,16 +138,9 @@ export default {
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || ''
 
-          // 处理 CSS 文件 - 文件名已经按示例命名好了
-          // 如: button.css, combo-box.css, flex-layout.css 等
-          if (name.endsWith('.css') && name !== 'src.css') {
-            // 直接用文件名（去掉.css）作为目录名，输出为 style.css
-            const exampleName = name.replace('.css', '')
-            return `${exampleName}/style.css`
-          }
-
-          // 其他资源保持原有路径
-          return 'assets/[name]-[hash].[ext]'
+          return (name.endsWith('.css') && !name.includes('vue-app'))
+            ? `${name.replace('.css', '')}/style.css`
+            : 'assets/[name]-[hash].[ext]'
         }
       }
     },

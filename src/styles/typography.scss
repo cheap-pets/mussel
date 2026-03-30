@@ -34,10 +34,6 @@
   }
 }
 
-.mu-text-color-accent {
-  color: var(--mu-secondary-color);
-}
-
 @each $v in ('left', 'center', 'right') {
   .text-#{$v} {
     text-align: #{$v};

@@ -8,7 +8,7 @@
         inactive-label="Light"
         @update:model-value="onUIModeChange" />
     </H2>
-    <div class="group button-w-90">
+    <div class="group button-w-100">
       <h3>NORMAL STYLE</h3>
       <div class="group-row">
         <mu-button x>
@@ -33,13 +33,13 @@
         </mu-button>
       </div>
       <div class="group-row">
-        <mu-button accent>
-          ACCENT
+        <mu-button secondary>
+          SECONDARY
         </mu-button>
-        <mu-button accent active>
+        <mu-button secondary active>
           ACTIVE
         </mu-button>
-        <mu-button accent disabled>
+        <mu-button secondary disabled>
           DISABLED
         </mu-button>
       </div>
@@ -55,7 +55,7 @@
         </mu-button>
       </div>
     </div>
-    <div class="group button-w-90">
+    <div class="group button-w-100">
       <h3>OUTLINE STYLE</h3>
       <div class="group-row">
         <mu-button button-style="outline">
@@ -80,13 +80,13 @@
         </mu-button>
       </div>
       <div class="group-row">
-        <mu-button accent button-style="outline">
-          ACCENT
+        <mu-button secondary button-style="outline">
+          SECONDARY
         </mu-button>
-        <mu-button accent button-style="outline" active>
+        <mu-button secondary button-style="outline" active>
           ACTIVE
         </mu-button>
-        <mu-button accent button-style="outline" disabled>
+        <mu-button secondary button-style="outline" disabled>
           DISABLED
         </mu-button>
       </div>
@@ -102,7 +102,7 @@
         </mu-button>
       </div>
     </div>
-    <div class="group button-w-90">
+    <div class="group button-w-100">
       <h3>TEXT STYLE</h3>
       <div class="group-row">
         <mu-button button-style="text">
@@ -127,13 +127,13 @@
         </mu-button>
       </div>
       <div class="group-row">
-        <mu-button accent button-style="text">
-          ACCENT
+        <mu-button secondary button-style="text">
+          SECONDARY
         </mu-button>
-        <mu-button accent button-style="text" active>
+        <mu-button secondary button-style="text" active>
           ACTIVE
         </mu-button>
-        <mu-button accent button-style="text" disabled>
+        <mu-button secondary button-style="text" disabled>
           DISABLED
         </mu-button>
       </div>
@@ -174,13 +174,13 @@
         </mu-button>
       </div>
       <div class="group-row link-group">
-        <mu-button accent button-style="link">
-          ACCENT
+        <mu-button secondary button-style="link">
+          SECONDARY
         </mu-button>
-        <mu-button accent button-style="link" active>
+        <mu-button secondary button-style="link" active>
           ACTIVE
         </mu-button>
-        <mu-button accent button-style="link" disabled>
+        <mu-button secondary button-style="link" disabled>
           DISABLED
         </mu-button>
       </div>
@@ -292,7 +292,7 @@
       <h3>BADGE</h3>
       <mu-button>badge<span class="mu-badge">Default</span></mu-button>
       <mu-button>badge<span class="mu-badge" primary>Primary</span></mu-button>
-      <mu-button>badge<span class="mu-badge" accent>Accent</span></mu-button>
+      <mu-button>badge<span class="mu-badge" secondary>SECONDARY</span></mu-button>
       <mu-button>badge<span class="mu-badge" warning>Warning</span></mu-button>
       <mu-button>badge<span class="mu-badge" danger>Danger</span></mu-button>
     </div>
@@ -423,7 +423,7 @@
     width: 80px;
   }
 
-  .button-w-90 .mu-button {
-    width: 90px;
+  .button-w-100 .mu-button {
+    width: 100px;
   }
 </style>

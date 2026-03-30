@@ -26,7 +26,7 @@
     disabled: Boolean,
     primary: Boolean,
     danger: Boolean,
-    accent: Boolean,
+    secondary: Boolean,
     xColor: [Boolean, String],
     type: { type: String, default: 'button' },
     size: {

@@ -145,7 +145,7 @@
 
   --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.2);
 
-  @each $v in (primary, success, warning, danger, accent) {
+  @each $v in (primary, success, warning, danger, secondary) {
     --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
   }
 

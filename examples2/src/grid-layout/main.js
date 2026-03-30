@@ -1,8 +1,5 @@
-import { createApp } from 'vue'
-import { install } from 'mussel'
+import { createVueApp } from '../common/vue-app.js'
 
 import GridLayoutDemo from './GridLayoutDemo.vue'
 
-const app = createApp(GridLayoutDemo)
-install(app)
-app.mount('#app')
+createVueApp(GridLayoutDemo)

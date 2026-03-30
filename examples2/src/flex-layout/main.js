@@ -1,8 +1,5 @@
-import { createApp } from 'vue'
-import { install } from 'mussel'
+import { createVueApp } from '../common/vue-app.js'
 
 import FlexLayoutDemo from './FlexLayoutDemo.vue'
 
-const app = createApp(FlexLayoutDemo)
-install(app)
-app.mount('#app')
+createVueApp(FlexLayoutDemo)

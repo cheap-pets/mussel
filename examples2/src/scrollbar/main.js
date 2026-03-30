@@ -1,8 +1,5 @@
-import { createApp } from 'vue'
-import { install } from 'mussel'
+import { createVueApp } from '../common/vue-app.js'
 
 import ScrollbarDemo from './ScrollbarDemo.vue'
 
-const app = createApp(ScrollbarDemo)
-install(app)
-app.mount('#app')
+createVueApp(ScrollbarDemo)

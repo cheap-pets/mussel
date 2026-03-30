@@ -81,7 +81,7 @@
 }
 
 .mu-button {
-  @each $v in (primary, accent, danger) {
+  @each $v in (primary, secondary, danger) {
     &[#{$v}] {
       --mu-button_color: var(--mu-#{$v}-color);
 
@@ -109,7 +109,7 @@
 
   &[x-color],
   &[primary],
-  &[accent],
+  &[secondary],
   &[danger] {
     border-color: var(--mu-button_color);
     color: #fff;

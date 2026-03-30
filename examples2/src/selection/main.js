@@ -1,8 +1,5 @@
-import { createApp } from 'vue'
-import { install } from 'mussel'
+import { createVueApp } from '../common/vue-app.js'
 
 import SelectionDemo from './SelectionDemo.vue'
 
-const app = createApp(SelectionDemo)
-install(app)
-app.mount('#app')
+createVueApp(SelectionDemo)

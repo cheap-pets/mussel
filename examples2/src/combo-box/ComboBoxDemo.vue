@@ -68,7 +68,7 @@
 
   const darkMode = ref(false)
   const artist = ref('Johann Baptist Strauss')
-    const selectedArtists = ref([{ value: 'Ludwig van Beethoven' }])
+  const selectedArtists = ref([{ value: 'Ludwig van Beethoven' }])
   const artists = ref([
     { is: '-', label: 'GROUP 1' },
     { value: 'Ludwig van Beethoven' },

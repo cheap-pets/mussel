@@ -20,7 +20,7 @@
     <div id="div1" class="group">
       <h3>Advanced Dialog</h3>
       <mu-button caption="Open Advanced Dialog" @click="openAdvancedDialog" />
-      <mu-button caption="Request Fullscreen" accent button-style="outline" @click="requestFullscreen('#div1')" />
+      <mu-button caption="Request Fullscreen" secondary button-style="outline" @click="requestFullscreen('#div1')" />
     </div>
 
     <!-- Drawer Controls -->
@@ -30,7 +30,7 @@
       <mu-button caption="Bottom" @click="openDrawer('bottom')" />
       <mu-button caption="Left" @click="openDrawer('left')" />
       <mu-button caption="Right" @click="openDrawer('right')" />
-      <mu-button caption="Request Fullscreen" accent button-style="outline" @click="requestFullscreen('#div2')" />
+      <mu-button caption="Request Fullscreen" secondary button-style="outline" @click="requestFullscreen('#div2')" />
       <mu-switch v-model="maskVisible" label="Mask Visible" />
       <mu-switch v-model="borderRadius" label="Border Radius" />
     </div>
@@ -71,7 +71,7 @@
       moveable
       keep-position
       :lazy="false"
-      :icon="{ icon: 'box', style: 'color: var(--mu-accent-color)' }"
+      :icon="{ icon: 'box', style: 'color: var(--mu-secondary-color)' }"
       :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
       @update:visible="(...args) => onDialogVisibleChange('advancedDialog', ...args)"
       @button-click="onButtonClick">

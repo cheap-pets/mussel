@@ -1,8 +1,5 @@
-import { createApp } from 'vue'
-import { install } from 'mussel'
+import { createVueApp } from '../common/vue-app.js'
 
 import FormDemo from './FormDemo.vue'
 
-const app = createApp(FormDemo)
-install(app)
-app.mount('#app')
+createVueApp(FormDemo)

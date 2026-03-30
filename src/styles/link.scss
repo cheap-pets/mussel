@@ -7,7 +7,7 @@ a.mu-icon,
     --mu-link_color: var(--mu-primary-color);
   }
 
-  &[accent] {
+  &[secondary] {
     --mu-link_color: var(--mu-secondary-color);
     --mu-link_hover-color: var(--mu-secondary-color-4);
   }

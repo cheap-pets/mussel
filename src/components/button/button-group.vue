@@ -15,7 +15,7 @@
     disabled: Boolean,
     primary: Boolean,
     danger: Boolean,
-    accent: Boolean,
+    secondary: Boolean,
     xColor: [Boolean, String],
     size: {
       type: String,
@@ -38,7 +38,7 @@
 
   const defaultButtonOptions = computed(() =>
     pickBy(props, (key, value) =>
-      ['primary', 'danger', 'accent', 'xColor'].includes(key) &&
+      ['primary', 'danger', 'secondary', 'xColor'].includes(key) &&
       value !== false
     )
   )
