@@ -155,7 +155,7 @@ app.mount('#app')
   <link rel="stylesheet" type="text/css" href="../../../node_modules/@tabler/icons-webfont/dist/tabler-icons-outline.css" />
 </head>
 <body>
-  <div id="app" class="mu-root"></div>
+  <div id="app"></div>
   <script type="module" src="./main.js"></script>
 </body>
 </html>

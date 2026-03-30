@@ -1,18 +1,18 @@
 .mu-dark {
   --mu-gray: #{$neutral4};
 
-  --mu-text-color-normal: var(--mu-gray-2);
-  --mu-text-color-clear: var(--mu-gray-1);
-  --mu-text-color-soft: var(--mu-gray-4);
-  --mu-text-color-muted: var(--mu-gray-5);
-  --mu-text-color-weak: var(--mu-gray-6);
+  --mu-text-color-clear: var(--mu-text-gray-0);
+  --mu-text-color-normal: var(--mu-text-gray-2);
+  --mu-text-color-subtle: var(--mu-text-gray-4);
+  --mu-text-color-soft: var(--mu-text-gray-5);
+  --mu-text-color-muted: var(--mu-text-gray-6);
 
-  --mu-bg-normal: var(--mu-gray-9);
-  --mu-bg-strong: rgba(255, 255, 255, .1);
-  --mu-bg-marked: rgba(255, 255, 255, .15);
-  --mu-bg-disabled: rgba(255, 255, 255, .15);
+  --mu-bg-normal: #000;
+  --mu-bg-strong: rgb(from var(--mu-bg-gray-0) r g b / 0.08);
+  --mu-bg-marked: rgb(from var(--mu-bg-gray-0) r g b / 0.14);
+  --mu-bg-disabled: rgb(from var(--mu-bg-gray-0) r g b / 0.11);
 
-  --mu-bg-overlay: var(--mu-gray-7);
+  --mu-bg-overlay: var(--mu-bg-gray-4);
 
   --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.2);
 
@@ -20,6 +20,8 @@
     --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
   }
 
-  --mu-border-color: var(--mu-gray-5);
-  --mu-border-color-muted: var(--mu-gray-6);
+  --mu-border-color-normal: var(--mu-border-gray-2);
+  --mu-border-color: var(--mu-border-color-normal);
+  --mu-border-color-strong: var(--mu-border-gray-0);
+  --mu-border-color-muted: var(--mu-border-gray-3);
 }

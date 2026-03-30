@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mussel 4 中性色方案演示</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --page-bg: #0e0f11;
+    --card-bg: #18191c;
+    --card-border: #2a2c30;
+    --text-primary: #e8e9ec;
+    --text-secondary: #8b8d93;
+    --text-muted: #55575e;
+    --accent: #1c7ed6;
+    --radius: 10px;
+  }
+
+  body {
+    background: var(--page-bg);
+    color: var(--text-primary);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 40px 100px;
+  }
+
+  .page-header {
+    margin-bottom: 64px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .page-header h1 span {
+    color: var(--accent);
+  }
+
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .palette-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .swatch {
+    flex: 1;
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    min-height: 72px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+  }
+
+  .swatch:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 1;
+  }
+
+  .swatch-light {
+    border: 1px solid var(--card-border);
+  }
+
+  .swatch-fill {
+    position: absolute;
+    inset: 0;
+  }
+
+  .swatch-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 6px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    line-height: 1.3;
+  }
+
+  .swatch-label .var-name {
+    font-weight: 500;
+    display: block;
+  }
+
+  .swatch-label .hex-val {
+    opacity: 0.7;
+    display: block;
+    font-size: 9px;
+  }
+
+  .swatch-label.on-dark { color: #fff; }
+  .swatch-label.on-light { color: #111; }
+
+  .swatch.is-mapped::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .compare-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .compare-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+  }
+
+  .compare-card .subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .mapping-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+
+  .mapping-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-muted);
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .mapping-table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-secondary);
+  }
+
+  .mapping-table tr:last-child td { border-bottom: none; }
+
+  .mapping-table .color-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .mapping-table .new-badge {
+    background: rgba(28, 126, 214, 0.15);
+    color: var(--accent);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 500;
+    margin-left: 6px;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  .mapping-table .changed-badge {
+    background: rgba(247, 103, 7, 0.15);
+    color: #f76707;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 500;
+    margin-left: 6px;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  .side-by-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .side-card {
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .side-card.light { background: #fff; color: #333; }
+  .side-card.dark { background: #0e0f11; color: #e8e9ec; }
+
+  .side-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .side-card .sub { font-size: 12px; opacity: 0.5; margin-bottom: 16px; }
+
+  .mini-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .mini-row:last-child { margin-bottom: 0; }
+
+  .mini-label {
+    width: 80px;
+    font-size: 11px;
+    opacity: 0.5;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .mini-border-demo {
+    width: 120px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .mini-text-demo { padding: 4px 0; }
+
+  .mini-bg-demo {
+    width: 80px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+
+  .footer-note {
+    margin-top: 40px;
+    padding: 16px 20px;
+    background: rgba(28, 126, 214, 0.06);
+    border: 1px solid rgba(28, 126, 214, 0.15);
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .footer-note code {
+    background: rgba(255,255,255,0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-bar {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  .legend-bar.mapped { background: var(--accent); }
+  .legend-bar.unmapped { background: var(--card-border); }
+
+  @media (max-width: 768px) {
+    .page { padding: 32px 20px 60px; }
+    .compare-grid, .side-by-side { grid-template-columns: 1fr; }
+    .palette-row { flex-wrap: wrap; }
+    .swatch { min-width: 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <h1>Mussel 4 <span>中性色分离</span>方案演示</h1>
+    <p>基于主色 #1c7ed6 (蓝) 生成 — 色板 10/5/5 级，语义映射 5/3/3 级</p>
+  </div>
+
+  <div id="app"></div>
+
+  <div class="footer-note">
+    <strong>说明：</strong>文本色板 (10 级) 饱和度 0.35、密度因子 1.0（线性分布）；边框色板 (5 级) 饱和度 0.2、密度因子 1.5；背景色板 (5 级) 饱和度 0.15、密度因子 1.5、色相偏移 +5°。语义变量从色板中间跳选，未映射的级别留作组件直接引用。色块底部蓝色标记线 = 已被语义变量选中。<code>text-color-weak</code> 已移除，placeholder 统一使用 <code>text-color-muted</code>。原有 <code>--mu-gray-0</code> ~ <code>--mu-gray-9</code> 密度因子调整为 1.0。
+  </div>
+</div>
+
+<script>
+// === Color generation (replicates Mussel's algorithm) ===
+
+function str2rgba (str) {
+  const m = str.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)
+  return m ? { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) } : null
+}
+
+function rgb2hsv ({ r, g, b }) {
+  r /= 255; g /= 255; b /= 255
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min
+  let h, s = max === 0 ? 0 : d / max, v = max
+  if (max === min) h = 0
+  else {
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break
+      case g: h = ((b - r) / d + 2) / 6; break
+      case b: h = ((r - g) / d + 4) / 6; break
+    }
+  }
+  return { h: h * 360, s, v: v * 100 }
+}
+
+function hsv2hex ({ h, s, v }) {
+  h = ((h % 360) + 360) % 360
+  s /= 100; v /= 100
+  const c = v * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c
+  let r, g, b
+  if (h < 60)       { r = c; g = x; b = 0 }
+  else if (h < 120) { r = x; g = c; b = 0 }
+  else if (h < 180) { r = 0; g = c; b = x }
+  else if (h < 240) { r = 0; g = x; b = c }
+  else if (h < 300) { r = x; g = 0; b = c }
+  else              { r = c; g = 0; b = x }
+  const toHex = v => Math.round((v + m) * 255).toString(16).padStart(2, '0')
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
+
+function generateNeutralPalette (baseColor, count = 10, densityFactor = 1.8, { saturationRatio = 0.3, hueShift = 0 } = {}) {
+  const rgb = str2rgba(baseColor)
+  if (!rgb) return []
+  const maxV = 96.5, minV = 3.5
+  const hsv = rgb2hsv(rgb)
+  const palette = []
+  for (let i = 0; i < count; i++) {
+    const ni = i / (count - 1)
+    const adjusted = Math.pow(ni, densityFactor)
+    palette.push(hsv2hex({
+      h: hsv.h + hueShift,
+      s: hsv.s * saturationRatio * ni,
+      v: minV + (maxV - minV) * (1 - adjusted)
+    }))
+  }
+  return palette
+}
+
+// === Generate all palettes ===
+
+const BASE = '#1c7ed6'
+
+const originalGray = generateNeutralPalette(BASE, 10, 1, { saturationRatio: 0.3, hueShift: 0 })
+const textGray    = generateNeutralPalette(BASE, 10, 1, { saturationRatio: 0.35, hueShift: 0 })
+const borderGray  = generateNeutralPalette(BASE, 5, 1.5, { saturationRatio: 0.2, hueShift: 0 })
+const bgGray      = generateNeutralPalette(BASE, 5, 1.5, { saturationRatio: 0.15, hueShift: 5 })
+
+// === Semantic mappings (light mode) ===
+
+const textSemantics = {
+  'text-color-clear':   { index: 9, desc: '输入框文字' },
+  'text-color-normal':  { index: 7, desc: '正常正文' },
+  'text-color-subtle':  { index: 5, desc: '次级正文', isNew: true },
+  'text-color-soft':    { index: 4, desc: '标签/辅助' },
+  'text-color-muted':   { index: 3, desc: '次要信息 + placeholder' },
+}
+
+const borderSemantics = {
+  'border-color-strong': { index: 3, desc: '强调边框', isNew: true },
+  'border-color':        { index: 2, desc: '默认边框' },
+  'border-color-muted':  { index: 1, desc: '弱化边框' },
+}
+
+const bgSemantics = {
+  'bg-strong':   { color: bgGray[4], opacity: 0.08, desc: '叠加背景', changed: true },
+  'bg-marked':   { color: bgGray[4], opacity: 0.14, desc: '标记背景', changed: true },
+  'bg-disabled': { color: bgGray[4], opacity: 0.11, desc: '禁用背景', changed: true },
+}
+
+// Dark mode mappings (reversed indices, wider spacing)
+const textDarkSemantics = {
+  'text-color-clear':   { index: 0, desc: '输入框文字' },
+  'text-color-normal':  { index: 2, desc: '正常正文' },
+  'text-color-subtle':  { index: 4, desc: '次级正文', isNew: true },
+  'text-color-soft':    { index: 5, desc: '标签/辅助（与亮色对称）' },
+  'text-color-muted':   { index: 6, desc: '次要信息 + placeholder' },
+}
+
+const borderDarkSemantics = {
+  'border-color-strong': { index: 0, desc: '强调边框', isNew: true },
+  'border-color':        { index: 2, desc: '默认边框' },
+  'border-color-muted':  { index: 3, desc: '弱化边框' },
+}
+
+const bgDarkSemantics = {
+  'bg-strong':   { color: bgGray[0], opacity: 0.08, desc: '叠加背景', changed: true },
+  'bg-marked':   { color: bgGray[0], opacity: 0.14, desc: '标记背景', changed: true },
+  'bg-disabled': { color: bgGray[0], opacity: 0.11, desc: '禁用背景', changed: true },
+}
+
+// Mapped indices for highlighting
+const textMappedIndices  = new Set([3, 4, 5, 7, 9])
+const borderMappedIndices = new Set(Object.values(borderSemantics).map(v => v.index))
+
+// === Render helpers ===
+
+function luminance (hex) {
+  const { r, g, b } = str2rgba(hex)
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255
+}
+
+function textColorFor (bg) {
+  return luminance(bg) > 0.55 ? 'on-light' : 'on-dark'
+}
+
+function rgbaFromHex (hex, alpha) {
+  const { r, g, b } = str2rgba(hex)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+function renderPaletteRow (colors, prefix, label, mappedIndices = null) {
+  const rows = colors.map((c, i) => {
+    const varName = `--mu-${prefix}-${i}`
+    const textCls = textColorFor(c)
+    const mapped = mappedIndices && mappedIndices.has(i) ? ' is-mapped' : ''
+    return `
+      <div class="swatch swatch-light${mapped}">
+        <div class="swatch-fill" style="background:${c}"></div>
+        <div class="swatch-label ${textCls}">
+          <span class="var-name">${varName}</span>
+          <span class="hex-val">${c}</span>
+        </div>
+      </div>`
+  }).join('')
+
+  return `
+    <div class="section">
+      <div class="section-title">${label}</div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-bar mapped"></span> 已被语义变量选中</div>
+        <div class="legend-item"><span class="legend-bar unmapped"></span> 备用，可被组件直接引用</div>
+      </div>
+      <div class="palette-row">${rows}</div>
+    </div>`
+}
+
+function renderSemanticsTable (title, subtitle, semantics, palette, prefixName) {
+  const rows = Object.entries(semantics).map(([name, { index, desc, isNew }]) => {
+    const hex = palette[index]
+    const badge = isNew ? '<span class="new-badge">NEW</span>' : ''
+    return `
+      <tr>
+        <td><code>--mu-${name}</code>${badge}</td>
+        <td>${prefixName}-${index}</td>
+        <td><span class="color-dot" style="background:${hex}"></span>${hex}</td>
+        <td>${desc}</td>
+      </tr>`
+  }).join('')
+
+  return `
+    <div class="compare-card">
+      <h3>${title}</h3>
+      <div class="subtitle">${subtitle}</div>
+      <table class="mapping-table">
+        <thead><tr><th>变量</th><th>映射</th><th>色值</th><th>用途</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`
+}
+
+// === Build page ===
+
+const app = document.getElementById('app')
+
+app.innerHTML = `
+  ${renderPaletteRow(originalGray, 'gray', '原有色板 (10 级) — saturationRatio: 0.3, densityFactor: 1.0，保留向后兼容')}
+  ${renderPaletteRow(textGray, 'text-gray', '文本色板 (10 级) — saturationRatio: 0.35, densityFactor: 1.0', textMappedIndices)}
+  ${renderPaletteRow(borderGray, 'border-gray', '边框色板 (5 级) — saturationRatio: 0.2, densityFactor: 1.5', borderMappedIndices)}
+  ${renderPaletteRow(bgGray, 'bg-gray', '背景色板 (5 级) — saturationRatio: 0.15, densityFactor: 1.5, hueShift: +5°')}
+
+  <div class="section">
+    <div class="section-title">语义变量映射（亮色模式）</div>
+    <div class="compare-grid">
+      ${renderSemanticsTable('文本色', '色板 10 级 → 语义 5 级', textSemantics, textGray, 'text-gray')}
+      ${renderSemanticsTable('边框色', '色板 5 级 → 语义 3 级', borderSemantics, borderGray, 'border-gray')}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">背景语义变量（透明叠加）</div>
+    <div class="compare-card" style="max-width:600px">
+      <table class="mapping-table">
+        <thead><tr><th>变量</th><th>值</th><th>用途</th></tr></thead>
+        <tbody>
+          ${Object.entries(bgSemantics).map(([name, { color, opacity, desc, changed }]) => `
+            <tr>
+              <td><code>--mu-${name}</code>${changed ? '<span class="changed-badge">CHANGED</span>' : ''}</td>
+              <td><span class="color-dot" style="background:${color}"></span>${color} @ ${Math.round(opacity * 100)}%</td>
+              <td>${desc}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">实际效果对比</div>
+    <div class="side-by-side">
+      <div class="side-card light">
+        <h3>亮色模式</h3>
+        <div class="sub">语义变量实际应用</div>
+        <div class="mini-row"><span class="mini-label">clear</span><span class="mini-text-demo" style="color:${textGray[9]}">输入框文字示例</span></div>
+        <div class="mini-row"><span class="mini-label">normal</span><span class="mini-text-demo" style="color:${textGray[7]}">正常正文示例</span></div>
+        <div class="mini-row"><span class="mini-label">subtle</span><span class="mini-text-demo" style="color:${textGray[5]}">次级正文示例</span></div>
+        <div class="mini-row"><span class="mini-label">soft</span><span class="mini-text-demo" style="color:${textGray[4]}">标签文字示例</span></div>
+        <div class="mini-row"><span class="mini-label">muted</span><span class="mini-text-demo" style="color:${textGray[3]}">次要信息 / Placeholder</span></div>
+        <div style="height:16px"></div>
+        <div class="mini-row"><span class="mini-label">border</span><div class="mini-border-demo" style="border:1px solid ${borderGray[2]}; color:${textGray[8]}">默认边框</div></div>
+        <div class="mini-row"><span class="mini-label">strong</span><div class="mini-border-demo" style="border:1px solid ${borderGray[3]}; color:${textGray[8]}">强调边框</div></div>
+        <div class="mini-row"><span class="mini-label">muted</span><div class="mini-border-demo" style="border:1px solid ${borderGray[1]}; color:${textGray[8]}">弱化边框</div></div>
+        <div style="height:16px"></div>
+        <div class="mini-row"><span class="mini-label">bg-strong</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[4], 0.08)}; color:${textGray[8]}">叠加背景</div></div>
+        <div class="mini-row"><span class="mini-label">bg-marked</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[4], 0.14)}; color:${textGray[8]}">标记背景</div></div>
+        <div class="mini-row"><span class="mini-label">disabled</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[4], 0.11)}; color:${textGray[5]}">禁用背景</div></div>
+      </div>
+
+      <div class="side-card dark">
+        <h3>暗色模式</h3>
+        <div class="sub">语义变量实际应用（索引拉开展间距）</div>
+        <div class="mini-row"><span class="mini-label">clear</span><span class="mini-text-demo" style="color:${textGray[0]}">输入框文字示例</span></div>
+        <div class="mini-row"><span class="mini-label">normal</span><span class="mini-text-demo" style="color:${textGray[2]}">正常正文示例</span></div>
+        <div class="mini-row"><span class="mini-label">subtle</span><span class="mini-text-demo" style="color:${textGray[4]}">次级正文示例</span></div>
+        <div class="mini-row"><span class="mini-label">soft</span><span class="mini-text-demo" style="color:${textGray[5]}">标签文字示例</span></div>
+        <div class="mini-row"><span class="mini-label">muted</span><span class="mini-text-demo" style="color:${textGray[6]}">次要信息 / Placeholder</span></div>
+        <div style="height:16px"></div>
+        <div class="mini-row"><span class="mini-label">border</span><div class="mini-border-demo" style="border:1px solid ${borderGray[2]}; color:${textGray[2]}">默认边框</div></div>
+        <div class="mini-row"><span class="mini-label">strong</span><div class="mini-border-demo" style="border:1px solid ${borderGray[0]}; color:${textGray[2]}">强调边框</div></div>
+        <div class="mini-row"><span class="mini-label">muted</span><div class="mini-border-demo" style="border:1px solid ${borderGray[3]}; color:${textGray[2]}">弱化边框</div></div>
+        <div style="height:16px"></div>
+        <div class="mini-row"><span class="mini-label">bg-strong</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[0], 0.08)}; color:${textGray[2]}">叠加背景</div></div>
+        <div class="mini-row"><span class="mini-label">bg-marked</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[0], 0.14)}; color:${textGray[2]}">标记背景</div></div>
+        <div class="mini-row"><span class="mini-label">disabled</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[0], 0.11)}; color:${textGray[5]}">禁用背景</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">色温对比（各色板中间值）</div>
+    <div class="palette-row">
+      ${[
+        { label: '文本基准灰', color: textGray[5], info: 'sat 0.35' },
+        { label: '边框基准灰', color: borderGray[2], info: 'sat 0.20' },
+        { label: '背景基准灰', color: bgGray[2], info: 'sat 0.15 · hue+5°' },
+      ].map(({ label, color, info }) => `
+        <div class="swatch swatch-light" style="flex:1; min-height:48px;">
+          <div class="swatch-fill" style="background:${color}"></div>
+          <div class="swatch-label ${textColorFor(color)}">
+            <span class="var-name">${label}</span>
+            <span class="hex-val">${color} · ${info}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">语义映射索引一览</div>
+    <div class="compare-grid">
+      ${renderSemanticsTable('文本 — 亮色', '', textSemantics, textGray, 'text-gray')}
+      ${renderSemanticsTable('文本 — 暗色', '', textDarkSemantics, textGray, 'text-gray')}
+      ${renderSemanticsTable('边框 — 亮色', '', borderSemantics, borderGray, 'border-gray')}
+      ${renderSemanticsTable('边框 — 暗色', '', borderDarkSemantics, borderGray, 'border-gray')}
+    </div>
+  </div>
+`
+</script>
+</body>
+</html>

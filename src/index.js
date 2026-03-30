@@ -27,6 +27,8 @@ function install (app, options = {}) {
   installIcons(icons)
   installDirectives(app)
   installComponents(app)
+
+  return app
 }
 
 export * from './env'

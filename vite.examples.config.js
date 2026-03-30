@@ -45,6 +45,7 @@ const examples = existsSync(examplesDir)
 
 // 为每个示例生成入口点
 const input = {}
+
 examples.forEach(example => {
   const mainJs = resolve(__dirname, `examples2/src/${example}/main.js`)
   if (existsSync(mainJs)) {

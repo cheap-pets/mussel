@@ -1,6 +1,27 @@
 import { kebabCase } from 'change-case'
 import { generatePalette, generateAccentColor, generateNeutralPalette } from './utils/color.js'
 
+const PURPOSE_CONFIG = {
+  text: {
+    count: 10,
+    densityFactor: 1.0,
+    saturationRatio: 0.35,
+    hueShift: 0
+  },
+  border: {
+    count: 5,
+    densityFactor: 1.5,
+    saturationRatio: 0.2,
+    hueShift: 0
+  },
+  bg: {
+    count: 5,
+    densityFactor: 1.5,
+    saturationRatio: 0.15,
+    hueShift: 5
+  }
+}
+
 const BASE_COLORS = {
   red: '#f03e3e',
   pink: '#d6336c',
@@ -46,8 +67,24 @@ function complementColors (colors) {
   }
 
   if (neutral || (primary && neutral !== false)) {
-    const neutralColors = generateNeutralPalette(neutral || primary, 10, 2)
-    appendColors('neutral', neutral || neutralColors[10], neutralColors)
+    const neutralColors = generateNeutralPalette(neutral || primary, 10, 1)
+
+    appendColors('neutral', neutral || neutralColors[5], neutralColors)
+
+    Object.entries(PURPOSE_CONFIG).forEach(([purpose, config]) => {
+      const palette = generateNeutralPalette(
+        neutral || primary,
+        config.count,
+        config.densityFactor,
+        config
+      )
+      // 存储为 textGray0-9 / borderGray0-4 / bgGray0-4
+      palette.forEach((color, i) => {
+        result[`${purpose}Gray${i}`] = color
+      })
+      // 中间色作为默认值
+      result[`${purpose}Gray`] = palette[Math.floor(config.count / 2)]
+    })
   }
 
   return result

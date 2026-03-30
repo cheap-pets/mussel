@@ -231,7 +231,7 @@ export function generatePalette (color) {
           s: calcSaturation(hsv, distance, light),
           v: calcValue(hsv, distance, light)
         })
-        : hsv2hex(hsv)
+        : color // distance=0 时直接返回原始颜色，避免精度损失
     )
   }
 
@@ -280,7 +280,12 @@ export function generateAccentColor (primaryColor) {
 // < 1: 深色更密集，浅色更疏松
 // = 1: 线性分布
 // > 1: 浅色更密集，深色更疏松
-export function generateNeutralPalette (baseColor, count = 10, densityFactor = 1.8) {
+export function generateNeutralPalette (
+  baseColor,
+  count = 10,
+  densityFactor = 1.8,
+  { saturationRatio = 0.3, hueShift = 0 } = {}
+) {
   const rgb = str2rgba(baseColor)
 
   if (!rgb) return
@@ -296,8 +301,8 @@ export function generateNeutralPalette (baseColor, count = 10, densityFactor = 1
 
     palette.push(
       hsv2hex({
-        h: hsv.h,
-        s: hsv.s * 0.3 * normalizedIndex,
+        h: hsv.h + hueShift,
+        s: hsv.s * saturationRatio * normalizedIndex,
         v: minV + (maxV - minV) * (1 - adjusted)
       })
     )
