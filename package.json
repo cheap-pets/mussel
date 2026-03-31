@@ -10,10 +10,11 @@
   "scripts": {
     "build": "vite build --mode development && vite build --mode production",
     "build:dev": "vite build --mode development --watch",
-    "build:examples": "vite build --config vite.examples.config.js",
+    "build:demo": "vite build --config vite.demo.config.js",
     "pub": "npm run build && npm publish"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
     "@tabler/icons": "^3.29.0",
     "@tabler/icons-webfont": "^3.29.0",
     "@vitejs/plugin-vue": "^6.0.5",

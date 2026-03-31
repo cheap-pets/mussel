@@ -1,15 +1,43 @@
-import lang from '@/langs'
-
-const { ACCEPT, OK, YES, NO, CANCEL } = lang.Button
+import { t } from '@/langs'
 
 export const ButtonPresets = {
-  '#YES': { name: 'YES', caption: YES, primary: true },
-  '#YES!': { name: 'YES', caption: YES, danger: true },
-  '#NO': { name: 'NO', caption: NO, action: 'close', buttonStyle: 'text' },
-  '#OK': { name: 'OK', caption: OK, primary: true },
-  '#OK!': { name: 'OK', caption: OK, danger: true },
-  '#ACCEPT': { name: 'ACCEPT', caption: ACCEPT, primary: true },
-  '#CANCEL': { name: 'CANCEL', caption: CANCEL, action: 'close', buttonStyle: 'text' },
+  '#YES': {
+    name: 'YES',
+    primary: true,
+    get caption () { return t('Button.YES') }
+  },
+  '#YES!': {
+    name: 'YES',
+    danger: true,
+    get caption () { return t('Button.YES') }
+  },
+  '#NO': {
+    name: 'NO',
+    action: 'close',
+    buttonStyle: 'text',
+    get caption () { return t('Button.NO') }
+  },
+  '#OK': {
+    name: 'OK',
+    primary: true,
+    get caption () { return t('Button.OK') }
+  },
+  '#OK!': {
+    name: 'OK',
+    danger: true,
+    get caption () { return t('Button.OK') }
+  },
+  '#ACCEPT': {
+    name: 'ACCEPT',
+    primary: true,
+    get caption () { return t('Button.ACCEPT') }
+  },
+  '#CANCEL': {
+    name: 'CANCEL',
+    action: 'close',
+    buttonStyle: 'text',
+    get caption () { return t('Button.CANCEL') }
+  },
   ' ': { is: 'div', class: 'mu-space' },
   '-': { is: 'div', class: 'mu-divider' }
 }

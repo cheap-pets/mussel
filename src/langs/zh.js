@@ -76,7 +76,13 @@ export default {
   },
 
   Pagination: {
+    PREV_PAGE: '上一页',
+    NEXT_PAGE: '下一页',
+    GOTO: '跳至',
+    PAGE: '页',
+    PER_PAGE: '/ 页',
     CURRENT: '第 {0} 页',
-    CURRENT_AND_TOTAL: '第 {0} 页，共 {1} 页'
+    CURRENT_AND_TOTAL: '第 {0} 页，共 {1} 页',
+    CURRENT_AND_SIZE: '第 {0} 页，{1} / 页'
   }
 }

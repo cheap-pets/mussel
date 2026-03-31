@@ -40,7 +40,7 @@ export const LinkColumn = {
         const item = {
           is: 'a',
           attrs: { class: itemClass, style: _style },
-          events: {}
+          events
         }
 
         if (idx === dotsIndex) {

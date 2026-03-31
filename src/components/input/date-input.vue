@@ -20,13 +20,13 @@
           <mu-icon icon="dropdownExpand" :expanded="selectingMonth || null" />
         </mu-button>
         <template v-if="!selectingMonth">
-          <mu-button :caption="THIS_MONTH" primary @click="setCurrent(today)" />
+          <mu-button :caption="$t('Calendar.THIS_MONTH')" primary @click="setCurrent(today)" />
           <mu-tool-button icon="chevronUp" @click="prevMonth" />
           <mu-tool-button icon="chevronDown" @click="nextMonth" />
         </template>
         <mu-button
           v-else
-          :caption="THIS_YEAR"
+          :caption="$t('Calendar.THIS_YEAR')"
           primary button-style="text"
           @click="monthSelector.setYear(today.year)" />
       </mu-toolbar>
@@ -50,17 +50,13 @@
   import './date-input.scss'
 
   import { ref, computed } from 'vue'
-  import { formatString } from '@/utils/string'
   import { toString, monthEquals } from '@/utils/date'
   import { calendarProps, useCalendar } from '../calendar/calendar'
-
-  import lang from '@/langs'
+  import { t as $t } from '@/langs'
 
   import ComboWrapper from './combo-wrapper.vue'
   import CalendarGrid from '../calendar/date-table.vue'
   import MonthPicker from '../calendar/month-picker.vue'
-
-  const { YEAR_AND_MONTH, MONTHS, THIS_YEAR, THIS_MONTH } = lang.Calendar
 
   defineOptions({ name: 'MusselDateInput' })
 
@@ -100,7 +96,7 @@
   const caption = computed(() =>
     selectingMonth.value
       ? `${firstYear.value} ~ ${firstYear.value + 9}`
-      : formatString(YEAR_AND_MONTH, year.value, MONTHS[month.value])
+      : $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS')[month.value])
   )
 
   const value = computed({

@@ -1,4 +1,13 @@
-@each $v in ('inline', 'block', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'contents') {
+@each $v in ('static', 'fixed', 'absolute', 'relative', 'sticky') {
+  .#{$v} {
+    position: #{$v};
+  }
+}
+
+@each $v in (
+  'inline', 'block', 'inline-block', 'flex', 
+  'inline-flex', 'grid', 'inline-grid', 'contents'
+) {
   .#{$v} {
     display: #{$v};
   }
@@ -6,4 +15,170 @@
 
 .hidden {
   display: none;
+}
+
+@each $v in ('auto', 'hidden', 'visible', 'clip') {
+  .overflow-#{$v} {
+    overflow: #{$v};
+  }
+}
+
+@each $v in ('row', 'row-reverse') {
+  .flex-#{$v} {
+    flex-direction: #{$v};
+  }
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-col-reverse {
+  flex-direction: column-reverse;
+}
+
+.flex-none {
+  flex: none;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-auto {
+  flex: auto;
+}
+
+.flex-initial {
+  flex: 0 auto;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.flex-shrink {
+  flex-shrink: 1;
+}
+
+@each $v in ('wrap', 'nowrap', 'wrap-reverse') {
+  .flex-#{$v} {
+    flex-wrap: #{$v};
+  }
+}
+
+@each $v in (
+  center, start, end, baseline, stretch,
+  flex-start, flex-end, unset, inherit
+) {
+  .items-#{$v} {
+    align-items: $v;
+  }
+
+  .self-#{$v} {
+    align-self: $v;
+  }
+}
+
+@each $v in (
+  start, end, left, right, baseline, center, stretch,
+  flex-start, flex-end, space-around, space-between, space-evenly
+) {
+  .justify-#{$v} {
+    justify-content: $v;
+  }
+}
+
+.gap-none {
+  gap: unset
+}
+
+@for $i from 1 through 4 {
+  .gap-#{$i}x {
+    gap: calc($i * var(--mu-base-spacing));
+  }
+
+  .p-#{$i}x {
+    padding: calc($i * var(--mu-base-spacing));
+  }
+
+  .px-#{$i}x {
+    padding-inline: calc($i * var(--mu-base-spacing));
+  }
+
+  .py-#{$i}x {
+    padding-block: calc($i * var(--mu-base-spacing));
+  }
+
+  .pt-#{$i}x {
+    padding-top: calc($i * var(--mu-base-spacing));
+  }
+
+  .pr-#{$i}x {
+    padding-right: calc($i * var(--mu-base-spacing));
+  }
+
+  .pb-#{$i}x {
+    padding-bottom: calc($i * var(--mu-base-spacing));
+  }
+
+  .pl-#{$i}x {
+    padding-left: calc($i * var(--mu-base-spacing));
+  }
+
+  .m-#{$i}x {
+    margin: calc($i * var(--mu-base-spacing));
+  }
+
+  .mx-#{$i}x {
+    margin-inline: calc($i * var(--mu-base-spacing));
+  }
+
+  .my-#{$i}x {
+    margin-block: calc($i * var(--mu-base-spacing));
+  }
+
+  .mt-#{$i}x {
+    margin-top: calc($i * var(--mu-base-spacing));
+  }
+
+  .mr-#{$i}x {
+    margin-right: calc($i * var(--mu-base-spacing));
+  }
+
+  .mb-#{$i}x {
+    margin-bottom: calc($i * var(--mu-base-spacing));
+  }
+
+  .ml-#{$i}x {
+    margin-left: calc($i * var(--mu-base-spacing));
+  }
+
+  .m-auto {
+    margin: auto;
+  }
+
+  .mx-auto {
+    margin-inline: auto;
+  }
+
+  .my-auto {
+    margin-block: auto;
+  }
+
+  .mt-auto {
+    margin-top: auto;
+  }
+
+  .mr-auto {
+    margin-right: auto;
+  }
+
+  .mb-auto {
+    margin-bottom: auto;
+  }
+
+  .ml-auto {
+    margin-left: auto;
+  }
 }

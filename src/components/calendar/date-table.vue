@@ -21,10 +21,9 @@
 </template>
 
 <script setup>
-  import lang from '@/langs'
-
   import { shallowRef, computed } from 'vue'
   import { throttle } from 'throttle-debounce'
+  import { t as $t } from '@/langs'
 
   import {
     equals,
@@ -35,13 +34,11 @@
     getMonthDaysCount
   } from '@/utils/date'
 
-  const { DAYS_OF_WEEK, DAYS_OF_WEEK_SHORT } = lang.Calendar
-
   defineEmits(['cellClick'])
 
   const props = defineProps({ year: Number, month: Number, selected: Object })
 
-  const daysOfWeek = shallowRef(DAYS_OF_WEEK_SHORT)
+  const daysOfWeek = shallowRef($t('Calendar.DAYS_OF_WEEK_SHORT'))
 
   const today = computed(() => toObject(new Date()))
 
@@ -89,7 +86,7 @@
 
   const onResize = throttle(300, event => {
     daysOfWeek.value = event.target.clientWidth >= 480
-      ? DAYS_OF_WEEK
-      : DAYS_OF_WEEK_SHORT
+      ? $t('Calendar.DAYS_OF_WEEK')
+      : $t('Calendar.DAYS_OF_WEEK_SHORT')
   })
 </script>

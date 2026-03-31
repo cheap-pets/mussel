@@ -1,19 +1,49 @@
 import en from './en'
 import zh from './zh'
 
+import { formatString } from '../utils/string'
+
+const langs = { en, zh }
+
+let resources
+let currentLocale
+
 function isZh () {
-  return (
-    navigator.language ||
-    navigator.userLanguage
-  ).indexOf('zh') === 0
+  return (navigator?.language || navigator?.userLanguage || '').startsWith('zh')
 }
 
-const lang = {}
+export function t (path, ...args) {
+  if (!resources) init()
 
-;['Page', 'Button', 'Message', 'Calendar'].forEach(prop => {
-  Object.defineProperty(lang, prop, {
-    get: () => isZh() ? zh[prop] : en[prop]
-  })
-})
+  const keys = path.split('.')
+  let value = resources
 
-export default lang
+  for (const key of keys) {
+    value = value?.[key]
+  }
+
+  return typeof value === 'string'
+    ? formatString(value, ...args)
+    : value ?? path
+}
+
+export function setupLocale (locale, data) {
+  if (!locale && window.navigator && isZh()) {
+    locale = 'zh'
+  } else {
+    locale ||= 'en'
+  }
+
+  if (data) {
+    langs[locale] = data
+  }
+
+  currentLocale = locale
+  resources = langs[currentLocale]
+}
+
+function init () {
+  setupLocale()
+}
+
+init()

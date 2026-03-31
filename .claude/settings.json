@@ -1,16 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch",
-      "Read(//d/npm/global/node_modules/stylelint/lib/rules/no-invalid-position-declaration/**)",
-      "Read(//d/npm/global/node_modules/stylelint/lib/utils/**)",
-      "Read(//d/npm/global/node_modules/stylelint-config-recommended-vue/lib/**)",
-      "Read(//d/npm/global/node_modules/stylelint-config-recommended-vue/node_modules/stylelint-config-html/**)",
-      "Read(//d/npm/global/node_modules/postcss-html/lib/html/**)",
-      "Read(//d/npm/global/node_modules/postcss-html/lib/**)"
+      "WebSearch"
     ],
     "additionalDirectories": [
-      "d:\\npm\\global\\node_modules\\stylelint\\lib\\utils"
     ]
   }
 }

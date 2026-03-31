@@ -1,45 +1,24 @@
-a.mu-icon,
 .mu-link {
-  --mu-link_color: var(--mu-text-color-normal);
-  --mu-link_hover-color: var(--mu-primary-color-4);
-
-  &[primary] {
-    --mu-link_color: var(--mu-primary-color);
-  }
-
-  &[secondary] {
-    --mu-link_color: var(--mu-secondary-color);
-    --mu-link_hover-color: var(--mu-secondary-color-4);
-  }
-
-  &[danger] {
-    --mu-link_color: var(--mu-danger-color);
-    --mu-link_hover-color: var(--mu-danger-color-4);
-  }
-}
-
-.mu-link, a.mu-icon {
   cursor: pointer;
-  color: var(--mu-link_color);
+  color: var(--mu-primary-color);
+  text-decoration: none;
+  text-underline-offset: 2px;
 
   &:hover {
-    color: var(--mu-link_hover-color);
-  }
-
-  &[disabled] {
-    pointer-events: none;
-    color: var(--mu-text-color-muted);
+    color: var(--mu-primary-color-4);
+    text-decoration: underline;
   }
 }
 
-.mu-link {
-  text-decoration: none;
+.mu-link--danger {
+  color: var(--mu-danger-color);
 
-  &[decoration="underline"], &:hover {
-    text-decoration: underline;
+  &:hover {
+    color: var(--mu-danger-color-4);
   }
+}
 
-  &[decoration="none"], &.mu-icon {
-    text-decoration: none;
-  }
+.mu-link[disabled] {
+  pointer-events: none;
+  color: var(--mu-text-color-muted);
 }

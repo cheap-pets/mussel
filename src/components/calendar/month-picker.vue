@@ -49,10 +49,7 @@
   import { pick } from '@/utils/object'
   import { monthEquals, toObject, toString } from '../../utils/date'
   import { valueTypeProp } from './calendar'
-
-  import lang from '@/langs'
-
-  const { MONTHS_SHORT } = lang.Calendar
+  import { t as $t } from '@/langs'
 
   defineOptions({ name: 'MusselMonthPicker' })
 
@@ -93,7 +90,7 @@
     const year = chosenYear.value
 
     return {
-      'data-month': MONTHS_SHORT[month],
+      'data-month': $t('Calendar.MONTHS_SHORT')[month],
       ...(
         isCurrentDecade.value
           ? {

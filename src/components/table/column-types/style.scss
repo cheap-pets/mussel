@@ -15,10 +15,10 @@
   color: transparent;
   text-align: center;
 
-  background-color: var(--mu-bg-normal);
+  // background-color: var(--mu-bg-normal);
 
   &:hover {
-    color: var(--mu-text-color-muted);
+    color: var(--mu-text-color-weak);
   }
 
   &[data-checked] {
@@ -26,7 +26,7 @@
     color: var(--mu-text-color-normal);
   }
 
-  &[data-disabled] {
+  &[disabled] {
     pointer-events: none;
     border-color: var(--mu-border-color);
     background-color: var(--mu-bg-strong);
@@ -38,19 +38,15 @@
   vertical-align: middle;
 }
 
-.mu-table__link-cell {
-  padding: calc(var(--cell-padding) - 2px);
-
-  & > .mu-link {
-    overflow: hidden;
-    margin: 2px;
-  }
-}
-
+.mu-table__link-cell,
 .mu-table__tag-cell {
   padding: calc(var(--cell-padding) - 2px);
+}
 
-  & > .mu-tag {
-    margin: 2px;
-  }
+.mu-table__link-cell > .mu-link,
+.mu-table__tag-cell > .mu-tag {
+  overflow: hidden;
+  max-width: calc(100% - 4px);
+  margin: 2px;
+  vertical-align: middle;
 }

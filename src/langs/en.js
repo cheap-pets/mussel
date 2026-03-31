@@ -75,7 +75,13 @@ export default {
   },
 
   Pagination: {
+    PREV_PAGE: 'Previous',
+    NEXT_PAGE: 'Next',
+    GOTO: 'Go to',
+    PAGE: 'page',
+    PER_PAGE: '/ page',
     CURRENT: 'Page {0}',
-    CURRENT_AND_TOTAL: 'Page {0} of {1}'
+    CURRENT_AND_TOTAL: 'Page {0} of {1}',
+    CURRENT_AND_SIZE: 'Page {0}, {1} / page'
   }
 }

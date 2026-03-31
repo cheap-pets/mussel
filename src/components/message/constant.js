@@ -1,31 +1,31 @@
-import lang from '@/langs'
+import { t } from '@/langs'
 
 export const MessageTypes = {
   ALERT: {
     icon: 'info',
-    title: lang.Message.ALERT,
-    buttons: ['#OK']
+    buttons: ['#OK'],
+    get title () { return t('Message.ALERT') }
   },
   SUCCESS: {
     icon: 'ok',
-    title: lang.Message.SUCCESS,
-    buttons: ['#OK']
+    buttons: ['#OK'],
+    get title () { return t('Message.SUCCESS') }
   },
   CONFIRM: {
     icon: 'question',
-    title: lang.Message.CONFIRM,
-    buttons: ['#CANCEL', '#OK']
+    buttons: ['#CANCEL', '#OK'],
+    get title () { return t('Message.CONFIRM') }
   },
   ERROR: {
     icon: 'x',
-    title: lang.Message.ERROR,
     buttons: ['#OK!'],
-    danger: true
+    danger: true,
+    get title () { return t('Message.ERROR') }
   },
   WARN: {
     icon: 'alert',
-    title: lang.Message.WARN,
     buttons: ['#CANCEL', '#OK!'],
-    danger: true
+    danger: true,
+    get title () { return t('Message.WARN') }
   }
 }

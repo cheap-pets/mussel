@@ -1,6 +1,7 @@
 import './root.scss'
 import './layout.scss'
 import './typography.scss'
+import './tag.scss'
 import './link.scss'
 import './animation.scss'
 import './background.scss'

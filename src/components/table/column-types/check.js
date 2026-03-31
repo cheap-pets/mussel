@@ -13,7 +13,7 @@ export const CheckColumn = {
           text: '✓',
           attrs: {
             class: 'mu-table__cell-check',
-            'data-disabled': disabledFn(record, value),
+            disabled: disabledFn(record, value),
             'data-checked': value
           },
           events: {

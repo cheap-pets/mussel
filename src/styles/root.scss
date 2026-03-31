@@ -51,6 +51,19 @@
 }
 
 .mu-root {
+  --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.1);
+
+  @each $v in (
+    "red", "pink", "grape", "violet", "indigo", "blue",
+    "cyan", "teal", "green", "lime", "yellow", "orange"
+  ) {
+    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}) r g b / 0.1);
+  }
+
+  @each $v in (primary, secondary, success, warning, danger) {
+    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.1);
+  }
+
   --mu-text-color-clear: var(--mu-text-gray-9);
   --mu-text-color-normal: var(--mu-text-gray-7);
   --mu-text-color-subtle: var(--mu-text-gray-5);
@@ -65,11 +78,12 @@
   --mu-bg-mask: rgba(0, 0, 0, .5);
   --mu-bg-overlay: var(--mu-bg-normal);
 
-  --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.1);
+  --mu-bg-header: var(--mu-gray-1);
+  --mu-bg-footer: var(--mu-gray-1);
+  --mu-bg-stripe: var(--mu-gray-0);
 
-  @each $v in (primary, secondary, success, warning, danger) {
-    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.1);
-  }
+  --mu-bg-hover: rgba(0, 0, 0, .03);
+  --mu-bg-select: var(--mu-primary-color-0);
 
   --mu-border-color-normal: var(--mu-border-gray-2);
   --mu-border-color: var(--mu-border-color-normal);

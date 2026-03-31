@@ -1,32 +1,32 @@
-import lang from '@/langs'
+import { t } from '@/langs'
 
 export const ButtonPresets = {
   ACCEPT: {
-    caption: lang.Button.ACCEPT,
+    get caption () { return t('Button.ACCEPT') },
     primary: true
   },
   OK: {
-    caption: lang.Button.OK,
+    get caption () { return t('Button.OK') },
     primary: true
   },
   CANCEL: {
-    caption: lang.Button.CANCEL,
+    get caption () { return t('Button.CANCEL') },
     buttonStyle: 'text'
   },
   YES: {
-    caption: lang.Button.YES,
+    get caption () { return t('Button.YES') },
     primary: true
   },
   NO: {
-    caption: lang.Button.NO,
+    get caption () { return t('Button.NO') },
     buttonStyle: 'text'
   },
   'OK!': {
-    caption: lang.Button.OK,
+    get caption () { return t('Button.OK') },
     danger: true
   },
   'YES!': {
-    caption: lang.Button.YES,
+    get caption () { return t('Button.YES') },
     danger: true
   }
 }

@@ -1,0 +1,45 @@
+.mu-tag {
+  cursor: default;
+
+  overflow: hidden;
+  display: inline-block;
+
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--mu-common-border-radius);
+
+  font-size: 12px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  
+  background-color: var(--mu-translucent-gray);
+  box-shadow: inset 0 0 0 1px var(--mu-gray);
+}
+
+.mu-tag--pill {
+  border-radius: 10px;
+}
+
+.mu-tag--flat {
+  box-shadow: none;
+}
+
+@each $v in ("primary", "secondary", "success", "warning", "danger") {
+  .mu-tag--#{$v} {
+    color: var(--mu-#{$v}-color);
+    background-color: var(--mu-translucent-#{$v});
+    box-shadow: inset 0 0 0 1px var(--mu-#{$v}-color);
+  }
+}
+
+@each $v in (
+  "red", "pink", "grape", "violet", "indigo", "blue",
+  "cyan", "teal", "green", "lime", "yellow", "orange"
+) {
+  .mu-tag--#{$v} {
+    color: var(--mu-#{$v});
+    background-color: var(--mu-translucent-#{$v});
+    box-shadow: inset 0 0 0 1px var(--mu-#{$v});
+  }
+}

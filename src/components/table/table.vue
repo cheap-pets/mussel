@@ -51,7 +51,7 @@
           :record="rec"
           :record-index="recIdx"
           :record-number="recordsOffset + recIdx + 1"
-          :class="getRecordKey(rec) === selectedRecKey ? 'mu-table__tr--selected' : null" />
+          :class="(selectedRecKey != null && getRecordKey(rec) === selectedRecKey) ? 'mu-table__tr--selected' : null" />
       </tbody>
     </table>
     <div class="mu-table__hover-indicator" :data-mode="hoverMode" :style="hoverStyle" />

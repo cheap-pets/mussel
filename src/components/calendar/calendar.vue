@@ -16,7 +16,7 @@
         </template>
       </mu-dropdown-button>
       <template v-if="!monthDropdown?.dropdownVisible">
-        <mu-button :caption="THIS_MONTH" primary @click="setCurrent(today)" />
+        <mu-button :caption="$t('Calendar.THIS_MONTH')" primary @click="setCurrent(today)" />
         <mu-tool-button icon="chevronUp" @click="prevMonth" />
         <mu-tool-button icon="chevronDown" @click="nextMonth" />
       </template>
@@ -34,14 +34,11 @@
   import './calendar.scss'
 
   import { ref, computed } from 'vue'
-  import { formatString } from '@/utils/string'
   import { calendarProps, useCalendar } from './calendar'
 
-  import lang from '@/langs'
+  import { t as $t } from '@/langs'
   import DateTable from './date-table.vue'
   import MonthPicker from './month-picker.vue'
-
-  const { YEAR_AND_MONTH, MONTHS, THIS_MONTH } = lang.Calendar
 
   defineOptions({ name: 'MusselCalendar' })
 
@@ -69,6 +66,6 @@
   const caption = computed(() =>
     selectingMonth.value
       ? `${firstYear.value} ~ ${firstYear.value + 9}`
-      : formatString(YEAR_AND_MONTH, year.value, MONTHS[month.value])
+      : $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS')[month.value])
   )
 </script>
