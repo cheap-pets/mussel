@@ -34,7 +34,7 @@
             <div
               v-if="col.type === 'check' && col.field && col.headerCheckbox"
               class="mu-table__cell-check"
-              :data-checked="headerChecked[col.field]"
+              :data-checked="headerChecked[col.field] || null"
               @click.stop="onHeaderCheckChange(col, !headerChecked[col.field])">
               ✓
             </div>

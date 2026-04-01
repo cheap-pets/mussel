@@ -21,7 +21,7 @@
     color: var(--mu-text-color-weak);
   }
 
-  &[data-checked="true"] {
+  &[data-checked] {
     border-color: var(--mu-border-color-strong);
     color: var(--mu-text-color-normal);
   }

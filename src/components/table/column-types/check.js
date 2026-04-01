@@ -13,8 +13,8 @@ export const CheckColumn = {
           text: '✓',
           attrs: {
             class: 'mu-table__cell-check',
-            disabled: disabledFn(record, value),
-            'data-checked': value
+            disabled: disabledFn(record, value) || null,
+            'data-checked': value || null
           },
           events: {
             click () {
