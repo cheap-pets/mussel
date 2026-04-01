@@ -7,6 +7,7 @@ import { optimize } from 'svgo'
 import { generatePreCssVariables } from './src/colors.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const isWatch = process.argv.includes('--watch')
 
 // 读取 package.json 获取版本号
 const pkgJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
@@ -59,29 +60,28 @@ demoModules.forEach(el => {
 function copyHtmlFiles() {
   return {
     name: 'copy-html-files',
-    writeBundle() {
-      const assetsDir = resolve(__dirname, 'demo/dist/assets')
-
-      const vueAppCss =
-        existsSync(assetsDir) &&
-        readdirSync(assetsDir).find(f => /^app-.*\.css$/.test(f))
-
+    writeBundle(options, bundle) {
       const templatePath = resolve(__dirname, 'demo/src/common/template.html')
 
       if (!existsSync(templatePath)) return
+
+      const appCssFile = Object
+        .entries(bundle)
+        .find(([, asset]) => asset.fileName.includes('app.css'))
+        ?.[0]
 
       const template = readFileSync(templatePath, 'utf-8')
 
       demoModules.forEach(el => {
         if (!input[el]) return
 
-        const distHtml = resolve(__dirname, `demo/dist/${el}/index.html`)
         mkdirSync(resolve(__dirname, `demo/dist/${el}`), { recursive: true })
 
+        const htmlFile = resolve(__dirname, `demo/dist/${el}/index.html`)
         const title = el.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join(' ')
-        const html = template.replace('{{title}}', title).replace('%app-css%', vueAppCss || '')
+        const html = template.replace('{{title}}', title).replace('%app-css%', appCssFile || '')
 
-        writeFileSync(distHtml, html)
+        writeFileSync(htmlFile, html)
       })
 
       const rootIndexHtml = resolve(__dirname, 'demo/src/index.html')
@@ -110,8 +110,8 @@ export default {
     transformer: 'lightningcss',
     lightningcss: {
       targets: {
-        chrome: 100,
         edge: 100,
+        chrome: 100,
         firefox: 100
       }
     },
@@ -134,13 +134,18 @@ export default {
       input,
       output: {
         entryFileNames: '[name]/main.js',
-        chunkFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name].js',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || ''
 
           return (name.endsWith('.css') && !name.includes('app'))
             ? `${name.replace('.css', '')}/style.css`
-            : 'assets/[name]-[hash].[ext]'
+            : 'assets/[name].[ext]'
+        }
+      },
+      onwarn(warning, warn) {
+        if (!isWatch || warning.code !== 'FILE_NAME_CONFLICT') {
+          warn(warning)
         }
       }
     },

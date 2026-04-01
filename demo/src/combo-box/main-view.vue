@@ -2,11 +2,7 @@
   <div>
     <h2>
       COMBOBOX & SELECT
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
     <div class="group">
       <div class="mu-input-group">
@@ -65,8 +61,8 @@
 
 <script setup>
   import { ref } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const artist = ref('Johann Baptist Strauss')
   const selectedArtists = ref([{ value: 'Ludwig van Beethoven' }])
   const artists = ref([
@@ -100,12 +96,9 @@
     console.log('dropdown show')
   }
 
-  function onUIModeChange () {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 </script>
 
-<style scoped>
+<style>
   .mu-combo-box {
     width: 300px;
   }

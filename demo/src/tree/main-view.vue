@@ -3,11 +3,7 @@
     <h2 style="width: 100%; margin: 0;">
       Tree Examples
       <mu-combo-box v-model="demo" class="mu-box" width="400" :options="demos" />
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
     <div v-if="!demo || demo === 1" class="demo-panel">
       <h3>1. Basic Style</h3>
@@ -256,7 +252,8 @@
     { label: 'FaceBook' }
   ]
 
-  const darkMode = ref(false)
+  import ThemeSwitch from '../common/theme-switch.vue'
+
   const data = ref(root.childNodes)
   const activeNode = ref()
   const expandTree = ref()
@@ -347,12 +344,9 @@
     }
   }
 
-  function onUIModeChange () {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 </script>
 
-<style scoped>
+<style>
   body {
     overflow: auto;
     min-width: 1200px;

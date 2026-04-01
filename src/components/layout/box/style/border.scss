@@ -6,7 +6,7 @@
   &[border-y],
   &[border-top],
   &[border-bottom] {
-    border: 0 solid var(--mu-border-color);
+    border: 0 solid var(--mu-border-color-normal);
   }
 
   &[border] {
@@ -42,7 +42,7 @@
   }
 
   &[border~="muted"] {
-    border-color: var(--mu-border-color-muted);
+    border-color: var(--mu-border-color-soft);
   }
 
   &[border-x],
@@ -82,7 +82,7 @@
 
   &[border-x~="muted"],
   &[border-left~="muted"] {
-    border-left-color: var(--mu-border-color-muted);
+    border-left-color: var(--mu-border-color-soft);
   }
 
   &[border-x],
@@ -122,7 +122,7 @@
 
   &[border-x~="muted"],
   &[border-right~="muted"] {
-    border-right-color: var(--mu-border-color-muted);
+    border-right-color: var(--mu-border-color-soft);
   }
 
   &[border-y],
@@ -162,7 +162,7 @@
 
   &[border-y~="muted"],
   &[border-top~="muted"] {
-    border-top-color: var(--mu-border-color-muted);
+    border-top-color: var(--mu-border-color-soft);
   }
 
   &[border-y],
@@ -202,7 +202,7 @@
 
   &[border-y~="muted"],
   &[border-bottom~="muted"] {
-    border-bottom-color: var(--mu-border-color-muted);
+    border-bottom-color: var(--mu-border-color-soft);
   }
 
   &[border-radius] {

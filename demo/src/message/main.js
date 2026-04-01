@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import MessageDemo from './MessageDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(MessageDemo)
+createVueApp(MainView)

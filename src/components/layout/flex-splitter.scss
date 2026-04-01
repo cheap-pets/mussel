@@ -24,7 +24,7 @@
   &::before {
     content: '';
     position: absolute;
-    background: var(--mu-border-color-muted);
+    background: var(--mu-border-color-soft);
   }
 
   &[border-radius]::before {
@@ -60,7 +60,7 @@
     z-index: 15;
 
     &::before {
-      background: var(--mu-border-color-muted);
+      background: var(--mu-border-color-soft);
     }
   }
 

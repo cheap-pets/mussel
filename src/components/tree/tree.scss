@@ -58,7 +58,7 @@
   }
 
   &:hover {
-    background: var(--mu-translucent-gray);
+    background: var(--mu-gray-translucent);
 
     & > .mu-tree-node_button[hover] {
       display: inline-flex;

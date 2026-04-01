@@ -6,7 +6,7 @@
 
   width: 16px;
   height: 16px;
-  border: 1px solid var(--mu-border-color);
+  border: 1px solid var(--mu-border-color-normal);
   border-radius: 4px;
 
   font-size: 12px;
@@ -21,14 +21,14 @@
     color: var(--mu-text-color-weak);
   }
 
-  &[data-checked] {
+  &[data-checked="true"] {
     border-color: var(--mu-border-color-strong);
     color: var(--mu-text-color-normal);
   }
 
   &[disabled] {
     pointer-events: none;
-    border-color: var(--mu-border-color);
+    border-color: var(--mu-border-color-normal);
     background-color: var(--mu-bg-strong);
   }
 }

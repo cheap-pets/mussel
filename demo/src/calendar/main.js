@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import CalendarDemo from './CalendarDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(CalendarDemo)
+createVueApp(MainView)

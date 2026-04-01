@@ -1,9 +1,13 @@
 .mu-root {
   @each $v in (
-    "red", "pink", "grape", "violet", "indigo", "blue",
+    "gray", "red", "pink", "grape", "violet", "indigo", "blue",
     "cyan", "teal", "green", "lime", "yellow", "orange"
   ) {
     --mu-#{$v}: #{map.get($colors, $v)};
+  }
+
+  @for $i from 0 through 19 {
+    --mu-gray-#{$i}: #{map.get($colors, gray#{$i})};
   }
 
   @each $v in (primary, secondary, success, warning, danger) {
@@ -13,67 +17,34 @@
       --mu-#{$v}-color-#{$i}: #{map.get($colors, #{$v}#{$i})};
     }
   }
-
-  --mu-gray: #{map.get($colors, neutral5)};
-
-  @for $i from 0 through 9 {
-    --mu-gray-#{$i}: #{map.get($colors, neutral#{$i})};
-  }
-
-  // 文本灰（10 级）
-  --mu-text-gray: #{map.get($colors, textGray5)};
-  --mu-text-gray-0: #{map.get($colors, textGray0)};
-  --mu-text-gray-1: #{map.get($colors, textGray1)};
-  --mu-text-gray-2: #{map.get($colors, textGray2)};
-  --mu-text-gray-3: #{map.get($colors, textGray3)};
-  --mu-text-gray-4: #{map.get($colors, textGray4)};
-  --mu-text-gray-5: #{map.get($colors, textGray5)};
-  --mu-text-gray-6: #{map.get($colors, textGray6)};
-  --mu-text-gray-7: #{map.get($colors, textGray7)};
-  --mu-text-gray-8: #{map.get($colors, textGray8)};
-  --mu-text-gray-9: #{map.get($colors, textGray9)};
-
-  // 边框灰（5 级）
-  --mu-border-gray: #{map.get($colors, borderGray2)};
-  --mu-border-gray-0: #{map.get($colors, borderGray0)};
-  --mu-border-gray-1: #{map.get($colors, borderGray1)};
-  --mu-border-gray-2: #{map.get($colors, borderGray2)};
-  --mu-border-gray-3: #{map.get($colors, borderGray3)};
-  --mu-border-gray-4: #{map.get($colors, borderGray4)};
-
-  // 背景灰（5 级）
-  --mu-bg-gray: #{map.get($colors, bgGray2)};
-  --mu-bg-gray-0: #{map.get($colors, bgGray0)};
-  --mu-bg-gray-1: #{map.get($colors, bgGray1)};
-  --mu-bg-gray-2: #{map.get($colors, bgGray2)};
-  --mu-bg-gray-3: #{map.get($colors, bgGray3)};
-  --mu-bg-gray-4: #{map.get($colors, bgGray4)};
 }
 
 .mu-root {
-  --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.1);
-
   @each $v in (
-    "red", "pink", "grape", "violet", "indigo", "blue",
+    "gray", "red", "pink", "grape", "violet", "indigo", "blue",
     "cyan", "teal", "green", "lime", "yellow", "orange"
   ) {
-    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}) r g b / 0.1);
+    --mu-#{$v}-translucent: rgb(from var(--mu-#{$v}) r g b / 0.1);
   }
 
   @each $v in (primary, secondary, success, warning, danger) {
-    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.1);
+    --mu-#{$v}-faint: #{map.get($colors, #{$v}0)};
+    --mu-#{$v}-translucent: rgb(from var(--mu-#{$v}-color) r g b / 0.1);
   }
 
-  --mu-text-color-clear: var(--mu-text-gray-9);
-  --mu-text-color-normal: var(--mu-text-gray-7);
-  --mu-text-color-subtle: var(--mu-text-gray-5);
-  --mu-text-color-soft: var(--mu-text-gray-4);
-  --mu-text-color-muted: var(--mu-text-gray-3);
+  --mu-text-color-strong: var(--mu-gray-18);
+  --mu-text-color-normal: var(--mu-gray-14);
+  --mu-text-color-subtle: var(--mu-gray-10);
+  --mu-text-color-soft: var(--mu-gray-8);
+  --mu-text-color-muted: var(--mu-gray-6);
+
+  --mu-border-color-strong: var(--mu-gray-12);
+  --mu-border-color-normal: var(--mu-gray-8);
+  --mu-border-color-soft: var(--mu-gray-4);
 
   --mu-bg-normal: #fff;
-  --mu-bg-strong: rgb(from var(--mu-bg-gray-4) r g b / 0.08);
-  --mu-bg-marked: rgb(from var(--mu-bg-gray-4) r g b / 0.14);
-  --mu-bg-disabled: rgb(from var(--mu-bg-gray-4) r g b / 0.11);
+  --mu-bg-strong: rgb(from var(--mu-gray-19) r g b / 0.08);
+  --mu-bg-disabled: rgb(from var(--mu-gray-19) r g b / 0.12);
 
   --mu-bg-mask: rgba(0, 0, 0, .5);
   --mu-bg-overlay: var(--mu-bg-normal);
@@ -81,14 +52,34 @@
   --mu-bg-header: var(--mu-gray-1);
   --mu-bg-footer: var(--mu-gray-1);
   --mu-bg-stripe: var(--mu-gray-0);
+}
 
-  --mu-bg-hover: rgba(0, 0, 0, .03);
-  --mu-bg-select: var(--mu-primary-color-0);
+.mu-dark {
+  --mu-text-color-strong: var(--mu-gray-1);
+  --mu-text-color-normal: var(--mu-gray-4);
+  --mu-text-color-subtle: var(--mu-gray-8);
+  --mu-text-color-soft: var(--mu-gray-10);
+  --mu-text-color-muted: var(--mu-gray-12);
 
-  --mu-border-color-normal: var(--mu-border-gray-2);
-  --mu-border-color: var(--mu-border-color-normal);
-  --mu-border-color-strong: var(--mu-border-gray-3);
-  --mu-border-color-muted: var(--mu-border-gray-1);
+  --mu-border-color-strong: var(--mu-gray-6);
+  --mu-border-color-normal: var(--mu-gray-10);
+  --mu-border-color-soft: var(--mu-gray-14);
+
+  --mu-bg-normal: var(--mu-gray-19);
+  --mu-bg-strong: rgb(from var(--mu-gray-0) r g b / 0.08);
+  --mu-bg-disabled: rgb(from var(--mu-gray-0) r g b / 0.12);
+
+  --mu-bg-overlay: var(--mu-gray-17);
+  --mu-bg-header: var(--mu-gray-16);
+  --mu-bg-footer: var(--mu-gray-16);
+  --mu-bg-stripe: var(--mu-gray-18);
+
+  --mu-gray-translucent: rgb(from var(--mu-gray) r g b / 0.2);
+
+  @each $v in (primary, success, warning, danger, secondary) {
+    --mu-#{$v}-faint: #{map.get($colors, #{$v}9)};
+    --mu-#{$v}-translucent: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
+  }
 }
 
 .mu-root {
@@ -118,10 +109,6 @@
   --mu-shadow-modal: 0 6px 12px rgba(0, 0, 0, 0.16), 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
-*, ::before, ::after {
-  box-sizing: border-box;
-}
-
 .mu-root {
   font-family:
     -apple-system, BlinkMacSystemFont,
@@ -141,30 +128,6 @@
   }
 }
 
-.mu-dark {
-  --mu-gray: #{map.get($colors, neutral4)};
-
-  --mu-text-color-clear: var(--mu-text-gray-0);
-  --mu-text-color-normal: var(--mu-text-gray-2);
-  --mu-text-color-subtle: var(--mu-text-gray-4);
-  --mu-text-color-soft: var(--mu-text-gray-5);
-  --mu-text-color-muted: var(--mu-text-gray-6);
-
-  --mu-bg-normal: #000;
-  --mu-bg-strong: rgb(from var(--mu-bg-gray-0) r g b / 0.08);
-  --mu-bg-marked: rgb(from var(--mu-bg-gray-0) r g b / 0.14);
-  --mu-bg-disabled: rgb(from var(--mu-bg-gray-0) r g b / 0.11);
-
-  --mu-bg-overlay: var(--mu-bg-gray-4);
-
-  --mu-translucent-gray: rgb(from var(--mu-gray) r g b / 0.2);
-
-  @each $v in (primary, success, warning, danger, secondary) {
-    --mu-translucent-#{$v}: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
-  }
-
-  --mu-border-color-normal: var(--mu-border-gray-2);
-  --mu-border-color: var(--mu-border-color-normal);
-  --mu-border-color-strong: var(--mu-border-gray-0);
-  --mu-border-color-muted: var(--mu-border-gray-3);
+*, ::before, ::after {
+  box-sizing: border-box;
 }

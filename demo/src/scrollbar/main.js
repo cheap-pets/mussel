@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import ScrollbarDemo from './ScrollbarDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(ScrollbarDemo)
+createVueApp(MainView)

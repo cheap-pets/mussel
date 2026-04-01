@@ -44,12 +44,12 @@
   padding: 0 5px;
   border-radius: 4px;
 
-  background-color: var(--mu-bg-marked);
+  background-color: var(--mu-gray-translucent);
   outline: none;
 
   &:focus,
   &:hover {
-    background-color: var(--mu-translucent-primary);
+    background-color: var(--mu-primary-translucent);
   }
 
   &:focus {

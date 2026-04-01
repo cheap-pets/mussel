@@ -19,12 +19,12 @@
   
   & td {
     cursor: pointer;
-    border: 1px solid var(--mu-border-color-muted);
+    border: 1px solid var(--mu-border-color-soft);
     color: var(--mu-text-color-normal);
     vertical-align: top;
 
     &:hover {
-      background-color: var(--mu-translucent-gray);
+      background-color: var(--mu-gray-translucent);
     }
 
     &[muted] {
@@ -39,7 +39,7 @@
 
     &[selected] {
       color: var(--mu-primary-color);
-      background-color: var(--mu-translucent-primary);
+      background-color: var(--mu-primary-translucent);
     }
   }
 }

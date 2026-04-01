@@ -276,22 +276,30 @@ export function generateAccentColor (primaryColor) {
   })
 }
 
-// densityFactor 控制分布:
-// < 1: 深色更密集，浅色更疏松
-// = 1: 线性分布
-// > 1: 浅色更密集，深色更疏松
-export function generateNeutralPalette (
-  baseColor,
-  count = 10,
-  densityFactor = 1.8,
-  { saturationRatio = 0.3, hueShift = 0 } = {}
-) {
+/**
+ * 生成中性色板（灰度色板）
+ * @param {string} baseColor - 基础颜色（hex 格式），其色相和饱和度会影响生成灰色的色温
+ * @param {Object} [options={}] - 配置选项
+ * @param {number} [options.count=10] - 色板级数
+ * @param {number} [options.densityFactor=1.8] - 密度因子，控制分布：<1 深色密集，=1 线性，>1 浅色密集
+ * @param {number} [options.saturationRatio=0.3] - 饱和度比例，控制灰色色温强度（0-1）
+ * @param {number} [options.hueShift=0] - 色相偏移（度数），正值为逆时针旋转
+ * @returns {string[]|undefined} 颜色数组（hex 格式）
+ */
+export function generateNeutralPalette (baseColor, options = {}) {
   const rgb = str2rgba(baseColor)
 
   if (!rgb) return
 
-  const maxV = 96.5
-  const minV = 3.5 // 最小亮度值，与 maxV 对称
+  const {
+    count = 10,
+    densityFactor = 1.8,
+    saturationRatio = 0.3,
+    hueShift = 0
+  } = options
+
+  const minV = 3.5 // 最小亮度值
+  const maxV = 100 - minV // 最大亮度值
   const hsv = rgb2hsv(rgb)
   const palette = []
 

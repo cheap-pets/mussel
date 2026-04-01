@@ -1,7 +1,7 @@
 .mu-input {
   --mu-input_height: var(--mu-input-size);
   --mu-input_bg: var(--mu-bg-normal);
-  --mu-input_border-color: var(--mu-border-color);
+  --mu-input_border-color: var(--mu-border-color-normal);
   --mu-input_border-radius: var(--mu-common-border-radius);
   --mu-input_focus-shadow: var(--mu-shadow-focus) rgb(from var(--mu-input_border-color) r g b / 0.15);
 }
@@ -45,7 +45,7 @@
     input#{&},
     #{&} > input {
       line-height: var(--mu-common-line-height);
-      color: var(--mu-text-color-clear);
+      color: var(--mu-text-color-strong);
       outline: none;
 
       &::-ms-clear {
@@ -127,7 +127,7 @@ div.mu-input {
     height: var(--mu-input-size);
     margin-left: -1px;
     padding: 0 11px;
-    border: 1px solid var(--mu-border-color);
+    border: 1px solid var(--mu-border-color-normal);
     border-radius: 0 !important;
   }
 
@@ -173,19 +173,19 @@ div.mu-input {
   background-color: var(--mu-input_bg);
 
   &[readonly] {
-    --mu-input_border-color: var(--mu-border-color-muted);
+    --mu-input_border-color: var(--mu-border-color-soft);
 
-    background-color: var(--mu-translucent-primary) !important;
+    background-color: var(--mu-primary-translucent) !important;
   }
 
   &[invalid] {
     --mu-input_border-color: var(--mu-danger-color);
 
-    background-color: var(--mu-translucent-danger) !important;
+    background-color: var(--mu-danger-translucent) !important;
   }
 
   &[disabled] {
-    --mu-input_border-color: var(--mu-border-color-muted);
+    --mu-input_border-color: var(--mu-border-color-soft);
 
     pointer-events: none;
     background-color: var(--mu-bg-disabled) !important;
@@ -215,7 +215,7 @@ div.mu-input {
 
 .mu-input-group > .mu-input {
   --mu-input_bg: var(--mu-bg-normal);
-  --mu-input_border-color: var(--mu-border-color);
+  --mu-input_border-color: var(--mu-border-color-normal);
 
   border-color: var(--mu-input_border-color);
 

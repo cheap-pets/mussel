@@ -1,6 +1,6 @@
 <template>
   <a
-    :class="['mu-tool-button', iconData.cls]"
+    :class="['mu-tool-button', danger && 'mu-tool-button--danger', iconData.cls]"
     :icon="icon"
     :size="size"
     :active="active || null"
@@ -20,6 +20,7 @@
 
   const props = defineProps({
     icon: String,
+    danger: Boolean,
     toggle: Boolean,
     animation: String,
     size: {

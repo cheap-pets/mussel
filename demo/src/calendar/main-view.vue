@@ -2,11 +2,7 @@
   <div>
     <h2>
       CALENDAR
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
     <div class="group" :class="[['test3'], 'test1', { test2: true }]">
       <mu-calendar v-model="date" class="calendar1" value-type="object" />
@@ -20,16 +16,12 @@
 
 <script setup>
   import { ref } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const date = ref(new Date())
-
-  function onUIModeChange () {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 </script>
 
-<style scoped>
+<style>
   .mu-combo-box {
     width: 300px;
   }

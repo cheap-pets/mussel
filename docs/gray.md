@@ -13,9 +13,10 @@
 
 | 文件 | 行 | 说明 |
 |------|-----|------|
-| `src/utils/color.js` | 283-307 | `generateNeutralPalette()` 基于主色生成 10 级灰度（饱和度降至 30%，密度因子 1.8，亮度范围 3.5%–96.5%） |
-| `src/colors.js` | 49-50 | 调用 `generateNeutralPalette`，映射为 `neutral0`–`neutral9` |
-| `src/colors.js` | 69-71 | 将 `neutral` 重命名为 `gray` 输出为 CSS 变量 |
+| `src/utils/color.js` | 283-307 | `generateNeutralPalette()` 基于主色生成灰度色板，参数 `{ count, densityFactor, saturationRatio, hueShift }` |
+| `src/colors.js` | 4-23 | `PURPOSE_CONFIG` 定义 text/border/bg 三组用途的色板参数 |
+| `src/colors.js` | 70-87 | 调用 `generateNeutralPalette` 生成 neutral（10 级）及 textGray/borderGray/bgGray（各 5 级） |
+| `src/colors.js` | 99-112 | 将颜色映射为 CSS 变量，`neutral` 重命名为 `gray` |
 
 ### 1.2 CSS 变量映射（SCSS 层）
 
@@ -26,13 +27,13 @@
 | 17 | `--mu-gray` | `neutral5` | 基础灰 |
 | 20 | `--mu-gray-0` ~ `--mu-gray-9` | `neutral0` ~ `neutral9` | 10 级灰度阶梯 |
 | 25 | `--mu-text-color-normal` | `--mu-gray-7` | 正常文本 |
-| 26 | `--mu-text-color-clear` | `--mu-gray-8` | 清晰文本（输入框文字） |
+| 26 | `--mu-text-color-strong` | `--mu-gray-8` | 清晰文本（输入框文字） |
 | 27 | `--mu-text-color-soft` | `--mu-gray-4` | 柔和文本（标签、禁用） |
 | 28 | `--mu-text-color-muted` | `--mu-gray-3` | 弱化文本 |
 | 29 | `--mu-text-color-weak` | `--mu-gray-2` | 最弱文本（placeholder） |
 | 39 | `--mu-translucent-gray` | `--mu-gray` 10% 透明度 | 半透明灰叠加层 |
 | 45 | `--mu-border-color` | `--mu-gray-2` | 默认边框 |
-| 46 | `--mu-border-color-muted` | `--mu-gray-1` | 弱化边框 |
+| 46 | `--mu-border-color-soft` | `--mu-gray-1` | 弱化边框 |
 | 32 | `--mu-bg-normal` | `#fff` | 正常背景（白色） |
 | 32 | `--mu-bg-strong` | `rgba(0,0,0,.05)` | 加深背景（灰 tint） |
 | 34 | `--mu-bg-disabled` | `rgba(0,0,0,.1)` | 禁用背景（灰 tint） |
@@ -44,13 +45,13 @@
 |------|--------|--------|------|
 | `--mu-gray` | neutral5 | neutral4 | 基础灰反转 |
 | `--mu-text-color-normal` | gray-7 | gray-2 | |
-| `--mu-text-color-clear` | gray-8 | gray-1 | |
+| `--mu-text-color-strong` | gray-8 | gray-1 | |
 | `--mu-text-color-soft` | gray-4 | gray-4 | |
 | `--mu-text-color-muted` | gray-3 | gray-5 | |
 | `--mu-text-color-weak` | gray-2 | gray-6 | |
 | `--mu-translucent-gray` | 10% | 20% | 暗色模式加大透明度 |
 | `--mu-border-color` | gray-2 | gray-5 | |
-| `--mu-border-color-muted` | gray-1 | gray-6 | |
+| `--mu-border-color-soft` | gray-1 | gray-6 | |
 | `--mu-bg-normal` | `#fff` | gray-9 | |
 | `--mu-bg-strong` | `rgba(0,0,0,.05)` | `rgba(255,255,255,.1)` | |
 | `--mu-bg-disabled` | `rgba(0,0,0,.1)` | `rgba(255,255,255,.15)` | |
@@ -78,7 +79,7 @@
 | 79 | `--mu-button_color` | `box-shadow`（rgb from 15%） | focus | 继承 border-color |
 | 114 | `--mu-button_color` | `border-color` | 默认 | gray-2 |
 | 115 | `#fff` | `color` | primary | 白色 |
-| 130 | `--mu-border-color-muted` | `border-color` | disabled | gray-1 |
+| 130 | `--mu-border-color-soft` | `border-color` | disabled | gray-1 |
 | 131 | `--mu-text-color-muted` | `color` | disabled | gray-3 |
 | 132 | `--mu-bg-disabled` | `background` | disabled | `rgba(0,0,0,.1)` |
 | 148 | `transparent` | `border-color` | text variant | — |
@@ -101,7 +102,7 @@
 | 11 | `--mu-bg-normal` | `--mu-button-group_divider-color` | 默认 | `#fff` |
 | 38 | `--mu-button_color` | `border-color` | 默认 | gray-2 |
 | 42 | `--mu-button_color` | `border-color` | hover | 继承 |
-| 46 | `--mu-border-color-muted` | `border-color` | disabled | gray-1 |
+| 46 | `--mu-border-color-soft` | `border-color` | disabled | gray-1 |
 
 ### 2.5 Input — `src/components/input/input.scss`
 
@@ -110,7 +111,7 @@
 | 3 | `--mu-bg-normal` | `--mu-input_bg` | 默认 | `#fff` |
 | 4 | `--mu-border-color` | `--mu-input_border-color` | 默认 | gray-2 |
 | 6 | `--mu-input_border-color` | `box-shadow`（rgb from 15%） | focus | 继承 border-color |
-| 48 | `--mu-text-color-clear` | `color` | 输入框文字 | gray-8 |
+| 48 | `--mu-text-color-strong` | `color` | 输入框文字 | gray-8 |
 | 56 | `--mu-text-color-weak` | `color` | placeholder | gray-2 |
 | 74 | `--mu-text-color-soft` | `color` | 前缀/后缀文字 | gray-4 |
 | 86 | `--mu-text-color-normal` | `color` | 后缀链接 hover | gray-7 |
@@ -119,8 +120,8 @@
 | 151 | `--mu-bg-strong` | `background` | input-group addon | `rgba(0,0,0,.05)` |
 | 171 | `--mu-input_border-color` | `border` | 默认 | gray-2 |
 | 172 | `--mu-text-color-normal` | `color` | 默认文字 | gray-7 |
-| 176 | `--mu-border-color-muted` | `--mu-input_border-color` | readonly | gray-1 |
-| 188 | `--mu-border-color-muted` | `--mu-input_border-color` | disabled | gray-1 |
+| 176 | `--mu-border-color-soft` | `--mu-input_border-color` | readonly | gray-1 |
+| 188 | `--mu-border-color-soft` | `--mu-input_border-color` | disabled | gray-1 |
 | 191 | `--mu-bg-disabled` | `background-color` | disabled | `rgba(0,0,0,.1)` |
 | 200 | `--mu-text-color-soft` | `color` | disabled 文字 | gray-4 |
 | 205 | `--mu-bg-strong` | `--mu-input_bg` | solid style | `rgba(0,0,0,.05)` |
@@ -151,7 +152,7 @@
 | 26 | `--mu-border-color` | `border` | 默认边框 | gray-2 |
 | 29 | `--mu-bg-normal` | `background-color` | 默认背景 | `#fff` |
 | 46 | `--mu-text-color-soft` | `color` | disabled 文字 | gray-4 |
-| 50 | `--mu-border-color-muted` | `border-color` | disabled 边框 | gray-1 |
+| 50 | `--mu-border-color-soft` | `border-color` | disabled 边框 | gray-1 |
 | 51 | `--mu-bg-disabled` | `background-color` | disabled 背景 | `rgba(0,0,0,.1)` |
 | 55 | `--mu-text-color-weak` | `background-color` | disabled + checked | gray-2 |
 
@@ -161,9 +162,9 @@
 |-----|------|----------|------|---------------------|
 | cal:6 | `--mu-text-color-normal` | `color` | 日历标题文字 | gray-7 |
 | cal:8 | `--mu-bg-normal` | `background-color` | 日历背景 | `#fff` |
-| cal:12 | `--mu-text-color-clear` | `color` | 月份文字 | gray-8 |
+| cal:12 | `--mu-text-color-strong` | `color` | 月份文字 | gray-8 |
 | grid:17 | `--mu-text-color-soft` | `color` | 日期文字 | gray-4 |
-| grid:22 | `--mu-border-color-muted` | `border` | 日期边框 | gray-1 |
+| grid:22 | `--mu-border-color-soft` | `border` | 日期边框 | gray-1 |
 | grid:23 | `--mu-text-color-normal` | `color` | 日期文字 | gray-7 |
 | grid:27 | `--mu-translucent-gray` | `background-color` | 日期 hover | gray 10% |
 | grid:32 | `--mu-text-color-muted` | `color` | 非当月日期 | gray-3 |
@@ -172,7 +173,7 @@
 
 | 行 | 变量 | CSS 属性 | 状态 | 实际灰色映射（亮色） |
 |-----|------|----------|------|---------------------|
-| panel:8 | `--mu-border-color-muted` | `border` | 面板边框 | gray-1 |
+| panel:8 | `--mu-border-color-soft` | `border` | 面板边框 | gray-1 |
 | panel:14 | `--mu-bg-overlay` | `background` | 面板背景 | `#fff`（亮色）/ gray-7（暗色） |
 | item:6 | `--mu-translucent-gray` | `background` | 项 hover | gray 10% |
 
@@ -189,15 +190,15 @@
 
 | 行 | 变量 | CSS 属性 | 状态 | 实际灰色映射（亮色） |
 |-----|------|----------|------|---------------------|
-| table:6 | `--mu-border-color-muted` | `--head-border-bottom` | 表头底线 | gray-1 |
+| table:6 | `--mu-border-color-soft` | `--head-border-bottom` | 表头底线 | gray-1 |
 | table:14 | `--mu-border-color` | `border` | 表格边框 | gray-2 |
 | table:15 | `--mu-text-color-normal` | `color` | 表头文字 | gray-7 |
-| table:21 | `--mu-border-color-muted` | `box-shadow` | 选中行描边 | gray-1 |
+| table:21 | `--mu-border-color-soft` | `box-shadow` | 选中行描边 | gray-1 |
 | table:86 | `--mu-bg-normal` | `background-color` | 表格背景 | `#fff` |
 | table:111 | `--mu-border-color-strong` | `border-right` | 列分隔线 | **未定义** |
-| table:126 | `--mu-border-color-muted` | `box-shadow` | 合并行描边 | gray-1 |
-| table:132 | `--mu-border-color-muted` | `--gridline-row` | 行网格线 | gray-1 |
-| table:137 | `--mu-border-color-muted` | `--gridline-col` | 列网格线 | gray-1 |
+| table:126 | `--mu-border-color-soft` | `box-shadow` | 合并行描边 | gray-1 |
+| table:132 | `--mu-border-color-soft` | `--gridline-row` | 行网格线 | gray-1 |
+| table:137 | `--mu-border-color-soft` | `--gridline-col` | 列网格线 | gray-1 |
 | table:185 | `--mu-border-color` | `border` | 列宽拖拽参考线 | gray-2 |
 | col:9 | `--mu-border-color` | `border` | 树形列边框 | gray-2 |
 | col:18 | `--mu-bg-normal` | `background-color` | 列背景 | `#fff` |
@@ -215,7 +216,7 @@
 | item:41 | `--mu-translucent-gray` | `background` | hover | gray 10% |
 | item:46 | `#fff` | `color` | active 文字 | 白色 |
 | item:52 | `--mu-text-color-muted` | `color` | muted 文字 | gray-3 |
-| divider:4 | `--mu-border-color-muted` | `border-top` | 分割线 | gray-1 |
+| divider:4 | `--mu-border-color-soft` | `border-top` | 分割线 | gray-1 |
 | divider:5 | `--mu-text-color-muted` | `color` | 分割线文字 | gray-3 |
 
 ### 2.14 Tabs — `src/components/tabs/tabs.scss` + `tab-panel.scss` + `tab-bar/tab-button.scss` + `tab-bar/tab-bar.scss` + `tab-bar/tab-style-simple.scss`
@@ -229,7 +230,7 @@
 | btn:30 | `--mu-translucent-gray` | `background` | 按钮 hover | gray 10% |
 | btn:34 | `#fff` | `color` | active 文字 | 白色 |
 | btn:41 | `--mu-text-color-muted` | `color` | disabled 文字 | gray-3 |
-| simple:4 | `--mu-border-color-muted` | `border-color` | 简单样式边框 | gray-1 |
+| simple:4 | `--mu-border-color-soft` | `border-color` | 简单样式边框 | gray-1 |
 | simple:8 | `--mu-bg-normal` | `background` | 简单样式背景 | `#fff` |
 
 ### 2.15 Modal — `src/components/modal/dialog.scss` + `drawer.scss`
@@ -254,7 +255,7 @@
 |-----|------|----------|------|---------------------|
 | status:5 | `--mu-text-color-normal` | `color` | 文字 | gray-7 |
 | status:18 | `--mu-text-color-muted` | `color` | secondary 文字 | gray-3 |
-| notifier:20 | `--mu-border-color-muted` | `border` | 通知边框 | gray-1 |
+| notifier:20 | `--mu-border-color-soft` | `border` | 通知边框 | gray-1 |
 | notifier:23 | `--mu-bg-overlay` | `background` | 通知背景 | `#fff`（亮色）/ gray-7（暗色） |
 
 ### 2.18 Tags — `src/components/tag/tags.scss`
@@ -270,13 +271,13 @@
 | 行 | 变量 | CSS 属性 | 状态 | 实际灰色映射（亮色） |
 |-----|------|----------|------|---------------------|
 | border:9 | `--mu-border-color` | `border` | 边框基础 | gray-2 |
-| border:45 | `--mu-border-color-muted` | `border-color` | muted 边框 | gray-1 |
-| border:85 | `--mu-border-color-muted` | `border-left-color` | left variant | gray-1 |
-| border:125 | `--mu-border-color-muted` | `border-right-color` | right variant | gray-1 |
-| border:165 | `--mu-border-color-muted` | `border-top-color` | top variant | gray-1 |
-| border:205 | `--mu-border-color-muted` | `border-bottom-color` | bottom variant | gray-1 |
-| splitter:27 | `--mu-border-color-muted` | `background` | 水平分割线 | gray-1 |
-| splitter:63 | `--mu-border-color-muted` | `background` | 垂直分割线 | gray-1 |
+| border:45 | `--mu-border-color-soft` | `border-color` | muted 边框 | gray-1 |
+| border:85 | `--mu-border-color-soft` | `border-left-color` | left variant | gray-1 |
+| border:125 | `--mu-border-color-soft` | `border-right-color` | right variant | gray-1 |
+| border:165 | `--mu-border-color-soft` | `border-top-color` | top variant | gray-1 |
+| border:205 | `--mu-border-color-soft` | `border-bottom-color` | bottom variant | gray-1 |
+| splitter:27 | `--mu-border-color-soft` | `background` | 水平分割线 | gray-1 |
+| splitter:63 | `--mu-border-color-soft` | `background` | 垂直分割线 | gray-1 |
 
 ### 2.20 Toolbar — `src/components/bar/toolbar.scss`
 
@@ -354,12 +355,12 @@
 | 语义变量 | 指向 | 色值 | 用途 |
 |----------|------|------|------|
 | `--mu-text-color-normal` | gray-7 | `#515c66` | 正常正文、标题 |
-| `--mu-text-color-clear` | gray-8 | `#2d343a` | 输入框输入文字 |
+| `--mu-text-color-strong` | gray-8 | `#2d343a` | 输入框输入文字 |
 | `--mu-text-color-soft` | gray-4 | `#afbbc6` | 标签、禁用文字 |
 | `--mu-text-color-muted` | gray-3 | `#c7d2db` | 次要信息、非当月日期 |
 | `--mu-text-color-weak` | gray-2 | `#dce4ea` | placeholder |
 | `--mu-border-color` | gray-2 | `#dce4ea` | 默认边框 |
-| `--mu-border-color-muted` | gray-1 | `#eaeef2` | 弱化边框 |
+| `--mu-border-color-soft` | gray-1 | `#eaeef2` | 弱化边框 |
 | `--mu-translucent-gray` | gray-5 @ 10% | `#93a1ad` 10% | hover 背景 |
 | `--mu-bg-strong` | `rgba(0,0,0,.05)` | — | 加深背景 |
 | `--mu-bg-disabled` | `rgba(0,0,0,.1)` | — | 禁用背景 |

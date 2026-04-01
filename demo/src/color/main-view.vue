@@ -25,7 +25,7 @@
           class="color-block">
           gray-{{ n - 1 }}
         </div>
-        <div class="color-block" style="background-color: var(--mu-translucent-gray); color: var(--mu-gray);">
+        <div class="color-block" style="background-color: var(--mu-gray-translucent); color: var(--mu-gray);">
           translucent
         </div>
       </div>
@@ -40,7 +40,7 @@
           class="color-block">
           primary-{{ n - 1 }}
         </div>
-        <div class="color-block" style="background-color: var(--mu-translucent-primary); color: var(--mu-primary-color);">
+        <div class="color-block" style="background-color: var(--mu-primary-translucent); color: var(--mu-primary-color);">
           translucent
         </div>
       </div>
@@ -55,7 +55,7 @@
           class="color-block">
           secondary-{{ n - 1 }}
         </div>
-        <div class="color-block" style="background-color: var(--mu-translucent-secondary); color: var(--mu-secondary-color);">
+        <div class="color-block" style="background-color: var(--mu-secondary-translucent); color: var(--mu-secondary-color);">
           translucent
         </div>
       </div>
@@ -70,7 +70,7 @@
           class="color-block">
           success-{{ n - 1 }}
         </div>
-        <div class="color-block" style="background-color: var(--mu-translucent-success); color: var(--mu-success-color);">
+        <div class="color-block" style="background-color: var(--mu-success-translucent); color: var(--mu-success-color);">
           translucent
         </div>
       </div>
@@ -85,7 +85,7 @@
           class="color-block">
           warning-{{ n - 1 }}
         </div>
-        <div class="color-block" style="background-color: var(--mu-translucent-warning); color: var(--mu-warning-color);">
+        <div class="color-block" style="background-color: var(--mu-warning-translucent); color: var(--mu-warning-color);">
           translucent
         </div>
       </div>
@@ -100,7 +100,7 @@
           class="color-block">
           danger-{{ n - 1 }}
         </div>
-        <div class="color-block" style="background-color: var(--mu-translucent-danger); color: var(--mu-danger-color);">
+        <div class="color-block" style="background-color: var(--mu-danger-translucent); color: var(--mu-danger-color);">
           translucent
         </div>
       </div>
@@ -112,7 +112,7 @@
   const baseColors = ['red', 'pink', 'grape', 'violet', 'indigo', 'blue', 'cyan', 'teal', 'green', 'lime', 'yellow', 'orange']
 </script>
 
-<style scoped>
+<style>
   .color-block {
     display: inline-block;
     width: 100px;

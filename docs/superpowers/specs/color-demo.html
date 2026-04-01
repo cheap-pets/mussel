@@ -333,13 +333,13 @@
 <div class="page">
   <div class="page-header">
     <h1>Mussel 4 <span>中性色分离</span>方案演示</h1>
-    <p>基于主色 #1c7ed6 (蓝) 生成 — 色板 10/5/5 级，语义映射 5/3/3 级</p>
+    <p>基于主色 #1c7ed6 (蓝) 生成 20 级色板，偶数/奇数索引分离为前景色和背景色</p>
   </div>
 
   <div id="app"></div>
 
   <div class="footer-note">
-    <strong>说明：</strong>文本色板 (10 级) 饱和度 0.35、密度因子 1.0（线性分布）；边框色板 (5 级) 饱和度 0.2、密度因子 1.5；背景色板 (5 级) 饱和度 0.15、密度因子 1.5、色相偏移 +5°。语义变量从色板中间跳选，未映射的级别留作组件直接引用。色块底部蓝色标记线 = 已被语义变量选中。<code>text-color-weak</code> 已移除，placeholder 统一使用 <code>text-color-muted</code>。原有 <code>--mu-gray-0</code> ~ <code>--mu-gray-9</code> 密度因子调整为 1.0。
+    <strong>说明：</strong>生成 20 级完整灰度色板（saturationRatio: 0.2, densityFactor: 1.2），通过偶数/奇数索引分离为两组：偶数索引 → gray-0~9（前景色，用于文本和边框），奇数索引 → bg-gray-0~9（背景色）。语义变量从色板中间跳选，未映射的级别留作组件直接引用。色块底部蓝色标记线 = 已被语义变量选中。
   </div>
 </div>
 
@@ -363,25 +363,43 @@ function rgb2hsv ({ r, g, b }) {
       case b: h = ((r - g) / d + 4) / 6; break
     }
   }
-  return { h: h * 360, s, v: v * 100 }
+  return { h: Math.round(h * 360), s: Math.round(s * 100), v: Math.round(v * 100) }
 }
 
-function hsv2hex ({ h, s, v }) {
+function hsv2rgb (hsv) {
+  let { h, s, v } = hsv
   h = ((h % 360) + 360) % 360
-  s /= 100; v /= 100
-  const c = v * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c
-  let r, g, b
-  if (h < 60)       { r = c; g = x; b = 0 }
-  else if (h < 120) { r = x; g = c; b = 0 }
-  else if (h < 180) { r = 0; g = c; b = x }
-  else if (h < 240) { r = 0; g = x; b = c }
-  else if (h < 300) { r = x; g = 0; b = c }
-  else              { r = c; g = 0; b = x }
-  const toHex = v => Math.round((v + m) * 255).toString(16).padStart(2, '0')
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+  h = (h === 360) ? 1 : (h % 360 / 360 * 6)
+  s = (s === 100) ? 1 : (s % 100 / 100)
+  v = (v === 100) ? 1 : (v % 100 / 100)
+  const i = Math.floor(h)
+  const f = h - i
+  const p = v * (1 - s)
+  const q = v * (1 - f * s)
+  const t = v * (1 - (1 - f) * s)
+  const mod = i % 6
+  const r = [v, q, p, p, t, v][mod]
+  const g = [t, v, v, q, p, p][mod]
+  const b = [p, p, t, v, v, q][mod]
+  return { r: Math.floor(r * 255), g: Math.floor(g * 255), b: Math.floor(b * 255) }
 }
 
-function generateNeutralPalette (baseColor, count = 10, densityFactor = 1.8, { saturationRatio = 0.3, hueShift = 0 } = {}) {
+function rgb2hex (rgb) {
+  let { r, g, b } = rgb
+  r = Math.round(r).toString(16)
+  g = Math.round(g).toString(16)
+  b = Math.round(b).toString(16)
+  r = r.length === 1 ? '0' + r : r
+  g = g.length === 1 ? '0' + g : g
+  b = b.length === 1 ? '0' + b : b
+  return '#' + r + g + b
+}
+
+function hsv2hex (hsv) {
+  return rgb2hex(hsv2rgb(hsv))
+}
+
+function generateNeutralPalette (baseColor, { count = 10, densityFactor = 1.8, saturationRatio = 0.3, hueShift = 0 } = {}) {
   const rgb = str2rgba(baseColor)
   if (!rgb) return []
   const maxV = 96.5, minV = 3.5
@@ -403,15 +421,18 @@ function generateNeutralPalette (baseColor, count = 10, densityFactor = 1.8, { s
 
 const BASE = '#1c7ed6'
 
-const originalGray = generateNeutralPalette(BASE, 10, 1, { saturationRatio: 0.3, hueShift: 0 })
-const textGray    = generateNeutralPalette(BASE, 10, 1, { saturationRatio: 0.35, hueShift: 0 })
-const borderGray  = generateNeutralPalette(BASE, 5, 1.5, { saturationRatio: 0.2, hueShift: 0 })
-const bgGray      = generateNeutralPalette(BASE, 5, 1.5, { saturationRatio: 0.15, hueShift: 5 })
+// 20 级完整色板
+const fullGray = generateNeutralPalette(BASE, { count: 20, densityFactor: 1.2, saturationRatio: 0.2, hueShift: 0 })
+
+// 偶数索引 → gray-0~9（前景色）
+const gray = fullGray.filter((_, i) => i % 2 === 0)
+// 奇数索引 → bg-gray-0~9（背景色）
+const bgGray = fullGray.filter((_, i) => i % 2 === 1)
 
 // === Semantic mappings (light mode) ===
 
 const textSemantics = {
-  'text-color-clear':   { index: 9, desc: '输入框文字' },
+  'text-color-strong':  { index: 9, desc: '输入框文字' },
   'text-color-normal':  { index: 7, desc: '正常正文' },
   'text-color-subtle':  { index: 5, desc: '次级正文', isNew: true },
   'text-color-soft':    { index: 4, desc: '标签/辅助' },
@@ -420,19 +441,21 @@ const textSemantics = {
 
 const borderSemantics = {
   'border-color-strong': { index: 3, desc: '强调边框', isNew: true },
-  'border-color':        { index: 2, desc: '默认边框' },
-  'border-color-muted':  { index: 1, desc: '弱化边框' },
+  'border-color-normal': { index: 2, desc: '默认边框', isNew: true },
+  'border-color-soft':   { index: 1, desc: '弱化边框' },
 }
 
 const bgSemantics = {
-  'bg-strong':   { color: bgGray[4], opacity: 0.08, desc: '叠加背景', changed: true },
-  'bg-marked':   { color: bgGray[4], opacity: 0.14, desc: '标记背景', changed: true },
-  'bg-disabled': { color: bgGray[4], opacity: 0.11, desc: '禁用背景', changed: true },
+  'bg-strong':   { color: bgGray[1], opacity: 0.08, desc: '叠加背景', changed: true },
+  'bg-disabled': { color: bgGray[1], opacity: 0.12, desc: '禁用背景', changed: true },
+  'bg-header':   { color: bgGray[0], opacity: 1, desc: '页眉背景', isNew: true },
+  'bg-footer':   { color: bgGray[0], opacity: 1, desc: '页脚背景', isNew: true },
+  'bg-stripe':   { color: bgGray[0], opacity: 1, desc: '斑马纹背景', isNew: true },
 }
 
 // Dark mode mappings (reversed indices, wider spacing)
 const textDarkSemantics = {
-  'text-color-clear':   { index: 0, desc: '输入框文字' },
+  'text-color-strong':  { index: 0, desc: '输入框文字' },
   'text-color-normal':  { index: 2, desc: '正常正文' },
   'text-color-subtle':  { index: 4, desc: '次级正文', isNew: true },
   'text-color-soft':    { index: 5, desc: '标签/辅助（与亮色对称）' },
@@ -441,19 +464,22 @@ const textDarkSemantics = {
 
 const borderDarkSemantics = {
   'border-color-strong': { index: 0, desc: '强调边框', isNew: true },
-  'border-color':        { index: 2, desc: '默认边框' },
-  'border-color-muted':  { index: 3, desc: '弱化边框' },
+  'border-color-normal': { index: 2, desc: '默认边框', isNew: true },
+  'border-color-soft':   { index: 3, desc: '弱化边框' },
 }
 
 const bgDarkSemantics = {
   'bg-strong':   { color: bgGray[0], opacity: 0.08, desc: '叠加背景', changed: true },
-  'bg-marked':   { color: bgGray[0], opacity: 0.14, desc: '标记背景', changed: true },
-  'bg-disabled': { color: bgGray[0], opacity: 0.11, desc: '禁用背景', changed: true },
+  'bg-disabled': { color: bgGray[0], opacity: 0.12, desc: '禁用背景', changed: true },
+  'bg-header':   { color: bgGray[9], opacity: 1, desc: '页眉背景', isNew: true },
+  'bg-footer':   { color: bgGray[9], opacity: 1, desc: '页脚背景', isNew: true },
+  'bg-stripe':   { color: bgGray[9], opacity: 1, desc: '斑马纹背景', isNew: true },
 }
 
 // Mapped indices for highlighting
 const textMappedIndices  = new Set([3, 4, 5, 7, 9])
-const borderMappedIndices = new Set(Object.values(borderSemantics).map(v => v.index))
+const borderMappedIndices = new Set([1, 2, 3])  // soft, normal, strong
+const bgMappedIndices = new Set([0, 1])  // stripe, header/footer
 
 // === Render helpers ===
 
@@ -498,14 +524,31 @@ function renderPaletteRow (colors, prefix, label, mappedIndices = null) {
 }
 
 function renderSemanticsTable (title, subtitle, semantics, palette, prefixName) {
-  const rows = Object.entries(semantics).map(([name, { index, desc, isNew }]) => {
-    const hex = palette[index]
-    const badge = isNew ? '<span class="new-badge">NEW</span>' : ''
+  const rows = Object.entries(semantics).map(([name, { index, color, opacity, desc, isNew, changed }]) => {
+    let hex, mapping, value
+    const badge = isNew ? '<span class="new-badge">NEW</span>' : (changed ? '<span class="changed-badge">CHANGED</span>' : '')
+
+    if (color !== undefined && opacity !== undefined) {
+      // 背景色变量：直接使用 color + opacity
+      hex = color
+      if (opacity === 1) {
+        value = hex
+        mapping = ''
+      } else {
+        value = `${color} @ ${Math.round(opacity * 100)}%`
+        mapping = ''
+      }
+    } else {
+      // 文本/边框变量：从 palette 中取 index
+      hex = palette[index]
+      mapping = `${prefixName}-${index}`
+      value = hex
+    }
     return `
       <tr>
         <td><code>--mu-${name}</code>${badge}</td>
-        <td>${prefixName}-${index}</td>
-        <td><span class="color-dot" style="background:${hex}"></span>${hex}</td>
+        <td>${mapping}</td>
+        <td><span class="color-dot" style="background:${hex}"></span>${value}</td>
         <td>${desc}</td>
       </tr>`
   }).join('')
@@ -526,33 +569,47 @@ function renderSemanticsTable (title, subtitle, semantics, palette, prefixName) 
 const app = document.getElementById('app')
 
 app.innerHTML = `
-  ${renderPaletteRow(originalGray, 'gray', '原有色板 (10 级) — saturationRatio: 0.3, densityFactor: 1.0，保留向后兼容')}
-  ${renderPaletteRow(textGray, 'text-gray', '文本色板 (10 级) — saturationRatio: 0.35, densityFactor: 1.0', textMappedIndices)}
-  ${renderPaletteRow(borderGray, 'border-gray', '边框色板 (5 级) — saturationRatio: 0.2, densityFactor: 1.5', borderMappedIndices)}
-  ${renderPaletteRow(bgGray, 'bg-gray', '背景色板 (5 级) — saturationRatio: 0.15, densityFactor: 1.5, hueShift: +5°')}
+  ${renderPaletteRow(gray, 'gray', '前景色板 gray (10 级) — 来自 20 级色板偶数索引', textMappedIndices)}
+  ${renderPaletteRow(bgGray, 'bg-gray', '背景色板 bg-gray (10 级) — 来自 20 级色板奇数索引', bgMappedIndices)}
 
   <div class="section">
-    <div class="section-title">语义变量映射（亮色模式）</div>
-    <div class="compare-grid">
-      ${renderSemanticsTable('文本色', '色板 10 级 → 语义 5 级', textSemantics, textGray, 'text-gray')}
-      ${renderSemanticsTable('边框色', '色板 5 级 → 语义 3 级', borderSemantics, borderGray, 'border-gray')}
+    <div class="section-title">完整灰色系 (20 级) — saturationRatio: 0.2, densityFactor: 1.2</div>
+    <div class="palette-row">
+      ${fullGray.slice(0, 10).map((c, i) => {
+        const varName = `--mu-${i % 2 === 0 ? 'gray-' + i/2 : 'bg-gray-' + Math.floor(i/2)}`
+        const textCls = textColorFor(c)
+        return `
+          <div class="swatch swatch-light">
+            <div class="swatch-fill" style="background:${c}"></div>
+            <div class="swatch-label ${textCls}">
+              <span class="var-name">${varName}</span>
+              <span class="hex-val">${c}</span>
+            </div>
+          </div>`
+      }).join('')}
+    </div>
+    <div class="palette-row" style="margin-top:4px">
+      ${fullGray.slice(10).map((c, i) => {
+        const idx = 10 + i
+        const varName = `--mu-${idx % 2 === 0 ? 'gray-' + idx/2 : 'bg-gray-' + Math.floor(idx/2)}`
+        const textCls = textColorFor(c)
+        return `
+          <div class="swatch swatch-light">
+            <div class="swatch-fill" style="background:${c}"></div>
+            <div class="swatch-label ${textCls}">
+              <span class="var-name">${varName}</span>
+              <span class="hex-val">${c}</span>
+            </div>
+          </div>`
+      }).join('')}
     </div>
   </div>
 
   <div class="section">
-    <div class="section-title">背景语义变量（透明叠加）</div>
-    <div class="compare-card" style="max-width:600px">
-      <table class="mapping-table">
-        <thead><tr><th>变量</th><th>值</th><th>用途</th></tr></thead>
-        <tbody>
-          ${Object.entries(bgSemantics).map(([name, { color, opacity, desc, changed }]) => `
-            <tr>
-              <td><code>--mu-${name}</code>${changed ? '<span class="changed-badge">CHANGED</span>' : ''}</td>
-              <td><span class="color-dot" style="background:${color}"></span>${color} @ ${Math.round(opacity * 100)}%</td>
-              <td>${desc}</td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
+    <div class="section-title">语义变量映射（亮色模式）</div>
+    <div class="compare-grid">
+      ${renderSemanticsTable('文本色', 'gray 10 级 → 语义 5 级', textSemantics, gray, 'gray')}
+      ${renderSemanticsTable('边框色', 'gray 10 级 → 语义 3 级', borderSemantics, gray, 'gray')}
     </div>
   </div>
 
@@ -562,37 +619,35 @@ app.innerHTML = `
       <div class="side-card light">
         <h3>亮色模式</h3>
         <div class="sub">语义变量实际应用</div>
-        <div class="mini-row"><span class="mini-label">clear</span><span class="mini-text-demo" style="color:${textGray[9]}">输入框文字示例</span></div>
-        <div class="mini-row"><span class="mini-label">normal</span><span class="mini-text-demo" style="color:${textGray[7]}">正常正文示例</span></div>
-        <div class="mini-row"><span class="mini-label">subtle</span><span class="mini-text-demo" style="color:${textGray[5]}">次级正文示例</span></div>
-        <div class="mini-row"><span class="mini-label">soft</span><span class="mini-text-demo" style="color:${textGray[4]}">标签文字示例</span></div>
-        <div class="mini-row"><span class="mini-label">muted</span><span class="mini-text-demo" style="color:${textGray[3]}">次要信息 / Placeholder</span></div>
+        <div class="mini-row"><span class="mini-label">strong</span><span class="mini-text-demo" style="color:${gray[9]}">输入框文字示例</span></div>
+        <div class="mini-row"><span class="mini-label">normal</span><span class="mini-text-demo" style="color:${gray[7]}">正常正文示例</span></div>
+        <div class="mini-row"><span class="mini-label">subtle</span><span class="mini-text-demo" style="color:${gray[5]}">次级正文示例</span></div>
+        <div class="mini-row"><span class="mini-label">soft</span><span class="mini-text-demo" style="color:${gray[4]}">标签文字示例</span></div>
+        <div class="mini-row"><span class="mini-label">muted</span><span class="mini-text-demo" style="color:${gray[3]}">次要信息 / Placeholder</span></div>
         <div style="height:16px"></div>
-        <div class="mini-row"><span class="mini-label">border</span><div class="mini-border-demo" style="border:1px solid ${borderGray[2]}; color:${textGray[8]}">默认边框</div></div>
-        <div class="mini-row"><span class="mini-label">strong</span><div class="mini-border-demo" style="border:1px solid ${borderGray[3]}; color:${textGray[8]}">强调边框</div></div>
-        <div class="mini-row"><span class="mini-label">muted</span><div class="mini-border-demo" style="border:1px solid ${borderGray[1]}; color:${textGray[8]}">弱化边框</div></div>
+        <div class="mini-row"><span class="mini-label">soft</span><div class="mini-border-demo" style="border:1px solid ${gray[1]}; color:${gray[9]}">弱化边框</div></div>
+        <div class="mini-row"><span class="mini-label">normal</span><div class="mini-border-demo" style="border:1px solid ${gray[2]}; color:${gray[9]}">默认边框</div></div>
+        <div class="mini-row"><span class="mini-label">strong</span><div class="mini-border-demo" style="border:1px solid ${gray[3]}; color:${gray[9]}">强调边框</div></div>
         <div style="height:16px"></div>
-        <div class="mini-row"><span class="mini-label">bg-strong</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[4], 0.08)}; color:${textGray[8]}">叠加背景</div></div>
-        <div class="mini-row"><span class="mini-label">bg-marked</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[4], 0.14)}; color:${textGray[8]}">标记背景</div></div>
-        <div class="mini-row"><span class="mini-label">disabled</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[4], 0.11)}; color:${textGray[5]}">禁用背景</div></div>
+        <div class="mini-row"><span class="mini-label">bg-strong</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[1], 0.08)}; color:${gray[9]}">叠加背景</div></div>
+        <div class="mini-row"><span class="mini-label">disabled</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[1], 0.12)}; color:${gray[5]}">禁用背景</div></div>
       </div>
 
       <div class="side-card dark">
         <h3>暗色模式</h3>
         <div class="sub">语义变量实际应用（索引拉开展间距）</div>
-        <div class="mini-row"><span class="mini-label">clear</span><span class="mini-text-demo" style="color:${textGray[0]}">输入框文字示例</span></div>
-        <div class="mini-row"><span class="mini-label">normal</span><span class="mini-text-demo" style="color:${textGray[2]}">正常正文示例</span></div>
-        <div class="mini-row"><span class="mini-label">subtle</span><span class="mini-text-demo" style="color:${textGray[4]}">次级正文示例</span></div>
-        <div class="mini-row"><span class="mini-label">soft</span><span class="mini-text-demo" style="color:${textGray[5]}">标签文字示例</span></div>
-        <div class="mini-row"><span class="mini-label">muted</span><span class="mini-text-demo" style="color:${textGray[6]}">次要信息 / Placeholder</span></div>
+        <div class="mini-row"><span class="mini-label">strong</span><span class="mini-text-demo" style="color:${gray[0]}">输入框文字示例</span></div>
+        <div class="mini-row"><span class="mini-label">normal</span><span class="mini-text-demo" style="color:${gray[2]}">正常正文示例</span></div>
+        <div class="mini-row"><span class="mini-label">subtle</span><span class="mini-text-demo" style="color:${gray[4]}">次级正文示例</span></div>
+        <div class="mini-row"><span class="mini-label">soft</span><span class="mini-text-demo" style="color:${gray[5]}">标签文字示例</span></div>
+        <div class="mini-row"><span class="mini-label">muted</span><span class="mini-text-demo" style="color:${gray[6]}">次要信息 / Placeholder</span></div>
         <div style="height:16px"></div>
-        <div class="mini-row"><span class="mini-label">border</span><div class="mini-border-demo" style="border:1px solid ${borderGray[2]}; color:${textGray[2]}">默认边框</div></div>
-        <div class="mini-row"><span class="mini-label">strong</span><div class="mini-border-demo" style="border:1px solid ${borderGray[0]}; color:${textGray[2]}">强调边框</div></div>
-        <div class="mini-row"><span class="mini-label">muted</span><div class="mini-border-demo" style="border:1px solid ${borderGray[3]}; color:${textGray[2]}">弱化边框</div></div>
+        <div class="mini-row"><span class="mini-label">soft</span><div class="mini-border-demo" style="border:1px solid ${gray[3]}; color:${gray[2]}">弱化边框</div></div>
+        <div class="mini-row"><span class="mini-label">normal</span><div class="mini-border-demo" style="border:1px solid ${gray[2]}; color:${gray[2]}">默认边框</div></div>
+        <div class="mini-row"><span class="mini-label">strong</span><div class="mini-border-demo" style="border:1px solid ${gray[0]}; color:${gray[2]}">强调边框</div></div>
         <div style="height:16px"></div>
-        <div class="mini-row"><span class="mini-label">bg-strong</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[0], 0.08)}; color:${textGray[2]}">叠加背景</div></div>
-        <div class="mini-row"><span class="mini-label">bg-marked</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[0], 0.14)}; color:${textGray[2]}">标记背景</div></div>
-        <div class="mini-row"><span class="mini-label">disabled</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[0], 0.11)}; color:${textGray[5]}">禁用背景</div></div>
+        <div class="mini-row"><span class="mini-label">bg-strong</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[0], 0.08)}; color:${gray[2]}">叠加背景</div></div>
+        <div class="mini-row"><span class="mini-label">disabled</span><div class="mini-bg-demo" style="background:${rgbaFromHex(bgGray[0], 0.12)}; color:${gray[5]}">禁用背景</div></div>
       </div>
     </div>
   </div>
@@ -601,9 +656,8 @@ app.innerHTML = `
     <div class="section-title">色温对比（各色板中间值）</div>
     <div class="palette-row">
       ${[
-        { label: '文本基准灰', color: textGray[5], info: 'sat 0.35' },
-        { label: '边框基准灰', color: borderGray[2], info: 'sat 0.20' },
-        { label: '背景基准灰', color: bgGray[2], info: 'sat 0.15 · hue+5°' },
+        { label: '前景基准灰', color: gray[5], info: 'gray-5 (偶数索引)' },
+        { label: '背景基准灰', color: bgGray[5], info: 'bg-gray-5 (奇数索引)' },
       ].map(({ label, color, info }) => `
         <div class="swatch swatch-light" style="flex:1; min-height:48px;">
           <div class="swatch-fill" style="background:${color}"></div>
@@ -618,10 +672,12 @@ app.innerHTML = `
   <div class="section">
     <div class="section-title">语义映射索引一览</div>
     <div class="compare-grid">
-      ${renderSemanticsTable('文本 — 亮色', '', textSemantics, textGray, 'text-gray')}
-      ${renderSemanticsTable('文本 — 暗色', '', textDarkSemantics, textGray, 'text-gray')}
-      ${renderSemanticsTable('边框 — 亮色', '', borderSemantics, borderGray, 'border-gray')}
-      ${renderSemanticsTable('边框 — 暗色', '', borderDarkSemantics, borderGray, 'border-gray')}
+      ${renderSemanticsTable('文本 — 亮色', '', textSemantics, gray, 'gray')}
+      ${renderSemanticsTable('文本 — 暗色', '', textDarkSemantics, gray, 'gray')}
+      ${renderSemanticsTable('边框 — 亮色', '', borderSemantics, gray, 'gray')}
+      ${renderSemanticsTable('边框 — 暗色', '', borderDarkSemantics, gray, 'gray')}
+      ${renderSemanticsTable('背景 — 亮色', '', bgSemantics, null, '')}
+      ${renderSemanticsTable('背景 — 暗色', '', bgDarkSemantics, null, '')}
     </div>
   </div>
 `

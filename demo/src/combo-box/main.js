@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import ComboBoxDemo from './ComboBoxDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(ComboBoxDemo)
+createVueApp(MainView)

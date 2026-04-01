@@ -2,11 +2,7 @@
   <div class="mu-box mu-bg-normal" position="fixed fit">
     <h2>
       Message Components & API
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
     <div class="group">
       <mu-button @click="alert">
@@ -78,13 +74,9 @@
 
 <script setup>
   import { ref, getCurrentInstance } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const { proxy } = getCurrentInstance()
-
-  function onUIModeChange () {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 
   function alert () {
     proxy.$mussel.messageBox.alert('Hello World !')

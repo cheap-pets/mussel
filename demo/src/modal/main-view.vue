@@ -2,28 +2,17 @@
   <div>
     <h2>
       MODAL DIALOG & DRAWER
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
 
-    <!-- Basic Dialogs -->
-    <div class="group">
-      <h3>Basic Dialogs</h3>
-      <mu-button caption="Open Dialog" @click="dialogVisible = true" />
-      <mu-button primary caption="Confirm Dialog" @click="confirmDialogVisible = true" />
-    </div>
-
-    <!-- Advanced Dialog -->
+    <!-- Dialog -->
     <div id="div1" class="group">
       <h3>Advanced Dialog</h3>
       <mu-button caption="Open Advanced Dialog" @click="openAdvancedDialog" />
       <mu-button caption="Request Fullscreen" secondary button-style="outline" @click="requestFullscreen('#div1')" />
     </div>
 
-    <!-- Drawer Controls -->
+    <!-- Drawer -->
     <div id="div2" class="group">
       <h3>Drawer</h3>
       <mu-button caption="Top" @click="openDrawer('top')" />
@@ -115,8 +104,8 @@
 
 <script setup>
   import { ref, getCurrentInstance } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const dialogVisible = ref(false)
   const confirmDialogVisible = ref(false)
   const advancedDialogVisible = ref(false)
@@ -155,7 +144,4 @@
     }
   }
 
-  function onUIModeChange (v) {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 </script>

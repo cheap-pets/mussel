@@ -2,11 +2,7 @@
   <div>
     <h2>
       SCROLLBAR & SCROLL-BOX
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
 
     <div v-mu-scrollbar class="scroll-container" scrollbar-visible="always">
@@ -55,8 +51,7 @@
 
 <script setup>
   import { ref } from 'vue'
-
-  const darkMode = ref(false)
+  import ThemeSwitch from '../common/theme-switch.vue'
 
   function resetHeight () {
     const el = document.querySelector('.scroll-element')
@@ -73,9 +68,6 @@
     }
   }
 
-  function onUIModeChange () {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 </script>
 
 <style>

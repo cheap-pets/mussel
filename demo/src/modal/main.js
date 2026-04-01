@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import ModalDemo from './ModalDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(ModalDemo)
+createVueApp(MainView)

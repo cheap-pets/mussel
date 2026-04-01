@@ -3,22 +3,22 @@
   --cell-padding: 8px;
   --cell-line-height: 18px;
 
-  --head-border-bottom: 1px solid var(--mu-border-color-muted);
+  --head-border-bottom: 1px solid var(--mu-border-color-soft);
 
   --gridline-row: none;
   --gridline-col: none;
 
-  --select-bg: var(--mu-bg-select);
-  --hover-bg: var(--mu-bg-hover);
+  --select-bg: var(--mu-primary-faint);
+  --hover-bg: var(--mu-gray-translucent);
 
-  border: 1px solid var(--mu-border-color);
+  border: 1px solid var(--mu-border-color-normal);
   color: var(--mu-text-color-normal);
 }
 
 .mu-table {
   & > table {
     table-layout: fixed;
-    box-shadow: 0 0 0 1px var(--mu-border-color-muted);
+    box-shadow: 0 0 0 1px var(--mu-border-color-soft);
   }
 
   & thead {
@@ -123,18 +123,18 @@
 .mu-table[data-empty],
 .mu-table--gridlines-none {
   & > table {
-    box-shadow: 0 -1px 0 1px var(--mu-border-color-muted);
+    box-shadow: 0 -1px 0 1px var(--mu-border-color-soft);
   }
 }
 
 .mu-table--gridlines-all,
 .mu-table--gridlines-row {
-  --gridline-row: 1px solid var(--mu-border-color-muted);
+  --gridline-row: 1px solid var(--mu-border-color-soft);
 }
 
 .mu-table--gridlines-all,
 .mu-table--gridlines-column {
-  --gridline-col: 1px solid var(--mu-border-color-muted);
+  --gridline-col: 1px solid var(--mu-border-color-soft);
 }
 
 
@@ -182,7 +182,7 @@
   max-height: 40px;
   margin-top: auto;
   padding: 4px var(--mu-base-spacing);
-  border: 1px solid var(--mu-border-color);
+  border: 1px solid var(--mu-border-color-normal);
   border-top: none;
 
   background-color: var(--mu-bg-footer);

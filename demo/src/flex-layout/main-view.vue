@@ -31,12 +31,7 @@
           v-model="stripe"
           label="显示条纹"
           :disabled="shape === 'bubble'" />
-        <mu-switch
-          v-model="darkMode"
-          active-label="Dark"
-          inactive-label="Light"
-          style="margin-left: 16px;"
-          @update:model-value="onUIModeChange" />
+        <theme-switch style="margin-left: 16px;" />
       </div>
       <mu-h-box flex="1" :style="{ gap }" padding="1x">
         <div
@@ -84,26 +79,26 @@
 
 <script setup>
   import { ref } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const size = ref('full')
   const shape = ref('line')
   const stripe = ref(false)
   const spaceFree = ref(false)
   const gap = '4px'
 
-  const onUIModeChange = () => {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 </script>
 
-<style scoped>
+<style>
   .block {
-    padding: 20px;
     overflow: hidden;
-    border: 0px solid var(--mu-border-color-muted);
-    background-color: var(--mu-bg-strong);
-    text-align: center;
+
+    padding: 20px;
+    border: 0px solid var(--mu-border-color-soft);
+
     font-size: 2rem;
+    text-align: center;
+
+    background-color: var(--mu-bg-strong);
   }
 </style>

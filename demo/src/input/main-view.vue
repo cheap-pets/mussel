@@ -2,11 +2,7 @@
   <div>
     <h2>
       INPUT & INPUT-GROUP
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
     <div class="group">
       <h3>Basic</h3>
@@ -98,8 +94,8 @@
 
 <script setup>
   import { ref } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const value = ref('')
   const selectValue = ref()
   const options = ref([
@@ -112,13 +108,9 @@
   const onChange = (v) => {
     console.log(v)
   }
-
-  const onUIModeChange = (v) => {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 </script>
 
-<style scoped>
+<style>
   .mu-input {
     width: 250px;
   }

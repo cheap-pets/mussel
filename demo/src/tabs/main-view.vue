@@ -9,11 +9,7 @@
       <mu-combo-box
         v-model="tabStyle" class="mu-box" :clear-button="false"
         style="width: 125px;" :options="styles" />
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </div>
 
     <mu-tabs
@@ -79,7 +75,8 @@
 <script setup>
   import { ref, onMounted } from 'vue'
 
-  const darkMode = ref(false)
+  import ThemeSwitch from '../common/theme-switch.vue'
+
   const positions = [
     { value: 'top' },
     { value: 'bottom' },
@@ -108,10 +105,6 @@
     { label: 'Johann Baptist Strauss', disabled: true }
   ]
 
-  function onUIModeChange (v) {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
-
   function updateActiveTab2 (tabName) {
     activeTab2.value = tabName
   }
@@ -125,7 +118,7 @@
   })
 </script>
 
-<style scoped>
+<style>
   .mu-tabs {
     height: 200px;
   }

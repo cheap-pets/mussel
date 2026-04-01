@@ -2,11 +2,7 @@
   <div>
     <h2>
       TABLE
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
 
     <div class="group">
@@ -34,7 +30,6 @@
         @update:selected-record-key="selectedId = $event" />
       <mu-pagination
         class="mu-table__footer"
-        style="justify-content: flex-end;"
         small
         quick-jumper
         :offset="offset"
@@ -51,12 +46,7 @@
 <script setup>
   import { ref, watch } from 'vue'
   import { faker } from '@faker-js/faker'
-
-  const darkMode = ref(false)
-
-  const onUIModeChange = () => {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
+  import ThemeSwitch from '../common/theme-switch.vue'
 
   const offset = ref(0)
   const limit = ref(50)
@@ -246,7 +236,7 @@
   }, { immediate: true })
 </script>
 
-<style scoped>
+<style>
   .mu-table {
     min-height: 500px;
     max-height: 800px;

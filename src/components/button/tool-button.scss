@@ -43,32 +43,31 @@
 }
 
 .mu-tool-button {
-  --mu-button_color: var(--mu-primary-color);
-
   color: var(--mu-text-color-soft);
 
-  &[danger] {
-    --mu-button_color: var(--mu-danger-color);
-
-    &:hover {
-      --mu-button_color: var(--mu-danger-color-4);
-    }
-  }
-
   &:hover {
-    color: var(--mu-button_color);
-    background-color: var(--mu-translucent-gray);
+    color: var(--mu-primary-color-4);
+    background-color: var(--mu-gray-translucent);
   }
 
   &[active] {
-    border:  1px solid var(--mu-button_color);
-    background-color: rgb(from var(--mu-button_color) r g b / 0.1);
+    border:  1px solid var(--mu-primary-color);
+    background-color: var(--mu-primary-translucent);
+  }
+}
+
+.mu-tool-button--danger {
+  &:hover {
+    color: var(--mu-danger-color-4);
   }
 
-  &[disabled] {
-    --mu-button_color: var(--mu-text-color-muted);
-    
-    pointer-events: none;
-    color: var(--mu-button_color);
+  &[active] {
+    border-color: var(--mu-danger-color);
+    background-color: var(--mu-danger-translucent);
   }
+}
+
+.mu-tool-button[disabled] {
+  pointer-events: none;
+  color: var(--mu-text-color-muted);
 }

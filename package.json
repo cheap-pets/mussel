@@ -9,8 +9,7 @@
   ],
   "scripts": {
     "build": "vite build --mode development && vite build --mode production",
-    "build:dev": "vite build --mode development --watch",
-    "build:demo": "vite build --config vite.demo.config.js",
+    "build:demo": "vite build --config vite.demo.config.js --watch",
     "pub": "npm run build && npm publish"
   },
   "devDependencies": {

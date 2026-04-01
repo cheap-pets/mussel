@@ -2,11 +2,7 @@
   <div>
     <H2>
       BUTTON, BUTTON GROUP & TOOL BUTTON
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </H2>
     <div class="group button-w-100">
       <h3>NORMAL STYLE</h3>
@@ -397,7 +393,8 @@
 <script setup>
   import { ref } from 'vue'
 
-  const darkMode = ref(false)
+  import ThemeSwitch from '../common/theme-switch.vue'
+
   const activeItem = ref(null)
   const active1 = ref(true)
   const active2 = ref(true)
@@ -406,12 +403,9 @@
     activeItem.value = v
   }
 
-  const onUIModeChange = (v) => {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 </script>
 
-<style scoped>
+<style>
   .link-group {
     gap: 16px;
     padding: 8px;

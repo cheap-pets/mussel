@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import FlexLayoutDemo from './FlexLayoutDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(FlexLayoutDemo)
+createVueApp(MainView)

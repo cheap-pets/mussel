@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import ColorDemo from './ColorDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(ColorDemo)
+createVueApp(MainView)

@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import GridLayoutDemo from './GridLayoutDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(GridLayoutDemo)
+createVueApp(MainView)

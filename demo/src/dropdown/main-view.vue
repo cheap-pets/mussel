@@ -2,11 +2,7 @@
   <div>
     <h2>
       DROPDOWN & CONTEXT-MENU
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
     <mu-context-menu ref="contextMenu" :menus="artists" />
     <div style="height: 100%; min-height: 800px;" @contextmenu="onContextMenu">
@@ -107,8 +103,8 @@
 
 <script setup>
   import { ref } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const contextMenu = ref()
   const artist = ref()
   const artists = ref([
@@ -143,10 +139,6 @@
   function requestFullscreen () {
     const divX = document.querySelector('#divX')
     divX.requestFullscreen()
-  }
-
-  function onUIModeChange () {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
   }
 
   function onContextMenu (event) {

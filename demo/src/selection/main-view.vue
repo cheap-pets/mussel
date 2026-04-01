@@ -2,13 +2,7 @@
   <div>
     <h2>
       SWITCH, CHECK & RADIO
-      <mu-switch
-        v-model="darkMode"
-        active-icon="sun"
-        inactive-icon="moon"
-        :active-value="false"
-        :inactive-value="true"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
     <div class="group">
       <h3>SWITCH</h3>
@@ -24,8 +18,8 @@
       <mu-check v-model="checked" label="Check 4" value="4" />
       <mu-check v-model="checked" label="Check 5" value="5" disabled />
     </div>
-    <div v-mu-scrollbar class="group" style="height: 200px; overflow: auto;">
-      <h3 style="height: 1000px;">
+    <div class="group">
+      <h3>
         RADIO
       </h3>
       <mu-radio v-model="radioValue" value="1" label="Radio 1" />
@@ -37,17 +31,13 @@
 
 <script setup>
   import { ref } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const value1 = ref(true)
   const check1 = ref(true)
   const check2 = ref(false)
   const checked = ref(['3'])
   const radioValue = ref('3')
-
-  function onUIModeChange () {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
 
   function onCheck1Update (v) {
     value1.value = v

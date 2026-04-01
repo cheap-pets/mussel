@@ -2,11 +2,7 @@
   <div>
     <H2>
       GESTURE
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </H2>
     <div class="group">
       <h3>TAP, PRESS, PAN</h3>
@@ -26,8 +22,8 @@
 
 <script setup>
   import { ref } from 'vue'
+  import ThemeSwitch from '../common/theme-switch.vue'
 
-  const darkMode = ref(false)
   const logs = ref([])
 
   function addLog (message) {
@@ -48,9 +44,6 @@
     addLog(`panmove: totalX = ${event.detail.gestureState.totalX}`)
   }
 
-  function onUIModeChange () {
-    document.body.classList.toggle('mu-dark', darkMode.value)
-  }
 </script>
 
 <style>

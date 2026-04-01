@@ -2,11 +2,7 @@
   <div>
     <h2>
       FORM
-      <mu-switch
-        v-model="darkMode"
-        active-label="Dark"
-        inactive-label="Light"
-        @update:model-value="onUIModeChange" />
+      <theme-switch />
     </h2>
     <div class="mu-box" position="fixed fit" padding="2x">
       <mu-form border="primary" label-width="60px" label-align="right">
@@ -39,11 +35,5 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
-
-  const darkMode = ref(false)
-
-  function onUIModeChange () {
-    document.querySelector('.mu-root').classList.toggle('mu-dark')
-  }
+  import ThemeSwitch from '../common/theme-switch.vue'
 </script>

@@ -1,5 +1,5 @@
 import { createVueApp } from '../common/app.js'
 
-import GestureDemo from './GestureDemo.vue'
+import MainView from './main-view.vue'
 
-createVueApp(GestureDemo)
+createVueApp(MainView)

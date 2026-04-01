@@ -13,7 +13,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   
-  background-color: var(--mu-translucent-gray);
+  background-color: var(--mu-gray-translucent);
   box-shadow: inset 0 0 0 1px var(--mu-gray);
 }
 
@@ -28,7 +28,7 @@
 @each $v in ("primary", "secondary", "success", "warning", "danger") {
   .mu-tag--#{$v} {
     color: var(--mu-#{$v}-color);
-    background-color: var(--mu-translucent-#{$v});
+    background-color: var(--mu-#{$v}-translucent);
     box-shadow: inset 0 0 0 1px var(--mu-#{$v}-color);
   }
 }
@@ -39,7 +39,7 @@
 ) {
   .mu-tag--#{$v} {
     color: var(--mu-#{$v});
-    background-color: var(--mu-translucent-#{$v});
+    background-color: var(--mu-#{$v}-translucent);
     box-shadow: inset 0 0 0 1px var(--mu-#{$v});
   }
 }
