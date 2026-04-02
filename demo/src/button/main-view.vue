@@ -406,6 +406,18 @@
 </script>
 
 <style>
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .group-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   .link-group {
     gap: 16px;
     padding: 8px;

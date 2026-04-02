@@ -83,6 +83,9 @@
 }
 
 .mu-root {
+  --mu-font-sans: system-ui, -apple-system, "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  --mu-font-mono: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace;  
+
   --mu-z-index-float: 1;
   --mu-z-index-layer: 10;
   --mu-z-index-modal: 100;
@@ -110,13 +113,7 @@
 }
 
 .mu-root {
-  font-family:
-    -apple-system, BlinkMacSystemFont,
-    "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", "Microsoft JhengHei",
-    "WenQuanYi Micro Hei",
-    "Helvetica Neue", Helvetica, Arial,
-    system-ui, sans-serif;
+  font-family: var(--mu-font-sans);
   font-size: var(--mu-common-font-size);
   font-weight: 400;
   color: var(--mu-text-color-normal);
