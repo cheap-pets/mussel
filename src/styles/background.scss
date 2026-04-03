@@ -1,12 +1,11 @@
-.mu-bg-normal {
-  background-color: var(--mu-bg-normal);
-}
-
-.mu-bg-strong {
-  background-color: var(--mu-bg-strong);
+@each $v in ('normal', 'strong', 'disabled', 'overlay', 'mask') {
+  .bg-#{$v} {
+    background-color: var(--mu-bg-#{$v});
+  }
 }
 
 .mu-masked {
   pointer-events: none;
+  background-color: var(--mu-bg-mask);
   filter: blur(4px);
 }

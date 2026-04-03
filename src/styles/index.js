@@ -1,5 +1,7 @@
 import './root.scss'
 import './layout.scss'
+import './spacing.scss'
+import './border.scss'
 import './typography.scss'
 import './tag.scss'
 import './link.scss'

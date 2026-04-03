@@ -1,0 +1,45 @@
+$DIRECTIONS:
+  (
+    ('', ''),
+    ('-x', '-inline'),
+    ('-y', '-block'),
+    ('-t', '-top'),
+    ('-r', '-right'),
+    ('-b', '-bottom'),
+    ('-l', '-left')
+  );
+
+$COLORS:
+  (
+    'soft': 'border-color-soft',
+    'strong': 'border-color-strong',
+    'primary': 'primary-color',
+    'danger': 'danger-color',
+  );
+
+$STYLES:
+  ('dashed', 'dotted', 'double');
+
+@each $dk, $dv in $DIRECTIONS {
+  .border#{$dk} {
+    border#{$dv}: 1px solid var(--mu-border-color-normal);
+  }
+
+  @for $i from 2 through 4 {
+    .border#{$dk}-#{$i} {
+      border#{$dv}: #{$i}px solid var(--mu-border-color-normal);
+    }
+  }
+
+  @each $ck, $cv in $COLORS {
+    .border#{$dk}-#{$ck} {
+      border#{$dv}-color: var(--mu-#{$cv});
+    }
+  }
+
+  @each $s in $STYLES {
+    .border#{$dk}-#{$s} {
+      border#{$dv}-style: $s;
+    }
+  }
+}

@@ -179,7 +179,7 @@ div.mu-input {
   }
 
   &[invalid] {
-    --mu-input_border-color: var(--mu-danger-color);
+    --mu-input_border-color: var(--mu-danger-color) !important;
 
     background-color: var(--mu-danger-translucent) !important;
   }
@@ -209,7 +209,8 @@ div.mu-input {
 
   &[input-style="underline"] {
     border-color: transparent transparent var(--mu-input_border-color);
-    border-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
   }
 }
 

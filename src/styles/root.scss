@@ -1,8 +1,15 @@
+$BASE_COLORS:
+  (
+    'gray',
+    'red', 'pink', 'grape', 'violet', 'indigo', 'blue',
+    'cyan', 'teal', 'green', 'lime', 'yellow', 'orange'
+  );
+
+$SEMANTIC_COLORS:
+  ('primary', 'secondary', 'success', 'warning', 'danger');
+
 .mu-root {
-  @each $v in (
-    "gray", "red", "pink", "grape", "violet", "indigo", "blue",
-    "cyan", "teal", "green", "lime", "yellow", "orange"
-  ) {
+  @each $v in $BASE_COLORS {
     --mu-#{$v}: #{map.get($colors, $v)};
   }
 
@@ -10,7 +17,7 @@
     --mu-gray-#{$i}: #{map.get($colors, gray#{$i})};
   }
 
-  @each $v in (primary, secondary, success, warning, danger) {
+  @each $v in $SEMANTIC_COLORS {
     --mu-#{$v}-color: #{map.get($colors, $v)};
 
     @for $i from 0 through 9 {
@@ -20,14 +27,11 @@
 }
 
 .mu-root {
-  @each $v in (
-    "gray", "red", "pink", "grape", "violet", "indigo", "blue",
-    "cyan", "teal", "green", "lime", "yellow", "orange"
-  ) {
+  @each $v in $BASE_COLORS {
     --mu-#{$v}-translucent: rgb(from var(--mu-#{$v}) r g b / 0.1);
   }
 
-  @each $v in (primary, secondary, success, warning, danger) {
+  @each $v in $SEMANTIC_COLORS {
     --mu-#{$v}-faint: #{map.get($colors, #{$v}0)};
     --mu-#{$v}-translucent: rgb(from var(--mu-#{$v}-color) r g b / 0.1);
   }
@@ -55,6 +59,13 @@
 }
 
 .mu-dark {
+  --mu-gray-translucent: rgb(from var(--mu-gray) r g b / 0.2);
+
+  @each $v in $SEMANTIC_COLORS {
+    --mu-#{$v}-faint: #{map.get($colors, #{$v}9)};
+    --mu-#{$v}-translucent: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
+  }
+
   --mu-text-color-strong: var(--mu-gray-1);
   --mu-text-color-normal: var(--mu-gray-4);
   --mu-text-color-subtle: var(--mu-gray-8);
@@ -73,13 +84,6 @@
   --mu-bg-header: var(--mu-gray-16);
   --mu-bg-footer: var(--mu-gray-16);
   --mu-bg-stripe: var(--mu-gray-18);
-
-  --mu-gray-translucent: rgb(from var(--mu-gray) r g b / 0.2);
-
-  @each $v in (primary, success, warning, danger, secondary) {
-    --mu-#{$v}-faint: #{map.get($colors, #{$v}9)};
-    --mu-#{$v}-translucent: rgb(from var(--mu-#{$v}-color) r g b / 0.2);
-  }
 }
 
 .mu-root {

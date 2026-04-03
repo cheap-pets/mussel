@@ -1,0 +1,33 @@
+$DIRECTIONS: (
+  ('', ''),
+  ('x', '-inline'),
+  ('y', '-block'),
+  ('t', '-top'),
+  ('r', '-right'),
+  ('b', '-bottom'),
+  ('l', '-left')
+);
+
+@each $k, $v in $DIRECTIONS {
+  @for $i from 1 through 4 {
+    .p#{$k}-#{$i}x {
+      padding#{$v}: calc($i * var(--mu-base-spacing));
+    }
+  }
+
+  .p#{$k}-auto {
+    padding#{$v}: auto;
+  }
+}
+
+@each $k, $v in $DIRECTIONS {
+  @for $i from 1 through 4 {
+    .m#{$k}-#{$i}x {
+      margin#{$v}: calc($i * var(--mu-base-spacing));
+    }
+  }
+
+  .m#{$k}-auto {
+    margin#{$v}: auto;
+  }
+}

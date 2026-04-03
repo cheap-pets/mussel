@@ -4,12 +4,12 @@
       INPUT & INPUT-GROUP
       <theme-switch />
     </h2>
-    <div class="group">
+    <div class="group flex flex-wrap gap-1x">
       <h3>Basic</h3>
       <mu-input v-model.trim="value" placeholder="Input Text" @update:model-value="onChange" />
       <mu-input v-model="value" placeholder="Input Text" :clear-button="false" />
     </div>
-    <div class="group">
+    <div class="group flex flex-wrap gap-1x">
       <h3>AFFIX：Icon, Text, Tool & Link</h3>
       <mu-input
         v-model="value"
@@ -23,7 +23,7 @@
       <mu-input v-model="value" prefix=":tool=folderOpen" />
       <mu-input v-model="value" prefix=":tool=bug" suffix=":link=Link" />
     </div>
-    <div class="group">
+    <div class="group flex flex-wrap gap-1x">
       <h3>Style & State</h3>
       <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Normal" />
       <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Underline" input-style="underline" />
@@ -50,7 +50,7 @@
       <mu-input v-model="value" prefix="Prefix" suffix=":tool=bug" placeholder="Disabled & Round & Solid" input-style="solid" round disabled />
     </div>
 
-    <div class="group">
+    <div class="group flex flex-wrap gap-1x">
       <h3>Input Group</h3>
       <div class="mu-input-group">
         <span>http://</span>
@@ -111,6 +111,10 @@
 </script>
 
 <style>
+  .group > h3 {
+    width: 100%;
+  }
+
   .mu-input {
     width: 250px;
   }

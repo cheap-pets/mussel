@@ -1,6 +1,6 @@
 <template>
   <div class="mu-form-field" :style="style">
-    <label v-if="label" class="mu-text-ellipsis" :text-align="labelAlign" :style="labelStyle">
+    <label v-if="label" class="text-ellipsis" :text-align="labelAlign" :style="labelStyle">
       {{ label }}
     </label>
     <slot />
