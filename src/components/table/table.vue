@@ -32,7 +32,7 @@
             :style="[col._ctrlStyle, col.headerStyle]"
             @click="onHeaderClick(col)">
             <div
-              v-if="col.type === 'check' && col.field && col.headerCheckbox"
+              v-if="col.type === 'check' && col.field && col.headerCheckbox && headerChecked"
               class="mu-table__cell-check"
               :data-checked="headerChecked[col.field] || null"
               @click.stop="onHeaderCheckChange(col, !headerChecked[col.field])">

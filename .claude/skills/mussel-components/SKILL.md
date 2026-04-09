@@ -1,542 +1,295 @@
 ---
 name: mussel-components
-description: Mussel 4 组件库开发指南。在使用 Mussel UI 框架开发 Vue 应用时使用此 skill。帮助开发者快速查找组件 API、选择合适组件、了解组件用法和最佳实践。当用户询问 Mussel 组件、组件属性、表单、按钮、对话框、布局等相关问题时使用。
+description: 使用 mussel Vue 3 组件库进行前端页面开发。在用户需要使用 mussel 构建页面、组件或界面时触发，包括但不限于：创建表单、数据表格、对话框、下拉菜单、树形控件、列表、布局、使用 mussel 样式系统、暗色模式切换等。当用户提到 mussel、mu-button、mu-table、mu-form、mu-dialog 等 mussel 组件名，或需要 Vue 组件库开发指导时，应使用此 skill。
 ---
 
-# Mussel 4 组件开发指南
+# Mussel 前端开发指南
 
- Mussel 是一个 Vue 3 组件库。本 skill 帮助你在使用 Mussel 组件时快速找到合适的组件、了解组件 API 并遵循最佳实践。
+Mussel 是一个 Vue 3 组件库，使用 Composition API + `<script setup>` 语法。本 skill 指导如何使用 mussel 的组件和样式系统构建前端页面。
 
-## 快速开始
+## 核心原则
 
-### 组件选择指南
+1. **使用 Composition API + `<script setup>`**：所有组件代码使用 Vue 3 的 `<script setup>` 语法
+2. **组件通过 `install(app)` 全局注册**：无需逐个导入组件，调用一次即可使用所有组件
+3. **布局优先使用 CSS 原子类 + `mu-box`**：Mussel 4 的布局系统基于 CSS，而非组件嵌套
+4. **通过 CSS 变量实现主题定制**：所有颜色、间距、字号等均通过 CSS 变量控制
+5. **暗色模式通过 `.mu-dark` class 切换**：在根元素上切换该 class 即可
 
-根据需求快速定位合适的组件：
-
-| 需求 | 推荐组件 | 说明 |
-|------|----------|------|
-| 水平/垂直布局 | `MuHBox` / `MuVBox` | Flex 布局容器，建议直接使用 class：`mu-h-box` / `mu-v-box` |
-| 网格布局 | `MuGridBox` / `MuGridCell` | 网格布局容器，建议使用 class |
-| 按钮 | `MuButton` | 支持多种样式：normal、outline、text、link |
-| 按钮组 | `MuButtonGroup` | 统一样式的按钮集合 |
-| 工具栏按钮 | `MuToolButton` | 仅图标的快捷按钮 |
-| 模态对话框 | `MuDialog` | 带遮罩的模态窗口，支持最大化 |
-| 抽屉面板 | `MuDrawer` | 从四周浮出的面板 |
-| 输入框 | `MuInput` | 基础文本输入，支持前缀/后缀 |
-| 下拉单选 | `MuSelect` | 下拉选择框 |
-| 下拉多选 | `MuMultiSelect` | 支持标签显示的多选框 |
-| 组合输入 | `MuComboBox` | 可输入也可下拉选择的组合框 |
-| 日期选择 | `MuDateInput` | 日期/月份选择器 |
-| 复选框 | `MuCheck` | 复选按钮 |
-| 单选框 | `MuRadio` | 单选按钮 |
-| 开关 | `MuSwitch` | 切换开关 |
-| 下拉菜单 | `MuDropdown` / `MuDropdownButton` | 下拉面板和按钮 |
-| 上下文菜单 | `MuContextMenu` | 右键菜单 |
-| 标签页 | `MuTabs` / `MuTabBar` / `MuTabPanel` | 多页签容器 |
-| 列表 | `MuList` / `MuListItem` | 数据列表 |
-| 树 | `MuTree` | 树形结构，支持勾选 |
-| 标签组 | `MuTags` | 标签展示和操作 |
-| 消息提示 | `MessageBox` | alert/confirm/error/warn 对话框 |
-| 浮动通知 | `Notifier` | 通知消息 |
-
-## 常用组件详解
-
-以下是最常用的组件详细说明。如需查看其他组件，请参考 [完整组件文档](references/full-components.md)。
-
----
-
-### 1. 布局组件
-
-#### MuHBox / MuVBox
-
-Flex 布局容器，用于水平或垂直排列子元素。
-
-**推荐用法：** 直接使用 class 而非组件标签
-
-```vue
-<!-- 水平布局 -->
-<div class="mu-h-box">
-  <div>Item 1</div>
-  <div>Item 2</div>
-</div>
-
-<!-- 垂直布局 -->
-<div class="mu-v-box">
-  <div>Item 1</div>
-  <div>Item 2</div>
-</div>
-```
-
-**最佳实践：**
-- 优先使用 class 方式，更轻量
-- 用于表单行、工具栏等场景
-- 配合 `gap`、`justify-content`、`align-items` 等 Flex 属性使用
-
----
-
-### 2. 按钮组件
-
-#### MuButton
-
-各种形态的按钮。
-
-**核心属性：**
-
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `caption` | String | 按钮标题 |
-| `icon` | String | 按钮图标 |
-| `size` | String | 尺寸：`small` \| `normal` \| `large` |
-| `button-style` | String | 风格：`normal` \| `outline` \| `text` \| `link` |
-| `primary` | Boolean | 主色按钮 |
-| `danger` | Boolean | 危险色按钮 |
-| `accent` | Boolean | 强调色按钮 |
-| `disabled` | Boolean | 禁用状态 |
-| `x-color` | String | 自定义颜色 |
-
-**常用示例：**
-
-```vue
-<!-- 基础按钮 -->
-<mu-button caption="确定" />
-
-<!-- 主按钮 -->
-<mu-button primary caption="提交" />
-
-<!-- 危险操作 -->
-<mu-button danger caption="删除" />
-
-<!-- 图标按钮 -->
-<mu-button icon="icon icon-save" caption="保存" />
-
-<!-- 不同尺寸 -->
-<mu-button size="small" caption="小" />
-<mu-button size="normal" caption="中" />
-<mu-button size="large" caption="大" />
-
-<!-- 不同风格 -->
-<mu-button button-style="normal" caption="普通" />
-<mu-button button-style="outline" caption="边框" />
-<mu-button button-style="text" caption="文字" />
-```
-
-**最佳实践：**
-- 表单提交使用 `primary` 按钮
-- 删除等危险操作使用 `danger` 按钮
-- 取消操作使用 `button-style="text"` 或默认按钮
-- 工具栏优先使用 `MuToolButton`
-
----
-
-### 3. 表单组件
-
-#### MuInput
-
-基础输入框。
-
-**核心属性：**
-
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `modelValue` | - | v-model 双向绑定 |
-| `type` | String | 原生 input type，默认 `text` |
-| `placeholder` | String | 占位文本 |
-| `clear-button` | Boolean | 显示清除按钮，默认受全局选项控制 |
-| `prefix` | String/Object | 前缀文本或按钮 |
-| `suffix` | String/Object | 后缀文本或按钮 |
-| `disabled` | Boolean | 禁用状态 |
-| `readonly` | Boolean | 只读状态 |
-
-**常用示例：**
-
-```vue
-<!-- 基础输入 -->
-<mu-input v-model="username" placeholder="请输入用户名" />
-
-<!-- 带前后缀 -->
-<mu-input v-model="price" prefix="¥" suffix="元" />
-
-<!-- 密码输入 -->
-<mu-input v-model="password" type="password" />
-
-<!-- 只读 -->
-<mu-input v-model="readonlyValue" readonly />
-
-<!-- 禁用 -->
-<mu-input v-model="disabledValue" disabled />
-```
-
----
-
-#### MuSelect
-
-下拉单选框。
-
-**核心属性：**
-
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `options` | Array | 选项数组 `[{ value, label }]` |
-| `option-key` | String | 选项的 key 属性名，默认 `value` |
-| `modelValue` | - | v-model 绑定值 |
-
-**示例：**
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const selected = ref('')
-
-const options = [
-  { value: 'apple', label: '苹果' },
-  { value: 'banana', label: '香蕉' },
-  { value: 'orange', label: '橙子' }
-]
-</script>
-
-<template>
-  <mu-select v-model="selected" :options="options" />
-</template>
-```
-
----
-
-#### MuCheck / MuRadio
-
-复选框和单选框。
-
-**示例：**
-
-```vue
-<!-- 复选框 - 单个 -->
-<mu-check v-model="agreed">我同意协议</mu-check>
-
-<!-- 复选框 - 数组组 -->
-<mu-check v-model="fruits" value="apple">苹果</mu-check>
-<mu-check v-model="fruits" value="banana">香蕉</mu-check>
-
-<!-- 单选框 -->
-<mu-radio v-model="gender" value="male">男</mu-radio>
-<mu-radio v-model="gender" value="female">女</mu-radio>
-```
-
----
-
-### 4. 模态窗口组件
-
-#### MuDialog
-
-模态对话框。
-
-**核心属性：**
-
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `visible` | Boolean | 显示/隐藏（v-model:visible） |
-| `title` | String | 对话框标题 |
-| `width` | String/Number | 宽度 |
-| `height` | String/Number | 高度 |
-| `easy-hide` | Boolean | 点击遮罩/ESC 关闭 |
-| `buttons` | Array | 底部按钮配置 |
-| `lazy` | Boolean | 懒渲染，首次打开时渲染 |
-
-**核心事件：**
-
-| 事件 | 参数 | 说明 |
-|------|------|------|
-| `update:visible` | value, action, trigger | 关闭事件，可判断触发原因 |
-| `button-click` | button | 按钮点击 |
-
-**示例：**
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const visible = ref(false)
-
-const open = () => { visible.value = true }
-
-const handleClose = (value, action, trigger) => {
-  console.log('触发原因:', trigger) // 'mask', 'esc', 'close-button', 'button'
-}
-</script>
-
-<template>
-  <mu-button @click="open" caption="打开对话框" />
-
-  <mu-dialog
-    v-model:visible="visible"
-    title="提示"
-    width="500px"
-    :easy-hide="true"
-    @update:visible="handleClose"
-  >
-    <p>对话框内容</p>
-
-    <template #footer>
-      <mu-button caption="取消" @click="visible = false" />
-      <mu-button primary caption="确定" />
-    </template>
-  </mu-dialog>
-</template>
-```
-
-**最佳实践：**
-- 使用 `v-model:visible` 控制显示状态
-- 表单对话框使用 `@update:visible` 检查是否因点击遮罩关闭
-- 复杂对话框使用 `lazy` 属性优化性能
-
----
-
-#### MuDrawer
-
-从四周浮出的抽屉面板。
-
-**核心属性：**
-
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `visible` | Boolean | 显示/隐藏 |
-| `position` | String | 位置：`top` \| `right` \| `bottom` \| `left` |
-| `width` | String/Number | 宽度（left/right） |
-| `height` | String/Number | 高度（top/bottom） |
-| `mask` | Boolean | 是否显示遮罩，默认 true |
-| `easy-hide` | Boolean | 快速关闭 |
-
-**示例：**
-
-```vue
-<mu-drawer
-  v-model:visible="drawerVisible"
-  position="right"
-  width="300px"
->
-  <p>抽屉内容</p>
-</mu-drawer>
-```
-
----
-
-### 5. 反馈组件
-
-#### MessageBox
-
-消息提示对话框（程序化调用）。
-
-```vue
-<script setup>
-import { inject } from 'vue'
-
-const { messageBox } = inject('$mussel')
-
-// 警告对话框
-const showAlert = async () => {
-  const btn = await messageBox.alert('操作成功！')
-  console.log('点击了:', btn)
-}
-
-// 确认对话框
-const showConfirm = async () => {
-  const btn = await messageBox.confirm('确定要删除吗？')
-  if (btn === 'ok') {
-    // 用户点击了确定
-  }
-}
-
-// 错误提示
-const showError = () => {
-  messageBox.error('操作失败，请重试')
-}
-
-// 警告提示
-const showWarn = () => {
-  messageBox.warn('请注意数据可能丢失')
-}
-</script>
-```
-
-#### Notifier
-
-浮动消息通知。
-
-```vue
-<script setup>
-import { inject } from 'vue'
-
-const { notifier } = inject('$mussel')
-
-notifier.notify({
-  title: '操作成功',
-  message: '数据已保存',
-  type: 'success' // 'alert' | 'success' | 'warn' | 'error'
-})
-</script>
-```
-
----
-
-## 组件使用模式
-
-### 表单布局模式
-
-```vue
-<template>
-  <mu-form label-width="100px" label-align="right">
-    <mu-form-row>
-      <mu-form-field label="用户名：">
-        <mu-input v-model="form.username" />
-      </mu-form-field>
-    </mu-form-row>
-
-    <mu-form-row>
-      <mu-form-field label="邮箱：">
-        <mu-input v-model="form.email" type="email" />
-      </mu-form-field>
-    </mu-form-row>
-
-    <mu-form-row>
-      <mu-form-field label="性别：">
-        <mu-radio v-model="form.gender" value="male">男</mu-radio>
-        <mu-radio v-model="form.gender" value="female">女</mu-radio>
-      </mu-form-field>
-    </mu-form-row>
-
-    <mu-form-row>
-      <mu-form-field>
-        <mu-button primary caption="提交" />
-        <mu-button caption="取消" />
-      </mu-form-field>
-    </mu-form-row>
-  </mu-form>
-</template>
-```
-
-### 工具栏模式
-
-```vue
-<template>
-  <div class="mu-h-box" style="gap: 8px; padding: 8px;">
-    <mu-button primary icon="icon icon-save" caption="保存" />
-    <mu-button caption="取消" />
-    <div style="flex: 1"></div>
-    <mu-tool-button icon="icon icon-settings" />
-    <mu-tool-button icon="icon icon-refresh" />
-  </div>
-</template>
-```
-
-### 标签页模式
-
-```vue
-<template>
-  <mu-tabs v-model:active-tab="activeTab" tab-style="border-card">
-    <mu-tab-panel name="tab1" caption="首页" icon="icon icon-home">
-      首页内容
-    </mu-tab-panel>
-    <mu-tab-panel name="tab2" caption="设置" icon="icon icon-settings">
-      设置内容
-    </mu-tab-panel>
-    <mu-tab-panel name="tab3" caption="关于" icon="icon icon-info">
-      关于内容
-    </mu-tab-panel>
-  </mu-tabs>
-</template>
-
-<script setup>
-import { ref } from 'vue'
-const activeTab = ref('tab1')
-</script>
-```
-
----
-
-## 常见问题
-
-### Q: 如何正确使用图标？
-
-图标需要在安装 Mussel 时注册，推荐集中管理：
+## 项目初始化
 
 ```javascript
-import { install as installMussel, installIcons } from 'mussel'
-import MySvgIcon from 'path/to/icon.svg'
+import { createApp } from 'vue'
+import { install } from 'mussel'
 
-const app = createApp()
+const app = createApp(App)
 
-// 方式1：安装时注册
-installMussel(app, {
-  icons: {
-    'my-icon': MySvgIcon,      // SVG 数据
-    'bolt': 'icon icon-bolt'   // icon-font class
-  }
-})
+install(app).mount('#app')
+```
 
-// 方式2：后续注册
-installIcons({
-  'another-icon': anotherSvgIcon
+install 时可传入选项：
+```javascript
+install(app, {
+  root: '#app',           // 根元素选择器
+  darkMode: false,        // 是否默认暗色模式
+  colors: { /* 自定义颜色 */ },
+  icons: { /* 注册图标 */ },
+  locale: 'zh-CN',
+  localeResources: {}
 })
 ```
 
-### Q: MuDialog 关闭事件如何区分触发原因？
+## 组件总览
 
-使用 `@update:visible` 事件的第三个参数：
+Mussel 组件分为 8 大类：
+
+| 分类 | 组件 |
+|------|------|
+| **布局** | MuHBox, MuVBox, MuGridBox, MuGridCell, MuFlexSplitter, MuScrollBox, MuTabs, MuTabBar, MuTabPanel, MuToolbar |
+| **图标/图形** | MuIcon, MuSvgStripe, MuBadge |
+| **按钮** | MuButton, MuButtonGroup, MuToolButton |
+| **模态窗口** | MuDialog, MuDrawer |
+| **表单/输入** | MuForm, MuFormRow, MuFormField, MuInput, MuInputGroup, MuSelect, MuComboBox, MuMultiSelect, MuDateInput, MuCheck, MuRadio, MuSwitch |
+| **导航** | MuDropdownPanel, MuDropdown, MuDropdownButton, MuContextMenu |
+| **数据展示** | MuList, MuListItem, MuListDivider, MuTree, MuTags, MuCalendar, MuTable |
+| **反馈** | MessageBox, Notifier, MuStatusBox |
+
+## 按需查阅参考文档
+
+根据任务需要，读取对应的参考文件获取完整的 API 文档：
+
+- **组件 API（props、events、slots、示例）** → 读取 `references/components.md`
+- **CSS 变量与原子类** → 读取 `references/styles.md`
+- **mu-box 盒模型属性** → 读取 `references/box.md`
+- **Flex 布局属性** → 读取 `references/flex-layout.md`
+- **Grid 布局属性** → 读取 `references/grid-layout.md`
+
+不需要一次性全部读取，根据当前任务涉及的组件和样式按需查阅。
+
+## 常见开发模式
+
+### 布局模式
+
+**页面整体布局**（全屏固定）：
+```vue
+<mu-v-box position="fixed fit" padding="1x">
+  <mu-toolbar><!-- 顶部栏 --></mu-toolbar>
+  <mu-h-box flex="1" padding="1x">
+    <div class="mu-v-box" flex="0" width="240"><!-- 侧边栏 --></div>
+    <mu-flex-splitter />
+    <div flex="1"><!-- 主内容区 --></div>
+  </mu-h-box>
+</mu-v-box>
+```
+
+**mu-box 属性布局**（适合简单场景）：
+```html
+<div class="mu-box" layout="flex" position="absolute fit" margin="1x">
+  <div class="mu-box" border margin="1x" width="350">Cell 1</div>
+  <div class="mu-box" border margin="1x" flex="1">Cell 2</div>
+</div>
+```
+
+### 表单模式
+
+```vue
+<mu-form border="primary" label-width="80px" label-align="right">
+  <mu-form-field label="用户名" flex="1 auto">
+    <mu-input v-model="form.username" />
+  </mu-form-field>
+  <mu-form-row>
+    <mu-form-field flex="1" label="手机号">
+      <mu-input v-model="form.phone" />
+    </mu-form-field>
+    <mu-form-field flex="1" label="邮箱">
+      <mu-input v-model="form.email" />
+    </mu-form-field>
+  </mu-form-row>
+  <mu-form-field label="角色">
+    <mu-select v-model="form.role" :options="roleOptions" />
+  </mu-form-field>
+</mu-form>
+```
+
+### 数据表格模式
+
+```vue
+<mu-table
+  :columns="columns"
+  :records="records"
+  key-field="id"
+  striped
+  hover-mode="cross"
+  gridlines="column"
+  placeholder="-"
+  @cell-click="onCellClick"
+  @cell-item-click="onCellItemClick" />
+```
+
+列配置示例：
+```javascript
+const columns = [
+  { type: 'rec_no' },
+  { type: 'check', field: 'checked', headerCheckbox: true },
+  { field: 'name', caption: '姓名', type: 'text', sortable: true },
+  { field: 'amount', caption: '金额', type: 'currency', align: 'right' },
+  { field: 'status', caption: '状态', type: 'bool', mappings: { true: '启用', false: '停用' } },
+  { field: 'created', caption: '创建时间', type: 'date' },
+  { caption: '操作', type: 'link', align: 'center',
+    links: (rec) => [
+      { caption: '编辑', action: 'edit' },
+      { caption: '删除', action: 'delete', danger: true }
+    ]
+  }
+]
+```
+
+### 对话框模式
 
 ```vue
 <mu-dialog
   v-model:visible="visible"
-  @update:visible="(val, action, trigger) => {
-    if (trigger === 'mask' || trigger === 'esc') {
-      // 用户点击了遮罩或按了 ESC，可能需要检查表单
-    }
-  }"
->
+  title="编辑信息"
+  width="600"
+  easy-hide>
+  <mu-form label-width="60px">
+    <mu-form-field label="名称">
+      <mu-input v-model="form.name" />
+    </mu-form-field>
+  </mu-form>
+  <template #footer>
+    <mu-button caption="取消" @click="visible = false" />
+    <mu-button primary caption="确认" @click="onSave" />
+  </template>
+</mu-dialog>
 ```
 
-### Q: 如何让下拉框支持用户输入？
-
-使用 `MuComboBox` 并设置 `editable`：
+### 下拉菜单模式
 
 ```vue
-<mu-combo-box
-  v-model="value"
-  :options="options"
-  editable
-/>
+<mu-dropdown
+  dropdown-trigger="click"
+  :dropdown-items="menuItems"
+  @action="onAction">
+  <mu-button caption="操作" />
+</mu-dropdown>
 ```
 
-### Q: 表单验证怎么做？
+menuItems 格式：
+```javascript
+const menuItems = [
+  { label: '编辑', icon: 'edit', action: 'edit' },
+  { label: '删除', icon: 'trash', action: 'delete', danger: true },
+  '-',  // 分隔线
+  { is: '-', label: '分组标题' },  // 分组标题
+  { label: '导出', action: 'export' }
+]
+```
 
-Mussel 4 目前表单组件主要用于布局，验证需要配合其他方案（如 VeeValidate）。
+### 消息提示
 
----
+```javascript
+import { inject } from 'vue'
 
-## 更多组件
+const { messageBox } = inject('$mussel')
 
-如需查看以下组件的详细信息，请读取 [完整组件文档](references/full-components.md)：
+// 弹窗
+messageBox.alert('操作成功')
+messageBox.confirm('确认删除？').then(btn => { /* btn === 'ok' */ })
+messageBox.error('出错了')
+messageBox.warn('请注意')
 
-- **导航组件**：MuDropdownPanel、MuDropdown、MuDropdownButton、MuContextMenu
-- **数据展示**：MuList、MuListItem、MuTree、MuTags、MuCalendar
-- **高级布局**：MuFlexSplitter、MuScrollBox
-- **其他**：MuSvgStripe、MuBadge、MuToolbar、MuStatusBox
+// 浮动通知
+messageBox.notify({
+  title: '提示',
+  message: '保存成功',
+  type: 'success'  // alert | success | warn | error
+})
+```
 
----
+### 暗色模式
 
-## 使用建议
+```javascript
+function toggleDarkMode (enabled) {
+  const root = document.querySelector('.mu-root') || document.body
+  root.classList.toggle('mu-dark', enabled)
+}
+```
 
-1. **优先使用 class 方式**：对于布局容器（MuHBox、MuVBox、MuGridBox），直接使用 class 更轻量
-2. **图标集中管理**：在应用入口统一注册所有图标，便于维护
-3. **响应式尺寸**：对话框、抽屉等组件的 width/height 可使用百分比或 `auto`
-4. **事件命名**：注意组件事件命名规范，如下拉相关事件带 `dropdown:` 前缀
-5. **全局配置**：通过 `$mussel.options` 配置全局行为，如 `input.clearButton`
+### 图标注册与使用
 
----
+```javascript
+import { installIcons } from 'mussel'
+import MyIcon from './icons/my-icon.svg'
 
-## 开发时查找组件
+installIcons({
+  'my-icon': MyIcon,       // SVG 数据
+  'bolt': '.ti.ti-bolt'    // icon-font class
+})
+```
 
-当你需要使用某个组件但不确定 API 时，按以下步骤操作：
+```vue
+<mu-icon icon="my-icon" />
+<mu-button icon="bolt" caption="闪电" />
+```
 
-1. **先看本指南的常用组件** - 大部分日常需求已覆盖
-2. **查看组件选择指南表** - 快速定位可能合适的组件
-3. **读取完整组件文档** - 获取更详细的 API 信息
-4. **查看项目中的示例代码** - 参考实际使用场景
+## 样式速查
+
+### 常用 CSS 变量
+
+```css
+/* 文本色 */
+var(--mu-text-color-strong)   /* 正文/输入 */
+var(--mu-text-color-normal)   /* 标题/名称 */
+var(--mu-text-color-subtle)   /* 次要信息 */
+var(--mu-text-color-muted)    /* 禁用文字 */
+
+/* 背景色 */
+var(--mu-bg-normal)           /* 默认背景 */
+var(--mu-bg-strong)           /* 导航/工具栏 */
+var(--mu-bg-header)           /* 头部区域 */
+var(--mu-bg-footer)           /* 尾部区域 */
+var(--mu-bg-stripe)           /* 交替行 */
+
+/* 功能色 */
+var(--mu-primary-color)       /* 主色 */
+var(--mu-success-color)       /* 成功 */
+var(--mu-warning-color)       /* 警告 */
+var(--mu-danger-color)        /* 危险 */
+var(--mu-secondary-color)     /* 次要色 */
+
+/* 边框色 */
+var(--mu-border-color-strong) /* 深边框 */
+var(--mu-border-color-normal) /* 正常边框 */
+var(--mu-border-color-soft)   /* 分隔线 */
+```
+
+### 常用原子类
+
+注意：原子类以 class 形式使用，**不能**用于 inline style，也**不能**作为裸属性写在元素上。`2x`、`1x` 等是 mussel 原子类特有的单位，CSS 本身不认识，所以 `style="gap: 2x"` 是无效的，`<div gap-1x>` 也是无效的，必须写成 `class="gap-2x"`。
+
+```css
+/* 间距 (1x=8px, 2x=16px, 3x=24px, 4x=32px) — 只能用 class，不能用 style */
+.p-1x .px-2x .py-1x .pt-1x .pr-1x .pb-1x .pl-1x
+.m-1x .mx-auto .my-2x .mt-1x .mr-1x .mb-1x .ml-1x
+
+/* Flex */
+.flex .flex-row .flex-col .flex-1 .flex-none .flex-wrap
+.justify-center .justify-end .items-center .gap-1x .gap-2x
+
+/* 显示 */
+.hidden .block .inline-block .contents
+
+/* 文本 */
+.text-strong .text-normal .text-subtle .text-muted
+.text-primary .text-success .text-danger .text-warning
+.text-left .text-center .text-right
+.text-ellipsis .line-clamp  /* line-clamp 通过 --line-clamp 变量控制行数 */
+
+/* 边框 */
+.border .border-soft .border-strong .border-primary .border-danger
+.border-t .border-b .border-x .border-y
+.border-dashed .border-dotted
+
+/* 溢出 */
+.overflow-auto .overflow-hidden
+```

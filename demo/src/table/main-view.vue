@@ -12,7 +12,7 @@
         :records="records"
         :records-offset="offset"
         :selected-record-key="selectedId"
-        :header-checked="headerChecked"
+        :header-checked-1="headerChecked"
         :order-by="orderByOption"
         :fixed-left-columns="3"
         key-field="userId"
