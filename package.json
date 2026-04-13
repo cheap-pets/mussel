@@ -32,7 +32,7 @@
       "config": ".cz-config.cjs"
     }
   },
-  "repository": "https://github.com/cheap-pets/mussel3.git",
+  "repository": "https://github.com/cheap-pets/mussel.git",
   "author": "scrollbar-ww <scrollbar@163.com>",
   "license": "MIT"
 }

@@ -1,2 +1,2 @@
-# mussel3
+# mussel
 UI Library for Vue@3
