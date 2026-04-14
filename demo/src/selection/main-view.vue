@@ -43,3 +43,11 @@
     value1.value = v
   }
 </script>
+
+<style>
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+</style>

@@ -1,13 +1,2 @@
 {
-  "permissions": {
-    "allow": [
-      "WebSearch",
-      "Edit(~/.claude/skills/mussel-components/**)",
-      "Edit(/.claude/skills/mussel-components/**)"
-    ],
-    "additionalDirectories": [
-      "C:\\Users\\scrol\\.claude\\skills\\mussel-components",
-      "C:\\Users\\scrol\\.claude\\skills\\mussel-components\\references"
-    ]
-  }
 }
