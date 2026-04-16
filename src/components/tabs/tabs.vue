@@ -1,5 +1,5 @@
 <template>
-  <div ref="thisEl" class="mu-tabs" :style="sizeStyle" :tab-position="tabPosition">
+  <div ref="thisEl" class="mu-tabs" :style="style" :tab-position="tabPosition">
     <mu-tab-bar
       v-model:active-tab="activeTab"
       v-bind="tabBarAttrs"
@@ -34,6 +34,7 @@
   const activeTab = defineModel('activeTab', { type: String })
 
   const props = defineProps({
+    ...sizeProps,
     tabStyle: {
       type: String,
       default: 'button',
@@ -45,11 +46,10 @@
       validator: v => ['top', 'right', 'bottom', 'left'].includes(v)
     },
     tabBarAttrs: Object,
-    tabButtons: Array,
-    ...sizeProps
+    tabButtons: Array
   })
 
-  const { sizeStyle } = useSize(props)
+  const style = useSize(props).resolved
 
   const thisEl = shallowRef()
   const mountedButtons = ref(new WeakMap())

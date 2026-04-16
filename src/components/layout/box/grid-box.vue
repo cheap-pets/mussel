@@ -11,7 +11,7 @@
   defineOptions({ name: 'MusselGridBox' })
 
   const props = defineProps({ ...sizeProps, rows: null, columns: null })
-  const sizeStyle = useSize(props).sizeStyle
+  const sizeStyle = useSize(props).resolved
 
   function getGridTemplateValues (v) {
     return isNaN(v) ? undefined : `repeat(${v}, 1fr)`

@@ -11,7 +11,7 @@
   defineOptions({ name: 'MusselForm' })
 
   const props = defineProps({ ...sizeProps, labelWidth: String, labelAlign: String })
-  const style = useSize(props).sizeStyle
+  const style = useSize(props).resolved
 
   provide('form', props)
 

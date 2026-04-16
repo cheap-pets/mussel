@@ -1,0 +1,260 @@
+.mu-big-table {
+  --row-height: 36px;
+  --cell-padding: 8px;
+  --cell-line-height: 18px;
+
+  --head-border-bottom: 1px solid var(--mu-border-color-soft);
+
+  --gridline-row: none;
+  --gridline-col: none;
+
+  --select-bg: var(--mu-primary-faint);
+  --hover-bg: var(--mu-gray-translucent);
+
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid var(--mu-border-color-normal);
+
+  color: var(--mu-text-color-normal);
+}
+
+// Header: outside scroll container, fixed at top
+.mu-big-table__header-wrap {
+  position: relative;
+
+  overflow: hidden;
+  flex-shrink: 0;
+
+  border-bottom: var(--head-border-bottom);
+
+  box-shadow: 0 0 0 1px var(--mu-border-color-soft);
+}
+
+.mu-big-table__header-row {
+  display: flex;
+  box-sizing: border-box;
+  height: var(--row-height);
+  box-shadow: 0 0 0 1px var(--mu-border-color-soft);
+}
+
+// Scroll area: the only scrollable part
+.mu-big-table__scroll-area {
+  position: relative;
+  overflow: auto;
+  flex: 1;
+}
+
+// Phantom element to create correct scrollbar
+.mu-big-table__phantom {
+  pointer-events: none;
+
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+// Virtual body: positioned absolutely, translated by scroll
+.mu-big-table__body {
+  pointer-events: none;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+// Virtual row: matches header-row layout
+.mu-big-table__row {
+  pointer-events: auto;
+  display: flex;
+  box-sizing: border-box;
+  height: var(--row-height);
+
+  & + & {
+    border-top: var(--gridline-row);
+  }
+
+  &--striped {
+    background-color: var(--mu-bg-stripe);
+  }
+
+  &--selected > .mu-big-table__cell {
+    background-color: var(--select-bg);
+  }
+}
+
+// Shared cell styles: used by both header cells and data cells
+.mu-big-table__th,
+.mu-big-table__cell {
+  position: relative;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+  padding: var(--cell-padding);
+  border-right: var(--gridline-col);
+
+  font-size: inherit;
+  line-height: var(--cell-line-height);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.last-col {
+    border-right: none;
+  }
+
+  &.fixed-col {
+    position: sticky;
+    z-index: 1;
+  }
+}
+
+// Header cell specifics
+.mu-big-table__th {
+  cursor: default;
+  font-weight: 500;
+  background-color: var(--mu-bg-header);
+}
+
+.mu-big-table__th--sortable {
+  padding: var(--cell-padding) calc(var(--cell-padding) + 18px);
+
+  & > .mu-sort-icon {
+    position: absolute;
+    right: var(--cell-padding);
+    font-size: 18px;
+    color: var(--mu-primary-color);
+  }
+}
+
+// Data cell specifics
+.mu-big-table__cell {
+  overflow: hidden;
+  flex-shrink: 1;
+  vertical-align: middle;
+  background-color: var(--mu-bg-normal);
+}
+
+// Pre-line support
+.mu-big-table__cell--pre-line {
+  white-space: pre-line;
+}
+
+// Data-attribute driven states
+.mu-big-table {
+  &[data-y-scrolled] .mu-big-table__header-wrap {
+    box-shadow: var(--mu-shadow-float), 0 0 0 1px var(--mu-border-color-soft);
+  }
+
+  &[data-x-scrolled] .last-fixed-col {
+    border-right: 1px solid var(--mu-border-color-strong);
+  }
+}
+
+.mu-big-table[data-empty] .mu-big-table__header-wrap {
+  box-shadow: 0 -1px 0 1px var(--mu-border-color-soft);
+}
+
+.mu-big-table--gridlines-all,
+.mu-big-table--gridlines-row {
+  --gridline-row: 1px solid var(--mu-border-color-soft);
+}
+
+.mu-big-table--gridlines-all,
+.mu-big-table--gridlines-column {
+  --gridline-col: 1px solid var(--mu-border-color-soft);
+}
+
+// Hover indicator
+.mu-big-table__hover-indicator {
+  pointer-events: none;
+  width: 0;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    background-color: var(--hover-bg);
+  }
+
+  &[data-mode='row'],
+  &[data-mode='cross'] {
+    &::before {
+      top: var(--hover-row-top);
+      left: 0;
+      width: var(--hover-row-width);
+      height: var(--hover-row-height);
+    }
+  }
+
+  &[data-mode='cell'],
+  &[data-mode='cross'],
+  &[data-mode='column'] {
+    &::after {
+      top: var(--hover-col-top);
+      left: var(--hover-col-left);
+      width: var(--hover-col-width);
+      height: var(--hover-col-height);
+    }
+  }
+}
+
+// Inline shared cell styles from table/column-types/style.scss
+.mu-table__cell-check {
+  cursor: pointer;
+  user-select: none;
+
+  display: inline-block;
+
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--mu-border-color-normal);
+  border-radius: 4px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 14px;
+  color: transparent;
+  text-align: center;
+
+  &:hover {
+    color: var(--mu-text-color-weak);
+  }
+
+  &[data-checked] {
+    border-color: var(--mu-border-color-strong);
+    color: var(--mu-text-color-normal);
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    border-color: var(--mu-border-color-normal);
+    background-color: var(--mu-bg-strong);
+  }
+}
+
+.mu-table__cell-img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.mu-big-table__cell.mu-table__link-cell,
+.mu-big-table__cell.mu-table__tag-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
+}
+
+.mu-big-table__cell.mu-table__link-cell > .mu-link,
+.mu-big-table__cell.mu-table__tag-cell > .mu-tag {
+  overflow: hidden;
+  max-width: calc(100% - 4px);
+  margin: 2px;
+  vertical-align: middle;
+}

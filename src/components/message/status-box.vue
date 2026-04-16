@@ -2,7 +2,7 @@
   <div
     class="mu-status-box mu-box"
     layout="flex" direction="column" content-center
-    :style="sizeStyle">
+    :style="style">
     <slot name="icon">
       <mu-icon v-if="icon" class="mu-status-box_icon" :icon="icon" />
     </slot>
@@ -30,5 +30,5 @@
     ...sizeProps
   })
 
-  const { sizeStyle } = useSize(props)
+  const style = useSize(props).resolved
 </script>

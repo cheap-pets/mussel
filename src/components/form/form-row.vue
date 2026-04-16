@@ -12,5 +12,5 @@
   defineOptions({ name: 'MusselFormRow' })
 
   const props = defineProps({ ...sizeProps })
-  const style = useSize(props).sizeStyle
+  const style = useSize(props).resolved
 </script>

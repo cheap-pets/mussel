@@ -4,9 +4,9 @@
       FORM
       <theme-switch />
     </h2>
-    <div class="mu-box" position="fixed fit" padding="2x">
+    <div class="mu-box" padding="2x">
       <mu-form border="primary" label-width="60px" label-align="right">
-        <mu-form-field label="Text 1" width="100" flex="1 auto">
+        <mu-form-field label="Text 1" width="200" flex="1 auto">
           <mu-input value="Value 1" />
         </mu-form-field>
         <mu-form-field label="Text 2" width="300" required flex="1 auto">

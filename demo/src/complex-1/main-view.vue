@@ -3,7 +3,7 @@
     <!-- 顶部导航栏 -->
     <header
       class="flex-none flex items-center px-2x"
-      style="background: var(--mu-bg-header); height: 48px; z-index: 10;">
+      style=" z-index: 10; height: 48px; background: var(--mu-bg-header);">
       <span style="font-size: 18px; font-weight: 600; color: var(--mu-primary-color);">Mussel Admin</span>
       <div class="ml-2x" style="font-size: 12px; opacity: 0.5;">
         管理控制台
@@ -214,7 +214,7 @@
     <!-- 底部状态栏 -->
     <footer
       class="flex-none flex items-center px-2x"
-      style="height: 28px; font-size: 12px; background: var(--mu-bg-header); border-top: 1px solid var(--mu-border-color-soft);">
+      style="height: 28px; border-top: 1px solid var(--mu-border-color-soft); font-size: 12px; background: var(--mu-bg-header);">
       <span style="opacity: 0.5;">Mussel Admin v1.0.0</span>
       <div class="ml-auto flex items-center gap-2x">
         <span style="opacity: 0.5;">在线用户：3</span>

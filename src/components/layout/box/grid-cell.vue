@@ -20,10 +20,10 @@
     rowEnd: null
   })
 
-  const { sizeStyle } = useSize(props)
+  const size = useSize(props).resolved
 
   const style = computed(() => ({
-    ...sizeStyle.value,
+    ...size.value,
     gridColumnStart: props.colStart,
     gridColumnSpan: props.colSpan,
     gridColumnEnd: props.colEnd,

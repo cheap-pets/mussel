@@ -12,19 +12,18 @@
 
   import { computed, inject } from 'vue'
   import { resolveSize } from '@/utils/size'
-  import { sizeProps, useSize } from '@/components/common-hooks/size'
+  import { useSize } from '@/components/common-hooks/size'
 
   defineOptions({ name: 'MusselFormField' })
 
   const props = defineProps({
-    ...sizeProps,
     label: String,
     labelWidth: String,
     labelAlign: String
   })
 
   const form = inject('form', {})
-  const style = useSize(props).sizeStyle
+  const style = useSize(props).resolved
 
   const labelAlign = computed(() =>
     props.labelAlign || form.labelAlign || null

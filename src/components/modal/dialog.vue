@@ -9,7 +9,7 @@
         @sizechange="onMaskResize" @click="onMaskClick">
         <div
           ref="dialogEl"
-          class="mu-dialog" :style="[sizeStyle, position]"
+          class="mu-dialog" :style="[dialogSize, position]"
           v-bind="$attrs" :dragging="dragging"
           @mousedown="onDragStart">
           <slot name="client">
@@ -88,7 +88,7 @@
   const slots = useSlots()
 
   const { ready, container, modalVisible, hide, onMaskClick } = useModal(props, emit)
-  const { sizeStyle } = useSize(props)
+  const { resolved: dialogSize } = useSize(props)
   const { genKey } = useKeyGen()
 
   const maximized = ref(false)

@@ -11,7 +11,7 @@
         <div
           v-bind="$attrs"
           class="mu-drawer"
-          :style="sizeStyle"
+          :style="drawerSize"
           :position="position"
           :border-radius="borderRadius ? '' : null">
           <slot />
@@ -46,5 +46,5 @@
   const emit = defineEmits([...modalEvents])
 
   const { ready, container, modalVisible, onMaskClick } = useModal(props, emit)
-  const { sizeStyle } = useSize(props)
+  const { resolved: drawerSize } = useSize(props)
 </script>
