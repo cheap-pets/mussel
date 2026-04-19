@@ -2,14 +2,8 @@
   <div
     ref="rootElement"
     v-mu-scrollbar
-    class="mu-table"
-    :class="[striped && 'mu-table--striped', gridlinesClass]"
-    :data-empty="!records?.length || null"
-    :data-x-overflowed="xOverflowed || null"
-    :data-y-overflowed="yOverflowed || null"
-    :data-x-scrolled="xScrolled || null"
-    :data-y-scrolled="yScrolled || null"
-    :data-y-scrolled-end="yScrolledEnd || null"
+    class="mu-table mu-scrollbar"
+    :class="tableClasses"
     @scroll="onScroll"
     @sizechange="onResize">
     <table
@@ -134,6 +128,21 @@
     return props.keyField ? rec[props.keyField] : autoRecordKey(rec)
   }
 
+  const isEmpty = computed(() => !props.records?.length)
+
+  const tableClasses = computed(() => {
+    return {
+      'mu-table--empty': isEmpty.value,
+      'mu-table--striped': props.striped,
+      [`mu-table--gridlines-${props.gridlines}`]: true,
+      'mu-table--x-overflowed': xOverflowed.value,
+      'mu-table--y-overflowed': yOverflowed.value,
+      'mu-table--x-scrolled': xScrolled.value,
+      'mu-table--y-scrolled': yScrolled.value,
+      'mu-table--y-scrolled-end': yScrolledEnd.value
+    }
+  })
+
   const sortDirection = computed(() => {
     if (!props.orderBy) return {}
 
@@ -147,10 +156,6 @@
 
   const selectedRecKey = computed(() =>
     props.selectedRecordKey ?? props.selectedRecord?.[props.keyField || '_key']
-  )
-
-  const gridlinesClass = computed(() =>
-    `mu-table--gridlines-${props.gridlines}`
   )
 
   const internalColumns = computed(() => {

@@ -6,7 +6,6 @@
       class="mu-table__td"
       :class="cell.class"
       :style="cell.style"
-      :rowspan="cell.rowspan"
       @mouseenter="onCellEnter($event.target, cell)"
       @mouseleave="removeTitle($event.target)"
       @click="onCellClick(record, cell.col._raw, recordIndex)">

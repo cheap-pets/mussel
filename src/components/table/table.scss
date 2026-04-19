@@ -102,25 +102,7 @@
   background-color: var(--select-bg);
 }
 
-.mu-table {
-  &[data-y-scrolled] thead {
-    box-shadow: var(--mu-shadow-float);
-  }
-
-  &[data-x-scrolled] .last-fixed-col {
-    border-right: 1px solid var(--mu-border-color-strong);
-  }
-
-  &[data-y-overflowed] + .mu-table__footer {
-    box-shadow: var(--mu-shadow-footer);
-  }
-
-  &[data-y-scrolled-end] + .mu-table__footer {
-    box-shadow: none;
-  }
-}
-
-.mu-table[data-empty],
+.mu-table--empty,
 .mu-table--gridlines-none {
   & > table {
     box-shadow: 0 -1px 0 1px var(--mu-border-color-soft);
@@ -137,6 +119,21 @@
   --gridline-col: 1px solid var(--mu-border-color-soft);
 }
 
+.mu-table--y-scrolled thead {
+  box-shadow: var(--mu-shadow-float);
+}
+
+.mu-table--x-scrolled .last-fixed-col {
+  border-right: 1px solid var(--mu-border-color-strong);
+}
+
+.mu-table--y-overflowed + .mu-table__footer {
+  box-shadow: var(--mu-shadow-footer);
+}
+
+.mu-table--y-scrolled-end + .mu-table__footer {
+  box-shadow: none;
+}
 
 .mu-table__hover-indicator {
   pointer-events: none;
