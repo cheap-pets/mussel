@@ -1,21 +1,19 @@
 <template>
   <div
-    ref="rootElement"
+    ref="wrapEl"
     v-mu-scrollbar
     class="mu-table mu-scrollbar"
-    :class="tableClasses"
+    :class="wrapClass"
+    :style="{ '--row-height': rowHeight }"
     @scroll="onScroll"
     @sizechange="onResize">
     <table
-      ref="tableElement"
+      ref="tableEl"
       cellspacing="0"
       :style="{ width: tableWidth, minWidth: tableMinWidth }"
       @sizechange="onResize">
       <colgroup>
-        <col
-          v-for="col in internalColumns"
-          :key="col._key"
-          :style="col._colStyle">
+        <col v-for="col in internalColumns" :key="col._key" :style="col._colStyle">
       </colgroup>
       <thead>
         <tr>
@@ -48,7 +46,7 @@
           :class="(selectedRecKey != null && getRecordKey(rec) === selectedRecKey) ? 'mu-table__tr--selected' : null" />
       </tbody>
     </table>
-    <div class="mu-table__hover-indicator" :data-mode="hoverMode" :style="hoverStyle" />
+    <div class="mu-table__hover-indicator" :class="hoverIndicatorClass" :style="hoverStyle" />
   </div>
 </template>
 
@@ -65,28 +63,28 @@
   import './table.scss'
 
   const props = defineProps({
+    keyField: String,
     records: { type: Array, default: () => [] },
     columns: { type: Array, default: () => [] },
-    recordsOffset: { type: Number, default: 0 },
-    headers: Array,
-    headerChecked: Object,
-    keyField: String,
-    fixedLeftColumns: Number,
-    orderBy: String,
-    striped: Boolean,
-    placeholder: String,
     selectedRecord: Object,
     selectedRecordKey: [String, Number],
-    hoverMode: {
-      default: 'row',
-      validator: v => ['none', 'row', 'column', 'cross', 'cell'].includes(v)
-    },
+    headerChecked: Object,
+    orderBy: String,
+    recordsOffset: { type: Number, default: 0 },
+    fixedLeftColumns: Number,
+    rowHeight: Number,
+    tableWidth: { default: 'fit-content' },
+    tableMinWidth: { default: '100%' },
     gridlines: {
       default: 'all',
       validator: v => ['none', 'all', 'row', 'column'].includes(v)
     },
-    tableWidth: { default: 'fit-content' },
-    tableMinWidth: { default: '100%' }
+    hoverMode: {
+      default: 'row',
+      validator: v => ['none', 'row', 'column', 'cross', 'cell'].includes(v)
+    },
+    striped: Boolean,
+    placeholder: String
   })
 
   const emit = defineEmits([
@@ -99,8 +97,8 @@
     'update:selected-record-key'
   ])
 
-  const rootElement = shallowRef()
-  const tableElement = shallowRef()
+  const wrapEl = shallowRef()
+  const tableEl = shallowRef()
 
   const fixedColumnsWidth = ref(0)
 
@@ -130,11 +128,11 @@
 
   const isEmpty = computed(() => !props.records?.length)
 
-  const tableClasses = computed(() => {
+  const wrapClass = computed(() => {
     return {
-      'mu-table--empty': isEmpty.value,
-      'mu-table--striped': props.striped,
       [`mu-table--gridlines-${props.gridlines}`]: true,
+      'mu-table--striped': props.striped,
+      'mu-table--empty': isEmpty.value,
       'mu-table--x-overflowed': xOverflowed.value,
       'mu-table--y-overflowed': yOverflowed.value,
       'mu-table--x-scrolled': xScrolled.value,
@@ -142,6 +140,10 @@
       'mu-table--y-scrolled-end': yScrolledEnd.value
     }
   })
+
+  const hoverIndicatorClass = computed(() =>
+    `mu-table__hover-indicator--${props.hoverMode}`
+  )
 
   const sortDirection = computed(() => {
     if (!props.orderBy) return {}
@@ -207,7 +209,7 @@
   let hoveringRow, hoveringCol
 
   const setHoverSize = debounce(100, () => {
-    const table = tableElement.value
+    const table = tableEl.value
     if (!table) return
 
     hoverStyle['--hover-row-width'] = `${table.offsetWidth}px`
@@ -254,7 +256,7 @@
 
     const left = cell.offsetLeft
     const fixedWidth = fixedColumnsWidth.value
-    const scrollLeft = tableElement.value.parentNode.scrollLeft
+    const scrollLeft = tableEl.value.parentNode.scrollLeft
 
     const offset = column._fixed || left >= fixedWidth + scrollLeft
       ? 0
@@ -282,10 +284,10 @@
   }, { noLeading: true })
 
   const onResize = throttle(100, () => {
-    const el = rootElement.value
+    const el = wrapEl.value
     if (!el) return
 
-    const table = tableElement.value
+    const table = tableEl.value
     const th = table.querySelector('th.last-fixed-col')
 
     const x = table.offsetWidth - el.clientWidth
@@ -302,7 +304,7 @@
   }, { noLeading: true })
 
   const onScroll = throttle(50, () => {
-    const el = rootElement.value
+    const el = wrapEl.value
     if (!el) return
 
     const { scrollLeft, scrollTop, scrollHeight, clientHeight } = el
@@ -342,7 +344,7 @@
     () => props.records,
     (newValue, oldValue) =>
       (newValue !== oldValue) &&
-      rootElement.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      wrapEl.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   )
 
   provide('table', {
