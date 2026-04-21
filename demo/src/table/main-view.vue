@@ -21,6 +21,7 @@
         hover-mode="cross"
         gridlines="column"
         striped
+        virtual-scroll
         placeholder="-"
         @header-click="onHeaderClick"
         @cell-click="onCellClick"
@@ -73,7 +74,7 @@
     }
   }
 
-  const records = ref(faker.helpers.multiple(createRandomUser, { count: 100 }))
+  const records = ref(faker.helpers.multiple(createRandomUser, { count: 20 }))
 
   const columns = ref([
     {
@@ -116,8 +117,8 @@
       caption: 'Avatar',
       class: 'avatar',
       field: 'avatar',
-      width: '60px',
-      type: 'img'
+      width: '60px'
+      // type: 'img'
     },
     {
       caption: 'Assets',

@@ -1,4 +1,5 @@
 .mu-table {
+  --head-row-height: 36px;
   --row-height: 36px;
   --cell-padding: 8px;
   --cell-line-height: 18px;
@@ -17,6 +18,8 @@
 
 .mu-table {
   & > table {
+    position: sticky;
+    top: 0;
     table-layout: fixed;
     box-shadow: 0 0 0 1px var(--mu-border-color-soft);
   }
@@ -25,6 +28,10 @@
     position: sticky;
     z-index: 2;
     top: 0;
+
+    & > tr {
+      height: var(--head-row-height);
+    }
   }
 
   & tr {
@@ -135,15 +142,32 @@
   box-shadow: none;
 }
 
+.mu-table__scroll-phantom {
+  position: absolute;
+  z-index: -1;
+
+  width: 1px;
+  height: 1px;
+
+  visibility: hidden;
+}
+
 .mu-table__hover-indicator {
   pointer-events: none;
+
+  position: sticky;
+  z-index: 2;
+  top: 0;
+
+  overflow: visible;
+
   width: 0;
+  height: 0;
 
   &::before,
   &::after {
     content: '';
     position: absolute;
-    z-index: 1;
     background-color: var(--hover-bg);
   }
 }
