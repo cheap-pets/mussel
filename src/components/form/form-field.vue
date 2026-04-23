@@ -1,6 +1,13 @@
 <template>
-  <div class="mu-form-field" :style="style">
-    <label v-if="label" class="text-ellipsis" :text-align="labelAlign" :style="labelStyle">
+  <div
+    class="mu-form-field"
+    :class="{
+      'mu-form-field--required': required,
+      'mu-form-field--invalid': invalid
+    }"
+    :label-align="labelAlignment"
+    :style="style">
+    <label v-if="label" class="mu-form-field__label text-ellipsis" :style="labelStyle">
       {{ label }}
     </label>
     <slot />
@@ -19,17 +26,24 @@
   const props = defineProps({
     label: String,
     labelWidth: String,
-    labelAlign: String
+    labelAlign: {
+      type: String,
+      validator: v => ['left', 'right', 'top'].includes(v)
+    },
+    required: Boolean,
+    invalid: Boolean
   })
 
   const form = inject('form', {})
   const style = useSize(props).resolved
 
-  const labelAlign = computed(() =>
+  const labelAlignment = computed(() =>
     props.labelAlign || form.labelAlign || null
   )
 
   const labelStyle = computed(() => ({
-    width: resolveSize(props.labelWidth || form.labelWidth)
+    width: labelAlignment.value === 'top'
+      ? '100%'
+      : resolveSize(props.labelWidth || form.labelWidth)
   }))
 </script>

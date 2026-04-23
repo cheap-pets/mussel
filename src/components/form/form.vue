@@ -5,6 +5,8 @@
 </template>
 
 <script setup>
+  import './form.scss'
+
   import { provide } from 'vue'
   import { sizeProps, useSize } from '@/components/common-hooks/size'
 

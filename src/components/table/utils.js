@@ -1,4 +1,4 @@
-import { isFunction } from 'es-toolkit'
+import { isFunction } from '@/utils/type'
 
 export function ensureFn (value, defaultFn) {
   return isFunction(value)

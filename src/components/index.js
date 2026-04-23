@@ -1,3 +1,6 @@
+import { kebabCase } from '@/utils/case'
+import { install as installScrollbarDirective } from './scrollbar/directive'
+
 import * as SvgComponents from './svg'
 import * as IconComponents from './icon'
 import * as LayoutComponents from './layout'
@@ -19,9 +22,7 @@ import MuTable from './table/table.vue'
 import MuBigTable from './table2/big-table.vue'
 import MuScrollBox from './scrollbar/scroll-box.vue'
 
-import { kebabCase } from '@/utils/case'
-
-export function install (app, options) {
+function installComponents (app, options) {
   function _install (components) {
     Object
       .entries(components)
@@ -54,4 +55,9 @@ export function install (app, options) {
     MuBigTable,
     MuScrollBox
   })
+}
+
+export function install (app, options) {
+  installScrollbarDirective(app)
+  installComponents(app, options)
 }

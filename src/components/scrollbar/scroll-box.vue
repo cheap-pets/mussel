@@ -8,7 +8,7 @@
 <script>
   import './scroll-box.scss'
 
-  import { attach, detach } from 'mussel-scrollbar'
+  import { attach, detach } from './scrollbar'
 
   export default {
     name: 'MusselScrollBox',

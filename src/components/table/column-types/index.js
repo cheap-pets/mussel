@@ -1,4 +1,4 @@
-import { isString } from 'es-toolkit'
+import { isString } from '@/utils/type'
 
 import { TextColumn } from './text'
 import { RecordNumberColumn } from './record-number'

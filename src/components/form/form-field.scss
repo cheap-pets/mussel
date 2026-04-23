@@ -2,59 +2,71 @@
   position: relative;
 
   display: flex;
+  gap: var(--mu-base-spacing);
   align-items: center;
 
   width: 100%;
   min-width: 100px;
-  padding: var(--mu-base-spacing);
 
   font-size: var(--mu-common-font-size);
 
-  & > label {
+  & > .mu-form-field__label {
     position: relative;
 
     display: inline-block;
     flex: none;
 
-    padding-right: 12px;
+    font-size: var(--mu-common-font-size);
+    color: var(--mu-text-color-subtle);
+  }
 
-    font-size: calc(1em - 1px);
-    color: var(--mu-text-color-soft);
 
-    @each $v in (left, right, center) {
-      &[text-align="#{$v}"] {
-        text-align: $v;
-      }
+  & > .mu-input,
+  & > .mu-input-group {
+    flex: 1 1 0;
+  }
+
+  &[label-align="right"] {
+    & > .mu-form-field__label {
+      text-align: right;
     }
   }
 
-  & > .mu-form-field_content {
-    display: inline-block;
-    flex: 1 1 0;
+  &[label-align="top"] {
+    flex-direction: column;
+    align-items: flex-start;
+
+    & > .mu-input,
+    & > .mu-input-group {
+      flex: none;
+      width: 100%;
+    }
   }
+}
 
-  & > .mu-input, & > .mu-input-group {
-    flex: 1 1 0;
-  }
-
-  &[required] > label:before {
-    content: "*";
-
-    position: absolute;
-    top: -3px;
-    right: 0;
-
-    display: inline-block;
-
-    width: 10px;
-
+.mu-form-field--invalid {
+  & > .mu-form-field__label {
     color: var(--mu-danger-color);
-    text-align: left;
+  }
+}
 
-    visibility: visible;
+.mu-form-field--required {
+  & > .mu-form-field__label {
+    &::after {
+      content: "*";
+      margin-left: 4px;
+      color: var(--mu-danger-color);
+    }
   }
 
-  &[invalid] > label {
-    color: var(--mu-danger-color);
+  &[label-align="right"] > .mu-form-field__label {
+    &::before {
+      content: "*";
+      margin-right: 4px;
+      color: var(--mu-danger-color);
+    }
+    &::after {
+      display: none;
+    }
   }
 }

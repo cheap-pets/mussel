@@ -1,4 +1,4 @@
-import { isPlainObject } from 'es-toolkit'
+import { isObject } from '@/utils/type'
 
 export const EnumColumn = {
   align: 'center',
@@ -11,7 +11,7 @@ export const EnumColumn = {
           value
         ]) => ([
           key,
-          isPlainObject(value) ? { ...value } : { text: value }
+          isObject(value) ? { ...value } : { text: value }
         ]))
     )
 

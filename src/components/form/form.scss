@@ -1,8 +1,8 @@
 .mu-form {
   display: flex;
   flex-wrap: wrap;
+  gap: calc(var(--mu-base-spacing) * 3);
   align-items: flex-start;
-  padding: var(--mu-base-spacing);
 
   & .mu-space {
     width: 100%;

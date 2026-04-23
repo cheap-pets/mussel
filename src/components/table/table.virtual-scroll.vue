@@ -1,6 +1,26 @@
 <template>
-  <div ref="wrapEl" v-mu-scrollbar class="mu-table" :class="wrapClass" @scroll="onScroll" @sizechange="onResize">
-    <table ref="tableEl" cellspacing="0" @sizechange="onResize">
+  <div
+    ref="wrapEl"
+    v-mu-scrollbar
+    class="mu-table mu-scrollbar"
+    :class="wrapClass"
+    :style="{ '--row-height': `${rowHeight}px` }"
+    @scroll="onScroll"
+    @sizechange="onResize">
+    <div
+      v-if="!scrolling"
+      class="mu-table__hover-indicator"
+      :class="hoverIndicatorClass"
+      :style="hoverStyle" />
+    <div
+      v-if="virtualScroll"
+      class="mu-table__scroll-phantom"
+      :style="{ top: phantomTop }" />
+    <table
+      ref="tableEl"
+      cellspacing="0"
+      :style="{ width: tableWidth, minWidth: tableMinWidth }"
+      @sizechange="onResize">
       <colgroup>
         <col v-for="col in internalColumns" :key="col._key" :style="col._colStyle">
       </colgroup>
@@ -26,23 +46,15 @@
       </thead>
       <tbody ref="tableBodyEl" @mouseleave="setHoverIndicator()">
         <table-row
-          v-for="(rec, recIdx) in records"
+          v-for="(rec, recIdx) in visibleRecords"
           :key="getRecordKey(rec)"
           :columns="internalColumns"
           :record="rec"
-          :record-index="recIdx"
-          :record-number="recordsOffset + recIdx + 1"
+          :record-index="virtualStartIndex + recIdx"
+          :record-number="recordsOffset + virtualStartIndex + recIdx + 1"
           :class="(selectedRecKey != null && getRecordKey(rec) === selectedRecKey) ? 'mu-table__tr--selected' : null" />
       </tbody>
     </table>
-    <div
-      v-if="!scrolling"
-      class="mu-table__hover-indicator"
-      :class="`mu-table__hover-indicator--${hoverMode}`"
-      :style="hoverStyle" />
-    <div v-if="$slots.footer" class="mu-table__footer">
-      <slot name="footer" />
-    </div>
   </div>
 </template>
 
@@ -69,6 +81,9 @@
     recordsOffset: { type: Number, default: 0 },
     fixedLeftColumns: Number,
     virtualScroll: Boolean,
+    rowHeight: { type: Number, default: 59 },
+    tableWidth: { default: 'fit-content' },
+    tableMinWidth: { default: '100%' },
     gridlines: {
       default: 'all',
       validator: v => ['none', 'all', 'row', 'column'].includes(v)
@@ -105,6 +120,9 @@
   const xOverflowed = ref(false)
   const yOverflowed = ref(false)
 
+  const virtualStartIndex = ref(0)
+  const visibleRecords = shallowRef(props.records)
+
   const hoverStyle = reactive({
     '--hover-row-top': 0,
     '--hover-row-width': 0,
@@ -117,6 +135,9 @@
 
   const autoRecordKey = autoIncrementKeyBuilder()
   const autoColumnKey = autoIncrementKeyBuilder()
+
+  let scrollTop = 0
+  let tableOffsetTop = 0
 
   function getRecordKey (rec) {
     return props.keyField ? rec[props.keyField] : autoRecordKey(rec)
@@ -136,6 +157,10 @@
       'mu-table--y-scrolled-end': yScrolledEnd.value
     }
   })
+
+  const hoverIndicatorClass = computed(() =>
+    `mu-table__hover-indicator--${props.hoverMode}`
+  )
 
   const sortDirection = computed(() => {
     if (!props.orderBy) return {}
@@ -198,6 +223,31 @@
     return columns
   })
 
+  const phantomTop = computed(() => {
+    if (!props.virtualScroll || !tableBodyEl.value || !props.records?.length) return 0
+    return `${tableBodyEl.value.offsetTop + props.records.length * props.rowHeight}px`
+  })
+
+  const BUFFER = 0
+
+  function updateVirtualState () {
+    if (!props.virtualScroll || !wrapEl.value) {
+      virtualStartIndex.value = 0
+      visibleRecords.value = props.records
+      return
+    }
+
+    const { rowHeight, records } = props
+    const { clientHeight } = wrapEl.value
+
+    const count = Math.ceil(clientHeight / rowHeight) + BUFFER * 2
+    const startIndex = Math.max(0, Math.floor(scrollTop / rowHeight) - BUFFER)
+    const endIndex = Math.min(records.length, startIndex + count)
+
+    virtualStartIndex.value = startIndex
+    visibleRecords.value = props.records.slice(startIndex, endIndex)
+  }
+
   let hoveringRow, hoveringCol
 
   function hideHoverIndicator () {
@@ -239,7 +289,7 @@
       next = next.nextElementSibling
     }
 
-    hoverStyle['--hover-row-top'] = `${first.offsetTop }px`
+    hoverStyle['--hover-row-top'] = `${first.offsetTop + tableOffsetTop }px`
     hoverStyle['--hover-row-height'] = `${last.offsetTop - first.offsetTop + last.offsetHeight}px`
   }
 
@@ -293,6 +343,7 @@
     }
 
     setHoverSize()
+    updateVirtualState()
   }, { noLeading: true })
 
   const cancelScrolling = debounce(300, () => {
@@ -300,15 +351,29 @@
   })
 
   const onScroll = throttle(16, () => {
-    if (!wrapEl.value) return
+    const table = tableEl.value
 
-    const { scrollTop, scrollLeft, scrollHeight, clientHeight } = wrapEl.value
+    if (!table) return
+
+    const wrap = wrapEl.value
+
+    const {
+      scrollTop: wst, scrollLeft: wsl, scrollHeight: wsh,
+      clientHeight: wch, clientTop: wct
+    } = wrap
 
     scrolling.value = true
-    xScrolled.value = scrollLeft > 0.5
-    yScrolled.value = scrollTop > 0.5
-    yScrolledEnd.value = yScrolled.value && (scrollHeight - scrollTop - clientHeight < 1)
+    xScrolled.value = wsl > 0.5
+    yScrolled.value = wst > 0.5
+    yScrolledEnd.value = yScrolled.value && (wsh - top - wch < 1)
 
+    const wt = wrap.getBoundingClientRect().top
+    const tt = table.getBoundingClientRect().top
+
+    scrollTop = wst
+    tableOffsetTop = tt - wt - wct
+
+    updateVirtualState()
     cancelScrolling()
   }, { noLeading: true })
 
@@ -340,9 +405,14 @@
       if (newValue !== oldValue) {
         wrapEl.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
         scrolling.value = false
+        scrollTop = 0
+        tableOffsetTop = 0
+        updateVirtualState()
       }
     }
   )
+
+  watch(() => props.virtualScroll, () => updateVirtualState())
 
   provide('table', {
     setHoverIndicator,

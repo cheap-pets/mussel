@@ -12,7 +12,7 @@
         :records="records"
         :records-offset="offset"
         :selected-record-key="selectedId"
-        :header-checked-1="headerChecked"
+        :header-checked="headerChecked"
         :order-by="orderByOption"
         :fixed-left-columns="3"
         key-field="userId"
@@ -28,18 +28,20 @@
         @cell-item-click="onCellItemClick"
         @update:header-checked="onHeaderCheckedChange"
         @update:cell-value="onCellValueChange"
-        @update:selected-record-key="selectedId = $event" />
-      <mu-pagination
-        class="mu-table__footer"
-        small
-        quick-jumper
-        :offset="offset"
-        :limit="limit"
-        :data-count="1000"
-        :page-size1="pageSize"
-        :page-size-options1="[20, 50, 100, 100]"
-        @update:offset="offset = $event"
-        @update:limit="limit = $event" />
+        @update:selected-record-key="selectedId = $event">
+        <template #footer>
+          <mu-pagination
+            small
+            quick-jumper
+            :offset="offset"
+            :limit="limit"
+            :data-count="1000"
+            :page-size1="pageSize"
+            :page-size-options1="[20, 50, 100, 100]"
+            @update:offset="offset = $event"
+            @update:limit="limit = $event" />
+        </template>
+      </mu-table>
     </div>
   </div>
 </template>
@@ -85,6 +87,7 @@
       field: 'checked',
       type: 'check',
       disabled: false,
+      width: '80px',
       headerCheckbox: true
     },
     {
