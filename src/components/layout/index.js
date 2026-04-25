@@ -1,3 +1,5 @@
-export * from './box'
-
+export { default as MuHBox } from './h-box.vue'
+export { default as MuVBox } from './v-box.vue'
+export { default as MuGridBox } from './grid-box.vue'
+export { default as MuGridCell } from './grid-cell.vue'
 export { default as MuFlexSplitter } from './flex-splitter.vue'

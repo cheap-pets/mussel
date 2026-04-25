@@ -334,7 +334,7 @@
           Three
         </mu-button>
       </mu-button-group>
-      <div class="mu-space" space="100%" />
+      <div class="flex-break" />
       <mu-button-group x-color="var(--mu-cyan)">
         <mu-button :active="activeItem === 1" @click="select(1)">
           One

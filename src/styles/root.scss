@@ -134,3 +134,10 @@ $SEMANTIC_COLORS:
 *, ::before, ::after {
   box-sizing: border-box;
 }
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}

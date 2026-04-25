@@ -1,5 +1,5 @@
 <template>
-  <div ref="thisEl" class="mu-tabs" :style="style" :tab-position="tabPosition">
+  <div ref="thisEl" class="mu-tabs" :tab-position="tabPosition">
     <mu-tab-bar
       v-model:active-tab="activeTab"
       v-bind="tabBarAttrs"
@@ -22,7 +22,6 @@
   import './tabs.scss'
 
   import { ref, shallowRef, computed, provide, onMounted, nextTick } from 'vue'
-  import { sizeProps, useSize } from '@/components/common-hooks/size'
   import { useCompatible } from '../common-hooks/compatible'
   import { debounce } from 'throttle-debounce'
 
@@ -34,7 +33,6 @@
   const activeTab = defineModel('activeTab', { type: String })
 
   const props = defineProps({
-    ...sizeProps,
     tabStyle: {
       type: String,
       default: 'button',
@@ -48,8 +46,6 @@
     tabBarAttrs: Object,
     tabButtons: Array
   })
-
-  const style = useSize(props).resolved
 
   const thisEl = shallowRef()
   const mountedButtons = ref(new WeakMap())

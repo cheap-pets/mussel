@@ -49,7 +49,7 @@
         style="width: 420px;" nowrap
         placeholder="select an artist" />
     </div>
-    <div class="group mu-box" position="fixed bottom left">
+    <div class="group fixed" style="bottom: 0; left: 0;">
       <mu-combo-box
         v-model="artistCn"
         value-mode="composite"

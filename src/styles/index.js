@@ -1,4 +1,3 @@
-import './reset.scss'
 import './root.scss'
 import './layout.scss'
 import './spacing.scss'

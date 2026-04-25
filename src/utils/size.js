@@ -17,9 +17,9 @@ export function resolveSize (s) {
 }
 
 export function measureTextWidths (computedStyle, texts) {
-  const ruler = document.createElement('span')
-
   const { font, letterSpacing, wordSpacing } = computedStyle
+
+  const ruler = document.createElement('span')
 
   Object.assign(ruler.style, {
     position: 'fixed',
@@ -33,16 +33,16 @@ export function measureTextWidths (computedStyle, texts) {
     wordSpacing
   })
 
-  document.body.appendChild(ruler)
-
   const nodes = texts.map(text => {
-    const node = document.createElement('span')
+    const el = document.createElement('span')
 
-    node.textContent = text
-    ruler.appendChild(node)
+    el.textContent = text
+    ruler.appendChild(el)
 
-    return node
+    return el
   })
+
+  document.body.appendChild(ruler)
 
   const widths = nodes.map(node => node.getBoundingClientRect().width)
 

@@ -4,7 +4,7 @@
       FORM
       <theme-switch />
     </h2>
-    <div class="mu-box" padding="2x">
+    <div class="p-2x">
       <mu-form class="border border-primary border-r4 p-3x" label-width="60px" label-align="left">
         <mu-form-field label="Text 1" width="200" flex="1 auto">
           <mu-input value="Value 1" />

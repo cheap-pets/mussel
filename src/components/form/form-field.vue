@@ -5,8 +5,7 @@
       'mu-form-field--required': required,
       'mu-form-field--invalid': invalid
     }"
-    :label-align="labelAlignment"
-    :style="style">
+    :label-align="labelAlignment">
     <label v-if="label" class="mu-form-field__label text-ellipsis" :style="labelStyle">
       {{ label }}
     </label>
@@ -19,7 +18,6 @@
 
   import { computed, inject } from 'vue'
   import { resolveSize } from '@/utils/size'
-  import { useSize } from '@/components/common-hooks/size'
 
   defineOptions({ name: 'MusselFormField' })
 
@@ -35,7 +33,6 @@
   })
 
   const form = inject('form', {})
-  const style = useSize(props).resolved
 
   const labelAlignment = computed(() =>
     props.labelAlign || form.labelAlign || null

@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-box mu-bg-normal" position="fixed fit">
+  <div class="bg-normal fixed" style="inset: 0;">
     <h2>
       Message Components & API
       <theme-switch />
@@ -58,11 +58,11 @@
             !
           </div>
         </template>
-        <div class="mu-box" layout="flex" margin-top="auto" align-self="stretch">
+        <div class="flex mt-auto self-stretch">
           <mu-button primary round>
             Create New ...
           </mu-button>
-          <span flex="1" />
+          <span class="flex-1" />
           <mu-button round>
             Dismiss
           </mu-button>

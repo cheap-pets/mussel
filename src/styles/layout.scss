@@ -75,6 +75,11 @@
   }
 }
 
+.flex-center {
+  align-items: center;
+  justify-content: center;
+}
+
 @each $v in (
   center, start, end, baseline, stretch,
   flex-start, flex-end, unset, inherit
@@ -105,4 +110,35 @@
   .gap-#{$i}x {
     gap: calc($i * var(--mu-base-spacing));
   }
+}
+
+.flex-divider {
+  display: block;
+  flex: 0 0 2px;
+  align-self: stretch;
+  background-color: var(--mu-border-color-soft);
+
+  @for $i from 1 through 4 {
+    &[line-width="#{i}"] {
+      flex-basis: #{$i}px;
+    }
+  }
+}
+
+.flex-spacer {
+  display: block;
+  flex: 1 1 0;
+
+  @for $i from 1 through 4 {
+    $v: calc($i * var(--mu-base-spacing));
+
+    &[space="#{$i}x"] {
+      flex: 0 0 $v;
+    }
+  }
+}
+
+.flex-break {
+  display: block;
+  flex: 0 0 100%;
 }

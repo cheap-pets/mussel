@@ -1,24 +1,21 @@
 <template>
-  <div class="mu-grid-box mu-box" :style="style">
+  <div class="grid" :style="style">
     <slot />
   </div>
 </template>
 
 <script setup>
   import { computed } from 'vue'
-  import { sizeProps, useSize } from '@/components/common-hooks/size'
 
   defineOptions({ name: 'MusselGridBox' })
 
-  const props = defineProps({ ...sizeProps, rows: null, columns: null })
-  const sizeStyle = useSize(props).resolved
+  const props = defineProps({ rows: null, columns: null })
 
   function getGridTemplateValues (v) {
     return isNaN(v) ? undefined : `repeat(${v}, 1fr)`
   }
 
   const style = computed(() => ({
-    ...sizeStyle.value,
     gridTemplateRows: getGridTemplateValues(props.rows),
     gridTemplateColumns: getGridTemplateValues(props.columns)
   }))

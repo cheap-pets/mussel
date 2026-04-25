@@ -38,6 +38,6 @@ export const ButtonPresets = {
     buttonStyle: 'text',
     get caption () { return t('Button.CANCEL') }
   },
-  ' ': { is: 'div', class: 'mu-space' },
-  '-': { is: 'div', class: 'mu-divider' }
+  ' ': { is: 'div', class: 'flex-spacer' },
+  '-': { is: 'div', class: 'flex-divider' }
 }

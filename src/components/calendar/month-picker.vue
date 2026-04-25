@@ -22,7 +22,7 @@
         </tr>
       </tbody>
     </table>
-    <div class="mu-divider" thin />
+    <div class="flex-divider" line-width="1" />
     <table class="mu-month-picker_month-table mu-calendar-grid" cellpadding="0" cellspacing="0">
       <tbody>
         <tr>

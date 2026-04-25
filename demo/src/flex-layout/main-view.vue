@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mu-v-box position="fixed fit" padding="1x">
+    <div class="flex flex-col fixed p-1x" style="inset: 0;">
       <div class="mu-bar">
         <h2>Flex-layout & Splitter</h2>
         <mu-select
@@ -33,9 +33,9 @@
           :disabled="shape === 'bubble'" />
         <theme-switch style="margin-left: 16px;" />
       </div>
-      <mu-h-box flex="1" :style="{ gap }" padding="1x">
+      <div class="flex flex-1 p-1x" :style="{ gap }">
         <div
-          class="block" flex="0" collapsible
+          class="block flex-none collapsible"
           style="min-width: 200px;"
           recover-size="auto">
           1
@@ -48,11 +48,11 @@
           :shape="shape"
           :stripe="stripe"
           :space-free="spaceFree" />
-        <mu-v-box
-          flex="1" collapsible
+        <div
+          class="flex flex-col flex-1 collapsible"
           style="overflow: hidden; min-width: 300px;"
           :style="{ gap }">
-          <div class="block" flex="1">
+          <div class="block flex-1">
             2A
           </div>
           <mu-flex-splitter
@@ -60,20 +60,20 @@
             :shape="shape"
             :stripe="stripe"
             :space-free="spaceFree" />
-          <div class="block" flex="1">
+          <div class="block flex-1">
             2B
           </div>
-        </mu-v-box>
+        </div>
         <mu-flex-splitter
           :size="size"
           :shape="shape"
           :stripe="stripe"
           :space-free="spaceFree" />
-        <div class="block" flex="1">
+        <div class="block flex-1">
           3
         </div>
-      </mu-h-box>
-    </mu-v-box>
+      </div>
+    </div>
   </div>
 </template>
 

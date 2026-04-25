@@ -1,11 +1,11 @@
 <template>
-  <div class="mu-box" position="fixed fit" style="background: #000;">
+  <div class="fixed" style="inset: 0; background: #000;">
     <mu-grid-box
-      width="480" height="270" padding="1x" style="background-color: rgba(0, 47, 167, .5);"
+      class="p-1x" style="width: 480px; height: 270px; background-color: rgba(0, 47, 167, .5);"
       :columns="config.columns" :rows="config.rows">
       <mu-grid-cell
         v-for="(cell, idx) in config.cells" :key="cell" :col-start="cell.colStart" :col-end="cell.colEnd"
-        :row-start="cell.rowStart" :row-end="cell.rowEnd" style="background-color: rgba(0, 47, 167, 1);" margin="1x">
+        :row-start="cell.rowStart" :row-end="cell.rowEnd" style="background-color: rgba(0, 47, 167, 1);" class="m-1x">
         {{ idx + 1 }}
       </mu-grid-cell>
     </mu-grid-box>

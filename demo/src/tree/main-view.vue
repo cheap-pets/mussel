@@ -1,8 +1,8 @@
 <template>
-  <div class="mu-box mu-bg-normal" width="100%" layout="flex" flex-wrap gap="2x" padding="2x">
+  <div class="bg-normal flex flex-wrap items-start gap-2x p-2x" style="width: 100%">
     <h2 style="width: 100%; margin: 0;">
       Tree Examples
-      <mu-combo-box v-model="demo" class="mu-box" width="400" :options="demos" />
+      <mu-combo-box v-model="demo" style="width: 400px" :options="demos" />
       <theme-switch />
     </h2>
     <div v-if="!demo || demo === 1" class="demo-panel">

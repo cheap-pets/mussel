@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="mu-status-box mu-box"
-    layout="flex" direction="column" content-center
-    :style="style">
+  <div class="mu-status-box">
     <slot name="icon">
       <mu-icon v-if="icon" class="mu-status-box_icon" :icon="icon" />
     </slot>
@@ -19,16 +16,11 @@
 <script setup>
   import './status-box.scss'
 
-  import { sizeProps, useSize } from '@/components/common-hooks/size'
-
   defineOptions({ name: 'MusselStatusBox' })
 
-  const props = defineProps({
+  defineProps({
     icon: String,
     title: String,
-    message: String,
-    ...sizeProps
+    message: String
   })
-
-  const style = useSize(props).resolved
 </script>

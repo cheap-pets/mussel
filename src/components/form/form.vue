@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-form" :style="style">
+  <div class="mu-form">
     <slot />
   </div>
 </template>
@@ -8,12 +8,10 @@
   import './form.scss'
 
   import { provide } from 'vue'
-  import { sizeProps, useSize } from '@/components/common-hooks/size'
 
   defineOptions({ name: 'MusselForm' })
 
-  const props = defineProps({ ...sizeProps, labelWidth: String, labelAlign: String })
-  const style = useSize(props).resolved
+  const props = defineProps({ labelWidth: String, labelAlign: String })
 
   provide('form', props)
 

@@ -20,23 +20,20 @@
       <div class="scroll-element" />
     </mu-scroll-box>
     <p />
-    <mu-scroll-box class="scroll-container mu-box" border>
+    <mu-scroll-box class="scroll-container border">
       <div style="position: sticky; left: 0; right: 0; top: 0;">
         <div
-          class="mu-box"
-          border
+          class="border"
           style="position: absolute; background-color: blue; left: 0; right: 0; top: 0; height: 40px;">
           1
         </div>
         <div
-          class="mu-box"
-          border
+          class="border"
           style="position: absolute; background-color: red; left: 0; width: 150px; height: 2000px;">
           1
         </div>
         <div
-          class="mu-box"
-          border
+          class="border"
           style="position: absolute; background-color: red; right: 0; width: 150px; height: 2000px;">
           3
         </div>

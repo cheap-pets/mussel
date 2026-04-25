@@ -1,13 +1,13 @@
 <template>
-  <div class="mu-box mu-bg-normal">
-    <div class="mu-bar mu-box mu-bg-strong">
+  <div class="bg-normal">
+    <div class="mu-bar bg-strong">
       <label>Tab Position</label>
       <mu-combo-box
-        v-model="tabPosition" class="mu-box" :clear-button="false"
+        v-model="tabPosition" :clear-button="false"
         style="width: 100px;" :options="positions" />
       <label>Tab Style</label>
       <mu-combo-box
-        v-model="tabStyle" class="mu-box" :clear-button="false"
+        v-model="tabStyle" :clear-button="false"
         style="width: 125px;" :options="styles" />
       <theme-switch />
     </div>
@@ -16,7 +16,7 @@
       v-model:active-tab="activeTab"
       :tab-style="tabStyle"
       :tab-position="tabPosition"
-      class="mu-box" margin="2x" padding="1x" border="dashed"
+      class="m-2x p-1x border border-dashed"
       @button-click="console.log($event)"
       @tab-click="console.log($event)"
       @tab-change="console.log($event)">
@@ -37,23 +37,23 @@
       </mu-tab-panel>
     </mu-tabs>
 
-    <div class="mu-divider mu-box" margin-x="2x" thin />
+    <div class="flex-divider mx-2x" line-width="1" />
 
     <mu-tabs
       :active-tab="activeTab2"
       :tab-style="tabStyle"
-      class="mu-box" margin="2x" padding="1x" border="muted"
+      class="m-2x p-1x border border-soft"
       style="--mu-tab-bar_active-bar-width: 1px;"
       @update:active-tab="updateActiveTab2">
       <template #tab-bar-prepend>
         <label class="mu-label">Customized Tab Bar</label>
-        <div class="mu-space" />
-        <div class="mu-divider" />
+        <div class="flex-spacer" />
+        <div class="flex-divider" />
       </template>
       <template #tab-bar-append>
-        <div class="mu-divider" />
-        <div class="mu-space" />
-        <mu-dropdown-button class="mu-box" caption="artist" :dropdown-items="artists" />
+        <div class="flex-divider" />
+        <div class="flex-spacer" />
+        <mu-dropdown-button caption="artist" :dropdown-items="artists" />
         <mu-input input-style="solid" prefix=":icon=search" placeholder="Search Something" />
       </template>
       <mu-tab-panel name="Tab_1">

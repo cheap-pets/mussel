@@ -1,5 +1,5 @@
 <template>
-  <div v-show="visible" ref="el" class="mu-tab-panel mu-box">
+  <div v-show="visible" ref="el" class="mu-tab-panel">
     <slot />
   </div>
 </template>
