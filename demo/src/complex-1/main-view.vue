@@ -232,22 +232,22 @@
     easy-hide>
     <mu-form label-width="80px" label-align="right" class="py-1x">
       <mu-form-row>
-        <mu-form-field label="客户：" flex="1 auto">
+        <mu-form-field label="客户：" class="flex-auto">
           <mu-select v-model="orderForm.customer" :options="customerOptions" placeholder="请选择客户" />
         </mu-form-field>
       </mu-form-row>
       <mu-form-row>
-        <mu-form-field label="商品：" flex="1 auto">
+        <mu-form-field label="商品：" class="flex-auto">
           <mu-input v-model="orderForm.product" placeholder="请输入商品名称" />
         </mu-form-field>
       </mu-form-row>
       <mu-form-row>
-        <mu-form-field label="数量：" flex="1 auto">
+        <mu-form-field label="数量：" class="flex-auto">
           <mu-input v-model="orderForm.quantity" type="number" placeholder="请输入数量" />
         </mu-form-field>
       </mu-form-row>
       <mu-form-row>
-        <mu-form-field label="金额：" flex="1 auto">
+        <mu-form-field label="金额：" class="flex-auto">
           <mu-input v-model="orderForm.amount" type="number" prefix="¥" placeholder="请输入金额" />
         </mu-form-field>
       </mu-form-row>
@@ -268,22 +268,22 @@
     easy-hide>
     <mu-form label-width="80px" label-align="right" class="py-1x">
       <mu-form-row>
-        <mu-form-field label="姓名：" flex="1 auto">
+        <mu-form-field label="姓名：" class="flex-auto">
           <mu-input v-model="userForm.name" placeholder="请输入姓名" />
         </mu-form-field>
       </mu-form-row>
       <mu-form-row>
-        <mu-form-field label="邮箱：" flex="1 auto">
+        <mu-form-field label="邮箱：" class="flex-auto">
           <mu-input v-model="userForm.email" type="email" placeholder="请输入邮箱" />
         </mu-form-field>
       </mu-form-row>
       <mu-form-row>
-        <mu-form-field label="角色：" flex="1 auto">
+        <mu-form-field label="角色：" class="flex-auto">
           <mu-select v-model="userForm.role" :options="roleOptions" placeholder="请选择角色" />
         </mu-form-field>
       </mu-form-row>
       <mu-form-row>
-        <mu-form-field label="状态：" flex="1 auto">
+        <mu-form-field label="状态：" class="flex-auto">
           <mu-switch v-model="userForm.active" active-label="启用" inactive-label="停用" />
         </mu-form-field>
       </mu-form-row>

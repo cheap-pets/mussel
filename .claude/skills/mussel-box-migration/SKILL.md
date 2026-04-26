@@ -18,6 +18,8 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 
 - `<mu-h-box>` / `<mu-v-box>` **组件**已简化为纯 `<div class="flex">` / `<div class="flex flex-col">`，应替换为 `<div class="flex ...">` / `<div class="flex flex-col ...">`
 - `<mu-grid-box>` / `<mu-grid-cell>` **保留为组件**，但其上非 props 的属性（`width`、`height`、`padding`、`margin`）需改为 `style` 或原子类
+- 所有 `<mu-*>` 组件（不仅是 `mu-box`）上若直接使用了 `width=` / `height=` 作为 HTML 属性，且该组件未将 `width`/`height` 声明为 props（已知 `mu-drawer`、`mu-dialog` 已声明），需改为 `style="width: ..."` / `style="height: ..."`
+- 所有 `<mu-*>` 组件（不仅是 `mu-box`）上的 `flex=` 属性需改为对应的 flex 原子类：`flex="1"` → `class="flex-1"`，`flex="0"` → `class="flex-none"`，`flex="auto"` / `flex="1 auto"` → `class="flex-auto"`
 - `class="mu-box"` 作为纯 CSS 类已无任何样式效果，应删除
 - `class="mu-space"` 已重命名为 `class="flex-spacer"`；`class="mu-divider"` 已重命名为 `class="flex-divider"`；尺寸变体改为属性选择器 `[space="Nx"]` / `[line-width="N"]`
 - `flex-wrap` 旧行为额外设置 `align-items: flex-start`，迁移时如需保留需加 `items-start`

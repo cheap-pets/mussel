@@ -1,14 +1,12 @@
 <template>
   <div
     class="mu-form-field"
-    :class="{
-      'mu-form-field--required': required,
-      'mu-form-field--invalid': invalid
-    }"
-    :label-align="labelAlignment">
-    <label v-if="label" class="mu-form-field__label text-ellipsis" :style="labelStyle">
+    :class="{ 'mu-form-field--required': required, 'mu-form-field--invalid': invalid }"
+    :label-align="labelAlignment"
+    :style="size">
+    <span v-if="label" class="mu-form-field__label text-ellipsis" :style="labelStyle">
       {{ label }}
-    </label>
+    </span>
     <slot />
   </div>
 </template>
@@ -22,6 +20,8 @@
   defineOptions({ name: 'MusselFormField' })
 
   const props = defineProps({
+    width: [String, Number],
+    height: [String, Number],
     label: String,
     labelWidth: String,
     labelAlign: {
@@ -33,6 +33,11 @@
   })
 
   const form = inject('form', {})
+
+  const size = computed(() => ({
+    width: resolveSize(props.width),
+    height: resolveSize(props.height)
+  }))
 
   const labelAlignment = computed(() =>
     props.labelAlign || form.labelAlign || null

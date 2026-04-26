@@ -1,11 +1,23 @@
 .mu-form {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--mu-base-spacing) * 3);
   align-items: flex-start;
-
-  & .flex-spacer {
-    width: 100%;
-    height: 0;
+  border-radius: var(--mu-common-border-radius);
+  
+  & > hr {
+    flex-basis: 100%;
+    margin: var(--mu-base-spacing);
+    border: none;
+    border-bottom: 1px dashed var(--mu-border-color-soft);
   }
+
+  .mu-form-field {
+    padding: var(--mu-base-spacing);
+  }
+}
+
+.mu-form-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }

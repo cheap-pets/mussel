@@ -24,15 +24,17 @@
 <script setup>
   import './drawer.scss'
 
+  import { computed } from 'vue'
+  import { resolveSize } from '@/utils/size'
   import { modalProps, modalEvents, useModal } from './modal'
-  import { sizeProps, useSize } from '@/components/common-hooks/size'
 
   defineOptions({ name: 'MusselDrawer', inheritAttrs: false })
 
   const props = defineProps({
-    ...sizeProps,
     ...modalProps,
     zIndex: String,
+    width: [String, Number],
+    height: [String, Number],
     borderRadius: Boolean,
     mask: { type: Boolean, default: true },
     teleport: { type: Boolean, default: true },
@@ -46,5 +48,9 @@
   const emit = defineEmits([...modalEvents])
 
   const { ready, container, modalVisible, onMaskClick } = useModal(props, emit)
-  const { resolved: drawerSize } = useSize(props)
+
+  const drawerSize = computed(() => ({
+    width: resolveSize(props.width),
+    height: resolveSize(props.height)
+  }))
 </script>

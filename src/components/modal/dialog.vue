@@ -4,13 +4,17 @@
       <div
         v-show="modalVisible"
         ref="maskEl"
+        v-bind="maskAttrs"
         class="mu-modal-mask mu-dialog-mask"
-        :class="maskClass" :style="{ zIndex }" v-bind="maskAttrs"
+        :class="maskClass"
+        :style="{ zIndex }"
         @sizechange="onMaskResize" @click="onMaskClick">
         <div
           ref="dialogEl"
-          class="mu-dialog" :style="[dialogSize, position]"
-          v-bind="$attrs" :dragging="dragging"
+          class="mu-dialog"
+          v-bind="$attrs"
+          :style="[dialogSize, position]"
+          :dragging="dragging"
           @mousedown="onDragStart">
           <slot name="client">
             <div v-if="headerVisible" class="mu-dialog_header">
@@ -62,9 +66,8 @@
   import { modalProps, modalEvents, useModal } from './modal'
   import { ButtonPresets } from './button-presets'
 
-  import { sizeProps, useSize } from '../common-hooks/size'
   import { useKeyGen } from '../common-hooks/key-gen'
-
+  import { resolveSize } from '@/utils/size'
   import { isString } from '@/utils/type'
   import { pick } from '@/utils/object'
 
@@ -73,8 +76,9 @@
   const emit = defineEmits([...modalEvents, 'buttonClick'])
 
   const props = defineProps({
-    ...sizeProps,
     ...modalProps,
+    width: [String, Number],
+    height: [String, Number],
     zIndex: String,
     buttons: Array,
     icon: [String, Object],
@@ -88,7 +92,6 @@
   const slots = useSlots()
 
   const { ready, container, modalVisible, hide, onMaskClick } = useModal(props, emit)
-  const { resolved: dialogSize } = useSize(props)
   const { genKey } = useKeyGen()
 
   const maximized = ref(false)
@@ -96,6 +99,11 @@
   const stateIcon = computed(() => maximized.value ? 'windowNormalize' : 'windowMaximize')
   const headerVisible = computed(() => props.title || props.closeButton || props.maximizeButton || slots.header)
   const footerVisible = computed(() => props.buttons?.length || slots.footer)
+
+  const dialogSize = computed(() => ({
+    width: resolveSize(props.width),
+    height: resolveSize(props.height)
+  }))
 
   const iconBindings = computed(() =>
     isString(props.icon) ? { icon: props.icon } : props.icon

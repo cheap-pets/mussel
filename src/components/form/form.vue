@@ -11,7 +11,10 @@
 
   defineOptions({ name: 'MusselForm' })
 
-  const props = defineProps({ labelWidth: String, labelAlign: String })
+  const props = defineProps({
+    labelWidth: String,
+    labelAlign: String
+  })
 
   provide('form', props)
 

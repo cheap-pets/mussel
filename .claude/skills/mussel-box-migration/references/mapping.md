@@ -45,13 +45,17 @@
 
 ### 3.2 Flex 子项
 
+> 此规则不仅适用于 `mu-box`，也适用于所有 `<mu-*>` 组件（如 `mu-form-field`）。
+
 | Mussel 3 | Mussel 4 | 说明 |
 |----------|----------|------|
+| `flex="0"` | `class="flex-0"` | |
 | `flex="1"` | `class="flex-1"` | |
-| `flex="0"` | `class="flex-none"` | |
+| `flex="2"` ~ `flex="8"` | `class="flex-2"` ~ `class="flex-8"` | |
+| `flex="9"` ~ `flex="12"` | `style="flex: 9"` ~ `style="flex: 12"` | 无对应原子类 |
+| `flex="none"` | `class="flex-none"` | |
 | `flex="auto"` | `class="flex-auto"` | |
-| `flex="2"` ~ `flex="12"` | `style="flex: 2"` ~ `style="flex: 12"` | 无对应原子类 |
-| `flex="1 auto"` | `class="flex-1"` + `style="flex-basis: auto"` | |
+| `flex="1 auto"` | `class="flex-auto"` | 等价于 `flex: auto` |
 
 ### 3.3 对齐
 
@@ -116,16 +120,18 @@
 | `border="primary"` | `class="border border-primary"` | |
 | `border="danger"` | `class="border border-danger"` | |
 | `border="muted"` | `class="border border-soft"` | muted → soft |
-| `border-radius` | `class="border-r4"` 或 `class="border-r8"` | |
 | `border-radius="window"` | 无原子类，需 `style` | |
 
 ### 3.7 尺寸
 
+> 此规则不仅适用于 `mu-box`，也适用于所有未将 `width` / `height` 定义为 props 的 `<mu-*>` 组件（如 `mu-form-field`、`mu-grid-box` 等）。
+> `mu-drawer`、`mu-dialog` 等组件已通过 `sizeProps` 声明了 `width` / `height` props，无需迁移。
+
 | Mussel 3 | Mussel 4 | 说明 |
 |----------|----------|------|
 | `width="100%"` | `style="width: 100%"` | |
-| `width="400"` | `style="width: 400px"` | |
-| `height="270"` | `style="height: 270px"` | |
+| `width="400"` | `style="width: 400px"` | 纯数字视为 px |
+| `height="270"` | `style="height: 270px"` | 纯数字视为 px |
 | `width="auto"` | `style="width: auto"` | |
 | `height="auto"` | `style="height: auto"` | |
 | `overflow="auto"` | `class="overflow-auto"` | |
@@ -306,18 +312,18 @@
 - [ ] `<mu-h-box>` / `<mu-v-box>` 组件 → `<div class="flex ...">` / `<div class="flex flex-col ...">`
 - [ ] `<mu-box>` 组件 → `<div>` + 合并 class
 - [ ] `layout="flex"` / `layout="grid"` → `class="flex"` / `class="grid"`
-- [ ] `flex="N"` → `class="flex-N"` / `class="flex-none"` / `class="flex-auto"`
+- [ ] `flex="N"` → `class="flex-N"` / `class="flex-none"` / `class="flex-auto"`（适用于 `mu-box` 及所有 `<mu-*>` 组件）
 - [ ] `padding=` / `margin=` 系列 → 原子类（`p-*x`、`m-*x`、`px-*x`、`mx-*x` 等）
 - [ ] `gap="Nx"` → `class="gap-Nx"`
 - [ ] `align-items=` / `align-self=` / `justify-content=` → 原子类（`items-*`、`self-*`、`justify-*`）
 - [ ] `border` / `border-right` 等 → `class="border"` / `class="border-r"` 等
 - [ ] `position="fixed fit"` → `class="fixed"` + `style="inset: 0"`
-- [ ] `width=` / `height=` → `style="width: ..."` / `style="height: ..."`
+- [ ] `width=` / `height=` → `style="width: ..."` / `style="height: ..."`（适用于 `mu-box` 及所有未声明 `width`/`height` props 的 `<mu-*>` 组件，如 `mu-form-field`、`mu-grid-box`）
 - [ ] `overflow=` → `class="overflow-*"`
 - [ ] `content-center` → `class="flex-center"`
 - [ ] `class="mu-space"` → `class="flex-spacer"`（flex: 1 1 0），`space="Nx"` 保留为属性 `[space="Nx"]`
 - [ ] `class="mu-space" space="100%"` → `class="flex-break"`
 - [ ] `class="mu-divider"` → `class="flex-divider"`（默认 2px），`thin` 改为 `line-width="1"`
 - [ ] `class="mu-box mu-bg-normal"` → `class="bg-normal"`
-- [ ] `<mu-grid-box>` 上非 props 的属性（`width`、`height`、`padding`）→ `style` 或原子类
+- [ ] `<mu-grid-box>` 上非 props 的属性（`width`、`height`、`padding`）→ `style` 或原子类（已包含在上条通用规则中）
 - [ ] `<mu-grid-cell>` 上的 `margin=` → `class="m-*x"`

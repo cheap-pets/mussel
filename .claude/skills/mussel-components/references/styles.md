@@ -244,7 +244,9 @@
 | 类名          | 说明           |
 | ------------- | -------------- |
 | .flex-none    | flex: none     |
+| .flex-0       | flex: 0        |
 | .flex-1       | flex: 1        |
+| .flex-2 ~ .flex-8 | flex: 2 ~ flex: 8 |
 | .flex-auto    | flex: auto     |
 | .flex-initial | flex: 0 auto   |
 | .flex-grow    | flex-grow: 1   |
@@ -398,7 +400,6 @@
 | .border-dashed   | 虚线边框         |
 | .border-dotted   | 点线边框         |
 | .border-double   | 双线边框         |
-
 
 
 ### 2.4 文本排版
