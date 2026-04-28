@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKeyGen } from '@/components/common-hooks/key-gen'
+import { autoIncrementKeyBuilder } from '@/utils/key-builder'
 
 import { isObject } from '@/utils/type'
 import { reverse } from '@/utils/object'
@@ -11,7 +11,7 @@ const DEFAULT_SHORTCUTS = {
 const DEFAULT_KEY_PROP = 'id'
 
 export function useListItems (itemsRef, options = {}) {
-  const { genKey, getObjectKey } = useKeyGen()
+  const getItemKey = autoIncrementKeyBuilder()
 
   const {
     defaultComponent = 'mu-list-item',
@@ -61,9 +61,7 @@ export function useListItems (itemsRef, options = {}) {
             : { [nonObjectSetToProp]: el }
       )
 
-      item.key ??= isObj
-        ? getObjectKey(el)
-        : genKey()
+      item.key ??= getItemKey(el)
 
       result.push(
         Object.assign(item, shortcuts[item.is])

@@ -21,7 +21,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 - 所有 `<mu-*>` 组件（不仅是 `mu-box`）上若直接使用了 `width=` / `height=` 作为 HTML 属性，且该组件未将 `width`/`height` 声明为 props（已知 `mu-drawer`、`mu-dialog` 已声明），需改为 `style="width: ..."` / `style="height: ..."`
 - 所有 `<mu-*>` 组件（不仅是 `mu-box`）上的 `flex=` 属性需改为对应的 flex 原子类：`flex="1"` → `class="flex-1"`，`flex="0"` → `class="flex-none"`，`flex="auto"` / `flex="1 auto"` → `class="flex-auto"`
 - `class="mu-box"` 作为纯 CSS 类已无任何样式效果，应删除
-- `class="mu-space"` 已重命名为 `class="flex-spacer"`；`class="mu-divider"` 已重命名为 `class="flex-divider"`；尺寸变体改为属性选择器 `[space="Nx"]` / `[line-width="N"]`
+- `class="mu-space"` 已重命名为 `class="flex-space"`；`class="mu-divider"` 已重命名为 `class="flex-divider"`；尺寸变体改为属性选择器 `[space="Nx"]` / `[line-width="N"]`
 - `flex-wrap` 旧行为额外设置 `align-items: flex-start`，迁移时如需保留需加 `items-start`
 
 ## 扫描模式
@@ -30,7 +30,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 
 **组件标签**：`<mu-box`、`<mu-h-box`、`<mu-v-box`
 
-**CSS 类**：`class="mu-box"`、`class="mu-h-box"`、`class="mu-v-box"`、`class="mu-space"`、`class="mu-divider"`、`class="mu-flex-item"`、`class="flex-spacer"`、`class="flex-divider"`
+**CSS 类**：`class="mu-box"`、`class="mu-h-box"`、`class="mu-v-box"`、`class="mu-space"`、`class="mu-divider"`、`class="mu-flex-item"`、`class="flex-space"`、`class="flex-divider"`
 
 **HTML 属性（依赖已移除的属性选择器）**：
 - 布局：`layout="flex"`、`layout="grid"`、`content-center`、`flex-wrap`、`inline`、`reverse`

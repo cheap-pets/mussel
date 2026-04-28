@@ -47,12 +47,12 @@
       @update:active-tab="updateActiveTab2">
       <template #tab-bar-prepend>
         <label class="mu-label">Customized Tab Bar</label>
-        <div class="flex-spacer" />
+        <div class="flex-space" />
         <div class="flex-divider" />
       </template>
       <template #tab-bar-append>
         <div class="flex-divider" />
-        <div class="flex-spacer" />
+        <div class="flex-space" />
         <mu-dropdown-button caption="artist" :dropdown-items="artists" />
         <mu-input input-style="solid" prefix=":icon=search" placeholder="Search Something" />
       </template>

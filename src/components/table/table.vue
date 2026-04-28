@@ -48,11 +48,11 @@
 
 <script setup>
   import { ref, shallowRef, reactive, computed, watch, provide, onBeforeUnmount } from 'vue'
-  import { autoIncrementKeyBuilder } from '@/utils/auto-key'
   import { throttle, debounce } from 'throttle-debounce'
+  import { autoIncrementKeyBuilder } from '@/utils/key-builder'
 
-  import { resolveColumnType } from './column-types'
   import { ensureFn, getPixelNumber, getCellAlignClass } from './utils'
+  import { resolveColumnType } from './column-types'
 
   import TableRow from './table-row.vue'
 
@@ -115,11 +115,11 @@
     '--hover-col-height': 0
   })
 
-  const autoRecordKey = autoIncrementKeyBuilder()
-  const autoColumnKey = autoIncrementKeyBuilder()
+  const genRecordKey = autoIncrementKeyBuilder()
+  const genColumnKey = autoIncrementKeyBuilder()
 
   function getRecordKey (rec) {
-    return props.keyField ? rec[props.keyField] : autoRecordKey(rec)
+    return props.keyField ? rec[props.keyField] : genRecordKey(rec)
   }
 
   const isEmpty = computed(() => !props.records?.length)
@@ -158,7 +158,7 @@
     let left = fixed ? 0 : null
 
     const columns = props.columns.map((el, idx) => {
-      const col = { ...el, _raw: el, _key: el.key ?? autoColumnKey(el) }
+      const col = { ...el, _raw: el, _key: el.key ?? genColumnKey(el) }
       const type = resolveColumnType(el.type)
 
       const { width = type.width, align = type.align } = el

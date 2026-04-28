@@ -66,7 +66,7 @@
   import { modalProps, modalEvents, useModal } from './modal'
   import { ButtonPresets } from './button-presets'
 
-  import { useKeyGen } from '../common-hooks/key-gen'
+  import { autoIncrementKeyBuilder } from '@/utils/key-builder'
   import { resolveSize } from '@/utils/size'
   import { isString } from '@/utils/type'
   import { pick } from '@/utils/object'
@@ -91,8 +91,9 @@
 
   const slots = useSlots()
 
+  const getButtonKey = autoIncrementKeyBuilder()
+
   const { ready, container, modalVisible, hide, onMaskClick } = useModal(props, emit)
-  const { genKey } = useKeyGen()
 
   const maximized = ref(false)
 
@@ -111,7 +112,7 @@
 
   const footerButtons = computed(() =>
     props.buttons?.map(el => {
-      const { _el, is = 'mu-button', key = genKey(), ...attrs } = isString(el)
+      const { _el, is = 'mu-button', key = getButtonKey(), ...attrs } = isString(el)
         ? { _el: el, ...ButtonPresets[el] }
         : el
 

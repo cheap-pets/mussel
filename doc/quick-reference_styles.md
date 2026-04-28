@@ -297,8 +297,8 @@
 
 | 类名                                | 说明                                          |
 | ----------------------------------- | --------------------------------------------- |
-| .flex-spacer                        | 弹性占位，flex: 1 1 0                        |
-| .flex-spacer[space="1x"] ~ [space="4x"] | 等间距变体，flex: 0 0 (n × 8px)              |
+| .flex-space                        | 弹性占位，flex: 1 1 0                        |
+| .flex-space[space="1x"] ~ [space="4x"] | 等间距变体，flex: 0 0 (n × 8px)              |
 | .flex-divider                       | 垂直分隔线，flex: 0 0 2px，默认浅色背景       |
 | .flex-divider[line-width="1"] ~ [line-width="4"] | 分隔线宽度，1 ~ 4px                         |
 | .flex-break                         | 强制换行，flex: 0 0 100%                     |
@@ -306,7 +306,7 @@
 ```html
 <div class="flex">
   <mu-button>A</mu-button>
-  <div class="flex-spacer" />          <!-- 弹性占位，推到两端 -->
+  <div class="flex-space" />          <!-- 弹性占位，推到两端 -->
   <mu-button>B</mu-button>
 </div>
 

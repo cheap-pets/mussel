@@ -474,7 +474,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | `class="mu-box"` CSS 类 | 无对应样式定义，仅是一个无意义的 class 名 |
 | `.mu-box` 上的属性选择器样式 | 所有 `margin=`、`padding=`、`border`、`width=`、`height=`、`position=`、`layout=`、`flex=`、`align-items=`、`justify-content=`、`gap=`、`overflow=`、`content-center`、`flex-wrap`、`inline`、`reverse` 等属性选择器均已失效 |
 | `class="mu-h-box"` / `class="mu-v-box"` 作为纯 CSS 类 | 不再具有 `display: flex` / `display: flex; flex-direction: column` 的效果 |
-| `class="mu-space"` | 改为 `class="flex-spacer"` |
+| `class="mu-space"` | 改为 `class="flex-space"` |
 | `class="mu-divider"` | 改为 `class="flex-divider"` |
 | `class="mu-flex-item"` | 无对应样式 |
 
@@ -619,14 +619,14 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 
 #### 辅助元素
 
-`mu-space` 已重命名为 `flex-spacer`，`mu-divider` 已重命名为 `flex-divider`。尺寸变体改用属性选择器。
+`mu-space` 已重命名为 `flex-space`，`mu-divider` 已重命名为 `flex-divider`。尺寸变体改用属性选择器。
 
-**flex-spacer（原 mu-space）：**
+**flex-space（原 mu-space）：**
 
 | Mussel 3 | Mussel 4 | 说明 |
 |----------|----------|------|
-| `<div class="mu-space" />` | `<div class="flex-spacer" />` | flex: 1 1 0 |
-| `<div class="mu-space" space="1x" />` | `<div class="flex-spacer" space="1x" />` | 等间距变体 1x ~ 4x |
+| `<div class="mu-space" />` | `<div class="flex-space" />` | flex: 1 1 0 |
+| `<div class="mu-space" space="1x" />` | `<div class="flex-space" space="1x" />` | 等间距变体 1x ~ 4x |
 | `<div class="mu-space" space="100%" />` | `<div class="flex-break" />` | 强制换行 |
 
 **flex-divider（原 mu-divider）：**
@@ -699,12 +699,12 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 <!-- 升级后 -->
 <template #tab-bar-prepend>
   <label class="mu-label">Customized Tab Bar</label>
-  <div class="flex-spacer" />
+  <div class="flex-space" />
   <div class="flex-divider" />
 </template>
 <template #tab-bar-append>
   <div class="flex-divider" />
-  <div class="flex-spacer" />
+  <div class="flex-space" />
   <mu-dropdown-button caption="artist" :dropdown-items="artists" />
 </template>
 ```
@@ -750,7 +750,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 - [ ] `width=` / `height=` → `style="width: ..."` / `style="height: ..."`（适用于 `mu-box` 及所有未声明 `width`/`height` props 的 `<mu-*>` 组件，如 `mu-form-field`、`mu-grid-box`）
 - [ ] `overflow=` → `class="overflow-*"`
 - [ ] `content-center` → `class="flex-center"`
-- [ ] `class="mu-space"` → `class="flex-spacer"`（`space="Nx"` 保留为属性选择器）
+- [ ] `class="mu-space"` → `class="flex-space"`（`space="Nx"` 保留为属性选择器）
 - [ ] `class="mu-divider"` → `class="flex-divider"`（`thin` 改为 `line-width="1"`）
 - [ ] `class="mu-box mu-bg-normal"` → `class="bg-normal"`
 - [ ] `<mu-grid-box>` 上非 props 的属性（`width`、`height`、`padding`）→ `style` 或原子类（已包含在上条通用规则中）

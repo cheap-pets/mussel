@@ -30,9 +30,7 @@
 
   import { ref, computed, useAttrs } from 'vue'
   import { pickBy } from '@/utils/object'
-  import { useKeyGen } from '@/components/common-hooks/key-gen'
-
-  const { getObjectKey: getKey } = useKeyGen()
+  import { autoIncrementKeyBuilder } from '@/utils/key-builder'
 
   defineOptions({ name: 'MusselTags' })
 
@@ -48,6 +46,8 @@
   })
 
   const attrs = useAttrs()
+
+  const getKey = autoIncrementKeyBuilder()
 
   const dropdown = ref()
 

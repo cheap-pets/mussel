@@ -60,8 +60,8 @@
 
 <script setup>
   import { ref, shallowRef, reactive, computed, watch, provide, onBeforeUnmount } from 'vue'
-  import { autoIncrementKeyBuilder } from '@/utils/auto-key'
   import { throttle, debounce } from 'throttle-debounce'
+  import { autoIncrementKeyBuilder } from '@/utils/key-builder'
 
   import { resolveColumnType } from './column-types'
   import { ensureFn, getPixelNumber, getCellAlignClass } from './utils'

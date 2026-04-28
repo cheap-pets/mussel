@@ -7,7 +7,9 @@
     <span v-if="label" class="mu-form-field__label text-ellipsis" :style="labelStyle">
       {{ label }}
     </span>
-    <slot />
+    <slot>
+      <component :is="input.type" v-bind="input.attrs" />
+    </slot>
   </div>
 </template>
 
@@ -20,6 +22,8 @@
   defineOptions({ name: 'MusselFormField' })
 
   const props = defineProps({
+    prop: String,
+    input: Object,
     width: [String, Number],
     height: [String, Number],
     label: String,

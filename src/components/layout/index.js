@@ -9,8 +9,8 @@ export const MuVBox =
 export const MuFlexDivider =
   (props, { slots }) => h('div', { ...props, class: ['flex-divider', props.class] }, slots.default?.())
 
-export const MuFlexSpacer =
-  (props, { slots }) => h('div', { ...props, class: ['flex-spacer', props.class] }, slots.default?.())
+export const MuFlexSpace =
+  (props, { slots }) => h('div', { ...props, class: ['flex-space', props.class] }, slots.default?.())
 
 export const MuFlexBreak =
   (props, { slots }) => h('div', { ...props, class: ['flex-break', props.class] }, slots.default?.())

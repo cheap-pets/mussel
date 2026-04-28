@@ -156,12 +156,12 @@
 
 ### 3.10 辅助元素
 
-#### flex-spacer（原 mu-space）
+#### flex-space
 
 | Mussel 3 | Mussel 4 | 说明 |
 |----------|----------|------|
-| `<div class="mu-space" />` | `<div class="flex-spacer" />` | flex: 1 1 0 |
-| `<div class="mu-space" space="1x" />` | `<div class="flex-spacer" space="1x" />` | 等间距变体 1x ~ 4x |
+| `<div class="mu-space" />` | `<div class="flex-space" />` | flex: 1 1 0 |
+| `<div class="mu-space" space="1x" />` | `<div class="flex-space" space="1x" />` | 等间距变体 1x ~ 4x |
 | `<div class="mu-space" space="100%" />` | `<div class="flex-break" />` | 强制换行 |
 
 #### flex-divider（原 mu-divider）
@@ -236,12 +236,12 @@
 <!-- 升级后 -->
 <template #tab-bar-prepend>
   <label class="mu-label">Customized Tab Bar</label>
-  <div class="flex-spacer" />
+  <div class="flex-space" />
   <div class="flex-divider" />
 </template>
 <template #tab-bar-append>
   <div class="flex-divider" />
-  <div class="flex-spacer" />
+  <div class="flex-space" />
   <mu-dropdown-button caption="artist" :dropdown-items="artists" />
 </template>
 ```
@@ -321,7 +321,7 @@
 - [ ] `width=` / `height=` → `style="width: ..."` / `style="height: ..."`（适用于 `mu-box` 及所有未声明 `width`/`height` props 的 `<mu-*>` 组件，如 `mu-form-field`、`mu-grid-box`）
 - [ ] `overflow=` → `class="overflow-*"`
 - [ ] `content-center` → `class="flex-center"`
-- [ ] `class="mu-space"` → `class="flex-spacer"`（flex: 1 1 0），`space="Nx"` 保留为属性 `[space="Nx"]`
+- [ ] `class="mu-space"` → `class="flex-space"`（flex: 1 1 0），`space="Nx"` 保留为属性 `[space="Nx"]`
 - [ ] `class="mu-space" space="100%"` → `class="flex-break"`
 - [ ] `class="mu-divider"` → `class="flex-divider"`（默认 2px），`thin` 改为 `line-width="1"`
 - [ ] `class="mu-box mu-bg-normal"` → `class="bg-normal"`
