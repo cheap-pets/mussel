@@ -2,6 +2,9 @@
   display: flex;
   gap: var(--mu-base-spacing);
   align-items: center;
+
+  width: 100%;
+
   font-size: var(--mu-common-font-size);
 
   & > .mu-form-field__label {

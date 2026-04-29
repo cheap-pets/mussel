@@ -50,7 +50,7 @@ export function useCalendar (model, props) {
     model.value = vType === 'object'
       ? value
       : vType === 'date'
-        ? new Date(value.year, value.month, value.date)
+        ? new Date(value.year, value.month, value.date ?? 1)
         : toString(value, props.format)
   }
 

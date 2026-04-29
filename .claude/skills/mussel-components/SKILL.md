@@ -84,7 +84,8 @@ description: 使用 MUSSEL 4 内部组件库和 UI 规范编写 Vue 界面代码
 | 单选框 | `MuRadio` |
 | 开关 | `MuSwitch` |
 
-> 表单布局：`<mu-form>` → `<mu-form-row>` → `<mu-form-field label="...">`
+> 表单：声明式 `<mu-form>` → `<mu-form-row>` → `<mu-form-field label="...">`
+> 数据驱动：`<mu-form :model="form" :items="[...]" />`，item 类型：字符串标题、`'hr'` 分隔线、`'->'` 换行、数组子行、`{ prop, label, input }` 字段
 
 ### 模态 / 抽屉
 

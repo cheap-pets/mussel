@@ -101,6 +101,7 @@ export default {
   plugins: [svg(), vue(), copyHtmlFiles()],
   resolve: {
     alias: {
+      'vue': resolve(__dirname, 'node_modules/vue/dist/vue.esm-browser.js'),
       '~icons': resolve(__dirname, 'node_modules/@tabler/icons/icons'),
       '@': resolve(__dirname, 'src'),
       'mussel': resolve(__dirname, 'src/index.js')

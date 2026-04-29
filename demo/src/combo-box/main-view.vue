@@ -4,7 +4,7 @@
       COMBOBOX & SELECT
       <theme-switch />
     </h2>
-    <div class="group">
+    <div class="group flex flex-col gap-1x">
       <div class="mu-input-group">
         <mu-combo-box
           v-model="artist"
@@ -31,7 +31,7 @@
       </mu-combo-box>
       <mu-combo-box v-model="artist" editable :options="artists" />
     </div>
-    <div class="group">
+    <div class="group flex flex-col gap-1x">
       <mu-select
         v-model="artist"
         class="my-select"

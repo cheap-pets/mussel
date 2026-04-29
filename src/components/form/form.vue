@@ -1,17 +1,11 @@
 <template>
   <div class="mu-form">
     <slot>
-      <template v-for="item in items" :key="getItemKey(item)">
-        <mu-form-row v-if="Array.isArray(item)" :items="item" />
-        <hr v-else-if="item === '--'">
-        <mu-flex-break v-else-if="item === '->'" />
-        <div v-else-if="isString(item)" class="mu-form__title">
-          {{ item }}
-        </div>
-        <component :is="item.is" v-else-if="item.is" v-bind="item.attrs" v-on="item.events">
+      <template v-for="item in resolvedItems" :key="item.key">
+        <component :is="item.is" v-if="item.text" v-bind="item.attrs">
           {{ item.text }}
         </component>
-        <mu-form-field v-else-if="item.prop" v-bind="item" />
+        <component :is="item.is" v-else v-bind="item.attrs" />
       </template>
     </slot>
   </div>
@@ -20,9 +14,9 @@
 <script setup>
   import './form.scss'
 
-  import { provide } from 'vue'
-  import { isString } from '@/utils/type'
+  import { provide, computed } from 'vue'
   import { autoIncrementKeyBuilder } from '@/utils/key-builder'
+  import { resolveFormItems } from './item-types'
 
   defineOptions({ name: 'MusselForm' })
 
@@ -33,7 +27,9 @@
     labelAlign: String
   })
 
-  const getItemKey = autoIncrementKeyBuilder()
+  const keyGen = autoIncrementKeyBuilder()
+
+  const resolvedItems = computed(() => resolveFormItems(props.items, keyGen))
 
   provide('form', props)
 </script>

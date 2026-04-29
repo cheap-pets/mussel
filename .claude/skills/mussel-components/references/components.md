@@ -355,26 +355,83 @@ buttons: [
 
 ### MuForm
 
-目前主要用于布局，后续将支持表单项快速定义。
+表单容器，支持声明式子组件和 `items` 数组驱动的数据模式。
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
-| `width` / `height` | String\|Number | 表单尺寸 |
+| `model` | Object | 表单数据对象，用于 `items` 模式下的双向绑定 |
+| `items` | Array | 表单项定义数组（数据驱动模式），结构见下方 |
 | `label-width` | String | 默认标签宽度（子 `MuFormField` 继承） |
-| `label-align` | String | 默认标签对齐：`left` \| `center` \| `right` |
+| `label-align` | String | 默认标签对齐：`left` \| `top` \| `right` |
+
+**items 数组支持的元素类型：**
+
+| 类型 | 写法 | 说明 |
+|------|------|------|
+| 标题 | `'字符串'` | 渲染为表单分组标题 |
+| 分隔线 | `'hr'` | 渲染为 `<hr>` |
+| 换行 | `'->'` | 渲染为 `flex-break`，强制换行 |
+| 子行 | `[...]` | 数组元素，渲染为一行 `mu-form-row` |
+| 字段 | `{ prop, label, ... }` | 渲染为 `mu-form-field`，自动绑定 `model[prop]` |
+| 自定义 | `{ is: '组件名', ... }` | 渲染为任意自定义组件 |
+
+---
 
 ### MuFormRow
 
-表单行容器，水平排列多个 `MuFormField`。
-
-### MuFormField
+表单行容器，水平排列多个 `MuFormField`。支持 `items` 数组。
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
+| `items` | Array | 行内字段定义，支持标题、字段、自定义组件（不支持 `hr` / `->` / 子行） |
+
+---
+
+### MuFormField
+
+表单字段，可自动渲染输入组件或通过 slot 自定义。
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `prop` | String | 对应 `model` 中的字段名，用于双向绑定 |
+| `input` | String\|Object | 输入组件配置（见下方说明） |
 | `label` | String | 字段标签文字 |
 | `label-width` | String | 覆盖 Form 的标签宽度 |
 | `label-align` | String | 覆盖 Form 的标签对齐 |
 | `width` / `height` | String\|Number | 字段尺寸 |
+| `required` | Boolean | 是否必填（添加必填样式） |
+| `invalid` | Boolean | 是否校验失败（添加错误样式） |
+
+**input 配置：**
+
+- 字符串形式：直接指定输入类型，自动渲染对应组件
+  ```javascript
+  { prop: 'name', label: '姓名', input: 'text' }      // <mu-input>
+  { prop: 'memo', label: '备注', input: 'memo' }      // <textarea class="mu-input">
+  { prop: 'date', label: '日期', input: 'date' }      // <mu-date-input>
+  { prop: 'month', label: '月份', input: 'month' }    // <mu-date-input type="month">
+  { prop: 'type', label: '类型', input: 'select' }    // <mu-select>
+  ```
+- 对象形式：完整控制组件、属性和绑定行为
+  ```javascript
+  { prop: 'color', label: '颜色', input: {
+    type: 'select',
+    clearButton: false,
+    options: [{ value: 'red', label: '红色' }]
+  }}
+  { prop: 'desc', label: '描述', input: { type: 'memo', style: 'height: 200px' }}
+  ```
+
+**input 对象的完整字段：**
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `type` | String | 输入类型：`text` \| `memo` \| `date` \| `month` \| `select` \| `multi-select` |
+| `is` | String | 直接指定组件名（设置后 `type` 不生效） |
+| `useModel` | Boolean | 是否通过 `v-model` 绑定 `form.model[prop]`（默认：`model` 和 `prop` 都存在时为 `true`） |
+| 其他 | Any | 透传给输入组件的属性 |
+
+**声明式用法：**
 
 ```html
 <mu-form label-width="100px" label-align="right">
@@ -387,6 +444,31 @@ buttons: [
     </mu-form-field>
   </mu-form-row>
 </mu-form>
+```
+
+**数据驱动用法：**
+
+```html
+<mu-form :model="form" :items="items" label-width="80px" label-align="left" />
+```
+
+```javascript
+const form = ref({ name: '', phone: '', birthday: '', memo: '', role: '' })
+
+const items = [
+  '基本信息',
+  { prop: 'name', label: '姓名', width: 1 / 2, required: true },
+  { prop: 'phone', label: '手机号', width: 1 / 2 },
+  'hr',
+  [
+    { prop: 'birthday', label: '生日', input: 'date' },
+    { prop: 'role', label: '角色', input: {
+      type: 'select',
+      options: [{ value: 'admin', label: '管理员' }, { value: 'user', label: '用户' }]
+    }}
+  ],
+  { prop: 'memo', label: '备注', input: { type: 'memo', style: 'height: 120px' } }
+]
 ```
 
 ---

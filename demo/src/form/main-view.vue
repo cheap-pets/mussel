@@ -35,10 +35,79 @@
           <textarea class="mu-input" style="height: 200px;" />
         </mu-form-field>
       </mu-form>
+      <mu-form class="mt-2x border" :model="form" :items="items" label-width="80px" label-align="top" />
     </div>
   </div>
 </template>
 
 <script setup>
+  import { ref } from 'vue'
+
   import ThemeSwitch from '../common/theme-switch.vue'
+
+  const form = ref({
+    brand: 'Apple',
+    model: 'MacBook Pro 14"',
+    processor: 'M3 Pro',
+    memory: '18GB',
+    storage: '512GB SSD',
+    screenSize: '14.2英寸',
+    resolution: '3024 x 1964',
+    graphics: '集成显卡',
+    price: '14999',
+    color: '深空灰色',
+    weight: '1.61',
+    warranty: 1,
+    stock: 50,
+    os: 'macOS',
+    releaseDate: '2024-11',
+    purchaseDate: '2024-12-15',
+    description: '搭载 M3 Pro 芯片的 MacBook Pro，性能强劲，续航出色，适合专业用户使用。'
+  })
+
+  const items = [
+    // 基本信息
+    '基本信息',
+    { prop: 'brand', label: '品牌', width: 1 / 2, required: true },
+    { prop: 'model', label: '型号', width: 1 / 2, required: true },
+    { prop: 'processor', label: '处理器', width: 1 / 2, required: true },
+    { prop: 'memory', label: '内存', width: 1 / 2, required: true },
+    { prop: 'storage', label: '存储', width: 1 / 2, required: true },
+    { prop: 'graphics', label: '显卡', width: 1 / 2 },
+    'hr',
+    '屏幕信息',
+    [
+      { prop: 'screenSize', label: '屏幕尺寸', required: true },
+      { prop: 'resolution', label: '分辨率', required: true }
+    ],
+    '价格与库存',
+    [
+      { prop: 'price', label: '价格（元）', required: true, input: { type: 'text' } },
+      { prop: 'color', label: '颜色' }
+    ],
+    [
+      { prop: 'weight', label: '重量（kg）' },
+      {
+        prop: 'warranty',
+        label: '保修期',
+        input: {
+          type: 'select',
+          clearButton: false,
+          options: [{ value: 1, label: '一年' }, { value: 2, label: '二年' }, { value: 3, label: '三年' }]
+        }
+      }
+    ],
+    [
+      { prop: 'stock', label: '库存', required: true },
+      { prop: 'os', label: '操作系统', input: { type: 'select', options: [{ value: 'macOS' }, { value: 'windows' }] } }
+    ],
+    'hr',
+    '日期选项',
+    [
+      { prop: 'releaseDate', label: '上市日期', input: 'month' },
+      { prop: 'purchaseDate', label: '购买日期', input: 'date' }
+    ],
+    'hr',
+    { prop: 'description', label: '商品描述', input: { type: 'memo', style: 'height: 200px' } }
+  ]
 </script>

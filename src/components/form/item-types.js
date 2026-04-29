@@ -1,0 +1,65 @@
+import { isString } from '@/utils/type'
+
+const HR = {
+  check: v => v === 'hr',
+  build: v => ({ type: 'hr', is: 'hr' })
+}
+
+const BREAK = {
+  check: v => v === '->',
+  build: v => ({ type: 'break', is: 'div', attrs: { class: 'flex-break' } })
+}
+
+const ITEMS = {
+  check: v => Array.isArray(v),
+  build: v => ({ type: 'items', is: 'mu-form-row', attrs: { items: v } })
+}
+
+const TITLE = {
+  check: v => isString(v),
+  build: v => ({ type: 'title', is: 'div', attrs: { class: 'mu-form__title' }, text: v })
+}
+
+const CUSTOM = {
+  check: v => v?.is,
+  build: v => {
+    const { is, text, ...attrs } = v
+    return { type: 'custom', is, attrs, text }
+  }
+}
+
+const FIELD = {
+  check: v => v?.prop,
+  build: v => {
+    const { is, ...attrs } = v
+    return { type: 'field', is: 'mu-form-field', attrs }
+  }
+}
+
+const FORM_ITEM_TYPES = [HR, BREAK, ITEMS, TITLE, CUSTOM, FIELD]
+const FORM_ROW_ITEM_TYPES = [TITLE, CUSTOM, FIELD]
+
+function resolveItems (items, validTypes, keyGen) {
+  const result = []
+
+  items
+    .forEach(el => {
+      const type = validTypes.find(t => t.check(el))
+
+      if (type) {
+        const item = type.build(el)
+        item.key = keyGen(el)
+        result.push(item)
+      }
+    })
+
+  return result
+}
+
+export function resolveFormItems (items, keyGen) {
+  return resolveItems(items, FORM_ITEM_TYPES, keyGen)
+}
+
+export function resolveFormRowItems (items, keyGen) {
+  return resolveItems(items, FORM_ROW_ITEM_TYPES, keyGen)
+}

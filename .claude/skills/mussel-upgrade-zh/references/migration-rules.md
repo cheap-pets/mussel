@@ -161,6 +161,36 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 | `margin="2x"` | `class="m-2x"` | 改为原子类 |
 | `padding="8px"` | `style="padding: 8px;"` | 转为内联样式 |
 
+Mussel 4 新增数据驱动表单能力：
+
+```html
+<!-- 升级前：声明式写法（仍可用） -->
+<mu-form label-width="80px">
+  <mu-form-field label="姓名">
+    <mu-input v-model="form.name" />
+  </mu-form-field>
+  <mu-form-field label="角色">
+    <mu-select v-model="form.role" :options="roleOptions" />
+  </mu-form-field>
+</mu-form>
+
+<!-- Mussel 4：数据驱动写法（推荐用于简单表单） -->
+<mu-form :model="form" :items="items" label-width="80px" />
+```
+
+```javascript
+const items = [
+  { prop: 'name', label: '姓名', required: true },
+  { prop: 'role', label: '角色', input: {
+    type: 'select',
+    options: [{ value: 'admin', label: '管理员' }, { value: 'user', label: '用户' }]
+  }}
+]
+```
+
+`input` 属性支持的类型：`text`（默认）| `memo` | `date` | `month` | `select` | `multi-select`。
+items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数组子行、`{ is: '组件名' }` 自定义组件。
+
 ### MuCheck
 
 | Mussel 3 | Mussel 4 | 备注 |
