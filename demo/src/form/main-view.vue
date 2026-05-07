@@ -62,7 +62,8 @@
     os: 'macOS',
     releaseDate: '2024-11',
     purchaseDate: '2024-12-15',
-    description: '搭载 M3 Pro 芯片的 MacBook Pro，性能强劲，续航出色，适合专业用户使用。'
+    description: '搭载 M3 Pro 芯片的 MacBook Pro，性能强劲，续航出色，适合专业用户使用。',
+    features: ['touchbar', 'wifi6']
   })
 
   const items = [
@@ -82,11 +83,11 @@
     ],
     '价格与库存',
     [
-      { prop: 'price', label: '价格（元）', required: true, input: { type: 'text' } },
-      { prop: 'color', label: '颜色' }
+      { prop: 'price', label: '价格', required: true, suffix: '(元)', input: { type: 'text' } },
+      { prop: 'stock', label: '库存', required: true, suffix: '(件)' }
     ],
     [
-      { prop: 'weight', label: '重量（kg）' },
+      { prop: 'weight', label: '重量', suffix: '(kg)' },
       {
         prop: 'warranty',
         label: '保修期',
@@ -98,9 +99,45 @@
       }
     ],
     [
-      { prop: 'stock', label: '库存', required: true },
-      { prop: 'os', label: '操作系统', input: { type: 'select', options: [{ value: 'macOS' }, { value: 'windows' }] } }
+      {
+        prop: 'color',
+        label: '颜色',
+        input: {
+          type: 'radio-group',
+          options: [
+            { value: '深空灰色', label: '深空灰' },
+            { value: '银色', label: '银色' },
+            { value: '星光色', label: '星光色' }
+          ]
+        }
+      },
+      {
+        prop: 'os',
+        label: '操作系统',
+        input: {
+          type: 'segmented',
+          options: [
+            { label: 'macOS', value: 'macOS' },
+            { label: 'linux', value: 'linux' },
+            { label: 'windows', value: 'windows' }
+          ],
+          class: 'flex-1'
+        }
+      }
     ],
+    {
+      prop: 'features',
+      label: '特性',
+      input: {
+        type: 'check-group',
+        options: [
+          { value: 'touchbar', label: 'Touch Bar' },
+          { value: 'wifi6', label: 'Wi-Fi 6E' },
+          { value: 'thunderbolt', label: 'Thunderbolt 4' },
+          { value: 'faceid', label: 'Face ID', disabled: true }
+        ]
+      }
+    },
     'hr',
     '日期选项',
     [

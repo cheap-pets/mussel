@@ -81,7 +81,10 @@ description: 使用 MUSSEL 4 内部组件库和 UI 规范编写 Vue 界面代码
 | 多选 | `MuMultiSelect` |
 | 日期 / 月份 | `MuDateInput` |
 | 复选框 | `MuCheck` |
+| 复选框组 | `MuCheckGroup` |
 | 单选框 | `MuRadio` |
+| 单选框组 | `MuRadioGroup` |
+| 分段控件 | `MuSegmented` |
 | 开关 | `MuSwitch` |
 
 > 表单：声明式 `<mu-form>` → `<mu-form-row>` → `<mu-form-field label="...">`

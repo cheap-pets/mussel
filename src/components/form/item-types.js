@@ -10,9 +10,9 @@ const BREAK = {
   build: v => ({ type: 'break', is: 'div', attrs: { class: 'flex-break' } })
 }
 
-const ITEMS = {
+const ROW = {
   check: v => Array.isArray(v),
-  build: v => ({ type: 'items', is: 'mu-form-row', attrs: { items: v } })
+  build: v => ({ type: 'row', is: 'mu-form-row', attrs: { items: v } })
 }
 
 const TITLE = {
@@ -36,7 +36,7 @@ const FIELD = {
   }
 }
 
-const FORM_ITEM_TYPES = [HR, BREAK, ITEMS, TITLE, CUSTOM, FIELD]
+const FORM_ITEM_TYPES = [HR, BREAK, ROW, TITLE, CUSTOM, FIELD]
 const FORM_ROW_ITEM_TYPES = [TITLE, CUSTOM, FIELD]
 
 function resolveItems (items, validTypes, keyGen) {

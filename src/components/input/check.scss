@@ -1,43 +1,46 @@
 .mu-check,
 .mu-radio {
-  --mu-check_size: 16px;
-
   cursor: pointer;
   user-select: none;
 
   display: flex;
-  gap: var(--mu-base-spacing);
+  gap: var(--mu-content-spacing);
   align-items: center;
 
-  font-size: var(--mu-common-font-size);
-  line-height: var(--mu-common-line-height);
+  max-width: 100%;
 
-  & > span {
-    display: block;
-    color: var(--mu-text-color-normal);
-  }
+  font-size: var(--mu-common-font-size);
+  line-height: var(--mu-input-size);
+  color: var(--mu-text-color-normal);
 
   & > input {
     cursor: pointer;
 
     flex: none;
 
-    width: var(--mu-check_size);
-    height: var(--mu-check_size);
+    width: 16px;
+    height: 16px;
     margin: 0;
 
     accent-color: var(--mu-primary-color);
   }
 
-  &[disabled] {
-    pointer-events: none;
+  & > span {
+    overflow: hidden;
+    flex: 1 1 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
 
-    & > input {
-      opacity: .67;
-    }
+.mu-check-group[disabled] > .mu-check,
+.mu-radio-group[disabled] > .mu-radio,
+.mu-check[disabled],
+.mu-radio[disabled] {
+  pointer-events: none;
+  color: var(--mu-text-color-soft);
 
-    & > span {
-      color: var(--mu-text-color-soft);
-    }
+  & > input {
+    opacity: .67;
   }
 }

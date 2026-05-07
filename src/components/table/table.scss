@@ -74,7 +74,7 @@
 
   font-weight: 500;
 
-  background-color: var(--mu-bg-header);
+  background-color: var(--mu-bg-fill);
 }
 
 .mu-table__th--sortable {
@@ -189,5 +189,5 @@
   padding: var(--mu-base-spacing);
   border-top: 1px solid var(--mu-border-color-soft);
 
-  background-color: var(--mu-bg-footer);
+  background-color: var(--mu-bg-fill);
 }

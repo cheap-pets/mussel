@@ -11,6 +11,7 @@
       <component :is="fieldInput.is" v-if="fieldInput.useModel" v-bind="fieldInput.attrs" v-model="form.model[prop]" />
       <component :is="fieldInput.is" v-else v-bind="fieldInput.attrs" />
     </slot>
+    <span v-if="suffix" class="mu-form-field__suffix">{{ suffix }}</span>
   </div>
 </template>
 
@@ -29,13 +30,13 @@
     prop: String,
     input: [String, Object],
     width: [String, Number],
-    height: [String, Number],
     label: String,
     labelWidth: String,
     labelAlign: {
       type: String,
       validator: v => ['left', 'right', 'top'].includes(v)
     },
+    suffix: String,
     required: Boolean,
     invalid: Boolean
   })
@@ -53,7 +54,7 @@
 
   const labelStyle = computed(() => ({
     width: labelAlignment.value === 'top'
-      ? '100%'
+      ? undefined
       : resolveSize(props.labelWidth || form.labelWidth)
   }))
 

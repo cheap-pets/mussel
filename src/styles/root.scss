@@ -52,9 +52,7 @@ $SEMANTIC_COLORS:
 
   --mu-bg-mask: rgba(0, 0, 0, .5);
   --mu-bg-overlay: var(--mu-bg-normal);
-
-  --mu-bg-header: var(--mu-gray-1);
-  --mu-bg-footer: var(--mu-gray-1);
+  --mu-bg-fill: var(--mu-gray-1);
   --mu-bg-stripe: var(--mu-gray-0);
 }
 
@@ -81,8 +79,7 @@ $SEMANTIC_COLORS:
   --mu-bg-disabled: rgb(from var(--mu-gray-0) r g b / 0.12);
 
   --mu-bg-overlay: var(--mu-gray-17);
-  --mu-bg-header: var(--mu-gray-16);
-  --mu-bg-footer: var(--mu-gray-16);
+  --mu-bg-fill: var(--mu-gray-16);
   --mu-bg-stripe: var(--mu-gray-18);
 
   color-scheme: dark;

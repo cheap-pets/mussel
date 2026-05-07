@@ -399,6 +399,7 @@ buttons: [
 | `label-width` | String | 覆盖 Form 的标签宽度 |
 | `label-align` | String | 覆盖 Form 的标签对齐 |
 | `width` / `height` | String\|Number | 字段尺寸 |
+| `suffix` | String | 字段后缀文字（如单位） |
 | `required` | Boolean | 是否必填（添加必填样式） |
 | `invalid` | Boolean | 是否校验失败（添加错误样式） |
 
@@ -411,6 +412,7 @@ buttons: [
   { prop: 'date', label: '日期', input: 'date' }      // <mu-date-input>
   { prop: 'month', label: '月份', input: 'month' }    // <mu-date-input type="month">
   { prop: 'type', label: '类型', input: 'select' }    // <mu-select>
+  { prop: 'view', label: '视图', input: 'segmented' } // <mu-segmented>
   ```
 - 对象形式：完整控制组件、属性和绑定行为
   ```javascript
@@ -426,7 +428,7 @@ buttons: [
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
-| `type` | String | 输入类型：`text` \| `memo` \| `date` \| `month` \| `select` \| `multi-select` |
+| `type` | String | 输入类型：`text` \| `memo` \| `date` \| `month` \| `select` \| `multi-select` \| `check-group` \| `radio-group` \| `segmented` |
 | `is` | String | 直接指定组件名（设置后 `type` 不生效） |
 | `useModel` | Boolean | 是否通过 `v-model` 绑定 `form.model[prop]`（默认：`model` 和 `prop` 都存在时为 `true`） |
 | 其他 | Any | 透传给输入组件的属性 |
@@ -559,6 +561,33 @@ const items = [
 | `label` | String | 标签文字 |
 | `disabled` | Boolean | 禁用状态 |
 
+> 可单独使用（`v-model` 绑定 Boolean），也可放在 `<mu-check-group>` 内（`v-model` 绑定 Array）。
+
+---
+
+### MuCheckGroup
+
+复选按钮组，管理多个 `MuCheck` 的选中状态。
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `modelValue` | Array | 双向绑定值（选中项 value 数组） |
+| `options` | Array | 选项数组 `[{ value, label, disabled? }]` |
+| `disabled` | Boolean | 禁用整组 |
+
+支持 `options` 属性和默认 slot 两种用法：
+
+```html
+<!-- options 属性 -->
+<mu-check-group v-model="checked" :options="options" />
+
+<!-- slot 用法 -->
+<mu-check-group v-model="checked">
+  <mu-check value="a" label="选项 A" />
+  <mu-check value="b" label="选项 B" />
+</mu-check-group>
+```
+
 ---
 
 ### MuRadio
@@ -571,6 +600,60 @@ const items = [
 | `value` | — | 选项值，必填 |
 | `label` | String | 标签文字 |
 | `disabled` | Boolean | 禁用状态 |
+
+> 可单独使用，也可放在 `<mu-radio-group>` 内。
+
+---
+
+### MuRadioGroup
+
+单选按钮组，管理多个 `MuRadio` 的选中状态。
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `modelValue` | — | 双向绑定值（当前选中项 value） |
+| `options` | Array | 选项数组 `[{ value, label, disabled? }]` |
+| `disabled` | Boolean | 禁用整组 |
+
+支持 `options` 属性和默认 slot 两种用法：
+
+```html
+<!-- options 属性 -->
+<mu-radio-group v-model="selected" :options="options" />
+
+<!-- slot 用法 -->
+<mu-radio-group v-model="selected">
+  <mu-radio value="x" label="Radio X" />
+  <mu-radio value="y" label="Radio Y" />
+</mu-radio-group>
+```
+
+---
+
+### MuSegmented
+
+分段控件，在多个互斥选项间切换，带滑块动画。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `modelValue` | — | — | 双向绑定值（当前选中项 value） |
+| `options` | Array | — | 选项数组，支持 `[{ value, label, icon?, disabled? }]` 或简单值 `[1, 2, 3]` |
+| `disabled` | Boolean | — | 禁用整组 |
+| `icon-position` | String | `left` | 图标位置：`left`（图标在文字左侧）\| `top`（图标在文字上方） |
+
+```html
+<mu-segmented v-model="viewMode" :options="[
+  { value: 'list', label: '列表', icon: 'list' },
+  { value: 'grid', label: '网格', icon: 'grid' },
+  { value: 'table', label: '表格', icon: 'table' }
+]" />
+
+<!-- 简单值形式 -->
+<mu-segmented v-model="period" :options="['日', '周', '月', '年']" />
+
+<!-- 图标在上方 -->
+<mu-segmented v-model="view" icon-position="top" :options="viewOptions" />
+```
 
 ---
 
@@ -599,7 +682,10 @@ const items = [
 | 多选 | `MuMultiSelect` |
 | 日期 / 月份 | `MuDateInput` |
 | 复选框 | `MuCheck` |
+| 复选框组 | `MuCheckGroup` |
 | 单选框 | `MuRadio` |
+| 单选框组 | `MuRadioGroup` |
+| 分段控件 | `MuSegmented` |
 | 开关 | `MuSwitch` |
 
 ---

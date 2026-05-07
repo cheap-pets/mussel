@@ -8,9 +8,13 @@
 <script setup>
   import './check.scss'
 
+  import { inject } from 'vue'
+
   defineOptions({ name: 'MusselCheck' })
 
-  const model = defineModel({ type: [Boolean, Array] })
+  const ownModel = defineModel({ type: [Boolean, Array] })
+  const groupModel = inject('checkGroup', null)?.model
+  const model = groupModel ?? ownModel
 
   defineProps({
     value: null,
