@@ -424,15 +424,6 @@ buttons: [
   { prop: 'desc', label: '描述', input: { type: 'memo', style: 'height: 200px' }}
   ```
 
-**input 对象的完整字段：**
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `type` | String | 输入类型：`text` \| `memo` \| `date` \| `month` \| `select` \| `multi-select` \| `check-group` \| `radio-group` \| `segmented` |
-| `is` | String | 直接指定组件名（设置后 `type` 不生效） |
-| `useModel` | Boolean | 是否通过 `v-model` 绑定 `form.model[prop]`（默认：`model` 和 `prop` 都存在时为 `true`） |
-| 其他 | Any | 透传给输入组件的属性 |
-
 **声明式用法：**
 
 ```html

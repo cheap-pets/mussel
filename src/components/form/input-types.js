@@ -1,4 +1,4 @@
-export const INPUT_COMPONENTS = {
+export const INPUT_TYPES = {
   text: ['mu-input'],
   memo: ['textarea', { class: 'mu-input', style: 'height: 80px' }],
   date: ['mu-date-input'],

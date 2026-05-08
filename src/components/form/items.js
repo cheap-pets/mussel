@@ -1,4 +1,7 @@
+import { computed } from 'vue'
+
 import { isString } from '@/utils/type'
+import { autoIncrementKeyBuilder } from '@/utils/key-builder'
 
 const HR = {
   check: v => v === 'hr',
@@ -39,27 +42,36 @@ const FIELD = {
 const FORM_ITEM_TYPES = [HR, BREAK, ROW, TITLE, CUSTOM, FIELD]
 const FORM_ROW_ITEM_TYPES = [TITLE, CUSTOM, FIELD]
 
-function resolveItems (items, validTypes, keyGen) {
-  const result = []
+function useItems (props, itemTypes) {
+  const keyGen = autoIncrementKeyBuilder()
 
-  items
-    .forEach(el => {
-      const type = validTypes.find(t => t.check(el))
+  const items = computed(() => {
+    const result = []
 
-      if (type) {
-        const item = type.build(el)
-        item.key = keyGen(el)
-        result.push(item)
-      }
-    })
+    props
+      .items
+      .forEach(el => {
+        const type = itemTypes.find(t => t.check(el))
 
-  return result
+        if (type) {
+          const item = type.build(el)
+          item.key = keyGen(el)
+          result.push(item)
+        }
+      })
+
+    return result
+  })
+
+  return {
+    items
+  }
 }
 
-export function resolveFormItems (items, keyGen) {
-  return resolveItems(items, FORM_ITEM_TYPES, keyGen)
+export function useFormItems (props) {
+  return useItems(props, FORM_ITEM_TYPES)
 }
 
-export function resolveFormRowItems (items, keyGen) {
-  return resolveItems(items, FORM_ROW_ITEM_TYPES, keyGen)
+export function useFormRowItems (props) {
+  return useItems(props, FORM_ROW_ITEM_TYPES)
 }

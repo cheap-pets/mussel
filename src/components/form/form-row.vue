@@ -1,7 +1,7 @@
 <template>
   <div class="mu-form-row">
     <slot>
-      <template v-for="item in resolvedItems" :key="item.key">
+      <template v-for="item in rowItems" :key="item.key">
         <component :is="item.is" v-if="item.text" v-bind="item.attrs">
           {{ item.text }}
         </component>
@@ -12,15 +12,10 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue'
-  import { autoIncrementKeyBuilder } from '@/utils/key-builder'
-  import { resolveFormRowItems } from './item-types'
+  import { useFormRowItems } from './items'
 
   defineOptions({ name: 'MusselFormRow' })
 
   const props = defineProps({ items: Array })
-
-  const keyGen = autoIncrementKeyBuilder()
-
-  const resolvedItems = computed(() => resolveFormRowItems(props.items, keyGen))
+  const rowItems = useFormRowItems(props).items
 </script>
