@@ -55,12 +55,12 @@
           if (el.validator) {
             outFieldRules.push(el)
           } else {
-            const ruleType = el.type
+            const validator = el.type
               ? RULE_TYPES[el.type]
               : el.required && RULE_TYPES.required
 
-            if (ruleType) {
-              outFieldRules.push({ validator: el, ...el })
+            if (validator) {
+              outFieldRules.push({ validator, ...el })
             }
           }
         }
