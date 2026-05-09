@@ -3,6 +3,7 @@ import { isString, isEmpty } from '@/utils/type'
 import { useCompatible } from '../common-hooks/compatible'
 
 export const inputProps = {
+  invalid: Boolean,
   readonly: Boolean,
   disabled: Boolean,
   placeholder: String,
@@ -23,10 +24,13 @@ export const inputEvents = [
 export function useInput (model, props, emit) {
   useCompatible('input')
 
+  const formField = inject('formField', {})
+
   const wrapperAttrs = computed(() => ({
     tabindex: props.tabindex,
     disabled: props.disabled || null,
-    readonly: props.readonly || null
+    readonly: props.readonly || null,
+    invalid: props.invalid || !!formField.error || null
   }))
 
   const inputAttrs = computed(() => ({

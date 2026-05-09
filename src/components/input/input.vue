@@ -15,12 +15,14 @@
   import './input.scss'
 
   import { inputProps, inputEvents, useInput } from './input'
+  import { useFieldModel } from '../form/validation'
 
   defineOptions({ name: 'MusselInput' })
 
-  const model = defineModel()
-  const props = defineProps({ ...inputProps, type: String })
-  const emit = defineEmits([...inputEvents])
+  const props = defineProps({ ...inputProps, type: String, modelValue: null })
+  const emit = defineEmits([...inputEvents, 'update:modelValue'])
+
+  const { model } = useFieldModel(props, 'modelValue', emit)
 
   const {
     wrapperAttrs,

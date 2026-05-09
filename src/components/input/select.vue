@@ -21,11 +21,13 @@
   import ComboWrapper from './combo-wrapper.vue'
 
   import { selectProps, useSelect } from './select'
+  import { useFieldModel } from '../form/validation'
 
   defineOptions({ name: 'MusselSelect' })
 
-  const model = defineModel()
-  const props = defineProps({ ...selectProps })
+  const props = defineProps({ ...selectProps, modelValue: null })
+  const emit = defineEmits(['update:modelValue'])
 
+  const { model } = useFieldModel(props, 'modelValue', emit)
   const { comboValue, optionComponents } = useSelect(model, props)
 </script>

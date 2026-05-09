@@ -376,36 +376,154 @@ installIcons({
 
 ### MuForm
 
-表单容器
+表单容器，支持声明式子组件和 `items` 数组驱动的数据模式。
 
-目前仅为布局用途，后续会支持表单项快速定义
+| 属性名称    | 类型   | 说明                                         |
+| ----------- | ------ | -------------------------------------------- |
+| model       | Object | 表单数据对象，用于 `items` 模式下的双向绑定  |
+| items       | Array  | 表单项定义数组（数据驱动模式），结构见下方   |
+| rules       | Object | 表单校验规则，key 为字段名，value 为规则定义 |
+| label-width | String | 默认标签宽度（子 MuFormField 继承）          |
+| label-align | String | 默认标签对齐：left \| top \| right           |
 
-| 属性名称    | 类型             | 说明                                      |
-| ----------- | ---------------- | ----------------------------------------- |
-| width       | String \| Number | 表单宽度                                  |
-| height      | String \| Number | 表单高度                                  |
-| label-width | String           | 默认标签宽度                              |
-| label-align | String           | 默认标签对齐方式，left \| center \| right |
+**items 数组支持的元素类型：**
+
+| 类型     | 写法                  | 说明                                        |
+| -------- | --------------------- | ------------------------------------------- |
+| 标题     | `'字符串'`            | 渲染为表单分组标题                          |
+| 分隔线   | `'hr'`                | 渲染为 `<hr>`                               |
+| 换行     | `'->'`                | 渲染为 `flex-break`，强制换行               |
+| 子行     | `[...]`               | 数组元素，渲染为一行 MuFormRow              |
+| 字段     | `{ prop, label, ... }` | 渲染为 MuFormField，自动绑定 `model[prop]` |
+| 自定义   | `{ is: '组件名', ... }` | 渲染为任意自定义组件                      |
+
+**rules 校验规则格式：**
+
+| 格式       | 示例                           | 说明                                           |
+| ---------- | ------------------------------ | ---------------------------------------------- |
+| 字符串     | `'required'`                  | 必填校验                                       |
+| 函数       | `(value) => false`            | 自定义校验，返回 `false` 或错误消息字符串      |
+| 对象       | `{ required: true, message }` | 支持更多配置，见下方                           |
+
+**rules 对象属性：**
+
+| 属性    | 类型     | 说明                                                 |
+| ------- | -------- | ---------------------------------------------------- |
+| required | Boolean | 是否必填                                             |
+| validator | Function | 自定义校验函数 `(value, params) => false \| string` |
+| message | String   | 校验失败时的提示消息                                 |
+| requiredMessage | String | 必填校验失败的提示消息（优先于 message）      |
+
+**方法：**
+
+| 方法             | 参数 | 说明                                                         |
+| ---------------- | ---- | ------------------------------------------------------------ |
+| validate()       | —    | 校验全部字段，返回 `{ ok: true }` 或 `{ errors }`            |
+| resetValidation() | —   | 清除所有校验错误状态                                         |
+
+**数据驱动用法示例：**
+
+```javascript
+const form = ref({ name: '', phone: '', birthday: '', role: '' })
+
+const rules = {
+  name: 'required',
+  phone: 'required',
+  role: { required: true, message: '请选择角色' }
+}
+
+const items = [
+  '基本信息',
+  { prop: 'name', label: '姓名', width: 1 / 2, required: true },
+  { prop: 'phone', label: '手机号', width: 1 / 2 },
+  'hr',
+  [
+    { prop: 'birthday', label: '生日', input: 'date' },
+    { prop: 'role', label: '角色', input: {
+      type: 'select',
+      options: [{ value: 'admin', label: '管理员' }, { value: 'user', label: '用户' }]
+    }}
+  ]
+]
+```
+
+```html
+<mu-form ref="formRef" :model="form" :items="items" :rules="rules" label-width="80px" />
+<mu-button @click="formRef.validate()" />
+```
 
 
 
 ### MuFormRow
 
-表单行容器
+表单行容器，水平排列多个 MuFormField。支持 `items` 数组。
+
+| 属性名称 | 类型  | 说明                                                       |
+| -------- | ----- | ---------------------------------------------------------- |
+| items    | Array | 行内字段定义，支持标题、字段、自定义组件（不支持 hr / -> / 子行） |
 
 
 
 ### MuFormField
 
-表单字段
+表单字段，可自动渲染输入组件或通过 slot 自定义。
 
-| 属性名称    | 类型             | 说明                                  |
-| ----------- | ---------------- | ------------------------------------- |
-| width       | String \| Number | 表单宽度                              |
-| height      | String \| Number | 表单高度                              |
-| label-width | String           | 标签宽度                              |
-| label-align | String           | 标签对齐方式，left \| center \| right |
-| label       | String           | 标签                                  |
+| 属性名称    | 类型             | 说明                                             |
+| ----------- | ---------------- | ------------------------------------------------ |
+| prop        | String           | 对应 model 中的字段名，用于双向绑定              |
+| input       | String \| Object | 输入组件配置（见下方 input 配置说明）            |
+| label       | String           | 字段标签文字                                     |
+| label-width | String           | 覆盖 Form 的标签宽度                             |
+| label-align | String           | 覆盖 Form 的标签对齐：left \| top \| right       |
+| width / height | String \| Number | 字段尺寸                                      |
+| suffix      | String           | 字段后缀文字（如单位）                           |
+| required    | Boolean          | 是否必填（添加必填样式并参与表单校验）           |
+| error       | String           | 手动设置校验错误信息                             |
+
+**input 配置：**
+
+字符串形式 — 直接指定输入类型，自动渲染对应组件：
+
+| input 值        | 渲染组件             |
+| --------------- | -------------------- |
+| `'text'`        | mu-input             |
+| `'memo'`        | textarea.mu-input    |
+| `'date'`        | mu-date-input        |
+| `'month'`       | mu-date-input(type=month) |
+| `'select'`      | mu-select            |
+| `'multi-select'` | mu-multi-select     |
+| `'segmented'`   | mu-segmented         |
+| `'check-group'` | mu-check-group       |
+| `'radio-group'` | mu-radio-group       |
+
+对象形式 — 完整控制组件、属性和绑定行为：
+
+```javascript
+{ prop: 'color', label: '颜色', input: {
+  type: 'select',
+  clearButton: false,
+  options: [{ value: 'red', label: '红色' }]
+}}
+{ prop: 'features', label: '特性', input: {
+  type: 'check-group',
+  options: [{ value: 'wifi', label: 'Wi-Fi' }, { value: 'bt', label: '蓝牙' }]
+}}
+```
+
+**声明式用法：**
+
+```html
+<mu-form label-width="100px" label-align="right">
+  <mu-form-row>
+    <mu-form-field label="姓名">
+      <mu-input v-model="form.name" />
+    </mu-form-field>
+    <mu-form-field label="手机号">
+      <mu-input v-model="form.phone" type="tel" />
+    </mu-form-field>
+  </mu-form-row>
+</mu-form>
+```
 
 
 
@@ -419,6 +537,7 @@ installIcons({
 | type         | String           | 原生 Input 元素的 type，默认为 text                          |
 | placeholder  | String           | 占位文本                                                     |
 | clear-button | Boolean          | 是否显示清除按钮，以全局选项 $mussel.options.input.clearButton 为默认值（缺省为 true） |
+| invalid      | Boolean          | 校验失败样式                                                 |
 | readonly     | Boolean          | 是否只读                                                     |
 | disabled     | Boolean          | 是否禁用                                                     |
 | prefix       | String \| Object | 前置文本或按钮                                               |
@@ -432,6 +551,10 @@ installIcons({
 | update:modelValue | value | 输入值变更事件         |
 | prefix-click      |       | 当前置按钮被点击时触发 |
 | suffix-click      |       | 当后置按钮被点击时触发 |
+
+> [!NOTE]
+>
+> 当 MuInput 置于 MuFormField 内部时，表单校验错误状态会自动同步到输入组件的 invalid 样式，无需手动设置 invalid 属性。
 
 
 
@@ -512,6 +635,29 @@ installIcons({
 
 
 
+### MuCheckGroup
+
+复选按钮组，管理多个 MuCheck 的选中状态
+
+| 属性名称   | 类型    | 说明                                                  |
+| ---------- | ------- | ----------------------------------------------------- |
+| modelValue | Array   | 双向绑定值（选中项 value 数组）                        |
+| options    | Array   | 选项数组 `[{ value, label, disabled? }]`              |
+| disabled   | Boolean | 禁用整组                                              |
+
+```html
+<!-- options 属性 -->
+<mu-check-group v-model="checked" :options="options" />
+
+<!-- slot 用法 -->
+<mu-check-group v-model="checked">
+  <mu-check value="a" label="选项 A" />
+  <mu-check value="b" label="选项 B" />
+</mu-check-group>
+```
+
+
+
 ### MuRadio
 
 单选按钮
@@ -523,6 +669,51 @@ installIcons({
 | label      | String  | 标签文字         |
 | disabled   | Boolean | 禁用状态         |
 
+
+
+### MuRadioGroup
+
+单选按钮组，管理多个 MuRadio 的选中状态
+
+| 属性名称   | 类型    | 说明                                              |
+| ---------- | ------- | ------------------------------------------------- |
+| modelValue |         | 双向绑定值（当前选中项 value）                     |
+| options    | Array   | 选项数组 `[{ value, label, disabled? }]`           |
+| disabled   | Boolean | 禁用整组                                          |
+
+```html
+<!-- options 属性 -->
+<mu-radio-group v-model="selected" :options="options" />
+
+<!-- slot 用法 -->
+<mu-radio-group v-model="selected">
+  <mu-radio value="x" label="Radio X" />
+  <mu-radio value="y" label="Radio Y" />
+</mu-radio-group>
+```
+
+
+
+### MuSegmented
+
+分段控件，在多个互斥选项间切换，带滑块动画
+
+| 属性名称      | 类型    | 默认   | 说明                                                              |
+| ------------- | ------- | ------ | ----------------------------------------------------------------- |
+| modelValue    |         |        | 双向绑定值（当前选中项 value）                                    |
+| options       | Array   |        | 选项数组 `[{ value, label, icon?, disabled? }]` 或简单值 `[1,2,3]` |
+| disabled      | Boolean |        | 禁用整组                                                          |
+| icon-position | String  | `left` | 图标位置：`left`（文字左侧）\| `top`（文字上方）                  |
+
+```html
+<mu-segmented v-model="viewMode" :options="[
+  { value: 'list', label: '列表', icon: 'list' },
+  { value: 'grid', label: '网格', icon: 'grid' }
+]" />
+
+<!-- 简单值形式 -->
+<mu-segmented v-model="period" :options="['日', '周', '月', '年']" />
+```
 
 
 

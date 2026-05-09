@@ -39,20 +39,25 @@
 <script setup>
   import './multi-select.scss'
 
+  import { ref } from 'vue'
+
+  import { multiSelectProps, useMultiSelect } from './multi-select'
+  import { useFieldModel } from '../form/validation'
+
   import ComboWrapper from './combo-wrapper.vue'
 
-  import { ref } from 'vue'
-  import { multiSelectProps, useMultiSelect } from './multi-select'
-
   defineOptions({ name: 'MusselMultiSelect' })
-
-  const model = defineModel({ type: Array })
 
   const props = defineProps({
     disabled: Boolean,
     readonly: Boolean,
+    modelValue: null,
     ...multiSelectProps
   })
+
+  const emit = defineEmits(['update:modelValue'])
+
+  const { model } = useFieldModel(props, 'modelValue', emit)
 
   const {
     comboValue,

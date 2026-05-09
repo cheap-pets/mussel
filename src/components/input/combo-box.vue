@@ -19,13 +19,16 @@
 
 <script setup>
   import { selectProps, useSelect } from './select'
+  import { useFieldModel } from '../form/validation'
 
   import ComboWrapper from './combo-wrapper.vue'
 
   defineOptions({ name: 'MusselComboBox' })
 
-  const model = defineModel()
-  const props = defineProps({ ...selectProps, editable: Boolean })
+  const props = defineProps({ ...selectProps, editable: Boolean, modelValue: null })
+  const emit = defineEmits(['update:modelValue'])
+
+  const { model } = useFieldModel(props, 'modelValue', emit)
 
   const { comboValue, optionComponents } = useSelect(model, props)
 </script>

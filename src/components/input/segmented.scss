@@ -3,7 +3,7 @@
 
   position: relative;
 
-  display: flex;
+  display: inline-flex;
   gap: 1px;
   align-items: stretch;
 
@@ -44,11 +44,11 @@
   display: inline-flex;
   flex: 1 1 0;
   flex-direction: row;
-  gap: var(--mu-content-spacing);
+  gap: var(--mu-base-spacing);
   align-items: center;
   justify-content: center;
 
-  padding: 4px var(--mu-base-spacing);
+  padding: 4px calc(var(--mu-base-spacing) * 2);
   border-radius: var(--mu-common-border-radius);
 
   font-size: var(--mu-common-font-size);

@@ -14,12 +14,11 @@
 <script setup>
   import './form.scss'
 
-  import { ref, toRefs, reactive, computed, provide } from 'vue'
+  import { ref, reactive, toRefs, toRaw, computed, provide } from 'vue'
+  import { isEmpty } from '@/utils/type'
 
-  import { isString, isFunction, isObject } from '@/utils/type'
   import { useFormItems } from './items'
-
-  import { RULE_TYPES } from './rules'
+  import { normalizeRule, validateRequired, executeValidator } from './validation'
 
   defineOptions({ name: 'MusselForm' })
 
@@ -34,73 +33,63 @@
   const { model, labelWidth, labelAlign } = toRefs(props)
   const { items: formItems } = useFormItems(props)
 
-  const labels = ref({})
+  const labels = {}
+  const extraRequired = {}
   const errors = ref({})
 
-  const formRules = computed(() => {
+  const normalizedRules = computed(() => {
     const rawRules = props.rules || {}
     const outRules = {}
 
     Object.keys(rawRules).forEach(prop => {
-      const value = rawRules[prop]
-      const rawFieldRules = Array.isArray(value) ? value : [value]
-      const outFieldRules = []
+      const rule = normalizeRule(rawRules[prop])
 
-      rawFieldRules.forEach(el => {
-        if (isString(el) && RULE_TYPES[el]) {
-          outFieldRules.push({ validator: RULE_TYPES[el] })
-        } else if (isFunction(el)) {
-          outFieldRules.push({ validator: el })
-        } else if (isObject(el)) {
-          if (el.validator) {
-            outFieldRules.push(el)
-          } else {
-            const validator = el.type
-              ? RULE_TYPES[el.type]
-              : el.required && RULE_TYPES.required
-
-            if (validator) {
-              outFieldRules.push({ validator, ...el })
-            }
-          }
-        }
-      })
-
-      if (outFieldRules.length) {
-        outRules[prop] = rawFieldRules
-      }
+      if (rule) outRules[prop] = rule
     })
 
     return outRules
   })
 
-  function setLabel (prop, label) {
-    labels.value[prop] = label
+  function setRequired (prop, value) {
+    if (value) extraRequired[prop] = true
+    else delete extraRequired[prop]
+  }
+
+  function setLabel (prop, value) {
+    if (value) labels[prop] = value
+    else delete labels[prop]
   }
 
   function validateField (prop) {
-    const rules = formRules.value[prop]
+    const rule = { ...normalizedRules.value[prop] }
 
-    rules.forEach(rule => {
-      const { validator, ...params } = rule
+    if (extraRequired[prop]) rule.required = true
 
-      params.label ||= labels.value[prop] || 'This field'
+    const { required, validator, ...params } = rule
 
-      const value = form.model[prop]
-      const error = validator(value, params)
+    params.label ||= labels[prop]
 
-      if (error === false) {
-        errors.value[prop] = params.message || `${params.label} is invalid`
-      } else if (isString(error)) {
-        errors.value[prop] = error
-      } else {
-        delete errors.value[prop]
-      }
-    })
+    const value = form.model[prop]
+
+    const error =
+      (required && validateRequired(value, params)) ||
+      (validator && executeValidator(validator, value, params))
+
+    if (error) {
+      errors.value[prop] = error
+    } else {
+      delete errors.value[prop]
+    }
   }
 
   function validate () {
-    Object.keys(formRules.value).forEach(validateField)
+    Object
+      .keys({ ...extraRequired, ...normalizedRules.value })
+      .forEach(validateField)
+
+    return isEmpty(errors.value)
+      ? { ok: true }
+      : { errors: toRaw(errors.value) }
   }
 
   function resetValidation () {
@@ -111,15 +100,17 @@
     model,
     labelWidth,
     labelAlign,
-    rules: formRules,
+    rules: normalizedRules,
     errors,
     setLabel,
+    setRequired,
     validateField
   })
 
   provide('form', form)
 
   defineExpose({
+    errors,
     validate,
     resetValidation
   })

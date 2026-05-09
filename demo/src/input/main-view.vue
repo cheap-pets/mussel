@@ -11,14 +11,7 @@
     </div>
     <div class="group flex flex-wrap gap-1x">
       <h3>AFFIX：Icon, Text, Tool & Link</h3>
-      <mu-input
-        v-model="value"
-        prefix=":icon=search"
-        label="myLabel">
-        <template #left>
-          My Slot Content
-        </template>
-      </mu-input>
+      <mu-input v-model="value" prefix=":icon=info" label="myLabel" />
       <mu-input v-model="value" suffix="Suffix" />
       <mu-input v-model="value" prefix=":tool=folderOpen" />
       <mu-input v-model="value" prefix=":tool=bug" suffix=":link=Link" />

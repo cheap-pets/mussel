@@ -74,6 +74,12 @@ export default {
     ]
   },
 
+  Validation: {
+    DEFAULT_LABEL: 'This field',
+    REQUIRED: '{0} is required.',
+    INVALID: '{0} is invalid'
+  },
+
   Pagination: {
     PREV_PAGE: 'Previous',
     NEXT_PAGE: 'Next',

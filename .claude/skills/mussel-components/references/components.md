@@ -361,8 +361,33 @@ buttons: [
 |------|------|------|
 | `model` | Object | 表单数据对象，用于 `items` 模式下的双向绑定 |
 | `items` | Array | 表单项定义数组（数据驱动模式），结构见下方 |
+| `rules` | Object | 表单校验规则，key 为字段名，value 为规则定义 |
 | `label-width` | String | 默认标签宽度（子 `MuFormField` 继承） |
 | `label-align` | String | 默认标签对齐：`left` \| `top` \| `right` |
+
+**rules 校验规则格式：**
+
+| 格式 | 示例 | 说明 |
+|------|------|------|
+| 字符串 | `'required'` | 必填校验 |
+| 函数 | `(value) => false` | 自定义校验，返回 `false` 或错误消息字符串 |
+| 对象 | `{ required: true, message }` | 支持更多配置 |
+
+**rules 对象属性：**
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `required` | Boolean | 是否必填 |
+| `validator` | Function | 自定义校验函数 `(value, params) => false \| string` |
+| `message` | String | 校验失败时的提示消息 |
+| `requiredMessage` | String | 必填校验失败的提示消息（优先于 message） |
+
+**方法（通过 ref 调用）：**
+
+| 方法 | 参数 | 返回值 | 说明 |
+|------|------|--------|------|
+| `validate()` | — | `{ ok: true }` \| `{ errors }` | 校验全部字段 |
+| `resetValidation()` | — | — | 清除所有校验错误状态 |
 
 **items 数组支持的元素类型：**
 
@@ -397,22 +422,25 @@ buttons: [
 | `input` | String\|Object | 输入组件配置（见下方说明） |
 | `label` | String | 字段标签文字 |
 | `label-width` | String | 覆盖 Form 的标签宽度 |
-| `label-align` | String | 覆盖 Form 的标签对齐 |
+| `label-align` | String | 覆盖 Form 的标签对齐：`left` \| `top` \| `right` |
 | `width` / `height` | String\|Number | 字段尺寸 |
 | `suffix` | String | 字段后缀文字（如单位） |
-| `required` | Boolean | 是否必填（添加必填样式） |
-| `invalid` | Boolean | 是否校验失败（添加错误样式） |
+| `required` | Boolean | 是否必填（添加必填样式并参与表单校验） |
+| `error` | String | 手动设置校验错误信息 |
 
 **input 配置：**
 
 - 字符串形式：直接指定输入类型，自动渲染对应组件
   ```javascript
-  { prop: 'name', label: '姓名', input: 'text' }      // <mu-input>
-  { prop: 'memo', label: '备注', input: 'memo' }      // <textarea class="mu-input">
-  { prop: 'date', label: '日期', input: 'date' }      // <mu-date-input>
-  { prop: 'month', label: '月份', input: 'month' }    // <mu-date-input type="month">
-  { prop: 'type', label: '类型', input: 'select' }    // <mu-select>
-  { prop: 'view', label: '视图', input: 'segmented' } // <mu-segmented>
+  { prop: 'name', label: '姓名', input: 'text' }          // <mu-input>
+  { prop: 'memo', label: '备注', input: 'memo' }          // <textarea class="mu-input">
+  { prop: 'date', label: '日期', input: 'date' }          // <mu-date-input>
+  { prop: 'month', label: '月份', input: 'month' }        // <mu-date-input type="month">
+  { prop: 'type', label: '类型', input: 'select' }        // <mu-select>
+  { prop: 'tags', label: '标签', input: 'multi-select' }  // <mu-multi-select>
+  { prop: 'view', label: '视图', input: 'segmented' }     // <mu-segmented>
+  { prop: 'opts', label: '选项', input: 'check-group' }   // <mu-check-group>
+  { prop: 'mode', label: '模式', input: 'radio-group' }   // <mu-radio-group>
   ```
 - 对象形式：完整控制组件、属性和绑定行为
   ```javascript
@@ -442,11 +470,18 @@ buttons: [
 **数据驱动用法：**
 
 ```html
-<mu-form :model="form" :items="items" label-width="80px" label-align="left" />
+<mu-form ref="formRef" :model="form" :items="items" :rules="rules" label-width="80px" label-align="left" />
+<mu-button primary @click="formRef.validate()">提交</mu-button>
 ```
 
 ```javascript
 const form = ref({ name: '', phone: '', birthday: '', memo: '', role: '' })
+
+const rules = {
+  name: 'required',
+  phone: 'required',
+  role: { required: true, message: '请选择角色' }
+}
 
 const items = [
   '基本信息',
@@ -474,6 +509,7 @@ const items = [
 | `type` | String | `text` | 原生 input type |
 | `placeholder` | String | — | 占位文本 |
 | `clear-button` | Boolean | 全局配置 | 是否显示清除按钮 |
+| `invalid` | Boolean | — | 校验失败样式 |
 | `readonly` / `disabled` | Boolean | — | 只读 / 禁用 |
 | `prefix` | String\|Object | — | 前置文本或按钮 |
 | `suffix` | String\|Object | — | 后置文本或按钮 |
@@ -483,6 +519,8 @@ const items = [
 |------|------|
 | `update:modelValue` | 值变更 |
 | `prefix-click` / `suffix-click` | 前/后置按钮点击 |
+
+> 当输入组件置于 `MuFormField` 内部时，表单校验错误状态会自动同步到输入组件的 `invalid` 样式，无需手动设置。输入值变更时也会自动触发该字段的校验。
 
 ---
 

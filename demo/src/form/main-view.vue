@@ -35,7 +35,18 @@
           <textarea class="mu-input" style="height: 200px;" />
         </mu-form-field>
       </mu-form>
-      <mu-form class="mt-2x border" :model="form" :items="items" label-width="80px" label-align="top" />
+      <mu-form
+        ref="formRef"
+        class="mt-2x border"
+        :model="form"
+        :items="items"
+        :rules="rules"
+        label-width="80px"
+        label-align="top" />
+      <div class="mt-2x flex gap-1x">
+        <mu-button caption="校验" primary @click="console.log(formRef.validate())" />
+        <mu-button caption="重置校验" @click="formRef.resetValidation()" />
+      </div>
     </div>
   </div>
 </template>
@@ -44,6 +55,18 @@
   import { ref } from 'vue'
 
   import ThemeSwitch from '../common/theme-switch.vue'
+
+  const formRef = ref()
+
+  const rules = {
+    brand: 'required',
+    model: 'required',
+    processor: 'required',
+    memory: 'required',
+    storage: 'required',
+    price: 'required',
+    stock: 'required'
+  }
 
   const form = ref({
     brand: 'Apple',
@@ -120,8 +143,7 @@
             { label: 'macOS', value: 'macOS' },
             { label: 'linux', value: 'linux' },
             { label: 'windows', value: 'windows' }
-          ],
-          class: 'flex-1'
+          ]
         }
       }
     ],

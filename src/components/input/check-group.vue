@@ -15,17 +15,20 @@
   import './check-group.scss'
 
   import { provide } from 'vue'
+  import { useFieldModel } from '../form/validation'
 
   import MuCheck from './check.vue'
 
   defineOptions({ name: 'MusselCheckGroup' })
 
-  const model = defineModel({ type: Array })
-
-  defineProps({
+  const props = defineProps({
     options: Array,
-    disabled: Boolean
+    disabled: Boolean,
+    modelValue: Array
   })
+  const emit = defineEmits(['update:modelValue'])
+
+  const { model } = useFieldModel(props, 'modelValue', emit)
 
   provide('checkGroup', { model })
 </script>

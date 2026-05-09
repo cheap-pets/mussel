@@ -22,16 +22,21 @@
   import './segmented.scss'
 
   import { ref, computed, watch, onMounted } from 'vue'
+  import { useFieldModel } from '../form/validation'
 
   import MuIcon from '../icon/icon.vue'
 
   defineOptions({ name: 'MusselSegmented' })
 
-  const model = defineModel()
   const props = defineProps({
     options: Array,
-    iconPosition: { type: String, default: 'left', validator: v => ['left', 'top'].includes(v) }
+    iconPosition: { type: String, default: 'left', validator: v => ['left', 'top'].includes(v) },
+    modelValue: null
   })
+
+  const emit = defineEmits(['update:modelValue'])
+
+  const { model } = useFieldModel(props, 'modelValue', emit)
 
   const itemRefs = ref([])
   const thumbStyle = ref({})

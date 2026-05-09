@@ -13,17 +13,20 @@
 
 <script setup>
   import { provide } from 'vue'
+  import { useFieldModel } from '../form/validation'
 
   import MuRadio from './radio.vue'
 
   defineOptions({ name: 'MusselRadioGroup' })
 
-  const model = defineModel()
-
-  defineProps({
+  const props = defineProps({
     options: Array,
-    disabled: Boolean
+    disabled: Boolean,
+    modelValue: null
   })
+  const emit = defineEmits(['update:modelValue'])
+
+  const { model } = useFieldModel(props, 'modelValue', emit)
 
   provide('radioGroup', { model })
 </script>

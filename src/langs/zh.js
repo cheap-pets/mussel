@@ -75,6 +75,12 @@ export default {
     ]
   },
 
+  Validation: {
+    DEFAULT_LABEL: '此字段',
+    REQUIRED: '{0}不能为空',
+    INVALID: '{0}无效'
+  },
+
   Pagination: {
     PREV_PAGE: '上一页',
     NEXT_PAGE: '下一页',

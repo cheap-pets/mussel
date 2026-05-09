@@ -50,19 +50,18 @@
   import './date-input.scss'
 
   import { ref, computed } from 'vue'
+
   import { toString, monthEquals } from '@/utils/date'
-  import { calendarProps, useCalendar } from '../calendar/calendar'
   import { t as $t } from '@/langs'
+
+  import { calendarProps, useCalendar } from '../calendar/calendar'
+  import { useFieldModel } from '../form/validation'
 
   import ComboWrapper from './combo-wrapper.vue'
   import CalendarGrid from '../calendar/date-table.vue'
   import MonthPicker from '../calendar/month-picker.vue'
 
   defineOptions({ name: 'MusselDateInput' })
-
-  const model = defineModel({
-    type: [Date, String, Object, Array]
-  })
 
   const props = defineProps({
     dropdownClass: null,
@@ -71,8 +70,13 @@
       default: 'date',
       validator: v => ['date', 'month'].includes(v)
     },
+    modelValue: { type: [Date, String, Object, Array] },
     ...calendarProps
   })
+
+  const emit = defineEmits(['update:modelValue'])
+
+  const { model } = useFieldModel(props, 'modelValue', emit)
 
   const {
     year,
