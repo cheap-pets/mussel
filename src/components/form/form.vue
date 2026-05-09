@@ -69,7 +69,7 @@
 
     params.label ||= labels[prop]
 
-    const value = form.model[prop]
+    const value = props.model[prop]
 
     const error =
       (required && validateRequired(value, params)) ||

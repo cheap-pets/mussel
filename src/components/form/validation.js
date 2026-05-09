@@ -7,7 +7,7 @@ import { t } from '@/langs'
 const RULE_TYPES = {}
 
 function parseStringRule (rule, required) {
-  const result = []
+  const result = {}
   const keys = rule.split('|')
 
   if (keys[0] === 'required') {

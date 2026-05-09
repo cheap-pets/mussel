@@ -45,8 +45,7 @@
   const form = inject('form', {})
 
   const size = computed(() => ({
-    width: resolveSize(props.width),
-    height: resolveSize(props.height)
+    width: resolveSize(props.width)
   }))
 
   const labelAlignment = computed(() =>

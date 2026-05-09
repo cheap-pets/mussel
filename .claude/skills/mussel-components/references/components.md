@@ -423,7 +423,7 @@ buttons: [
 | `label` | String | 字段标签文字 |
 | `label-width` | String | 覆盖 Form 的标签宽度 |
 | `label-align` | String | 覆盖 Form 的标签对齐：`left` \| `top` \| `right` |
-| `width` / `height` | String\|Number | 字段尺寸 |
+| `width` | String\|Number | 字段宽度 |
 | `suffix` | String | 字段后缀文字（如单位） |
 | `required` | Boolean | 是否必填（添加必填样式并参与表单校验） |
 | `error` | String | 手动设置校验错误信息 |
