@@ -193,91 +193,6 @@
       </div>
     </div>
     <div class="group">
-      <h3>X-COLOR</h3>
-      <div class="group-row">
-        <mu-button x-color="gray">
-          GRAY
-        </mu-button>
-        <mu-button x-color="#ff0000">
-          #FF0000
-        </mu-button>
-        <mu-button x-color="pink">
-          PINK
-        </mu-button>
-        <mu-button x-color="grape">
-          GRAPE
-        </mu-button>
-        <mu-button x-color="violet">
-          VIOLET
-        </mu-button>
-        <mu-button x-color="indigo">
-          INDIGO
-        </mu-button>
-        <mu-button x-color="blue">
-          BLUE
-        </mu-button>
-        <mu-button x-color="cyan">
-          CYAN
-        </mu-button>
-        <mu-button x-color="teal">
-          TEAL
-        </mu-button>
-        <mu-button x-color="green">
-          GREEN
-        </mu-button>
-        <mu-button x-color="lime">
-          LIME
-        </mu-button>
-        <mu-button x-color="yellow">
-          YELLOW
-        </mu-button>
-        <mu-button x-color="orange">
-          ORANGE
-        </mu-button>
-      </div>
-      <div class="group-row">
-        <mu-button x-color="gray" button-style="outline">
-          GRAY
-        </mu-button>
-        <mu-button x-color="#ff0000" button-style="outline">
-          #FF0000
-        </mu-button>
-        <mu-button x-color="pink" button-style="outline">
-          PINK
-        </mu-button>
-        <mu-button x-color="grape" button-style="outline">
-          GRAPE
-        </mu-button>
-        <mu-button x-color="violet" button-style="outline">
-          VIOLET
-        </mu-button>
-        <mu-button x-color="indigo" button-style="outline">
-          INDIGO
-        </mu-button>
-        <mu-button x-color="blue" button-style="outline">
-          BLUE
-        </mu-button>
-        <mu-button x-color="cyan" button-style="outline">
-          CYAN
-        </mu-button>
-        <mu-button x-color="teal" button-style="outline">
-          TEAL
-        </mu-button>
-        <mu-button x-color="green" button-style="outline">
-          GREEN
-        </mu-button>
-        <mu-button x-color="lime" button-style="outline">
-          LIME
-        </mu-button>
-        <mu-button x-color="yellow" button-style="outline">
-          YELLOW
-        </mu-button>
-        <mu-button x-color="orange" button-style="outline">
-          ORANGE
-        </mu-button>
-      </div>
-    </div>
-    <div class="group">
       <h3>ICON</h3>
       <mu-button class="mu-icon-button" icon="bolt" />
       <mu-button icon="loading:spin" primary caption="Loading" />
@@ -295,9 +210,9 @@
     <div class="group">
       <h3>SIZE</h3>
       <mu-button size="small" caption="SMALL" />
-      <mu-button size="small" primary caption="SMALL" />
+      <mu-button size="small" primary round caption="SMALL" />
       <mu-button size="large" caption="LARGE" />
-      <mu-button size="large" primary caption="LARGE" />
+      <mu-button size="large" primary round caption="LARGE" />
     </div>
     <div class="group">
       <h3>BUTTON GROUP</h3>
@@ -335,17 +250,6 @@
         </mu-button>
       </mu-button-group>
       <div class="flex-break" />
-      <mu-button-group x-color="var(--mu-cyan)">
-        <mu-button :active="activeItem === 1" @click="select(1)">
-          One
-        </mu-button>
-        <mu-button :active="activeItem === 2" @click="select(2)">
-          Two
-        </mu-button>
-        <mu-button :active="activeItem === 3" @click="select(3)">
-          Three
-        </mu-button>
-      </mu-button-group>
       <mu-button-group danger round button-style="outline" size="small">
         <mu-button :active="activeItem === 1" @click="select(1)">
           One
@@ -423,10 +327,6 @@
     padding: 8px;
     border: 1px dashed #ddd;
     border-radius: 8px;
-  }
-
-  .mu-button[x-color] {
-    width: 80px;
   }
 
   .button-w-100 .mu-button {

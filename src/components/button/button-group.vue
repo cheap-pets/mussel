@@ -16,15 +16,16 @@
     primary: Boolean,
     danger: Boolean,
     secondary: Boolean,
-    xColor: [Boolean, String],
     size: {
       type: String,
-      default: null,
-      validator: v => ['small', 'normal', 'large'].includes(v)
+      validator: v => ['normal', 'small', 'large'].includes(v)
+    },
+    color: {
+      type: String,
+      validator: v => ['normal', 'primary', 'secondary', 'danger'].includes(v)
     },
     buttonStyle: {
       type: String,
-      default: null,
       validator: v => ['normal', 'outline'].includes(v)
     }
   })
@@ -38,7 +39,7 @@
 
   const defaultButtonOptions = computed(() =>
     pickBy(props, (key, value) =>
-      ['primary', 'danger', 'secondary', 'xColor'].includes(key) &&
+      ['primary', 'danger', 'secondary'].includes(key) &&
       value !== false
     )
   )

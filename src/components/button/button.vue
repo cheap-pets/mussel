@@ -1,7 +1,8 @@
 <template>
-  <button ref="thisEl" class="mu-button" :type="type" v-bind="attrs">
+  <button type="button" class="mu-button" :class="[colorClass, appearanceClass, activeClass]">
     <slot>
-      <mu-icon v-if="icon" :icon="icon" />{{ caption }}
+      <mu-icon v-if="icon" :icon="icon" />
+      <span>{{ caption }}</span>
     </slot>
   </button>
 </template>
@@ -9,12 +10,7 @@
 <script setup>
   import './button.scss'
 
-  import { ref, isRef, inject, computed } from 'vue'
-  import { getComputedXColor } from '@/colors'
-
-  import { resolveAttrs } from '@/utils/vue'
-  import { pickBy, defaults } from '@/utils/object'
-  import { generateAdjacentColors } from '@/utils/color'
+  import { inject, computed } from 'vue'
 
   defineOptions({ name: 'MusselButton' })
 
@@ -27,11 +23,13 @@
     primary: Boolean,
     danger: Boolean,
     secondary: Boolean,
-    xColor: [Boolean, String],
-    type: { type: String, default: 'button' },
     size: {
       type: String,
       validator: v => ['small', 'normal', 'large'].includes(v)
+    },
+    color: {
+      type: String,
+      validator: v => ['normal', 'primary', 'secondary', 'danger'].includes(v)
     },
     buttonStyle: {
       type: String,
@@ -39,50 +37,36 @@
     }
   })
 
-  const thisEl = ref()
+  const group = inject('buttonGroup', null)
 
-  const forcedButtonOptions = inject('forcedButtonOptions', null)
-  const defaultButtonOptions = inject('defaultButtonOptions', null)
+  function resolveClassName (value) {
+    return value && value !== 'normal' && `mu-button--${value}`
+  }
 
-  const attrs = computed(() => {
-    if (!thisEl.value) return
-
-    const values = defaults(
-      {
-        active: props.active,
-        ...(
-          isRef(forcedButtonOptions)
-            ? forcedButtonOptions.value
-            : forcedButtonOptions
-        )
-      },
-      pickBy(props, (key, value) =>
-        !['type', 'icon', 'caption', 'active'].includes(key) &&
-        value !== false
-      ),
-      (
-        isRef(defaultButtonOptions)
-          ? defaultButtonOptions.value
-          : defaultButtonOptions
-      )
-    )
-
-    if (values.xColor) {
-      const xColors = generateAdjacentColors(
-        getComputedXColor(values.xColor, thisEl.value)
-      )
-
-      if (xColors) {
-        values.style = {
-          '--mu-x-color': xColors.color,
-          '--mu-x-color-dark': xColors.dark,
-          '--mu-x-color-light': xColors.light
-        }
-      }
-
-      values.xColor = true
+  const colorClass = computed(() => {
+    function resolve (source) {
+      return source
+        ? source.color || ['primary', 'secondary', 'danger'].find(key => source[key])
+        : null
     }
 
-    return resolveAttrs(values)
+    return resolveClassName(resolve(props) || resolve(group))
   })
+
+  const appearanceClass = computed(() => {
+    function resolve (source) {
+      return source && [
+        resolveClassName(source.size),
+        resolveClassName(source.buttonStyle),
+        resolveClassName(source.buttonStyle !== 'link' && source.round && 'round'),
+        resolveClassName(source.disabled && 'disabled')
+      ].filter(Boolean)
+    }
+
+    return resolve(group) || resolve(props)
+  })
+
+  const activeClass = computed(() =>
+    resolveClassName(props.active && 'active')
+  )
 </script>
