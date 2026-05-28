@@ -43,7 +43,7 @@
       :active-tab="activeTab2"
       :tab-style="tabStyle"
       class="m-2x p-1x border border-soft"
-      style="--mu-tab-bar_active-bar-width: 1px;"
+      style="--active-bar-width: 1px;"
       @update:active-tab="updateActiveTab2">
       <template #tab-bar-prepend>
         <label class="mu-label">Customized Tab Bar</label>

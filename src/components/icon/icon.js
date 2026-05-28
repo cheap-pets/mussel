@@ -34,7 +34,7 @@ export function useIcon (props) {
 
       if (!icon && !warned[value]) {
         warned[value] = true
-        console.warn('[MUSSEL:ICON]', `Unregistered icon name or invalid icon property "${value}" is detected.`)
+        console.warn('[MUSSEL:Icon]', `Unregistered icon name or invalid icon property "${value}" is detected.`)
       }
 
       return Object.assign(result, icon)

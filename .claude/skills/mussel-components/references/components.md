@@ -24,12 +24,32 @@
 
 网格布局容器与单元格。
 
-> **推荐直接使用 class 形式**：
-> ```html
-> <div class="mu-grid-box">
->   <div class="mu-grid-cell">单元格</div>
-> </div>
-> ```
+> **推荐直接使用原子类**：`<div class="grid">` + 原生 CSS Grid 属性，无需组件。
+
+**MuGridBox 属性：**
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `columns` | Number | 列数（自动生成 `repeat(n, 1fr)`) |
+| `rows` | Number | 行数（自动生成 `repeat(n, 1fr)`) |
+
+**MuGridCell 属性：**
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `col-start` | Number | 起始列 |
+| `col-span` | Number | 跨列数 |
+| `col-end` | Number | 结束列 |
+| `row-start` | Number | 起始行 |
+| `row-span` | Number | 跨行数 |
+| `row-end` | Number | 结束行 |
+
+```html
+<mu-grid-box :columns="6" :rows="6">
+  <mu-grid-cell :col-span="2" :row-span="3">宽 2 高 3</mu-grid-cell>
+  <mu-grid-cell>默认</mu-grid-cell>
+</mu-grid-box>
+```
 
 ---
 
@@ -207,18 +227,17 @@ installIcons({ refresh: RefreshIcon })
 | `icon` | String | — | 按钮图标 |
 | `size` | String | `normal` | `small` \| `normal` \| `large` |
 | `button-style` | String | `normal` | `normal` \| `outline` \| `text` \| `link` |
-| `primary` | Boolean | — | 主色按钮 |
-| `danger` | Boolean | — | 危险色按钮 |
-| `accent` | Boolean | — | 强调色按钮 |
+| `color` | String | `'normal'` | `'normal'` \| `'primary'` \| `'secondary'` \| `'danger'`，推荐使用 |
+| `primary` | Boolean | — | 主色按钮（已废弃，用 `color="primary"`） |
+| `danger` | Boolean | — | 危险色按钮（已废弃，用 `color="danger"`） |
+| `secondary` | Boolean | — | 次要色按钮（已废弃，用 `color="secondary"`） |
 | `round` | Boolean | — | 左右圆弧形态 |
 | `active` | Boolean | — | 选中状态 |
 | `disabled` | Boolean | — | 禁用状态 |
-| `type` | String | `button` | 原生 type 属性（`submit` \| `reset` \| `button`）|
-| `x-color` | String | — | 自定义颜色（标准色值或 CSS 变量） |
 
 ```html
-<mu-button primary caption="保存" icon="save" @click="save" />
-<mu-button danger button-style="outline" caption="删除" @click="remove" />
+<mu-button color="primary" caption="保存" icon="save" @click="save" />
+<mu-button color="danger" button-style="outline" caption="删除" @click="remove" />
 <mu-button button-style="text" caption="取消" @click="cancel" />
 ```
 
@@ -230,7 +249,7 @@ installIcons({ refresh: RefreshIcon })
 |------|------|------|
 | `size` | String | 覆盖内部所有按钮的尺寸 |
 | `button-style` | String | `normal` \| `outline` |
-| `primary` / `danger` / `accent` | Boolean | 设置整组按钮颜色 |
+| `primary` / `danger` / `secondary` | Boolean | 设置整组按钮颜色 |
 | `round` | Boolean | 圆弧形态 |
 | `disabled` | Boolean | 禁用整组 |
 
@@ -276,12 +295,16 @@ installIcons({ refresh: RefreshIcon })
 | `width` | String\|Number | — | 窗口宽度 |
 | `height` | String\|Number | — | 窗口高度 |
 | `buttons` | Array | — | 底部操作按钮，结构见下方 |
-| `easy-hide` | Boolean | — | 点击遮罩或 ESC 关闭 |
+| `dismissible` | Boolean\|String | — | 点击遮罩或 ESC 关闭。`true`=两者均可，`'esc'`=仅ESC，`'mask'`=仅遮罩。不设置则不自动关闭 |
 | `close-button` | Boolean | `true` | 显示右上角关闭按钮 |
 | `maximize-button` | Boolean | — | 显示最大化按钮 |
-| `lazy` | Boolean | — | 首次打开时才渲染内容 |
+| `maximize-to-fullscreen` | Boolean | — | 最大化时进入全屏模式 |
+| `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
 | `keep-position` | Boolean | — | 再次打开时保留上次位置 |
+| `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
+| `z-index` | String | — | 自定义层级 |
 | `mask-class` | — | — | 遮罩 class |
+| `mask-attrs` | Object | — | 透传给遮罩的额外属性 |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
@@ -310,7 +333,7 @@ buttons: [
   title="编辑用户"
   width="560px"
   :buttons="[{ caption: '保存', primary: true, action: 'save' }, { caption: '取消' }]"
-  easy-hide
+  dismissible
   @button-click="onButton"
   @update:visible="onVisibleChange"
 >
@@ -330,10 +353,14 @@ buttons: [
 | `position` | String | `bottom` | `top` \| `right` \| `bottom` \| `left` |
 | `width` | String\|Number | — | 宽度（left/right 时有效） |
 | `height` | String\|Number | — | 高度（top/bottom 时有效） |
-| `easy-hide` | Boolean | — | 点击遮罩或 ESC 关闭 |
+| `dismissible` | Boolean\|String | — | 点击遮罩或 ESC 关闭。`true`=两者均可，`'esc'`=仅ESC，`'mask'`=仅遮罩。不设置则不自动关闭 |
 | `mask` | Boolean | `true` | 是否显示遮罩 |
 | `border-radius` | Boolean | — | 是否圆角 |
 | `teleport` | Boolean | `true` | 渲染到页面根容器 |
+| `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
+| `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
+| `mask-class` | — | — | 遮罩 class |
+| `mask-attrs` | Object | — | 透传给遮罩的额外属性 |
 
 | 事件 | 说明 |
 |------|------|
@@ -471,7 +498,7 @@ buttons: [
 
 ```html
 <mu-form ref="formRef" :model="form" :items="items" :rules="rules" label-width="80px" label-align="left" />
-<mu-button primary @click="formRef.validate()">提交</mu-button>
+<mu-button color="primary" @click="formRef.validate()">提交</mu-button>
 ```
 
 ```javascript
@@ -694,6 +721,9 @@ const items = [
 |------|------|------|------|
 | `modelValue` | — | — | 双向绑定值 |
 | `label` | String | — | 标签文字 |
+| `icon` | String | — | 图标（两侧均显示） |
+| `active-icon` | String | — | 激活态图标 |
+| `inactive-icon` | String | — | 非激活态图标 |
 | `active-label` | String | — | 打开状态文字 |
 | `inactive-label` | String | — | 关闭状态文字 |
 | `active-value` | — | `true` | 打开状态值 |
@@ -914,6 +944,9 @@ const ctxMenu = shallowRef()
 | `model-value` | Date\|String\|Object\|Array | — | 双向绑定日期值 |
 | `format` | String | `yyyy-MM-dd` | String 类型下的格式 |
 | `value-type` | String | `date` | 返回类型：`date` \| `string` \| `object` |
+| `range` | Boolean | — | 范围选择模式 |
+| `min` | Date\|String | — | 最小可选日期 |
+| `max` | Date\|String | — | 最大可选日期 |
 
 ---
 
@@ -932,6 +965,7 @@ const ctxMenu = shallowRef()
 | `order-by` | String | — | 排序字段，格式 `field:asc` / `field:desc` |
 | `records-offset` | Number | — | 记录偏移量（影响行号显示）|
 | `fixed-left-columns` | Number | — | 固定左侧列数 |
+| `virtual-scroll` | Boolean | — | 虚拟滚动（大数据量时使用） |
 | `placeholder` | String | — | 空单元格占位文本 |
 | `table-width` | String | `fit-content` | 表格宽度 |
 | `table-min-width` | String | `100%` | 表格最小宽度 |
@@ -1089,6 +1123,6 @@ messageBox.notify({
 
 <!-- 加载失败 -->
 <mu-status-box icon="error" title="加载失败" message="请检查网络后重试">
-  <mu-button primary caption="重新加载" @click="reload" />
+  <mu-button color="primary" caption="重新加载" @click="reload" />
 </mu-status-box>
 ```

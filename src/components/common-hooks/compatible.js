@@ -9,7 +9,7 @@ const DEPRECATED_PROPS = {
   },
   modal: {
     moveable: false,
-    'mask-action': 'easy-hide'
+    'mask-action': 'dismissible'
   },
   dropdown: {
     'trigger-action': 'dropdown-trigger'

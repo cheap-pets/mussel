@@ -36,7 +36,7 @@
 
 ```html
 <!-- ✅ 正确 -->
-<header style="background: var(--mu-bg-header)">...</header>
+<header style="background: var(--mu-bg-strong)">...</header>
 <div style="background: var(--mu-bg-overlay)">弹出层</div>
 
 <!-- ❌ 错误 -->
@@ -203,14 +203,12 @@
 ```css
 /* ✅ 正确 */
 .label {
-  font-size: var(--mu-common-font-size);
-  line-height: var(--mu-common-line-height);
+  font-size: var(--mu-font-size-normal);
 }
 
 /* ❌ 错误 */
 .label {
   font-size: 14px;
-  line-height: 20px;
 }
 ```
 
@@ -344,3 +342,45 @@ body    { font-family: 'PingFang SC', sans-serif; }
   [ ] 全屏布局用 flex + flex-1，不用 calc(100vh - Xpx)
   [ ] 平级元素间距用 gap，不给最后一项以外加 margin
 ```
+
+---
+
+## 9. 已废弃 API
+
+以下 API 在老版本中存在，4.0 中已废弃或移除。生成新代码时**禁止使用**。
+
+### 按钮
+
+| 废弃属性 | 替代方案 |
+|---------|---------|
+| `primary` / `danger` / `secondary` Boolean | `color="primary"` / `color="danger"` / `color="secondary"` |
+| `accent` | 不再支持，使用 `color` 属性 |
+| `x-color` | 不再支持 |
+
+### 模态 / 抽屉
+
+| 废弃属性 | 替代方案 |
+|---------|---------|
+| `easy-hide` | `dismissible`（默认 `true`） |
+| `mask-action` | `dismissible` |
+| `moveable` | 已移除 |
+
+### 输入
+
+| 废弃属性 | 替代方案 |
+|---------|---------|
+| `label` | `prefix` / `suffix` |
+| `solid` / `underline` | `input-style` |
+
+### 下拉
+
+| 废弃属性 | 替代方案 |
+|---------|---------|
+| `trigger-action` | `dropdown-trigger` |
+
+### 标签页
+
+| 废弃属性 | 替代方案 |
+|---------|---------|
+| `onTabClick` | `@button-click` |
+| `onTabChange` | `@update:active-tab` |

@@ -1,5 +1,6 @@
 .mu-button {
-  --size: var(--mu-input-size);
+  --height: var(--mu-control-height-normal);
+  --intent-color: var(--mu-border-color-normal);
 
   cursor: pointer;
   user-select: none;
@@ -12,56 +13,53 @@
   align-items: center;
   justify-content: center;
 
-  min-width: var(--size);
-  height: var(--size);
+  min-width: var(--height);
+  height: var(--height);
   padding: 0 15px;
+  border: 1px solid var(--intent-color);
   border-radius: var(--mu-common-border-radius);
 
   font-family: inherit;
-  font-size: var(--mu-common-font-size);
+  font-size: var(--mu-font-size-normal);
   font-weight: 500;
-  line-height: var(--mu-common-line-height);
+  color: var(--mu-text-color-subtle);
   text-decoration: none;
   white-space: nowrap;
 
+  background: var(--mu-bg-normal);
   outline: none;
 
   & > .mu-icon {
     font-size: calc(1em + 2px);
   }
+}
 
-  &.mu-icon-button {
-    padding: 0 !important;
-  }
+.mu-button--round {
+  border-radius: calc(var(--height) / 2);
 }
 
 .mu-button--small {
-  --size: var(--mu-input-size-small);
+  --height: var(--mu-control-height-small);
 
   padding: 0 7px;
   font-size: 12px;
 }
 
 .mu-button--large {
-  --size: var(--mu-input-size-large);
+  --height: var(--mu-control-height-large);
 
   padding: 0 23px;
   font-size: 16px;
 }
 
-.mu-button--round {
-  border-radius: calc(var(--size) / 2);
-}
-
-.mu-button {
-  --border-color: var(--mu-border-color-normal);
-
-  border: 1px solid var(--border-color);
-  color: var(--mu-text-color-subtle);
-  background: var(--mu-bg-normal);
+.mu-button--link {
+  height: unset;
+  padding: 0;
 }
 
 .mu-button--active {
+  --intent-color: var(--mu-primary-color-6);
+
   z-index: 1;
   color: var(--mu-primary-color-6);
   background: rgb(from var(--mu-primary-color-6) r g b / 0.1);
@@ -69,47 +67,39 @@
 
 .mu-button {
   &:hover {
-    --border-color: var(--mu-primary-color-4);
+    --intent-color: var(--mu-primary-color-4);
 
     z-index: 2;
     color: var(--mu-primary-color-4);
     background: rgb(from var(--mu-primary-color-4) r g b / 0.1);
   }
 
-  &.mu-button--active {
-    --border-color: var(--mu-primary-color-6);
-  }
-
   &:focus {
-    box-shadow: var(--mu-shadow-focus) rgb(from var(--border-color) r g b / 0.15);
+    box-shadow: var(--mu-shadow-focus) rgb(from var(--intent-color) r g b / 0.15);
   }
 }
 
 @each $v in ('primary', 'secondary', 'danger') {
   .mu-button--#{$v} {
-    --border-color: var(--mu-#{$v}-color);
+    --intent-color: var(--mu-#{$v}-color);
 
     &.mu-button {
       color: #fff;
-      background: var(--mu-#{$v}-color);
+      background: var(--intent-color);
     }
 
     &.mu-button--active {
-      --border-color: var(--mu-#{$v}-color-6);
-
-      background: var(--mu-#{$v}-color-6);
+      --intent-color: var(--mu-#{$v}-color-6);
     }
 
     &:hover {
-      --border-color: var(--mu-#{$v}-color-4);
-
-      background: var(--mu-#{$v}-color-4);
+      --intent-color: var(--mu-#{$v}-color-4);
     }
 
     &.mu-button--outline,
     &.mu-button--text,
     &.mu-button--link {
-      color: var(--mu-#{$v}-color);
+      color: var(--intent-color);
     }
   }
 }
@@ -119,15 +109,10 @@
     background: transparent;
   }
 
-  &.mu-button--link {
-    height: unset;
-    padding: 0;
-  }
-
   &.mu-button--disabled {
     pointer-events: none;
     border-color: var(--mu-border-color-soft);
-    color: var(--mu-text-color-muted) !important;
+    color: var(--mu-text-color-muted);
     background: var(--mu-bg-disabled);
   }
 
@@ -143,6 +128,10 @@
 .mu-button--outline {
   &:hover,
   &.mu-button--active {
-    background: rgb(from var(--border-color) r g b / 0.1);
+    background: rgb(from var(--intent-color) r g b / 0.1);
   }
+}
+
+.mu-icon-button {
+  padding: 0 !important;
 }

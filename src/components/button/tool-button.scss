@@ -1,5 +1,5 @@
 .mu-tool-button {
-  --mu-button_size: var(--mu-input-size);
+  --mu-button_size: var(--mu-control-height-normal);
 
   cursor: pointer;
   user-select: none;
@@ -18,19 +18,18 @@
 
   font-size: 18px;
   font-weight: 400;
-  line-height: var(--mu-common-line-height);
   text-decoration: none;
 
   outline: none;
 
   &[size="small"] {
-    --mu-button_size: var(--mu-input-size-small);
+    --mu-button_size: var(--mu-control-height-small);
 
     font-size: 14px;
   }
 
   &[size="large"] {
-    --mu-button_size: var(--mu-input-size-large);
+    --mu-button_size: var(--mu-control-height-large);
 
     font-size: 22px;
   }

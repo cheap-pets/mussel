@@ -1,30 +1,31 @@
 .mu-input {
-  --mu-input_height: var(--mu-input-size);
-  --mu-input_bg: var(--mu-bg-normal);
-  --mu-input_border-color: var(--mu-border-color-normal);
-  --mu-input_border-radius: var(--mu-common-border-radius);
-  --mu-input_focus-shadow: var(--mu-shadow-focus) rgb(from var(--mu-input_border-color) r g b / 0.15);
+  --height: var(--mu-control-height-normal);
+  --line-height: 20px;
+  --bg: var(--mu-bg-normal);
+  --border-color: var(--mu-border-color-normal);
+  --border-radius: var(--mu-common-border-radius);
+  --focus-shadow: var(--mu-shadow-focus) rgb(from var(--border-color) r g b / 0.15);
 }
 
 .mu-input {
   position: relative;
 
   width: 200px;
-  height: var(--mu-input_height);
+  height: var(--height);
   padding: 5px 11px;
-  border-radius: var(--mu-input_border-radius);
+  border-radius: var(--border-radius);
 
-  font-size: var(--mu-common-font-size);
-  line-height: var(--mu-common-line-height);
+  font-size: var(--mu-font-size-normal);
+  line-height: var(--line-height);
 
   outline: none;
 
   &[small] {
-    --mu-input_height: var(--mu-input-size-small);
+    --height: var(--mu-control-height-small);
   }
 
   &[round] {
-    --mu-input_border-radius: calc(var(--mu-input_height) / 2);
+    --border-radius: calc(var(--height) / 2);
   }
 }
 
@@ -44,7 +45,7 @@
     textarea#{&},
     input#{&},
     #{&} > input {
-      line-height: var(--mu-common-line-height);
+      line-height: var(--line-height);
       color: var(--mu-text-color-strong);
       outline: none;
 
@@ -116,7 +117,7 @@ div.mu-input {
 
   display: flex;
 
-  font-size: var(--mu-common-font-size);
+  font-size: var(--mu-font-size-normal);
   color: var(--mu-text-color-normal);
 
   & > * {
@@ -124,7 +125,7 @@ div.mu-input {
     gap: var(--mu-base-spacing);
     align-items: center;
 
-    height: var(--mu-input-size);
+    height: var(--mu-control-height-normal);
     margin-left: -1px;
     padding: 0 11px;
     border: 1px solid var(--mu-border-color-normal);
@@ -134,13 +135,13 @@ div.mu-input {
   & > .mu-icon,
   & > .mu-tool-button {
     justify-content: center;
-    width: var(--mu-input-size);
+    width: var(--mu-control-height-normal);
     padding: 0;
     font-size: calc(1em + 2px);
   }
   
   & > .mu-input {
-    --mu-input_height: var(--mu-input-size);
+    --height: var(--mu-control-height-normal);
 
     z-index: 1;
     flex: 1 1 0;
@@ -168,24 +169,24 @@ div.mu-input {
 }
 
 .mu-input {
-  border: 1px solid var(--mu-input_border-color);
+  border: 1px solid var(--border-color);
   color: var(--mu-text-color-normal);
-  background-color: var(--mu-input_bg);
+  background-color: var(--bg);
 
   &[readonly] {
-    --mu-input_border-color: var(--mu-border-color-soft);
+    --border-color: var(--mu-border-color-soft);
 
     background-color: var(--mu-primary-translucent) !important;
   }
 
   &[invalid] {
-    --mu-input_border-color: var(--mu-danger-color) !important;
+    --border-color: var(--mu-danger-color) !important;
 
     background-color: var(--mu-danger-translucent) !important;
   }
 
   &[disabled] {
-    --mu-input_border-color: var(--mu-border-color-soft);
+    --border-color: var(--mu-border-color-soft);
 
     pointer-events: none;
     background-color: var(--mu-bg-disabled) !important;
@@ -202,33 +203,33 @@ div.mu-input {
   }
 
   &[input-style="solid"] {
-    --mu-input_bg: var(--mu-bg-strong);
+    --bg: var(--mu-bg-strong);
 
     border-color: transparent;
   }
 
   &[input-style="underline"] {
-    border-color: transparent transparent var(--mu-input_border-color);
+    border-color: transparent transparent var(--border-color);
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
   }
 }
 
 .mu-input-group > .mu-input {
-  --mu-input_bg: var(--mu-bg-normal);
-  --mu-input_border-color: var(--mu-border-color-normal);
+  --bg: var(--mu-bg-normal);
+  --border-color: var(--mu-border-color-normal);
 
-  border-color: var(--mu-input_border-color);
+  border-color: var(--border-color);
 
   &[invalid] {
-    --mu-input_border-color: var(--mu-danger-color);
+    --border-color: var(--mu-danger-color);
   }
 }
 
 .mu-input {
   &:hover, &:focus-within {
-    border-color: var(--mu-input_border-color);
-    border-radius: var(--mu-input_border-radius);
+    border-color: var(--border-color);
+    border-radius: var(--border-radius);
 
     & > .mu-input_clear-button {
       display: inline-block;
@@ -236,22 +237,22 @@ div.mu-input {
   }
 
   &:focus-within {
-    --mu-input_border-color: var(--mu-primary-color);
+    --border-color: var(--mu-primary-color);
 
-    box-shadow: var(--mu-input_focus-shadow);
+    box-shadow: var(--focus-shadow);
   }
 
   &:hover {
-    --mu-input_border-color: var(--mu-primary-color-4);
+    --border-color: var(--mu-primary-color-4);
   }
 
   &[invalid] {
     &:focus-within {
-      --mu-input_border-color: var(--mu-danger-color);
+      --border-color: var(--mu-danger-color);
     }
 
     &:hover {
-      --mu-input_border-color: var(--mu-danger-color-4);
+      --border-color: var(--mu-danger-color-4);
     }
   }
 }

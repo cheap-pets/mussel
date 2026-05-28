@@ -64,12 +64,14 @@ description: 使用 MUSSEL 4 内部组件库和 UI 规范编写 Vue 界面代码
 
 | 需求 | 组件 / 关键属性 |
 |------|--------------|
-| 常规按钮 | `<mu-button>`，主操作加 `primary`，危险操作加 `danger` |
+| 常规按钮 | `<mu-button>`，主操作加 `color="primary"`，危险操作加 `color="danger"` |
 | 按钮组 | `<mu-button-group>`，风格统一用 `button-style="outline"` |
 | 纯图标按钮 | `<mu-tool-button>`，工具栏专用，不支持文字 |
 | 带下拉的按钮 | `<mu-dropdown-button>`，分割形式加 `split-button` |
 
 > `button-style` 可选：`normal` \| `outline` \| `text` \| `link`
+>
+> `color` 可选：`normal` \| `primary` \| `secondary` \| `danger`（推荐，替代旧的 `primary`/`danger` Boolean 属性）
 
 ### 输入组件
 
@@ -97,7 +99,7 @@ description: 使用 MUSSEL 4 内部组件库和 UI 规范编写 Vue 界面代码
 | 对话框 | `<mu-dialog>`，底部按钮用 `:buttons` 数组配置，不要自己塞 slot |
 | 抽屉 | `<mu-drawer>`，`position` 默认是 `bottom`，侧滑需显式写 `right` / `left` |
 
-> `easy-hide` = 点击遮罩或 ESC 关闭，几乎所有场景都应加上
+> `dismissible` 控制点击遮罩或 ESC 是否关闭弹窗。需显式设置：`true`=两者均可，`'esc'`=仅ESC，`'mask'`=仅遮罩，不设置则不自动关闭。
 
 ### 导航 / 菜单
 
@@ -129,6 +131,7 @@ description: 使用 MUSSEL 4 内部组件库和 UI 规范编写 Vue 界面代码
 <mu-icon icon=".icon icon-bolt" />
 
 <!-- 状态徽章 -->
+<mu-badge primary>主要</mu-badge>
 <mu-badge success>已完成</mu-badge>
 <mu-badge danger>异常</mu-badge>
 ```

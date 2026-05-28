@@ -229,7 +229,7 @@
     v-model:visible="orderDialogVisible"
     title="新建订单"
     width="480"
-    easy-hide>
+    dismissible>
     <mu-form label-width="80px" label-align="right" class="py-1x">
       <mu-form-row>
         <mu-form-field label="客户：" class="flex-auto">
@@ -265,7 +265,7 @@
     v-model:visible="userDialogVisible"
     :title="isEditingUser ? '编辑用户' : '新增用户'"
     width="480"
-    easy-hide>
+    dismissible>
     <mu-form label-width="80px" label-align="right" class="py-1x">
       <mu-form-row>
         <mu-form-field label="姓名：" class="flex-auto">

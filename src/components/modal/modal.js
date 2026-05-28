@@ -9,8 +9,11 @@ export const modalProps = {
   maskClass: null,
   maskAttrs: Object,
   visible: Boolean,
-  easyHide: Boolean,
   disposeOnHide: Boolean,
+  dismissible: {
+    type: [Boolean, String],
+    validator: v => [true, false, 'esc', 'mask'].includes(v)
+  },
   lazy: { type: Boolean, default: true }
 }
 
@@ -48,14 +51,23 @@ export function useModal (props, emit) {
   }
 
   function onMaskClick (event) {
-    if (props.easyHide && isMouseDownInMask && isMouseUpInMask) {
+    if (
+      [true, 'mask'].includes(props.dismissible) &&
+      isMouseDownInMask &&
+      isMouseUpInMask
+    ) {
       isMouseDownInMask = undefined
       hide('$MASK')
     }
   }
 
   function onCaptureEscKeyDown (event) {
-    if (props.visible && props.easyHide) hide('$ESC')
+    if (
+      props.visible &&
+      [true, 'esc'].includes(props.dismissible)
+    ) {
+      hide('$ESC')
+    }
   }
 
   function onCaptureMouseDown (event) {

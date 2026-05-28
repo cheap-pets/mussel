@@ -128,6 +128,8 @@ background: #fff1f0;
 | `--mu-bg-mask` | 遮罩层背景（全屏覆盖） |
 | `--mu-bg-overlay` | 弹出层、浮出面板背景 |
 
+> `--mu-bg-header` 和 `--mu-bg-footer` 在老版本中存在，4.0 已移除，统一使用 `--mu-bg-strong`。
+
 ---
 
 ### 1.7 边框颜色
@@ -157,8 +159,9 @@ background: #fff1f0;
 |------|--------|------|
 | `--mu-font-sans` | — | 无衬线字体族，正文 |
 | `--mu-font-mono` | — | 等宽字体族，代码块 |
-| `--mu-common-font-size` | `14px` | 组件标题、正文主字号 |
-| `--mu-common-line-height` | `20px` | 正文行高 |
+| `--mu-font-size-normal` | `14px` | 组件标题、正文主字号 |
+| `--mu-font-size-small` | `12px` | 小号文字 |
+| `--mu-font-size-large` | `16px` | 大号文字 |
 
 ---
 
@@ -192,13 +195,15 @@ background: #fff1f0;
 
 ---
 
-## 6. 输入控件尺寸 Tokens
+## 6. 控件尺寸 Tokens
 
 | 变量 | 默认值 | 用途 |
 |------|--------|------|
-| `--mu-input-size` | `32px` | 默认输入框高度 |
-| `--mu-input-size-small` | `24px` | 小尺寸输入框 |
-| `--mu-input-size-large` | `40px` | 大尺寸输入框 |
+| `--mu-control-height-normal` | `32px` | 默认控件高度 |
+| `--mu-control-height-small` | `24px` | 小尺寸控件 |
+| `--mu-control-height-large` | `40px` | 大尺寸控件 |
+
+> 老版本使用 `--mu-input-size`，4.0 已统一为 `--mu-control-height-*`。
 
 ---
 

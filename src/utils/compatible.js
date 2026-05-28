@@ -1,27 +1,22 @@
-import { pascalCase } from '@/utils/case'
+import { pascalCase } from './case.js'
 
-const warned = {}
+const warned = new Set()
 
-export function outputDeprecatedWarning ({
-  component = '',
-  type = '',
-  deprecated = 'unknown',
-  replacement = '',
-  once = true
-}) {
-  const prefix = 'MUSSEL' + (component && `:${component.toUpperCase()}`)
+export function warnDeprecated ({ component, deprecated, alternative, once = true } = {}) {
+  if (!deprecated) return
+
+  const prefix = `MUSSEL${component ? ':' + pascalCase(component) : ''}`
 
   if (once) {
-    const onceKey = `${prefix}_${type}_${deprecated}_${replacement}`
+    const key = `${prefix}_${deprecated}_${alternative}`
 
-    if (warned[onceKey]) return
-    else warned[onceKey] = true
+    if (warned.has(key)) return
+    else warned.add(key)
   }
 
   const message =
-    (type && `${pascalCase(type)} `) +
     (deprecated + ' is deprecated, and will be removed in future versions.') +
-    (replacement && ` Please use "${replacement}" instead.`)
+    (alternative && ` Please use "${alternative}" instead.`)
 
   console.warn(`[${prefix}]`, message)
 }

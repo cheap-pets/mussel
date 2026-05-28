@@ -56,7 +56,7 @@
       title="Advanced Modal Dialog"
       width="800"
       height="600"
-      easy-hide
+      dismissible
       moveable
       keep-position
       :lazy="false"
@@ -95,7 +95,7 @@
       :border-radius="borderRadius"
       style="padding: 16px;"
       width="50%"
-      easy-hide>
+      dismissible>
       <label>I am a {{ drawerPosition }} drawer.</label>
       <p>Drawer content goes here.</p>
     </mu-drawer>

@@ -1,5 +1,5 @@
 .mu-segmented {
-  --mu-segmented-height: var(--mu-input-size);
+  --mu-segmented-height: var(--mu-control-height-normal);
 
   position: relative;
 
@@ -51,8 +51,7 @@
   padding: 4px calc(var(--mu-base-spacing) * 2);
   border-radius: var(--mu-common-border-radius);
 
-  font-size: var(--mu-common-font-size);
-  line-height: var(--mu-common-line-height);
+  font-size: var(--mu-font-size-normal);
   color: var(--mu-text-color-normal);
   white-space: nowrap;
 

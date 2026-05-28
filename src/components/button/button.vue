@@ -11,6 +11,7 @@
   import './button.scss'
 
   import { inject, computed } from 'vue'
+  import { warnDeprecated } from '../../utils/compatible.js'
 
   defineOptions({ name: 'MusselButton' })
 
@@ -44,13 +45,27 @@
   }
 
   const colorClass = computed(() => {
-    function resolve (source) {
-      return source
-        ? source.color || ['primary', 'secondary', 'danger'].find(key => source[key])
-        : null
+    function resolve (source, component) {
+      if (!source) return null
+      if (source.color) return source.color
+
+      const color =
+        ['primary', 'secondary', 'danger'].find(key => source[key])
+
+      if (color) {
+        warnDeprecated({
+          component,
+          deprecated: 'props primary|secondary|danger',
+          alternative: 'color="primary|secondary|danger"'
+        })
+      }
+
+      return color
     }
 
-    return resolveClassName(resolve(props) || resolve(group))
+    return resolveClassName(
+      resolve(props, 'Button') || resolve(group, 'ButtonGroup')
+    )
   })
 
   const appearanceClass = computed(() => {

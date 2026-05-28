@@ -7,12 +7,12 @@
 
   width: 100%;
 
-  font-size: var(--mu-common-font-size);
+  font-size: var(--mu-font-size-normal);
 
   & > .mu-form-field__label {
     display: block;
     flex: none;
-    font-size: var(--mu-common-font-size);
+    font-size: var(--mu-font-size-normal);
     color: var(--mu-text-color-subtle);
   }
 

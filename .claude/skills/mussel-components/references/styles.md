@@ -1,4 +1,4 @@
-# MUSSEL 4 - 样式
+# MUSSEL 4 - 原子样式
 
 
 
@@ -103,12 +103,13 @@
 | --------------- | ---------------------------------------------------------- |
 | --mu-bg-normal  | 默认背景                                                   |
 | --mu-bg-strong  | 强调区域背景，比如用作导航区域，或者头、尾的工具栏的背景等 |
-| --mu-bg-header  | 头部区域背景                                               |
-| --mu-bg-footer  | 尾部区域背景                                               |
+| --mu-bg-fill    | 填充背景，如分段控件底色、区块内嵌容器等                   |
 | --mu-bg-stripe  | 条纹行背景，用于表格交替行等                               |
 | --mu-bg-disabled| 禁用组件的背景                                             |
 | --mu-bg-mask    | 遮罩层默认背景                                             |
 | --mu-bg-overlay | 弹出层、覆盖物的默认背景                                   |
+
+> `--mu-bg-header` 和 `--mu-bg-footer` 在老版本中存在，4.0 已移除，统一使用 `--mu-bg-strong`。
 
 
 
@@ -131,14 +132,17 @@
 
 
 
-### 1.9 文字尺寸、行高
+### 1.9 文字尺寸
 
 | 变量名称                | 说明                                                |
 | ----------------------- | --------------------------------------------------- |
 | --mu-font-sans          | 无衬线字体族                                        |
 | --mu-font-mono          | 等宽字体族                                          |
-| --mu-common-font-size   | 普通文字尺寸，用于大部分组件的标题文字，默认值 14px |
-| --mu-common-line-height | 普通行高，默认值 20px                               |
+| --mu-font-size-normal   | 普通文字尺寸，用于大部分组件的标题文字，默认值 14px |
+| --mu-font-size-small    | 小号文字尺寸，默认值 12px                           |
+| --mu-font-size-large    | 大号文字尺寸，默认值 16px                           |
+
+> 老版本使用 `--mu-common-font-size`，4.0 已统一为 `--mu-font-size-normal`。
 
 
 
@@ -175,13 +179,15 @@
 
 
 
-### 1.13 输入控件尺寸
+### 1.13 控件尺寸
 
 | 变量名称            | 说明         | 默认值 |
 | ------------------- | ------------ | ------ |
-| --mu-input-size     | 默认输入高度 | 32px   |
-| --mu-input-size-small | 小尺寸输入高度 | 24px |
-| --mu-input-size-large | 大尺寸输入高度 | 40px |
+| --mu-control-height-normal | 默认控件高度 | 32px   |
+| --mu-control-height-small | 小尺寸控件高度 | 24px |
+| --mu-control-height-large | 大尺寸控件高度 | 40px |
+
+> 老版本使用 `--mu-input-size`，4.0 已统一为 `--mu-control-height-*`。
 
 
 
@@ -252,6 +258,12 @@
 | .flex-grow    | flex-grow: 1   |
 | .flex-shrink  | flex-shrink: 1 |
 
+**Flex 快捷类：**
+
+| 类名              | 说明                                        |
+| ----------------- | ------------------------------------------- |
+| .flex-center      | 同时设置 `align-items: center; justify-content: center` |
+
 
 
 **Flex 换行：**
@@ -290,6 +302,16 @@
 | ---------- | ------------------------ |
 | .gap-none  | gap: unset               |
 | .gap-{n}x  | gap: n * 8px             |
+
+**Z-index 定位：**
+
+| 类名       | 说明                              |
+| ---------- | --------------------------------- |
+| .z-float   | z-index: var(--mu-z-index-float)  |
+| .z-layer   | z-index: var(--mu-z-index-layer)  |
+| .z-modal   | z-index: var(--mu-z-index-modal)  |
+| .z-popup   | z-index: var(--mu-z-index-popup)  |
+| .z-ontop   | z-index: var(--mu-z-index-ontop)  |
 
 
 
@@ -364,6 +386,27 @@
 
 
 ### 2.3 背景与边框
+
+**背景颜色：**
+
+| 类名              | 说明             |
+| ----------------- | ---------------- |
+| .bg-normal        | 默认背景色       |
+| .bg-strong        | 强调区域背景色   |
+| .bg-disabled      | 禁用状态背景色   |
+| .bg-overlay       | 弹出层背景色     |
+| .bg-mask          | 遮罩层背景色     |
+
+**阴影：**
+
+| 类名                     | 说明                 |
+| ------------------------ | -------------------- |
+| .mu-shadow-float         | 突出元素阴影         |
+| .mu-shadow-popup         | 弹出元素阴影         |
+| .mu-shadow-layer         | 浮动层阴影           |
+| .mu-shadow-modal         | 模态窗口阴影         |
+| .mu-shadow-focus         | 焦点阴影（需 :focus）  |
+| .mu-shadow-focus-within  | 焦点阴影（需 :focus-within） |
 
 **边框宽度 (n: 1 ~ 4, 像素值)：**
 
@@ -485,3 +528,9 @@ display: -webkit-box;
 -webkit-line-clamp: var(--line-clamp);
 white-space: pre-line;
 ```
+
+**标签样式：**
+
+| 类名       | 说明                     |
+| ---------- | ------------------------ |
+| .mu-label  | 固定样式的表单标签（灰色 500、加粗、单行省略、最小宽度 20px） |

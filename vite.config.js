@@ -14,6 +14,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const pkgJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
 const version = pkgJson.version
 
+const targetBrowsers = {
+  chrome: 120,
+  edge: 120,
+  firefox: 128,
+  safari: 20
+}
+
 const colorMaps =
   '$colors: (\n' +
   Object
@@ -60,11 +67,7 @@ export default defineConfig(({ mode }) => {
     css: {
       transformer: 'lightningcss',
       lightningcss: {
-        targets: {
-          chrome: 100,
-          edge: 100,
-          firefox: 100
-        }
+        targets: targetBrowsers
       },
       preprocessorOptions: {
         scss: {
@@ -77,7 +80,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
-      target: ['chrome100', 'edge100', 'firefox100'],
+      target: Object.entries(targetBrowsers).map(([name, ver]) => `${name}${ver}`),
       emptyOutDir: false,
       lib: {
         entry: resolve(__dirname, 'src/index.js'),

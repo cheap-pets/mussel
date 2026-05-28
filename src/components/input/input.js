@@ -10,9 +10,9 @@ export const inputProps = {
   prefix: [String, Object],
   suffix: [String, Object],
   tabindex: { default: '-1' },
-  clearButton: {
+  clearable: {
     type: Boolean,
-    default: () => inject('$mussel').options.input?.clearButton ?? true
+    default: () => inject('$mussel').options.input?.clearable
   }
 }
 
@@ -47,7 +47,7 @@ export function useInput (model, props, emit) {
   }
 
   const clearButtonVisible = computed(() =>
-    props.clearButton &&
+    props.clearable &&
     !props.disabled &&
     !props.readonly &&
     !isEmpty(model.value, { skipBoolean: true })

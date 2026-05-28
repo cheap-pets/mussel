@@ -13,6 +13,13 @@ const isWatch = process.argv.includes('--watch')
 const pkgJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
 const version = pkgJson.version
 
+const targetBrowsers = {
+  chrome: 120,
+  edge: 120,
+  firefox: 128,
+  safari: 20
+}
+
 const colorMaps =
   '$colors: (\n' +
   Object
@@ -110,11 +117,7 @@ export default {
   css: {
     transformer: 'lightningcss',
     lightningcss: {
-      targets: {
-        edge: 100,
-        chrome: 100,
-        firefox: 100
-      }
+      targets: targetBrowsers
     },
     preprocessorOptions: {
       scss: {
@@ -127,6 +130,7 @@ export default {
     }
   },
   build: {
+    target: Object.entries(targetBrowsers).map(([name, ver]) => `${name}${ver}`),
     outDir: resolve(__dirname, 'demo/dist'),
     emptyOutDir: true,
     minify: false,

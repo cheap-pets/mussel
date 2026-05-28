@@ -20,7 +20,7 @@
   max-height: 100%;
   border-radius: var(--mu-window-border-radius);
 
-  font-size: var(--mu-common-font-size);
+  font-size: var(--mu-font-size-normal);
   color: var(--mu-text-color-normal);
 
   background: var(--mu-bg-overlay);
@@ -89,7 +89,7 @@
 .mu-dialog_title {
   pointer-events: none;
   flex: 1 1 0;
-  font-size: calc(var(--mu-common-font-size) + 2px);
+  font-size: calc(var(--mu-font-size-normal) + 2px);
   font-weight: 600;
 }
 

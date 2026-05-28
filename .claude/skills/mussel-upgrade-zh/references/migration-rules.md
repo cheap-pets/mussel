@@ -27,7 +27,7 @@
 |----------|----------|
 | `<mu-editor>` | `<mu-input>` |
 | `class="mu-editor"` | `class="mu-input"` |
-| `:clear-button="true"` | `clearable="true"` |
+| `:clear-button="true"` | `:clearable="true"` |
 | `solid`（布尔属性） | `input-style="solid"` |
 | `underline`（布尔属性） | `input-style="underline"` |
 | `round`（布尔属性） | 无直接对应 |
@@ -111,10 +111,12 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `mask-action="none"` | `:easy-hide="false"` | |
-| `mask-action="hide"` | `:easy-hide="true"` | |
+| `mask-action="none"` | `:dismissible="false"` | |
+| `mask-action="hide"` | `dismissible`（需显式设置） | |
 | `:moveable="false"` | `:keep-position="true"` | 逻辑取反 |
 | `render-to-body` | _(已移除，自动处理)_ | |
+
+> `easy-hide` 在早期 Mussel 4 中曾使用，现已改为 `dismissible`。`dismissible` 支持：`true`（遮罩+ESC均可关闭）、`'esc'`（仅ESC）、`'mask'`（仅遮罩）、`false`（禁止关闭）。
 
 ### MuComboBox
 
@@ -202,7 +204,20 @@ items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `secondary` | `accent` | |
+| `secondary` | `secondary`（不变） | |
+| `accent` | `secondary` | `accent` 已移除 |
+
+### MuButton
+
+| Mussel 3 | Mussel 4 | 备注 |
+|----------|----------|------|
+| `primary`（Boolean） | `color="primary"` | 旧写法仍可用（已废弃），推荐使用 `color` 属性 |
+| `danger`（Boolean） | `color="danger"` | 同上 |
+| `secondary`（Boolean） | `color="secondary"` | 同上 |
+| `accent` | _(已移除)_ | 无替代 |
+| `x-color` | _(已移除)_ | 无替代 |
+
+Mussel 4 推荐 `color` 属性：`'normal' | 'primary' | 'secondary' | 'danger'`。
 
 ### MuIcon
 
@@ -280,7 +295,7 @@ function onDialogVisibleChange (value, trigger) {
 | Mussel 3 | Mussel 4 |
 |----------|----------|
 | `--mu-gray-dark` | `--mu-text-color-normal` |
-| `--mu-primary-color-shadow` | `--mu-bg-translucent-primary` |
+| `--mu-primary-color-shadow` | `--mu-primary-translucent` |
 | `--mu-unit-spacing-size` | `--mu-base-spacing` |
 | `--mu-editor-text-color` | `--mu-text-color-clear` |
 | `--mu-mask-background` | `--mu-bg-mask` |
@@ -401,13 +416,13 @@ app.use(pluginMussel, {
 .mu-root {
   --mu-mask-background: var(--mu-bg-mask);
   --mu-divider-color: var(--mu-divider-color);
-  --mu-background-hover: var(--mu-bg-translucent-gray);
+  --mu-background-hover: var(--mu-gray-translucent);
   --mu-unit-spacing-size: var(--mu-base-spacing);
-  --mu-list-item-hover-background: var(--mu-bg-translucent-gray);
+  --mu-list-item-hover-background: var(--mu-gray-translucent);
   --mu-text-color-weak: var(--mu-text-color-muted);
   --mu-button-border-color-normal: var(--mu-border-color);
   --mu-background-normal: var(--mu-bg-normal);
-  --mu-primary-color-shadow: var(--mu-bg-translucent-primary);
+  --mu-primary-color-shadow: var(--mu-primary-translucent);
 }
 ```
 

@@ -58,12 +58,20 @@
 
 | 类名 | CSS 等价 | 说明 |
 |------|---------|------|
+| `.flex-0` | `flex: 0` | 不伸缩 |
 | `.flex-1` | `flex: 1` | 均分剩余空间，最常用 |
+| `.flex-2` ~ `.flex-8` | `flex: 2` ~ `flex: 8` | 按比例伸缩 |
 | `.flex-auto` | `flex: auto` | 按内容宽度伸缩 |
 | `.flex-initial` | `flex: 0 auto` | 不增长，可收缩 |
 | `.flex-none` | `flex: none` | 固定尺寸，不伸缩 |
 | `.flex-grow` | `flex-grow: 1` | 只增长 |
 | `.flex-shrink` | `flex-shrink: 1` | 只收缩 |
+
+### 3.3a 快捷居中
+
+| 类名 | CSS 等价 | 说明 |
+|------|---------|------|
+| `.flex-center` | `align-items: center; justify-content: center` | 水平垂直同时居中 |
 
 ### 3.4 主轴对齐（justify-content）
 
@@ -123,6 +131,32 @@
 | `.gap-2x` | `gap: 16px` |
 | `.gap-3x` | `gap: 24px` |
 | `.gap-4x` | `gap: 32px` |
+
+---
+
+## 4a. Z-index 定位
+
+使用语义类替代手写 z-index 数值。
+
+| 类名 | CSS 等价 |
+|------|---------|
+| `.z-float` | `z-index: var(--mu-z-index-float)` |
+| `.z-layer` | `z-index: var(--mu-z-index-layer)` |
+| `.z-modal` | `z-index: var(--mu-z-index-modal)` |
+| `.z-popup` | `z-index: var(--mu-z-index-popup)` |
+| `.z-ontop` | `z-index: var(--mu-z-index-ontop)` |
+
+---
+
+## 4b. 背景色
+
+| 类名 | CSS 等价 |
+|------|---------|
+| `.bg-normal` | `background-color: var(--mu-bg-normal)` |
+| `.bg-strong` | `background-color: var(--mu-bg-strong)` |
+| `.bg-disabled` | `background-color: var(--mu-bg-disabled)` |
+| `.bg-overlay` | `background-color: var(--mu-bg-overlay)` |
+| `.bg-mask` | `background-color: var(--mu-bg-mask)` |
 
 ---
 
@@ -267,11 +301,11 @@
 ### 页面框架（Header + Sidebar + Content）
 ```html
 <div class="flex flex-col" style="height: 100vh">
-  <header class="flex-none flex items-center px-2x" style="background: var(--mu-bg-header)">
+  <header class="flex-none flex items-center px-2x bg-strong">
     页头
   </header>
   <div class="flex flex-1 overflow-hidden">
-    <aside class="flex-none overflow-auto" style="width: 240px; background: var(--mu-bg-strong)">
+    <aside class="flex-none overflow-auto bg-strong" style="width: 240px">
       侧边栏
     </aside>
     <main class="flex-1 overflow-auto p-2x">

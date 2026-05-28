@@ -10,13 +10,12 @@
   align-items: center;
   justify-content: center;
 
-  height: var(--mu-input-size);
+  height: var(--mu-control-height-normal);
   padding: 0 12px;
   border-radius: var(--mu-common-border-radius);
 
-  font-size: var(--mu-common-font-size);
+  font-size: var(--mu-font-size-normal);
   font-weight: 500;
-  line-height: var(--mu-common-line-height);
   color: var(--mu-text-color-normal);
   text-decoration: none;
 
@@ -45,7 +44,7 @@
 
 .mu-tab-bar[tab-style=small-button] {
   & .mu-tab-button {
-    height: var(--mu-input-size-small);
+    height: var(--mu-control-height-small);
     padding: 0 8px;
   }
 }
