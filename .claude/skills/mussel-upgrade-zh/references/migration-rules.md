@@ -44,9 +44,9 @@
 <mu-input v-model="value" clearable input-style="solid" style="width: 100%;" suffix=":icon=search" />
 ```
 
-### MuOption → 已移除
+### MuOption → 仍可用，推荐使用 options 属性
 
-`<mu-option>` 已移除。选项现在通过 Select/ComboBox 的 `options` 数组属性配置。
+`<mu-option>` 在 Mussel 4 中仍保留，但推荐使用 Select/ComboBox 的 `options` 数组属性配置选项。
 
 ```html
 <!-- 升级前 -->
@@ -55,8 +55,14 @@
   <mu-option value="b" label="B" />
 </mu-select>
 
-<!-- 升级后 -->
+<!-- 升级后（推荐） -->
 <mu-select v-model="val" :options="[{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }]" />
+
+<!-- 升级后（兼容，仍可用） -->
+<mu-select v-model="val">
+  <mu-option value="a" label="A" />
+  <mu-option value="b" label="B" />
+</mu-select>
 ```
 
 ### MuTabsButtons → 已移除
@@ -65,7 +71,8 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 
 ### MuTreeView / MuTreeNode / MuTreeNodes → MuTree
 
-三个组件统一由 `<mu-tree>` 替代。
+`<mu-tree-view>` 和 `<mu-tree-nodes>` 已移除。`<mu-tree-node>` 仍保留但推荐使用数据驱动方式。
+三个组件推荐统一由 `<mu-tree>` 数据驱动方式替代。
 
 ```html
 <!-- 升级前 -->
@@ -80,9 +87,9 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 <mu-tree :data="treeData" :props="treeProps" @node-click="onNodeClick" />
 ```
 
-### MuDropdownItem / MuDropdownCheckItem / MuDropdownRadioItem → 已移除
+### MuDropdownItem / MuDropdownCheckItem / MuDropdownRadioItem → 仍可用，推荐使用 dropdown-items
 
-三个组件统一由 MuDropdown/MuDropdownPanel 的 `dropdown-items` 数组属性替代。
+三个组件在 Mussel 4 中仍保留，但推荐使用 MuDropdown/MuDropdownPanel 的 `dropdown-items` 数组属性。
 
 ```html
 <!-- 升级前 -->
@@ -94,12 +101,21 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
   </template>
 </mu-dropdown>
 
-<!-- 升级后 -->
+<!-- 升级后（推荐） -->
 <mu-dropdown :dropdown-items="[
   { caption: '选项1', action: 'opt1' },
   { caption: '勾选1', type: 'check', value: 'check1' }
 ]">
   <mu-button>菜单</mu-button>
+</mu-dropdown>
+
+<!-- 升级后（兼容，仍可用） -->
+<mu-dropdown>
+  <mu-button>菜单</mu-button>
+  <template #dropdown>
+    <mu-dropdown-item caption="选项1" />
+    <mu-dropdown-check-item caption="勾选1" />
+  </template>
 </mu-dropdown>
 ```
 
@@ -111,18 +127,22 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `mask-action="none"` | `:dismissible="false"` | |
 | `mask-action="hide"` | `dismissible`（需显式设置） | |
-| `:moveable="false"` | `:keep-position="true"` | 逻辑取反 |
 | `render-to-body` | _(已移除，自动处理)_ | |
+| `moveable` | _(已移除)_ | 拖拽始终可用，无需配置 |
+| `dialog-style` | _(已移除)_ | 用标准 `style` 属性传入（通过 `$attrs` fallthrough 到 `.mu-dialog`） |
+| `container` | _(已移除)_ | 自动挂载到 body |
+| `@close-button-click` | _(已移除)_ | 关闭按钮点击触发 `hide` 事件 |
+| `@mask-click` | _(已移除)_ | 用 `dismissible` 控制遮罩行为 |
 
-> `easy-hide` 在早期 Mussel 4 中曾使用，现已改为 `dismissible`。`dismissible` 支持：`true`（遮罩+ESC均可关闭）、`'esc'`（仅ESC）、`'mask'`（仅遮罩）、`false`（禁止关闭）。
+> `easy-hide` 在早期 Mussel 4 中曾使用，现已改为 `dismissible`。
+> `dismissible` 支持：`false`（默认值，禁止关闭）、`true`（遮罩+ESC均可关闭）、`'esc'`（仅ESC）、`'mask'`（仅遮罩）。
 
 ### MuComboBox
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `:clear-button="true"` | `clearable="true"` | |
+| `:clear-button="true"` | `clearable` | |
 | `class="mu-box"` | _(移除该 class)_ | |
 | `width="100%"` | `style="width: 100%;"` | |
 | `label`（属性） | `prefix` / `suffix` | |
@@ -193,12 +213,6 @@ const items = [
 `input` 属性支持的类型：`text`（默认）| `memo` | `date` | `month` | `select` | `multi-select`。
 items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数组子行、`{ is: '组件名' }` 自定义组件。
 
-### MuCheck
-
-| Mussel 3 | Mussel 4 | 备注 |
-|----------|----------|------|
-| `class="mu-box"` | _(移除该 class)_ | |
-| `:disabled="false"` | `:disabled="!editable || null"` | `false` 不生效，需用 null |
 
 ### MuBadge
 
@@ -211,13 +225,11 @@ items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `primary`（Boolean） | `color="primary"` | 旧写法仍可用（已废弃），推荐使用 `color` 属性 |
-| `danger`（Boolean） | `color="danger"` | 同上 |
-| `secondary`（Boolean） | `color="secondary"` | 同上 |
-| `accent` | _(已移除)_ | 无替代 |
+| `primary|secondary|danger`（Boolean） | `color="primary|secondary|danger"` | 旧布尔属性仍可用（deprecated），优先使用 `color` |
 | `x-color` | _(已移除)_ | 无替代 |
 
 Mussel 4 推荐 `color` 属性：`'normal' | 'primary' | 'secondary' | 'danger'`。
+Mussel 4 新增 `buttonStyle` 属性：`'normal' | 'outline' | 'text' | 'link'`（控制按钮外观样式）。
 
 ### MuIcon
 
@@ -297,7 +309,7 @@ function onDialogVisibleChange (value, trigger) {
 | `--mu-gray-dark` | `--mu-text-color-normal` |
 | `--mu-primary-color-shadow` | `--mu-primary-translucent` |
 | `--mu-unit-spacing-size` | `--mu-base-spacing` |
-| `--mu-editor-text-color` | `--mu-text-color-clear` |
+| `--mu-editor-text-color` | `--mu-text-color-strong` |
 | `--mu-mask-background` | `--mu-bg-mask` |
 
 ### Editor 专用变量（已移除）
@@ -360,13 +372,19 @@ Mussel 4 新增：
 
 Mussel 4 新增了完整的原子类系统。主要类别：
 
-**布局**：`.flex`、`.flex-row`、`.flex-col`、`.flex-1`、`.items-center`、`.justify-between`、`.gap-{n}x`
+**布局**：`.flex`、`.inline-flex`、`.block`、`.inline-block`、`.grid`、`.inline-grid`、`.contents`、`.hidden`、`.flex-row`、`.flex-col`、`.flex-1`、`.items-center`、`.justify-between`、`.gap-{n}x`
+
+**定位**：`.static`、`.relative`、`.absolute`、`.fixed`、`.sticky`、`.z-float`、`.z-layer`、`.z-modal`、`.z-popup`、`.z-ontop`
 
 **间距**：`.p-{n}x`、`.m-{n}x`、`.px-{n}x`、`.mx-{n}x`（n: 1-4）
 
-**边框**：`.border`、`.border-2`、`.border-primary`、`.border-danger`、`.border-dashed`
+**边框**：`.border`、`.border-2`、`.border-3`、`.border-4`、`.border-primary`、`.border-danger`、`.border-soft`、`.border-strong`、`.border-dashed`、`.border-dotted`
 
-**文本**：`.text-strong`、`.text-muted`、`.text-primary`、`.text-ellipsis`、`.line-clamp`
+**文本**：`.text-strong`、`.text-normal`、`.text-muted`、`.text-subtle`、`.text-soft`、`.text-primary`、`.text-secondary`、`.text-success`、`.text-warning`、`.text-danger`、`.text-ellipsis`、`.line-clamp`
+
+**背景**：`.bg-normal`、`.bg-strong`、`.bg-disabled`、`.bg-overlay`、`.bg-mask`、`.bg-fill`、`.bg-stripe`
+
+**溢出**：`.overflow-auto`、`.overflow-hidden`、`.overflow-visible`、`.overflow-clip`
 
 ---
 
@@ -430,6 +448,44 @@ app.use(pluginMussel, {
 
 ## 8. 结构变更
 
+### MuDialog 属性绑定层级变更
+
+Mussel 3 中，用户传入的属性（`class`、`style` 等）绑定在最外层 `.mu-modal-mask` 元素上。Mussel 4 中改为绑定在内层 `.mu-dialog` 元素上。
+
+DOM 结构对比：
+
+```html
+<!-- Mussel 3 -->
+<div class="mu-modal-mask my-dialog" style="...">  ← $attrs 绑定在这里
+  <div class="mu-dialog">
+    ...
+  </div>
+</div>
+
+<!-- Mussel 4 -->
+<div class="mu-modal-mask mu-dialog-mask">  ← 不再接收 $attrs
+  <div class="mu-dialog my-dialog" style="...">  ← $attrs 绑定在这里
+    ...
+  </div>
+</div>
+```
+
+这意味着之前通过外层 class 定位内层 `.mu-dialog` 的 CSS 选择器需要调整：
+
+```css
+/* 升级前（Mussel 3）：属性在 mask 层，需用子选择器定位 dialog */
+.my-dialog > .mu-dialog {
+  /* ... */
+}
+
+/* 升级后（Mussel 4）：属性直接在 dialog 层，直接选择即可 */
+.my-dialog {
+  /* ... */
+}
+```
+
+同理，JS 中通过组件 `$el` 获取 DOM 引用时，`$el` 从 `.mu-modal-mask` 变为 `.mu-dialog`，如有依赖需相应调整。
+
 ### MuDialog Body
 
 ```html
@@ -443,6 +499,40 @@ app.use(pluginMussel, {
   <div style="padding: 16px;">内容</div>
 </mu-dialog>
 ```
+
+### MuDialog 内部结构变更
+
+Mussel 3 的 header/body/footer 包裹在 `.mu-dialog_center` 容器中，且有 `.mu-dialog_side-panel` 侧面板。Mussel 4 移除了这些包裹层。
+
+```html
+<!-- Mussel 3 内部结构 -->
+<div class="mu-dialog">
+  <slot name="side-panel" />           <!-- 侧面板 -->
+  <div class="mu-dialog_center">       <!-- 居中包裹层 -->
+    <div class="mu-dialog_header">...</div>
+    <slot />                           <!-- body -->
+    <div class="mu-dialog_footer">...</div>
+  </div>
+</div>
+
+<!-- Mussel 4 内部结构 -->
+<div class="mu-dialog">
+  <!-- 无 side-panel，无 mu-dialog_center -->
+  <div class="mu-dialog_header">...</div>
+  <slot />                             <!-- body -->
+  <div class="mu-dialog_footer">...</div>
+</div>
+```
+
+迁移要点：
+
+| 变更 | 说明 |
+|------|------|
+| `mu-dialog_center` 已移除 | 不再有居中包裹层，header/body/footer 直接在 `.mu-dialog` 内 |
+| `side-panel` 插槽已移除 | 侧面板不再支持，需自行实现 |
+| padding 模式变更 | Mussel 3 通过 `.mu-dialog_center > *` 自动给所有子元素加 padding；Mussel 4 用 `--mu-dialog-padding` 变量，仅 header/footer 有 padding，body 需手动添加 |
+| 关闭按钮变更 | Mussel 3 使用 `<mu-icon icon="x">`；Mussel 4 使用 `<mu-tool-button icon="windowClose" danger>` |
+| 尺寸默认值变更 | `min-width` 360→320，`max-width/height` 90%→100% |
 
 ### MuDialog 按钮
 
@@ -493,7 +583,10 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuMultiSelect | 下拉多选框（带标签显示） |
 | MuDateInput | 日期/月份选择器 |
 | MuTable | 数据表格，支持多种列类型（text、check、bool、enum、date、link、tag 等） |
+| MuBigTable | 大数据量表格，支持虚拟滚动 |
 | MuList | 列表容器，支持滚动条 |
+| MuListItem | 列表项 |
+| MuListDivider | 列表分隔线 |
 | MuTree | 统一的树组件 |
 | MuTags | 标签组，支持展开/收起 |
 | MuCalendar | 月历组件 |
@@ -504,6 +597,15 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuInputGroup | 输入框分组 |
 | MuToolbar | 工具栏组件 |
 | MuSvgStripe | SVG 装饰条纹 |
+| MuBar | 通用条形容器 |
+| MuPagination | 分页组件 |
+| MuScrollBox | 可滚动容器（带自定义滚动条） |
+| MuSegmented | 分段选择器 |
+| MuFormRow | 表单行布局 |
+| MuStatusBox | 状态提示框 |
+| MuMessage | 消息通知 |
+| MuMessageBox | 消息弹框（插件式调用） |
+| MuNotifier | 通知提示（插件式调用） |
 
 ---
 

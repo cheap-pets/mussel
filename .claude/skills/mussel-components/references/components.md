@@ -535,7 +535,7 @@ const items = [
 | `modelValue` | — | — | 双向绑定值 |
 | `type` | String | `text` | 原生 input type |
 | `placeholder` | String | — | 占位文本 |
-| `clear-button` | Boolean | 全局配置 | 是否显示清除按钮 |
+| `clearable` | Boolean | 全局配置 | 是否显示清除按钮 |
 | `invalid` | Boolean | — | 校验失败样式 |
 | `readonly` / `disabled` | Boolean | — | 只读 / 禁用 |
 | `prefix` | String\|Object | — | 前置文本或按钮 |

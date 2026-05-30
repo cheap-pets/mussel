@@ -122,13 +122,12 @@ background: #fff1f0;
 |------|------|
 | `--mu-bg-normal` | 页面默认背景 |
 | `--mu-bg-strong` | 强调区域：导航栏、头部工具栏、底部工具栏 |
-| `--mu-bg-fill` | 填充背景：分段控件底色、区块内嵌容器 |
+| `--mu-bg-fill` | 填充背景：分段控件底色、区块内嵌容器、表头 |
 | `--mu-bg-stripe` | 表格斑马纹交替行 |
 | `--mu-bg-disabled` | 禁用状态控件背景 |
 | `--mu-bg-mask` | 遮罩层背景（全屏覆盖） |
 | `--mu-bg-overlay` | 弹出层、浮出面板背景 |
 
-> `--mu-bg-header` 和 `--mu-bg-footer` 在老版本中存在，4.0 已移除，统一使用 `--mu-bg-strong`。
 
 ---
 
