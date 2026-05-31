@@ -13,7 +13,7 @@
           ref="dialogEl"
           class="mu-dialog"
           v-bind="$attrs"
-          :style="[dialogSize, position]"
+          :style="[sizeStyle, position]"
           :dragging="dragging"
           @mousedown="onDragStart">
           <slot name="client">
@@ -101,7 +101,7 @@
   const headerVisible = computed(() => props.title || props.closeButton || props.maximizeButton || slots.header)
   const footerVisible = computed(() => props.buttons?.length || slots.footer)
 
-  const dialogSize = computed(() => ({
+  const sizeStyle = computed(() => ({
     width: resolveSize(props.width),
     height: resolveSize(props.height)
   }))
@@ -250,6 +250,8 @@
   })
 
   defineExpose({
-    hide
+    hide,
+    maskEl,
+    dialogEl
   })
 </script>

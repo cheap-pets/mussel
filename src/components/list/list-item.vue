@@ -8,13 +8,15 @@
 </template>
 
 <script setup>
+  import { computed } from 'vue'
+
   import './list-item.scss'
 
   defineOptions({
     name: 'MusselListItem'
   })
 
-  defineProps({
+  const props = defineProps({
     icon: String,
     label: String,
     tag: {
@@ -22,4 +24,6 @@
       default: 'div'
     }
   })
+
+  const componentTag = computed(() => props.tag === 'a' ? 'a' : 'span')
 </script>

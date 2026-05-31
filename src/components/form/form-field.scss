@@ -6,6 +6,7 @@
   align-items: center;
 
   width: 100%;
+  padding: var(--mu-base-spacing);
 
   font-size: var(--mu-font-size-normal);
 
@@ -29,6 +30,11 @@
     & > .mu-form-field__label {
       width: 100%;
     }
+  }
+
+  & > .mu-input,
+  & > .mu-input-group {
+    flex: 1 1 0;
   }
 }
 

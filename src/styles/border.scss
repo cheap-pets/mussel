@@ -39,7 +39,7 @@ $STYLES:
 
   @each $s in $STYLES {
     .border#{$dk}-#{$s} {
-      border#{$dv}-style: $s;
+      border#{$dv}-style: #{$s};
     }
   }
 }

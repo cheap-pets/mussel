@@ -26,14 +26,17 @@ description: 将使用 Mussel 3 的 Vue 项目升级到 Mussel 4 组件库。当
    - **组件标签**：`<mu-editor`、`<mu-tabs-buttons`、`<mu-tree-view`、`<mu-tree-nodes`、`<mu-box`、`<mu-h-box`、`<mu-v-box`（已移除）；`<mu-option`、`<mu-tree-node`、`<mu-dropdown-item`、`<mu-dropdown-check-item`、`<mu-dropdown-radio-item`（仍可用，推荐迁移）
    - **废弃 CSS 类**：`class="mu-box"`、`class="mu-h-box"`、`class="mu-v-box"`、`class="mu-space"`、`class="mu-divider"`、`class="mu-flex-item"`、`class="mu-bg-transparent"`、`class="mu-bg-white"`、`class="mu-bg-black"`、`class="mu-bg-x-color"`（注意：`class="mu-space"` → `class="flex-space"`，`class="mu-divider"` → `class="flex-divider"`）
    - **废弃属性（box 属性选择器）**：`layout="flex"`、`layout="grid"`、`flex="`、`margin="`、`padding="`、`padding-x="`、`padding-y="`、`margin-x="`、`margin-y="`、`margin-top="`、`margin-bottom="`、`margin-left="`、`margin-right="`、`padding-top="`、`padding-bottom="`、`padding-left="`、`padding-right="`、`border`、`border-right`、`border-left`、`border-top`、`border-bottom`、`border-x`、`border-y`、`position="`、`width="`、`height="`、`overflow="`、`align-items="`、`align-self="`、`justify-content="`、`content-center`、`flex-wrap`、`inline`、`reverse`、`collapsible`、`gap="`（当这些属性出现在非组件的 `<div>` 上，或出现在 `<mu-h-box>`/`<mu-v-box>`/`<mu-grid-box>` 的 HTML 属性上而非组件 props 时，它们依赖已移除的 CSS 属性选择器，需要迁移）
-   - **废弃属性（其他）**：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`container`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`:tab-bar-params`
+   - **废弃属性（其他）**：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`container`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`trigger-action="press"`、`:tab-bar-params`、`:messages`（Notifier 改为 `:notifications`）、`:tab-items`（TabBar 改为 `:tab-buttons`）、`dropdown-icon="dropdown"`（改为 `"dropdownExpand"`）
    - **废弃 CSS 变量**：`--mu-gray-dark`、`--mu-text-color-reversed`、`--mu-text-color-weak`、`--mu-background-normal`、`--mu-background-hover`、`--mu-background-disabled`、`--mu-primary-color-shadow`、`--mu-unit-spacing-size`、`--mu-editor-text-color`、`--mu-text-color-placeholder`
    - **废弃图标名称**：`icon="dropdown"`
-   - **废弃类名**：`class="mu-editor"`（检查 mu-editor 相关的 class）
+   - **废弃类名**：`class="mu-editor"`（检查 mu-editor 相关的 class）、`class="mu-text-ellipsis"`（改为 `text-ellipsis`）
    - **废弃事件**：`@tab-click`、`@tab-change`、`@close-button-click`、`@mask-click`
+   - **废弃插槽**：`<template #left>` / `<template #right>`（ComboBox 改为 `prefix`/`suffix` 属性）、`<template #tab-bar>`（Tabs 改为 `#tab-bar-prepend`/`#tab-bar-append`）
+   - **废弃属性（子组件）**：`title`（TabButton 移除）、`divider`（ListDivider 移除）、`value`（ListItem 移除）
    - **缺少 mu-box class**：`<mu-form-field` 或 `<mu-form` 没有 `class="mu-box"`
    - **非 box 组件上的 width 属性**：除 box/form/dialog/tabs 外的组件使用了 `width="100%"`
    - **Dialog CSS 选择器**：`> .mu-dialog` 子选择器模式（Mussel 3 属性绑在 mask 层，Mussel 4 改为绑在 dialog 层，需调整 CSS 选择器）
+   - **Dialog 默认 slot 内边距丢失**：Mussel 3 中 `.mu-dialog_center > *` 自动给默认 slot 内容加 `padding: 16px 24px`，Mussel 4 的 `.mu-dialog_body` 无 padding。需检查所有 `<mu-dialog>` 默认 slot，给根元素添加 `padding`（原子类 `p-2x` 或内联样式 `padding: 16px 24px`）
 4. 同时检查 `package.json` 中的 mussel 依赖版本，以及全局插件配置（如 `app.use(pluginMussel, {...})`）。
 5. 检查所有 CSS/SCSS 文件中对 mussel 变量的引用。
 

@@ -146,6 +146,9 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 | `class="mu-box"` | _(移除该 class)_ | |
 | `width="100%"` | `style="width: 100%;"` | |
 | `label`（属性） | `prefix` / `suffix` | |
+| `dropdown-align` | `dropdown-position` | 同 MuDropdown |
+| `<template #left>` | `prefix` 属性 | `#left` 插槽已移除，用 `prefix` 属性代替 |
+| `<template #right>` | `suffix` 属性 | `#right` 插槽已移除，用 `suffix` 属性代替 |
 
 ### MuDropdown
 
@@ -168,12 +171,61 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
 | `trigger-action="click"` | `dropdown-trigger="click"` | |
+| `trigger-action="press"` | _(已移除)_ | `'press'` 触发模式不再支持，仅 `'hover'` 和 `'click'` |
+| `dropdown-icon="dropdown"` | `dropdown-icon="dropdownExpand"` | 默认图标名变更 |
 
 ### MuTabs
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
 | `:tab-bar-params` | `tab-bar-attrs` | |
+| `<template #tab-bar>` | _(已移除)_ | 无法再整体替换 tab-bar，改用 `#tab-bar-prepend` / `#tab-bar-append` 插槽 |
+
+### MuTabBar
+
+| Mussel 3 | Mussel 4 | 备注 |
+|----------|----------|------|
+| `:tab-items` | `:tab-buttons` | 属性重命名 |
+
+### MuTabButton
+
+| Mussel 3 | Mussel 4 | 备注 |
+|----------|----------|------|
+| `title` | _(已移除)_ | |
+
+### MuNotifier
+
+| Mussel 3 | Mussel 4 | 备注 |
+|----------|----------|------|
+| `:messages` | `:notifications` | 属性重命名 |
+
+### MuMessageBox
+
+Mussel 4 中 `callback` 参数类型变更：
+
+```js
+// Mussel 3：callback 接收 button 对象
+callback (btn) {
+  console.log(btn?.raw || btn) // 完整的按钮对象
+}
+
+// Mussel 4：callback 接收字符串（按钮名称）
+callback (trigger) {
+  console.log(trigger) // 字符串，如 'OK'、'CANCEL' 或自定义按钮名
+}
+```
+
+### MuListItem
+
+| Mussel 3 | Mussel 4 | 备注 |
+|----------|----------|------|
+| `value` | _(已移除)_ | |
+
+### MuListDivider
+
+| Mussel 3 | Mussel 4 | 备注 |
+|----------|----------|------|
+| `divider`（布尔属性） | _(已移除)_ | |
 
 ### MuForm / MuFormField
 
@@ -251,6 +303,8 @@ Mussel 4 新增 `buttonStyle` 属性：`'normal' | 'outline' | 'text' | 'link'`�
 | MuTabs | `@tab-click` | `@button-click` |
 | MuTabs | `@tab-change` | `@update:active-tab` |
 | MuComboBox | `@update:model-value` | `@update:model-value`（相同，但需验证用法） |
+
+> **MuTabs 事件 payload 变更**：`@tab-click` 的 payload 是完整的 tab 对象，`@button-click` 的 payload 是 tab `name` 字符串。如果回调中使用了 tab 对象的其他字段（如 `caption`、`icon`），需改用 `name` 自行查找。
 
 ### MuDialog 事件变更
 
@@ -367,6 +421,15 @@ Mussel 4 新增：
 | _(无)_ | `.mu-text-color-strong`（新增） |
 | _(无)_ | `.mu-text-color-subtle`（新增） |
 | _(无)_ | `.mu-text-color-soft`（新增） |
+
+### 文本省略类重命名
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `class="mu-text-ellipsis"` | `class="text-ellipsis"` |
+| `.mu-text-ellipsis`（CSS 选择器） | `.text-ellipsis` |
+
+此规则适用于 Vue 模板中的 class 属性和 CSS/SCSS 中的选择器。
 
 ### 新增原子类（Mussel 4）
 
@@ -486,6 +549,149 @@ DOM 结构对比：
 
 同理，JS 中通过组件 `$el` 获取 DOM 引用时，`$el` 从 `.mu-modal-mask` 变为 `.mu-dialog`，如有依赖需相应调整。
 
+#### CSS 选择器迁移完整示例
+
+**示例 1：简单尺寸设置（SCSS 嵌套写法）**
+
+```scss
+/* 升级前（Mussel 3）：通过子选择器定位 dialog */
+.my-dialog {
+  & > .mu-dialog {
+    width: 600px;
+    height: 400px;
+  }
+}
+
+/* 升级后（Mussel 4）：class 直接在 dialog 上，样式直接写 */
+.my-dialog {
+  width: 600px;
+  height: 400px;
+}
+```
+
+**示例 2：带内部元素样式**
+
+```scss
+/* 升级前（Mussel 3） */
+.my-dialog {
+  & > .mu-dialog {
+    width: 800px;
+    height: 90%;
+
+    & > .mu-dialog-body {
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    & .mu-dialog_header, .mu-dialog_footer {
+      padding: 16px;
+    }
+  }
+}
+
+/* 升级后（Mussel 4）：去掉 > .mu-dialog 中间层，子元素改为平级选择器 */
+.my-dialog {
+  width: 800px;
+  height: 90%;
+
+  .mu-dialog-body {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mu-dialog_header, .mu-dialog_footer {
+    padding: 16px;
+  }
+}
+```
+
+**示例 3：`mu-dialog_center` 包裹层移除**
+
+Mussel 4 移除了 `.mu-dialog_center` 包裹层，`header`/`body`/`footer` 直接在 `.mu-dialog` 内。
+
+```scss
+/* 升级前（Mussel 3）：有 mu-dialog_center 中间层 */
+.dialog-message-center {
+  & > .mu-dialog {
+    width: 770px;
+
+    & > .mu-dialog_center {
+      width: 100%;
+
+      & .dialog-message-center_body {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    & .mu-dialog_header, .mu-dialog_footer {
+      padding: 16px;
+    }
+  }
+}
+
+/* 升级后（Mussel 4）：去掉 > .mu-dialog 和 > .mu-dialog_center 两层 */
+.dialog-message-center {
+  width: 770px;
+
+  .dialog-message-center_body {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mu-dialog_header, .mu-dialog_footer {
+    padding: 16px;
+  }
+}
+```
+
+**示例 4：扁平写法（非 SCSS 嵌套）**
+
+```css
+/* 升级前 */
+.my-dialog > .mu-dialog {
+  width: 400px;
+}
+.my-dialog .mu-dialog-body {
+  min-height: 400px;
+}
+
+/* 升级后 */
+.my-dialog {
+  width: 400px;
+}
+.my-dialog .mu-dialog-body {
+  min-height: 400px;
+}
+```
+
+**示例 5：JS 中获取 Dialog DOM 元素**
+
+> ⚠️ 此项涉及 JS 逻辑变更（事件监听器绑定/解绑等），**无法安全自动升级**，需人工逐个审核。
+
+Mussel 4 中 MuDialog 组件通过 `defineExpose` 暴露 `dialogEl`（`shallowRef`）和 `maskEl`（`shallowRef`），分别对应 `.mu-dialog` 和 `.mu-modal-mask` DOM 元素。通过 template ref 访问时 Vue 自动解包，无需 `.value`。不应再使用 `$el`。
+
+```js
+// 升级前：通过 $el 和 querySelector 定位 mask / dialog
+const maskEl = dialogRef.value.$el                              // mask 层
+const dialogEl = dialogRef.value.$el.querySelector('.mu-dialog') // dialog 层
+
+// 升级后：通过 defineExpose 暴露的属性直接获取
+const maskEl = dialogRef.value.maskEl    // mask 层（.mu-modal-mask）
+const dialogEl = dialogRef.value.dialogEl // dialog 层（.mu-dialog）
+```
+
+迁移要点：
+- `ref.value.$el` → 不再使用，改用 `ref.value.maskEl` 或 `ref.value.dialogEl`
+- `ref.value.$el.querySelector('.mu-dialog')` → `ref.value.dialogEl`
+- `dialogEl` / `maskEl` 均为 `shallowRef`，通过 template ref 访问时 Vue 自动解包，直接用 `ref.value.dialogEl` 即可拿到 DOM 元素
+- 在 mask 层监听事件（如遮罩点击）→ 用 `ref.value.maskEl`
+- 在 dialog 层操作（focus、paste 等）→ 用 `ref.value.dialogEl`
+
 ### MuDialog Body
 
 ```html
@@ -499,6 +705,41 @@ DOM 结构对比：
   <div style="padding: 16px;">内容</div>
 </mu-dialog>
 ```
+
+### MuDialog 默认 slot 内边距丢失
+
+Mussel 3 中，`.mu-dialog_center > *` 会给所有子元素（包括 header、body、footer）自动添加 `padding: 16px 24px`。因此默认 slot 中的内容天然具有内边距，无需手动设置。
+
+Mussel 4 中，`.mu-dialog_body` 仅有 `flex: auto`，**没有 padding**。`--mu-dialog-padding` 变量（默认值 `12px`）仅作用于 header 和 footer。默认 slot 内容会紧贴边缘，导致视觉上的内容挤压。
+
+**检测方法**：检查所有 `<mu-dialog>` 的默认 slot 内容，如果 Mussel 3 下视觉效果正常（内容与边缘有间距），升级后内容会贴边。
+
+**解决方案**：在默认 slot 的根元素上添加内边距，推荐使用原子类或内联样式：
+
+```html
+<!-- 方案 A：原子类（推荐，16px 对应 p-2x 的近似值） -->
+<mu-dialog v-model:visible="visible">
+  <div class="p-2x">
+    内容
+  </div>
+</mu-dialog>
+
+<!-- 方案 B：内联样式（精确匹配 Mussel 3 的 16px 24px） -->
+<mu-dialog v-model:visible="visible">
+  <div style="padding: 16px 24px;">
+    内容
+  </div>
+</mu-dialog>
+
+<!-- 方案 C：如果默认 slot 已有根元素，直接在该元素上加 padding -->
+<mu-dialog v-model:visible="visible">
+  <div ref="innerPanel" class="inner-panel" style="padding: 16px 24px;">
+    内容
+  </div>
+</mu-dialog>
+```
+
+> **注意**：如果默认 slot 中的内容本身已有占满宽度的子元素（如表格、表单行），通常只需顶部和底部 padding，可改为 `padding: 16px 0` 或 `class="py-2x"`，让内容自然撑满宽度。
 
 ### MuDialog 内部结构变更
 
@@ -556,6 +797,10 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 <mu-multi-select :options="options" v-model="values" clearable />
 ```
 
+### MuCheck / MuRadio 根元素变更
+
+Mussel 3 中，`<mu-check>` 和 `<mu-radio>` 在没有 `label` 时渲染裸 `<input>` 作为根元素。Mussel 4 始终渲染 `<label>` 作为根元素。如果有 CSS 选择器依赖根元素是 `<input>`，需相应调整。
+
 ### MuTree（替代 TreeView/TreeNode/TreeNodes）
 
 ```html
@@ -603,6 +848,8 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuSegmented | 分段选择器 |
 | MuFormRow | 表单行布局 |
 | MuStatusBox | 状态提示框 |
+| MuCheckGroup | 复选框组（数据驱动，`options` 数组 + `v-model`） |
+| MuRadioGroup | 单选框组（数据驱动，`options` 数组 + `v-model`） |
 | MuMessage | 消息通知 |
 | MuMessageBox | 消息弹框（插件式调用） |
 | MuNotifier | 通知提示（插件式调用） |

@@ -7,13 +7,15 @@
     <span v-if="label" class="mu-form-field__label text-ellipsis" :style="labelStyle">
       {{ label }}
     </span>
-    <div class="mu-form-field__input">
-      <slot>
-        <component :is="control.is" v-if="control.vModel" v-bind="control.attrs" v-model="form.model[prop]" />
-        <component :is="control.is" v-else v-bind="control.attrs" />
-      </slot>
-      <span v-if="fieldError" class="mu-form-field__error text-ellipsis">{{ fieldError }}</span>
-    </div>
+    <slot>
+      <div class="mu-form-field__input">
+        <slot name="input">
+          <component :is="control.is" v-if="control.vModel" v-bind="control.attrs" v-model="form.model[prop]" />
+          <component :is="control.is" v-else v-bind="control.attrs" />
+        </slot>
+        <span v-if="fieldError" class="mu-form-field__error text-ellipsis">{{ fieldError }}</span>
+      </div>
+    </slot>
     <span v-if="suffix" class="mu-form-field__suffix">{{ suffix }}</span>
   </div>
 </template>
@@ -88,7 +90,7 @@
   )
 
   const fieldError = computed(() =>
-    props.error || form.errors[props.prop]
+    props.error || form.errors?.[props.prop]
   )
 
   provide('formField', reactive({

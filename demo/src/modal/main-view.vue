@@ -49,6 +49,7 @@
 
     <!-- Advanced Dialog -->
     <mu-dialog
+      ref="myDialog"
       id="advancedDialog"
       v-model:visible="advancedDialogVisible"
       maximize-button
@@ -83,6 +84,7 @@
         </div>
       </div>
       <template #footer-prepend>
+        <mu-button caption="shit" @click="showEl" />
         <mu-input placeholder="where's your money?" />
       </template>
     </mu-dialog>
@@ -114,7 +116,13 @@
   const maskVisible = ref(true)
   const borderRadius = ref(true)
 
+  const myDialog = ref()
+
   const { proxy } = getCurrentInstance()
+
+  function showEl () {
+    console.log(myDialog.value.$el)
+  }
 
   function openAdvancedDialog () {
     advancedDialogVisible.value = true
