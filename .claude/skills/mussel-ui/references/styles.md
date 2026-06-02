@@ -1,195 +1,210 @@
-# MUSSEL 4 - 原子样式
+# MUSSEL 4 — 样式变量与原子类
 
+> **使用原则**
+> - 禁止硬编码颜色值（如 `#fff`、`rgb(0,0,0)`），一律使用 CSS 变量
+> - 禁止使用 `--mu-gray-0` ~ `--mu-gray-19` 等原始灰阶作为文字颜色，应使用文本颜色变量
+> - 阴影、层级同理，直接使用语义变量，不手写数值
+> - 间距只使用 `{n}x` 系列（1x=8px，最大 4x=32px），禁止写 `style="margin: 12px"`
+> - 优先使用原子类完成布局，避免在组件内写一次性 CSS
 
+---
 
-## 1 - 变量
+## 1 - CSS 变量（Tokens）
 
+### 1.1 基本色
 
+用于图标着色、装饰性元素，**不直接用于文本或背景**，应优先使用语义扩展色。
 
-### 1.1 基本颜色
+| 变量 | 含义 |
+|------|------|
+| `--mu-red` | 红色 |
+| `--mu-pink` | 粉色 |
+| `--mu-grape` | 葡萄紫 |
+| `--mu-violet` | 紫罗兰 |
+| `--mu-indigo` | 靛蓝 |
+| `--mu-blue` | 蓝色 |
+| `--mu-cyan` | 青绿色 |
+| `--mu-teal` | 蓝绿色 |
+| `--mu-green` | 绿色 |
+| `--mu-lime` | 青柠色 |
+| `--mu-yellow` | 黄色 |
+| `--mu-orange` | 橙色 |
+| `--mu-gray` | 中性灰（由主色计算） |
+| `--mu-gray-0` ~ `--mu-gray-19` | 由浅到深的 20 级灰阶 |
 
-| 变量名称         | 说明                           |
-| ---------------- | ------------------------------ |
-| --mu-red         | 红色                           |
-| --mu-pink        | 粉色                           |
-| --mu-grape       | 葡萄紫                         |
-| --mu-violet      | 紫罗兰                         |
-| --mu-indigo      | 靛蓝                           |
-| --mu-blue        | 蓝色                           |
-| --mu-cyan        | 青绿色                         |
-| --mu-teal        | 蓝绿色                         |
-| --mu-green       | 绿色                           |
-| --mu-lime        | 青柠色                         |
-| --mu-yellow      | 黄色                           |
-| --mu-orange      | 橙色                           |
-| --mu-gray        | 灰色，默认是由主色计算的中性色 |
-| --mu-gray-(0~19) | 由浅到深的灰色，共 20 个       |
+---
 
+### 1.2 语义扩展色（优先使用）
 
+日常开发中最常用的颜色变量。带数字后缀的变量为色阶（0 最浅，9 最深）。
 
-### 1.2 扩展颜色
+| 变量 | 默认映射 | 用途 |
+|------|---------|------|
+| `--mu-primary-color` | blue | 主操作色，按钮、链接、选中态 |
+| `--mu-primary-color-0` ~ `--mu-primary-color-9` | — | 主色色阶 |
+| `--mu-secondary-color` | — | 次要操作色 |
+| `--mu-secondary-color-0` ~ `--mu-secondary-color-9` | — | 次要色色阶 |
+| `--mu-success-color` | green | 成功、完成状态 |
+| `--mu-success-color-0` ~ `--mu-success-color-9` | — | 成功色色阶 |
+| `--mu-warning-color` | orange | 警告、待确认状态 |
+| `--mu-warning-color-0` ~ `--mu-warning-color-9` | — | 警告色色阶 |
+| `--mu-danger-color` | red | 错误、危险、删除操作 |
+| `--mu-danger-color-0` ~ `--mu-danger-color-9` | — | 危险色色阶 |
 
-| 变量名称                   | 说明                      |
-| -------------------------- | ------------------------- |
-| --mu-primary-color         | 主色，默认取 blue         |
-| --mu-primary-color-(0~9)   | 由浅到深的主色，共 10 个  |
-| --mu-secondary-color       | 次要色                    |
-| --mu-secondary-color-(0~9) | 由浅到深的次要色，共 10 个 |
-| --mu-success-color         | 成功信息色，默认取 green  |
-| --mu-success-color-(0~9)   | 由浅到深的成功色，共 10 个 |
-| --mu-warning-color         | 警告色，默认取 orange     |
-| --mu-warning-color-(0~9)   | 由浅到深的警告色，共 10 个 |
-| --mu-danger-color          | 危险色，默认取 red        |
-| --mu-danger-color-(0~9)    | 由浅到深的危险色，共 10 个 |
+---
 
+### 1.3 透明色变体（`-translucent`）
 
+所有基本色和语义色均有 10% 透明度的 `-translucent` 变体，适用于 hover 背景、标签底色等场景。
 
-### 1.3 透明色
+| 变量 | 用途示例 |
+|------|---------|
+| `--mu-primary-translucent` | 主色按钮 hover 背景 |
+| `--mu-danger-translucent` | 危险操作行高亮背景 |
+| `--mu-success-translucent` | 成功状态标签底色 |
+| `--mu-warning-translucent` | 警告提示背景 |
+| `--mu-gray-translucent` | 通用 hover 背景 |
+| `--mu-red-translucent` ~ `--mu-orange-translucent` | 各基本色透明变体 |
 
-基本色和扩展色均提供 `-translucent` 变体，为对应颜色的 10% 透明度版本。
+---
 
-| 变量名称                 | 说明         |
-| ------------------------ | ------------ |
-| --mu-gray-translucent    | 灰色透明变体 |
-| --mu-red-translucent     | 红色透明变体 |
-| --mu-pink-translucent    | 粉色透明变体 |
-| --mu-grape-translucent   | 葡萄紫透明变体 |
-| --mu-violet-translucent  | 紫罗兰透明变体 |
-| --mu-indigo-translucent  | 靛蓝透明变体 |
-| --mu-blue-translucent    | 蓝色透明变体 |
-| --mu-cyan-translucent    | 青绿色透明变体 |
-| --mu-teal-translucent    | 蓝绿色透明变体 |
-| --mu-green-translucent   | 绿色透明变体 |
-| --mu-lime-translucent    | 青柠色透明变体 |
-| --mu-yellow-translucent  | 黄色透明变体 |
-| --mu-orange-translucent  | 橙色透明变体 |
-| --mu-primary-translucent   | 主色透明变体   |
-| --mu-secondary-translucent | 次要色透明变体 |
-| --mu-success-translucent   | 成功色透明变体 |
-| --mu-warning-translucent   | 警告色透明变体 |
-| --mu-danger-translucent    | 危险色透明变体 |
+### 1.4 极浅色变体（`-faint`）
 
+扩展语义色的极浅版本，适用于状态 Badge、Tag 等需要低饱和度底色的场景。
 
+| 变量 | 用途示例 |
+|------|---------|
+| `--mu-primary-faint` | 主色标签底色 |
+| `--mu-secondary-faint` | 次要标签底色 |
+| `--mu-success-faint` | 成功状态背景块 |
+| `--mu-warning-faint` | 警告状态背景块 |
+| `--mu-danger-faint` | 错误状态背景块 |
 
-### 1.4 浅色
+---
 
-扩展色提供 `-faint` 极浅版本。
+### 1.5 文本颜色（由深到浅）
 
-| 变量名称               | 说明         |
-| ---------------------- | ------------ |
-| --mu-primary-faint     | 主色极浅版本   |
-| --mu-secondary-faint   | 次要色极浅版本 |
-| --mu-success-faint     | 成功色极浅版本 |
-| --mu-warning-faint     | 警告色极浅版本 |
-| --mu-danger-faint      | 危险色极浅版本 |
+| 变量 | 原子类 | 适用场景 |
+|------|--------|---------|
+| `--mu-text-color-strong` | `.text-strong` | 用户输入内容、文章正文 |
+| `--mu-text-color-normal` | `.text-normal` | 常规名称、普通标签 |
+| `--mu-text-color-subtle` | `.text-subtle` | 次要信息、描述文字 |
+| `--mu-text-color-soft` | `.text-soft` | 副标题、提示文字 |
+| `--mu-text-color-muted` | `.text-muted` | 禁用状态文字 |
 
+功能色文本：`.text-primary` / `.text-secondary` / `.text-success` / `.text-warning` / `.text-danger`
 
-
-### 1.5 文本颜色
-
-| 变量名称                | 说明（由深到浅排列）                     |
-| ----------------------- | ---------------------------------------- |
-| --mu-text-color-strong  | 清晰，常用于用户输入文本或者文章正文显示 |
-| --mu-text-color-normal  | 常规，常用于各类名称显示                 |
-| --mu-text-color-subtle  | 次要，用于次级文字信息显示               |
-| --mu-text-color-soft    | 柔和，常用于副标题或提示类文字的显示     |
-| --mu-text-color-muted   | 淡雅，常用于被 disabled 的组件文字       |
-
-
+---
 
 ### 1.6 背景颜色
 
-| 变量名称        | 说明                                                       |
-| --------------- | ---------------------------------------------------------- |
-| --mu-bg-normal  | 默认背景                                                   |
-| --mu-bg-strong  | 强调区域背景，比如用作导航区域，或者头、尾的工具栏的背景等 |
-| --mu-bg-fill    | 填充背景，如分段控件底色、区块内嵌容器、表头等                   |
-| --mu-bg-stripe  | 条纹行背景，用于表格交替行等                               |
-| --mu-bg-disabled| 禁用组件的背景                                             |
-| --mu-bg-mask    | 遮罩层默认背景                                             |
-| --mu-bg-overlay | 弹出层、覆盖物的默认背景                                   |
+| 变量 | 用途 |
+|------|------|
+| `--mu-bg-normal` | 页面默认背景 |
+| `--mu-bg-strong` | 强调区域：导航栏、头部工具栏、底部工具栏 |
+| `--mu-bg-fill` | 填充背景：分段控件底色、区块内嵌容器、表头 |
+| `--mu-bg-stripe` | 表格斑马纹交替行 |
+| `--mu-bg-disabled` | 禁用状态控件背景 |
+| `--mu-bg-mask` | 遮罩层背景（全屏覆盖） |
+| `--mu-bg-overlay` | 弹出层、浮出面板背景 |
 
-
+---
 
 ### 1.7 边框颜色
 
-| 变量名称                 | 说明                         |
-| ------------------------ | ---------------------------- |
-| --mu-border-color-strong | 较深的边框颜色               |
-| --mu-border-color-normal | 正常的边框颜色               |
-| --mu-border-color-soft   | 较浅的边框颜色，常用作分隔线 |
+| 变量 | 原子类 | 用途 |
+|------|--------|------|
+| `--mu-border-color-strong` | `.border-strong` | 强调性分隔、输入框聚焦边框 |
+| `--mu-border-color-normal` | （默认）| 常规组件边框 |
+| `--mu-border-color-soft` | `.border-soft` | 轻量分隔线、卡片边框 |
 
-
+---
 
 ### 1.8 边框弧度
 
-| 变量名称                  | 说明                               |
-| ------------------------- | ---------------------------------- |
-| --mu-common-border-radius | 一般组件边框弧度                   |
-| --mu-window-border-radius | 窗口边框弧度，也可用于各类浮出面板 |
+| 变量 | 用途 |
+|------|------|
+| `--mu-common-border-radius` | 输入框、按钮、标签等常规组件 |
+| `--mu-window-border-radius` | 弹窗、抽屉、浮出面板 |
 
+---
 
+### 1.9 字体
 
-### 1.9 文字尺寸
+| 变量 | 默认值 | 用途 |
+|------|--------|------|
+| `--mu-font-sans` | — | 无衬线字体族，正文 |
+| `--mu-font-mono` | — | 等宽字体族，代码块 |
+| `--mu-font-size-normal` | `14px` | 组件标题、正文主字号 |
+| `--mu-font-size-small` | `12px` | 小号文字 |
+| `--mu-font-size-large` | `16px` | 大号文字 |
 
-| 变量名称                | 说明                                                |
-| ----------------------- | --------------------------------------------------- |
-| --mu-font-sans          | 无衬线字体族                                        |
-| --mu-font-mono          | 等宽字体族                                          |
-| --mu-font-size-normal   | 普通文字尺寸，用于大部分组件的标题文字，默认值 14px |
-| --mu-font-size-small    | 小号文字尺寸，默认值 12px                           |
-| --mu-font-size-large    | 大号文字尺寸，默认值 16px                           |
+> ⚠️ `--mu-common-font-size` 已废弃，4.0 统一为 `--mu-font-size-normal`。
 
-> 老版本使用 `--mu-common-font-size`，4.0 已统一为 `--mu-font-size-normal`。
-
-
+---
 
 ### 1.10 间距
 
-| 变量名称             | 说明                       |
-| -------------------- | -------------------------- |
-| --mu-base-spacing    | 布局间距基准值，默认值 8px |
-| --mu-content-spacing | 行内元素间距。默认值 5px   |
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `--mu-base-spacing` | `8px` | 布局间距基准，所有 `{n}x` 类均以此为倍数 |
+| `--mu-content-spacing` | `5px` | 行内元素间距，图标与文字之间等 |
 
+间距倍数对照：
 
+| 倍数 | 像素值 | 典型用途 |
+|------|--------|---------|
+| `1x` | 8px | 紧凑元素内边距 |
+| `2x` | 16px | 常规卡片内边距 |
+| `3x` | 24px | 区块间距 |
+| `4x` | 32px | 大区域分隔 |
 
-### 1.11 阴影
+---
 
-| 变量名称          | 说明（阴影由浅到深排列）           |
-| ----------------- | ---------------------------------- |
-| --mu-shadow-focus | 焦点输入元素阴影                   |
-| --mu-shadow-float | 突出元素阴影                       |
-| --mu-shadow-popup | 弹出元素阴影，如下拉框、消息提示等 |
-| --mu-shadow-layer | 浮动层元素阴影，如抽屉面板等       |
-| --mu-shadow-modal | 模态窗口阴影                       |
+### 1.11 阴影（由浅到深）
 
+| 变量 | 适用元素 |
+|------|---------|
+| `--mu-shadow-focus` | 聚焦的输入控件 |
+| `--mu-shadow-float` | 悬浮突出的卡片、按钮 |
+| `--mu-shadow-popup` | 下拉菜单、Tooltip、消息提示 |
+| `--mu-shadow-layer` | 抽屉面板、侧边浮层 |
+| `--mu-shadow-modal` | 模态对话框 |
 
+---
 
-### 1.12 Z-INDEX
+### 1.12 Z-index（层级由低到高）
 
-| 变量名称           | 说明                                 |
-| ------------------ | ------------------------------------ |
-| --mu-z-index-float | 突出元素层级                         |
-| --mu-z-index-layer | 浮动层层级                           |
-| --mu-z-index-modal | 模态窗口层级                         |
-| --mu-z-index-popup | 弹出元素层级                         |
-| --mu-z-index-ontop | 置顶层级，如消息提示、全局等待动画等 |
+| 变量 | 适用场景 |
+|------|---------|
+| `--mu-z-index-float` | 突出卡片、悬浮按钮 |
+| `--mu-z-index-layer` | 抽屉、侧边浮层 |
+| `--mu-z-index-modal` | 模态对话框 |
+| `--mu-z-index-popup` | 下拉框、Tooltip |
+| `--mu-z-index-ontop` | 全局消息提示、全屏加载动画（最高层） |
 
+> **层级使用规则**：不允许手写 `z-index` 数值，一律使用以上变量。
 
+---
 
 ### 1.13 控件尺寸
 
-| 变量名称            | 说明         | 默认值 |
-| ------------------- | ------------ | ------ |
-| --mu-control-height-normal | 默认控件高度 | 32px   |
-| --mu-control-height-small | 小尺寸控件高度 | 24px |
-| --mu-control-height-large | 大尺寸控件高度 | 40px |
+| 变量 | 默认值 | 用途 |
+|------|--------|------|
+| `--mu-control-height-normal` | `32px` | 默认控件高度 |
+| `--mu-control-height-small` | `24px` | 小尺寸控件 |
+| `--mu-control-height-large` | `40px` | 大尺寸控件 |
 
 > 老版本使用 `--mu-input-size`，4.0 已统一为 `--mu-control-height-*`。
 
 
 
 ## 2 - 原子类
+
+> **使用原则**
+> - 优先使用原子类完成布局，避免在组件内写一次性 CSS
+> - 间距只使用 `{n}x` 系列（1x=8px，最大 4x=32px），禁止写 `style="margin: 12px"`
+> - `gap-{n}x` 同样基于 `--mu-base-spacing` 的倍数
 
 ### 2.1 定位与布局
 
@@ -341,6 +356,26 @@
   <mu-button>B</mu-button>
   <div class="flex-break" />           <!-- 强制换行 -->
   <mu-button>C</mu-button>
+</div>
+```
+
+**Flex 常用组合：**
+
+```html
+<!-- 水平垂直居中 -->
+<div class="flex items-center justify-center">...</div>
+
+<!-- 水平两端对齐，垂直居中（工具栏常用） -->
+<div class="flex items-center justify-between">
+  <span>标题</span>
+  <button>操作</button>
+</div>
+
+<!-- 垂直列布局，子项均分 -->
+<div class="flex flex-col flex-1">
+  <div class="flex-none">固定头部</div>
+  <div class="flex-1 overflow-auto">可滚动内容区</div>
+  <div class="flex-none">固定底部</div>
 </div>
 ```
 
@@ -532,3 +567,57 @@ white-space: pre-line;
 | 类名       | 说明                     |
 | ---------- | ------------------------ |
 | .mu-label  | 固定样式的表单标签（灰色 500、加粗、单行省略、最小宽度 20px） |
+
+
+
+## 3 - 常用布局模式
+
+### 页面框架（Header + Sidebar + Content）
+
+```html
+<div class="flex flex-col" style="height: 100vh">
+  <header class="flex-none flex items-center px-2x bg-strong">
+    页头
+  </header>
+  <div class="flex flex-1 overflow-hidden">
+    <aside class="flex-none overflow-auto bg-strong" style="width: 240px">
+      侧边栏
+    </aside>
+    <main class="flex-1 overflow-auto p-2x">
+      内容区
+    </main>
+  </div>
+</div>
+```
+
+### 卡片列表（均匀间距）
+
+```html
+<div class="flex flex-col gap-2x">
+  <div class="border border-soft p-2x">卡片 1</div>
+  <div class="border border-soft p-2x">卡片 2</div>
+</div>
+```
+
+### 工具栏（左内容 + 右操作）
+
+```html
+<div class="flex items-center gap-1x px-2x py-1x border-b border-soft">
+  <span class="text-normal">数据列表</span>
+  <span class="text-soft ml-2x">共 128 条</span>
+  <div class="ml-auto flex items-center gap-1x">
+    <button>筛选</button>
+    <button>导出</button>
+  </div>
+</div>
+```
+
+### 居中表单区域
+
+```html
+<div class="flex flex-1 items-center justify-center p-4x">
+  <div class="flex flex-col gap-2x" style="width: 400px">
+    <!-- 表单内容 -->
+  </div>
+</div>
+```

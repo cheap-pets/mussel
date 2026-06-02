@@ -1,21 +1,184 @@
-# Mussel 3 → Mussel 4 迁移规则
+# Mussel 3 → Mussel 4 升级指南
 
-所有已知 API 变更的完整参考。升级过程中以此文件为权威依据。
+本文件包含**升级流程**和**迁移规则**两部分。
+进入升级任务时必须先读顶部「升级流程」，再按需查「迁移规则」。
 
 ---
 
 ## 目录
 
-1. [组件替换](#1-组件替换)
-2. [属性重命名](#2-属性重命名)
-3. [事件重命名](#3-事件重命名)
-4. [CSS 变量重命名](#4-css-变量重命名)
-5. [CSS 类变更](#5-css-类变更)
-6. [图标变更](#6-图标变更)
-7. [全局配置变更](#7-全局配置变更)
-8. [结构变更](#8-结构变更)
-9. [新增组件](#9-新增组件)
-10. [Box 布局系统迁移](#10-box-布局系统迁移)
+- [升级流程](#升级流程)
+  - [重要约束](#重要约束)
+  - [阶段一：分析](#阶段一分析)
+  - [阶段二：计划](#阶段二计划)
+  - [阶段三：执行](#阶段三执行)
+- [迁移规则](#迁移规则)
+  1. [组件替换](#1-组件替换)
+  2. [属性重命名](#2-属性重命名)
+  3. [事件重命名](#3-事件重命名)
+  4. [CSS 变量重命名](#4-css-变量重命名)
+  5. [CSS 类变更](#5-css-类变更)
+  6. [图标变更](#6-图标变更)
+  7. [全局配置变更](#7-全局配置变更)
+  8. [结构变更](#8-结构变更)
+  9. [新增组件](#9-新增组件)
+  10. [Box 布局系统迁移](#10-box-布局系统迁移)
+
+---
+
+## 升级流程
+
+三阶段：**分析** → **计划** → **执行**。
+
+### 重要约束
+
+- **升级前必须确保当前代码已 commit 或处于独立分支**，以便随时回退。若用户尚未 commit，先提醒用户执行 `git add -A && git commit` 或创建新分支。
+- **无法安全自动升级**的内容（上下文模糊、业务逻辑耦合复杂、规则未覆盖）只在计划文档中标注，**不修改代码**，由开发者手动处理。
+- 每次修改都记入升级跟踪文档。
+- 修改前必须先读文件，绝不猜测。
+
+### 阶段一：分析
+
+1. 读本文件「迁移规则」部分，加载全部规则。
+2. 定位项目根目录（`package.json`、`vite.config.*`）。
+3. 用 Grep/Glob 搜索**所有 Mussel 3 模式**，分类（详见下方「迁移规则」）：
+   - 组件标签（已移除：`<mu-editor>`、`<mu-tabs-buttons>`、`<mu-tree-view>`、`<mu-tree-nodes>`、`<mu-box>`、`<mu-h-box>`、`<mu-v-box>`；推荐迁移：`<mu-option>`、`<mu-tree-node>`、`<mu-dropdown-item>` 等）
+   - 废弃 CSS 类（`mu-box`、`mu-h-box`、`mu-v-box`、`mu-space`→`flex-space`、`mu-divider`→`flex-divider`、`mu-flex-item`、`mu-bg-transparent`、`mu-bg-white`、`mu-bg-black`、`mu-bg-x-color`、`mu-editor`、`mu-text-ellipsis`→`text-ellipsis`）
+   - 废弃 box 属性选择器（`layout="flex"`、`flex="..."`、`margin="..."`、`padding="..."`、`padding-x/y`、`margin-x/y`、`margin-top/bottom/left/right`、`padding-top/bottom/left/right`、`border`/`border-right` 等、`position="..."`、`width="..."`、`height="..."`、`overflow="..."`、`align-items="..."`、`align-self="..."`、`justify-content="..."`、`content-center`、`flex-wrap`、`inline`、`reverse`、`collapsible`、`gap="..."`）
+   - 废弃属性（其他）：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`container`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
+   - 废弃 CSS 变量：`--mu-gray-dark`、`--mu-text-color-reversed`、`--mu-text-color-weak`、`--mu-background-normal`、`--mu-background-hover`、`--mu-background-disabled`、`--mu-primary-color-shadow`、`--mu-unit-spacing-size`、`--mu-editor-text-color`、`--mu-text-color-placeholder`
+   - 废弃图标：`icon="dropdown"`
+   - 废弃事件：`@tab-click`、`@tab-change`、`@close-button-click`、`@mask-click`
+   - 废弃插槽：`<template #left>`/`#right`（ComboBox→`prefix`/`suffix` 属性）、`<template #tab-bar>`（Tabs→`#tab-bar-prepend`/`#tab-bar-append`）
+   - 废弃子组件属性：`title`（TabButton）、`divider`（ListDivider）、`value`（ListItem）
+   - 缺少 `mu-box` class 的 `<mu-form-field>`/`<mu-form>`
+   - 非 box 组件上的 `width="100%"`
+   - Dialog CSS 选择器 `> .mu-dialog`（Mussel 4 改为绑在 dialog 层）
+   - Dialog 默认 slot 内边距丢失（Mussel 4 `.mu-dialog__body` 无 padding，需加 `p-2x` 或 `padding: 16px 24px`）
+4. 检查 `package.json` 的 mussel 依赖版本与全局插件配置（`app.use(pluginMussel, {...})`）。
+5. 检查所有 CSS/SCSS 文件对 mussel 变量的引用。
+
+汇总表报告：
+
+| 类别 | 数量 | 涉及文件 |
+|------|------|----------|
+| 组件替换 | N | ... |
+| 属性重命名 | N | ... |
+| 变量重命名 | N | ... |
+| CSS 类变更 | N | ... |
+| 图标变更 | N | ... |
+| 全局配置变更 | N | ... |
+
+### 阶段二：计划
+
+在 `{项目根目录}/mussel-upgrade-plan.md` 创建计划文档：
+
+```markdown
+# Mussel 3 → Mussel 4 升级计划
+
+**项目**：{项目名称}
+**日期**：{今天}
+**生成工具**：Mussel UI Skill
+
+## 范围概览
+{简要概述}
+
+## 迁移项
+
+### 1. 组件替换
+| 文件 | 行号 | 当前写法 | 目标写法 | 可自动？ |
+|------|------|----------|----------|----------|
+
+### 2. 属性 / 事件重命名
+| 文件 | 行号 | 当前写法 | 目标写法 | 可自动？ |
+|------|------|----------|----------|----------|
+
+### 3. CSS 变量更新
+| 文件 | 当前变量 | 目标变量 | 可自动？ |
+|------|----------|----------|----------|
+
+### 4. CSS 类更新
+| 文件 | 当前类名 | 目标 | 可自动？ |
+|------|----------|------|----------|
+
+### 5. 全局配置 / 插件变更
+| 文件 | 变更说明 | 可自动？ |
+|------|----------|----------|
+
+### 6. 需要人工审核的项目
+{列出无法自动升级项及原因}
+
+## 执行顺序
+1. 全局配置 / CSS 变量（基础层）
+2. 组件替换
+3. 属性 / 事件重命名
+4. CSS 类变更
+5. 人工审核项
+```
+
+**可自动？= 否** 的判定条件：
+- 上下文模糊（动态属性值）
+- 业务逻辑与 mussel API 紧密耦合
+- 模式无法明确匹配任何迁移规则
+- 文件位于 `node_modules` 或为生成文件
+
+向用户展示计划并询问：
+
+> 已分析项目并在 `{路径}/mussel-upgrade-plan.md` 创建升级计划。包含 {N} 个可自动升级项和 {M} 个人工审核项。是否开始执行？
+
+等待确认。
+
+### 阶段三：执行
+
+逐类别系统处理。
+
+执行规则：
+1. **修改前先读文件**，绝不盲目编辑。
+2. **逐文件处理**，完成一个文件所有变更后再下一个。
+3. **跟踪进度**，每改一个文件后更新计划文档，增加"状态"列：`已完成` / `跳过（需人工处理）` / `受阻`。
+4. **跳过非自动项**，在计划中备注，不改代码。
+5. **保留业务逻辑**，仅变更 mussel 相关 API/属性/类/变量。
+
+升级日志（计划文档中维护）：
+
+```markdown
+## 升级日志
+| 序号 | 文件 | 变更内容 | 状态 |
+|------|------|----------|------|
+```
+
+全部完成后生成 `{项目根目录}/mussel-upgrade-summary.md`：
+
+```markdown
+# Mussel 3 → Mussel 4 升级总结
+**项目**：{项目名称}
+**日期**：{今天}
+
+## 结果
+- 修改文件数：{N}
+- 应用变更总数：{N}
+- 跳过项数（需人工审核）：{N}
+
+## 已修改文件
+| 文件 | 变更说明 |
+|------|----------|
+
+## 需要人工审核的项目
+| 项目 | 文件 | 原因 |
+|------|------|------|
+
+## 后续步骤
+- [ ] 审核所有"需要人工审核"项
+- [ ] 将 package.json 的 mussel 依赖更新为 4.x
+- [ ] 运行应用，测试所有已修改组件
+- [ ] 移除升级期间的 CSS 兼容垫片（如有）
+```
+
+---
+
+## 迁移规则
+
+所有已知 API 变更的完整参考。升级过程中以此部分为权威依据。
 
 ---
 
@@ -30,7 +193,7 @@
 | `:clear-button="true"` | `:clearable="true"` |
 | `solid`（布尔属性） | `input-style="solid"` |
 | `underline`（布尔属性） | `input-style="underline"` |
-| `round`（布尔属性） | 无直接对应 |
+| `round`（布尔属性） | `pill`（布尔属性） |
 | 通过 `<template #prefix>` / `<template #suffix>` 插槽添加前后缀 | `prefix=":icon=search"` / `suffix=":icon=search"` 属性 |
 | `width="100%"` | `style="width: 100%;"` |
 
@@ -199,22 +362,6 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 |----------|----------|------|
 | `:messages` | `:notifications` | 属性重命名 |
 
-### MuMessageBox
-
-Mussel 4 中 `callback` 参数类型变更：
-
-```js
-// Mussel 3：callback 接收 button 对象
-callback (btn) {
-  console.log(btn?.raw || btn) // 完整的按钮对象
-}
-
-// Mussel 4：callback 接收字符串（按钮名称）
-callback (trigger) {
-  console.log(trigger) // 字符串，如 'OK'、'CANCEL' 或自定义按钮名
-}
-```
-
 ### MuListItem
 
 | Mussel 3 | Mussel 4 | 备注 |
@@ -345,7 +492,7 @@ function onDialogVisibleChange (value, trigger) {
 | Mussel 3 | Mussel 4 |
 |----------|----------|
 | `--mu-background-normal` | `--mu-bg-normal` |
-| `--mu-background-hover` | `--mu-bg-translucent-gray` |
+| `--mu-background-hover` | `--mu-gray-translucent` |
 | `--mu-background-strong` | `--mu-bg-strong` |
 | `--mu-background-disabled` | `--mu-bg-disabled` |
 
@@ -496,7 +643,7 @@ app.use(pluginMussel, {
 ```css
 .mu-root {
   --mu-mask-background: var(--mu-bg-mask);
-  --mu-divider-color: var(--mu-divider-color);
+  --mu-divider-color: var(--mu-border-color-soft);
   --mu-background-hover: var(--mu-gray-translucent);
   --mu-unit-spacing-size: var(--mu-base-spacing);
   --mu-list-item-hover-background: var(--mu-gray-translucent);
@@ -526,7 +673,7 @@ DOM 结构对比：
 </div>
 
 <!-- Mussel 4 -->
-<div class="mu-modal-mask mu-dialog-mask">  ← 不再接收 $attrs
+<div class="mu-modal-mask flex flex-center">  ← 不再接收 $attrs
   <div class="mu-dialog my-dialog" style="...">  ← $attrs 绑定在这里
     ...
   </div>
@@ -595,13 +742,13 @@ DOM 结构对比：
   width: 800px;
   height: 90%;
 
-  .mu-dialog-body {
+  .mu-dialog__body {
     overflow: auto;
     display: flex;
     flex-direction: column;
   }
 
-  .mu-dialog_header, .mu-dialog_footer {
+  .mu-dialog__header, .mu-dialog__footer {
     padding: 16px;
   }
 }
@@ -643,7 +790,7 @@ Mussel 4 移除了 `.mu-dialog_center` 包裹层，`header`/`body`/`footer` 直�
     flex-direction: column;
   }
 
-  .mu-dialog_header, .mu-dialog_footer {
+  .mu-dialog__header, .mu-dialog__footer {
     padding: 16px;
   }
 }
@@ -664,7 +811,7 @@ Mussel 4 移除了 `.mu-dialog_center` 包裹层，`header`/`body`/`footer` 直�
 .my-dialog {
   width: 400px;
 }
-.my-dialog .mu-dialog-body {
+.my-dialog .mu-dialog__body {
   min-height: 400px;
 }
 ```
@@ -759,9 +906,9 @@ Mussel 3 的 header/body/footer 包裹在 `.mu-dialog_center` 容器中，且有
 <!-- Mussel 4 内部结构 -->
 <div class="mu-dialog">
   <!-- 无 side-panel，无 mu-dialog_center -->
-  <div class="mu-dialog_header">...</div>
+  <div class="mu-dialog__header">...</div>
   <slot />                             <!-- body -->
-  <div class="mu-dialog_footer">...</div>
+  <div class="mu-dialog__footer">...</div>
 </div>
 ```
 
@@ -850,7 +997,6 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuStatusBox | 状态提示框 |
 | MuCheckGroup | 复选框组（数据驱动，`options` 数组 + `v-model`） |
 | MuRadioGroup | 单选框组（数据驱动，`options` 数组 + `v-model`） |
-| MuMessage | 消息通知 |
 | MuMessageBox | 消息弹框（插件式调用） |
 | MuNotifier | 通知提示（插件式调用） |
 
