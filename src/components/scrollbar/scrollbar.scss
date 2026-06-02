@@ -15,7 +15,7 @@
   }
 }
 
-.mu-scrollbar_tracks {
+.mu-scrollbar__tracks {
   user-select: none;
 
   position: sticky !important;
@@ -33,49 +33,49 @@
   transition: opacity 0.5s ease-in-out;
 }
 
-.mu-scrollbar_track-x,
-.mu-scrollbar_track-y {
+.mu-scrollbar__track-x,
+.mu-scrollbar__track-y {
   position: absolute;
   overflow: hidden;
   border-radius: var(--mu-scrollbar_border-radius);
   background: var(--mu-scrollbar_background);
 }
 
-.mu-scrollbar_track-x > .mu-scrollbar_thumb,
-.mu-scrollbar_track-y > .mu-scrollbar_thumb {
+.mu-scrollbar__track-x > .mu-scrollbar__thumb,
+.mu-scrollbar__track-y > .mu-scrollbar__thumb {
   position: absolute;
   border-radius: var(--mu-scrollbar_border-radius);
   background: var(--mu-scrollbar_color);
 }
 
-.mu-scrollbar_track-x:active > .mu-scrollbar_thumb,
-.mu-scrollbar_track-x > .mu-scrollbar_thumb:hover,
-.mu-scrollbar_track-y:active > .mu-scrollbar_thumb,
-.mu-scrollbar_track-y > .mu-scrollbar_thumb:hover {
+.mu-scrollbar__track-x:active > .mu-scrollbar__thumb,
+.mu-scrollbar__track-x > .mu-scrollbar__thumb:hover,
+.mu-scrollbar__track-y:active > .mu-scrollbar__thumb,
+.mu-scrollbar__track-y > .mu-scrollbar__thumb:hover {
   background: var(--mu-scrollbar_active-color);
 }
 
-.mu-scrollbar_track-x {
+.mu-scrollbar__track-x {
   height: var(--mu-scrollbar_width);
 }
 
-.mu-scrollbar_track-x > .mu-scrollbar_thumb {
+.mu-scrollbar__track-x > .mu-scrollbar__thumb {
   min-width: var(--mu-scrollbar_min-length);
   height: 100%;
 }
 
-.mu-scrollbar_track-y {
+.mu-scrollbar__track-y {
   width: var(--mu-scrollbar_width);
 }
 
-.mu-scrollbar_track-y > .mu-scrollbar_thumb{
+.mu-scrollbar__track-y > .mu-scrollbar__thumb{
   width: 100%;
   min-height: var(--mu-scrollbar_min-length);
 }
 
-.mu-scrollbar:hover > .mu-scrollbar_tracks,
-.mu-scrollbar:active > .mu-scrollbar_tracks,
-.mu-scrollbar[scrollbar-visible=always] > .mu-scrollbar_tracks {
+.mu-scrollbar:hover > .mu-scrollbar__tracks,
+.mu-scrollbar:active > .mu-scrollbar__tracks,
+.mu-scrollbar[scrollbar-visible=always] > .mu-scrollbar__tracks {
   opacity: 1;
 }
 
@@ -83,6 +83,6 @@
   overflow: hidden;
 }
 
-.mu-scrollbar[scrollbar-visible=hidden] > .mu-scrollbar_tracks {
+.mu-scrollbar[scrollbar-visible=hidden] > .mu-scrollbar__tracks {
   display: none !important;
 }

@@ -1,11 +1,11 @@
 <template>
   <div
-    :class="['mu-pagination', small && 'mu-pagination-small']"
+    :class="['mu-pagination', small && 'mu-pagination--small']"
     @sizechange="calcMaxPageButtonsCount">
     <mu-button
       button-style="text"
-      :title="$t('Pagination.PREV_PAGE')"
       icon="key-left"
+      :title="$t('Pagination.PREV_PAGE')"
       :disabled="disabled || index < 1 || null"
       @click="goto(index - 1)" />
     <template v-for="el in pages">
@@ -22,14 +22,14 @@
     <label v-if="middleText">{{ middleText }}</label>
     <mu-button
       button-style="text"
-      :title="$t('Pagination.NEXT_PAGE')"
       icon="key-right"
+      :title="$t('Pagination.NEXT_PAGE')"
       :disabled="disabled || eof || index === count - 1 || null"
       @click="goto(index + 1)" />
     <template v-if="sizeOptions?.length">
       <div class="mu-tool-divider" />
       <mu-combo-box
-        class="mu-pagination_size-select"
+        class="mu-pagination__size-select"
         :options="sizeOptions"
         :clear-button="false"
         :value="size"
@@ -38,7 +38,7 @@
     <label v-else-if="size && !middleText">{{ `${size} ${$t('Pagination.PER_PAGE')}` }}</label>
     <template v-if="quickJumper">
       <label>{{ $t('Pagination.GOTO') }}</label>
-      <mu-input class="mu-pagination_quick-jumper" type="number" @keydown.enter="doJump" />
+      <mu-input class="mu-pagination__quick-jumper" type="number" @keydown.enter="doJump" />
       <label>{{ $t('Pagination.PAGE') }}</label>
     </template>
   </div>
@@ -193,11 +193,11 @@
       font-size: inherit;
     }
 
-    & > .mu-pagination_size-select {
+    & > .mu-pagination__size-select {
       width: 100px;
     }
 
-    & > .mu-pagination_quick-jumper {
+    & > .mu-pagination__quick-jumper {
       width: 55px;
       padding: 8px;
       appearance: textfield;
@@ -209,7 +209,7 @@
     }
   }
 
-  .mu-pagination-small {
+  .mu-pagination--small {
     & > .mu-icon-button {
       width: 24px;
       padding: 0;

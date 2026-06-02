@@ -7,7 +7,7 @@
   --mu-flex-splitter_slim-size: 2px;
 
   --mu-flex-splitter_bar-size: var(--mu-flex-splitter_full-size);
-  --mu-flex-splitter_stripe-size: 3px;
+  --mu-flex-splitter__stripe-size: 3px;
 
   user-select: none;
 
@@ -95,7 +95,7 @@
   pointer-events: none;
 }
 
-.mu-flex-splitter_stripe {
+.mu-flex-splitter__stripe {
   position: absolute;
   display: block;
   color: #fff;
@@ -104,14 +104,14 @@
 .mu-flex-splitter {
   &[size="slim"],
   &[size="concealed"] {
-    & > .mu-flex-splitter_stripe {
+    & > .mu-flex-splitter__stripe {
       display: none;
     }
   }
 
   &:hover,
   &[active] {
-    & > .mu-flex-splitter_stripe {
+    & > .mu-flex-splitter__stripe {
       display: block;
     }
   }
@@ -126,8 +126,8 @@
     width: var(--mu-flex-splitter_bar-size);
   }
 
-  & > .mu-flex-splitter_stripe {
-    width: var(--mu-flex-splitter_stripe-size);
+  & > .mu-flex-splitter__stripe {
+    width: var(--mu-flex-splitter__stripe-size);
   }
 }
 
@@ -140,8 +140,8 @@
     height: var(--mu-flex-splitter_bar-size);
   }
 
-  & > .mu-flex-splitter_stripe {
-    height: var(--mu-flex-splitter_stripe-size);
+  & > .mu-flex-splitter__stripe {
+    height: var(--mu-flex-splitter__stripe-size);
   }
 }
 

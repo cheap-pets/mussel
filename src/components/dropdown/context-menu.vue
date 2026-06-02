@@ -121,9 +121,9 @@
 
   function onMenuClick (event) {
     if (
-      event.target.classList.contains('mu-popup_mask') ||
+      event.target.classList.contains('mu-popup--mask') ||
       findUp(event.target, pEl => {
-        if (pEl.classList.contains('mu-popup_off')) return true
+        if (pEl.classList.contains('mu-popup--off')) return true
         if (pEl === menu.value) return false
       })
     ) {

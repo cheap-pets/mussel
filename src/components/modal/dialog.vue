@@ -1,11 +1,11 @@
 <template>
   <Teleport v-if="visible || ready" :to="container">
-    <Transition name="mu-dialog">
+    <Transition name="mu-dialog-">
       <div
         v-show="modalVisible"
         ref="maskEl"
         v-bind="maskAttrs"
-        class="mu-modal-mask mu-dialog-mask"
+        class="mu-modal-mask flex flex-center"
         :class="maskClass"
         :style="{ zIndex }"
         @sizechange="onMaskResize" @click="onMaskClick">
@@ -17,28 +17,28 @@
           :dragging="dragging"
           @mousedown="onDragStart">
           <slot name="client">
-            <div v-if="headerVisible" class="mu-dialog_header">
+            <div v-if="headerVisible" class="mu-dialog__header">
               <slot name="header">
                 <slot name="header-prepend" />
-                <mu-icon v-if="icon" class="mu-dialog_icon" v-bind="iconBindings" />
-                <label class="mu-dialog_title" draggable="false">{{ title }}</label>
+                <mu-icon v-if="icon" class="mu-dialog__icon" v-bind="iconBindings" />
+                <label class="mu-dialog__title" draggable="false">{{ title }}</label>
                 <slot name="header-append" />
-                <div class="mu-dialog_sys-buttons">
+                <div class="mu-dialog__sys-buttons">
                   <mu-tool-button
                     v-if="maximizeButton"
-                    class="mu-dialog_sys-button"
+                    class="mu-dialog__sys-button"
                     :icon="stateIcon + ':hover-shrink'"
                     @click="toggleWindowState" />
                   <mu-tool-button
                     v-if="closeButton"
-                    class="mu-dialog_sys-button"
+                    class="mu-dialog__sys-button"
                     icon="windowClose" danger
                     @click="hide('$X')" />
                 </div>
               </slot>
             </div>
             <slot />
-            <div v-if="footerVisible" class="mu-dialog_footer">
+            <div v-if="footerVisible" class="mu-dialog__footer">
               <slot name="footer">
                 <slot name="footer-prepend" />
                 <component
@@ -170,7 +170,7 @@
   function onDragStart (event) {
     if (
       maximized.value ||
-      !['mu-dialog_header', 'mu-dialog_title']
+      !['mu-dialog__header', 'mu-dialog__title']
         .find(cls => event.target.classList.contains(cls))
     ) return
 
@@ -215,13 +215,13 @@
       if (props.maximizeToFullscreen) {
         dialogEl.value.requestFullscreen()
       } else {
-        dialogEl.value.classList.add('mu-dialog-maximized')
+        dialogEl.value.classList.add('mu-dialog--maximized')
       }
     } else {
       if (props.maximizeToFullscreen) {
         document.exitFullscreen()
       } else {
-        dialogEl.value.classList.remove('mu-dialog-maximized')
+        dialogEl.value.classList.remove('mu-dialog--maximized')
       }
     }
   }

@@ -12,13 +12,12 @@ export const dropdownProps = {
   dropdownClass: null,
   dropdownStyle: null,
   dropdownSnapTo: null,
-  dropdownPanel: Object,
   dropdownAttrs: Object,
   dropdownWidth: String,
   dropdownHeight: String,
   dropdownDisabled: Boolean,
   dropdownScrollbar: Boolean,
-  dropdownIcon: { type: String, default: 'dropdownExpand' }
+  dropdownIcon: { type: [Boolean, String], default: true }
 }
 
 export const optionalProps = {
@@ -39,15 +38,26 @@ export function useDropdown (props, emit, options = {}) {
   useCompatible('dropdown')
 
   const {
-    wrapperRef = shallowRef(),
-    dropdownPanelRef = shallowRef()
+    wrapper = shallowRef(),
+    dropdownPanel = shallowRef()
   } = options
 
   const expanded = ref()
-  const dropdownVisible = readonly(expanded)
 
-  const dropdownPanel = computed(() =>
-    props.dropdownPanel || dropdownPanelRef.value
+  const wrapperEvents = {
+    click: onTriggerClick,
+    mouseover: onTriggerMouseOver,
+    mouseleave: onTriggerMouseLeave
+  }
+
+  const dropdownIconAttrs = computed(() => (
+    props.dropdownIcon &&
+    {
+      icon: props.dropdownIcon === true ? 'dropdownExpand' : props.dropdownIcon,
+      class: 'mu-dropdown-arrow',
+      expanded: expanded.value || null
+    }
+  )
   )
 
   const dropdownPanelAttrs = computed(() => ({
@@ -59,21 +69,24 @@ export function useDropdown (props, emit, options = {}) {
     dropdownItems: props.dropdownItems
   }))
 
-  const dropdownIconAttrs = computed(() => ({
-    icon: props.dropdownIcon,
-    class: 'mu-dropdown-arrow',
-    expanded: expanded.value || null
-  }))
+  const dropdownPanelEvents = {
+    show: onDropdownShow,
+    hide: onDropdownHide,
+    action: emitAction,
+    itemclick: emitItemClick
+  }
+
+  const dropdownVisible = readonly(expanded)
 
   const snapTo = computed(() => {
-    const wrapperEl = wrapperRef.value?.$el || wrapperRef.value
+    const hostEl = wrapper.value?.$el || wrapper.value
     const target = props.dropdownSnapTo
 
     return target
       ? target === '$parent'
-        ? wrapperEl?.parentNode
+        ? hostEl?.parentNode
         : target.$el || target
-      : wrapperEl
+      : hostEl
   })
 
   function onDropdownShow () {
@@ -131,24 +144,11 @@ export function useDropdown (props, emit, options = {}) {
     dropdownPanel.value?.updatePosition()
   }
 
-  const wrapperEvents = {
-    click: onTriggerClick,
-    mouseover: onTriggerMouseOver,
-    mouseleave: onTriggerMouseLeave
-  }
-
-  const dropdownPanelEvents = {
-    show: onDropdownShow,
-    hide: onDropdownHide,
-    action: emitAction,
-    itemclick: emitItemClick
-  }
-
   return {
-    wrapperRef,
+    wrapper,
     wrapperEvents,
     dropdownVisible,
-    dropdownPanelRef,
+    dropdownPanel,
     dropdownPanelAttrs,
     dropdownPanelEvents,
     dropdownIconAttrs,

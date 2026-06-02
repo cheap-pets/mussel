@@ -2,9 +2,12 @@
   position: fixed;
   z-index: var(--mu-z-index-modal);
   inset: 0;
+
   background: var(--mu-bg-mask);
 
-  &[invisible] {
+  transition-duration: .2s;
+
+  &.mu-modal-mask--invisible {
     pointer-events: none;
     background: none;
   }

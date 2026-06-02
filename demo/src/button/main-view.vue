@@ -210,9 +210,9 @@
     <div class="group">
       <h3>SIZE</h3>
       <mu-button size="small" caption="SMALL" />
-      <mu-button size="small" primary round caption="SMALL" />
+      <mu-button size="small" primary pill caption="SMALL" />
       <mu-button size="large" caption="LARGE" />
-      <mu-button size="large" primary round caption="LARGE" />
+      <mu-button size="large" primary pill caption="LARGE" />
     </div>
     <div class="group">
       <h3>BUTTON GROUP</h3>
@@ -250,7 +250,7 @@
         </mu-button>
       </mu-button-group>
       <div class="flex-break" />
-      <mu-button-group danger round button-style="outline" size="small">
+      <mu-button-group danger pill button-style="outline" size="small">
         <mu-button :active="activeItem === 1" @click="select(1)">
           One
         </mu-button>

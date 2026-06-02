@@ -1,5 +1,5 @@
 <template>
-  <button type="button" class="mu-button" :class="[colorClass, appearanceClass, activeClass]">
+  <button type="button" class="mu-button" :class="extraClass">
     <slot>
       <mu-icon v-if="icon" :icon="icon" />
       <span>{{ caption }}</span>
@@ -19,11 +19,11 @@
     icon: String,
     caption: String,
     active: Boolean,
-    round: Boolean,
     disabled: Boolean,
     primary: Boolean,
     danger: Boolean,
     secondary: Boolean,
+    pill: Boolean,
     size: {
       type: String,
       validator: v => ['small', 'normal', 'large'].includes(v)
@@ -73,7 +73,7 @@
       return source && [
         resolveClassName(source.size),
         resolveClassName(source.buttonStyle),
-        resolveClassName(source.buttonStyle !== 'link' && source.round && 'round'),
+        resolveClassName(source.buttonStyle !== 'link' && source.pill && 'pill'),
         resolveClassName(source.disabled && 'disabled')
       ].filter(Boolean)
     }
@@ -84,4 +84,10 @@
   const activeClass = computed(() =>
     resolveClassName(props.active && 'active')
   )
+
+  const extraClass = computed(() => [
+    colorClass.value,
+    appearanceClass.value,
+    activeClass.value
+  ])
 </script>

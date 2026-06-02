@@ -1,30 +1,29 @@
 <template>
   <mu-button-group
     v-if="splitButton"
-    ref="wrapperRef"
+    ref="wrapper"
     class="mu-dropdown"
     v-bind="$attrs">
     <mu-button :icon="icon" :caption="caption" @click="collapse">
       <slot />
     </mu-button>
-    <mu-button class="mu-button mu-icon-button" :active="dropdownVisible" v-on="wrapperEvents">
+    <mu-button v-if="dropdownIconAttrs" class="mu-button mu-icon-button" :active="dropdownVisible" v-on="wrapperEvents">
       <mu-icon v-bind="dropdownIconAttrs" />
     </mu-button>
   </mu-button-group>
   <mu-button
     v-else
-    ref="wrapperRef"
+    ref="wrapper"
     v-bind="$attrs" class="mu-dropdown" :active="dropdownVisible"
     v-on="wrapperEvents">
     <slot>
       <mu-icon v-if="icon" :icon="icon" />
       {{ caption }}
     </slot>
-    <mu-icon v-bind="dropdownIconAttrs" />
+    <mu-icon v-if="dropdownIconAttrs" v-bind="dropdownIconAttrs" />
   </mu-button>
   <mu-dropdown-panel
-    v-if="!dropdownPanel"
-    ref="dropdownPanelRef"
+    ref="dropdownPanel"
     v-bind="dropdownPanelAttrs"
     v-on="dropdownPanelEvents">
     <slot name="dropdown" />
@@ -52,13 +51,13 @@
   const emit = defineEmits(dropdownEvents)
 
   const {
-    wrapperRef,
+    wrapper,
     wrapperEvents,
     dropdownVisible,
-    dropdownPanelRef,
+    dropdownIconAttrs,
+    dropdownPanel,
     dropdownPanelAttrs,
     dropdownPanelEvents,
-    dropdownIconAttrs,
     expand,
     collapse
   } = useDropdown(props, emit)

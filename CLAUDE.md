@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Mussel (河蚌) 是 Vue 3 组件库，当前版本 `4.0.0-alpha.13`。纯 JavaScript（无 TypeScript），使用 Composition API `<script setup>` 语法。
+Mussel 是 Vue 3 组件库，当前版本 `4.0.0-alpha.13`。纯 JavaScript（无 TypeScript），使用 Composition API `<script setup>` 语法。
 
 - **仓库**: https://github.com/cheap-pets/mussel.git
 - **分支**: `4.0`（开发分支），`master`（主分支）
@@ -13,7 +13,7 @@ Mussel (河蚌) 是 Vue 3 组件库，当前版本 `4.0.0-alpha.13`。纯 JavaSc
 
 | 层面 | 技术 |
 |------|------|
-| 框架 | Vue 3.5 (`<script setup>`, Composition API) |
+| 框架 | Vue 3.x (`<script setup>`, Composition API) |
 | 构建 | Vite 8 + rolldown (UMD 输出) |
 | CSS | Sass (sass-embedded) + LightningCSS |
 | 图标 | @tabler/icons (SVG) |

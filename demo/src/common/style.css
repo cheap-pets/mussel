@@ -3,6 +3,10 @@ body {
 }
 
 .group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
   margin: 8px;
   padding: 8px;
 }

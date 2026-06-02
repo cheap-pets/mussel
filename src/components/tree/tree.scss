@@ -31,11 +31,11 @@
     font-size: calc(1em + 2px);
   }
 
-  & > .mu-tree-node_expand-icon {
+  & > .mu-tree-node__expand-icon {
     pointer-events: auto;
   }
 
-  & > .mu-tree-node_button {
+  & > .mu-tree-node__button {
     width: 20px;
     line-height: 0;
     text-align: center;
@@ -45,7 +45,7 @@
     }
   }
 
-  & > .mu-tree-node_label {
+  & > .mu-tree-node__label {
     cursor: inherit;
     user-select: none;
 
@@ -59,7 +59,7 @@
   &:hover {
     background: var(--mu-gray-translucent);
 
-    & > .mu-tree-node_button[hover] {
+    & > .mu-tree-node__button[hover] {
       display: inline-flex;
     }
   }

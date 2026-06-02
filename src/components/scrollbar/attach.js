@@ -69,16 +69,16 @@ export function attach (el) {
   }
 
   function createElements () {
-    const thumbX = h('.mu-scrollbar_thumb')
-    const thumbY = h('.mu-scrollbar_thumb')
-    const trackX = h('.mu-scrollbar_track-x', [thumbX])
-    const trackY = h('.mu-scrollbar_track-y', [thumbY])
+    const thumbX = h('.mu-scrollbar__thumb')
+    const thumbY = h('.mu-scrollbar__thumb')
+    const trackX = h('.mu-scrollbar__track-x', [thumbX])
+    const trackY = h('.mu-scrollbar__track-y', [thumbY])
 
     const existedTracks =
-      el.firstChild?.classList?.contains('mu-scrollbar_tracks') &&
+      el.firstChild?.classList?.contains('mu-scrollbar__tracks') &&
       el.firstChild
 
-    const tracks = h(existedTracks || '.mu-scrollbar_tracks', [trackX, trackY])
+    const tracks = h(existedTracks || '.mu-scrollbar__tracks', [trackX, trackY])
 
     if (existedTracks) {
       ctx.existedTracks = true

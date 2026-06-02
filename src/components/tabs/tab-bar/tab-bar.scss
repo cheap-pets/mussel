@@ -3,7 +3,7 @@
   background: var(--mu-bg-strong);
 }
 
-.mu-tab-bar_buttons {
+.mu-tab-bar__buttons {
   display: flex;
   gap: var(--mu-content-spacing);
   align-items: center;
@@ -18,7 +18,7 @@
     height: unset;
     padding: var(--mu-base-spacing);
 
-    & > .mu-tab-bar_buttons {
+    & > .mu-tab-bar__buttons {
       flex-direction: column;
       align-items: stretch;
     }

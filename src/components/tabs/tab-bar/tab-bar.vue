@@ -1,7 +1,7 @@
 <template>
   <div class="mu-bar mu-tab-bar">
     <slot name="prepend" />
-    <div class="mu-tab-bar_buttons">
+    <div class="mu-tab-bar__buttons">
       <mu-tab-button
         v-for="el in tabButtons"
         :key="el.name"

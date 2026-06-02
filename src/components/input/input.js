@@ -41,7 +41,7 @@ export function useInput (model, props, emit) {
   }))
 
   const clearButtonAttrs = {
-    class: 'mu-input_clear-button',
+    class: 'mu-input__clear-button',
     tag: 'a',
     icon: 'x'
   }
@@ -70,7 +70,7 @@ export function useInput (model, props, emit) {
       : Object(option)
 
     return AffixResolver[type]?.(
-      Object.assign(opts, { class: `mu-input_${affixType}` })
+      Object.assign(opts, { class: `mu-input__${affixType}` })
     )
   }
 

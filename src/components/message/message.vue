@@ -1,10 +1,10 @@
 <template>
   <div class="mu-message">
-    <div class="mu-message_title">
-      <mu-icon class="mu-message_icon" :icon="icon" />
+    <div class="mu-message__title">
+      <mu-icon class="mu-message__icon" :icon="icon" />
       <label>{{ title }}</label>
     </div>
-    <div class="mu-message_content" v-html="html" />
+    <div class="mu-message__content" v-html="html" />
   </div>
 </template>
 <script setup>

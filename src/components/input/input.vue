@@ -1,11 +1,11 @@
 <template>
   <div class="mu-input" v-bind="wrapperAttrs">
-    <component :is="pre.is" v-if="pre" v-bind="pre.attrs" class="mu-input_prefix" @click="onPrefixClick">
+    <component :is="pre.is" v-if="pre" v-bind="pre.attrs" class="mu-input__prefix" @click="onPrefixClick">
       {{ pre.content }}
     </component>
     <input v-model="model" v-bind="inputAttrs">
     <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click="clear" />
-    <component :is="suf.is" v-if="suf" v-bind="suf.attrs" class="mu-input_suffix" @click="onSuffixClick">
+    <component :is="suf.is" v-if="suf" v-bind="suf.attrs" class="mu-input__suffix" @click="onSuffixClick">
       {{ suf.content }}
     </component>
   </div>

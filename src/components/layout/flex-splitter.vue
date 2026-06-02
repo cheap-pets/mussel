@@ -11,7 +11,7 @@
     @mousedown="onMouseDown">
     <slot v-if="isStriped" name="stripe">
       <mu-svg-stripe
-        class="mu-flex-splitter_stripe"
+        class="mu-flex-splitter__stripe"
         :direction="StripeDirectionMap[direction]" />
     </slot>
   </div>

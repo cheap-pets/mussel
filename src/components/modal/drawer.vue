@@ -4,15 +4,15 @@
       <div
         v-show="modalVisible"
         v-bind="maskAttrs"
-        class="mu-modal-mask mu-drawer-mask"
-        :invisible="mask ? null : ''"
+        class="mu-drawer-mask mu-modal-mask flex flex-center"
+        :class="{ 'mu-modal-mask--invisible': !mask }"
         :style="{ zIndex }"
         @click="onMaskClick">
         <div
           v-bind="$attrs"
           class="mu-drawer"
+          :class="`mu-drawer--${position}`"
           :style="drawerSize"
-          :position="position"
           :border-radius="borderRadius ? '' : null">
           <slot />
         </div>
@@ -35,7 +35,6 @@
     zIndex: String,
     width: [String, Number],
     height: [String, Number],
-    borderRadius: Boolean,
     mask: { type: Boolean, default: true },
     teleport: { type: Boolean, default: true },
     position: {

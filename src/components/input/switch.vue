@@ -1,6 +1,6 @@
 <template>
   <div class="mu-switch" :active="isActive" @click="toggle">
-    <span v-if="innerLabel" class="mu-switch_label">{{ innerLabel }}</span>
+    <span v-if="innerLabel" class="mu-switch__label">{{ innerLabel }}</span>
     <mu-icon v-else-if="innerIcon" :icon="innerIcon" />
   </div>
 </template>

@@ -7,7 +7,7 @@
 
   background: var(--mu-bg-normal);
 
-  & > .mu-tab-bar_buttons {
+  & > .mu-tab-bar__buttons {
     align-items: stretch;
   }
 
@@ -43,7 +43,7 @@
   &[tab-position=top] {
     border-bottom-width: var(--active-bar-width);
 
-    & > .mu-tab-bar_buttons {
+    & > .mu-tab-bar__buttons {
       margin-bottom: calc(var(--active-bar-width) * -1);
     }
 
@@ -55,7 +55,7 @@
   &[tab-position=bottom] {
     border-top-width: var(--active-bar-width);
 
-    & > .mu-tab-bar_buttons {
+    & > .mu-tab-bar__buttons {
       margin-top: calc(var(--active-bar-width) * -1);
     }
 
@@ -67,7 +67,7 @@
   &[tab-position=left] {
     border-right-width: var(--active-bar-width);
 
-    & > .mu-tab-bar_buttons {
+    & > .mu-tab-bar__buttons {
       margin-right: calc(var(--active-bar-width) * -1);
     }
 
@@ -79,7 +79,7 @@
   &[tab-position=right] {
     border-left-width: var(--active-bar-width);
 
-    & > .mu-tab-bar_buttons {
+    & > .mu-tab-bar__buttons {
       margin-left: calc(var(--active-bar-width) * -1);
     }
 

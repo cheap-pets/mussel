@@ -1,6 +1,6 @@
 <template>
   <div class="mu-scroll-box mu-scrollbar">
-    <div class="mu-scrollbar_tracks" />
+    <div class="mu-scrollbar__tracks" />
     <slot />
   </div>
 </template>

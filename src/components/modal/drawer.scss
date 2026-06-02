@@ -1,12 +1,5 @@
-.mu-drawer-mask {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition-duration: .2s;
-
-  &.mu-drawer-mask {
-    z-index: var(--mu-z-index-layer);
-  }
+.mu-drawer-mask.mu-modal-mask {
+  z-index: var(--mu-z-index-layer);
 }
 
 .mu-drawer {
@@ -26,11 +19,11 @@
 
   transition: transform .2s, opacity .2s;
 
-  &[border-radius] {
+  &.mu-drawer--round {
     border-radius: var(--mu-window-border-radius);
   }
 
-  &[position=top] {
+  &.mu-drawer--top {
     top: 0;
     right: 0;
     left: 0;
@@ -39,7 +32,7 @@
     border-top-right-radius: 0;
   }
 
-  &[position=bottom] {
+  &.mu-drawer--bottom {
     right: 0;
     bottom: 0;
     left: 0;
@@ -48,7 +41,7 @@
     border-bottom-left-radius: 0;
   }
 
-  &[position=left] {
+  &.mu-drawer--left {
     top: 0;
     bottom: 0;
     left: 0;
@@ -57,7 +50,7 @@
     border-bottom-left-radius: 0;
   }
 
-  &[position=right] {
+  &.mu-drawer--right {
     top: 0;
     right: 0;
     bottom: 0;

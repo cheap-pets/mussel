@@ -1,6 +1,6 @@
 <template>
   <div class="mu-tags">
-    <div v-for="el in items" :key="getKey(el)" class="mu-tags_tag" tabindex="-1">
+    <div v-for="el in items" :key="getKey(el)" class="mu-tags__tag" tabindex="-1">
       <label :title="tooltip ? (el.title || el.label) : null">
         {{ el.label }}
       </label>
@@ -10,7 +10,7 @@
       v-if="moreCount || dropdownVisible"
       ref="dropdown"
       v-bind="dropdownBindings"
-      class="mu-tags_more"
+      class="mu-tags__more"
       tabindex="-1"
       @click.stop>
       +{{ moreCount }}

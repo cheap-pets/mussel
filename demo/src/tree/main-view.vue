@@ -65,7 +65,7 @@
             icon="info"
             :style="{ color: scoped.node.id % 5 === 0 ? 'red' : undefined }" />
           <label
-            class="mu-tree-node_label"
+            class="mu-tree-node__label"
             :style="{ color: scoped.node.id % 5 === 0 ? 'red' : undefined }">
             Custom: {{ scoped.node.label }} (id: {{ scoped.node.id }})
           </label>
@@ -76,7 +76,7 @@
             icon="x"
             danger
             hover
-            class="mu-icon-button mu-tree-node_button"
+            class="mu-icon-button mu-tree-node__button"
             @click="tree.emit('nodeButtonClick', node, { title: 'Custom Button' })" />
         </template>
       </mu-tree>
@@ -137,11 +137,11 @@
         :active-node="activeNode"
         @node-click="onNodeClick">
         <template #default="{ node }">
-          <label class="mu-tree-node_label">
+          <label class="mu-tree-node__label">
             {{ node.label }}
           </label>
           <mu-dropdown
-            class="mu-tree-node_button"
+            class="mu-tree-node__button"
             dropdown-trigger="click"
             :dropdown-panel="dropdownMenu">
             <mu-icon class="mu-icon-button" icon="dotsVert" />

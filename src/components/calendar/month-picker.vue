@@ -1,6 +1,6 @@
 <template>
   <div class="mu-month-picker">
-    <table class="mu-month-picker_year-table mu-calendar-grid" cellpadding="0" cellspacing="0">
+    <table class="mu-month-picker__year-table mu-calendar-grid" cellpadding="0" cellspacing="0">
       <tbody>
         <tr>
           <td @click="setFirstYear(firstYear - 10)">
@@ -23,7 +23,7 @@
       </tbody>
     </table>
     <div class="flex-divider" line-width="1" />
-    <table class="mu-month-picker_month-table mu-calendar-grid" cellpadding="0" cellspacing="0">
+    <table class="mu-month-picker__month-table mu-calendar-grid" cellpadding="0" cellspacing="0">
       <tbody>
         <tr>
           <td

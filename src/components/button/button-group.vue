@@ -7,15 +7,14 @@
 <script setup>
   import './button-group.scss'
 
-  import { computed, provide } from 'vue'
-  import { pickBy } from '@/utils/object'
+  import { provide } from 'vue'
 
   const props = defineProps({
-    round: Boolean,
     disabled: Boolean,
     primary: Boolean,
     danger: Boolean,
     secondary: Boolean,
+    pill: Boolean,
     size: {
       type: String,
       validator: v => ['normal', 'small', 'large'].includes(v)
@@ -30,21 +29,5 @@
     }
   })
 
-  const forcedButtonOptions = computed(() =>
-    pickBy(props, (key, value) =>
-      ['size', 'round', 'disabled', 'buttonStyle'].includes(key) &&
-      (key !== 'disabled' || value)
-    )
-  )
-
-  const defaultButtonOptions = computed(() =>
-    pickBy(props, (key, value) =>
-      ['primary', 'danger', 'secondary'].includes(key) &&
-      value !== false
-    )
-  )
-
   provide('buttonGroup', props)
-  provide('forcedButtonOptions', forcedButtonOptions)
-  provide('defaultButtonOptions', defaultButtonOptions)
 </script>

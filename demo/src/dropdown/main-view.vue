@@ -45,7 +45,7 @@
         <mu-dropdown-button
           class="mu-icon-button"
           button-style="text"
-          dropdown-icon="dots"
+          dropdown-icon
           dropdown-trigger="hover"
           :dropdown-items="artists"
           @dropdown:itemclick="onItemClick"

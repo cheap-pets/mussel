@@ -1,6 +1,6 @@
 <template>
   <div
-    ref="wrapperRef"
+    ref="wrapper"
     class="mu-input"
     v-bind="wrapperAttrs"
     @click="onWrapperClick"
@@ -16,7 +16,7 @@
       <input v-model="model" v-bind="inputAttrs" @click.stop="onInputClick">
     </slot>
     <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click.stop="clear" />
-    <mu-icon v-if="expandable" tag="a" v-bind="dropdownIconAttrs" />
+    <mu-icon v-if="dropdownIconAttrs && expandable" tag="a" v-bind="dropdownIconAttrs" />
     <component
       :is="suf.is"
       v-if="suf"
@@ -25,9 +25,8 @@
       {{ suf.content }}
     </component>
     <mu-dropdown-panel
-      v-if="!dropdownPanel"
-      ref="dropdownPanelRef"
-      class="mu-input_dropdown-panel"
+      ref="dropdownPanel"
+      class="mu-input__dropdown-panel"
       v-bind="dropdownPanelAttrs"
       v-on="dropdownPanelEvents">
       <slot name="dropdown" />
@@ -69,12 +68,12 @@
   } = useInput(model, props, emit)
 
   const {
-    wrapperRef,
+    wrapper,
     dropdownVisible,
-    dropdownPanelRef,
+    dropdownIconAttrs,
+    dropdownPanel,
     dropdownPanelAttrs,
     dropdownPanelEvents,
-    dropdownIconAttrs,
     expand,
     collapse,
     toggle: toggleDropdown,

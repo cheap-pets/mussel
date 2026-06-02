@@ -105,7 +105,7 @@ div.mu-input {
     }
   }
 
-  & > .mu-input_clear-button {
+  & > .mu-input__clear-button {
     display: none;
   }
 }
@@ -231,7 +231,7 @@ div.mu-input {
     border-color: var(--border-color);
     border-radius: var(--border-radius);
 
-    & > .mu-input_clear-button {
+    & > .mu-input__clear-button {
       display: inline-block;
     }
   }

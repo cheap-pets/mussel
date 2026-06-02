@@ -16,17 +16,17 @@
     max-width: 100%;
   }
 
-  & .mu-status-box_icon {
+  & .mu-status-box__icon {
     font-size: 100px;
     color: var(--mu-text-color-muted);
   }
 
-  & .mu-status-box_title {
+  & .mu-status-box__title {
     font-size: calc(1em * 1.25);
     font-weight: 600;
   }
 
-  .mu-status-box_message {
+  .mu-status-box__message {
     line-height: 20px;
     text-align: center;
   }

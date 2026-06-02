@@ -6,7 +6,7 @@
         :caption="caption"
         icon="calendar"
         class="mu-caption"
-        dropdown-class="mu-calendar_dropdown">
+        dropdown-class="mu-calendar__dropdown">
         <template #dropdown>
           <month-picker
             ref="monthSelector"

@@ -38,8 +38,8 @@
   flex-wrap: nowrap;
 }
 
-.mu-tags_tag,
-.mu-tags_more {
+.mu-tags__tag,
+.mu-tags__more {
   height: 20px;
   padding: 0 5px;
   border-radius: 4px;
@@ -57,7 +57,7 @@
   }
 }
 
-.mu-tags_tag {
+.mu-tags__tag {
   overflow: hidden;
   display: inline-flex;
   flex: none;
@@ -89,12 +89,12 @@
   }
 }
 
-.mu-tags_more {
+.mu-tags__more {
   cursor: pointer;
   flex: none;
   line-height: 20px;
 }
 
-.mu-tags[tag-shrink] > .mu-tags_tag {
+.mu-tags[tag-shrink] > .mu-tags__tag {
   flex: 0 1 auto;
 }

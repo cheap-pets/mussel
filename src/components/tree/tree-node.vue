@@ -9,7 +9,7 @@
     @dblclick="toggleExpand">
     <mu-icon
       v-if="expandIcon !== false"
-      class="mu-tree-node_expand-icon"
+      class="mu-tree-node__expand-icon"
       :expanded="expanded || null"
       :icon="expandIcon"
       @click.stop="toggleExpand"
@@ -17,14 +17,14 @@
     <mu-check
       v-if="checkbox"
       v-model="checked"
-      class="mu-tree-node_check"
+      class="mu-tree-node__check"
       @dblclick.stop />
     <slot :node="node">
       <mu-icon
         v-if="nodeIcon !==false"
-        class="mu-tree-node_icon"
+        class="mu-tree-node__icon"
         :icon="nodeIcon" />
-      <label class="mu-tree-node_label" :title="data.title">
+      <label class="mu-tree-node__label" :title="data.title">
         {{ data.label }}
       </label>
     </slot>
@@ -34,7 +34,7 @@
         :key="btn"
         v-bind="btn"
         tag="a"
-        class="mu-tool-button mu-tree-node_button"
+        class="mu-tool-button mu-tree-node__button"
         @click="tree.emit('nodeButtonClick', node, btn)" />
     </slot>
   </a>

@@ -78,13 +78,12 @@
             { label: 'Exit' }
           ]" />
       </template>
-      <div v-mu-scrollbar class="mu-dialog_body mu-bg-strong" style="padding: 24px;">
+      <div v-mu-scrollbar class="mu-dialog__body mu-bg-strong" style="padding: 24px;">
         <div style="height: 1000px; font-style: italic; font-size: 16px;">
           A long time ago in a galaxy far, far away…
         </div>
       </div>
       <template #footer-prepend>
-        <mu-button caption="shit" @click="showEl" />
         <mu-input placeholder="where's your money?" />
       </template>
     </mu-dialog>
@@ -119,10 +118,6 @@
   const myDialog = ref()
 
   const { proxy } = getCurrentInstance()
-
-  function showEl () {
-    console.log(myDialog.value.$el)
-  }
 
   function openAdvancedDialog () {
     advancedDialogVisible.value = true

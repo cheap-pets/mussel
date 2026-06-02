@@ -1,10 +1,3 @@
-.mu-dialog-mask {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition-duration: .2s;
-}
-
 .mu-dialog {
   --mu-dialog-padding: 12px;
 
@@ -33,23 +26,23 @@
   }
 }
 
-.mu-dialog-maximized {
+.mu-dialog--maximized {
   width: 100% !important;
   max-width: 100% !important;
   height: 100% !important;
   max-height: 100% !important;
 }
 
-.mu-dialog-enter-from,
-.mu-dialog-leave-to {
+.mu-dialog--enter-from,
+.mu-dialog--leave-to {
   & > .mu-dialog {
     transform: translateY(300px);
     opacity: 0;
   }
 }
 
-.mu-dialog_header,
-.mu-dialog_footer {
+.mu-dialog__header,
+.mu-dialog__footer {
   user-select: none;
 
   display: flex;
@@ -69,30 +62,30 @@
   }
 }
 
-.mu-dialog_header + .mu-dialog_footer {
+.mu-dialog__header + .mu-dialog__footer {
   margin-top: auto;
 }
 
-.mu-dialog_footer {
+.mu-dialog__footer {
   justify-content: flex-end;
 }
 
-.mu-dialog_body {
+.mu-dialog__body {
   flex: 1 1 auto;
 }
 
-.mu-dialog_icon {
+.mu-dialog__icon {
   pointer-events: none;
   font-size: 24px;
 }
 
-.mu-dialog_title {
+.mu-dialog__title {
   pointer-events: none;
   flex: 1 1 0;
   font-size: calc(var(--mu-font-size-normal) + 2px);
   font-weight: 600;
 }
 
-.mu-dialog_sys-button {
+.mu-dialog__sys-button {
   background: none !important;
 }

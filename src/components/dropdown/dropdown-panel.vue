@@ -10,7 +10,7 @@
       @click="onClick"
       @mouseover.stop="clearHideTimer"
       @mouseleave.stop="delayHide">
-      <div v-if="scrollbar" class="mu-scrollbar_tracks" />
+      <div v-if="scrollbar" class="mu-scrollbar__tracks" />
       <slot>
         <component
           :is="el.is"
@@ -206,9 +206,9 @@
 
   function onClick (event) {
     if (
-      event.target.classList.contains('mu-popup_mask') ||
+      event.target.classList.contains('mu-popup--mask') ||
       findUp(event.target, el => {
-        if (el.classList.contains('mu-popup_off')) return true
+        if (el.classList.contains('mu-popup--off')) return true
         if (el === thisEl.value) return false
       })
     ) {
