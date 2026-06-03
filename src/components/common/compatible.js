@@ -8,7 +8,6 @@ const DEPRECATED_PROPS = {
     underline: 'input-style="underline"'
   },
   modal: {
-    moveable: false,
     'mask-action': 'dismissible'
   },
   dropdown: {

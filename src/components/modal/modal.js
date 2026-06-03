@@ -1,8 +1,8 @@
 import './modal-mask.scss'
 
 import { ref, shallowRef, inject, watch, onMounted } from 'vue'
-import { useModalManager } from '@/components/common-hooks/popup'
-import { useCompatible } from '../common-hooks/compatible'
+import { useModalManager } from '@/components/common/popup'
+import { useCompatible } from '../common/compatible'
 import { delay } from '@/utils/timer'
 
 export const modalProps = {

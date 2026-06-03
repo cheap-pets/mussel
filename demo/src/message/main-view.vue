@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-  import { ref, getCurrentInstance } from 'vue'
+  import { getCurrentInstance } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
   const { proxy } = getCurrentInstance()

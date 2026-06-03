@@ -8,49 +8,49 @@
         class="mu-modal-mask flex flex-center"
         :class="maskClass"
         :style="{ zIndex }"
-        @sizechange="onMaskResize" @click="onMaskClick">
+        @click="onMaskClick"
+        @sizechange="debounceCorrectPosition">
         <div
           ref="dialogEl"
           class="mu-dialog"
           v-bind="$attrs"
-          :style="[sizeStyle, position]"
-          :dragging="dragging"
+          :class="{ 'mu-dialog--dragging': dragging }"
+          :style="{ ...size, ...position }"
           @mousedown="onDragStart">
-          <slot name="client">
-            <div v-if="headerVisible" class="mu-dialog__header">
-              <slot name="header">
-                <slot name="header-prepend" />
-                <mu-icon v-if="icon" class="mu-dialog__icon" v-bind="iconBindings" />
-                <label class="mu-dialog__title" draggable="false">{{ title }}</label>
-                <slot name="header-append" />
-                <div class="mu-dialog__sys-buttons">
-                  <mu-tool-button
-                    v-if="maximizeButton"
-                    class="mu-dialog__sys-button"
-                    :icon="stateIcon + ':hover-shrink'"
-                    @click="toggleWindowState" />
-                  <mu-tool-button
-                    v-if="closeButton"
-                    class="mu-dialog__sys-button"
-                    icon="windowClose" danger
-                    @click="hide('$X')" />
-                </div>
-              </slot>
+          <div v-if="headerVisible" class="mu-dialog__header">
+            <div class="mu-dialog__header-content">
+              <mu-icon v-if="icon" class="mu-dialog__icon" v-bind="dlgIconAttrs" />
+              <span v-if="title" class="mu-dialog__title text-ellipsis">{{ title }}</span>
+              <slot name="header" />
             </div>
-            <slot />
-            <div v-if="footerVisible" class="mu-dialog__footer">
-              <slot name="footer">
-                <slot name="footer-prepend" />
-                <component
-                  :is="el.is"
-                  v-for="el in footerButtons"
-                  :key="el.key"
-                  v-bind="el.attrs"
-                  @click="el.is === 'mu-button' && onButtonClick(el)" />
-                <slot name="footer-append" />
-              </slot>
+            <div v-if="maximizeButton || closeButton" class="mu-dialog__sys-buttons">
+              <mu-tool-button
+                v-if="maximizeButton"
+                class="mu-dialog__sys-button"
+                :icon="dlgStateIcon + ':hover-shrink'"
+                @click="toggleWindowState" />
+              <mu-tool-button
+                v-if="closeButton"
+                class="mu-dialog__sys-button"
+                icon="windowClose"
+                danger
+                @click="hide('$X')" />
             </div>
-          </slot>
+          </div>
+          <div v-mu-scrollbar="bodyScrollbar" class="mu-dialog__body" :class="bodyClass" :style="bodyStyle">
+            <div v-if="bodyScrollbar" class="mu-scrollbar__tracks" />
+            <slot name="body" />
+            <slot v-if="!$slots.body" />
+          </div>
+          <div v-if="footerVisible" class="mu-dialog__footer">
+            <slot name="footer" />
+            <component
+              :is="el.is"
+              v-for="el in footerButtons"
+              :key="el.key"
+              v-bind="el.attrs"
+              @click="el.is === 'mu-button' && onButtonClick(el)" />
+          </div>
         </div>
       </div>
     </Transition>
@@ -65,11 +65,13 @@
 
   import { modalProps, modalEvents, useModal } from './modal'
   import { ButtonPresets } from './button-presets'
+  import { autoOrBool } from '../common/props'
 
   import { autoIncrementKeyBuilder } from '@/utils/key-builder'
   import { resolveSize } from '@/utils/size'
   import { isString } from '@/utils/type'
   import { pick } from '@/utils/object'
+  import { warnDeprecated } from '@/utils/compatible'
 
   defineOptions({ name: 'MusselDialog', inheritAttrs: false })
 
@@ -80,6 +82,11 @@
     width: [String, Number],
     height: [String, Number],
     zIndex: String,
+    header: { ...autoOrBool },
+    footer: { ...autoOrBool },
+    bodyClass: null,
+    bodyStyle: null,
+    bodyScrollbar: Boolean,
     buttons: Array,
     icon: [String, Object],
     title: [String, Object],
@@ -91,28 +98,48 @@
 
   const slots = useSlots()
 
-  const getButtonKey = autoIncrementKeyBuilder()
+  if (slots.default && !slots.body) {
+    warnDeprecated({
+      component: 'Dialog',
+      deprecated: 'default slot',
+      alternative: 'body slot'
+    })
+  }
 
-  const { ready, container, modalVisible, hide, onMaskClick } = useModal(props, emit)
+  const {
+    ready,
+    container,
+    modalVisible,
+    hide,
+    onMaskClick
+  } = useModal(props, emit)
 
   const maximized = ref(false)
+  const btnKeyGen = autoIncrementKeyBuilder()
 
-  const stateIcon = computed(() => maximized.value ? 'windowNormalize' : 'windowMaximize')
-  const headerVisible = computed(() => props.title || props.closeButton || props.maximizeButton || slots.header)
-  const footerVisible = computed(() => props.buttons?.length || slots.footer)
+  const headerVisible = computed(() =>
+    props.header === 'auto'
+      ? props.title || props.closeButton || props.maximizeButton || slots.header
+      : props.header
+  )
 
-  const sizeStyle = computed(() => ({
+  const footerVisible = computed(() =>
+    props.footer === 'auto'
+      ? props.buttons?.length || slots.footer
+      : props.footer
+  )
+
+  const size = computed(() => ({
     width: resolveSize(props.width),
     height: resolveSize(props.height)
   }))
 
-  const iconBindings = computed(() =>
-    isString(props.icon) ? { icon: props.icon } : props.icon
-  )
+  const dlgIconAttrs = computed(() => isString(props.icon) ? { icon: props.icon } : props.icon)
+  const dlgStateIcon = computed(() => maximized.value ? 'windowNormalize' : 'windowMaximize')
 
   const footerButtons = computed(() =>
     props.buttons?.map(el => {
-      const { _el, is = 'mu-button', key = getButtonKey(), ...attrs } = isString(el)
+      const { _el, is = 'mu-button', key = btnKeyGen(), ...attrs } = isString(el)
         ? { _el: el, ...ButtonPresets[el] }
         : el
 
@@ -140,17 +167,11 @@
   function correctPosition () {
     if (!modalVisible.value) return
 
-    const {
-      offsetTop: top,
-      offsetLeft: left,
-      offsetHeight: height,
-      offsetWidth: width
-    } = dialogEl.value
+    const { offsetTop: top, offsetLeft: left, offsetHeight: height, offsetWidth: width } = dialogEl.value
+    const { clientHeight: maxHeight, clientWidth: maxWidth } = maskEl.value
 
-    const { clientHeight, clientWidth } = maskEl.value
-
-    const maxTop = clientHeight - (height <= clientHeight ? height : clientHeight)
-    const maxLeft = clientWidth - (width <= clientWidth ? width : clientWidth)
+    const maxTop = maxHeight - (height <= maxHeight ? height : maxHeight)
+    const maxLeft = maxWidth - (width <= maxWidth ? width : maxWidth)
 
     if (top < 0) {
       position.top = 0
@@ -165,13 +186,12 @@
     }
   }
 
-  const onMaskResize = debounce(300, correctPosition)
+  const debounceCorrectPosition = debounce(300, correctPosition)
 
   function onDragStart (event) {
     if (
       maximized.value ||
-      !['mu-dialog__header', 'mu-dialog__title']
-        .find(cls => event.target.classList.contains(cls))
+      !['mu-dialog__header', 'mu-dialog__header-content'].find(cls => event.target.classList.contains(cls))
     ) return
 
     const { pageY, pageX } = event

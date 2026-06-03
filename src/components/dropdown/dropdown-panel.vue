@@ -26,7 +26,7 @@
   import './dropdown-panel.scss'
 
   import { ref, toRef, shallowRef, shallowReactive, computed, provide, inject } from 'vue'
-  import { usePopupManager } from '@/components/common-hooks/popup'
+  import { usePopupManager } from '@/components/common/popup'
   import { useListItems } from '../list/list-items'
 
   import { findUp, isElementInViewport } from '@/utils/dom'

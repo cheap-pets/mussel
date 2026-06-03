@@ -1,19 +1,18 @@
 <template>
   <Teleport v-if="visible || ready" :to="container" :disabled="!teleport">
-    <Transition name="mu-drawer">
+    <Transition name="mu-drawer-">
       <div
         v-show="modalVisible"
         v-bind="maskAttrs"
-        class="mu-drawer-mask mu-modal-mask flex flex-center"
+        class="mu-drawer-mask mu-modal-mask"
         :class="{ 'mu-modal-mask--invisible': !mask }"
         :style="{ zIndex }"
         @click="onMaskClick">
         <div
           v-bind="$attrs"
           class="mu-drawer"
-          :class="`mu-drawer--${position}`"
-          :style="drawerSize"
-          :border-radius="borderRadius ? '' : null">
+          :class="[`mu-drawer--${position}`, rounded && 'mu-drawer--rounded']"
+          :style="drawerSize">
           <slot />
         </div>
       </div>
@@ -35,8 +34,9 @@
     zIndex: String,
     width: [String, Number],
     height: [String, Number],
-    mask: { type: Boolean, default: true },
+    rounded: Boolean,
     teleport: { type: Boolean, default: true },
+    mask: { type: Boolean, default: true },
     position: {
       type: String,
       default: 'bottom',

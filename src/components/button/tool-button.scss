@@ -1,5 +1,5 @@
 .mu-tool-button {
-  --mu-button_size: var(--mu-control-height-normal);
+  --size: var(--mu-control-height-normal);
 
   cursor: pointer;
   user-select: none;
@@ -11,8 +11,8 @@
   align-items: center;
   justify-content: center;
 
-  min-width: var(--mu-button_size);
-  height: var(--mu-button_size);
+  min-width: var(--size);
+  height: var(--size);
   padding: 0;
   border-radius: var(--mu-common-border-radius);
 
@@ -21,18 +21,6 @@
   text-decoration: none;
 
   outline: none;
-
-  &[size="small"] {
-    --mu-button_size: var(--mu-control-height-small);
-
-    font-size: 14px;
-  }
-
-  &[size="large"] {
-    --mu-button_size: var(--mu-control-height-large);
-
-    font-size: 22px;
-  }
 
   & > svg {
     display: block;
@@ -53,6 +41,18 @@
     border:  1px solid var(--mu-primary-color);
     background-color: var(--mu-primary-translucent);
   }
+}
+
+.mu-tool-button--small {
+  --size: var(--mu-control-height-small);
+
+  font-size: 14px;
+}
+
+.mu-tool-button--large {
+  --size: var(--mu-control-height-large);
+
+  font-size: 22px;
 }
 
 .mu-tool-button--danger {

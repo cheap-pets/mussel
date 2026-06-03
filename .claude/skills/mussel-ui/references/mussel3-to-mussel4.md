@@ -49,7 +49,7 @@
    - 废弃 CSS 变量：`--mu-gray-dark`、`--mu-text-color-reversed`、`--mu-text-color-weak`、`--mu-background-normal`、`--mu-background-hover`、`--mu-background-disabled`、`--mu-primary-color-shadow`、`--mu-unit-spacing-size`、`--mu-editor-text-color`、`--mu-text-color-placeholder`
    - 废弃图标：`icon="dropdown"`
    - 废弃事件：`@tab-click`、`@tab-change`、`@close-button-click`、`@mask-click`
-   - 废弃插槽：`<template #left>`/`#right`（ComboBox→`prefix`/`suffix` 属性）、`<template #tab-bar>`（Tabs→`#tab-bar-prepend`/`#tab-bar-append`）
+   - 废弃插槽：`<template #left>`/`#right`（ComboBox→`prefix`/`suffix` 属性）、`<template #tab-bar>`（Tabs→`#tab-bar-prepend`/`#tab-bar-append`）、`<template #client>`/`#header-prepend`/`#header-append`/`#footer-prepend`/`#footer-append`（Dialog→`#body`/`#header`/`#footer`）
    - 废弃子组件属性：`title`（TabButton）、`divider`（ListDivider）、`value`（ListItem）
    - 缺少 `mu-box` class 的 `<mu-form-field>`/`<mu-form>`
    - 非 box 组件上的 `width="100%"`
@@ -297,6 +297,13 @@ Mussel 3 的 `<mu-tabs-buttons>` 已移除。标签按钮现在由 `<mu-tabs>` �
 | `container` | _(已移除)_ | 自动挂载到 body |
 | `@close-button-click` | _(已移除)_ | 关闭按钮点击触发 `hide` 事件 |
 | `@mask-click` | _(已移除)_ | 用 `dismissible` 控制遮罩行为 |
+| `<template #client>` | _(已移除)_ | 不再有整体包裹 slot |
+| `<template #header-prepend>` / `#header-append` | `<template #header>` | header slot 从完全自定义改为附加内容 |
+| `<template #footer-prepend>` / `#footer-append` | `<template #footer>` | footer slot 从完全自定义改为附加内容（插入在按钮之前） |
+| _(无)_ | `header` prop | `'auto'`\|Boolean，控制头部显隐 |
+| _(无)_ | `footer` prop | `'auto'`\|Boolean，控制底部显隐 |
+| _(无)_ | `body-scrollbar` prop | 启用 body 内置滚动条 |
+| _(无)_ | `<template #body>` | 推荐的主体内容插槽，替代 default slot |
 
 > `easy-hide` 在早期 Mussel 4 中曾使用，现已改为 `dismissible`。
 > `dismissible` 支持：`false`（默认值，禁止关闭）、`true`（遮罩+ESC均可关闭）、`'esc'`（仅ESC）、`'mask'`（仅遮罩）。
@@ -847,9 +854,23 @@ const dialogEl = dialogRef.value.dialogEl // dialog 层（.mu-dialog）
   <mu-dialog-body>内容</mu-dialog-body>
 </mu-dialog>
 
-<!-- 升级后：内容直接放入，给根节点添加 padding -->
+<!-- 升级后：使用 #body 插槽（推荐），给根节点添加 padding -->
+<mu-dialog v-model:visible="visible">
+  <template #body>
+    <div style="padding: 16px;">内容</div>
+  </template>
+</mu-dialog>
+
+<!-- 升级后：使用 default 插槽（兼容旧版） -->
 <mu-dialog v-model:visible="visible">
   <div style="padding: 16px;">内容</div>
+</mu-dialog>
+
+<!-- 升级后：启用内置滚动条 -->
+<mu-dialog v-model:visible="visible" body-scrollbar>
+  <template #body>
+    <!-- 内容自动获得自定义滚动条 -->
+  </template>
 </mu-dialog>
 ```
 
@@ -906,9 +927,22 @@ Mussel 3 的 header/body/footer 包裹在 `.mu-dialog_center` 容器中，且有
 <!-- Mussel 4 内部结构 -->
 <div class="mu-dialog">
   <!-- 无 side-panel，无 mu-dialog_center -->
-  <div class="mu-dialog__header">...</div>
-  <slot />                             <!-- body -->
-  <div class="mu-dialog__footer">...</div>
+  <div class="mu-dialog__header">
+    <div class="mu-dialog__header-content">
+      <mu-icon ... />
+      <span class="mu-dialog__title">...</span>
+      <slot name="header" />
+    </div>
+    <div class="mu-dialog__sys-buttons">...</div>
+  </div>
+  <div class="mu-dialog__body">
+    <slot name="body" />               <!-- body 插槽（推荐） -->
+    <slot v-if="!$slots.body" />       <!-- default 插槽（兼容旧版） -->
+  </div>
+  <div class="mu-dialog__footer">
+    <slot name="footer" />             <!-- footer 附加内容 -->
+    <!-- 按钮列表 -->
+  </div>
 </div>
 ```
 
@@ -920,6 +954,11 @@ Mussel 3 的 header/body/footer 包裹在 `.mu-dialog_center` 容器中，且有
 | `side-panel` 插槽已移除 | 侧面板不再支持，需自行实现 |
 | padding 模式变更 | Mussel 3 通过 `.mu-dialog_center > *` 自动给所有子元素加 padding；Mussel 4 用 `--mu-dialog-padding` 变量，仅 header/footer 有 padding，body 需手动添加 |
 | 关闭按钮变更 | Mussel 3 使用 `<mu-icon icon="x">`；Mussel 4 使用 `<mu-tool-button icon="windowClose" danger>` |
+| header/footer 显隐控制 | 新增 `header`/`footer` props（`'auto'`\|Boolean），`'auto'` 时根据内容自动判断，也可显式 `true`/`false` |
+| body 插槽 | 新增 `#body` 插槽（推荐），替代 default slot；default slot 保留作为兼容 |
+| body-scrollbar | 新增 `body-scrollbar` prop，为 body 区域启用自定义滚动条 |
+| header 内部结构 | 新增 `mu-dialog__header-content` 包裹层（图标 + 标题 + header slot） |
+| 移除插槽 | `client`、`header-prepend`、`header-append`、`footer-prepend`、`footer-append` 已移除 |
 | 尺寸默认值变更 | `min-width` 360→320，`max-width/height` 90%→100% |
 
 ### MuDialog 按钮

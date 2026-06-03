@@ -1,5 +1,7 @@
 .mu-dialog {
   --mu-dialog-padding: 12px;
+  --mu-dialog-header-height: 56px;
+  --mu-dialog-footer-height: 56px;
 
   position: absolute;
 
@@ -21,7 +23,7 @@
 
   transition: transform .2s, opacity .2s;
 
-  &[dragging] {
+  &.mu-dialog--dragging {
     opacity: .8;
   }
 }
@@ -43,31 +45,40 @@
 
 .mu-dialog__header,
 .mu-dialog__footer {
-  user-select: none;
-
   display: flex;
   flex: none;
-  gap: 8px;
   align-items: center;
 
-  padding: var(--mu-dialog-padding);
+  padding: 0 var(--mu-dialog-padding);
 
-  line-height: 20px;
   color: var(--mu-text-color-normal);
 
   & > .flex-divider {
     align-self: center;
     height: calc(1em + 2px);
-    margin: 0 var(--mu-base-spacing);
   }
 }
 
-.mu-dialog__header + .mu-dialog__footer {
-  margin-top: auto;
+.mu-dialog__header {
+  user-select: none;
+  height: var(--mu-dialog-header-height);
+}
+
+.mu-dialog__header-content {
+  overflow: hidden;
+  display: flex;
+  flex: 1 1 0;
+  gap: var(--mu-base-spacing);
+  align-items: center;
+  align-self: stretch;
+
+  padding-right: var(--mu-base-spacing);
 }
 
 .mu-dialog__footer {
+  gap: var(--mu-base-spacing);
   justify-content: flex-end;
+  height: var(--mu-dialog-footer-height);
 }
 
 .mu-dialog__body {
@@ -76,16 +87,28 @@
 
 .mu-dialog__icon {
   pointer-events: none;
+  flex: none;
   font-size: 24px;
 }
 
 .mu-dialog__title {
   pointer-events: none;
   flex: 1 1 0;
-  font-size: calc(var(--mu-font-size-normal) + 2px);
+  // font-size: calc(var(--mu-font-size-normal) + 2px);
   font-weight: 600;
 }
 
+.mu-dialog__sys-buttons {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
 .mu-dialog__sys-button {
+  flex: none;
   background: none !important;
+
+  &.mu-tool-button {
+    font-size: 20px;
+  }
 }

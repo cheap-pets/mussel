@@ -1,0 +1,17 @@
+@each $v in ('default', 'auto', 'pointer') {
+  .cursor-#{$v} {
+    cursor: #{$v};
+  }
+}
+
+@each $v in ('none', 'auto', 'all', 'text') {
+  .select-#{$v} {
+    user-select: #{$v};
+  }
+}
+
+@each $v in ('none', 'auto') {
+  .pointer-event-#{$v} {
+    pointer-events: #{$v};
+  }
+}

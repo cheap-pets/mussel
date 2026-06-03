@@ -7,65 +7,45 @@
 
     <!-- Dialog -->
     <div id="div1" class="group">
-      <h3>Advanced Dialog</h3>
-      <mu-button caption="Open Advanced Dialog" @click="openAdvancedDialog" />
+      <h3>Dialog</h3>
+      <mu-button caption="Open Dialog" @click="openDialog" />
       <mu-button caption="Request Fullscreen" secondary button-style="outline" @click="requestFullscreen('#div1')" />
     </div>
 
     <!-- Drawer -->
     <div id="div2" class="group">
-      <h3>Drawer</h3>
+      <h3 class="flex items-center gap-1x">
+        Drawer
+        <mu-switch v-model="maskVisible" label="Mask Visible" />
+        <mu-switch v-model="rounded" label="Rounded Border" />
+      </h3>
+
       <mu-button caption="Top" @click="openDrawer('top')" />
       <mu-button caption="Bottom" @click="openDrawer('bottom')" />
       <mu-button caption="Left" @click="openDrawer('left')" />
       <mu-button caption="Right" @click="openDrawer('right')" />
       <mu-button caption="Request Fullscreen" secondary button-style="outline" @click="requestFullscreen('#div2')" />
-      <mu-switch v-model="maskVisible" label="Mask Visible" />
-      <mu-switch v-model="borderRadius" label="Border Radius" />
     </div>
 
-    <!-- Basic Dialog -->
-    <mu-dialog
-      v-model:visible="dialogVisible"
-      title="Dialog"
-      width="400px">
-      <p>This is a dialog content.</p>
-      <template #footer>
-        <mu-button caption="Close" @click="dialogVisible = false" />
-      </template>
-    </mu-dialog>
-
-    <!-- Confirm Dialog -->
-    <mu-dialog
-      v-model:visible="confirmDialogVisible"
-      title="Confirm"
-      width="400px">
-      <p>Are you sure to continue?</p>
-      <template #footer>
-        <mu-button caption="Cancel" @click="confirmDialogVisible = false" />
-        <mu-button primary caption="OK" @click="confirmDialogVisible = false" />
-      </template>
-    </mu-dialog>
-
-    <!-- Advanced Dialog -->
+    <!-- Dialog -->
     <mu-dialog
       ref="myDialog"
-      id="advancedDialog"
-      v-model:visible="advancedDialogVisible"
-      maximize-button
-      maximize-to-fullscreen
-      title="Advanced Modal Dialog"
+      v-model:visible="dialogVisible"
       width="800"
       height="600"
+      title="Modal Dialog"
       dismissible
-      moveable
       keep-position
+      maximize-button
+      maximize-to-fullscreen
+      body-scrollbar
+      body-class="mu-bg-strong p-3x"
       :lazy="false"
       :icon="{ icon: 'box', style: 'color: var(--mu-secondary-color)' }"
       :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
-      @update:visible="(...args) => onDialogVisibleChange('advancedDialog', ...args)"
+      @update:visible="(...args) => onDialogVisibleChange('myDialog', ...args)"
       @button-click="onButtonClick">
-      <template #header-append>
+      <template #header>
         <mu-input placeholder="find your money" prefix=":icon=search" input-style="solid" round />
         <mu-dropdown-button
           class="mu-icon-button"
@@ -78,12 +58,10 @@
             { label: 'Exit' }
           ]" />
       </template>
-      <div v-mu-scrollbar class="mu-dialog__body mu-bg-strong" style="padding: 24px;">
-        <div style="height: 1000px; font-style: italic; font-size: 16px;">
-          A long time ago in a galaxy far, far away…
-        </div>
+      <div style="height: 1000px; font-size: 16px; font-style: italic;">
+        A long time ago in a galaxy far, far away…
       </div>
-      <template #footer-prepend>
+      <template #footer>
         <mu-input placeholder="where's your money?" />
       </template>
     </mu-dialog>
@@ -93,7 +71,7 @@
       v-model:visible="drawerVisible"
       :position="drawerPosition"
       :mask="maskVisible"
-      :border-radius="borderRadius"
+      :rounded="rounded"
       style="padding: 16px;"
       width="50%"
       dismissible>
@@ -108,19 +86,17 @@
   import ThemeSwitch from '../common/theme-switch.vue'
 
   const dialogVisible = ref(false)
-  const confirmDialogVisible = ref(false)
-  const advancedDialogVisible = ref(false)
   const drawerVisible = ref(false)
   const drawerPosition = ref('left')
   const maskVisible = ref(true)
-  const borderRadius = ref(true)
+  const rounded = ref(true)
 
   const myDialog = ref()
 
   const { proxy } = getCurrentInstance()
 
-  function openAdvancedDialog () {
-    advancedDialogVisible.value = true
+  function openDialog () {
+    dialogVisible.value = true
   }
 
   function openDrawer (position) {

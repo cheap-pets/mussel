@@ -11,6 +11,11 @@
 | `icon` | String\|Object | — | 标题图标 |
 | `width` | String\|Number | — | 窗口宽度 |
 | `height` | String\|Number | — | 窗口高度 |
+| `header` | `'auto'`\|Boolean | `'auto'` | 头部显隐。`'auto'` 时根据 title/icon/close-button/maximize-button/header slot 自动判断 |
+| `footer` | `'auto'`\|Boolean | `'auto'` | 底部显隐。`'auto'` 时根据 buttons/footer slot 自动判断 |
+| `body-class` | String | — | 传给 body 区域的 class |
+| `body-style` | Object | — | 传给 body 区域的 style |
+| `body-scrollbar` | Boolean | — | 为 body 区域启用滚动条（使用 `v-mu-scrollbar`） |
 | `buttons` | Array | — | 底部操作按钮，结构见下方 |
 | `dismissible` | Boolean\|String | — | 点击遮罩或 ESC 关闭。`true`=两者均可，`'esc'`=仅ESC，`'mask'`=仅遮罩。不设置则不自动关闭 |
 | `close-button` | Boolean | `true` | 显示右上角关闭按钮 |
@@ -31,10 +36,10 @@
 
 | 插槽 | 说明 |
 |------|------|
-| `header` | 完全自定义头部 |
-| `header-prepend` / `header-append` | 头部前/后置内容 |
-| `footer` | 完全自定义底部 |
-| `footer-prepend` / `footer-append` | 底部前/后置内容 |
+| `header` | 头部附加内容（插入在标题与系统按钮之间） |
+| `body` | 主体内容（推荐使用） |
+| `default` | 主体内容（兼容旧版，`body` slot 存在时忽略） |
+| `footer` | 底部附加内容（插入在按钮之前） |
 
 **buttons 结构：**
 ```javascript
@@ -54,9 +59,11 @@ buttons: [
   @button-click="onButton"
   @update:visible="onVisibleChange"
 >
-  <mu-form label-width="80px">
-    <!-- 表单内容 -->
-  </mu-form>
+  <template #body>
+    <mu-form label-width="80px">
+      <!-- 表单内容 -->
+    </mu-form>
+  </template>
 </mu-dialog>
 ```
 
@@ -75,7 +82,6 @@ buttons: [
 | `border-radius` | Boolean | — | 是否圆角 |
 | `teleport` | Boolean | `true` | 渲染到页面根容器 |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
-| `dismissible` | Boolean\|String | — | 点击遮罩或 ESC 关闭。`true`=两者均可，`'esc'`=仅ESC，`'mask'`=仅遮罩。不设置则不自动关闭 |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
 | `mask-class` | — | — | 遮罩 class |
 | `mask-attrs` | Object | — | 透传给遮罩的额外属性 |

@@ -1,6 +1,6 @@
 import { computed, inject } from 'vue'
 import { isString, isEmpty } from '@/utils/type'
-import { useCompatible } from '../common-hooks/compatible'
+import { useCompatible } from '../common/compatible'
 
 export const inputProps = {
   invalid: Boolean,

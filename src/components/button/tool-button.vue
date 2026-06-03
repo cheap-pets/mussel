@@ -1,8 +1,7 @@
 <template>
   <a
-    :class="['mu-tool-button', danger && 'mu-tool-button--danger', iconData.cls]"
+    :class="['mu-tool-button', `mu-tool-button--${size}`, danger && 'mu-tool-button--danger', iconData.cls]"
     :icon="icon"
-    :size="size"
     :active="active || null"
     :animation="animation || iconData.animation"
     @click="onClick"

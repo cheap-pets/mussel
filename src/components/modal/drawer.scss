@@ -19,7 +19,7 @@
 
   transition: transform .2s, opacity .2s;
 
-  &.mu-drawer--round {
+  &.mu-drawer--rounded {
     border-radius: var(--mu-window-border-radius);
   }
 
@@ -60,25 +60,25 @@
   }
 }
 
-.mu-drawer-enter-from,
-.mu-drawer-leave-to {
+.mu-drawer--enter-from,
+.mu-drawer--leave-to {
   & > .mu-drawer {
     opacity: 0;
+  }
 
-    &[position=top] {
-      transform: translateY(-100%);
-    }
+  & > .mu-drawer--top {
+    transform: translateY(-100%);
+  }
 
-    &[position=bottom] {
-      transform: translateY(100%);
-    }
+  & > .mu-drawer--bottom {
+    transform: translateY(100%);
+  }
 
-    &[position=left] {
-      transform: translateX(-100%);
-    }
+  & > .mu-drawer--left {
+    transform: translateX(-100%);
+  }
 
-    &[position=right] {
-      transform: translateX(100%);
-    }
+  & > .mu-drawer--right {
+    transform: translateX(100%);
   }
 }
