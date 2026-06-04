@@ -7,7 +7,7 @@
       v-bind="$attrs"
       class="mu-context-menu mu-dropdown-panel"
       :style="popupStyle"
-      @click="onMenuClick"
+      @click="onClick"
       @contextmenu.prevent>
       <slot>
         <component
@@ -119,12 +119,12 @@
     })
   }
 
-  function onMenuClick (event) {
+  function onClick (event) {
     if (
-      event.target.classList.contains('mu-popup--mask') ||
-      findUp(event.target, pEl => {
-        if (pEl.classList.contains('mu-popup--off')) return true
-        if (pEl === menu.value) return false
+      event.target.classList.contains('mu-popup-mask') ||
+      findUp(event.target, el => {
+        if (el.classList.contains('mu-popup-off')) return true
+        if (el === menu.value) return false
       })
     ) {
       hide()

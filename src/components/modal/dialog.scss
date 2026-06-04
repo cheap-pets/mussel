@@ -1,5 +1,4 @@
 .mu-dialog {
-  --mu-dialog-padding: 12px;
   --mu-dialog-header-height: 56px;
   --mu-dialog-footer-height: 56px;
 
@@ -11,7 +10,7 @@
 
   min-width: 320px;
   max-width: 100%;
-  min-height: 200px;
+  min-height: 160px;
   max-height: 100%;
   border-radius: var(--mu-window-border-radius);
 
@@ -49,10 +48,6 @@
   flex: none;
   align-items: center;
 
-  padding: 0 var(--mu-dialog-padding);
-
-  color: var(--mu-text-color-normal);
-
   & > .flex-divider {
     align-self: center;
     height: calc(1em + 2px);
@@ -62,6 +57,7 @@
 .mu-dialog__header {
   user-select: none;
   height: var(--mu-dialog-header-height);
+  padding-right: calc(var(--mu-base-spacing) * 2);
 }
 
 .mu-dialog__header-content {
@@ -73,12 +69,14 @@
   align-self: stretch;
 
   padding-right: var(--mu-base-spacing);
+  padding-left: calc(var(--mu-base-spacing) * 2);
 }
 
 .mu-dialog__footer {
   gap: var(--mu-base-spacing);
   justify-content: flex-end;
   height: var(--mu-dialog-footer-height);
+  padding: 0 calc(var(--mu-base-spacing) * 2);
 }
 
 .mu-dialog__body {
@@ -94,21 +92,27 @@
 .mu-dialog__title {
   pointer-events: none;
   flex: 1 1 0;
-  // font-size: calc(var(--mu-font-size-normal) + 2px);
+  font-size: 14px;
   font-weight: 600;
 }
 
 .mu-dialog__sys-buttons {
   display: flex;
   flex: none;
+  gap: var(--mu-base-spacing);
   align-items: center;
 }
 
 .mu-dialog__sys-button {
+  cursor: pointer;
   flex: none;
-  background: none !important;
+  font-size: 20px;
 
-  &.mu-tool-button {
-    font-size: 20px;
+  &:hover {
+    color: var(--mu-primary-color-4);
+  }
+
+  &[danger]:hover {
+    color: var(--mu-danger-color-4);
   }
 }

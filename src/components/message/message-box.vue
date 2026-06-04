@@ -4,20 +4,23 @@
     v-model:visible="visible"
     class="mu-message-box"
     mask-class="mu-message-mask"
+    body-class="py-1x px-2x"
+    body-scrollbar
+    :icon="icon && { icon, class: iconClass }"
+    :title="title"
     :buttons="buttons"
     :dismissible="dismissible"
     @button-click="onButtonClick"
     @update:visible="onVisibleChange">
-    <mu-message v-bind="{ icon, title, message, type }" />
+    <div class="mu-message-box__message px-4x" v-html="html" />
   </mu-dialog>
 </template>
 
 <script setup>
   import './message-box.scss'
 
-  import MuMessage from './message.vue'
-
-  import { shallowRef, inject } from 'vue'
+  import { shallowRef, computed, inject } from 'vue'
+  import { sanitizeHTML } from '@/utils/dom'
 
   const props = defineProps({
     icon: null,
@@ -33,6 +36,9 @@
 
   const dialog = shallowRef()
   const visible = shallowRef(true)
+
+  const iconClass = computed(() => ['WARN', 'ERROR'].includes(props.type) ? 'text-danger' : 'text-primary')
+  const html = computed(() => sanitizeHTML(props.message))
 
   function onButtonClick (btn) {
     dialog.value.hide(btn.name)

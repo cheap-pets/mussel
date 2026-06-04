@@ -2,15 +2,12 @@
   z-index: calc(var(--mu-z-index-ontop) - 1);
 }
 
-.mu-message-box {
-  &.mu-dialog {
-    max-width: 90%;
-    max-height: 90%;
-  }
+.mu-dialog.mu-message-box {
+  max-width: 80%;
+  max-height: 80%;
+}
 
-  & > .mu-message {
-    overflow: hidden auto;
-    flex: 1 1 auto;
-    padding: 0 calc(var(--mu-base-spacing) * 4);
-  }
+.mu-message-box__message {
+  line-height: 20px;
+  white-space: pre-wrap;
 }

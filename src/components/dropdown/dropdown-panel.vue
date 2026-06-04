@@ -206,9 +206,9 @@
 
   function onClick (event) {
     if (
-      event.target.classList.contains('mu-popup--mask') ||
+      event.target.classList.contains('mu-popup-mask') ||
       findUp(event.target, el => {
-        if (el.classList.contains('mu-popup--off')) return true
+        if (el.classList.contains('mu-popup-off')) return true
         if (el === thisEl.value) return false
       })
     ) {

@@ -35,13 +35,13 @@
       height="600"
       title="Modal Dialog"
       dismissible
+      dispose-on-hide
       keep-position
       maximize-button
       maximize-to-fullscreen
       body-scrollbar
       body-class="mu-bg-strong p-3x"
       :lazy="false"
-      :icon="{ icon: 'box', style: 'color: var(--mu-secondary-color)' }"
       :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
       @update:visible="(...args) => onDialogVisibleChange('myDialog', ...args)"
       @button-click="onButtonClick">
@@ -120,6 +120,10 @@
       proxy.$mussel.messageBox.alert('Cannot find any !')
     } else {
       console.log(button.name)
+
+      if (button.name === 'OK') {
+        dialogVisible.value = false
+      }
     }
   }
 

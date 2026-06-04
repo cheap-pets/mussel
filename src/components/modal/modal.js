@@ -89,12 +89,19 @@ export function useModal (props, emit) {
       }
     }
 
-    modalVisible.value = props.visible
+    modalVisible.value = value
 
-    delay().then(() =>
-      (value === modalVisible.value) &&
-      emit(modalVisible.value ? 'show' : 'hide')
-    )
+    const shouldDispose = props.disposeOnHide
+    const ms = !value && shouldDispose ? 200 : undefined
+
+    delay(ms).then(() => {
+      const mv = modalVisible.value
+
+      if (value !== mv) return
+      if (!mv && shouldDispose) ready.value = false
+
+      emit(mv ? 'show' : 'hide')
+    })
   }
 
   watch(() => props.visible, setModalVisible)

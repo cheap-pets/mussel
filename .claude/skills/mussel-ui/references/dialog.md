@@ -13,7 +13,7 @@
 | `height` | String\|Number | — | 窗口高度 |
 | `header` | `'auto'`\|Boolean | `'auto'` | 头部显隐。`'auto'` 时根据 title/icon/close-button/maximize-button/header slot 自动判断 |
 | `footer` | `'auto'`\|Boolean | `'auto'` | 底部显隐。`'auto'` 时根据 buttons/footer slot 自动判断 |
-| `body-class` | String | — | 传给 body 区域的 class |
+| `body-class` | String | — | 传给 body 区域的 class，通常用于控制其布局方式、间距、背景等 |
 | `body-style` | Object | — | 传给 body 区域的 style |
 | `body-scrollbar` | Boolean | — | 为 body 区域启用滚动条（使用 `v-mu-scrollbar`） |
 | `buttons` | Array | — | 底部操作按钮，结构见下方 |

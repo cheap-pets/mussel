@@ -8,9 +8,10 @@ import MessageBox from './message-box.vue'
 export function pluginMessageBox (app) {
   function showMessage (options) {
     const type = (options.type || 'ALERT').toUpperCase()
+    const typeOption = MessageTypes[type]
 
     options = {
-      ...MessageTypes[type],
+      ...typeOption,
       ...isString(options) ? { message: options } : options
     }
 

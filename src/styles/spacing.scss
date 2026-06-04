@@ -9,6 +9,10 @@ $DIRECTIONS: (
 );
 
 @each $k, $v in $DIRECTIONS {
+  .p#{$k}-0 {
+    padding#{$v}: 0;
+  }
+
   @for $i from 1 through 4 {
     .p#{$k}-#{$i}x {
       padding#{$v}: calc($i * var(--mu-base-spacing));
@@ -21,6 +25,10 @@ $DIRECTIONS: (
 }
 
 @each $k, $v in $DIRECTIONS {
+  .m#{$k}-0 {
+    margin#{$v}: 0;
+  }
+
   @for $i from 1 through 4 {
     .m#{$k}-#{$i}x {
       margin#{$v}: calc($i * var(--mu-base-spacing));

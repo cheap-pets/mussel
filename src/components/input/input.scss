@@ -70,9 +70,14 @@ div.mu-input {
 }
 
 .mu-input {
-  & > span, & > a {
+  & > span {
     flex: none;
     color: var(--mu-text-color-soft);
+  }
+
+  & > a {
+    flex: none;
+    color: var(--mu-text-color-subtle);
   }
 
   & > span {

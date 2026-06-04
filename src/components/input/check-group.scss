@@ -2,7 +2,7 @@
 .mu-radio-group {
   display: flex;
   flex-wrap: wrap;
-  row-gap: 0;
+  row-gap: var(--mu-base-spacing);
   column-gap: calc(var(--mu-base-spacing) * 2);
   align-items: center;
 }

@@ -17,19 +17,19 @@
           :class="{ 'mu-dialog--dragging': dragging }"
           :style="{ ...size, ...position }"
           @mousedown="onDragStart">
-          <div v-if="headerVisible" class="mu-dialog__header">
+          <div v-if="headerVisible" class="mu-dialog__header" :class="headerClass">
             <div class="mu-dialog__header-content">
               <mu-icon v-if="icon" class="mu-dialog__icon" v-bind="dlgIconAttrs" />
               <span v-if="title" class="mu-dialog__title text-ellipsis">{{ title }}</span>
               <slot name="header" />
             </div>
             <div v-if="maximizeButton || closeButton" class="mu-dialog__sys-buttons">
-              <mu-tool-button
+              <mu-icon
                 v-if="maximizeButton"
                 class="mu-dialog__sys-button"
                 :icon="dlgStateIcon + ':hover-shrink'"
                 @click="toggleWindowState" />
-              <mu-tool-button
+              <mu-icon
                 v-if="closeButton"
                 class="mu-dialog__sys-button"
                 icon="windowClose"
@@ -42,7 +42,7 @@
             <slot name="body" />
             <slot v-if="!$slots.body" />
           </div>
-          <div v-if="footerVisible" class="mu-dialog__footer">
+          <div v-if="footerVisible" class="mu-dialog__footer" :class="footerClass">
             <slot name="footer" />
             <component
               :is="el.is"
@@ -84,6 +84,8 @@
     zIndex: String,
     header: { ...autoOrBool },
     footer: { ...autoOrBool },
+    headerClass: null,
+    footerClass: null,
     bodyClass: null,
     bodyStyle: null,
     bodyScrollbar: Boolean,
@@ -270,8 +272,8 @@
   })
 
   defineExpose({
-    hide,
     maskEl,
-    dialogEl
+    dialogEl,
+    hide
   })
 </script>

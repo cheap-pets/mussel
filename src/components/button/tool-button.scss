@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
 
-  min-width: var(--size);
+  width: var(--size);
   height: var(--size);
   padding: 0;
   border-radius: var(--mu-common-border-radius);
@@ -30,7 +30,7 @@
 }
 
 .mu-tool-button {
-  color: var(--mu-text-color-soft);
+  color: var(--mu-text-color-subtle);
 
   &:hover {
     color: var(--mu-primary-color-4);

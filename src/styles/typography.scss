@@ -42,13 +42,6 @@
   white-space: pre-line;
 }
 
-.mu-label {
-  overflow: hidden;
-
-  min-width: 20px;
-
-  font-weight: 500;
-  color: var(--mu-text-color-soft);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.leading-none {
+  line-height: 1;
 }

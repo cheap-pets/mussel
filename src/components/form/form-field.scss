@@ -41,6 +41,7 @@
 .mu-form-field__input {
   position: relative;
   flex: 1 1 0;
+  min-height: var(--mu-control-height-normal);
 
   & > .mu-input,
   & > .mu-input-group {
