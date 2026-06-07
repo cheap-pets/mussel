@@ -57,15 +57,15 @@
   padding: 0;
 }
 
-.mu-button--active {
-  --intent-color: var(--mu-primary-color-6);
-
-  z-index: 1;
-  color: var(--mu-primary-color-6);
-  background: rgb(from var(--mu-primary-color-6) r g b / 0.1);
-}
-
 .mu-button {
+  &[active] {
+    --intent-color: var(--mu-primary-color-6);
+
+    z-index: 1;
+    color: var(--mu-primary-color-6);
+    background: rgb(from var(--mu-primary-color-6) r g b / 0.1);
+  }
+
   &:hover {
     --intent-color: var(--mu-primary-color-4);
 
@@ -88,7 +88,8 @@
       background: var(--intent-color);
     }
 
-    &.mu-button--active {
+    &.mu-button--active,
+    &[active] {
       --intent-color: var(--mu-#{$v}-color-6);
     }
 
@@ -126,8 +127,7 @@
 
 .mu-button--text,
 .mu-button--outline {
-  &:hover,
-  &.mu-button--active {
+  &:hover, &[active] {
     background: rgb(from var(--intent-color) r g b / 0.1);
   }
 }

@@ -22,13 +22,10 @@
   import './tabs.scss'
 
   import { ref, shallowRef, computed, provide, onMounted, nextTick } from 'vue'
-  import { useCompatible } from '../common/compatible'
   import { debounce } from 'throttle-debounce'
 
   defineOptions({ name: 'MusselTabs' })
   defineEmits(['buttonClick'])
-
-  useCompatible('tabs')
 
   const activeTab = defineModel('activeTab', { type: String })
 

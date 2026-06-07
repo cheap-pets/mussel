@@ -164,10 +164,18 @@ const items = [
 | `suffix` | String\|Object | — | 后置文本或按钮 |
 | `tabindex` | String | `-1` | Tab 聚焦顺序 |
 
-| 事件 | 说明 |
-|------|------|
-| `update:modelValue` | 值变更 |
-| `prefix-click` / `suffix-click` | 前/后置按钮点击 |
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `update:modelValue` | value | 值变更 |
+| `input` | Event | 原生 input 事件 |
+| `focus` | Event | 获焦 |
+| `blur` | Event | 失焦 |
+| `click` | Event | 点击 |
+| `keydown` | Event | 键盘按下 |
+| `enter` | — | 回车键（keyCode 13） |
+| `esc` | — | ESC 键（keyCode 27） |
+| `prefix-click` | — | 前置按钮点击 |
+| `suffix-click` | — | 后置按钮点击 |
 
 > 当输入组件置于 `MuFormField` 内部时，表单校验错误状态会自动同步到输入组件的 `invalid` 样式，无需手动设置。输入值变更时也会自动触发该字段的校验。
 

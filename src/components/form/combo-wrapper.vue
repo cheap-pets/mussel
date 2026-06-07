@@ -13,15 +13,11 @@
       {{ pre.content }}
     </component>
     <slot v-bind="inputAttrs">
-      <input v-model="model" v-bind="inputAttrs" @click.stop="onInputClick">
+      <input v-model="model" v-bind="inputAttrs" v-on="comboInputEvents">
     </slot>
     <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click.stop="clear" />
     <mu-icon v-if="dropdownIconAttrs && expandable" tag="a" v-bind="dropdownIconAttrs" />
-    <component
-      :is="suf.is"
-      v-if="suf"
-      v-bind="suf.attrs"
-      @click.stop="onSuffixClick">
+    <component :is="suf.is" v-if="suf" v-bind="suf.attrs" @click.stop="onSuffixClick">
       {{ suf.content }}
     </component>
     <mu-dropdown-panel
@@ -38,7 +34,7 @@
   import './combo-wrapper.scss'
 
   import { computed } from 'vue'
-  import { inputProps, inputEvents, useInput } from './input'
+  import { inputProps, inputEmits, useInput } from './input'
   import { dropdownProps, dropdownEvents, useDropdown } from '../dropdown/dropdown-wrapper'
 
   defineOptions({ name: 'MusselComboWrapper' })
@@ -52,13 +48,14 @@
   })
 
   const emit = defineEmits([
-    ...inputEvents,
+    ...inputEmits,
     ...dropdownEvents
   ])
 
   const {
     wrapperAttrs,
     inputAttrs,
+    inputEvents,
     prefix: pre,
     suffix: suf,
     onPrefixClick,
@@ -66,6 +63,14 @@
     clearButtonVisible,
     clearButtonAttrs
   } = useInput(model, props, emit)
+
+  const comboInputEvents = {
+    ...inputEvents,
+    click (e) {
+      if (!props.readonly && props.editable === false) toggleDropdown()
+      emit('click', e)
+    }
+  }
 
   const {
     wrapper,
@@ -93,10 +98,6 @@
 
   function onWrapperClick () {
     if (!props.disabled && !props.readonly) toggleDropdown()
-  }
-
-  function onInputClick () {
-    if (!props.readonly && props.editable === false) toggleDropdown()
   }
 
   defineExpose({

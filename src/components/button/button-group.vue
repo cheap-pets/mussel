@@ -12,8 +12,8 @@
   const props = defineProps({
     disabled: Boolean,
     primary: Boolean,
-    danger: Boolean,
     secondary: Boolean,
+    danger: Boolean,
     pill: Boolean,
     size: {
       type: String,

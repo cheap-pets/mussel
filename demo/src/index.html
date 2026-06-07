@@ -3,321 +3,599 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Mussel 4 组件演示示例</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mussel 4 — Vue 3 企业级组件库</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --dark: #0f1117;
+      --dark-2: #1a1d27;
+      --dark-3: #252830;
+      --accent: #5b7fff;
+      --accent-dim: rgba(91,127,255,0.12);
+      --accent-hover: #7a9aff;
+      --surface: #ffffff;
+      --surface-2: #f8f9fb;
+      --text-1: #0f1117;
+      --text-2: #4a4e5c;
+      --text-3: #8b8fa3;
+      --text-inv: #ffffff;
+      --text-inv-2: rgba(255,255,255,0.65);
+      --text-inv-3: rgba(255,255,255,0.4);
+      --border: #e3e5eb;
+      --border-dark: rgba(255,255,255,0.08);
+      --radius-sm: 5px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-sm: 0 1px 2px rgba(15,17,23,0.06);
+      --shadow-md: 0 2px 8px rgba(15,17,23,0.08), 0 1px 2px rgba(15,17,23,0.04);
+      --shadow-lg: 0 8px 24px rgba(15,17,23,0.1);
     }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 40px 20px;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--surface);
+      color: var(--text-2);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    .container {
-      max-width: 1200px;
+    /* ── Hero ── */
+    .hero {
+      background: var(--dark);
+      padding: 64px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(91,127,255,0.08) 0%, transparent 70%);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 960px;
       margin: 0 auto;
+      position: relative;
+      z-index: 1;
     }
 
-    h1 {
-      color: white;
-      text-align: center;
-      margin-bottom: 10px;
-      font-size: 2.5rem;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    .hero-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 56px;
     }
 
-    .subtitle {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.9);
-      margin-bottom: 40px;
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .logo-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-inv);
+      letter-spacing: -0.2px;
+    }
+
+    .logo-version {
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-link {
+      color: var(--text-inv-3);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .hero-link:hover { color: var(--text-inv); }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--text-inv);
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .hero-desc {
       font-size: 1.1rem;
+      color: var(--text-inv-2);
+      max-width: 480px;
+      line-height: 1.65;
+      font-weight: 400;
     }
 
+    .hero-meta {
+      display: flex;
+      gap: 32px;
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-dark);
+    }
+
+    .hero-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hero-stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-inv);
+      letter-spacing: -0.3px;
+    }
+
+    .hero-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-inv-3);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Content ── */
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-3);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* ── Launchpad Grid ── */
     .demos-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(6, 1fr);
       gap: 20px;
       margin-bottom: 40px;
     }
 
-    .demo-card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
+    /* ── App Tile ── */
+    .app-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 8px 16px;
       text-decoration: none;
       color: inherit;
-      display: block;
+      outline: none;
+      border-radius: var(--radius-lg);
+      transition: background 0.2s;
     }
 
-    .demo-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    .app-tile:hover {
+      background: var(--surface-2);
     }
 
-    .demo-card h3 {
-      color: #333;
-      margin-bottom: 8px;
-      font-size: 1.3rem;
+    .app-tile:focus-visible {
+      background: var(--surface-2);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .app-tile:active {
+      background: var(--border);
+    }
+
+    .app-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 2px 8px rgba(15,17,23,0.1), 0 1px 3px rgba(15,17,23,0.06);
+    }
+
+    .app-tile:hover .app-icon {
+      transform: scale(1.1);
+    }
+
+    .app-tile:active .app-icon {
+      transform: scale(0.95);
+    }
+
+    .app-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .app-icon--basic { background: linear-gradient(135deg, #4263eb, #5c7cfa); color: #fff; }
+    .app-icon--form  { background: linear-gradient(135deg, #2b8a3e, #40c057); color: #fff; }
+    .app-icon--nav   { background: linear-gradient(135deg, #e67700, #fab005); color: #fff; }
+    .app-icon--data  { background: linear-gradient(135deg, #7048e8, #9775fa); color: #fff; }
+    .app-icon--fb    { background: linear-gradient(135deg, #c92a2a, #f03e3e); color: #fff; }
+    .app-icon--lay   { background: linear-gradient(135deg, #4c51bf, #7f9cf5); color: #fff; }
+    .app-icon--tool  { background: linear-gradient(135deg, #0ca678, #38d9a9); color: #fff; }
+
+    .app-name {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-1);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .app-tile:hover .app-name {
+      color: var(--accent);
+    }
+
+    /* ── Featured Tile ── */
+    .app-tile--featured {
+      grid-column: 5 / -1;
+      grid-row: 1 / 4;
+      flex-direction: row;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      background: var(--dark);
+      border-radius: var(--radius-xl);
+      padding: 32px 28px;
+      color: #fff;
+    }
+
+    .app-tile--featured:hover {
+      background: var(--dark-2);
+    }
+
+    .app-tile--featured:focus-visible {
+      background: var(--dark-2);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .app-tile--featured .app-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      box-shadow: 0 4px 16px rgba(91,127,255,0.3);
+    }
+
+    .app-tile--featured .app-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .app-tile--featured .app-icon:hover {
+      transform: scale(1.05);
+    }
+
+    .featured-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .featured-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-inv);
+      letter-spacing: -0.2px;
+    }
+
+    .featured-desc {
+      font-size: 0.82rem;
+      color: var(--text-inv-2);
+      line-height: 1.6;
+    }
+
+    .featured-cta {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
       display: flex;
       align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      transition: gap 0.2s;
+    }
+
+    .app-tile--featured:hover .featured-cta {
       gap: 8px;
     }
 
-    .demo-card p {
-      color: #666;
-      font-size: 0.9rem;
-      line-height: 1.5;
+    .featured-cta svg {
+      width: 14px;
+      height: 14px;
     }
 
-    .demo-icon {
-      font-size: 1.5rem;
+    /* ── Info bar ── */
+    .info-bar {
+      display: flex;
+      gap: 24px;
+      padding: 16px 20px;
+      background: var(--surface-2);
+      border-radius: var(--radius-md);
+      margin-bottom: 32px;
+      font-size: 0.82rem;
+      color: var(--text-3);
+      border: 1px solid var(--border);
     }
 
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      background: #e0e7ff;
-      color: #4f46e5;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-left: auto;
+    .info-bar span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .info {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 20px;
-      color: white;
-      margin-bottom: 20px;
+    .info-bar code {
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.78rem;
     }
 
-    .info h2 {
-      margin-bottom: 10px;
+    /* ── Footer ── */
+    footer {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-3);
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
     }
 
-    .info code {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
+    footer a {
+      color: var(--text-2);
+      text-decoration: none;
+      font-weight: 500;
     }
 
-    .info ul {
-      margin-left: 20px;
-      line-height: 1.8;
+    footer a:hover { color: var(--accent); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .demos-grid { grid-template-columns: repeat(4, 1fr); }
+      .hero h1 { font-size: 2rem; }
+      .hero-meta { gap: 24px; }
+      .app-tile--featured { grid-column: 1 / -1; grid-row: auto; flex-direction: column; }
+      .info-bar { flex-wrap: wrap; gap: 12px; }
     }
 
-    .footer {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.8);
-      margin-top: 40px;
-      font-size: 0.9rem;
+    @media (max-width: 480px) {
+      .demos-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .hero { padding: 40px 20px 56px; }
+      .hero h1 { font-size: 1.6rem; }
+      .hero-meta { flex-direction: column; gap: 16px; }
+      .app-icon { width: 52px; height: 52px; border-radius: 13px; }
+      .app-icon svg { width: 22px; height: 22px; }
+      .app-name { font-size: 0.72rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎨 Mussel 4 组件演示</h1>
-    <p class="subtitle">Vue 3 组件库示例集合</p>
+  <header class="hero">
+    <div class="hero-inner">
+      <nav class="hero-nav">
+        <a href="./" class="logo">
+          <div class="logo-mark">M</div>
+          <span class="logo-text">Mussel</span>
+          <span class="logo-version">4.0 alpha</span>
+        </a>
+        <a href="https://github.com/cheap-pets/mussel" class="hero-link">GitHub →</a>
+      </nav>
 
-    <div class="info">
-      <h2>📖 使用说明</h2>
-      <ul>
-        <li>点击下方卡片查看各个组件的演示页面</li>
-        <li>构建命令: <code>npm run build:demos</code></li>
-        <li>构建产物位于 <code>demos2/dist/</code> 目录</li>
-        <li>源代码使用 Vue 3 Composition API + Vite 构建</li>
-      </ul>
+      <h1>为管理界面<br>设计的组件库</h1>
+      <p class="hero-desc">基于 Vue 3 Composition API，提供表单、数据展示、布局和交互反馈等企业级组件，开箱即用。</p>
+
+      <div class="hero-meta">
+        <div class="hero-stat">
+          <span class="hero-stat-value">40+</span>
+          <span class="hero-stat-label">组件</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">18</span>
+          <span class="hero-stat-label">演示页</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">0</span>
+          <span class="hero-stat-label">外部运行时依赖</span>
+        </div>
+      </div>
     </div>
+  </header>
+
+  <main class="content">
+    <div class="info-bar">
+      <span>点击卡片进入演示</span>
+      <span>构建 <code>npm run build:demo</code></span>
+      <span>Vue 3 + Vite</span>
+    </div>
+
+    <p class="section-label">组件列表</p>
 
     <div class="demos-grid">
-      <a href="./button/" class="demo-card">
-        <h3>
-          <span class="demo-icon">🔘</span>
-          Button
-          <span class="badge">基础</span>
-        </h3>
-        <p>按钮组件 - 支持多种样式、尺寸和状态</p>
+      <a href="./button/" class="app-tile">
+        <span class="app-icon app-icon--basic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="2"/></svg>
+        </span>
+        <span class="app-name">Button</span>
       </a>
 
-      <a href="./input/" class="demo-card">
-        <h3>
-          <span class="demo-icon">📝</span>
-          Input
-          <span class="badge">表单</span>
-        </h3>
-        <p>输入框组件 - 支持前缀、后缀和多种样式</p>
+      <a href="./input/" class="app-tile">
+        <span class="app-icon app-icon--form">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+        </span>
+        <span class="app-name">Input</span>
       </a>
 
-      <a href="./form/" class="demo-card">
-        <h3>
-          <span class="demo-icon">📋</span>
-          Form
-          <span class="badge">表单</span>
-        </h3>
-        <p>表单布局 - 包含表单字段和表单行</p>
+      <a href="./form/" class="app-tile">
+        <span class="app-icon app-icon--form">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+        </span>
+        <span class="app-name">Form</span>
       </a>
 
-      <a href="./modal/" class="demo-card">
-        <h3>
-          <span class="demo-icon">🪟</span>
-          Modal
-          <span class="badge">弹窗</span>
-        </h3>
-        <p>模态对话框和抽屉面板</p>
+      <a href="./modal/" class="app-tile">
+        <span class="app-icon app-icon--nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+        </span>
+        <span class="app-name">Modal</span>
       </a>
 
-      <a href="./tabs/" class="demo-card">
-        <h3>
-          <span class="demo-icon">📑</span>
-          Tabs
-          <span class="badge">导航</span>
-        </h3>
-        <p>标签页组件 - 支持多种样式</p>
+      <a href="./tabs/" class="app-tile">
+        <span class="app-icon app-icon--nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h14"/></svg>
+        </span>
+        <span class="app-name">Tabs</span>
       </a>
 
-      <a href="./dropdown/" class="demo-card">
-        <h3>
-          <span class="demo-icon">📂</span>
-          Dropdown
-          <span class="badge">导航</span>
-        </h3>
-        <p>下拉菜单组件</p>
+      <a href="./dropdown/" class="app-tile">
+        <span class="app-icon app-icon--nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+        <span class="app-name">Dropdown</span>
       </a>
 
-      <a href="./combo-box/" class="demo-card">
-        <h3>
-          <span class="demo-icon">🔽</span>
-          Combo Box
-          <span class="badge">表单</span>
-        </h3>
-        <p>组合输入框 - 可输入也可下拉选择</p>
+      <a href="./combo-box/" class="app-tile">
+        <span class="app-icon app-icon--form">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M15 9l3 3-3 3"/></svg>
+        </span>
+        <span class="app-name">Combo Box</span>
       </a>
 
-      <a href="./selection/" class="demo-card">
-        <h3>
-          <span class="demo-icon">☑️</span>
-          Selection
-          <span class="badge">表单</span>
-        </h3>
-        <p>选择组件 - 复选框和单选框</p>
+      <a href="./selection/" class="app-tile">
+        <span class="app-icon app-icon--form">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/></svg>
+        </span>
+        <span class="app-name">Selection</span>
       </a>
 
-      <a href="./calendar/" class="demo-card">
-        <h3>
-          <span class="demo-icon">📅</span>
-          Calendar
-          <span class="badge">表单</span>
-        </h3>
-        <p>日历组件</p>
+      <a href="./calendar/" class="app-tile">
+        <span class="app-icon app-icon--form">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+        </span>
+        <span class="app-name">Calendar</span>
       </a>
 
-      <a href="./tree/" class="demo-card">
-        <h3>
-          <span class="demo-icon">🌲</span>
-          Tree
-          <span class="badge">数据</span>
-        </h3>
-        <p>树形组件</p>
+      <a href="./tree/" class="app-tile">
+        <span class="app-icon app-icon--data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v6H4z"/><path d="M14 4h6v6h-6z"/><path d="M4 14h6v6H4z"/><path d="M17 14v7"/><path d="M14 17h6"/></svg>
+        </span>
+        <span class="app-name">Tree</span>
       </a>
 
-      <a href="./color/" class="demo-card">
-        <h3>
-          <span class="demo-icon">🎨</span>
-          Color
-          <span class="badge">工具</span>
-        </h3>
-        <p>颜色选择器和颜色系统</p>
+      <a href="./color/" class="app-tile">
+        <span class="app-icon app-icon--tool">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 14 7 7 0 0 1 0 10"/></svg>
+        </span>
+        <span class="app-name">Color</span>
       </a>
 
-      <a href="./message/" class="demo-card">
-        <h3>
-          <span class="demo-icon">💬</span>
-          Message
-          <span class="badge">反馈</span>
-        </h3>
-        <p>消息提示和通知组件</p>
+      <a href="./message/" class="app-tile">
+        <span class="app-icon app-icon--fb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </span>
+        <span class="app-name">Message</span>
       </a>
 
-      <a href="./flex-layout/" class="demo-card">
-        <h3>
-          <span class="demo-icon">📐</span>
-          Flex Layout
-          <span class="badge">布局</span>
-        </h3>
-        <p>Flex 布局和分隔条</p>
+      <a href="./flex-layout/" class="app-tile">
+        <span class="app-icon app-icon--lay">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18"/></svg>
+        </span>
+        <span class="app-name">Flex Layout</span>
       </a>
 
-      <a href="./grid-layout/" class="demo-card">
-        <h3>
-          <span class="demo-icon">🔲</span>
-          Grid Layout
-          <span class="badge">布局</span>
-        </h3>
-        <p>网格布局</p>
+      <a href="./grid-layout/" class="app-tile">
+        <span class="app-icon app-icon--lay">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>
+        </span>
+        <span class="app-name">Grid Layout</span>
       </a>
 
-      <a href="./scrollbar/" class="demo-card">
-        <h3>
-          <span class="demo-icon">↕️</span>
-          Scrollbar
-          <span class="badge">工具</span>
-        </h3>
-        <p>滚动条样式</p>
+      <a href="./scrollbar/" class="app-tile">
+        <span class="app-icon app-icon--tool">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12l7-7 7 7"/></svg>
+        </span>
+        <span class="app-name">Scrollbar</span>
       </a>
 
-      <a href="./table/" class="demo-card">
-        <h3>
-          <span class="demo-icon">📊</span>
-          Table
-          <span class="badge">数据</span>
-        </h3>
-        <p>表格组件 - 支持排序、分页和多种列类型</p>
+      <a href="./table/" class="app-tile">
+        <span class="app-icon app-icon--data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>
+        </span>
+        <span class="app-name">Table</span>
       </a>
 
-      <a href="./table2/" class="demo-card">
-        <h3>
-          <span class="demo-icon">⚡</span>
-          Big Table
-          <span class="badge">数据</span>
-        </h3>
-        <p>虚拟滚动表格 - 支持大数据量渲染，复用全部列类型</p>
+      <a href="./table2/" class="app-tile">
+        <span class="app-icon app-icon--data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </span>
+        <span class="app-name">Big Table</span>
       </a>
 
-      <a href="./gesture/" class="demo-card">
-        <h3>
-          <span class="demo-icon">👆</span>
-          Gesture
-          <span class="badge">交互</span>
-        </h3>
-        <p>手势交互 - 点击、长按、拖拽</p>
+      <a href="./gesture/" class="app-tile">
+        <span class="app-icon app-icon--fb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/><path d="M15 15l4 4"/></svg>
+        </span>
+        <span class="app-name">Gesture</span>
       </a>
 
-      <a href="./complex-1/" class="demo-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <h3 style="color: white;">
-          <span class="demo-icon">🖥️</span>
-          Admin Console
-          <span class="badge" style="background: rgba(255,255,255,0.2); color: white;">综合</span>
-        </h3>
-        <p style="color: rgba(255,255,255,0.85);">管理控制台综合演示 - 包含侧边栏导航、数据表格、标签页、对话框、表单、统计卡片等完整场景</p>
+      <a href="./complex-1/" class="app-tile app-tile--featured">
+        <span class="app-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h20"/><path d="M8 3v18"/></svg>
+        </span>
+        <div class="featured-info">
+          <span class="featured-title">Admin Console</span>
+          <span class="featured-desc">侧边栏、数据表格、标签页、对话框、表单、统计卡片 — 完整管理界面场景</span>
+          <span class="featured-cta">查看演示 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span>
+        </div>
       </a>
     </div>
+  </main>
 
-    <div class="footer">
-      <p>Built with ❤️ using Mussel 4 • Vue 3 • Vite</p>
-      <p style="margin-top: 10px; opacity: 0.7;">
-        <a href="https://github.com/cheap-pets/mussel" style="color: white;">GitHub</a>
-      </p>
-    </div>
-  </div>
+  <footer>
+    <span>© 2024–2026 cheap-pets · Mussel 4.0</span>
+    <a href="https://github.com/cheap-pets/mussel">GitHub</a>
+  </footer>
 </body>
 </html>

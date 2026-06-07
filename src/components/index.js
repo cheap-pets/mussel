@@ -21,6 +21,7 @@ import MuBadge from './badge/badge.vue'
 import MuTable from './table/table.vue'
 import MuBigTable from './table2/big-table.vue'
 import MuScrollBox from './scrollbar/scroll-box.vue'
+import MuPagination from './pagination/pagination.vue'
 
 function installComponents (app, options) {
   function _install (components) {
@@ -53,7 +54,8 @@ function installComponents (app, options) {
     MuBadge,
     MuTable,
     MuBigTable,
-    MuScrollBox
+    MuScrollBox,
+    MuPagination
   })
 }
 

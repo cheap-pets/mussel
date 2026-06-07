@@ -11,6 +11,7 @@
           prefix="Artist: "
           dropdown-host="$parent"
           :options="artists"
+          @esc="console.log('esc')"
           @prefix-click="onPrefixClick"
           @dropdown:show="onDropdownShow" />
         <mu-button

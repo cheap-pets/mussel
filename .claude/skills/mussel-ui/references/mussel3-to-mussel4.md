@@ -1054,12 +1054,19 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 <mu-input v-model="value" clearable input-style="solid" style="width: 100%;" suffix=":icon=search" />
 ```
 
-新增事件：
+事件变更：
 
-| Mussel 3（MuEditor） | Mussel 4（MuInput） |
-|----------------------|---------------------|
-| _(无专用事件)_ | `@prefix-click` |
-| _(无专用事件)_ | `@suffix-click` |
+| Mussel 3（MuEditor） | Mussel 4（MuInput） | 备注 |
+|----------------------|---------------------|------|
+| `@input` | `@input` | 参数变更：V3 传 `value`，V4 传原生 `Event` |
+| `@click` | `@click` | 不变，传原生 `Event` |
+| `@focus` | `@focus` | 参数变更：V3 传组件 ref，V4 传原生 `Event` |
+| `@blur` | `@blur` | 参数变更：V3 传组件 ref，V4 传原生 `Event` |
+| `@enterkey` | `@enter` | 重命名；参数变更：V3 传组件 ref，V4 无参数 |
+| `@esckey` | `@esc` | 重命名；参数变更：V3 传组件 ref，V4 无参数 |
+| _(无)_ | `@keydown` | 新增，传原生 `Event` |
+| _(无)_ | `@prefix-click` | 新增，前置按钮点击 |
+| _(无)_ | `@suffix-click` | 新增，后置按钮点击 |
 
 ---
 

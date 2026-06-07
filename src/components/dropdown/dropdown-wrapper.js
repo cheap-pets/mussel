@@ -1,5 +1,4 @@
 import { ref, shallowRef, readonly, computed } from 'vue'
-import { useCompatible } from '../common/compatible'
 
 export const dropdownEvents = [
   'action',
@@ -35,8 +34,6 @@ export const optionalProps = {
 }
 
 export function useDropdown (props, emit, options = {}) {
-  useCompatible('dropdown')
-
   const {
     wrapper = shallowRef(),
     dropdownPanel = shallowRef()

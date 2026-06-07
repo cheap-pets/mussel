@@ -2,7 +2,6 @@ import './modal-mask.scss'
 
 import { ref, shallowRef, inject, watch, onMounted } from 'vue'
 import { useModalManager } from '@/components/common/popup'
-import { useCompatible } from '../common/compatible'
 import { delay } from '@/utils/timer'
 
 export const modalProps = {
@@ -28,8 +27,6 @@ function targetIsMask (event) {
 }
 
 export function useModal (props, emit) {
-  useCompatible('modal')
-
   const rootEl = inject('$mussel').rootElement
   const container = shallowRef(rootEl)
 

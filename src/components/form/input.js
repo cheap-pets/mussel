@@ -1,6 +1,5 @@
 import { computed, inject } from 'vue'
 import { isString, isEmpty } from '@/utils/type'
-import { useCompatible } from '../common/compatible'
 
 export const inputProps = {
   invalid: Boolean,
@@ -16,14 +15,19 @@ export const inputProps = {
   }
 }
 
-export const inputEvents = [
+export const inputEmits = [
+  'input',
+  'focus',
+  'blur',
+  'keydown',
+  'enter',
+  'esc',
+  'click',
   'prefixClick',
   'suffixClick'
 ]
 
 export function useInput (model, props, emit) {
-  useCompatible('input')
-
   const formField = inject('formField', {})
 
   const wrapperAttrs = computed(() => ({
@@ -39,6 +43,19 @@ export function useInput (model, props, emit) {
     readonly: props.readonly || props.editable === false,
     placeholder: props.placeholder
   }))
+
+  const inputEvents = {
+    click: e => emit('click', e),
+    input: e => emit('input', e),
+    focus: e => emit('focus', e),
+    blur: e => emit('blur', e),
+    keydown (e) {
+      emit('keydown', e)
+
+      if (e.keyCode === 13) emit('enter', e)
+      else if (e.keyCode === 27) emit('esc', e)
+    }
+  }
 
   const clearButtonAttrs = {
     class: 'mu-input__clear-button',
@@ -88,6 +105,7 @@ export function useInput (model, props, emit) {
   return {
     wrapperAttrs,
     inputAttrs,
+    inputEvents,
     prefix,
     suffix,
     onPrefixClick,

@@ -220,7 +220,7 @@
       height: 24px;
     }
 
-    & > .mu-editor, & > .mu-input {
+    & > .mu-input {
       height: 24px;
     }
 

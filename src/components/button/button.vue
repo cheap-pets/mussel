@@ -1,5 +1,9 @@
 <template>
-  <button type="button" class="mu-button" :class="extraClass">
+  <button
+    type="button"
+    :class="['mu-button', colorClass, extraClass]"
+    :active="active || null"
+    :disabled="isDisabled">
     <slot>
       <mu-icon v-if="icon" :icon="icon" />
       <span>{{ caption }}</span>
@@ -21,8 +25,8 @@
     active: Boolean,
     disabled: Boolean,
     primary: Boolean,
-    danger: Boolean,
     secondary: Boolean,
+    danger: Boolean,
     pill: Boolean,
     size: {
       type: String,
@@ -39,6 +43,10 @@
   })
 
   const group = inject('buttonGroup', null)
+
+  const isDisabled = computed(() =>
+    group?.disabled || props.disabled || null
+  )
 
   function resolveClassName (value) {
     return value && value !== 'normal' && `mu-button--${value}`
@@ -68,26 +76,15 @@
     )
   })
 
-  const appearanceClass = computed(() => {
+  const extraClass = computed(() => {
     function resolve (source) {
       return source && [
         resolveClassName(source.size),
         resolveClassName(source.buttonStyle),
-        resolveClassName(source.buttonStyle !== 'link' && source.pill && 'pill'),
-        resolveClassName(source.disabled && 'disabled')
+        resolveClassName(source.pill && source.buttonStyle !== 'link' && 'pill')
       ].filter(Boolean)
     }
 
     return resolve(group) || resolve(props)
   })
-
-  const activeClass = computed(() =>
-    resolveClassName(props.active && 'active')
-  )
-
-  const extraClass = computed(() => [
-    colorClass.value,
-    appearanceClass.value,
-    activeClass.value
-  ])
 </script>

@@ -72,6 +72,7 @@ $SEMANTIC_COLORS:
   --mu-text-color-subtle: var(--mu-gray-7);
   --mu-text-color-soft: var(--mu-gray-10);
   --mu-text-color-muted: var(--mu-gray-12);
+  --mu-text-color-weak: var(--mu-gray-12); // 兼容性配置，暂留
 
   --mu-border-color-strong: var(--mu-gray-6);
   --mu-border-color-normal: var(--mu-gray-10);

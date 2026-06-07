@@ -3,7 +3,7 @@
     <component :is="pre.is" v-if="pre" v-bind="pre.attrs" class="mu-input__prefix" @click="onPrefixClick">
       {{ pre.content }}
     </component>
-    <input v-model="model" v-bind="inputAttrs">
+    <input v-model="model" v-bind="inputAttrs" v-on="inputEvents">
     <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click="clear" />
     <component :is="suf.is" v-if="suf" v-bind="suf.attrs" class="mu-input__suffix" @click="onSuffixClick">
       {{ suf.content }}
@@ -14,19 +14,20 @@
 <script setup>
   import './input.scss'
 
-  import { inputProps, inputEvents, useInput } from './input'
+  import { inputProps, inputEmits, useInput } from './input'
   import { useFieldModel } from '../form/validation'
 
   defineOptions({ name: 'MusselInput' })
 
   const props = defineProps({ ...inputProps, type: String, modelValue: null })
-  const emit = defineEmits([...inputEvents, 'update:modelValue'])
+  const emit = defineEmits([...inputEmits, 'update:modelValue'])
 
   const { model } = useFieldModel(props, 'modelValue', emit)
 
   const {
     wrapperAttrs,
     inputAttrs,
+    inputEvents,
     prefix: pre,
     suffix: suf,
     onPrefixClick,

@@ -1,9 +1,10 @@
 import { pascalCase } from './case.js'
+import { isDev } from '../env'
 
 const warned = new Set()
 
 export function warnDeprecated ({ component, deprecated, alternative, once = true } = {}) {
-  if (!deprecated) return
+  if (!isDev || !deprecated) return
 
   const prefix = `MUSSEL${component ? ':' + pascalCase(component) : ''}`
 
