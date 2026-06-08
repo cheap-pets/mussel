@@ -33,46 +33,39 @@
           :disabled="shape === 'bubble'" />
         <theme-switch style="margin-left: 16px;" />
       </div>
-      <div class="flex flex-1 p-1x" :style="{ gap }">
-        <div
-          class="block flex-none collapsible"
-          style="min-width: 200px;"
-          recover-size="auto">
-          1
-          <div style="width: 500px">
-            Content
+      <mu-split-h-box class="flex-1 p-1x" resizable :style="{ gap }">
+        <template #left>
+          <div class="block" style="width: 100%; height: 100%">
+            1
+            <div style="width: 500px">
+              Content
+            </div>
           </div>
-        </div>
-        <mu-flex-splitter
-          :size="size"
-          :shape="shape"
-          :stripe="stripe"
-          :space-free="spaceFree" />
-        <div
-          class="flex flex-col flex-1 collapsible"
-          style="overflow: hidden; min-width: 300px;"
-          :style="{ gap }">
-          <div class="block flex-1">
-            2A
+        </template>
+        <template #center>
+          <mu-split-v-box
+            resizable="top"
+            :splitter-size="size"
+            :splitter-shape="shape"
+            style="overflow: hidden; width: 100%; min-width: 300px; height: 100%;">
+            <template #top>
+              <div class="block" style="height: 100%;">
+                2A
+              </div>
+            </template>
+            <template #center>
+              <div class="block" style="height: 100%;">
+                2B
+              </div>
+            </template>
+          </mu-split-v-box>
+        </template>
+        <template #right>
+          <div class="block" style="width: 100%; height: 100%;">
+            3
           </div>
-          <mu-flex-splitter
-            :size="size"
-            :shape="shape"
-            :stripe="stripe"
-            :space-free="spaceFree" />
-          <div class="block flex-1">
-            2B
-          </div>
-        </div>
-        <mu-flex-splitter
-          :size="size"
-          :shape="shape"
-          :stripe="stripe"
-          :space-free="spaceFree" />
-        <div class="block flex-1">
-          3
-        </div>
-      </div>
+        </template>
+      </mu-split-h-box>
     </div>
   </div>
 </template>

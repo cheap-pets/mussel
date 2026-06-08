@@ -1,3 +1,7 @@
+.mu-resizing {
+  pointer-events: none;
+}
+
 .mu-flex-collapsed {
   display: none !important;
 }
@@ -9,6 +13,7 @@
   --mu-flex-splitter_bar-size: var(--mu-flex-splitter_full-size);
   --mu-flex-splitter__stripe-size: 3px;
 
+  pointer-events: auto;
   user-select: none;
 
   position: relative;
@@ -31,11 +36,12 @@
     border-radius: var(--mu-flex-splitter_full-size);
   }
 
-  &[direction] {
+  &--row,
+  &--column {
     display: flex;
   }
 
-  &[size="concealed"] {
+  &--hidden {
     &::before {
       background: transparent;
     }
@@ -45,14 +51,14 @@
     }
   }
 
-  &[size="slim"] {
+  &--slim {
     --mu-flex-splitter_bar-size: var(--mu-flex-splitter_slim-size);
 
     flex-basis: var(--mu-flex-splitter_slim-size);
   }
 
-  &[space-free],
-  &[size="concealed"] {
+  &--space-free,
+  &--hidden {
     flex-basis: 0;
   }
 
@@ -86,13 +92,9 @@
     --mu-flex-splitter_bar-size: var(--mu-flex-splitter_full-size);
   }
 
-  &[resizable="no"] {
+  &--no-resize {
     pointer-events: none;
   }
-}
-
-.mu-resizing :not(.mu-flex-splitter[active]) {
-  pointer-events: none;
 }
 
 .mu-flex-splitter__stripe {
@@ -102,8 +104,8 @@
 }
 
 .mu-flex-splitter {
-  &[size="slim"],
-  &[size="concealed"] {
+  &--slim,
+  &--hidden {
     & > .mu-flex-splitter__stripe {
       display: none;
     }
@@ -117,7 +119,7 @@
   }
 }
 
-.mu-flex-splitter[direction="row"] {
+.mu-flex-splitter--row {
   cursor: col-resize;
 
   &::before {
@@ -131,7 +133,7 @@
   }
 }
 
-.mu-flex-splitter[direction="column"] {
+.mu-flex-splitter--column {
   cursor: row-resize;
 
   &::before {
@@ -145,7 +147,7 @@
   }
 }
 
-.mu-flex-splitter[shape="bubble"] {
+.mu-flex-splitter--bubble {
   &::before {
     background-color: transparent;
   }
@@ -171,7 +173,7 @@
     }
   }
 
-  &[direction="row"] {
+  &.mu-flex-splitter--row {
     &::after {
       top: auto;
       bottom: auto;
@@ -186,7 +188,7 @@
     }
   }
 
-  &[direction="column"] {
+  &.mu-flex-splitter--column {
     &::after {
       right: auto;
       left: auto;

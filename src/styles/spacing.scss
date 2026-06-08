@@ -19,6 +19,10 @@ $DIRECTIONS: (
     }
   }
 
+  .p#{$k}-half {
+    padding#{$v}: calc(var(--mu-base-spacing) / 2);
+  }
+
   .p#{$k}-auto {
     padding#{$v}: auto;
   }
@@ -33,6 +37,10 @@ $DIRECTIONS: (
     .m#{$k}-#{$i}x {
       margin#{$v}: calc($i * var(--mu-base-spacing));
     }
+  }
+
+  .m#{$k}-half {
+    margin#{$v}: calc(var(--mu-base-spacing) / 2);
   }
 
   .m#{$k}-auto {

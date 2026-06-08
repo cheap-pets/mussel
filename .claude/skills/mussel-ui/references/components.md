@@ -79,6 +79,112 @@ Flex 容器内可拖拽调整尺寸的分隔条，**只能用于 flex 容器中*
 
 ---
 
+### MuSplitHBox / MuSplitVBox
+
+可拖拽分割的弹性布局。HBox 水平排列，VBox 垂直排列。内部使用 `MuFlexSplitter` 实现拖拽。
+
+`left` / `right`（HBox）和 `top` / `bottom`（VBox）插槽均为可选——省略后不渲染对应面板，因此可灵活组成**两区**或**三区**可拖动布局：
+
+```html
+<!-- 两区布局：仅 left + center -->
+<mu-split-h-box left-width="240px" resizable="left">
+  <template #left>导航</template>
+  <template #center>主内容</template>
+</mu-split-h-box>
+
+<!-- 两区布局：仅 center + bottom -->
+<mu-split-v-box bottom-height="200px" resizable="bottom">
+  <template #center>主内容</template>
+  <template #bottom>终端</template>
+</mu-split-v-box>
+
+<!-- 三区布局：完整 left + center + right -->
+<mu-split-h-box left-width="200px" right-width="300px" resizable>
+  <template #left>侧边栏</template>
+  <template #center>主内容</template>
+  <template #right>属性面板</template>
+</mu-split-h-box>
+```
+
+**MuSplitHBox 属性：**
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
+| `splitter-size` | String | — | 分隔条尺寸：`normal` \| `slim` \| `hidden` |
+| `splitter-shape` | String | — | 分隔条形状：`line` \| `bubble` |
+| `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始宽度）\| `none`（无响应） |
+| `left-width` | String | `'33.3%'` | 左侧面板初始宽度 |
+| `left-class` | String | — | 左侧面板 class |
+| `left-style` | Object \| String | — | 左侧面板 style |
+| `right-width` | String | `'33.3%'` | 右侧面板初始宽度 |
+| `right-class` | String | — | 右侧面板 class |
+| `right-style` | Object \| String | — | 右侧面板 style |
+| `center-class` | String | — | 中间区域 class |
+| `center-style` | Object \| String | — | 中间区域 style |
+
+**MuSplitHBox 插槽：**
+
+| 插槽 | 说明 |
+|------|------|
+| `left` | 左侧面板内容（有插槽时才渲染） |
+| `center` | 中间内容区 |
+| `right` | 右侧面板内容（有插槽时才渲染） |
+
+```html
+<mu-split-h-box
+  left-width="200px"
+  right-width="300px"
+  resizable
+  splitter-size="slim"
+>
+  <template #left>侧边栏</template>
+  <template #center>主内容</template>
+  <template #right>属性面板</template>
+</mu-split-h-box>
+```
+
+**MuSplitVBox 属性：**
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `resizable` | Boolean \| String | — | 可拖拽面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false` |
+| `splitter-size` | String | — | 分隔条尺寸：`normal` \| `slim` \| `hidden` |
+| `splitter-shape` | String | — | 分隔条形状：`line` \| `bubble` |
+| `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始高度）\| `none`（无响应） |
+| `top-height` | String | `'33.3%'` | 顶部面板初始高度 |
+| `top-class` | String | — | 顶部面板 class |
+| `top-style` | Object \| String | — | 顶部面板 style |
+| `bottom-height` | String | `'33.3%'` | 底部面板初始高度 |
+| `bottom-class` | String | — | 底部面板 class |
+| `bottom-style` | Object \| String | — | 底部面板 style |
+| `center-class` | String | — | 中间区域 class |
+| `center-style` | Object \| String | — | 中间区域 style |
+
+**MuSplitVBox 插槽：**
+
+| 插槽 | 说明 |
+|------|------|
+| `top` | 顶部面板内容（有插槽时才渲染） |
+| `center` | 中间内容区 |
+| `bottom` | 底部面板内容（有插槽时才渲染） |
+
+```html
+<mu-split-v-box
+  top-height="40px"
+  bottom-height="200px"
+  resizable="bottom"
+>
+  <template #top>工具栏</template>
+  <template #center>主内容</template>
+  <template #bottom>日志面板</template>
+</mu-split-v-box>
+```
+
+> **提示：** 双击分隔条可重置面板尺寸到初始值。
+
+---
+
 ### MuScrollBox
 
 带非原生渲染滚动条的容器，由 `overflow` 样式控制滚动方向。

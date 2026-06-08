@@ -1,14 +1,14 @@
 <template>
-  <div class="mu-split-h-box flex flex-row">
+  <div class="mu-split-v-box flex flex-col">
     <div
-      v-if="$slots.left"
-      :class="['mu-split-box__start', leftClass]"
-      :style="[leftStyle, leftWidthStyle]">
-      <slot name="left" />
+      v-if="$slots.top"
+      :class="['mu-split-box__start', topClass]"
+      :style="[topStyle, topHeightStyle]">
+      <slot name="top" />
     </div>
     <splitter
-      v-if="[true, 'left'].includes(resizable)"
-      direction="row"
+      v-if="[true, 'top'].includes(resizable)"
+      direction="column"
       target="prev"
       :size="splitterSize"
       :shape="splitterShape"
@@ -20,18 +20,18 @@
       <slot name="center" />
     </div>
     <splitter
-      v-if="[true, 'right'].includes(resizable)"
-      direction="row"
+      v-if="[true, 'bottom'].includes(resizable)"
+      direction="column"
       target="next"
       :size="splitterSize"
       :shape="splitterShape"
       @dblclick="dblclick === 'reset' && reset('end')"
       @resize-target="resize('end', $event)" />
     <div
-      v-if="$slots.right"
-      :class="['mu-split-box__end', rightClass]"
-      :style="[rightStyle, rightWidthStyle]">
-      <slot name="right" />
+      v-if="$slots.bottom"
+      :class="['mu-split-box__end', bottomClass]"
+      :style="[bottomStyle, bottomHeightStyle]">
+      <slot name="bottom" />
     </div>
   </div>
 </template>
@@ -43,17 +43,17 @@
   import Splitter from './splitter.vue'
 
   const props = defineProps({
-    leftClass: null,
-    leftStyle: null,
-    rightClass: null,
-    rightStyle: null,
+    topClass: null,
+    topStyle: null,
+    bottomClass: null,
+    bottomStyle: null,
     centerClass: null,
     centerStyle: null,
-    leftWidth: { type: String, default: '33.3%' },
-    rightWidth: { type: String, default: '33.3%' },
+    topHeight: { type: String, default: '33.3%' },
+    bottomHeight: { type: String, default: '33.3%' },
     resizable: {
       type: [Boolean, String],
-      validator: v => [false, true, 'left', 'right'].includes(v)
+      validator: v => [false, true, 'top', 'bottom'].includes(v)
     },
     splitterSize: String,
     splitterShape: String,
@@ -65,12 +65,12 @@
   })
 
   const {
-    startSizeStyle: leftWidthStyle,
-    endSizeStyle: rightWidthStyle,
+    startSizeStyle: topHeightStyle,
+    endSizeStyle: bottomHeightStyle,
     init,
     reset,
     resize
   } = useSplitBox()
 
-  onMounted(() => init(props.leftWidth, props.rightWidth))
+  onMounted(() => init(props.topHeight, props.bottomHeight))
 </script>

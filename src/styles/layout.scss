@@ -99,6 +99,10 @@ $FLEX_DIRECTIONS: (
   gap: unset
 }
 
+.gap-half {
+  gap: calc(var(--mu-base-spacing) / 2);
+}
+
 @for $i from 1 through 4 {
   .gap-#{$i}x {
     gap: calc($i * var(--mu-base-spacing));

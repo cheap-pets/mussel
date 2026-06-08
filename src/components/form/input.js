@@ -94,11 +94,11 @@ export function useInput (model, props, emit) {
   const prefix = computed(() => resolveAffixComponent('prefix', props.prefix))
   const suffix = computed(() => resolveAffixComponent('suffix', props.suffix))
 
-  function onPrefixClick () {
+  function onPrefixClick (event) {
     emit('prefixClick')
   }
 
-  function onSuffixClick () {
+  function onSuffixClick (event) {
     emit('suffixClick')
   }
 

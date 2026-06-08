@@ -1,0 +1,17 @@
+.mu-split-box__start,
+.mu-split-box__end {
+  overflow: hidden;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.mu-split-box__center {
+  overflow: hidden;
+  flex-basis: 50px;
+  flex-grow: 1 !important;
+  flex-shrink: 0;
+}
+
+.mu-split-box__splitter {
+  flex: none;
+}

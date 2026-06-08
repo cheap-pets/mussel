@@ -67,7 +67,10 @@
   const comboInputEvents = {
     ...inputEvents,
     click (e) {
-      if (!props.readonly && props.editable === false) toggleDropdown()
+      if (props.readonly || props.editable) {
+        e.stopPropagation()
+      }
+
       emit('click', e)
     }
   }

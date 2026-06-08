@@ -1,12 +1,7 @@
 <template>
   <div
     ref="thisEl"
-    class="mu-flex-splitter"
-    :direction="direction"
-    :size="size"
-    :shape="shape"
-    :resizable="resizable ? null : 'no'"
-    :space-free="spaceFree ? '' : null"
+    :class="cls"
     @dblclick="onDblClick"
     @mousedown="onMouseDown">
     <slot v-if="isStriped" name="stripe">
@@ -32,8 +27,8 @@
     },
     size: {
       type: String,
-      default: () => inject('$mussel').options.splitter?.size || 'full',
-      validate: v => ['full', 'slim', 'concealed'].includes(v)
+      default: () => inject('$mussel').options.splitter?.size || 'hidden',
+      validate: v => ['normal', 'slim', 'hidden'].includes(v)
     },
     shape: {
       type: String,
@@ -61,6 +56,15 @@
   const isStriped = computed(() =>
     props.resizable && props.shape === 'line' && props.stripe
   )
+
+  const cls = computed(() => [
+    'mu-flex-splitter',
+    direction.value && `mu-flex-splitter--${direction.value}`,
+    ['slim', 'hidden'].includes(props.size) && `mu-flex-splitter--${props.size}`,
+    props.shape === 'bubble' && 'mu-flex-splitter--bubble',
+    !props.resizable && 'mu-flex-splitter--no-resize',
+    props.spaceFree && 'mu-flex-splitter--space-free'
+  ])
 
   function isResizableElement (element) {
     const { position, display } = window.getComputedStyle(element)
