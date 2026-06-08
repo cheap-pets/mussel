@@ -42,7 +42,6 @@ function installComponents (app, options) {
   _install(TabsComponents)
   _install(BarComponents)
   _install(CalendarComponents)
-  _install(InputComponents)
   _install(FormComponents)
   _install(ModalComponents)
   _install(DropdownComponents)
