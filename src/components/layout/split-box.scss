@@ -1,3 +1,7 @@
+.mu-split-box {
+  overflow: hidden;
+}
+
 .mu-split-box__start,
 .mu-split-box__end {
   overflow: hidden;
@@ -10,8 +14,4 @@
   flex-basis: 50px;
   flex-grow: 1 !important;
   flex-shrink: 0;
-}
-
-.mu-split-box__splitter {
-  flex: none;
 }

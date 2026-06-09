@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-split-h-box flex flex-row">
+  <div class="mu-split-box flex flex-row">
     <div
       v-if="$slots.left"
       :class="['mu-split-box__start', leftClass]"
@@ -7,10 +7,9 @@
       <slot name="left" />
     </div>
     <splitter
-      v-if="[true, 'left'].includes(resizable)"
+      v-if="$slots.left && [true, 'left'].includes(resizable)"
       direction="row"
       target="prev"
-      :size="splitterSize"
       :shape="splitterShape"
       @dblclick="dblclick === 'reset' && reset('start')"
       @resize-target="resize('start', $event)" />
@@ -20,10 +19,9 @@
       <slot name="center" />
     </div>
     <splitter
-      v-if="[true, 'right'].includes(resizable)"
+      v-if="$slots.right && [true, 'right'].includes(resizable)"
       direction="row"
       target="next"
-      :size="splitterSize"
       :shape="splitterShape"
       @dblclick="dblclick === 'reset' && reset('end')"
       @resize-target="resize('end', $event)" />
@@ -55,7 +53,6 @@
       type: [Boolean, String],
       validator: v => [false, true, 'left', 'right'].includes(v)
     },
-    splitterSize: String,
     splitterShape: String,
     dblclick: {
       type: String,

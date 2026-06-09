@@ -4,38 +4,36 @@
       <div class="mu-bar">
         <h2>Flex-layout & Splitter</h2>
         <mu-select
-          v-model="spaceFree"
-          style="width: 125px;"
-          :options="[
-            { value: false, label: '占用空间' },
-            { value: true, label: '不占空间' }
-          ]" />
-        <mu-select
-          v-model="size"
-          style="width: 125px;"
-          prefix="尺寸:"
-          :options="[
-            { value: 'normal', label: '普通' },
-            { value: 'slim', label: '较细' },
-            { value: 'concealed', label: '隐蔽' }
-          ]" />
-        <mu-select
           v-model="shape"
-          style="width: 125px;"
+          style="width: 130px;"
           prefix="形状:"
           :options="[
-            { value: 'line', label: '线条' },
-            { value: 'bubble', label: '气泡' }
+            { value: 'hidden', label: '隐藏' },
+            { value: 'normal', label: '普通' },
+            { value: 'slim', label: '细条' },
+            { value: 'pill', label: '胶囊' },
+            { value: 'slim-pill', label: '窄胶囊' },
           ]" />
-        <mu-check
-          v-model="stripe"
-          label="显示条纹"
-          :disabled="shape === 'bubble'" />
+        <mu-select
+          v-model="gap"
+          style="width: 115px;"
+          prefix="间距:"
+          :options="[
+            { value: '0', label: '0' },
+            { value: '4px', label: '4px' },
+            { value: '8px', label: '8px' },
+          ]" />
         <theme-switch style="margin-left: 16px;" />
       </div>
-      <mu-split-h-box class="flex-1 p-1x" resizable :style="{ gap }">
+      <mu-split-h-box
+        class="flex-1 p-1x border"
+        resizable
+        left-class="mu-bg-strong"
+        right-class="mu-bg-strong"
+        :splitter-shape="shape"
+        :style="{ gap }">
         <template #left>
-          <div class="block" style="width: 100%; height: 100%">
+          <div class="block">
             1
             <div style="width: 500px">
               Content
@@ -44,24 +42,25 @@
         </template>
         <template #center>
           <mu-split-v-box
-            resizable="top"
-            :splitter-size="size"
+            class="block"
+            resizable
             :splitter-shape="shape"
-            style="overflow: hidden; width: 100%; min-width: 300px; height: 100%;">
+            :style="{ gap }"
+            style="min-width: 300px;">
             <template #top>
               <div class="block" style="height: 100%;">
                 2A
               </div>
             </template>
             <template #center>
-              <div class="block" style="height: 100%;">
+              <div class="block">
                 2B
               </div>
             </template>
           </mu-split-v-box>
         </template>
         <template #right>
-          <div class="block" style="width: 100%; height: 100%;">
+          <div class="block">
             3
           </div>
         </template>
@@ -74,11 +73,8 @@
   import { ref } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
-  const size = ref('full')
-  const shape = ref('line')
-  const stripe = ref(false)
-  const spaceFree = ref(false)
-  const gap = '4px'
+  const shape = ref('normal')
+  const gap = ref('4px')
 
 </script>
 
@@ -86,12 +82,10 @@
   .block {
     overflow: hidden;
 
-    padding: 20px;
-    border: 0px solid var(--mu-border-color-soft);
+    width: 100%;
+    height: 100%;
 
     font-size: 2rem;
     text-align: center;
-
-    background-color: var(--mu-bg-strong);
   }
 </style>

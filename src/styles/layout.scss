@@ -4,6 +4,10 @@
   }
 }
 
+.inset-0 {
+  inset: 0;
+}
+
 @each $v in ('float', 'layer', 'modal', 'popup', 'ontop') {
   .z-#{$v} {
     --z-offset: 0;

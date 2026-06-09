@@ -1,11 +1,11 @@
 <template>
-  <div ref="thisEl" :class="cls" :direction="direction" @mousedown="onMouseDown" />
+  <div :class="cls" :direction="direction" @mousedown="onMouseDown" />
 </template>
 
 <script setup>
-  import { inject, shallowRef, computed } from 'vue'
+  import './splitter.scss'
 
-  const thisEl = shallowRef()
+  import { computed } from 'vue'
 
   const emit = defineEmits(['resize-target'])
 
@@ -18,30 +18,62 @@
       type: String,
       validator: v => ['prev', 'next'].includes(v)
     },
-    size: {
-      type: String,
-      default: 'hidden',
-      validator: v => ['normal', 'slim', 'hidden'].includes(v)
-    },
     shape: {
       type: String,
-      default: () => inject('$mussel').options.splitter?.shape || 'line',
-      validate: v => ['line', 'bubble'].includes(v)
+      default: 'hidden',
+      validator: v => ['hidden', 'normal', 'slim', 'bubble', 'slim-pill'].includes(v)
     }
   })
 
-  const cls = computed(() => [
-    'mu-flex-splitter',
-    `mu-flex-splitter--${props.direction}`,
-    props.shape === 'bubble' && `mu-flex-splitter--${props.shape}`,
-    ['slim', 'hidden'].includes(props.size) && `mu-flex-splitter--${props.size}`
-  ])
+  function prefixClass (className) {
+    return `mu-flex-splitter--${className}`
+  }
+
+  const cls = computed(() =>
+    [
+      'mu-flex-splitter',
+      prefixClass(props.direction === 'column' ? 'col' : 'row'),
+      ['hidden', 'slim', 'pill', 'slim-pill'].includes(props.shape) && prefixClass(props.shape)
+    ].filter(Boolean)
+  )
+
+  function calcSiblingSizeLimit (el) {
+    const {
+      previousElementSibling: prevEl,
+      nextElementSibling: nextEl
+    } = el
+
+    const targetEl =
+      props.target === 'prev' ? prevEl : nextEl
+
+    const isRow = props.direction === 'row'
+    const sizeProp = isRow ? 'Width' : 'Height'
+    const minProp = `min${sizeProp}`
+    const maxProp = `max${sizeProp}`
+
+    const targetCs = getComputedStyle(targetEl)
+
+    const min = parseFloat(targetCs[minProp]) || 0
+    const max = parseFloat(targetCs[maxProp]) || Infinity
+
+    const totalSize = prevEl[`client${sizeProp}`] + nextEl[`client${sizeProp}`]
+    const otherMin = parseFloat(
+      getComputedStyle(props.target === 'prev' ? nextEl : prevEl)[minProp]
+    ) || 0
+
+    return { targetEl, min, max: Math.min(max, totalSize - otherMin) }
+  }
 
   function onMouseDown (event) {
-    const el = thisEl.value
-    const isPrev = props.target === 'prev'
-    const targetEl = isPrev ? el.previousElementSibling : el.nextElementSibling
-    const sign = isPrev ? 1 : -1
+    const el = event.target
+
+    const {
+      previousElementSibling: prevEl,
+      nextElementSibling: nextEl
+    } = el
+
+    const [targetEl, sign] =
+      props.target === 'prev' ? [prevEl, 1] : [nextEl, -1]
 
     const { pageX: startX, pageY: startY } = event
     const { width: startW, height: startH } = targetEl.getBoundingClientRect()
@@ -58,14 +90,14 @@
       props.direction === 'row' ? onMouseMoveX : onMouseMoveY
 
     function onMouseUp () {
-      thisEl.value.removeAttribute('active')
+      el.removeAttribute('active')
       document.body.classList.remove('mu-resizing')
 
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
     }
 
-    thisEl.value.setAttribute('active', true)
+    el.setAttribute('active', true)
     document.body.classList.add('mu-resizing')
 
     window.addEventListener('mousemove', onMouseMove)
