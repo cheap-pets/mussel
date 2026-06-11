@@ -8,11 +8,12 @@
     </div>
     <splitter
       v-if="$slots.left && [true, 'left'].includes(resizable)"
-      direction="row"
       target="prev"
+      direction="row"
       :shape="splitterShape"
-      @dblclick="dblclick === 'reset' && reset('start')"
-      @resize-target="resize('start', $event)" />
+      :collapsible="!!collapsible"
+      @resizing="resize('start', $event)"
+      @dblclick="dblclick === 'reset' && reset('start')" />
     <div
       :class="['mu-split-box__center', centerClass]"
       :style="[centerStyle]">
@@ -20,11 +21,12 @@
     </div>
     <splitter
       v-if="$slots.right && [true, 'right'].includes(resizable)"
-      direction="row"
       target="next"
+      direction="row"
       :shape="splitterShape"
-      @dblclick="dblclick === 'reset' && reset('end')"
-      @resize-target="resize('end', $event)" />
+      :collapsible="collapsible"
+      @resizing="resize('end', $event)"
+      @dblclick="dblclick === 'reset' && reset('end')" />
     <div
       v-if="$slots.right"
       :class="['mu-split-box__end', rightClass]"
@@ -49,11 +51,15 @@
     centerStyle: null,
     leftWidth: { type: String, default: '33.3%' },
     rightWidth: { type: String, default: '33.3%' },
+    splitterShape: String,
     resizable: {
       type: [Boolean, String],
       validator: v => [false, true, 'left', 'right'].includes(v)
     },
-    splitterShape: String,
+    collapsible: {
+      type: [Boolean, String],
+      validator: v => [false, true, 'left', 'right'].includes(v)
+    },
     dblclick: {
       type: String,
       default: 'reset',
@@ -67,7 +73,7 @@
     init,
     reset,
     resize
-  } = useSplitBox()
+  } = useSplitBox(props)
 
   onMounted(() => init(props.leftWidth, props.rightWidth))
 </script>

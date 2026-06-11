@@ -5,33 +5,24 @@
         <h2>Flex-layout & Splitter</h2>
         <mu-select
           v-model="shape"
-          style="width: 130px;"
-          prefix="形状:"
+          style="width: 150px;"
+          prefix="Shape:"
           :options="[
-            { value: 'hidden', label: '隐藏' },
-            { value: 'normal', label: '普通' },
-            { value: 'slim', label: '细条' },
-            { value: 'pill', label: '胶囊' },
-            { value: 'slim-pill', label: '窄胶囊' },
-          ]" />
-        <mu-select
-          v-model="gap"
-          style="width: 115px;"
-          prefix="间距:"
-          :options="[
-            { value: '0', label: '0' },
-            { value: '4px', label: '4px' },
-            { value: '8px', label: '8px' },
+            { value: 'hidden', label: 'hidden' },
+            { value: 'normal', label: 'normal' },
+            { value: 'slim', label: 'slim' },
+            { value: 'pill', label: 'pill' }
           ]" />
         <theme-switch style="margin-left: 16px;" />
       </div>
       <mu-split-h-box
         class="flex-1 p-1x border"
         resizable
+        collapsible
         left-class="mu-bg-strong"
+        left-style="min-width: 300px"
         right-class="mu-bg-strong"
-        :splitter-shape="shape"
-        :style="{ gap }">
+        :splitter-shape="shape">
         <template #left>
           <div class="block">
             1
@@ -44,9 +35,8 @@
           <mu-split-v-box
             class="block"
             resizable
-            :splitter-shape="shape"
-            :style="{ gap }"
-            style="min-width: 300px;">
+            top-class="border-b"
+            :splitter-shape="shape">
             <template #top>
               <div class="block" style="height: 100%;">
                 2A
@@ -73,8 +63,7 @@
   import { ref } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
-  const shape = ref('normal')
-  const gap = ref('4px')
+  const shape = ref('pill')
 
 </script>
 

@@ -11,8 +11,9 @@
       direction="column"
       target="prev"
       :shape="splitterShape"
+      :collapsible="collapsible"
       @dblclick="dblclick === 'reset' && reset('start')"
-      @resize-target="resize('start', $event)" />
+      @resizing="resize('start', $event)" />
     <div
       :class="['mu-split-box__center', centerClass]"
       :style="[centerStyle]">
@@ -23,8 +24,9 @@
       direction="column"
       target="next"
       :shape="splitterShape"
+      :collapsible="!!collapsible"
       @dblclick="dblclick === 'reset' && reset('end')"
-      @resize-target="resize('end', $event)" />
+      @resizing="resize('end', $event)" />
     <div
       v-if="$slots.bottom"
       :class="['mu-split-box__end', bottomClass]"
@@ -49,11 +51,15 @@
     centerStyle: null,
     topHeight: { type: String, default: '33.3%' },
     bottomHeight: { type: String, default: '33.3%' },
+    splitterShape: String,
     resizable: {
       type: [Boolean, String],
       validator: v => [false, true, 'top', 'bottom'].includes(v)
     },
-    splitterShape: String,
+    collapsible: {
+      type: [Boolean, String],
+      validator: v => [false, true, 'top', 'bottom'].includes(v)
+    },
     dblclick: {
       type: String,
       default: 'reset',
@@ -67,7 +73,7 @@
     init,
     reset,
     resize
-  } = useSplitBox()
+  } = useSplitBox(props)
 
   onMounted(() => init(props.topHeight, props.bottomHeight))
 </script>

@@ -1,5 +1,9 @@
 <template>
-  <div :class="cls" :direction="direction" @mousedown="onMouseDown" />
+  <div
+    class="mu-flex-splitter"
+    :class="cls"
+    :direction="direction"
+    @mousedown="onMouseDown" />
 </template>
 
 <script setup>
@@ -7,22 +11,26 @@
 
   import { computed } from 'vue'
 
-  const emit = defineEmits(['resize-target'])
+  import { clamp } from '@/utils/math.js'
+  import { resolvePixel } from '@/utils/size.js'
+
+  const emit = defineEmits(['resizing'])
 
   const props = defineProps({
-    direction: {
-      type: String,
-      validator: v => ['row', 'column'].includes(v)
-    },
     target: {
       type: String,
       validator: v => ['prev', 'next'].includes(v)
     },
+    direction: {
+      type: String,
+      validator: v => ['row', 'column'].includes(v)
+    },
     shape: {
       type: String,
       default: 'hidden',
-      validator: v => ['hidden', 'normal', 'slim', 'bubble', 'slim-pill'].includes(v)
-    }
+      validator: v => ['hidden', 'normal', 'slim', 'pill'].includes(v)
+    },
+    collapsible: Boolean
   })
 
   function prefixClass (className) {
@@ -31,73 +39,82 @@
 
   const cls = computed(() =>
     [
-      'mu-flex-splitter',
       prefixClass(props.direction === 'column' ? 'col' : 'row'),
-      ['hidden', 'slim', 'pill', 'slim-pill'].includes(props.shape) && prefixClass(props.shape)
+      ['hidden', 'slim', 'pill'].includes(props.shape) && prefixClass(props.shape)
     ].filter(Boolean)
   )
 
-  function calcSiblingSizeLimit (el) {
+  function calculateSizeRange (splitterEl) {
     const {
+      parentElement: parentEl,
       previousElementSibling: prevEl,
       nextElementSibling: nextEl
-    } = el
+    } = splitterEl
 
-    const targetEl =
-      props.target === 'prev' ? prevEl : nextEl
+    const [targetEl, centerEl, sign] =
+      props.target === 'prev' ? [prevEl, nextEl, 1] : [nextEl, prevEl, -1]
 
-    const isRow = props.direction === 'row'
-    const sizeProp = isRow ? 'Width' : 'Height'
-    const minProp = `min${sizeProp}`
-    const maxProp = `max${sizeProp}`
+    const propSuffix = props.direction === 'row' ? 'Width' : 'Height'
+    const minProp = `min${propSuffix}`
+    const maxProp = `max${propSuffix}`
+    const clientSizeProp = `client${propSuffix}`
+    const offsetSizeProp = `offset${propSuffix}`
 
-    const targetCs = getComputedStyle(targetEl)
+    const clientSize = parentEl[clientSizeProp]
+    const totalSize = prevEl[offsetSizeProp] + nextEl[offsetSizeProp]
 
-    const min = parseFloat(targetCs[minProp]) || 0
-    const max = parseFloat(targetCs[maxProp]) || Infinity
+    let { [minProp]: tMin, [maxProp]: tMax } = getComputedStyle(targetEl)
+    let { [minProp]: cMin, [maxProp]: cMax, flexBasis: cBas } = getComputedStyle(centerEl)
 
-    const totalSize = prevEl[`client${sizeProp}`] + nextEl[`client${sizeProp}`]
-    const otherMin = parseFloat(
-      getComputedStyle(props.target === 'prev' ? nextEl : prevEl)[minProp]
-    ) || 0
+    ;[tMin = 0, tMax = totalSize, cMin = 0, cMax = totalSize, cBas = 0] =
+      [tMin, tMax, cMin, cMax, cBas].map(v => resolvePixel(v, clientSize))
 
-    return { targetEl, min, max: Math.min(max, totalSize - otherMin) }
+    return {
+      targetEl,
+      sign,
+      tMin,
+      min: Math.max(tMin, totalSize - cMax),
+      max: Math.min(tMax, totalSize - Math.max(cMin, cBas))
+    }
   }
 
   function onMouseDown (event) {
-    const el = event.target
-
-    const {
-      previousElementSibling: prevEl,
-      nextElementSibling: nextEl
-    } = el
-
-    const [targetEl, sign] =
-      props.target === 'prev' ? [prevEl, 1] : [nextEl, -1]
-
-    const { pageX: startX, pageY: startY } = event
+    const { target: splitterEl, pageX: startX, pageY: startY } = event
+    const { targetEl, sign, tMin, min, max } = calculateSizeRange(splitterEl)
     const { width: startW, height: startH } = targetEl.getBoundingClientRect()
 
     function onMouseMoveX (e) {
-      emit('resize-target', startW + (e.pageX - startX) * sign)
+      let size = startW + (e.pageX - startX) * sign
+
+      size = props.collapsible && size < tMin / 2
+        ? 0
+        : clamp(size, min, max)
+
+      emit('resizing', size && `${size}px`)
     }
 
     function onMouseMoveY (e) {
-      emit('resize-target', startH + (e.pageY - startY) * sign)
+      let size = startH + (e.pageY - startY) * sign
+
+      size = props.collapsible && size < tMin / 2
+        ? 0
+        : clamp(size, min, max)
+
+      emit('resizing', size && `${size}px`)
     }
 
     const onMouseMove =
       props.direction === 'row' ? onMouseMoveX : onMouseMoveY
 
     function onMouseUp () {
-      el.removeAttribute('active')
+      splitterEl.removeAttribute('active')
       document.body.classList.remove('mu-resizing')
 
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
     }
 
-    el.setAttribute('active', true)
+    splitterEl.setAttribute('active', true)
     document.body.classList.add('mu-resizing')
 
     window.addEventListener('mousemove', onMouseMove)
