@@ -40,7 +40,7 @@
   const cls = computed(() =>
     [
       prefixClass(props.direction === 'column' ? 'col' : 'row'),
-      ['hidden', 'slim', 'pill'].includes(props.shape) && prefixClass(props.shape)
+      props.shape !== 'normal' && prefixClass(props.shape)
     ].filter(Boolean)
   )
 
