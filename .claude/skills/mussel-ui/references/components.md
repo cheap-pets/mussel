@@ -55,33 +55,24 @@
 
 ---
 
-### MuFlexSplitter
+### 分隔条（Splitter，内部组件）
 
-Flex 容器内可拖拽调整尺寸的分隔条，**只能用于 flex 容器中**。
+`MuSplitHBox` / `MuSplitVBox` 面板之间的可拖拽分隔条是**内部组件**，不再作为独立的 `<mu-flex-splitter>` 公开注册（旧 API 已移除）。分隔条的形态通过 split-box 的 `splitter-shape` 属性控制，形状取值：
 
-| 属性 | 类型 | 默认 | 说明 |
-|------|------|------|------|
-| `size` | String | `full` | 尺寸：`full` \| `slim` \| `concealed` |
-| `shape` | String | — | 形状：`line` \| `bubble` |
-| `stripe` | Boolean | — | 是否显示装饰条纹（仅 `line` 形状有效） |
-| `space-free` | Boolean | `false` | 是否不占用父容器空间 |
-| `collapse-button` | Boolean | `false` | 是否显示收拢按钮 |
-| `collapse-threshold` | Number | `200` | 收拢尺寸阈值（px） |
-| `resizable` | Boolean | `true` | 是否可拖拽 |
+| 取值 | 说明 |
+|------|------|
+| `hidden` | 默认。不占空间、无可见线，但仍可拖拽 |
+| `normal` | 常规宽度的分隔线（4px） |
+| `slim` | 细线（2px） |
+| `pill` | 不占空间，hover/拖拽时浮现的胶囊把手 |
 
-```html
-<div class="mu-h-box" style="height: 100%">
-  <div class="flex-1 overflow-auto">左侧内容</div>
-  <mu-flex-splitter collapse-button size="slim" />
-  <div style="width: 300px">右侧面板</div>
-</div>
-```
+> 分隔条仅在对应面板**可调整尺寸**（`resizable` 包含该侧）且插槽存在时才渲染。拖拽时尺寸受面板 CSS `min-width` / `max-width`（或 height）约束。
 
 ---
 
 ### MuSplitHBox / MuSplitVBox
 
-可拖拽分割的弹性布局。HBox 水平排列，VBox 垂直排列。内部使用 `MuFlexSplitter` 实现拖拽。
+可拖拽分割的弹性布局。HBox 水平排列，VBox 垂直排列。面板间由内部 splitter（分隔条）实现拖拽，并可整体收拢（`collapsible`）。
 
 `left` / `right`（HBox）和 `top` / `bottom`（VBox）插槽均为可选——省略后不渲染对应面板，因此可灵活组成**两区**或**三区**可拖动布局：
 
@@ -111,8 +102,8 @@ Flex 容器内可拖拽调整尺寸的分隔条，**只能用于 flex 容器中*
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
-| `splitter-size` | String | — | 分隔条尺寸：`normal` \| `slim` \| `hidden` |
-| `splitter-shape` | String | — | 分隔条形状：`line` \| `bubble` |
+| `collapsible` | Boolean \| String | — | 可收拢面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`。拖动至该侧 `min-width` 一半以下即收拢为 0 宽（`display:none`），双击重置恢复 |
+| `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`（详见上方「分隔条」） |
 | `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始宽度）\| `none`（无响应） |
 | `left-width` | String | `'33.3%'` | 左侧面板初始宽度 |
 | `left-class` | String | — | 左侧面板 class |
@@ -136,7 +127,8 @@ Flex 容器内可拖拽调整尺寸的分隔条，**只能用于 flex 容器中*
   left-width="200px"
   right-width="300px"
   resizable
-  splitter-size="slim"
+  collapsible
+  splitter-shape="pill"
 >
   <template #left>侧边栏</template>
   <template #center>主内容</template>
@@ -149,8 +141,8 @@ Flex 容器内可拖拽调整尺寸的分隔条，**只能用于 flex 容器中*
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false` |
-| `splitter-size` | String | — | 分隔条尺寸：`normal` \| `slim` \| `hidden` |
-| `splitter-shape` | String | — | 分隔条形状：`line` \| `bubble` |
+| `collapsible` | Boolean \| String | — | 可收拢面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false`。拖动至该侧 `min-height` 一半以下即收拢为 0 高（`display:none`），双击重置恢复 |
+| `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`（详见上方「分隔条」） |
 | `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始高度）\| `none`（无响应） |
 | `top-height` | String | `'33.3%'` | 顶部面板初始高度 |
 | `top-class` | String | — | 顶部面板 class |

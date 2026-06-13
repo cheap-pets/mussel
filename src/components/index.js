@@ -17,7 +17,6 @@ import * as MessageComponents from './message'
 import MuTags from './tag/tags.vue'
 import MuBadge from './badge/badge.vue'
 import MuTable from './table/table.vue'
-import MuBigTable from './table2/big-table.vue'
 import MuScrollBox from './scrollbar/scroll-box.vue'
 import MuPagination from './pagination/pagination.vue'
 
@@ -50,7 +49,6 @@ function installComponents (app, options) {
     MuTags,
     MuBadge,
     MuTable,
-    MuBigTable,
     MuScrollBox,
     MuPagination
   })

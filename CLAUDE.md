@@ -38,99 +38,140 @@ src/
 ├── index.js            # 入口：install() 注册全部组件、颜色、图标、语言
 ├── colors.js           # 颜色系统：调色板生成、CSS 变量注入
 ├── env.js              # 环境变量导出
-├── components/         # 组件目录（每个子目录一个组件族）
-│   ├── button/         # MuButton, MuToolButton, MuButtonGroup
-│   ├── form/           # MuForm, MuFormField, MuFormRow, MuInput, MuSelect, MuComboBox, MuMultiSelect, MuCheck, MuRadio, MuSwitch, MuDateInput, MuSegmented
-│   ├── table/          # MuTable (常规表格，含多种列类型)
-│   ├── table2/         # MuBigTable (虚拟滚动大表)
-│   ├── modal/          # MuDialog, MuDrawer
-│   ├── dropdown/       # MuDropdown, MuDropdownPanel, MuContextMenu, MuDropdownButton
-│   ├── tree/           # MuTree, MuTreeNode
-│   ├── tabs/           # MuTabs, MuTabBar, MuTabPanel
-│   ├── list/           # MuList, MuListItem, MuListDivider
-│   ├── calendar/       # MuCalendar, MuDateTable, MuMonthPicker
-│   ├── message/        # MuMessage, MuMessageBox, MuNotifier, MuStatusBox
-│   ├── layout/         # MuHBox, MuVBox, MuFlexBox, MuFlexSplitter, MuSplitHBox, MuSplitVBox, MuGridBox, MuGridCell
-│   ├── bar/            # MuBar, MuToolbar
-│   ├── pagination/     # MuPagination
-│   ├── icon/           # MuIcon, MuSortIcon
-│   ├── svg/            # MuSvgStripe
-│   ├── tag/            # MuTags
-│   ├── badge/          # MuBadge
-│   ├── scrollbar/      # MuScrollBox + v-mu-scrollbar 指令
-│   └── common/         # 共享工具 (popup.js, props.js)
-├── styles/             # 全局样式
-│   ├── index.js        # 样式入口（统一导出）
-│   ├── root.scss       # CSS 变量定义（颜色、间距、字体、阴影、z-index）
-│   ├── layout.scss     # Flex/Grid 原子类
-│   ├── spacing.scss    # 间距原子类
-│   ├── border.scss     # 边框原子类
-│   ├── typography.scss # 排版原子类
-│   ├── background.scss # 背景色原子类
-│   ├── box-shadow.scss # 阴影原子类
-│   ├── pointer.scss    # 鼠标指针样式
-│   ├── animation.scss  # 动画
-│   ├── link.scss       # 链接样式
-│   └── tag.scss        # 标签样式
-├── utils/              # 工具函数
-│   ├── color.js        # 调色板生成算法
-│   ├── dom.js          # DOM 操作
-│   ├── size.js         # 尺寸解析
-│   ├── date.js         # 日期处理
-│   ├── case.js         # 大小写转换 (kebabCase 等)
-│   ├── type.js         # 类型判断
-│   ├── object.js       # 对象工具
-│   ├── array.js        # 数组工具
-│   ├── string.js       # 字符串工具
-│   ├── vue.js          # Vue 相关工具
-│   ├── prop.js         # 属性工具
-│   ├── style.js        # 样式工具
-│   ├── h.js            # 渲染函数工具
-│   ├── timer.js        # 定时器
-│   ├── crypto.js       # 加密
-│   ├── key-builder.js  # 按键构建器
-│   └── compatible.js   # 废弃 API 兼容/警告
-├── events/             # 事件系统
-│   ├── index.js        # 事件模块入口
-│   ├── custom-event.js
-│   ├── interceptor.js  # EventInterceptor
-│   ├── resize.js       # resize 监听
-│   └── touch/          # 触摸/手势 (tap, pan, press)
-├── icons/              # 图标注册系统
-│   ├── index.js        # 图标注册/安装
-│   ├── svg/            # 内置 SVG 图标
-│   └── tabler-icons.js # Tabler 图标集成
-└── langs/              # 国际化
-    ├── index.js
-    ├── zh.js
-    └── en.js
+├── components/         # 组件目录（每个子目录一个组件族，见下方「组件清单」）
+├── styles/             # 全局样式（见下方「样式文件」）
+├── utils/              # 工具函数（color/dom/date/size/type/object/string/vue/style/h/timer/crypto/key-builder/compatible 等）
+├── events/             # 事件系统（custom-event/interceptor/resize/touch 手势）
+├── icons/              # 图标注册系统（内置 SVG + Tabler 集成）
+└── langs/              # 国际化（zh / en）
 ```
+
+### 关键文件速查
+
+| 用途 | 文件 |
+|------|------|
+| 库入口 | `src/index.js` |
+| 构建配置 | `vite.config.js` |
+| 颜色系统 | `src/colors.js` |
+| CSS 变量定义 | `src/styles/root.scss` |
+| 组件注册 | `src/components/index.js` |
+| 工具函数 | `src/utils/*.js` |
+| 触摸手势 | `src/events/touch/` |
+| 图标系统 | `src/icons/index.js` |
+
+### 组件清单（src/components/）
+
+两级：第一行为目录（仅目录名 + 入口文件，常为 `index.js`），后续缩进行为该目录下注册的组件。
+
+| 目录名 | 组件名 | 说明 | 主文件 | 其他文件 |
+|------|------|------|----------------|---------|
+| `layout/` | | 弹性布局容器与分隔 | `index.js` | flex-box.vue |
+| | MuHBox | 水平排列容器 | h-box.vue | |
+| | MuVBox | 垂直排列容器 | v-box.vue | |
+| | MuSplitHBox | 可拖拽/收拢的水平分隔布局 | split-h-box.vue | split-box.js/scss, splitter.vue/scss |
+| | MuSplitVBox | 可拖拽/收拢的垂直分隔布局 | split-v-box.vue | split-box.js/scss, splitter.vue/scss |
+| | MuGridBox | 网格布局容器 | grid-box.vue | |
+| | MuGridCell | 网格单元 | grid-cell.vue | |
+| | MuFlexDivider / MuFlexSpace / MuFlexBreak | 分隔线 / 弹性占位 / 换行（函数式组件） | index.js（h 函数） | flex-splitter.vue/scss（未注册） |
+| `bar/` | | 条形容器与工具栏 | `index.js` | |
+| | MuBar | 通用条形容器 | bar.vue | bar.scss |
+| | MuToolbar | 工具栏 | toolbar.vue | toolbar.scss |
+| `button/` | | 按钮 | `index.js` | |
+| | MuButton | 按钮 | button.vue | button.scss |
+| | MuToolButton | 图标快捷按钮 | tool-button.vue | tool-button.scss |
+| | MuButtonGroup | 按钮组 | button-group.vue | button-group.scss |
+| `form/` | | 表单与输入控件 | `index.js` | |
+| | MuInput | 文本输入框 | input.vue | input.scss, input.js |
+| | MuInputGroup | 输入框分组 | input-group.vue | input.scss |
+| | MuSelect | 下拉选择（不可输入） | select.vue | select.scss, select.js |
+| | MuMultiSelect | 多选下拉 | multi-select.vue | multi-select.scss, multi-select.js |
+| | MuComboBox | 可输入下拉 | combo-box.vue | combo-wrapper.vue/scss |
+| | MuOption | 选项 | option.vue | |
+| | MuDateInput | 日期选择框 | date-input.vue | date-input.scss, ../calendar/\* |
+| | MuSwitch | 开关 | switch.vue | switch.scss |
+| | MuCheck | 复选 | check.vue | check.scss |
+| | MuCheckGroup | 复选组 | check-group.vue | check-group.scss |
+| | MuRadio | 单选 | radio.vue | |
+| | MuRadioGroup | 单选组 | radio-group.vue | |
+| | MuSegmented | 分段控件 | segmented.vue | segmented.scss |
+| | MuForm | 表单容器（声明式 + 数据驱动） | form.vue | form.scss, validation.js, items.js, input-types.js |
+| | MuFormRow | 表单行 | form-row.vue | |
+| | MuFormField | 表单字段 | form-field.vue | form-field.scss |
+| `dropdown/` | | 下拉与菜单 | `index.js` | dropdown-wrapper.js |
+| | MuDropdownPanel | 下拉面板 | dropdown-panel.vue | dropdown-panel.scss |
+| | MuDropdownItem | 下拉项 | dropdown-item.vue | dropdown-item.scss, dropdown-item.js |
+| | MuDropdownCheckItem | 勾选下拉项 | dropdown-check-item.vue | |
+| | MuDropdownRadioItem | 单选下拉项 | dropdown-radio-item.vue | |
+| | MuDropdown | 下拉触发器 | dropdown.vue | |
+| | MuDropdownButton | 带下拉的按钮 | dropdown-button.vue | |
+| | MuContextMenu | 右键菜单 | context-menu.vue | |
+| `tree/` | | 树 | `index.js` | default-options.js |
+| | MuTree | 树容器 | tree.vue | tree.scss, tree.js |
+| | MuTreeNode | 树节点 | tree-node.vue | |
+| `tabs/` | | 页签 | `index.js` | |
+| | MuTabs | 页签容器 | tabs.vue | tabs.scss |
+| | MuTabBar | 页签按钮栏 | tab-bar/tab-bar.vue | tab-bar/ |
+| | MuTabPanel | 页签面板 | tab-panel.vue | tab-panel.scss |
+| `list/` | | 列表 | `index.js` | list.vue, list-items.js |
+| | MuListItem | 列表项 | list-item.vue | list-item.scss |
+| | MuListDivider | 列表分隔线 | list-divider.vue | list-divider.scss |
+| `calendar/` | | 日历 | `index.js` | calendar-grid.scss |
+| | MuCalendar | 月历 | calendar.vue | calendar.scss, calendar.js |
+| | （内部子组件） | 日期表 / 月份 / 年份选择器 | date-table.vue | month-picker.vue/scss, year-picker.vue/scss |
+| `table/` | | 表格 | —（无 index.js） | |
+| | MuTable | 常规表格（多种列类型） | table.vue | table.scss, table-row.vue, column-types/, utils.js |
+| `modal/` | | 模态 | `index.js` | modal.js, modal-mask.scss, button-presets.js |
+| | MuDialog | 对话框 | dialog.vue | dialog.scss |
+| | MuDrawer | 抽屉 | drawer.vue | drawer.scss |
+| `message/` | | 反馈 | `index.js` | constant.js |
+| | MuStatusBox | 状态提示框 | status-box.vue | status-box.scss |
+| | messageBox / notifier | 消息框 / 通知（`$mussel` API） | message-box.js, notifier.js | message-box.vue/scss, notifier.vue/scss, message.vue/scss |
+| `pagination/` | | 分页 | —（无 index.js） | |
+| | MuPagination | 分页 | pagination.vue | |
+| `icon/` | | 图标 | `index.js` | |
+| | MuIcon | 图标 | icon.vue | icon.scss, icon.js |
+| | MuSortIcon | 排序图标 | sort-icon.vue | |
+| `svg/` | | SVG 装饰 | `index.js` | |
+| | MuSvgStripe | 条纹背景 | svg-stripe.vue | |
+| `tag/` | | 标签 | —（无 index.js） | |
+| | MuTags | 标签组 | tags.vue | tags.scss |
+| `badge/` | | 徽章 | —（无 index.js） | |
+| | MuBadge | 徽章 | badge.vue | badge.scss |
+| `scrollbar/` | | 滚动条 | —（无 index.js） | directive.js |
+| | MuScrollBox + v-mu-scrollbar 指令 | 自定义滚动条容器 | scroll-box.vue | scroll-box.scss, scrollbar.js/scss, attach.js, update-positions.js, track-mouse-events.js |
+| `common/` | | 共享工具（非组件） | — | popup.js, props.js |
+
+### 基础样式文件（src/styles/）
+
+| 文件 | 简介 |
+|------|------|
+| `index.js` | 样式入口（统一导出） |
+| `root.scss` | CSS 变量定义（颜色、间距、字体、阴影、z-index） |
+| `layout.scss` | Flex/Grid 原子类 |
+| `spacing.scss` | 间距原子类 |
+| `border.scss` | 边框原子类 |
+| `typography.scss` | 排版原子类 |
+| `background.scss` | 背景色原子类 |
+| `box-shadow.scss` | 阴影原子类 |
+| `pointer.scss` | 鼠标指针样式 |
+| `animation.scss` | 动画 |
+| `link.scss` | 链接样式 |
+| `tag.scss` | 标签样式 |
 
 ## Architecture & Conventions
 
-### Component Registration
+### 组件约定
 
-组件通过 `Mu` 前缀 + `kebab-case` 自动注册：
-- 源码: `MuButton` → 注册为 `<mu-button>`
-- 每个 `components/<name>/index.js` 导出组件，由 `components/index.js` 统一注册
-
-### Component File Pattern
-
-每个组件典型结构：
-```
-button/
-├── button.vue       # 单文件组件 (<script setup>)
-├── button.scss      # 组件样式（就近放置，组件内 import）
-└── index.js         # 导出
-```
-
-### Vue Component Conventions
-
-- **Composition API + `<script setup>`** — 统一使用，无 Options API
-- `defineOptions({ name: 'MusselXxx' })` — 设置组件名
-- 样式文件在组件内 `import './xxx.scss'` 引入
-- Props 验证使用 `validator` 函数
-- 组件名以 `Mussel` 为内部名前缀，注册名用 `Mu` 前缀
+- **注册**：`Mu` 前缀 + kebab-case 自动注册，源码 `MuButton` → `<mu-button>`；每个 `components/<name>/index.js` 导出，由 `components/index.js` 统一注册
+- **写法**：Composition API + `<script setup>`（无 Options API），`defineOptions({ name: 'MusselXxx' })` 设组件名，Props 用 `validator` 校验
+- **命名**：内部名前缀 `Mussel`，注册名前缀 `Mu`
+- **文件结构**（典型）：
+  ```
+  button/
+  ├── button.vue       # <script setup> 单文件组件
+  ├── button.scss      # 样式就近放置，组件内 import './xxx.scss'
+  └── index.js         # 导出
+  ```
 
 ### CSS Architecture
 
@@ -145,7 +186,7 @@ button/
 - 灰阶: `--mu-gray-0` ~ `--mu-gray-19`（20级）
 - 文本色: `--mu-text-color-strong/normal/subtle/soft/muted`
 - 边框色: `--mu-border-color-strong/normal/soft`
-- z-index: `float(1) < layer(10) < modal(100) < popup(1000) < ontop(10000)`
+- z-index: `--mu-z-index-float(1) < layer(10) < modal(100) < popup(1000) < ontop(10000)`
 
 **Sass 构建注入**: `root.scss` 编译时通过 `vite.config.js` 注入 `$colors` map 和 `@use "sass:map"`
 
@@ -193,7 +234,7 @@ UMD 格式库文件：
 
 | # | 禁止内容 | 应替换为 |
 |---|---------|---------|
-| 1 | 硬编码颜色（`#xxx` / `rgb()` / `red` 等） | `--mu-color-*` CSS 变量 |
+| 1 | 硬编码颜色（`#xxx` / `rgb()` / `red` 等） | `--mu-*` 颜色变量（如 `--mu-primary-color` / `--mu-bg-*`） |
 | 2 | 手写 z-index 数字 | `--mu-z-index-*` 变量 |
 | 3 | 非 8px 体系间距（`12px` / `6px` 等） | 8px 基准倍数值（`{n}x` 系列） |
 | 4 | 能用原子类解决的布局却写 `style` 属性 | 对应原子类 |
@@ -206,51 +247,16 @@ UMD 格式库文件：
 3. **确认样式**：涉及颜色/间距/原子类/布局时，读取 `references/styles.md`
 4. **生成并自检**：对照硬性禁止逐条检查
 
-### 组件速查表
-
-**布局容器**：`<mu-h-box>` / `<mu-v-box>` / `<mu-grid-box>` + `<mu-grid-cell>` / `<mu-flex-splitter>` / `<mu-scroll-box>` 或 `v-mu-scrollbar` / `<mu-svg-stripe>`
-
-**导航/工具栏**：`<mu-bar>` / `<mu-toolbar>` / `<mu-tabs>` + `<mu-tab-panel>` / `<mu-pagination>`
-
-**按钮**：`<mu-button>` / `<mu-button-group>` / `<mu-tool-button>`（纯图标）/ `<mu-dropdown-button>`（带下拉）
-
-**输入组件**：`<mu-input>` / `<mu-select>`（不可输入）/ `<mu-combo-box>`（可输入）/ `<mu-multi-select>` / `<mu-date-input>` / `<mu-check>` / `<mu-radio>` / `<mu-segmented>` / `<mu-switch>`
-
-**表单**：`<mu-form>` 支持声明式（`<mu-form-row>` + `<mu-form-field>`）和数据驱动（`:model` + `:items`）
-
-**模态/抽屉**：`<mu-dialog>` / `<mu-drawer>`
-
-**下拉/菜单**：`<mu-dropdown>` / `<mu-dropdown-panel>` / `<mu-context-menu>`
-
-**数据展示**：`<mu-table>` / `<mu-list-item>` / `<mu-tree>` / `<mu-tags>` / `<mu-calendar>`
-
-**图标/徽章**：`<mu-icon>` / `<mu-sort-icon>` / `<mu-badge>`
-
-**反馈**：`messageBox`（通过 `inject('$mussel')` 获取）/ `<mu-status-box>`
-
 ### 样式要点
 
 - **颜色**：语义扩展色优先（`--mu-primary-color` 等），不用基本色；状态色用语义色；hover 用 `-translucent` 变体
 - **文本**：`.text-strong` / `.text-normal` / `.text-subtle` / `.text-soft` / `.text-muted`
 - **背景**：`--mu-bg-normal` / `--mu-bg-strong` / `--mu-bg-fill` / `--mu-bg-stripe` / `--mu-bg-disabled` / `--mu-bg-mask` / `--mu-bg-overlay`
 - **间距**：`{n}x` 系列（1x=8px，2x=16px，3x=24px，4x=32px），行内元素间距用 `--mu-content-spacing`
-- **z-index**：`float(1) < layer(10) < modal(100) < popup(1000) < ontop(10000)`
 - **阴影**：`--mu-shadow-focus` / `--mu-shadow-float` / `--mu-shadow-popup` / `--mu-shadow-layer` / `--mu-shadow-modal`
 - **布局**：全屏布局用 flex + `flex-1`，不用 `calc(100vh - Xpx)`；平级间距用 `gap`，不给每个子项加 margin
 
-### 已废弃 API（禁止在新代码中使用）
-
-| 废弃属性 | 替代方案 |
-|---------|---------|
-| `primary` / `danger` / `secondary` Boolean（按钮） | `color="primary"` / `color="danger"` / `color="secondary"` |
-| `easy-hide`（模态/抽屉） | `dismissible` |
-| `mask-action` | `dismissible` |
-| `label`（输入） | `prefix` / `suffix` |
-| `solid` / `underline`（输入） | `input-style` |
-| `trigger-action`（下拉） | `dropdown-trigger` |
-| `@tabClick` / `@tabChange` | `@button-click` / `@update:active-tab` |
-
-### 参考文件
+### 参考文档
 
 | 文件 | 内容 |
 |------|------|
@@ -277,16 +283,3 @@ UMD 格式库文件：
 | 🔧 | chore | 构建/配置 |
 
 格式: `<emoji>: <描述>`，subject 限 80 字符，跳过 scope 和 body。
-
-## Key Files Quick Reference
-
-| 用途 | 文件 |
-|------|------|
-| 库入口 | `src/index.js` |
-| 构建配置 | `vite.config.js` |
-| 颜色系统 | `src/colors.js` |
-| CSS 变量定义 | `src/styles/root.scss` |
-| 组件注册 | `src/components/index.js` |
-| 工具函数 | `src/utils/*.js` |
-| 触摸手势 | `src/events/touch/` |
-| 图标系统 | `src/icons/index.js` |

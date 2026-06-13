@@ -3,8 +3,8 @@ name: mussel-ui
 description: >
   编写或修改使用 MUSSEL 4 组件库的 Vue 界面代码时使用，
   包括新建页面、调整已有 UI、Review 代码合规性。
-  用户明确要求将 Mussel 3 代码升级到 Mussel 4 时也必须使用，
-  例如："升级到 Mussel 4"、"迁移到新版 Mussel"。
+  用户明确要求将 Mussel 3 代码升级到 Mussel 4 时也需使用，
+  如："升级到 Mussel 4"、"迁移到新版 Mussel"。
 ---
 
 # MUSSEL 4 开发 Skill
@@ -65,7 +65,7 @@ description: >
 | 水平排列 | `<mu-h-box>` |
 | 垂直排列 | `<mu-v-box>` |
 | 网格布局 | `<mu-grid-box>` + `<mu-grid-cell>` |
-| 可拖拽分隔 | `<mu-flex-splitter>`（只能在 flex 容器内） |
+| 可拖拽分隔 | `<mu-split-h-box>` / `<mu-split-v-box>`（分隔条为内部组件，`collapsible` 可收拢） |
 | 弹性分隔线 | `<mu-flex-divider>` |
 | 弹性占位 | `<mu-flex-space>` |
 | 弹性换行 | `<mu-flex-break>` |

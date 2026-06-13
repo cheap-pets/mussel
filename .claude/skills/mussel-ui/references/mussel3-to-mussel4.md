@@ -18,7 +18,7 @@
   2. [CSS 变量与 CSS 类](#2-css-变量与-css-类)
   3. [图标](#3-图标)
   4. [组件迁移](#4-组件迁移)
-     - [4.1 MuDialog（含 Drawer）](#41-mudialog含-drawer)
+     - [4.1 MuDialog（含 Drawer）](#41-mudialog)
      - [4.2 MuInput（原 MuEditor）](#42-muinput原-mueditor)
      - [4.3 MuComboBox / MuMultiSelect](#43-mucombobox--mumultiselect)
      - [4.4 MuDropdown 系列](#44-mudropdown-系列)
@@ -46,10 +46,25 @@
 - 每次修改都记入升级跟踪文档。
 - 修改前必须先读文件，绝不猜测。
 
+### 前置步骤：确认源目录
+
+1. 查找并初步判断需升级的目录：
+  - 项目中前端源码目录；
+  - 若项目中同时包含 vue2、vue3 版本源码的目录，通常是名称包含 vue3 的目录。
+2. 让用户确认需升级的项目源码目录路径。
+3. 验证路径有效性：
+   - 目录存在且可读
+   - 包含 Vue 组件文件（`.vue`）
+   - 包含 Mussel 3 依赖的迹象（`package.json` 中 mussel 版本 < 4、或 `.vue`/`.js`/`.css` 文件中存在 `mu-editor`/`mu-box`/`mu-tree-view` 等 Mussel 3 模式）
+4. 若路径无效或不包含 Mussel 3 代码，向用户报告原因并重新确认。
+5. 确认后，后续所有阶段均基于此目录操作。
+
+> 此步骤确保升级流程作用于正确目录，避免误改无关项目或遗漏目标文件。
+
 ### 阶段一：分析
 
 1. 读本文件「迁移规则」部分，加载全部规则。
-2. 定位项目根目录（`package.json`、`vite.config.*`）。
+2. 以前置步骤确认的源目录为项目根目录，验证 `package.json`、`vite.config.*` 等配置文件位置。
 3. 用 Grep/Glob 搜索**所有 Mussel 3 模式**，分类：
 
    **布局系统**：
@@ -668,7 +683,7 @@ Mussel 4 新增了完整的原子类系统。完整列表见 `references/styles.
 
 ## 4. 组件迁移
 
-### 4.1 MuDialog（含 Drawer）
+### 4.1 MuDialog
 
 > 完整 MuDialog API：`references/dialog.md`
 
@@ -1517,7 +1532,7 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuCalendar | 月历组件 |
 | MuDrawer | 抽屉面板（上/右/下/左） |
 | MuContextMenu | 右键上下文菜单 |
-| MuFlexSplitter | 可拖拽的 Flex 分隔条 |
+| MuSplitHBox / MuSplitVBox | 可拖拽、可收拢的弹性分隔布局（分隔条为内部组件） |
 | MuToolButton | 仅图标的快捷操作按钮 |
 | MuInputGroup | 输入框分组 |
 | MuToolbar | 工具栏组件 |

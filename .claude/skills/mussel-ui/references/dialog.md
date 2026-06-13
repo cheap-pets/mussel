@@ -79,7 +79,7 @@ buttons: [
 | `height` | String\|Number | — | 高度（top/bottom 时有效） |
 | `dismissible` | Boolean\|String | — | 点击遮罩或 ESC 关闭。`true`=两者均可，`'esc'`=仅ESC，`'mask'`=仅遮罩。不设置则不自动关闭 |
 | `mask` | Boolean | `true` | 是否显示遮罩 |
-| `border-radius` | Boolean | — | 是否圆角 |
+| `rounded` | Boolean | — | 是否圆角 |
 | `teleport` | Boolean | `true` | 渲染到页面根容器 |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |

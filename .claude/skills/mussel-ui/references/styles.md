@@ -84,10 +84,12 @@
 
 ### 1.5 文本颜色（由深到浅）
 
+文本色由 20 级灰阶映射而来（禁止直接用 `--mu-gray-*`，必须用下列语义变量）。近期已将 `normal` 加深，拉开与 `subtle` 的层级。
+
 | 变量 | 原子类 | 适用场景 |
 |------|--------|---------|
-| `--mu-text-color-strong` | `.text-strong` | 用户输入内容、文章正文 |
-| `--mu-text-color-normal` | `.text-normal` | 常规名称、普通标签 |
+| `--mu-text-color-strong` | `.text-strong` | 用户输入内容、文章正文、强调标题 |
+| `--mu-text-color-normal` | `.text-normal` | 默认正文、常规名称、普通标签（页面主文本） |
 | `--mu-text-color-subtle` | `.text-subtle` | 次要信息、描述文字 |
 | `--mu-text-color-soft` | `.text-soft` | 副标题、提示文字 |
 | `--mu-text-color-muted` | `.text-muted` | 禁用状态文字 |
@@ -112,11 +114,13 @@
 
 ### 1.7 边框颜色
 
+边框色由灰阶映射而来（禁止直接用 `--mu-gray-*`）。近期已整体调浅，使边框更柔和，避免喧宾夺主。三档由深到浅：
+
 | 变量 | 原子类 | 用途 |
 |------|--------|------|
 | `--mu-border-color-strong` | `.border-strong` | 强调性分隔、输入框聚焦边框 |
 | `--mu-border-color-normal` | （默认）| 常规组件边框 |
-| `--mu-border-color-soft` | `.border-soft` | 轻量分隔线、卡片边框 |
+| `--mu-border-color-soft` | `.border-soft` | 轻量分隔线、卡片边框、表格内框 |
 
 ---
 
@@ -217,6 +221,8 @@
 | .absolute         | position: absolute |
 | .relative         | position: relative |
 | .sticky           | position: sticky |
+| .inset-0          | inset: 0 |
+
 
 
 

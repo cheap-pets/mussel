@@ -85,6 +85,7 @@
   { prop: 'memo', label: '备注', input: 'memo' }          // <textarea class="mu-input">
   { prop: 'date', label: '日期', input: 'date' }          // <mu-date-input>
   { prop: 'month', label: '月份', input: 'month' }        // <mu-date-input type="month">
+  { prop: 'year', label: '年份', input: 'year' }          // <mu-date-input type="year">
   { prop: 'type', label: '类型', input: 'select' }        // <mu-select>
   { prop: 'tags', label: '标签', input: 'multi-select' }  // <mu-multi-select>
   { prop: 'view', label: '视图', input: 'segmented' }     // <mu-segmented>
@@ -225,14 +226,20 @@ const items = [
 
 ## MuDateInput
 
-日期选择框。
+日期选择框。下拉面板含工具栏（标题、本月/本年按钮、上下翻页）与对应选择网格。
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
-| `type` | String | `date` | `date`（选日期）\| `month`（选月份）|
+| `type` | String | `date` | `date`（选日期）\| `month`（选月份）\| `year`（选年份） |
 | `format` | String | `yyyy-MM-dd` | 日期格式 |
 | `valueType` | String | `date` | 返回值类型：`date` \| `string` \| `object` |
+| `dropdown-class` | String | — | 下拉面板附加 class |
 | (其他) | — | — | 继承 `MuInput` 属性（options 相关除外）|
+
+> - `type="date"`：标题按钮可切换到月份/年份选择网格（标题显示 `年 ~ 年+9` 的十年区间），用于快速跨年跳转。
+> - `type="year"`：直接进入年份选择网格（每屏 10 年，左右翻页切换十年区间），选中即提交并关闭。
+> - `type="month"`：月份选择网格，含十年区间内年份切换 + 12 月份格。
+> - 翻页按钮：日期模式翻月，月份/年份模式翻十年区间；「本月/本年」按钮跳回当前。
 
 ---
 
