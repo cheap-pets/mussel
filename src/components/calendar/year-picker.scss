@@ -1,12 +1,8 @@
-.mu-month-picker {
+.mu-year-picker {
   display: flex;
   flex-direction: column;
 
   & td[data-year]:before {
     content: attr(data-year);
-  }
-
-  & td[data-month]:before {
-    content: attr(data-month);
   }
 }

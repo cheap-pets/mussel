@@ -121,12 +121,14 @@ export function monthEquals (a, b) {
   a = toObject(a)
   b = toObject(b)
 
-  return (
-    a?.year &&
-    b?.year &&
-    a.year === b.year &&
-    a.month === b.month
-  )
+  return a?.year && b?.year && a.year === b.year && a.month === b.month
+}
+
+export function yearEquals (a, b) {
+  a = toObject(a)
+  b = toObject(b)
+
+  return a?.year && b?.year && a.year === b.year
 }
 
 export function formatDate (date, format = 'yyyy-MM-dd') {

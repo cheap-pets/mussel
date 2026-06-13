@@ -16,4 +16,8 @@
 .mu-calendar__dropdown {
   width: 320px;
   height: 240px;
+
+  & > .mu-month-picker {
+    height: 100%;
+  }
 }

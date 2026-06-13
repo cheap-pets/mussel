@@ -39,13 +39,13 @@ $SEMANTIC_COLORS:
   }
 
   --mu-text-color-strong: var(--mu-gray-18);
-  --mu-text-color-normal: var(--mu-gray-14);
+  --mu-text-color-normal: var(--mu-gray-15);
   --mu-text-color-subtle: var(--mu-gray-11);
   --mu-text-color-soft: var(--mu-gray-8);
   --mu-text-color-muted: var(--mu-gray-6);
 
-  --mu-border-color-strong: var(--mu-gray-12);
-  --mu-border-color-normal: var(--mu-gray-8);
+  --mu-border-color-strong: var(--mu-gray-10);
+  --mu-border-color-normal: var(--mu-gray-7);
   --mu-border-color-soft: var(--mu-gray-4);
 
   --mu-bg-normal: #fff;
@@ -75,8 +75,8 @@ $SEMANTIC_COLORS:
   --mu-text-color-weak: var(--mu-gray-12); // 兼容性配置，暂留
 
   --mu-border-color-strong: var(--mu-gray-6);
-  --mu-border-color-normal: var(--mu-gray-10);
-  --mu-border-color-soft: var(--mu-gray-14);
+  --mu-border-color-normal: var(--mu-gray-9);
+  --mu-border-color-soft: var(--mu-gray-12);
 
   --mu-bg-normal: var(--mu-gray-19);
   --mu-bg-strong: rgb(from var(--mu-gray-0) r g b / 0.08);

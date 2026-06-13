@@ -5,43 +5,48 @@
     class="mu-date-input"
     dropdown-icon="calendar"
     :dropdown-class="[dropdownClass, 'mu-calendar']"
-    @dropdown:show="onExpand">
+    @dropdown:show="currentView = type">
     <template #dropdown>
       <mu-toolbar>
-        <div v-if="type === 'month'" class="mu-caption">
+        <div v-if="type !== 'date'" class="mu-caption">
           {{ caption }}
         </div>
         <mu-button
           v-else
           class="mu-caption"
-          :active="selectingMonth"
-          @click="selectingMonth = !selectingMonth">
+          button-style="text"
+          :active="currentView !== 'date'"
+          @click="toggleMonthMode">
           {{ caption }}
-          <mu-icon icon="dropdownExpand" :expanded="selectingMonth || null" />
+          <mu-icon icon="dropdownExpand" :expanded="currentView !== 'date' || null" />
         </mu-button>
-        <template v-if="!selectingMonth">
-          <mu-button :caption="$t('Calendar.THIS_MONTH')" primary @click="setCurrent(today)" />
+        <mu-button
+          button-style="text"
+          :caption="currentButtonCaption"
+          @click="onCurrentButtonClick()" />
+        <template v-if="isDateMode">
           <mu-tool-button icon="chevronUp" @click="prevMonth" />
           <mu-tool-button icon="chevronDown" @click="nextMonth" />
         </template>
-        <mu-button
-          v-else
-          :caption="$t('Calendar.THIS_YEAR')"
-          primary button-style="text"
-          @click="monthSelector.setYear(today.year)" />
       </mu-toolbar>
       <month-picker
-        v-if="selectingMonth"
+        v-if="currentView === 'month'"
         ref="monthSelector"
         v-model="current"
         value-type="Object"
-        @month-cell-click="onMonthCellClick" />
+        @month-cell-click="selectMonth" />
+      <year-picker
+        v-else-if="currentView === 'year'"
+        ref="yearSelector"
+        v-model="current"
+        value-type="Object"
+        @year-cell-click="selectYear" />
       <calendar-grid
         v-else
         :year="year"
         :month="month"
         :selected="selected"
-        @cell-click="onDateCellClick" />
+        @cell-click="selectDate" />
     </template>
   </combo-wrapper>
 </template>
@@ -51,7 +56,7 @@
 
   import { ref, computed } from 'vue'
 
-  import { toString, monthEquals } from '@/utils/date'
+  import { toString, monthEquals, yearEquals } from '@/utils/date'
   import { t as $t } from '@/langs'
 
   import { calendarProps, useCalendar } from '../calendar/calendar'
@@ -60,6 +65,7 @@
   import ComboWrapper from './combo-wrapper.vue'
   import CalendarGrid from '../calendar/date-table.vue'
   import MonthPicker from '../calendar/month-picker.vue'
+  import YearPicker from '../calendar/year-picker.vue'
 
   defineOptions({ name: 'MusselDateInput' })
 
@@ -68,7 +74,7 @@
     type: {
       type: String,
       default: 'date',
-      validator: v => ['date', 'month'].includes(v)
+      validator: v => ['date', 'month', 'year'].includes(v)
     },
     modelValue: { type: [Date, String, Object, Array] },
     ...calendarProps
@@ -88,19 +94,29 @@
     nextMonth,
     setCurrent,
     updateModelValue,
-    onDateCellClick: _onDateCellClick
+    onDateCellClick
   } = useCalendar(model, props)
 
   const wrapper = ref()
   const monthSelector = ref()
-  const selectingMonth = ref()
+  const yearSelector = ref()
+  const currentView = ref()
 
-  const firstYear = computed(() => monthSelector.value?.firstYear)
+  const isDateMode = computed(() => currentView.value === 'date')
+  const firstYear = computed(() =>
+    currentView.value === 'year'
+      ? yearSelector.value?.firstYear
+      : monthSelector.value?.firstYear
+  )
 
   const caption = computed(() =>
-    selectingMonth.value
-      ? `${firstYear.value} ~ ${firstYear.value + 9}`
-      : $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS')[month.value])
+    currentView.value === 'date'
+      ? $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS')[month.value])
+      : `${firstYear.value} ~ ${firstYear.value + 9}`
+  )
+
+  const currentButtonCaption = computed(() =>
+    $t(currentView.value === 'date' ? 'Calendar.THIS_MONTH' : 'Calendar.THIS_YEAR')
   )
 
   const value = computed({
@@ -112,16 +128,26 @@
     }
   })
 
-  function onExpand () {
-    selectingMonth.value = props.type === 'month'
+  function toggleMonthMode () {
+    currentView.value = currentView.value === 'date' ? 'month' : 'date'
   }
 
-  function onDateCellClick (cell) {
-    _onDateCellClick(cell)
+  function onCurrentButtonClick () {
+    if (currentView.value === 'date') {
+      setCurrent(today.value)
+    } else if (currentView.value === 'month') {
+      monthSelector.value.setYear(today.value.year)
+    } else if (currentView.value === 'year') {
+      yearSelector.value.setYear(today.value.year)
+    }
+  }
+
+  function selectDate (cell) {
+    onDateCellClick(cell)
     wrapper.value.collapse()
   }
 
-  function onMonthCellClick () {
+  function selectMonth () {
     if (props.type === 'month') {
       if (!monthEquals(current.value, selected.value)) {
         updateModelValue(current.value)
@@ -129,7 +155,17 @@
 
       wrapper.value.collapse()
     } else {
-      selectingMonth.value = false
+      currentView.value = props.type
+    }
+  }
+
+  function selectYear () {
+    if (props.type === 'year') {
+      if (!yearEquals(current.value, selected.value)) {
+        updateModelValue(current.value)
+      }
+
+      wrapper.value.collapse()
     }
   }
 </script>

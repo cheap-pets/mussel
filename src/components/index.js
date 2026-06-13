@@ -1,4 +1,3 @@
-import { kebabCase } from '@/utils/case'
 import { install as installScrollbarDirective } from './scrollbar/directive'
 
 import * as SvgComponents from './svg'
@@ -27,7 +26,7 @@ function installComponents (app, options) {
     Object
       .entries(components)
       .forEach(([key, component]) =>
-        key.startsWith('Mu') && app.component(kebabCase(key), component)
+        key.startsWith('Mu') && app.component(key, component)
       )
 
     components.install?.(app, options)

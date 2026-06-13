@@ -29,20 +29,6 @@
   }
 }
 
-.mu-tool-button {
-  color: var(--mu-text-color-subtle);
-
-  &:hover {
-    color: var(--mu-primary-color-4);
-    background-color: var(--mu-gray-translucent);
-  }
-
-  &[active] {
-    border:  1px solid var(--mu-primary-color);
-    background-color: var(--mu-primary-translucent);
-  }
-}
-
 .mu-tool-button--small {
   --size: var(--mu-control-height-small);
 
@@ -55,15 +41,42 @@
   font-size: 22px;
 }
 
-.mu-tool-button--danger {
-  &:hover {
-    color: var(--mu-danger-color-4);
-  }
+
+.mu-tool-button {
+  --intent-color: var(--mu-text-color-subtle);
+
+  color: var(--intent-color);
 
   &[active] {
-    border-color: var(--mu-danger-color);
-    background-color: var(--mu-danger-translucent);
+    --intent-color: var(--mu-primary-color-6);
+
+    z-index: 1;
+    border: 1px solid var(--intent-color);
+    background: rgb(from var(--intent-color) r g b / 0.1);
   }
+
+  &:hover,
+  &:active {
+    --intent-color: var(--mu-primary-color-4);
+
+    z-index: 2;
+    background: rgb(from var(--intent-color) r g b / 0.1);
+  }
+
+  &:focus {
+    box-shadow: var(--mu-shadow-focus) rgb(from var(--intent-color) r g b / 0.15);
+  }
+}
+
+.mu-tool-button--danger {
+  &[active] {
+    --intent-color: var(--mu-danger-color-6);
+  }
+
+  &:hover {
+    --intent-color: var(--mu-danger-color-4);
+  }
+
 }
 
 .mu-tool-button[disabled] {

@@ -120,7 +120,7 @@ $FLEX_DIRECTIONS: (
   background-color: var(--mu-border-color-soft);
 
   @for $i from 1 through 4 {
-    &[line-width="#{i}"] {
+    &[line-width="#{$i}"] {
       flex-basis: #{$i}px;
     }
   }

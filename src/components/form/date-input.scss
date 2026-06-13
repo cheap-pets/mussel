@@ -6,7 +6,8 @@
     border-radius: var(--mu-common-border-radius);
   }
 
-  &  > .mu-month-picker {
+  &  > .mu-month-picker,
+  &  > .mu-year-picker {
     flex: 1 1 0;
     margin-top: 4px;
   }

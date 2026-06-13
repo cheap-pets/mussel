@@ -1,5 +1,5 @@
 <template>
-  <table class="mu-calendar__date-table mu-calendar-grid" @sizechange="onResize">
+  <table class="mu-calendar-grid" @sizechange="onResize">
     <thead>
       <th v-for="v in daysOfWeek" :key="v">
         {{ v }}

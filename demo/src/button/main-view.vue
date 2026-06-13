@@ -278,18 +278,18 @@
       <mu-tool-button size="small" icon="chevronUp" />
       <mu-tool-button size="small" icon="chevronRight" danger />
       <mu-tool-button size="small" icon="chevronDown" disabled />
-      <mu-tool-button v-model:active="active1" size="small" icon="chevronLeft" toggle />
+      <mu-tool-button v-model:active="active1" size="small" icon="dots" toggle />
       <mu-tool-button v-model:active="active2" size="small" icon="album" danger toggle />
       <mu-tool-button icon="chevronUp" />
       <mu-tool-button icon="chevronRight" danger />
       <mu-tool-button icon="chevronDown" disabled />
-      <mu-tool-button v-model:active="active1" icon="chevronLeft" toggle />
+      <mu-tool-button v-model:active="active1" icon="dots" toggle />
       <mu-tool-button v-model:active="active2" icon="album" danger toggle />
       <mu-tool-button size="large" icon="chevronUp" />
       <mu-tool-button size="large" icon="chevronRight" danger />
       <mu-tool-button size="large" icon="chevronDown" disabled />
-      <mu-tool-button v-model:active="active1" size="large" icon="chevronLeft" toggle />
-      <mu-tool-button v-model:active="active2" size="large" icon=".ti.ti-file" danger toggle />
+      <mu-tool-button v-model:active="active1" size="large" icon="dots" toggle />
+      <mu-tool-button v-model:active="active2" size="large" icon="album" danger toggle />
     </div>
   </div>
 </template>

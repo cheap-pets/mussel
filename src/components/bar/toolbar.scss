@@ -1,5 +1,6 @@
 .mu-toolbar {
   padding: 0 4px;
+  border-radius: var(--mu-common-border-radius);
   background-color: var(--mu-bg-strong);
 
   & > .mu-caption {

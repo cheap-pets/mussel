@@ -13,13 +13,16 @@
   
   & th {
     height: 40px;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--mu-text-color-soft);
   }
   
   & td {
     cursor: pointer;
+
     border: 1px solid var(--mu-border-color-soft);
+
+    font-weight: 400;
     color: var(--mu-text-color-normal);
     vertical-align: top;
 
@@ -49,5 +52,9 @@
     border: none;
     text-align: center;
     vertical-align: middle;
+  }
+
+  & td {
+    border-radius: var(--mu-common-border-radius);
   }
 }
