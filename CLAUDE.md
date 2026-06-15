@@ -236,7 +236,7 @@ UMD 格式库文件：
 |---|---------|---------|
 | 1 | 硬编码颜色（`#xxx` / `rgb()` / `red` 等） | `--mu-*` 颜色变量（如 `--mu-primary-color` / `--mu-bg-*`） |
 | 2 | 手写 z-index 数字 | `--mu-z-index-*` 变量 |
-| 3 | 非 8px 体系间距（`12px` / `6px` 等） | 8px 基准倍数值（`{n}x` 系列） |
+| 3 | 非基准倍数间距（`12px` / `6px` 等） | `-0` / `-half` / `-1x`~`-4x` 后缀（0/4/8/16/24/32px） |
 | 4 | 能用原子类解决的布局却写 `style` 属性 | 对应原子类 |
 | 5 | 自造 `--mu-*` 变量 | 规范中已定义的变量 |
 
@@ -249,15 +249,17 @@ UMD 格式库文件：
 ### 样式要点
 
 - **颜色**：语义扩展色优先（`--mu-primary-color` 等），不用基本色；状态色用语义色；hover 用 `-translucent` 变体
-- **文本**：`.text-strong` / `.text-normal` / `.text-subtle` / `.text-soft` / `.text-muted`
+- **文本**：`.mu-text-strong` / `.mu-text-normal` / `.mu-text-subtle` / `.mu-text-soft` / `.mu-text-muted`
 - **背景**：`--mu-bg-normal` / `--mu-bg-strong` / `--mu-bg-fill` / `--mu-bg-stripe` / `--mu-bg-disabled` / `--mu-bg-mask` / `--mu-bg-overlay`
-- **间距**：`{n}x` 系列（1x=8px，2x=16px，3x=24px，4x=32px），行内元素间距用 `--mu-content-spacing`
+- **间距**：`-0` / `-half` / `-1x`~`-4x` 后缀（0/4/8/16/24/32px），行内元素间距用 `--mu-content-spacing`
 - **阴影**：`--mu-shadow-focus` / `--mu-shadow-float` / `--mu-shadow-popup` / `--mu-shadow-layer` / `--mu-shadow-modal`
 - **布局**：全屏布局用 flex + `flex-1`，不用 `calc(100vh - Xpx)`；平级间距用 `gap`，不给每个子项加 margin
 
 ### 参考文档
 
 > Skill 已从 `.claude/skills/` 迁移到项目根目录的 `skills/`，并按分类重组。下方路径均相对于 `skills/mussel-ui/`。
+
+> ⚠️ **文档同步**：`skills/mussel-ui/references/` 与 `docs/quick-reference_*.md` 互为同步副本（前者供 agent 使用，后者面向最终用户）。修改其中任一处时，**必须同步修改另一处**，避免内容漂移。
 
 **主入口**
 
