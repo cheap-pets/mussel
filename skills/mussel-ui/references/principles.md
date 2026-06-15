@@ -5,15 +5,15 @@
 
 ---
 
-## 🔴 硬性禁止（任何情况下不得违反）
+## 🔴 核心规范
 
-以下行为无论任何理由均不允许，发现即视为不合规：
+> 以下规范在生成和 Review 代码时必须逐条核对。第 1 条为优先级要求（默认遵守、有合理例外），第 2–5 条为硬性禁止（任何情况不得违反）。
 
-1. **禁止硬编码颜色**：不得出现 `#xxx`、`rgb()`、`hsl()`、颜色名（如 `red`、`gray`）
-2. **禁止手写 z-index 数值**：不得出现 `z-index: 999`、`z-index: 9999` 等裸数字
-3. **禁止使用不在 `{n}x` 体系内的间距**：不得出现 `margin: 12px`、`padding: 6px` 等非基准倍数的间距值
-4. **禁止在组件内写大段一次性 CSS**：能用原子类解决的布局，不写 `style` 属性
-5. **禁止自造颜色变量**：不得声明未在 `styles.md` 中列出的 `--mu-*` 变量
+1. **优先使用语义颜色**：优先使用 `styles.md` 中定义的语义 CSS 变量，仅在变量无法覆盖的场景（SVG 内联色、第三方组件深层覆盖、动态计算色等）才使用具体颜色值
+2. **禁止手写 z-index 数值**：不得出现 `z-index: 999`、`z-index: 9999` 等裸数字，必须使用 `--mu-z-index-*` 变量
+3. **禁止使用非基准倍数的间距**：间距必须取 `0`（`.p-0` / `.m-0` / `.gap-none`）、`half`（`.p-half` / `.m-half` / `.gap-half`，=4px）、`1x` ~ `4x`（=8/16/24/32px）等基准倍数，不得出现无法换算为这些倍数的裸值（如 `7px`、`13px`）。行内元素（图标与文字间距等）例外，使用 `--mu-content-spacing`
+4. **禁止用 `style`/`<style>` 写可被原子类替代的样式**：布局、间距、对齐、显示性等能用原子类表达的，一律用原子类；仅当原子类无法覆盖（如动态值、特殊动画）才写 `style`，且不得在组件内堆砌大段一次性 CSS
+5. **禁止自造 `--mu-*` 变量**：不得声明未在 `styles.md` 中列出的 `--mu-*` 变量（含颜色、尺寸、z-index 等）
 
 ---
 
@@ -22,10 +22,12 @@
 ### 规范 1-A：文字颜色必须使用语义文本变量
 
 ```html
-<!-- ✅ 正确：使用语义文本色 -->
-<h2 class="text-normal">订单列表</h2>
-<p class="text-soft">共 32 条记录</p>
-<span class="text-muted">已禁用</span>
+<!-- ✅ 正确：使用语义文本色（5 档：strong/normal/subtle/soft/muted） -->
+<h2 class="mu-text-strong">文章标题</h2>
+<p class="mu-text-normal">订单列表</p>
+<p class="mu-text-subtle">共 32 条记录</p>
+<p class="mu-text-soft">副标题或提示</p>
+<span class="mu-text-muted">已禁用</span>
 
 <!-- ❌ 错误：硬编码颜色 -->
 <h2 style="color: #333">订单列表</h2>
@@ -35,9 +37,12 @@
 ### 规范 1-B：背景色必须使用背景变量
 
 ```html
-<!-- ✅ 正确 -->
-<header style="background: var(--mu-bg-strong)">...</header>
-<div style="background: var(--mu-bg-overlay)">弹出层</div>
+<!-- ✅ 正确：有对应原子类的优先用原子类（.mu-bg-normal/.mu-bg-strong/.mu-bg-fill/.mu-bg-disabled/.mu-bg-overlay/.mu-bg-mask） -->
+<header class="mu-bg-strong">...</header>
+<div class="mu-bg-overlay">弹出层</div>
+
+<!-- ✅ 正确：无对应原子类时才用 style + 变量（如 stripe） -->
+<div style="background: var(--mu-bg-stripe)">斑马纹行</div>
 
 <!-- ❌ 错误 -->
 <header style="background: #f5f5f5">...</header>
@@ -48,8 +53,8 @@
 
 ```html
 <!-- ✅ 正确：成功/警告/危险场景用语义色 -->
-<span class="text-success">支付成功</span>
-<span class="text-danger">余额不足</span>
+<span class="mu-text-success">支付成功</span>
+<span class="mu-text-danger">余额不足</span>
 <div style="background: var(--mu-danger-faint); color: var(--mu-danger-color)">
   表单验证失败
 </div>
@@ -108,10 +113,18 @@
 }
 ```
 
-### 规范 2-C：禁止出现非 8px 体系的间距
+### 规范 2-C：禁止出现非基准倍数的间距
 
-常见错误值：`6px`、`10px`、`12px`、`20px`、`28px`。
-如果设计稿标注了这些数值，应向上取整到最近的 `{n}x` 倍数（或与设计师确认）。
+合法间距值只有：`0`、`4px`（half）、`8px`（1x）、`16px`（2x）、`24px`（3x）、`32px`（4x）。
+常见错误值与替代建议：
+
+| 错误值 | 建议替代 |
+|--------|----------|
+| `6px` / `5px` | `gap-half`（4px）或 `1x`（8px）；图标-文字间距用 `--mu-content-spacing` |
+| `10px` / `12px` | `1x`（8px）或 `2x`（16px）向上取整 |
+| `20px` / `28px` | `2x`（16px）或 `3x`（24px）向上取整 |
+
+设计稿标注了这些数值时，应取整到最近的基准倍数（或与设计师确认）。
 
 ---
 
@@ -120,19 +133,12 @@
 ### 规范 3-A：z-index 只能使用 Token 变量
 
 ```css
-/* ✅ 正确 */
-.dropdown {
-  z-index: var(--mu-z-index-popup);
-}
-.drawer {
-  z-index: var(--mu-z-index-layer);
-}
-.dialog {
-  z-index: var(--mu-z-index-modal);
-}
-.toast {
-  z-index: var(--mu-z-index-ontop);
-}
+/* ✅ 正确：按层级由低到高选用对应变量（默认值见右注释） */
+.floating-card { z-index: var(--mu-z-index-float); }   /* 1 */
+.drawer        { z-index: var(--mu-z-index-layer); }   /* 10 */
+.dialog        { z-index: var(--mu-z-index-modal); }   /* 100 */
+.dropdown      { z-index: var(--mu-z-index-popup); }   /* 1000 */
+.toast         { z-index: var(--mu-z-index-ontop); }   /* 10000 */
 
 /* ❌ 错误：手写数字 */
 .dropdown {
@@ -143,7 +149,7 @@
 }
 ```
 
-层级高低顺序（由低到高）：`float` < `layer` < `modal` < `popup` < `ontop`
+层级高低顺序（由低到高）：`float`(1) < `layer`(10) < `modal`(100) < `popup`(1000) < `ontop`(10000)
 
 ---
 
@@ -281,9 +287,9 @@ body    { font-family: 'PingFang SC', sans-serif; }
 ### 规范 7-C：遮罩层和弹出层背景使用 Token
 
 ```html
-<!-- ✅ 正确 -->
-<div style="background: var(--mu-bg-mask); z-index: var(--mu-z-index-modal)">遮罩</div>
-<div style="background: var(--mu-bg-overlay); z-index: var(--mu-z-index-modal)">弹窗</div>
+<!-- ✅ 正确：背景优先用原子类，z-index 用类 -->
+<div class="mu-bg-mask z-modal">遮罩</div>
+<div class="mu-bg-overlay z-modal">弹窗</div>
 
 <!-- ❌ 错误 -->
 <div style="background: rgba(0,0,0,0.4); z-index: 1000">遮罩</div>
@@ -296,10 +302,8 @@ body    { font-family: 'PingFang SC', sans-serif; }
 ### 规范 8-A：禁用状态使用专用 Token
 
 ```html
-<!-- ✅ 正确 -->
-<div style="background: var(--mu-bg-disabled); color: var(--mu-text-color-muted)">
-  已禁用区域
-</div>
+<!-- ✅ 正确：背景用原子类，文字色用类 -->
+<div class="mu-bg-disabled mu-text-muted">已禁用区域</div>
 
 <!-- ❌ 错误 -->
 <div style="background: #f5f5f5; color: #ccc; cursor: not-allowed">
@@ -311,76 +315,35 @@ body    { font-family: 'PingFang SC', sans-serif; }
 
 ## 快速自检清单
 
-生成或修改 UI 代码后，逐项检查：
+生成或修改 UI 代码后逐项核对。`(核心规范 N)` 为该条对应的规则来源；核心规范 1 为优先级要求（有合理例外），2–5 为硬性禁止（违反即不合规）。
 
-```
-颜色
-  [ ] 无硬编码颜色值（#xxx / rgb() / 颜色名）
-  [ ] 文字颜色使用 text-* 类或 --mu-text-color-* 变量
-  [ ] 背景使用 --mu-bg-* 变量
-  [ ] 状态色（成功/警告/危险）使用语义扩展色，非基本色
-  [ ] hover 背景使用 -translucent 变体
+**硬性禁止**
 
-间距
-  [ ] 所有间距为 8px 的 1~4 倍（8/16/24/32px）
-  [ ] 使用 gap-{n}x 替代子项 margin
-  [ ] 行内元素间距使用 --mu-content-spacing
+- [ ] (核心规范 2) z-index 无裸数字，只用 `var(--mu-z-index-*)` 或 `.z-*` 类
+      判定：`grep "z-index\s*:\s*\d"` 应只命中 `var()`
+- [ ] (核心规范 3) 间距无非法裸值，padding/margin/gap 只用 `-0` / `-half` / `-1x`~`-4x` 后缀；
+      行内元素间距用 `--mu-content-spacing`
+      判定：其余 px 裸值（7px/13px 等）均为违规，`grep "margin.*:\s*5px"` 应为空
+- [ ] (核心规范 4) 样式尽量原子化，能用原子类的（布局/间距/对齐/显示性）一律用原子类，
+      不写进 `style`/`<style>`；组件内不得堆砌大段一次性 CSS
+- [ ] (核心规范 5) 不自造 `--mu-*` 变量，所有 `--mu-*` 均可在 `styles.md` 第 1 节查到出处
+- [ ] (核心规范 5) `border-radius` 用 `--mu-common-border-radius` / `--mu-window-border-radius`，无 4px/8px 裸值
+      判定：`grep "border-radius\s*:\s*\d"` 应只命中 `var()`
+- [ ] (核心规范 5) 字号用 `--mu-font-size-normal` / `-small` / `-large`，不手写 14px
+      判定：`grep "font-size\s*:\s*\d"` 应只命中 `var()`
+- [ ] (核心规范 5) `box-shadow` 用 `--mu-shadow-*` 变量或 `.mu-shadow-*` 类，无手写阴影
+      判定：`grep "box-shadow\s*:\s*\d"` 应只命中 `var()`
 
-层叠 & 阴影
-  [ ] z-index 使用 --mu-z-index-* 变量，无裸数字
-  [ ] box-shadow 使用 --mu-shadow-* 变量
+**优先级要求**
 
-形状 & 边框
-  [ ] border-radius 使用 --mu-common-border-radius 或 --mu-window-border-radius
-  [ ] 边框颜色使用 border-soft / border-strong 等类
-
-排版
-  [ ] 字号使用 --mu-common-font-size，不手写 14px
-  [ ] 文字超长使用 .text-ellipsis 或 .line-clamp
-
-布局
-  [ ] 全屏布局用 flex + flex-1，不用 calc(100vh - Xpx)
-  [ ] 平级元素间距用 gap，不给最后一项以外加 margin
-```
+- [ ] (核心规范 1) 无硬编码颜色值，`#xxx` / `rgb()` / 颜色名应仅出现在 SVG 内联色、第三方深层覆盖等例外
+      - 文字色：用 `.mu-text-*` 类或 `--mu-text-color-*` 变量
+      - 背景色：优先 `.mu-bg-*` 类，其次 `--mu-bg-*` 变量
+      - 状态色：成功/警告/危险用语义扩展色，非 `--mu-green`/`--mu-red` 等基本色
+      - hover/激活背景：用 `-translucent` 变体，不手写 `rgba`
+      - 边框颜色：用 `.border-soft` / `-strong` 等类
+        判定：`grep "border.*:\s*1px solid #"` 应为空
 
 ---
 
-## 9. 已废弃 API
-
-以下 API 在老版本中存在，4.0 中已废弃或移除。生成新代码时**禁止使用**。
-
-### 按钮
-
-| 废弃属性 | 替代方案 |
-|---------|---------|
-| `primary` / `danger` / `secondary` Boolean | `color="primary"` / `color="danger"` / `color="secondary"` |
-| `accent` | 不再支持，使用 `color` 属性 |
-| `x-color` | 不再支持 |
-
-### 模态 / 抽屉
-
-| 废弃属性 | 替代方案 |
-|---------|---------|
-| `easy-hide` | `dismissible`（默认 `true`） |
-| `mask-action` | `dismissible` |
-| `moveable` | 已移除 |
-
-### 输入
-
-| 废弃属性 | 替代方案 |
-|---------|---------|
-| `label` | `prefix` / `suffix` |
-| `solid` / `underline` | `input-style` |
-
-### 下拉
-
-| 废弃属性 | 替代方案 |
-|---------|---------|
-| `trigger-action` | `dropdown-trigger` |
-
-### 标签页
-
-| 废弃属性 | 替代方案 |
-|---------|---------|
-| `onTabClick` | `@button-click` |
-| `onTabChange` | `@update:active-tab` |
+> **已废弃 API 不在本文件列出**。Mussel 3 → 4 的属性废弃与替代方案集中在 `references/upgrade/rules.md`「迁移规则 5 组件迁移」中，生成迁移相关代码时查阅该文件。

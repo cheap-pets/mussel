@@ -1,8 +1,78 @@
-# dialog.md — 模态与抽屉组件 API
+# 容器与面板组件 API
+
+### MuTabs
+
+多页签容器。
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `active-tab` | String | 双向绑定，当前活动页签名称 |
+| `tab-style` | String | `button` \| `small-button` \| `simple` \| `card` \| `border-card` |
+| `tab-buttons` | Array | 手动指定页签按钮，默认由内部 `MuTabPanel` 自动生成 |
+| `tab-position` | String | `top`（默认）\| `bottom` \| `left` \| `right` |
+| `tab-bar-attrs` | Object | 传递给内置 `MuTabBar` 的额外属性 |
+
+| 插槽 | 说明 |
+|------|------|
+| `tab-bar-prepend` | 页签按钮栏前置内容 |
+| `tab-bar-append` | 页签按钮栏后置内容（常用于放置工具按钮） |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `button-click` | `name` | 页签按钮点击 |
+
+```html
+<mu-tabs v-model:active-tab="activeTab" tab-style="button">
+  <template #tab-bar-append>
+    <mu-tool-button icon="refresh" @click="reload" />
+  </template>
+  <mu-tab-panel name="list" caption="列表" icon="list">
+    <!-- 列表内容 -->
+  </mu-tab-panel>
+  <mu-tab-panel name="detail" caption="详情" icon="detail" :disabled="!selectedId">
+    <!-- 详情内容 -->
+  </mu-tab-panel>
+</mu-tabs>
+```
 
 ---
 
-## MuDialog
+### MuTabPanel
+
+单个页签内容容器，**必须置于 MuTabs 中**。
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `name` | String | 页签唯一标识，必填 |
+| `caption` | String | 页签按钮标题 |
+| `icon` | String | 页签按钮图标 |
+| `title` | String | 页签按钮 tooltip |
+| `disabled` | Boolean | 是否禁用 |
+| `tab-order` | Number | 手动排序（默认按 DOM 顺序） |
+
+---
+
+### MuTabBar
+
+独立页签栏，不包含内容区，用于自定义页签 + 内容分离的布局。
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `active-tab` | String | 双向绑定，当前活动页签 |
+| `tab-style` | String | `button` \| `small-button` \| `simple` |
+| `tab-buttons` | Array | 页签按钮数据 |
+| `tab-position` | String | `top` \| `bottom` \| `left` \| `right` |
+
+| 插槽 | 说明 |
+|------|------|
+| `prepend` | 前置内容 |
+| `append` | 后置内容 |
+
+---
+
+## 模态与抽屉
+
+### MuDialog
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
@@ -69,7 +139,7 @@ buttons: [
 
 ---
 
-## MuDrawer
+### MuDrawer
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
@@ -93,8 +163,8 @@ buttons: [
 
 ```html
 <mu-drawer v-model:visible="drawerVisible" position="right" width="400px" dismissible>
-  <div class="mu-v-box" style="height: 100%">
-    <div class="flex-none px-2x py-1x border-b border-soft text-normal">详情</div>
+  <div class="flex flex-col" style="height: 100%">
+    <div class="flex-none px-2x py-1x border-b border-soft mu-text-normal">详情</div>
     <mu-scroll-box class="flex-1 p-2x">内容区域</mu-scroll-box>
   </div>
 </mu-drawer>

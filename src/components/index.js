@@ -1,6 +1,6 @@
 import { install as installScrollbarDirective } from './scrollbar/directive'
 
-import * as SvgComponents from './svg'
+// import * as SvgComponents from './svg'
 import * as IconComponents from './icon'
 import * as LayoutComponents from './layout'
 import * as ButtonComponents from './button'
@@ -31,7 +31,7 @@ function installComponents (app, options) {
     components.install?.(app, options)
   }
 
-  _install(SvgComponents)
+  // _install(SvgComponents)
   _install(IconComponents)
   _install(LayoutComponents)
   _install(ButtonComponents)

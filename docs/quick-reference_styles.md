@@ -104,15 +104,15 @@
 
 文本色由灰阶映射而来，禁止直接使用 `--mu-gray-*`。由深到浅排列。
 
-| 变量名称                | 原子类       | 适用场景                                       |
-| ----------------------- | ------------ | ---------------------------------------------- |
-| --mu-text-color-strong  | .text-strong | 用户输入内容、文章正文、强调标题               |
-| --mu-text-color-normal  | .text-normal | 默认正文、常规名称、普通标签（页面主文本）     |
-| --mu-text-color-subtle  | .text-subtle | 次要信息、描述文字                             |
-| --mu-text-color-soft    | .text-soft   | 副标题、提示文字                               |
-| --mu-text-color-muted   | .text-muted  | 禁用状态文字                                   |
+| 变量名称                | 原子类          | 适用场景                                       |
+| ----------------------- | --------------- | ---------------------------------------------- |
+| --mu-text-color-strong  | .mu-text-strong | 用户输入内容、文章正文、强调标题               |
+| --mu-text-color-normal  | .mu-text-normal | 默认正文、常规名称、普通标签（页面主文本）     |
+| --mu-text-color-subtle  | .mu-text-subtle | 次要信息、描述文字                             |
+| --mu-text-color-soft    | .mu-text-soft   | 副标题、提示文字                               |
+| --mu-text-color-muted   | .mu-text-muted  | 禁用状态文字                                   |
 
-功能色文本：`.text-primary` / `.text-secondary` / `.text-success` / `.text-warning` / `.text-danger`
+功能色文本：`.mu-text-primary` / `.mu-text-secondary` / `.mu-text-success` / `.mu-text-warning` / `.mu-text-danger`
 
 
 
@@ -457,15 +457,18 @@
 
 ### 2.3 背景与边框
 
-**背景颜色：**
+**背景颜色（类名带 `mu-` 前缀）：**
 
-| 类名        | 说明             |
-| ----------- | ---------------- |
-| .bg-normal  | 默认背景色       |
-| .bg-strong  | 强调区域背景色   |
-| .bg-disabled| 禁用状态背景色   |
-| .bg-overlay | 弹出层背景色     |
-| .bg-mask    | 遮罩层背景色     |
+| 类名          | 说明             |
+| ------------- | ---------------- |
+| .mu-bg-normal | 默认背景色       |
+| .mu-bg-strong | 强调区域背景色   |
+| .mu-bg-fill   | 填充背景色       |
+| .mu-bg-disabled | 禁用状态背景色   |
+| .mu-bg-overlay| 弹出层背景色     |
+| .mu-bg-mask   | 遮罩层背景色     |
+
+> ⚠️ 背景类前缀是 `.mu-bg-*`（注意 `mu-` 前缀），与 `.mu-text-*` / `.z-*` / `.border-*` 等原子类不同。
 
 **阴影：**
 
@@ -522,26 +525,21 @@
 
 | 类名                  | 变量名                   | 说明                           |
 | --------------------- | ------------------------ | ------------------------------ |
-| .text-strong          | --mu-text-color-strong   | 清晰，常用于用户输入或文章正文 |
-| .mu-text-color-strong | --mu-text-color-strong   | 同上                           |
-| .text-normal          | --mu-text-color-normal   | 常规，常用于各类名称显示       |
-| .mu-text-color-normal | --mu-text-color-normal   | 同上                           |
-| .text-subtle          | --mu-text-color-subtle   | 次要，用于次级文字信息显示     |
-| .mu-text-color-subtle | --mu-text-color-subtle   | 同上                           |
-| .text-soft            | --mu-text-color-soft     | 柔和，常用于副标题或提示文字   |
-| .mu-text-color-soft   | --mu-text-color-soft     | 同上                           |
-| .text-muted           | --mu-text-color-muted    | 淡雅，常用于禁用组件文字       |
-| .mu-text-color-muted  | --mu-text-color-muted    | 同上                           |
+| .mu-text-strong       | --mu-text-color-strong   | 清晰，常用于用户输入或文章正文 |
+| .mu-text-normal       | --mu-text-color-normal   | 常规，常用于各类名称显示       |
+| .mu-text-subtle       | --mu-text-color-subtle   | 次要，用于次级文字信息显示     |
+| .mu-text-soft         | --mu-text-color-soft     | 柔和，常用于副标题或提示文字   |
+| .mu-text-muted        | --mu-text-color-muted    | 淡雅，常用于禁用组件文字       |
 
 **功能色文本颜色：**
 
 | 类名                   | 变量名               | 说明       |
 | ---------------------- | -------------------- | ---------- |
-| .text-primary          | --mu-primary-color   | 主色文本   |
-| .text-secondary        | --mu-secondary-color | 次要色文本 |
-| .text-success          | --mu-success-color   | 成功色文本 |
-| .text-warning          | --mu-warning-color   | 警告色文本 |
-| .text-danger           | --mu-danger-color    | 危险色文本 |
+| .mu-text-primary       | --mu-primary-color   | 主色文本   |
+| .mu-text-secondary     | --mu-secondary-color | 次要色文本 |
+| .mu-text-success       | --mu-success-color   | 成功色文本 |
+| .mu-text-warning       | --mu-warning-color   | 警告色文本 |
+| .mu-text-danger        | --mu-danger-color    | 危险色文本 |
 
 **文本对齐：**
 
@@ -640,8 +638,8 @@ white-space: pre-line;
 
 ```html
 <div class="flex items-center gap-1x px-2x py-1x border-b border-soft">
-  <span class="text-normal">数据列表</span>
-  <span class="text-soft ml-2x">共 128 条</span>
+  <span class="mu-text-normal">数据列表</span>
+  <span class="mu-text-soft ml-2x">共 128 条</span>
   <div class="ml-auto flex items-center gap-1x">
     <button>筛选</button>
     <button>导出</button>

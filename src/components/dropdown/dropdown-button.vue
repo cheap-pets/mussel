@@ -1,9 +1,5 @@
 <template>
-  <mu-button-group
-    v-if="splitButton"
-    ref="wrapper"
-    class="mu-dropdown"
-    v-bind="$attrs">
+  <mu-button-group v-if="splitButton" ref="wrapperRef" class="mu-dropdown" v-bind="$attrs">
     <mu-button :icon="icon" :caption="caption" @click="collapse">
       <slot />
     </mu-button>
@@ -13,7 +9,7 @@
   </mu-button-group>
   <mu-button
     v-else
-    ref="wrapper"
+    ref="wrapperRef"
     v-bind="$attrs" class="mu-dropdown" :active="dropdownVisible"
     v-on="wrapperEvents">
     <slot>
@@ -23,7 +19,8 @@
     <mu-icon v-if="dropdownIconAttrs" v-bind="dropdownIconAttrs" />
   </mu-button>
   <mu-dropdown-panel
-    ref="dropdownPanel"
+    v-if="!dropdownPanel"
+    ref="dropdownPanelRef"
     v-bind="dropdownPanelAttrs"
     v-on="dropdownPanelEvents">
     <slot name="dropdown" />
@@ -38,6 +35,8 @@
     useDropdown
   } from './dropdown-wrapper'
 
+  import MuDropdownPanel from './dropdown-panel.vue'
+
   defineOptions({ name: 'MusselDropdownButton', inheritAttrs: false })
 
   const props = defineProps({
@@ -51,11 +50,11 @@
   const emit = defineEmits(dropdownEvents)
 
   const {
-    wrapper,
+    wrapperRef,
     wrapperEvents,
     dropdownVisible,
     dropdownIconAttrs,
-    dropdownPanel,
+    dropdownPanelRef,
     dropdownPanelAttrs,
     dropdownPanelEvents,
     expand,

@@ -1,13 +1,13 @@
 @each $v in ('strong', 'normal', 'subtle', 'soft', 'muted') {
   .text-#{$v},
-  .mu-text-color-#{$v} {
+  .mu-text-#{$v} {
     color: var(--mu-text-color-#{$v});
   }
 }
 
 @each $v in ('primary', 'secondary', 'success', 'warning', 'danger') {
   .text-#{$v},
-  .mu-text-color-#{$v} {
+  .mu-text-#{$v} {
     color: var(--mu-#{$v}-color);
   }
 }

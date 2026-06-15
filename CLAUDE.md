@@ -242,10 +242,9 @@ UMD 格式库文件：
 
 ### 工作流程
 
-1. **识别任务类型**：Mussel 3 → 4 升级 → 先读 `references/mussel3-to-mussel4.md`；新建/修改 UI → 继续
-2. **识别组件，查阅 API**：按需读取对应参考文件，不凭记忆猜测属性名
-3. **确认样式**：涉及颜色/间距/原子类/布局时，读取 `references/styles.md`
-4. **生成并自检**：对照硬性禁止逐条检查
+1. **识别任务类型**：Mussel 3 → 4 升级 → 流程读 `references/upgrade/process.md`、规则按需查 `references/upgrade/rules.md`；新建/修改 UI → 继续
+2. **按需查阅 API 与样式**：组件 API 按 8 大类 1:1 路由到 `references/components/*.md`，不凭记忆猜测属性名；样式 Token 读 `references/styles.md`，安装初始化读 `references/install.md`
+3. **生成并自检**：对照 `references/principles.md` 的硬性禁止清单逐条检查
 
 ### 样式要点
 
@@ -258,16 +257,41 @@ UMD 格式库文件：
 
 ### 参考文档
 
+> Skill 已从 `.claude/skills/` 迁移到项目根目录的 `skills/`，并按分类重组。下方路径均相对于 `skills/mussel-ui/`。
+
+**主入口**
+
 | 文件 | 内容 |
 |------|------|
-| `.claude/skills/mussel-ui/SKILL.md` | Skill 主文件：工作流程、组件速查表 |
-| `.claude/skills/mussel-ui/references/principles.md` | 代码规范与强制约束（含 Good/Bad 示例） |
-| `.claude/skills/mussel-ui/references/styles.md` | CSS 变量（Tokens）、原子类、常用布局模式 |
-| `.claude/skills/mussel-ui/references/components.md` | 布局/图标/按钮/导航/下拉/数据展示/反馈 组件 API |
-| `.claude/skills/mussel-ui/references/dialog.md` | MuDialog / MuDrawer 完整 API |
-| `.claude/skills/mussel-ui/references/form.md` | MuForm / MuFormField / 输入组件完整 API |
-| `.claude/skills/mussel-ui/references/table.md` | MuTable 完整 API（列配置、列类型） |
-| `.claude/skills/mussel-ui/references/mussel3-to-mussel4.md` | Mussel 3 → 4 升级指南（迁移规则、升级流程） |
+| `SKILL.md` | Skill 主文件：工作流程、安装 options 速查、组件速查表（8 大类选型） |
+
+**`references/` 参考**
+
+| 文件 | 内容 |
+|------|------|
+| `references/principles.md` | 代码规范与强制约束（含 Good/Bad 示例、自检清单） |
+| `references/styles.md` | CSS 变量（Tokens）、原子类、常用布局模式 |
+| `references/install.md` | `install(app, options)`、options 全字段、`$mussel` 上下文、`installIcons` |
+
+**`references/components/` 组件 API（按 8 大类 1:1 路由）**
+
+| 文件 | 内容 |
+|------|------|
+| `references/components/layout.md` | 布局（FlexBox/HBox/VBox/Grid、Split、ScrollBox、Toolbar） |
+| `references/components/containers-panels.md` | 容器与面板（Tabs、Dialog、Drawer） |
+| `references/components/buttons.md` | 按钮与操作（Button/ButtonGroup/ToolButton/DropdownButton） |
+| `references/components/form.md` | 表单与输入（Form/FormField/Input/Select/ComboBox/DateInput/Check/Radio/Segmented/Switch） |
+| `references/components/navigation.md` | 导航与菜单（DropdownPanel/Dropdown/ContextMenu） |
+| `references/components/data-display.md` | 数据展示（List/Tree/Tags/Calendar/Table） |
+| `references/components/feedback.md` | 反馈（MessageBox/Notifier/StatusBox） |
+| `references/components/basic-elements.md` | 基础元素（Icon/SortIcon/Badge） |
+
+**`references/upgrade/` 升级（M3 → 4）**
+
+| 文件 | 内容 |
+|------|------|
+| `references/upgrade/process.md` | 升级流程（分析→计划→执行） |
+| `references/upgrade/rules.md` | 迁移规则（全局配置/CSS 变量/布局/图标/组件迁移/新增组件） |
 
 ## Commit Convention
 

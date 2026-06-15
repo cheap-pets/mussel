@@ -4,6 +4,80 @@
 
 
 
+## 0 - 安装
+
+Mussel 通过 `install` 作为 Vue 插件挂载。`install` 接收一个 Vue 应用实例和可选的配置对象，完成组件注册、图标注册、主题色配置、多语言设置，并注入全局 `$mussel` 上下文。返回传入的 `app`，便于链式 `.mount()`。
+
+```javascript
+import { createApp } from 'vue'
+import { install, installIcons } from 'mussel'
+
+const app = createApp(App)
+
+install(app, {
+  root: '#app',
+  darkMode: 'auto',
+  colors: { primary: '#1c7ed6' },
+  icons: { edit: EditIcon },
+  locale: 'zh',
+  localeResources: { ... }
+}).mount('#app')
+```
+
+### install(app, options)
+
+| 参数 | 类型 | 说明 |
+| ---- | ---- | ---- |
+| app | App | Vue 应用实例（`createApp` 返回值），必填 |
+| options | Object | 安装配置，见下表 |
+
+### options 选项
+
+| 属性 | 类型 | 默认值 | 说明 |
+| ---- | ---- | ------ | ---- |
+| root | String \| Element | `document.body` | 应用根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
+| darkMode | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
+| colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
+| icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
+| locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
+| localeResources | Object | — | 自定义语言包，写入指定 `locale` 下；Mussel 内置 `zh` / `en` |
+| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `input.clearButton` 等） |
+
+> [!NOTE]
+>
+> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置语言（`setupLocale`）→ 设置主题色（`setupColors`）→ 注册图标（`installIcons`）→ 注册全部组件。
+
+### 全局 `$mussel` 上下文
+
+`install` 后，组件内可通过 `inject('$mussel')` 或 `this.$mussel` 获取上下文：
+
+```javascript
+const { rootElement, options, messageBox } = inject('$mussel')
+
+messageBox.alert('操作完成')
+```
+
+| 属性 | 说明 |
+| ---- | ---- |
+| rootElement | Element，`root` 解析后的根 DOM 元素 |
+| options | Object，传入的 `componentOptions`（剔除 `root`/`darkMode`/`colors`/`icons`/`locale`/`localeResources` 之后的部分） |
+| messageBox | 命令式对话框与通知 API（`alert` / `confirm` / `error` / `warn` / `notify`） |
+
+### installIcons(icons)
+
+独立注册图标，可在 `install` 之外任意时机补充。值可为 SVG 字符串/数据，或 icon-font 的 class 字符串：
+
+```javascript
+import { installIcons } from 'mussel'
+
+installIcons({
+  refresh: RefreshIcon,        // svg data
+  bolt: 'icon icon-bolt'       // icon-font class
+})
+```
+
+
+
 ## 1 - 布局
 
 
@@ -373,7 +447,7 @@ buttons: [
 ```html
 <mu-drawer v-model:visible="drawerVisible" position="right" width="400px" dismissible>
   <div class="mu-v-box" style="height: 100%">
-    <div class="flex-none px-2x py-1x border-b border-soft text-normal">详情</div>
+    <div class="flex-none px-2x py-1x border-b border-soft mu-text-normal">详情</div>
     <mu-scroll-box class="flex-1 p-2x">内容区域</mu-scroll-box>
   </div>
 </mu-drawer>
@@ -1357,9 +1431,3 @@ installIcons({ refresh: RefreshIcon })
 <mu-badge danger>异常</mu-badge>
 <mu-badge />               <!-- 小红点 -->
 ```
-
-
-
-### MuSvgStripe
-
-一个 svg 画的装饰条纹，例如可用于作为拖拽条装饰。

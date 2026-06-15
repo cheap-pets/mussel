@@ -8,6 +8,7 @@ export const dropdownEvents = [
 ]
 
 export const dropdownProps = {
+  dropdownPanel: Object,
   dropdownClass: null,
   dropdownStyle: null,
   dropdownSnapTo: null,
@@ -35,8 +36,8 @@ export const optionalProps = {
 
 export function useDropdown (props, emit, options = {}) {
   const {
-    wrapper = shallowRef(),
-    dropdownPanel = shallowRef()
+    wrapperRef = shallowRef(),
+    dropdownPanelRef = shallowRef()
   } = options
 
   const expanded = ref()
@@ -46,6 +47,8 @@ export function useDropdown (props, emit, options = {}) {
     mouseover: onTriggerMouseOver,
     mouseleave: onTriggerMouseLeave
   }
+
+  const dropdownPanel = computed(() => props.dropdownPanel || dropdownPanelRef.value)
 
   const dropdownIconAttrs = computed(() => (
     props.dropdownIcon &&
@@ -76,7 +79,7 @@ export function useDropdown (props, emit, options = {}) {
   const dropdownVisible = readonly(expanded)
 
   const snapTo = computed(() => {
-    const hostEl = wrapper.value?.$el || wrapper.value
+    const hostEl = wrapperRef.value?.$el || wrapperRef.value
     const target = props.dropdownSnapTo
 
     return target
@@ -97,6 +100,8 @@ export function useDropdown (props, emit, options = {}) {
   }
 
   function expand () {
+    if (props.dropdownDisabled) return
+
     dropdownPanel.value.show({
       snapTo: snapTo.value,
       width: props.dropdownWidth,
@@ -111,7 +116,7 @@ export function useDropdown (props, emit, options = {}) {
 
   function toggle () {
     if (expanded.value) collapse()
-    else if (!props.dropdownDisabled) expand()
+    else expand()
   }
 
   function onTriggerClick (event) {
@@ -119,6 +124,10 @@ export function useDropdown (props, emit, options = {}) {
       toggle()
       event.stopPropagation()
     }
+  }
+
+  function updateDropdownPosition () {
+    dropdownPanel.value?.updatePosition()
   }
 
   function onTriggerMouseOver () {
@@ -137,15 +146,11 @@ export function useDropdown (props, emit, options = {}) {
     emit('dropdown:itemclick', item)
   }
 
-  function updateDropdownPosition () {
-    dropdownPanel.value?.updatePosition()
-  }
-
   return {
-    wrapper,
+    wrapperRef,
     wrapperEvents,
     dropdownVisible,
-    dropdownPanel,
+    dropdownPanelRef,
     dropdownPanelAttrs,
     dropdownPanelEvents,
     dropdownIconAttrs,

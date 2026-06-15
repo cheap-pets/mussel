@@ -5,7 +5,7 @@
     @dblclick="onDblClick"
     @mousedown="onMouseDown">
     <slot v-if="isStriped" name="stripe">
-      <mu-svg-stripe
+      <svg-stripe
         class="mu-flex-splitter__stripe"
         :direction="StripeDirectionMap[direction]" />
     </slot>
@@ -16,6 +16,8 @@
   import './flex-splitter.scss'
 
   import { ref, computed, inject, provide, onMounted } from 'vue'
+
+  import SvgStripe from '../svg/svg-stripe.vue'
 
   const thisEl = ref()
   const direction = ref()

@@ -1,13 +1,14 @@
 <template>
   <div
-    ref="wrapper"
+    ref="wrapperRef"
     class="mu-dropdown"
     :class="dropdownVisible && 'mu-dropdown--expanded'"
     v-on="wrapperEvents">
     <slot />
     <mu-icon v-if="dropdownIconAttrs" v-bind="dropdownIconAttrs" />
     <mu-dropdown-panel
-      ref="dropdownPanel"
+      v-if="!dropdownPanel"
+      ref="dropdownPanelRef"
       v-bind="dropdownPanelAttrs"
       v-on="dropdownPanelEvents">
       <slot name="dropdown" />
@@ -23,6 +24,8 @@
     useDropdown
   } from './dropdown-wrapper'
 
+  import MuDropdownPanel from './dropdown-panel.vue'
+
   defineOptions({ name: 'MusselDropdown' })
 
   const props = defineProps({
@@ -35,11 +38,11 @@
   const emit = defineEmits(dropdownEvents)
 
   const {
-    wrapper,
+    wrapperRef,
     wrapperEvents,
     dropdownVisible,
     dropdownIconAttrs,
-    dropdownPanel,
+    dropdownPanelRef,
     dropdownPanelAttrs,
     dropdownPanelEvents,
     expand,

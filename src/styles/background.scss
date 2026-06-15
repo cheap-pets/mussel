@@ -1,4 +1,5 @@
 @each $v in ('normal', 'strong', 'fill', 'disabled', 'overlay', 'mask') {
+  .bg-#{$v},
   .mu-bg-#{$v} {
     background-color: var(--mu-bg-#{$v});
   }

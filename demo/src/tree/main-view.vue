@@ -144,7 +144,7 @@
             class="mu-tree-node__button"
             dropdown-trigger="click"
             :dropdown-panel="dropdownMenu">
-            <mu-icon class="mu-icon-button" icon="dotsVert" />
+            <mu-icon class="mu-icon-button" icon="dots" />
           </mu-dropdown>
         </template>
       </mu-tree>
@@ -185,6 +185,7 @@
 </template>
 
 <script setup>
+  import ThemeSwitch from '../common/theme-switch.vue'
   import { ref, computed } from 'vue'
 
   const demos = [
@@ -251,8 +252,6 @@
     { label: 'WeChat' },
     { label: 'FaceBook' }
   ]
-
-  import ThemeSwitch from '../common/theme-switch.vue'
 
   const data = ref(root.childNodes)
   const activeNode = ref()
@@ -356,9 +355,11 @@
     display: flex;
     gap: 8px;
     align-items: center;
+
     height: 40px;
     margin: 0;
     padding: 0 8px;
+
     background-color: var(--mu-bg-strong);
   }
 
@@ -375,11 +376,12 @@
 
   .demo-panel {
     width: calc(50% - 10px);
-    border: 1px solid #ccc;
+    border: 1px solid var(--mu-border-color-soft);
   }
 
   .mu-tree {
     --mu-tree_node-height: 32px;
+
     width: 100%;
     height: 200px;
     margin-top: 8px;

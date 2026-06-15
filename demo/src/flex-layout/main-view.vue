@@ -33,8 +33,8 @@
         </template>
         <template #center>
           <mu-split-v-box
-            class="block"
             resizable
+            class="block"
             top-class="border-b"
             :splitter-shape="shape">
             <template #top>

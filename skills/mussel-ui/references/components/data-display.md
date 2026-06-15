@@ -1,4 +1,99 @@
-# table.md — 表格组件 API
+# 数据展示组件 API
+
+### MuList
+
+> ⚠️ MuList 为内部组件，未全局注册。需局部 import 使用：
+> ```javascript
+> import { MuList } from 'mussel/components/list'
+> ```
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `items` | Array | 列表项数据 |
+| `scrollbar` | Boolean | 是否显示 Mussel 滚动条 |
+| `itemClass` | String | 列表项 class |
+| `itemTagName` | String | 列表项标签：`a`（默认）\| `div` |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `item-click` | `item` | 列表项点击 |
+
+---
+
+### MuListItem
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `icon` | String | 图标 |
+| `label` | String | 标题文字 |
+| `tag` | String | 渲染标签：`div`（默认）\| `a` |
+
+### MuListDivider
+
+列表分隔项，无属性。
+
+---
+
+### MuTree
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `data` | Array | 树节点数据 |
+| `props` | Object | 节点数据属性映射 |
+| `buttons` | Array | 节点工具按钮 |
+| `checkbox` | Boolean | 是否显示勾选框 |
+| `cascaded-check` | Boolean | 是否级联勾选 |
+| `checked-nodes-keys` | Set | 已勾选节点 key 集合 |
+| `auto-expand-level` | Number | 自动展开层级数 |
+| `active-node` | Object\|Number\|String | 当前选中节点 |
+| `node-icons` | Boolean\|Object | 是否显示节点图标及自定义图标 |
+| `expand-icons` | Boolean\|Object | 是否显示展开图标及自定义 |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `node-click` | `node` | 节点点击（不含展开按钮） |
+| `node-expand` / `node-collapse` | `node` | 展开/收拢（可用于懒加载）|
+| `node-button-click` | `node, button` | 节点工具按钮点击 |
+| `node-check-change` | `node, checked` | 勾选状态变更 |
+
+| 插槽 | 说明 |
+|------|------|
+| `default` | 节点内容模板，作用域参数为 `node` |
+| `buttons` | 节点工具按钮模板，作用域参数为 `node` |
+
+---
+
+### MuTags
+
+标签组。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `tags` | Array | — | 标签数据 |
+| `max` | Number | — | 最大显示数量，超出合并省略 |
+| `removable` | Boolean | — | 是否可删除 |
+| `expandable` | Boolean | — | 是否可下拉展开所有标签 |
+| `tooltip` | Boolean | `true` | 标签是否显示 tooltip |
+| `dropdown-snap-to` | — | 父节点 | 下拉面板吸附目标 |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `tag-remove` | `tag` | 点击删除按钮 |
+
+---
+
+### MuCalendar
+
+月历，用于页面内嵌日期展示与选择。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `model-value` | Date\|String\|Object\|Array | — | 双向绑定日期值 |
+| `format` | String | `yyyy-MM-dd` | String 类型下的格式 |
+| `value-type` | String | `date` | 返回类型：`date` \| `string` \| `object` |
+| `range` | Boolean | — | 范围选择模式 |
+| `min` | Date\|String | — | 最小可选日期 |
+| `max` | Date\|String | — | 最大可选日期 |
 
 ---
 

@@ -1,244 +1,342 @@
-# Mussel 3 → Mussel 4 升级指南
+# Mussel 3 → Mussel 4 迁移规则
 
-本文件包含**升级流程**和**迁移规则**两部分。
-进入升级任务时必须先读顶部「升级流程」，再按需查「迁移规则」。
+所有已知 API 变更的完整参考。升级过程中以此文件为权威依据。
+
+**升级流程**（分析 → 计划 → 执行）见同级目录 `process.md`。
+
+> 章节顺序 = 执行顺序：**全局配置是升级第一步**（应用入口 `install` 改写后才能启动验证后续迁移），因此从第 1 节「全局配置」开始；CSS 变量迁移与布局迁移相互独立，但 CSS 变量改完后即可验证主题色，故 CSS（第 2 节）先于布局（第 3 节）。
 
 ---
 
 ## 目录
 
-- [升级流程](#升级流程)
-  - [重要约束](#重要约束)
-  - [阶段一：分析](#阶段一分析)
-  - [阶段二：计划](#阶段二计划)
-  - [阶段三：执行](#阶段三执行)
-- [Mussel 4 速查表](#mussel-4-速查表)
-- [迁移规则](#迁移规则)
-  1. [布局系统](#1-布局系统)
-  2. [CSS 变量与 CSS 类](#2-css-变量与-css-类)
-  3. [图标](#3-图标)
-  4. [组件迁移](#4-组件迁移)
-     - [4.1 MuDialog（含 Drawer）](#41-mudialog)
-     - [4.2 MuInput（原 MuEditor）](#42-muinput原-mueditor)
-     - [4.3 MuComboBox / MuMultiSelect](#43-mucombobox--mumultiselect)
-     - [4.4 MuDropdown 系列](#44-mudropdown-系列)
-     - [4.5 MuTabs / MuTabBar / MuTabButton](#45-mutabs--mutabbar--mutabbutton)
-     - [4.6 MuForm / MuFormField](#46-muform--muformfield)
-     - [4.7 MuTree](#47-mutree)
-     - [4.8 MuButton / MuBadge / MuIcon](#48-mubutton--mubadge--muicon)
-     - [4.9 MuList / MuListItem / MuListDivider](#49-mulist--mulistitem--mulistdivider)
-     - [4.10 MuNotifier](#410-munotifier)
-     - [4.11 MuMessageBox](#411-mumessagebox)
-     - [4.12 其他小组件](#412-其他小组件)
-  5. [全局配置](#5-全局配置)
-  6. [新增组件](#6-新增组件)
+1. [全局配置](#1-全局配置)
+   - [安装方式](#安装方式)
+   - [插件注册](#插件注册)
+   - [导出变更](#导出变更)
+2. [CSS 变量与 CSS 类](#2-css-变量与-css-类)
+3. [布局系统](#3-布局系统)
+4. [图标](#4-图标)
+5. [组件迁移](#5-组件迁移)
+   - [5.1 MuDialog（含 Drawer）](#51-mudialog)
+   - [5.2 MuInput（原 MuEditor）](#52-muinput原-mueditor)
+   - [5.3 MuComboBox / MuMultiSelect](#53-mucombobox--mumultiselect)
+   - [5.4 MuDropdown 系列](#54-mudropdown-系列)
+   - [5.5 MuTabs / MuTabBar / MuTabButton](#55-mutabs--mutabbar--mutabbutton)
+   - [5.6 MuForm / MuFormField](#56-muform--muformfield)
+   - [5.7 MuTree](#57-mutree)
+   - [5.8 MuButton / MuBadge / MuIcon](#58-mubutton--mubadge--muicon)
+   - [5.9 MuList / MuListItem / MuListDivider](#59-mulist--mulistitem--mulistdivider)
+   - [5.10 MuNotifier](#510-munotifier)
+   - [5.11 MuMessageBox](#511-mumessagebox)
+   - [5.12 其他小组件](#512-其他小组件)
+6. [新增组件](#6-新增组件)
 
 ---
 
-## 升级流程
+## 1. 全局配置
 
-三阶段：**分析** → **计划** → **执行**。
+### 安装方式
 
-### 重要约束
+> 完整 `install` API（options 字段、`$mussel` 上下文、`installIcons`）见 `references/install.md`。
 
-- **升级前必须确保当前代码已 commit 或处于独立分支**，以便随时回退。若用户尚未 commit，先提醒用户执行 `git add -A && git commit` 或创建新分支。
-- **无法安全自动升级**的内容（上下文模糊、业务逻辑耦合复杂、规则未覆盖）只在计划文档中标注，**不修改代码**，由开发者手动处理。
-- 每次修改都记入升级跟踪文档。
-- 修改前必须先读文件，绝不猜测。
+#### 导入与调用
 
-### 前置步骤：确认源目录
+Mussel 4 不再以「插件对象」形式提供，而是直接导出 `install` 函数。V3 的 `app.use(pluginMussel, ...)` 写法需改为调用 `install` 函数。
 
-1. 查找并初步判断需升级的目录：
-  - 项目中前端源码目录；
-  - 若项目中同时包含 vue2、vue3 版本源码的目录，通常是名称包含 vue3 的目录。
-2. 让用户确认需升级的项目源码目录路径。
-3. 验证路径有效性：
-   - 目录存在且可读
-   - 包含 Vue 组件文件（`.vue`）
-   - 包含 Mussel 3 依赖的迹象（`package.json` 中 mussel 版本 < 4、或 `.vue`/`.js`/`.css` 文件中存在 `mu-editor`/`mu-box`/`mu-tree-view` 等 Mussel 3 模式）
-4. 若路径无效或不包含 Mussel 3 代码，向用户报告原因并重新确认。
-5. 确认后，后续所有阶段均基于此目录操作。
+```js
+// Mussel 3：导入插件对象，通过 app.use 注册
+import pluginMussel from 'mussel'
+app.use(pluginMussel, { theme: { ... }, ... })
 
-> 此步骤确保升级流程作用于正确目录，避免误改无关项目或遗漏目标文件。
+// Mussel 4：导入 install 函数，直接调用并链式 mount
+import { createApp } from 'vue'
+import { install } from 'mussel'
 
-### 阶段一：分析
+install(app, { colors: { ... }, ... }).mount('#app')
 
-1. 读本文件「迁移规则」部分，加载全部规则。
-2. 以前置步骤确认的源目录为项目根目录，验证 `package.json`、`vite.config.*` 等配置文件位置。
-3. 用 Grep/Glob 搜索**所有 Mussel 3 模式**，分类：
-
-   **布局系统**：
-   - 已移除组件：`<mu-box>`、`<mu-h-box>`、`<mu-v-box>`
-   - 废弃 CSS 类：`mu-box`、`mu-h-box`、`mu-v-box`、`mu-space`→`flex-space`、`mu-divider`→`flex-divider`、`mu-flex-item`、`mu-bg-transparent`、`mu-bg-white`、`mu-bg-black`、`mu-bg-x-color`
-   - 废弃属性选择器：`layout="flex"`、`flex="..."`、`margin="..."`、`padding="..."`、`padding-x/y`、`margin-x/y`、`margin-top/bottom/left/right`、`padding-top/bottom/left/right`、`border`/`border-right` 等、`position="..."`、`width="..."`、`height="..."`、`overflow="..."`、`align-items="..."`、`align-self="..."`、`justify-content="..."`、`content-center`、`flex-wrap`、`inline`、`reverse`、`collapsible`、`gap="..."`
-
-   **CSS 变量与 CSS 类**：
-   - 废弃 CSS 变量：`--mu-gray-dark`、`--mu-text-color-reversed`、`--mu-text-color-weak`、`--mu-background-normal`、`--mu-background-hover`、`--mu-background-disabled`、`--mu-primary-color-shadow`、`--mu-unit-spacing-size`、`--mu-editor-text-color`、`--mu-text-color-placeholder`
-   - 废弃 CSS 类：`mu-editor`→`mu-input`、`mu-text-ellipsis`→`text-ellipsis`、`mu-text-color-weak`→`mu-text-color-muted`
-
-   **图标**：
-   - `icon="dropdown"` → `icon="chevronDown"`
-
-   **组件迁移**：
-   - 已移除组件：`<mu-editor>`、`<mu-tabs-buttons>`、`<mu-tree-view>`、`<mu-tree-nodes>`
-   - 推荐迁移：`<mu-option>`、`<mu-tree-node>`、`<mu-dropdown-item>` 等
-   - 废弃属性：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`container`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
-   - 废弃事件：`@tab-click`、`@tab-change`、`@close-button-click`、`@mask-click`
-   - 废弃插槽：`<template #left>`/`#right`（ComboBox→`prefix`/`suffix` 属性）、`<template #tab-bar>`（Tabs→`#tab-bar-prepend`/`#tab-bar-append`）、`<template #client>`/`#header-prepend`/`#header-append`/`#footer-prepend`/`#footer-append`（Dialog→`#body`/`#header`/`#footer`）
-   - 废弃子组件属性：`title`（TabButton）、`divider`（ListDivider）、`value`（ListItem）
-   - 缺少 `mu-box` class 的 `<mu-form-field>`/`<mu-form>`
-   - 非 box 组件上的 `width="100%"`
-   - Dialog CSS 选择器 `> .mu-dialog`（Mussel 4 改为绑在 dialog 层）
-   - Dialog 默认 slot 内边距丢失（Mussel 4 `.mu-dialog__body` 无 padding，需加 `p-2x` 或 `padding: 16px 24px`）
-
-4. 检查 `package.json` 的 mussel 依赖版本与全局插件配置（`app.use(pluginMussel, {...})`）。
-5. 检查所有 CSS/SCSS 文件对 mussel 变量的引用。
-
-汇总表报告：
-
-| 类别 | 数量 | 涉及文件 |
-|------|------|----------|
-| 布局系统 | N | ... |
-| CSS 变量/类 | N | ... |
-| 图标 | N | ... |
-| 组件迁移 | N | ... |
-| 全局配置 | N | ... |
-
-### 阶段二：计划
-
-在 `{项目根目录}/mussel-upgrade-plan.md` 创建计划文档：
-
-```markdown
-# Mussel 3 → Mussel 4 升级计划
-
-**项目**：{项目名称}
-**日期**：{今天}
-**生成工具**：Mussel UI Skill
-
-## 范围概览
-{简要概述}
-
-## 迁移项
-
-### 1. 布局系统
-| 文件 | 行号 | 当前写法 | 目标写法 | 可自动？ |
-|------|------|----------|----------|----------|
-
-### 2. CSS 变量 / CSS 类
-| 文件 | 行号 | 当前写法 | 目标写法 | 可自动？ |
-|------|------|----------|----------|----------|
-
-### 3. 图标
-| 文件 | 行号 | 当前写法 | 目标写法 | 可自动？ |
-|------|------|----------|----------|----------|
-
-### 4. 组件迁移
-| 文件 | 行号 | 组件 | 当前写法 | 目标写法 | 可自动？ |
-|------|------|------|----------|----------|----------|
-
-### 5. 全局配置
-| 文件 | 变更说明 | 可自动？ |
-|------|----------|----------|
-
-### 6. 需要人工审核的项目
-{列出无法自动升级项及原因}
-
-## 执行顺序
-1. 全局配置（基础层）
-2. CSS 变量 / CSS 类
-3. 布局系统
-4. 组件迁移（按组件逐个处理）
-5. 图标
-6. 人工审核项
+// 或经 app.use 注册（install 是函数，Vue 会以 install(app, options) 调用）
+app.use(install, { colors: { ... }, ... }).mount('#app')
 ```
 
-**可自动？= 否** 的判定条件：
-- 上下文模糊（动态属性值）
-- 业务逻辑与 mussel API 紧密耦合
-- 模式无法明确匹配任何迁移规则
-- 文件位于 `node_modules` 或为生成文件
+要点：
 
-向用户展示计划并询问：
+- **返回值**：V4 `install` 返回传入的 `app`，可链式 `.mount()`；这是 V4 新增能力，推荐直接 `install(app, options).mount(...)`。
+- **职责**：`install` 一次完成组件注册、滚动条指令注册、图标注册、主题色（`setupColors`）、多语言（`setupLocale`）、注入全局 `$mussel` 上下文。无需再单独 `app.use` 其他子插件。
+- **命令式 API**：`messageBox`（`alert`/`confirm`/`error`/`warn`/`notify`）在 `install` 内挂到 `app.config.globalProperties.$mussel`，组件内通过 `inject('$mussel').messageBox` 取用。
+- **顺序敏感**：依赖 `install` 注入的上下文（如 `$mussel.messageBox`）的代码，必须在 `install` 调用之后执行。
 
-> 已分析项目并在 `{路径}/mussel-upgrade-plan.md` 创建升级计划。包含 {N} 个可自动升级项和 {M} 个人工审核项。是否开始执行？
+#### 图标注册函数更名
 
-等待确认。
+```js
+// Mussel 3
+import { registerIcons } from 'mussel'
+registerIcons({ edit: EditIcon })
 
-### 阶段三：执行
-
-逐类别系统处理。
-
-执行规则：
-1. **修改前先读文件**，绝不盲目编辑。
-2. **逐文件处理**，完成一个文件所有变更后再下一个。
-3. **跟踪进度**，每改一个文件后更新计划文档，增加"状态"列：`已完成` / `跳过（需人工处理）` / `受阻`。
-4. **跳过非自动项**，在计划中备注，不改代码。
-5. **保留业务逻辑**，仅变更 mussel 相关 API/属性/类/变量。
-
-升级日志（计划文档中维护）：
-
-```markdown
-## 升级日志
-| 序号 | 文件 | 变更内容 | 状态 |
-|------|------|----------|------|
+// Mussel 4
+import { installIcons } from 'mussel'
+installIcons({ edit: EditIcon })
 ```
 
-全部完成后生成 `{项目根目录}/mussel-upgrade-summary.md`：
+也可在 `install` 时通过 `options.icons` 一次性注册，二者等价。
 
-```markdown
-# Mussel 3 → Mussel 4 升级总结
-**项目**：{项目名称}
-**日期**：{今天}
+#### 升级检查清单（安装）
 
-## 结果
-- 修改文件数：{N}
-- 应用变更总数：{N}
-- 跳过项数（需人工审核）：{N}
+- [ ] 导入语句：`import pluginMussel from 'mussel'` → `import { install } from 'mussel'`
+- [ ] 调用方式：`app.use(pluginMussel, {...})` → `install(app, {...}).mount(...)`（或 `app.use(install, {...}).mount(...)`）
+- [ ] 图标注册：`registerIcons` → `installIcons`（或并入 `install` 的 `options.icons`）
+- [ ] `theme: { 逐项 CSS 变量 }` → `colors: { 基础色 }`（自动派生调色板，见下「主题变量映射变更」）
+- [ ] `theme: false` 跳过颜色初始化已不支持，V4 始终初始化颜色系统
+- [ ] `autoComplementColors` 已移除，V4 始终自动补全衍生色
+- [ ] `root` 默认值由 `document.documentElement` 改为 `document.body`；若原样式依赖根元素为 `<html>`，需显式传 `root`
+- [ ] 命令式对话框/通知统一改走 `inject('$mussel').messageBox`（详见 5.11）
 
-## 已修改文件
-| 文件 | 变更说明 |
-|------|----------|
+### 插件注册
 
-## 需要人工审核的项目
-| 项目 | 文件 | 原因 |
-|------|------|------|
+```js
+// Mussel 3
+app.use(pluginMussel, {
+  theme: {
+    // 主题变量（驼峰，直接映射 CSS 变量）
+    primary: '#008CD6',
+    danger: '#f57a79',
+    success: '#00b25a',
+    warning: '#f4af61',
+    primaryColorDark: '#006db0',
+    primaryColorLight: '#24a7e3',
+    commonFontSize: '12px',
+    textColorNormal: 'var(--mu-gray-8)',
+    borderColor: '#ebecf0',
+    dividerColor: '#ebecf0',
+    // ...
+  },
+  darkMode: true | 'auto',   // 暗色模式
+  autoComplementColors: true, // 自动补全衍生色（默认开启）
+  root: document.documentElement,  // 挂载根元素
+  icons: { ... }             // 图标注册
+})
 
-## 后续步骤
-- [ ] 审核所有"需要人工审核"项
-- [ ] 将 package.json 的 mussel 依赖更新为 4.x
-- [ ] 运行应用，测试所有已修改组件
-- [ ] 移除升级期间的 CSS 兼容垫片（如有）
+// Mussel 4
+app.use(pluginMussel, {
+  root: '#app',              // 挂载根元素（选择器或 DOM 元素）
+  darkMode: true | 'auto',   // 暗色模式
+  colors: {
+    // 仅需指定基础色/语义色，自动生成调色板（10 级衍生色 + 20 级灰阶）
+    primary: '#1c7ed6',
+    danger: '#f03e3e',
+    success: '#37b24d',
+    warning: '#f76707',
+    secondary: '#...',        // 可选，不指定则从 primary 自动生成
+    neutral: '#...'           // 可选，不指定则从 primary 生成灰阶
+  },
+  icons: { ... },            // 图标注册
+  locale: 'zh',              // 语言包（'zh' | 'en'）
+  localeResources: { ... },  // 自定义语言资源
+  // 其余属性作为 componentOptions 传入，通过 $mussel.options 访问
+  messageBox: { dismissible: false },  // MessageBox 默认配置
+  tree: { ... }                        // Tree 默认配置
+})
+```
+
+#### 配置项变更对照
+
+| Mussel 3 | Mussel 4 | 说明 |
+|----------|----------|------|
+| `theme: { primary: '...', ... }` | `colors: { primary: '...', ... }` | 重命名。V3 手动指定每个 CSS 变量值；V4 仅指定基础色，自动生成调色板 |
+| `theme: false` | _(已移除)_ | V4 始终初始化颜色系统 |
+| `darkMode` | `darkMode`（不变） | 但根元素 class 变更：V3 加 `dark-mode` 属性，V4 加 `mu-dark` class |
+| `autoComplementColors` | _(已移除)_ | V4 始终自动补全，不可关闭 |
+| `root` | `root`（不变） | 默认值变更：V3 默认 `document.documentElement`，V4 默认 `document.body` |
+| `icons` | `icons`（不变） | |
+| _(无)_ | `locale` | 新增：语言包设置（`'zh'` \| `'en'`） |
+| _(无)_ | `localeResources` | 新增：自定义语言资源 |
+| _(无)_ | `...componentOptions` | 新增：其余属性作为组件级配置，通过 `inject('$mussel').options` 访问 |
+
+#### 主题变量映射变更
+
+V3 `theme` 中手动指定的变量，在 V4 中改为 `colors` 只需指定基础色值：
+
+| Mussel 3 `theme.*` | Mussel 4 `colors.*` | 说明 |
+|--------------------|---------------------|------|
+| `primary` | `primary` | 基础色，V4 自动生成 `primary-color-0` ~ `primary-color-9` 调色板 |
+| `danger` / `success` / `warning` | `danger` / `success` / `warning` | 同理，自动生成调色板 |
+| `primaryColorDark` | _(已移除)_ | 由调色板自动生成 |
+| `primaryColorLight` | _(已移除)_ | 由调色板自动生成 |
+| `secondary` | `secondary` | 可选，不指定则从 primary 自动生成 |
+| _(无)_ | `neutral` | 灰阶基准色，不指定则从 primary 生成 20 级灰阶 |
+| `commonFontSize` | _(已移除)_ | 用 CSS 变量 `--mu-font-size` 控制 |
+| `textColorNormal` | _(已移除)_ | 用 CSS 变量 `--mu-text-color-normal` 控制 |
+| `borderColor` / `dividerColor` | _(已移除)_ | 用 CSS 变量 `--mu-border-color-normal` / `--mu-border-color-soft` 控制 |
+
+> **V3 theme 中除颜色外的变量**（`commonFontSize`、`textColorNormal`、`borderColor` 等）在 V4 中不再通过 `install` 传入，改为直接覆盖 CSS 变量。
+
+#### 暗色模式变更
+
+| | Mussel 3 | Mussel 4 |
+|---|----------|----------|
+| 根元素标记 | `root.setAttribute('dark-mode', '')` | `root.classList.add('mu-dark')` |
+| CSS 变量覆盖 | `[dark-mode] .mu-root { --mu-xxx: ... }` | `.mu-root.mu-dark { --mu-xxx: ... }` |
+
+### 导出变更
+
+```js
+// Mussel 3
+export { install, components, icons, registerIcons, scrollbar }
+
+// Mussel 4
+export { install, installIcons }  // 仅导出 install 和 installIcons
 ```
 
 ---
 
-## Mussel 4 速查表
+## 2. CSS 变量与 CSS 类
 
-升级完成后编写新代码时参考以下文档：
+### 文本颜色
 
-- **原子样式**（CSS 变量、原子类、间距、颜色）：`references/styles.md`
-- **组件 API**：按类型查阅对应参考文件
-  - 模态框 / 抽屉：`references/dialog.md`
-  - 表单 / 输入：`references/form.md`
-  - 表格：`references/table.md`
-  - 其他组件：`references/components.md`
-- **组件选型**：`SKILL.md` 组件速查表
+#### CSS 变量
 
-> 迁移规则中的「目标写法」列均使用 Mussel 4 语法，具体属性/事件/插槽的完整 API 请查阅上述参考文件。
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `--mu-text-color-normal` | `--mu-text-color-normal`（不变） |
+| `--mu-text-color-reversed` | `#fff`（直接使用颜色值） |
+| `--mu-text-color-weak` | `--mu-text-color-muted` |
+| `--mu-text-color-placeholder` | _(已移除)_ |
+| _(无)_ | `--mu-text-color-strong`（新增） |
+| _(无)_ | `--mu-text-color-subtle`（新增） |
+| _(无)_ | `--mu-text-color-soft`（新增） |
+
+#### CSS 类
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `.mu-text-color-weak` | `.mu-text-color-muted` |
+| _(无)_ | `.mu-text-color-strong`（新增） |
+| _(无)_ | `.mu-text-color-subtle`（新增） |
+| _(无)_ | `.mu-text-color-soft`（新增） |
+
+### 背景颜色
+
+#### CSS 变量
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `--mu-background-normal` | `--mu-bg-normal` |
+| `--mu-background-hover` | `--mu-gray-translucent` |
+| `--mu-background-strong` | `--mu-bg-strong` |
+| `--mu-background-disabled` | `--mu-bg-disabled` |
+
+#### 废弃的背景类
+
+以下类在 Mussel 4 中**已移除**，需替换为内联样式：
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `class="mu-bg-transparent"` | `style="background: transparent"` |
+| `class="mu-bg-white"` | `style="background: white"` |
+| `class="mu-bg-black"` | `style="background: black"` |
+| `class="mu-bg-x-color"` | `style="background-color: var(--mu-xxx)"` |
+
+### 边框颜色
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `--mu-border-color` | `--mu-border-color-normal` |
+| `--mu-divider-color` | `--mu-border-color-soft` |
+
+### 其他变量
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `--mu-gray-dark` | `--mu-text-color-normal` |
+| `--mu-primary-color-shadow` | `--mu-primary-translucent` |
+| `--mu-unit-spacing-size` | `--mu-base-spacing` |
+| `--mu-editor-text-color` | `--mu-text-color-strong` |
+| `--mu-mask-background` | `--mu-bg-mask` |
+
+### Editor 专用变量（已移除）
+
+以下变量在 Mussel 4 中不再存在：
+- `--mu-editor-background` → 使用 `--mu-bg-normal`
+- `--mu-editor-background-solid` → 已移除
+- `--mu-editor-background-readonly` → 已移除
+- `--mu-editor-border-color` → 已移除
+- `--mu-editor-label-background` → 已移除
+
+### Editor 类名重命名
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `class="mu-editor"` | `class="mu-input"` |
+
+### 文本省略类重命名
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `class="mu-text-ellipsis"` | `class="text-ellipsis"` |
+| `.mu-text-ellipsis`（CSS 选择器） | `.text-ellipsis` |
+
+此规则适用于 Vue 模板中的 class 属性和 CSS/SCSS 中的选择器。
+
+### 颜色变体变更
+
+Mussel 3 中每个基本色有 `dark`、`light`、`shadow` 变体（如 `--mu-red-dark`）。在 Mussel 4 中**全部移除**。
+
+Mussel 4 新增：
+- `-translucent` 变体（10% 透明度）：`--mu-red-translucent`
+- `-faint` 变体（极浅色）：`--mu-primary-faint`
+- 扩展色等级色：`--mu-primary-color-0` ~ `--mu-primary-color-9`
+
+### 灰度色阶
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `--mu-gray-0` ~ `--mu-gray-9`（10 级） | `--mu-gray-0` ~ `--mu-gray-19`（20 级） |
+
+0-9 级保持不变，10-19 级为新增。
+
+### CSS 兼容性垫片
+
+在应用根样式中添加以下映射，使旧变量名继续生效：
+
+```css
+.mu-root {
+  --mu-mask-background: var(--mu-bg-mask);
+  --mu-divider-color: var(--mu-border-color-soft);
+  --mu-background-hover: var(--mu-gray-translucent);
+  --mu-unit-spacing-size: var(--mu-base-spacing);
+  --mu-list-item-hover-background: var(--mu-gray-translucent);
+  --mu-text-color-weak: var(--mu-text-color-muted);
+  --mu-button-border-color-normal: var(--mu-border-color);
+  --mu-background-normal: var(--mu-bg-normal);
+  --mu-primary-color-shadow: var(--mu-primary-translucent);
+}
+```
+
+### 新增原子类（Mussel 4）
+
+Mussel 4 新增了完整的原子类系统。完整列表见 `references/styles.md`，主要类别：
+
+**布局**：`.flex`、`.inline-flex`、`.block`、`.inline-block`、`.grid`、`.inline-grid`、`.contents`、`.hidden`、`.flex-row`、`.flex-col`、`.flex-1`、`.items-center`、`.justify-between`、`.gap-{n}x`
+
+**定位**：`.static`、`.relative`、`.absolute`、`.fixed`、`.sticky`、`.z-float`、`.z-layer`、`.z-modal`、`.z-popup`、`.z-ontop`
+
+**间距**：`.p-{n}x`、`.m-{n}x`、`.px-{n}x`、`.mx-{n}x`（n: 1-4）
+
+**边框**：`.border`、`.border-2`、`.border-3`、`.border-4`、`.border-primary`、`.border-danger`、`.border-soft`、`.border-strong`、`.border-dashed`、`.border-dotted`
+
+**文本**：`.mu-text-strong`、`.mu-text-normal`、`.mu-text-muted`、`.mu-text-subtle`、`.mu-text-soft`、`.mu-text-primary`、`.mu-text-secondary`、`.mu-text-success`、`.mu-text-warning`、`.mu-text-danger`、`.text-ellipsis`、`.line-clamp`
+
+**背景**：`.mu-bg-normal`、`.mu-bg-strong`、`.mu-bg-fill`、`.mu-bg-disabled`、`.mu-bg-overlay`、`.mu-bg-mask`（斑马纹只有 `--mu-bg-stripe` 变量，无对应原子类）
+
+**溢出**：`.overflow-auto`、`.overflow-hidden`、`.overflow-visible`、`.overflow-clip`
 
 ---
 
-## 迁移规则
-
-所有已知 API 变更的完整参考。升级过程中以此部分为权威依据。
-
----
-
-## 1. 布局系统
+## 3. 布局系统
 
 Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布局组件。所有原本通过 `MuBox|MuFlexBox` 组件、`class="mu-box|mu-flex-box|mu-h-box|mu-v-box"` + HTML 属性实现的布局、间距、边框、尺寸等，现在需改用原子类实现。
 
-### 1.1 移除项
+### 3.1 移除项
 
 | 移除项 | 说明 |
 |--------|------|
@@ -250,7 +348,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | `class="mu-divider"` | 改为 `class="flex-divider"` |
 | `class="mu-flex-item"` | 无对应样式 |
 
-### 1.2 组件变更
+### 3.2 组件变更
 
 | 组件 | Mussel 3 渲染 | Mussel 4 渲染 | 迁移方式 |
 |------|---------------|---------------|----------|
@@ -259,7 +357,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | `<mu-grid-box>` | `<div class="mu-grid-box">` + 属性选择器 | `<div class="grid">` + 内联 style | **保留组件**，但 `width`/`height`/`padding` 等属性需改用 `style` 或原子类 |
 | `<mu-grid-cell>` | `<div>` + 属性选择器 | `<div>` + 内联 style | **保留组件**，通过 `:col-start`/`:col-end`/`:row-start`/`:row-end` props 传值 |
 
-### 1.3 属性选择器 → 原子类 / 内联样式 完整映射
+### 3.3 属性选择器 → 原子类 / 内联样式 完整映射
 
 #### 布局
 
@@ -409,7 +507,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | `<div class="mu-divider" thin />` | `<div class="flex-divider" line-width="1" />` | 1px 细分隔线 |
 | 像素值变体 | `class="flex-divider" line-width="{n}"` | 1 ~ 4px |
 
-### 1.4 升级示例
+### 3.4 升级示例
 
 #### 简单页面容器
 
@@ -504,7 +602,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 </mu-grid-box>
 ```
 
-### 1.5 升级检查清单
+### 3.5 升级检查清单
 
 对每个涉及 `mu-box` 的文件，逐一检查：
 
@@ -530,150 +628,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 
 ---
 
-## 2. CSS 变量与 CSS 类
-
-### 文本颜色
-
-#### CSS 变量
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `--mu-text-color-normal` | `--mu-text-color-normal`（不变） |
-| `--mu-text-color-reversed` | `#fff`（直接使用颜色值） |
-| `--mu-text-color-weak` | `--mu-text-color-muted` |
-| `--mu-text-color-placeholder` | _(已移除)_ |
-| _(无)_ | `--mu-text-color-strong`（新增） |
-| _(无)_ | `--mu-text-color-subtle`（新增） |
-| _(无)_ | `--mu-text-color-soft`（新增） |
-
-#### CSS 类
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `.mu-text-color-weak` | `.mu-text-color-muted` |
-| _(无)_ | `.mu-text-color-strong`（新增） |
-| _(无)_ | `.mu-text-color-subtle`（新增） |
-| _(无)_ | `.mu-text-color-soft`（新增） |
-
-### 背景颜色
-
-#### CSS 变量
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `--mu-background-normal` | `--mu-bg-normal` |
-| `--mu-background-hover` | `--mu-gray-translucent` |
-| `--mu-background-strong` | `--mu-bg-strong` |
-| `--mu-background-disabled` | `--mu-bg-disabled` |
-
-#### 废弃的背景类
-
-以下类在 Mussel 4 中**已移除**，需替换为内联样式：
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `class="mu-bg-transparent"` | `style="background: transparent"` |
-| `class="mu-bg-white"` | `style="background: white"` |
-| `class="mu-bg-black"` | `style="background: black"` |
-| `class="mu-bg-x-color"` | `style="background-color: var(--mu-xxx)"` |
-
-### 边框颜色
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `--mu-border-color` | `--mu-border-color-normal` |
-| `--mu-divider-color` | `--mu-border-color-soft` |
-
-### 其他变量
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `--mu-gray-dark` | `--mu-text-color-normal` |
-| `--mu-primary-color-shadow` | `--mu-primary-translucent` |
-| `--mu-unit-spacing-size` | `--mu-base-spacing` |
-| `--mu-editor-text-color` | `--mu-text-color-strong` |
-| `--mu-mask-background` | `--mu-bg-mask` |
-
-### Editor 专用变量（已移除）
-
-以下变量在 Mussel 4 中不再存在：
-- `--mu-editor-background` → 使用 `--mu-bg-normal`
-- `--mu-editor-background-solid` → 已移除
-- `--mu-editor-background-readonly` → 已移除
-- `--mu-editor-border-color` → 已移除
-- `--mu-editor-label-background` → 已移除
-
-### Editor 类名重命名
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `class="mu-editor"` | `class="mu-input"` |
-
-### 文本省略类重命名
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `class="mu-text-ellipsis"` | `class="text-ellipsis"` |
-| `.mu-text-ellipsis`（CSS 选择器） | `.text-ellipsis` |
-
-此规则适用于 Vue 模板中的 class 属性和 CSS/SCSS 中的选择器。
-
-### 颜色变体变更
-
-Mussel 3 中每个基本色有 `dark`、`light`、`shadow` 变体（如 `--mu-red-dark`）。在 Mussel 4 中**全部移除**。
-
-Mussel 4 新增：
-- `-translucent` 变体（10% 透明度）：`--mu-red-translucent`
-- `-faint` 变体（极浅色）：`--mu-primary-faint`
-- 扩展色等级色：`--mu-primary-color-0` ~ `--mu-primary-color-9`
-
-### 灰度色阶
-
-| Mussel 3 | Mussel 4 |
-|----------|----------|
-| `--mu-gray-0` ~ `--mu-gray-9`（10 级） | `--mu-gray-0` ~ `--mu-gray-19`（20 级） |
-
-0-9 级保持不变，10-19 级为新增。
-
-### CSS 兼容性垫片
-
-在应用根样式中添加以下映射，使旧变量名继续生效：
-
-```css
-.mu-root {
-  --mu-mask-background: var(--mu-bg-mask);
-  --mu-divider-color: var(--mu-border-color-soft);
-  --mu-background-hover: var(--mu-gray-translucent);
-  --mu-unit-spacing-size: var(--mu-base-spacing);
-  --mu-list-item-hover-background: var(--mu-gray-translucent);
-  --mu-text-color-weak: var(--mu-text-color-muted);
-  --mu-button-border-color-normal: var(--mu-border-color);
-  --mu-background-normal: var(--mu-bg-normal);
-  --mu-primary-color-shadow: var(--mu-primary-translucent);
-}
-```
-
-### 新增原子类（Mussel 4）
-
-Mussel 4 新增了完整的原子类系统。完整列表见 `references/styles.md`，主要类别：
-
-**布局**：`.flex`、`.inline-flex`、`.block`、`.inline-block`、`.grid`、`.inline-grid`、`.contents`、`.hidden`、`.flex-row`、`.flex-col`、`.flex-1`、`.items-center`、`.justify-between`、`.gap-{n}x`
-
-**定位**：`.static`、`.relative`、`.absolute`、`.fixed`、`.sticky`、`.z-float`、`.z-layer`、`.z-modal`、`.z-popup`、`.z-ontop`
-
-**间距**：`.p-{n}x`、`.m-{n}x`、`.px-{n}x`、`.mx-{n}x`（n: 1-4）
-
-**边框**：`.border`、`.border-2`、`.border-3`、`.border-4`、`.border-primary`、`.border-danger`、`.border-soft`、`.border-strong`、`.border-dashed`、`.border-dotted`
-
-**文本**：`.text-strong`、`.text-normal`、`.text-muted`、`.text-subtle`、`.text-soft`、`.text-primary`、`.text-secondary`、`.text-success`、`.text-warning`、`.text-danger`、`.text-ellipsis`、`.line-clamp`
-
-**背景**：`.bg-normal`、`.bg-strong`、`.bg-disabled`、`.bg-overlay`、`.bg-mask`、`.bg-fill`、`.bg-stripe`
-
-**溢出**：`.overflow-auto`、`.overflow-hidden`、`.overflow-visible`、`.overflow-clip`
-
----
-
-## 3. 图标
+## 4. 图标
 
 | Mussel 3 | Mussel 4 |
 |----------|----------|
@@ -681,11 +636,11 @@ Mussel 4 新增了完整的原子类系统。完整列表见 `references/styles.
 
 ---
 
-## 4. 组件迁移
+## 5. 组件迁移
 
-### 4.1 MuDialog
+### 5.1 MuDialog
 
-> 完整 MuDialog API：`references/dialog.md`
+> 完整 MuDialog API：`references/components/containers-panels.md`
 
 #### 属性变更
 
@@ -1044,7 +999,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 ---
 
-### 4.2 MuInput（原 MuEditor）
+### 5.2 MuInput（原 MuEditor）
 
 `<mu-editor>` 已重命名为 `<mu-input>`。
 
@@ -1085,7 +1040,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 ---
 
-### 4.3 MuComboBox / MuMultiSelect
+### 5.3 MuComboBox / MuMultiSelect
 
 #### MuComboBox
 
@@ -1111,7 +1066,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 ---
 
-### 4.4 MuDropdown 系列
+### 5.4 MuDropdown 系列
 
 #### MuDropdown
 
@@ -1171,7 +1126,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 ---
 
-### 4.5 MuTabs / MuTabBar / MuTabButton
+### 5.5 MuTabs / MuTabBar / MuTabButton
 
 #### MuTabs
 
@@ -1203,7 +1158,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 ---
 
-### 4.6 MuForm / MuFormField
+### 5.6 MuForm / MuFormField
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
@@ -1243,7 +1198,7 @@ items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数
 
 ---
 
-### 4.7 MuTree
+### 5.7 MuTree
 
 `<mu-tree-view>` 和 `<mu-tree-nodes>` 已移除。`<mu-tree-node>` 仍保留但推荐使用数据驱动方式。
 三个组件推荐统一由 `<mu-tree>` 数据驱动方式替代。
@@ -1275,7 +1230,7 @@ items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数
 
 ---
 
-### 4.8 MuButton / MuBadge / MuIcon
+### 5.8 MuButton / MuBadge / MuIcon
 
 #### MuButton
 
@@ -1302,7 +1257,7 @@ Mussel 4 新增 `buttonStyle` 属性：`'normal' | 'outline' | 'text' | 'link'`�
 
 ---
 
-### 4.9 MuList / MuListItem / MuListDivider
+### 5.9 MuList / MuListItem / MuListDivider
 
 | 组件 | Mussel 3 | Mussel 4 | 备注 |
 |------|----------|----------|------|
@@ -1311,7 +1266,7 @@ Mussel 4 新增 `buttonStyle` 属性：`'normal' | 'outline' | 'text' | 'link'`�
 
 ---
 
-### 4.10 MuNotifier
+### 5.10 MuNotifier
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
@@ -1319,7 +1274,7 @@ Mussel 4 新增 `buttonStyle` 属性：`'normal' | 'outline' | 'text' | 'link'`�
 
 ---
 
-### 4.11 MuMessageBox
+### 5.11 MuMessageBox
 
 #### callback 签名变更
 
@@ -1399,7 +1354,7 @@ Mussel 3 使用无前缀字符串 `'OK'`、`'CANCEL'` 等。Mussel 4 使用 `#` 
 
 ---
 
-### 4.12 其他小组件
+### 5.12 其他小组件
 
 #### MuCheck / MuRadio 根元素变更
 
@@ -1409,106 +1364,6 @@ Mussel 3 中，`<mu-check>` 和 `<mu-radio>` 在没有 `label` 时渲染裸 `<in
 
 仍支持 `width` 属性的组件：**form、dialog、tabs**。
 其他所有组件（包括 box）：`width="100%"` → `style="width: 100%;"`。
-
----
-
-## 5. 全局配置
-
-### 插件注册
-
-```js
-// Mussel 3
-app.use(pluginMussel, {
-  theme: {
-    // 主题变量（驼峰，直接映射 CSS 变量）
-    primary: '#008CD6',
-    danger: '#f57a79',
-    success: '#00b25a',
-    warning: '#f4af61',
-    primaryColorDark: '#006db0',
-    primaryColorLight: '#24a7e3',
-    commonFontSize: '12px',
-    textColorNormal: 'var(--mu-gray-8)',
-    borderColor: '#ebecf0',
-    dividerColor: '#ebecf0',
-    // ...
-  },
-  darkMode: true | 'auto',   // 暗色模式
-  autoComplementColors: true, // 自动补全衍生色（默认开启）
-  root: document.documentElement,  // 挂载根元素
-  icons: { ... }             // 图标注册
-})
-
-// Mussel 4
-app.use(pluginMussel, {
-  root: '#app',              // 挂载根元素（选择器或 DOM 元素）
-  darkMode: true | 'auto',   // 暗色模式
-  colors: {
-    // 仅需指定基础色/语义色，自动生成调色板（10 级衍生色 + 20 级灰阶）
-    primary: '#1c7ed6',
-    danger: '#f03e3e',
-    success: '#37b24d',
-    warning: '#f76707',
-    secondary: '#...',        // 可选，不指定则从 primary 自动生成
-    neutral: '#...'           // 可选，不指定则从 primary 生成灰阶
-  },
-  icons: { ... },            // 图标注册
-  locale: 'zh',              // 语言包（'zh' | 'en'）
-  localeResources: { ... },  // 自定义语言资源
-  // 其余属性作为 componentOptions 传入，通过 $mussel.options 访问
-  messageBox: { dismissible: false },  // MessageBox 默认配置
-  tree: { ... }                        // Tree 默认配置
-})
-```
-
-#### 配置项变更对照
-
-| Mussel 3 | Mussel 4 | 说明 |
-|----------|----------|------|
-| `theme: { primary: '...', ... }` | `colors: { primary: '...', ... }` | 重命名。V3 手动指定每个 CSS 变量值；V4 仅指定基础色，自动生成调色板 |
-| `theme: false` | _(已移除)_ | V4 始终初始化颜色系统 |
-| `darkMode` | `darkMode`（不变） | 但根元素 class 变更：V3 加 `dark-mode` 属性，V4 加 `mu-dark` class |
-| `autoComplementColors` | _(已移除)_ | V4 始终自动补全，不可关闭 |
-| `root` | `root`（不变） | 默认值变更：V3 默认 `document.documentElement`，V4 默认 `document.body` |
-| `icons` | `icons`（不变） | |
-| _(无)_ | `locale` | 新增：语言包设置（`'zh'` \| `'en'`） |
-| _(无)_ | `localeResources` | 新增：自定义语言资源 |
-| _(无)_ | `...componentOptions` | 新增：其余属性作为组件级配置，通过 `inject('$mussel').options` 访问 |
-
-#### 主题变量映射变更
-
-V3 `theme` 中手动指定的变量，在 V4 中改为 `colors` 只需指定基础色值：
-
-| Mussel 3 `theme.*` | Mussel 4 `colors.*` | 说明 |
-|--------------------|---------------------|------|
-| `primary` | `primary` | 基础色，V4 自动生成 `primary-color-0` ~ `primary-color-9` 调色板 |
-| `danger` / `success` / `warning` | `danger` / `success` / `warning` | 同理，自动生成调色板 |
-| `primaryColorDark` | _(已移除)_ | 由调色板自动生成 |
-| `primaryColorLight` | _(已移除)_ | 由调色板自动生成 |
-| `secondary` | `secondary` | 可选，不指定则从 primary 自动生成 |
-| _(无)_ | `neutral` | 灰阶基准色，不指定则从 primary 生成 20 级灰阶 |
-| `commonFontSize` | _(已移除)_ | 用 CSS 变量 `--mu-font-size` 控制 |
-| `textColorNormal` | _(已移除)_ | 用 CSS 变量 `--mu-text-color-normal` 控制 |
-| `borderColor` / `dividerColor` | _(已移除)_ | 用 CSS 变量 `--mu-border-color-normal` / `--mu-border-color-soft` 控制 |
-
-> **V3 theme 中除颜色外的变量**（`commonFontSize`、`textColorNormal`、`borderColor` 等）在 V4 中不再通过 `install` 传入，改为直接覆盖 CSS 变量。
-
-#### 暗色模式变更
-
-| | Mussel 3 | Mussel 4 |
-|---|----------|----------|
-| 根元素标记 | `root.setAttribute('dark-mode', '')` | `root.classList.add('mu-dark')` |
-| CSS 变量覆盖 | `[dark-mode] .mu-root { --mu-xxx: ... }` | `.mu-root.mu-dark { --mu-xxx: ... }` |
-
-#### 导出变更
-
-```js
-// Mussel 3
-export { install, components, icons, registerIcons, scrollbar }
-
-// Mussel 4
-export { install, installIcons }  // 仅导出 install 和 installIcons
-```
 
 ---
 
@@ -1536,7 +1391,6 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuToolButton | 仅图标的快捷操作按钮 |
 | MuInputGroup | 输入框分组 |
 | MuToolbar | 工具栏组件 |
-| MuSvgStripe | SVG 装饰条纹 |
 | MuBar | 通用条形容器 |
 | MuPagination | 分页组件 |
 | MuScrollBox | 可滚动容器（带自定义滚动条） |

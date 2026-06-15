@@ -1,11 +1,6 @@
 # MUSSEL 4 — 样式变量与原子类
 
-> **使用原则**
-> - 禁止硬编码颜色值（如 `#fff`、`rgb(0,0,0)`），一律使用 CSS 变量
-> - 禁止使用 `--mu-gray-0` ~ `--mu-gray-19` 等原始灰阶作为文字颜色，应使用文本颜色变量
-> - 阴影、层级同理，直接使用语义变量，不手写数值
-> - 间距只使用 `{n}x` 系列（1x=8px，最大 4x=32px），禁止写 `style="margin: 12px"`
-> - 优先使用原子类完成布局，避免在组件内写一次性 CSS
+> 颜色、间距、原子类等使用规范见 `principles.md` 硬性禁止清单。
 
 ---
 
@@ -84,17 +79,17 @@
 
 ### 1.5 文本颜色（由深到浅）
 
-文本色由 20 级灰阶映射而来（禁止直接用 `--mu-gray-*`，必须用下列语义变量）。近期已将 `normal` 加深，拉开与 `subtle` 的层级。
+文本色由 20 级灰阶映射而来。近期已将 `normal` 加深，拉开与 `subtle` 的层级。
 
 | 变量 | 原子类 | 适用场景 |
 |------|--------|---------|
-| `--mu-text-color-strong` | `.text-strong` | 用户输入内容、文章正文、强调标题 |
-| `--mu-text-color-normal` | `.text-normal` | 默认正文、常规名称、普通标签（页面主文本） |
-| `--mu-text-color-subtle` | `.text-subtle` | 次要信息、描述文字 |
-| `--mu-text-color-soft` | `.text-soft` | 副标题、提示文字 |
-| `--mu-text-color-muted` | `.text-muted` | 禁用状态文字 |
+| `--mu-text-color-strong` | `.mu-text-strong` | 用户输入内容、文章正文、强调标题 |
+| `--mu-text-color-normal` | `.mu-text-normal` | 默认正文、常规名称、普通标签（页面主文本） |
+| `--mu-text-color-subtle` | `.mu-text-subtle` | 次要信息、描述文字 |
+| `--mu-text-color-soft` | `.mu-text-soft` | 副标题、提示文字 |
+| `--mu-text-color-muted` | `.mu-text-muted` | 禁用状态文字 |
 
-功能色文本：`.text-primary` / `.text-secondary` / `.text-success` / `.text-warning` / `.text-danger`
+功能色文本：`.mu-text-primary` / `.mu-text-secondary` / `.mu-text-success` / `.mu-text-warning` / `.mu-text-danger`
 
 ---
 
@@ -114,7 +109,7 @@
 
 ### 1.7 边框颜色
 
-边框色由灰阶映射而来（禁止直接用 `--mu-gray-*`）。近期已整体调浅，使边框更柔和，避免喧宾夺主。三档由深到浅：
+边框色由灰阶映射而来。近期已整体调浅，使边框更柔和，避免喧宾夺主。三档由深到浅：
 
 | 变量 | 原子类 | 用途 |
 |------|--------|------|
@@ -154,14 +149,18 @@
 | `--mu-base-spacing` | `8px` | 布局间距基准，所有 `{n}x` 类均以此为倍数 |
 | `--mu-content-spacing` | `5px` | 行内元素间距，图标与文字之间等 |
 
-间距倍数对照：
+间距倍数对照（原子类后缀）：
 
-| 倍数 | 像素值 | 典型用途 |
+| 后缀 | 像素值 | 典型用途 |
 |------|--------|---------|
+| `0` | 0 | 清除间距 |
+| `half` | 4px | 紧凑组件内部微小间距 |
 | `1x` | 8px | 紧凑元素内边距 |
 | `2x` | 16px | 常规卡片内边距 |
 | `3x` | 24px | 区块间距 |
 | `4x` | 32px | 大区域分隔 |
+
+> 间距原子类支持的后缀：`-0` / `-half` / `-1x` ~ `-4x`（padding/margin 同理），gap 支持 `gap-none` / `gap-half` / `gap-1x` ~ `gap-4x`。
 
 ---
 
@@ -187,8 +186,6 @@
 | `--mu-z-index-popup` | 下拉框、Tooltip |
 | `--mu-z-index-ontop` | 全局消息提示、全屏加载动画（最高层） |
 
-> **层级使用规则**：不允许手写 `z-index` 数值，一律使用以上变量。
-
 ---
 
 ### 1.13 控件尺寸
@@ -205,10 +202,7 @@
 
 ## 2 - 原子类
 
-> **使用原则**
-> - 优先使用原子类完成布局，避免在组件内写一次性 CSS
-> - 间距只使用 `{n}x` 系列（1x=8px，最大 4x=32px），禁止写 `style="margin: 12px"`
-> - `gap-{n}x` 同样基于 `--mu-base-spacing` 的倍数
+> `gap-{n}x` 同样基于 `--mu-base-spacing` 的倍数，另提供 `gap-half`（半倍）和 `gap-none`（清除）。
 
 ### 2.1 定位与布局
 
@@ -320,7 +314,8 @@
 | 类名       | 说明                     |
 | ---------- | ------------------------ |
 | .gap-none  | gap: unset               |
-| .gap-{n}x  | gap: n * 8px             |
+| .gap-half  | gap: calc(--mu-base-spacing / 2)，即 4px |
+| .gap-{n}x  | gap: n × 8px（n: 1 ~ 4） |
 
 **Z-index 定位：**
 
@@ -389,52 +384,49 @@
 
 ### 2.2 间距
 
-间距基于 `--mu-base-spacing`（默认 8px）的倍数，支持 1x ~ 4x。
+间距基于 `--mu-base-spacing`（默认 8px）的倍数，padding/margin 均支持后缀 `-0` / `-half` / `-{1~4}x`。
 
-**padding (n: 1 ~ 4)：**
+**padding：**
 
-| 类名       | 说明                     |
-| ---------- | ------------------------ |
-| .p-{n}x    | 上下左右 padding         |
-| .px-{n}x   | 水平方向 padding         |
-| .py-{n}x   | 垂直方向 padding         |
-| .pt-{n}x   | padding-top              |
-| .pr-{n}x   | padding-right            |
-| .pb-{n}x   | padding-bottom           |
-| .pl-{n}x   | padding-left             |
+| 类名 | 说明 |
+| ---- | ---- |
+| .p-{s} | 上下左右 padding（s 取 0 / half / 1x ~ 4x） |
+| .px-{s} | 水平方向 padding |
+| .py-{s} | 垂直方向 padding |
+| .pt-{s} | padding-top |
+| .pr-{s} | padding-right |
+| .pb-{s} | padding-bottom |
+| .pl-{s} | padding-left |
 
-**margin (n: 1 ~ 4)：**
+**margin：**
 
-| 类名       | 说明                     |
-| ---------- | ------------------------ |
-| .m-{n}x    | 上下左右 margin          |
-| .mx-{n}x   | 水平方向 margin          |
-| .my-{n}x   | 垂直方向 margin          |
-| .mt-{n}x   | margin-top               |
-| .mr-{n}x   | margin-right             |
-| .mb-{n}x   | margin-bottom            |
-| .ml-{n}x   | margin-left              |
-| .m-auto    | margin: auto             |
-| .mx-auto   | 水平方向 margin: auto    |
-| .my-auto   | 垂直方向 margin: auto    |
-| .mt-auto   | margin-top: auto         |
-| .mr-auto   | margin-right: auto       |
-| .mb-auto   | margin-bottom: auto      |
-| .ml-auto   | margin-left: auto        |
+| 类名 | 说明 |
+| ---- | ---- |
+| .m-{s} | 上下左右 margin（s 取 0 / half / 1x ~ 4x） |
+| .mx-{s} | 水平方向 margin |
+| .my-{s} | 垂直方向 margin |
+| .mt-{s} | margin-top |
+| .mr-{s} | margin-right |
+| .mb-{s} | margin-bottom |
+| .ml-{s} | margin-left |
+| .m-auto / .mx-auto / .my-auto / .mt-auto / .mr-auto / .mb-auto / .ml-auto | 对应方向 margin: auto |
 
 
 
 ### 2.3 背景与边框
 
-**背景颜色：**
+**背景颜色（类名带 `mu-` 前缀）：**
 
 | 类名              | 说明             |
 | ----------------- | ---------------- |
-| .bg-normal        | 默认背景色       |
-| .bg-strong        | 强调区域背景色   |
-| .bg-disabled      | 禁用状态背景色   |
-| .bg-overlay       | 弹出层背景色     |
-| .bg-mask          | 遮罩层背景色     |
+| .mu-bg-normal     | 默认背景色       |
+| .mu-bg-strong     | 强调区域背景色   |
+| .mu-bg-fill       | 填充背景色       |
+| .mu-bg-disabled   | 禁用状态背景色   |
+| .mu-bg-overlay    | 弹出层背景色     |
+| .mu-bg-mask       | 遮罩层背景色     |
+
+> ⚠️ 背景类前缀是 `.mu-bg-*`（注意 `mu-` 前缀），与 `.text-*` / `.z-*` / `.border-*` 等无前缀原子类不同。
 
 **阴影：**
 
@@ -468,20 +460,52 @@
 
 **边框颜色：**
 
-| 类名             | 说明               |
-| ---------------- | ------------------ |
-| .border-soft     | 浅色边框           |
-| .border-strong   | 深色边框           |
-| .border-primary  | 主色边框           |
-| .border-danger   | 危险色边框         |
+每个方向均支持以下四档颜色（方向前缀同边框宽度：`-x` / `-y` / `-t` / `-r` / `-b` / `-l`，无前缀为四边）。
+
+| 颜色后缀        | 说明               |
+| --------------- | ------------------ |
+| `-soft`         | 浅色边框           |
+| `-strong`       | 深色边框           |
+| `-primary`      | 主色边框           |
+| `-danger`       | 危险色边框         |
+
+示例：
+
+| 类名               | 说明                  |
+| ------------------ | --------------------- |
+| .border-soft       | 四边浅色边框          |
+| .border-strong     | 四边深色边框          |
+| .border-primary    | 四边主色边框          |
+| .border-danger     | 四边危险色边框        |
+| .border-x-soft     | 水平方向浅色边框      |
+| .border-y-strong   | 垂直方向深色边框      |
+| .border-t-primary  | 上边主色边框          |
+| .border-b-danger   | 下边危险色边框        |
+
+> 颜色与方向可任意组合，共 4 色 × 7 方向（含四边）= 28 个类。
 
 **边框样式：**
 
-| 类名             | 说明             |
-| ---------------- | ---------------- |
-| .border-dashed   | 虚线边框         |
-| .border-dotted   | 点线边框         |
-| .border-double   | 双线边框         |
+每个方向均支持以下三种样式（方向前缀同上）。
+
+| 样式后缀        | 说明             |
+| --------------- | ---------------- |
+| `-dashed`       | 虚线边框         |
+| `-dotted`       | 点线边框         |
+| `-double`       | 双线边框         |
+
+示例：
+
+| 类名                | 说明               |
+| ------------------- | ------------------ |
+| .border-dashed      | 四边虚线边框       |
+| .border-dotted      | 四边点线边框       |
+| .border-double      | 四边双线边框       |
+| .border-x-dashed    | 水平方向虚线边框   |
+| .border-y-dotted    | 垂直方向点线边框   |
+| .border-t-double    | 上边双线边框       |
+
+> 样式与方向可任意组合，共 3 样式 × 7 方向（含四边）= 21 个类。
 
 
 ### 2.4 文本排版
@@ -492,31 +516,21 @@
 
 | 类名                    | 变量名                     | 说明                           |
 | ----------------------- | -------------------------- | ------------------------------ |
-| .text-strong            | --mu-text-color-strong     | 清晰，常用于用户输入或文章正文 |
-| .mu-text-color-strong   | --mu-text-color-strong     | 同上                           |
-| .text-normal            | --mu-text-color-normal     | 常规，常用于各类名称显示       |
-| .mu-text-color-normal   | --mu-text-color-normal     | 同上                           |
-| .text-subtle            | --mu-text-color-subtle     | 次要，用于次级文字信息显示     |
-| .mu-text-color-subtle   | --mu-text-color-subtle     | 同上                           |
-| .text-soft              | --mu-text-color-soft       | 柔和，常用于副标题或提示文字   |
-| .mu-text-color-soft     | --mu-text-color-soft       | 同上                           |
-| .text-muted             | --mu-text-color-muted      | 淡雅，常用于禁用组件文字       |
-| .mu-text-color-muted    | --mu-text-color-muted      | 同上                           |
+| .mu-text-strong         | --mu-text-color-strong     | 清晰，常用于用户输入或文章正文 |
+| .mu-text-normal         | --mu-text-color-normal     | 常规，常用于各类名称显示       |
+| .mu-text-subtle         | --mu-text-color-subtle     | 次要，用于次级文字信息显示     |
+| .mu-text-soft           | --mu-text-color-soft       | 柔和，常用于副标题或提示文字   |
+| .mu-text-muted          | --mu-text-color-muted      | 淡雅，常用于禁用组件文字       |
 
 **功能色文本颜色：**
 
 | 类名                    | 变量名                   | 说明       |
 | ----------------------- | ------------------------ | ---------- |
-| .text-primary           | --mu-primary-color       | 主色文本   |
-| .mu-text-color-primary  | --mu-primary-color       | 同上       |
-| .text-secondary         | --mu-secondary-color     | 次要色文本 |
-| .mu-text-color-secondary | --mu-secondary-color     | 同上       |
-| .text-success           | --mu-success-color       | 成功色文本 |
-| .mu-text-color-success  | --mu-success-color       | 同上       |
-| .text-warning           | --mu-warning-color       | 警告色文本 |
-| .mu-text-color-warning  | --mu-warning-color       | 同上       |
-| .text-danger            | --mu-danger-color        | 危险色文本 |
-| .mu-text-color-danger   | --mu-danger-color        | 同上       |
+| .mu-text-primary        | --mu-primary-color       | 主色文本   |
+| .mu-text-secondary      | --mu-secondary-color     | 次要色文本 |
+| .mu-text-success        | --mu-success-color       | 成功色文本 |
+| .mu-text-warning        | --mu-warning-color       | 警告色文本 |
+| .mu-text-danger         | --mu-danger-color        | 危险色文本 |
 
 **文本对齐：**
 
@@ -582,11 +596,11 @@ white-space: pre-line;
 
 ```html
 <div class="flex flex-col" style="height: 100vh">
-  <header class="flex-none flex items-center px-2x bg-strong">
+  <header class="flex-none flex items-center px-2x mu-bg-strong">
     页头
   </header>
   <div class="flex flex-1 overflow-hidden">
-    <aside class="flex-none overflow-auto bg-strong" style="width: 240px">
+    <aside class="flex-none overflow-auto mu-bg-strong" style="width: 240px">
       侧边栏
     </aside>
     <main class="flex-1 overflow-auto p-2x">
@@ -609,8 +623,8 @@ white-space: pre-line;
 
 ```html
 <div class="flex items-center gap-1x px-2x py-1x border-b border-soft">
-  <span class="text-normal">数据列表</span>
-  <span class="text-soft ml-2x">共 128 条</span>
+  <span class="mu-text-normal">数据列表</span>
+  <span class="mu-text-soft ml-2x">共 128 条</span>
   <div class="ml-auto flex items-center gap-1x">
     <button>筛选</button>
     <button>导出</button>

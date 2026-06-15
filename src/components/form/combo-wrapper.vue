@@ -1,6 +1,6 @@
 <template>
   <div
-    ref="wrapper"
+    ref="wrapperRef"
     class="mu-input"
     v-bind="wrapperAttrs"
     @click="onWrapperClick"
@@ -21,7 +21,8 @@
       {{ suf.content }}
     </component>
     <mu-dropdown-panel
-      ref="dropdownPanel"
+      v-if="!dropdownPanel"
+      ref="dropdownPanelRef"
       class="mu-input__dropdown-panel"
       v-bind="dropdownPanelAttrs"
       v-on="dropdownPanelEvents">
@@ -36,6 +37,8 @@
   import { computed } from 'vue'
   import { inputProps, inputEmits, useInput } from './input'
   import { dropdownProps, dropdownEvents, useDropdown } from '../dropdown/dropdown-wrapper'
+
+  import MuDropdownPanel from '../dropdown/dropdown-panel.vue'
 
   defineOptions({ name: 'MusselComboWrapper' })
 
@@ -76,10 +79,10 @@
   }
 
   const {
-    wrapper,
+    wrapperRef,
     dropdownVisible,
     dropdownIconAttrs,
-    dropdownPanel,
+    dropdownPanelRef,
     dropdownPanelAttrs,
     dropdownPanelEvents,
     expand,

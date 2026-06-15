@@ -1,4 +1,4 @@
-# form.md — 表单与输入组件 API
+# 表单与输入组件 API
 
 ---
 
@@ -365,7 +365,3 @@ const items = [
 | `inactive-label` | String | — | 关闭状态文字 |
 | `active-value` | — | `true` | 打开状态值 |
 | `inactive-value` | — | `false` | 关闭状态值 |
-
----
-
-> **输入组件选型速查表**见 SKILL.md「输入组件」章节，本文件不再重复。
