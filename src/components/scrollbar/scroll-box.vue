@@ -6,8 +6,6 @@
 </template>
 
 <script>
-  import './scroll-box.scss'
-
   import { attach, detach } from './scrollbar'
 
   export default {

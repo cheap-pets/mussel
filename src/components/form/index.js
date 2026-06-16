@@ -1,4 +1,5 @@
 export { default as MuInput } from './input.vue'
+export { default as MuSearchInput } from './search-input.vue'
 export { default as MuInputGroup } from './input-group.vue'
 export { default as MuSelect } from './select.vue'
 export { default as MuMultiSelect } from './multi-select.vue'

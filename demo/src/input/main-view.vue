@@ -7,7 +7,7 @@
     <div class="group flex flex-wrap gap-1x">
       <h3>Basic</h3>
       <mu-input v-model.trim="value" placeholder="Input Text" @update:model-value="onChange" @esc="console.log('esc')"/>
-      <mu-input v-model="value" placeholder="Input Text" :clear-button="false" />
+      <mu-input v-model="value" placeholder="Input Text" clearable />
     </div>
     <div class="group flex flex-wrap gap-1x">
       <h3>AFFIX：Icon, Text, Tool & Link</h3>

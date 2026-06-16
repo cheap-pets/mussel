@@ -5,66 +5,28 @@
       <theme-switch />
     </h2>
 
-    <!-- Dialog -->
-    <div id="div1" class="group">
-      <h3>Dialog</h3>
-      <mu-button caption="Open Dialog" @click="openDialog" />
-      <mu-button caption="Request Fullscreen" secondary button-style="outline" @click="requestFullscreen('#div1')" />
-    </div>
+    <mu-button class="m-2x" caption="Fullscreen" @click="requestFullscreen('#div1')" />
 
-    <!-- Drawer -->
-    <div id="div2" class="group">
-      <h3 class="flex items-center gap-1x">
+    <div id="div1" class="px-2x">
+      <h3 class="my-2x">
+        Dialog
+      </h3>
+      <mu-button caption="Open Dialog" @click="openDialog" />
+      <h3 class="flex items-center gap-1x mt-2x">
         Drawer
         <mu-switch v-model="maskVisible" label="Mask Visible" />
         <mu-switch v-model="rounded" label="Rounded Border" />
       </h3>
-
-      <mu-button caption="Top" @click="openDrawer('top')" />
-      <mu-button caption="Bottom" @click="openDrawer('bottom')" />
-      <mu-button caption="Left" @click="openDrawer('left')" />
-      <mu-button caption="Right" @click="openDrawer('right')" />
-      <mu-button caption="Request Fullscreen" secondary button-style="outline" @click="requestFullscreen('#div2')" />
+      <div class="flex gap-1x mt-2x">
+        <mu-button caption="Top" @click="openDrawer('top')" />
+        <mu-button caption="Bottom" @click="openDrawer('bottom')" />
+        <mu-button caption="Left" @click="openDrawer('left')" />
+        <mu-button caption="Right" @click="openDrawer('right')" />
+      </div>
     </div>
 
     <!-- Dialog -->
-    <mu-dialog
-      ref="myDialog"
-      v-model:visible="dialogVisible"
-      width="800"
-      height="600"
-      title="Modal Dialog"
-      dismissible
-      dispose-on-hide
-      keep-position
-      maximize-button
-      maximize-to-fullscreen
-      body-scrollbar
-      body-class="mu-bg-strong p-3x"
-      :lazy="false"
-      :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
-      @update:visible="(...args) => onDialogVisibleChange('myDialog', ...args)"
-      @button-click="onButtonClick">
-      <template #header>
-        <mu-input placeholder="find your money" prefix=":icon=search" input-style="solid" round />
-        <mu-dropdown-button
-          class="mu-icon-button"
-          button-style="text"
-          dropdown-icon="dots"
-          :dropdown-items="[
-            { label: 'Open Recent Files' },
-            { label: 'New File' },
-            '-',
-            { label: 'Exit' }
-          ]" />
-      </template>
-      <div style="height: 1000px; font-size: 16px; font-style: italic;">
-        A long time ago in a galaxy far, far away…
-      </div>
-      <template #footer>
-        <mu-input placeholder="where's your money?" />
-      </template>
-    </mu-dialog>
+    <my-dialog ref="myDialogRef" />
 
     <!-- Drawer -->
     <mu-drawer
@@ -82,21 +44,20 @@
 </template>
 
 <script setup>
-  import { ref, getCurrentInstance } from 'vue'
-  import ThemeSwitch from '../common/theme-switch.vue'
+  import { ref } from 'vue'
 
-  const dialogVisible = ref(false)
+  import ThemeSwitch from '../common/theme-switch.vue'
+  import MyDialog from './my-dialog.vue'
+
   const drawerVisible = ref(false)
   const drawerPosition = ref('left')
   const maskVisible = ref(true)
   const rounded = ref(true)
 
-  const myDialog = ref()
-
-  const { proxy } = getCurrentInstance()
+  const myDialogRef = ref()
 
   function openDialog () {
-    dialogVisible.value = true
+    myDialogRef.value?.show('A long time ago in a galaxy far, far away…')
   }
 
   function openDrawer (position) {
@@ -105,26 +66,7 @@
   }
 
   function requestFullscreen (selector) {
-    const element = document.querySelector(selector)
-    if (element) {
-      element.requestFullscreen()
-    }
-  }
-
-  function onDialogVisibleChange (dialogName, value, trigger) {
-    console.log(dialogName, value, trigger)
-  }
-
-  function onButtonClick (button) {
-    if (button.name === 'Find') {
-      proxy.$mussel.messageBox.alert('Cannot find any !')
-    } else {
-      console.log(button.name)
-
-      if (button.name === 'OK') {
-        dialogVisible.value = false
-      }
-    }
+    document.querySelector(selector).requestFullscreen()
   }
 
 </script>

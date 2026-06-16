@@ -23,6 +23,7 @@ export { default as chevronDown } from '~icons/outline/chevron-down.svg'
 export { default as chevronLeft } from '~icons/outline/chevron-left.svg'
 export { default as chevronRight } from '~icons/outline/chevron-right.svg'
 
+export { default as search } from '~icons/outline/search.svg'
 export { default as calendar } from '~icons/outline/calendar-month.svg'
 
 export const loading = {

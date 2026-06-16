@@ -13,4 +13,4 @@ dist/
 .claude/settings.local.json
 .claude/memory/
 
-opencode.json
+AGENTS.md

@@ -182,6 +182,21 @@ const items = [
 
 ---
 
+## MuSearchInput
+
+带防抖与默认搜索图标的输入框，常作为列表/表格或下拉选项的过滤搜索框。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `debounce-delay` | Number | `500` | 值变更后触发 `update:modelValue` 的防抖延迟（毫秒） |
+| `prefix` | String\|Object | `':icon=search'` | 默认渲染搜索图标（覆盖 MuInput 默认值） |
+| `clearable` | Boolean | `true` | 默认显示清除按钮（覆盖 MuInput 默认值） |
+| (其他) | — | — | 继承全部 `MuInput` 属性与事件 |
+
+> 内部维护 `localValue` 以保证输入即时显示；`update:modelValue` 仅在用户停止输入 `debounce-delay` 毫秒后才触发（且仅当值确实变化时）。其余事件（`input`、`focus`、`blur`、`enter` 等）即时触发。点击清除按钮会把值置为空字符串 `''`。
+
+---
+
 ## MuSelect
 
 单选下拉框，**不需要用户输入时优先使用**。
@@ -191,9 +206,72 @@ const items = [
 | `options` | Array | 下拉选项列表 |
 | `option-key` | String | 选项的 key 属性，默认 `value` |
 | `value-mode` | String | `normal`（默认）\| `composite`（modelValue 为 `{label, value}`）|
+| `dropdown-scrollbar` | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`（关闭后由内部容器负责滚动） |
 | (其他) | — | 继承全部 `MuInput` 属性及 `MuDropdown` 的 `dropdown-` 前缀属性 |
 
 **options 结构：** `[{ label: '管理员', value: 'admin' }]`
+
+**带过滤搜索框的下拉列表：** 不使用 `options`，而是通过 `#dropdown` 插槽自定义下拉内容，配合 `MuSearchInput`（输入过滤）+ `MuScrollBox`（滚动容器）+ `MuOption`（选项）实现可搜索列表。
+
+```html
+<mu-select
+  v-model="selectedItem"
+  placeholder="search & select"
+  dropdown-class="combo-search-panel flex flex-col gap-half">
+  <template #dropdown>
+    <mu-search-input
+      v-model="searchKey"
+      class="flex-none"
+      input-style="solid"
+      style="width: 100%;" />
+    <mu-scroll-box class="flex-1">
+      <mu-option
+        v-for="el in filteredItems"
+        :key="el"
+        :value="el" />
+    </mu-scroll-box>
+  </template>
+</mu-select>
+```
+
+```javascript
+const searchKey = ref('')
+const selectedItem = ref()
+const items = new Array(50).fill(0).map((el, idx) => `items${idx}`)
+const filteredItems = computed(() =>
+  items.filter(item => !searchKey.value || item.includes(searchKey.value))
+)
+```
+
+```css
+.combo-search-panel {
+  width: 300px;
+  max-height: 240px;
+}
+```
+
+> `dropdown-scrollbar` 默认为 `false`，下拉面板不渲染自定义滚动条，由内部的 `MuScrollBox` 负责滚动；通过 `dropdown-class` 控制面板宽度与最大高度，并用 flex 布局（`mu-search-input` 固定高度 + `mu-scroll-box` 自适应）让搜索框始终置顶。如需 Mussel 自定义滚动条，设置 `:dropdown-scrollbar="true"`。
+
+---
+
+## MuOption
+
+下拉选项，**必须置于 `MuSelect` / `MuMultiSelect` / `MuComboBox` 的 `#dropdown` 插槽内**。作为 `#dropdown` 插槽自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `value` | — | 选项值，必填（选中匹配的依据） |
+| `label` | String | 显示文字，缺省时回退到 `value` |
+| `icon` | String | 选项前置图标 |
+| (其他) | — | 继承 `MuDropdownItem` 属性 |
+
+| 插槽 | 说明 |
+|------|------|
+| `default` | 自定义选项内容，作用域插槽暴露 `{ selected }`（是否处于选中态，Boolean） |
+
+> - 多选模式（父级为 `MuMultiSelect`）下，默认内容会在选中项前显示 `check` 图标；单选模式不显示。
+> - 组件在 `mounted` 时向父级 select 注册自身、`unmounted` 时注销，因此必须作为上述 select 组件的子节点使用。
+> - 当 `MuSelect` 通过 `options` 属性渲染时，内部会自动生成 `MuOption`，无需手动编写。
 
 ---
 

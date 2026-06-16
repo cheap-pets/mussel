@@ -2,7 +2,7 @@
   position: fixed !important;
   z-index: var(--mu-z-index-popup);
 
-  overflow: auto;
+  overflow: hidden;
 
   padding: 4px;
   border: 1px solid var(--mu-border-color-soft);
@@ -16,6 +16,10 @@
 
   transition-duration: .1s;
   transition-property: opacity;
+
+  &.mu-scrollbar {
+    overflow: auto;
+  }
 
   &[position="top"],
   &[position="bottom"] {

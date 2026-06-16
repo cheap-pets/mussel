@@ -4,7 +4,7 @@
       {{ pre.content }}
     </component>
     <input v-model="model" v-bind="inputAttrs" v-on="inputEvents">
-    <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click="clear" />
+    <mu-icon v-if="clearButtonVisible" v-bind="clearButtonAttrs" @click="clear()" />
     <component :is="suf.is" v-if="suf" v-bind="suf.attrs" class="mu-input__suffix" @click="onSuffixClick">
       {{ suf.content }}
     </component>
@@ -12,8 +12,6 @@
 </template>
 
 <script setup>
-  import './input.scss'
-
   import { inputProps, inputEmits, useInput } from './input'
   import { useFieldModel } from '../form/validation'
 
@@ -33,10 +31,7 @@
     onPrefixClick,
     onSuffixClick,
     clearButtonVisible,
-    clearButtonAttrs
+    clearButtonAttrs,
+    clear
   } = useInput(model, props, emit)
-
-  function clear () {
-    model.value = null
-  }
 </script>

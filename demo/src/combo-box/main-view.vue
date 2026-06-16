@@ -40,6 +40,25 @@
         placeholder="select an artist"
         prefix="Artist:"
         :options="artists" />
+      <mu-select
+        v-model="selectedItem"
+        placeholder="search & select"
+        dropdown-class="combo-search-panel flex flex-col gap-half"
+        :dropdown-scrollbar="false">
+        <template #dropdown>
+          <mu-search-input
+            v-model="searchKey"
+            class="flex-none"
+            input-style="solid"
+            style="width: 100%;" />
+          <mu-scroll-box class="flex-1">
+            <mu-option
+              v-for="el in filteredItems"
+              :key="el"
+              :value="el" />
+          </mu-scroll-box>
+        </template>
+      </mu-select>
       <mu-multi-select
         v-model="selectedArtists"
         :options="artists"
@@ -61,7 +80,7 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
   const artist = ref('Johann Baptist Strauss')
@@ -75,6 +94,12 @@
     { value: 'Johann Baptist Strauss', disabled: true }
   ])
   const artistCn = ref()
+  const searchKey = ref('')
+  const selectedItem = ref()
+  const items = new Array(50).fill(0).map((el, idx) => `items${idx}`)
+  const filteredItems = computed(() =>
+    items.filter(item => !searchKey.value || item.includes(searchKey.value))
+  )
   const artistsCn = [
     { value: 'Ludwig van Beethoven', label: '贝多芬' },
     { value: 'Wolfgang Amadeus Mozart', label: '莫扎特' },
@@ -102,6 +127,11 @@
 <style>
   .mu-combo-box {
     width: 300px;
+  }
+
+  .combo-search-panel {
+    width: 300px;
+    max-height: 240px;
   }
 
     .my-select :deep(input) {

@@ -77,11 +77,15 @@
       </div>
       <div class="group">
         <mu-dropdown
-          dropdown-trigger="click"
-          dropdown-style="max-height: 200px;"
-          dropdown-scrollbar
-          :dropdown-items="artists">
-          <mu-button>Mussel Scrollbar</mu-button>
+          dropdown-class="dropdown-max-height-200 flex flex-col gap-half"
+          dropdown-trigger="click">
+          <mu-button>Search & Select</mu-button>
+          <template #dropdown>
+            <mu-search-input v-model="searchKey" class="flex-none" input-style="solid" style="width: 100%;" />
+            <mu-scroll-box class="flex-1">
+              <mu-dropdown-item v-for="el in filteredItems" :key="el" :label="el" />
+            </mu-scroll-box>
+          </template>
         </mu-dropdown>
       </div>
       <div id="divX" class="group">
@@ -102,7 +106,7 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
   const contextMenu = ref()
@@ -119,6 +123,10 @@
   ])
   const checkedArtist = ref(null)
   const checkedArtists = ref([])
+
+  const searchKey = ref('')
+  const items = new Array(50).fill(0).map((el, idx) => `items${idx}`)
+  const filteredItems = computed(() => items.filter(item => !searchKey.value || item.includes(searchKey.value)))
 
   function onShow () {
     console.log('show')
@@ -145,3 +153,11 @@
     contextMenu.value.show(event)
   }
 </script>
+
+<style>
+  .dropdown-max-height-200 {
+    overflow: hidden;
+    width: 300px;
+    max-height: 200px;
+  }
+</style>

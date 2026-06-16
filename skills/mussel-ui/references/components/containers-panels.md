@@ -111,30 +111,101 @@
 | `default` | 主体内容（兼容旧版，`body` slot 存在时忽略） |
 | `footer` | 底部附加内容（插入在按钮之前） |
 
-**buttons 结构：**
-```javascript
-buttons: [
-  { caption: '确定', primary: true, action: 'ok' },
-  { caption: '取消', action: 'cancel' }
-]
+**buttons 写法（字符串快速定义 / 对象完整定义）：**
+
+`buttons` 数组每一项既可以是字符串（快速定义），也可以是对象（完整定义）。字符串会按字面量解析：
+
+| 写法 | 含义 |
+|------|------|
+| `'Find'` | 普通按钮，`name` 与 `caption` 均为该字符串 |
+| `'#OK'` \| `'#CANCEL'` \| `'#YES'` \| `'#NO'` \| `'#ACCEPT'` | 内置预设，自动套用主色/文本样式/`action:'close'`/多语言文案 |
+| `'#OK!'` \| `'#YES!'` | 同名预设的危险色（红色）变体 |
+| `' '`（单个空格） | 弹性间距，把后续按钮推到右侧 |
+| `'-'`（连字符） | 分隔线 |
+| `{ name, caption, primary, buttonStyle, action, icon, ... }` | 完整对象，可任意覆盖以上字段 |
+
+> `@button-click` 回调收到 `{ name, caption, action, ... }`。**自定义按钮建议显式设 `name`**，再用它判断点击来源——预设按钮的 `name` 固定（如 `'OK'`、`'CANCEL'`）；纯字符串按钮的 `name` 即字符串本身，只要文案稳定也可用，但一旦需要让 `name` 与 `caption` 解耦就必须用对象形式。
+
+**用法示例：封装为独立组件，通过 `show(data)` 显示**
+
+Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `show(data)`，由父组件以 `ref` 调用并传入状态。
+
+`my-dialog.vue`：
+
+```vue
+<template>
+  <mu-dialog
+    ref="dialogRef"
+    v-model:visible="visible"
+    class="my-dialog"
+    title="编辑用户"
+    dismissible
+    keep-position
+    body-class="p-3x"
+    :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
+    @button-click="onButtonClick">
+    <mu-form label-width="80px">
+      <!-- 表单内容，使用 data -->
+    </mu-form>
+  </mu-dialog>
+</template>
+
+<script setup>
+  import { ref } from 'vue'
+
+  const visible = ref(false)
+  const data = ref(null)
+
+  function show (value) {
+    data.value = value
+    visible.value = true
+  }
+
+  function onButtonClick (button) {
+    // 用 name 判断点击来源
+    if (button.name === 'Find') {
+      // 自定义按钮：对象形式时 name 来自 { name }，字符串形式时即字符串本身
+    } else if (button.name === 'OK') {
+      // 预设按钮：'#OK' 的 name 固定为 'OK'
+      visible.value = false
+    }
+  }
+
+  defineExpose({ show })
+</script>
+
+<style>
+  /* mu-dialog 仅有 width/height 属性，无 min/max 属性；
+     覆盖最大/最小尺寸需通过 class（透传到 .mu-dialog 根元素）在样式中设置。 */
+  .my-dialog {
+    width: 800px;
+    min-width: 640px;
+    max-width: 90%;
+    height: 600px;
+    min-height: 480px;
+    max-height: 90%;
+  }
+</style>
 ```
 
-```html
-<mu-dialog
-  v-model:visible="visible"
-  title="编辑用户"
-  width="560px"
-  :buttons="[{ caption: '保存', primary: true, action: 'save' }, { caption: '取消' }]"
-  dismissible
-  @button-click="onButton"
-  @update:visible="onVisibleChange"
->
-  <template #body>
-    <mu-form label-width="80px">
-      <!-- 表单内容 -->
-    </mu-form>
-  </template>
-</mu-dialog>
+父组件调用：
+
+```vue
+<template>
+  <mu-button caption="编辑" @click="open" />
+  <my-dialog ref="dialogRef" />
+</template>
+
+<script setup>
+  import { ref } from 'vue'
+  import MyDialog from './my-dialog.vue'
+
+  const dialogRef = ref()
+
+  function open () {
+    dialogRef.value?.show({ id: 1, name: 'Tom' })
+  }
+</script>
 ```
 
 ---

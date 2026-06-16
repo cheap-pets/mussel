@@ -6,7 +6,7 @@
       v-bind="$attrs"
       v-mu-scrollbar="scrollbar"
       class="mu-dropdown-panel"
-      :style="[sizeStyle, popupStyle]"
+      :style="[sizeStyle, popupStyle, $attrs.style]"
       @click="onClick"
       @mouseover.stop="clearHideTimer"
       @mouseleave.stop="delayHide">

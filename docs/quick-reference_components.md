@@ -386,31 +386,101 @@ installIcons({
 | default  | 主体内容（兼容旧版，`body` slot 存在时忽略）      |
 | footer   | 底部附加内容（插入在按钮之前）                    |
 
-**buttons 结构：**
+**buttons 写法（字符串快速定义 / 对象完整定义）：**
 
-```javascript
-buttons: [
-  { caption: '确定', primary: true, action: 'ok' },
-  { caption: '取消', action: 'cancel' }
-]
+`buttons` 数组每一项既可以是字符串（快速定义），也可以是对象（完整定义）。字符串会按字面量解析：
+
+| 写法 | 含义 |
+|------|------|
+| `'Find'` | 普通按钮，`name` 与 `caption` 均为该字符串 |
+| `'#OK'` \| `'#CANCEL'` \| `'#YES'` \| `'#NO'` \| `'#ACCEPT'` | 内置预设，自动套用主色/文本样式/`action:'close'`/多语言文案 |
+| `'#OK!'` \| `'#YES!'` | 同名预设的危险色（红色）变体 |
+| `' '`（单个空格） | 弹性间距，把后续按钮推到右侧 |
+| `'-'`（连字符） | 分隔线 |
+| `{ name, caption, primary, buttonStyle, action, icon, ... }` | 完整对象，可任意覆盖以上字段 |
+
+> `@button-click` 回调收到 `{ name, caption, action, ... }`。**自定义按钮建议显式设 `name`**，再用它判断点击来源——预设按钮的 `name` 固定（如 `'OK'`、`'CANCEL'`）；纯字符串按钮的 `name` 即字符串本身，只要文案稳定也可用，但一旦需要让 `name` 与 `caption` 解耦就必须用对象形式。
+
+**用法示例：封装为独立组件，通过 `show(data)` 显示**
+
+Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `show(data)`，由父组件以 `ref` 调用并传入状态。
+
+`my-dialog.vue`：
+
+```vue
+<template>
+  <mu-dialog
+    ref="dialogRef"
+    v-model:visible="visible"
+    class="my-dialog"
+    title="编辑用户"
+    dismissible
+    keep-position
+    body-class="p-3x"
+    :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
+    @button-click="onButtonClick">
+    <mu-form label-width="80px">
+      <!-- 表单内容，使用 data -->
+    </mu-form>
+  </mu-dialog>
+</template>
+
+<script setup>
+  import { ref } from 'vue'
+
+  const visible = ref(false)
+  const data = ref(null)
+
+  function show (value) {
+    data.value = value
+    visible.value = true
+  }
+
+  function onButtonClick (button) {
+    // 用 name 判断点击来源
+    if (button.name === 'Find') {
+      // 自定义按钮：对象形式时 name 来自 { name }，字符串形式时即字符串本身
+    } else if (button.name === 'OK') {
+      // 预设按钮：'#OK' 的 name 固定为 'OK'
+      visible.value = false
+    }
+  }
+
+  defineExpose({ show })
+</script>
+
+<style>
+  /* mu-dialog 仅有 width/height 属性，无 min/max 属性；
+     覆盖最大/最小尺寸需通过 class（透传到 .mu-dialog 根元素）在样式中设置。 */
+  .my-dialog {
+    width: 800px;
+    min-width: 640px;
+    max-width: 90%;
+    height: 600px;
+    min-height: 480px;
+    max-height: 90%;
+  }
+</style>
 ```
 
-```html
-<mu-dialog
-  v-model:visible="visible"
-  title="编辑用户"
-  width="560px"
-  :buttons="[{ caption: '保存', primary: true, action: 'save' }, { caption: '取消' }]"
-  dismissible
-  @button-click="onButton"
-  @update:visible="onVisibleChange"
->
-  <template #body>
-    <mu-form label-width="80px">
-      <!-- 表单内容 -->
-    </mu-form>
-  </template>
-</mu-dialog>
+父组件调用：
+
+```vue
+<template>
+  <mu-button caption="编辑" @click="open" />
+  <my-dialog ref="dialogRef" />
+</template>
+
+<script setup>
+  import { ref } from 'vue'
+  import MyDialog from './my-dialog.vue'
+
+  const dialogRef = ref()
+
+  function open () {
+    dialogRef.value?.show({ id: 1, name: 'Tom' })
+  }
+</script>
 ```
 
 > [!WARNING]
@@ -752,6 +822,23 @@ const items = [
 
 
 
+### MuSearchInput
+
+带防抖与默认搜索图标的输入框，常作为列表/表格或下拉选项的过滤搜索框
+
+| 属性名称      | 类型             | 默认值         | 说明                                                         |
+| ------------- | ---------------- | -------------- | ------------------------------------------------------------ |
+| debounce-delay| Number           | `500`          | 值变更后触发 `update:modelValue` 的防抖延迟（毫秒）          |
+| prefix        | String \| Object | `':icon=search'`| 默认渲染搜索图标（覆盖 MuInput 默认值）                      |
+| clearable     | Boolean          | `true`         | 默认显示清除按钮（覆盖 MuInput 默认值）                      |
+| (其他)        | —                | —              | 包含全部 MuInput 属性与事件                                   |
+
+> [!NOTE]
+>
+> 内部维护即时显示的输入值；`update:modelValue` 仅在用户停止输入 `debounce-delay` 毫秒后（且值确实变化时）才触发，其余事件（`input`、`focus`、`blur`、`enter` 等）即时触发。点击清除按钮会把值置为空字符串 `''`。
+
+
+
 ### MuInputGroup
 
 输入框组
@@ -767,7 +854,74 @@ const items = [
 | options    | Array  | 下拉选项列表，结构 `[{ label, value }]`                      |
 | option-key | String | 下拉选项的 key 属性，默认为 `value`                          |
 | value-mode | String | `normal`（默认）\| `composite`（modelValue 为 `{ label, value }`） |
+| dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`（关闭后由 `mu-scroll-box` 等内部容器负责滚动） |
 | (其他)     | —      | 包含全部 MuInput 属性、MuDropdown 中 `dropdown-` 为前缀的属性 |
+
+**带过滤搜索框的下拉列表：** 不使用 `options`，而是通过 `#dropdown` 插槽自定义下拉内容，配合 `mu-search-input`（输入过滤）+ `mu-scroll-box`（滚动容器）+ `mu-option`（选项）实现可搜索列表。
+
+```html
+<mu-select
+  v-model="selectedItem"
+  placeholder="search & select"
+  dropdown-class="combo-search-panel flex flex-col gap-half">
+  <template #dropdown>
+    <mu-search-input
+      v-model="searchKey"
+      class="flex-none"
+      input-style="solid"
+      style="width: 100%;" />
+    <mu-scroll-box class="flex-1">
+      <mu-option
+        v-for="el in filteredItems"
+        :key="el"
+        :value="el" />
+    </mu-scroll-box>
+  </template>
+</mu-select>
+```
+
+```javascript
+const searchKey = ref('')
+const selectedItem = ref()
+const items = new Array(50).fill(0).map((el, idx) => `items${idx}`)
+const filteredItems = computed(() =>
+  items.filter(item => !searchKey.value || item.includes(searchKey.value))
+)
+```
+
+```css
+.combo-search-panel {
+  width: 300px;
+  max-height: 240px;
+}
+```
+
+> [!NOTE]
+>
+> `dropdown-scrollbar` 默认为 `false`，下拉面板不渲染自定义滚动条，由内部的 `mu-scroll-box` 负责滚动；通过 `dropdown-class` 控制面板宽度与最大高度，并用 flex 布局（`mu-search-input` 固定高度 + `mu-scroll-box` 自适应）让搜索框始终置顶。如需 Mussel 自定义滚动条，设置 `:dropdown-scrollbar="true"`。
+
+
+
+### MuOption
+
+下拉选项，**必须置于 `mu-select` / `mu-multi-select` / `mu-combo-box` 的 `#dropdown` 插槽内**。作为 `#dropdown` 插槽自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
+
+| 属性名称 | 类型   | 说明                                         |
+| -------- | ------ | -------------------------------------------- |
+| value    | —      | 选项值，必填（选中匹配的依据）               |
+| label    | String | 显示文字，缺省时回退到 `value`               |
+| icon     | String | 选项前置图标                                 |
+| (其他)   | —      | 包含全部 MuDropdownItem 属性                  |
+
+| 插槽名称 | 说明                                                  |
+| -------- | ----------------------------------------------------- |
+| default  | 自定义选项内容，作用域插槽暴露 `{ selected }`（Boolean） |
+
+> [!NOTE]
+>
+> - 多选模式（父级为 `mu-multi-select`）下，默认内容会在选中项前显示 check 图标；单选模式不显示。
+> - 组件在挂载时向父级 select 注册自身、卸载时注销，因此必须作为上述 select 组件的子节点使用。
+> - 当 `mu-select` 通过 `options` 属性渲染时，内部会自动生成 `mu-option`，无需手动编写。
 
 
 
@@ -993,6 +1147,7 @@ const items = [
 | dropdown-position  | String  | 弹出位置：`auto` \| `fixed` \| `top` \| `bottom` |
 | dropdown-icon      | String  | 下拉按钮图标，默认为下箭头                       |
 | dropdown-disabled  | Boolean | 下拉面板禁用状态                                 |
+| dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`       |
 | dropdown-attrs     | Object  | 透传给面板的额外属性                             |
 | dropdown-snap-to   | —       | 下拉面板吸附目标，默认为组件根元素               |
 

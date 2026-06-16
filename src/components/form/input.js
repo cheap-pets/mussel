@@ -1,3 +1,5 @@
+import './input.scss'
+
 import { computed, inject } from 'vue'
 import { isString, isEmpty } from '@/utils/type'
 
@@ -102,6 +104,10 @@ export function useInput (model, props, emit) {
     emit('suffixClick')
   }
 
+  function clear (v = null) {
+    model.value = v
+  }
+
   return {
     wrapperAttrs,
     inputAttrs,
@@ -111,6 +117,7 @@ export function useInput (model, props, emit) {
     onPrefixClick,
     onSuffixClick,
     clearButtonVisible,
-    clearButtonAttrs
+    clearButtonAttrs,
+    clear
   }
 }
