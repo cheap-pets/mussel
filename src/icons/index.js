@@ -1,5 +1,5 @@
 import * as tablerIcons from './tabler-icons'
-import * as customIcons from './svg'
+// import * as customIcons from './svg'
 
 import { isObject, isString, isSVGString } from '@/utils/type'
 import { generateHash } from '@/utils/crypto'
@@ -78,7 +78,7 @@ function install (data = {}, dataType) {
 }
 
 install(tablerIcons, 'svg')
-install(customIcons, 'svg')
+// install(customIcons, 'svg')
 
 install({
   windowClose: {

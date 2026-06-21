@@ -77,7 +77,7 @@ div.mu-input {
 
   & > a {
     flex: none;
-    color: var(--mu-text-color-subtle);
+    color: var(--mu-text-color-soft);
   }
 
   & > span {
@@ -89,7 +89,7 @@ div.mu-input {
     text-decoration: none;
 
     &:hover {
-      color: var(--mu-text-color-normal);
+      color: var(--mu-text-color-subtle);
     }
   }
 

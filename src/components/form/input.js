@@ -1,6 +1,7 @@
 import './input.scss'
 
-import { computed, inject } from 'vue'
+import { customRef, computed, inject } from 'vue'
+import { debounce } from 'throttle-debounce'
 import { isString, isEmpty } from '@/utils/type'
 
 export const inputProps = {
@@ -62,7 +63,7 @@ export function useInput (model, props, emit) {
   const clearButtonAttrs = {
     class: 'mu-input__clear-button',
     tag: 'a',
-    icon: 'x'
+    icon: 'X'
   }
 
   const clearButtonVisible = computed(() =>
@@ -120,4 +121,22 @@ export function useInput (model, props, emit) {
     clearButtonAttrs,
     clear
   }
+}
+
+export function useDebouncedRef (value, delay = 500) {
+  return customRef((track, trigger) => {
+    const debouncedTrigger = debounce(trigger, delay)
+
+    return {
+      get () {
+        track()
+        return value
+      },
+
+      set (v) {
+        value = v
+        debouncedTrigger()
+      }
+    }
+  })
 }

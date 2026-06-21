@@ -1,5 +1,6 @@
 import loaderSvg from '~icons/outline/loader.svg'
 
+export { default as x } from '~icons/filled/circle-x.svg'
 export { default as X } from '~icons/outline/x.svg'
 export { default as check } from '~icons/outline/check.svg'
 
