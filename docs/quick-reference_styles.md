@@ -461,6 +461,7 @@
 
 | 类名          | 说明             |
 | ------------- | ---------------- |
+| .bg-none      | 清除背景（`background: none`）|
 | .mu-bg-normal | 默认背景色       |
 | .mu-bg-strong | 强调区域背景色   |
 | .mu-bg-fill   | 填充背景色       |

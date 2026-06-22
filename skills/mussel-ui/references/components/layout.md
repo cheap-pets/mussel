@@ -234,3 +234,10 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 ### MuToolbar
 
 具有特殊样式的工具栏容器（MuBar 的变体），常用于页面顶部操作区。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `small` | Boolean | — | 小尺寸模式，内部按钮默认按 `small` 尺寸渲染 |
+| `button-style` | String | `text` | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
+
+> `MuToolbar` 通过 `provide` 向内部的 `MuButton` / `MuIconButton` / `MuPagination` 注入 `small` 与 `button-style`，作为这些组件未显式设置时的默认值。子组件显式传入对应属性时优先使用自身设置。

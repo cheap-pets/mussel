@@ -747,7 +747,7 @@ function onDialogVisibleChange (value, trigger) {
 | `mu-dialog_center` 已移除 | 不再有居中包裹层，header/body/footer 直接在 `.mu-dialog` 内 |
 | `side-panel` 插槽已移除 | 侧面板不再支持，需自行实现 |
 | padding 模式变更 | Mussel 3 通过 `.mu-dialog_center > *` 自动给所有子元素加 padding；Mussel 4 用 `--mu-dialog-padding` 变量，仅 header/footer 有 padding，body 需手动添加 |
-| 关闭按钮变更 | Mussel 3 使用 `<mu-icon icon="x">`；Mussel 4 使用 `<mu-tool-button icon="windowClose" danger>` |
+| 关闭按钮变更 | Mussel 3 使用 `<mu-icon icon="x">`；Mussel 4 使用 `<mu-icon-button icon="windowClose" danger>` |
 | header/footer 显隐控制 | 新增 `header`/`footer` props（`'auto'`\|Boolean），`'auto'` 时根据内容自动判断，也可显式 `true`/`false` |
 | body 插槽 | 新增 `#body` 插槽（推荐），替代 default slot；default slot 保留作为兼容 |
 | body-scrollbar | 新增 `body-scrollbar` prop，为 body 区域启用自定义滚动条 |
@@ -1388,7 +1388,7 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuDrawer | 抽屉面板（上/右/下/左） |
 | MuContextMenu | 右键上下文菜单 |
 | MuSplitHBox / MuSplitVBox | 可拖拽、可收拢的弹性分隔布局（分隔条为内部组件） |
-| MuToolButton | 仅图标的快捷操作按钮 |
+| MuIconButton | 仅图标的快捷操作按钮 |
 | MuInputGroup | 输入框分组 |
 | MuToolbar | 工具栏组件 |
 | MuBar | 通用条形容器 |

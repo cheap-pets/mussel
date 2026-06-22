@@ -13,7 +13,8 @@
 | `danger` | Boolean | — | 危险色按钮（已废弃，用 `color="danger"`） |
 | `secondary` | Boolean | — | 次要色按钮（已废弃，用 `color="secondary"`） |
 | `pill` | Boolean | — | 左右圆弧形态 |
-| `active` | Boolean | — | 选中状态 |
+| `toggle` | Boolean | — | 开关模式：开启后点击切换 `active`，需配合 `v-model:active` |
+| `active` | Boolean | — | 选中状态（`toggle` 开启时双向绑定）|
 | `disabled` | Boolean | — | 禁用状态 |
 
 ```html
@@ -44,22 +45,21 @@
 
 ---
 
-### MuToolButton
+### MuIconButton
 
-仅图标的工具栏快捷按钮，**不支持文字标题**。
+仅图标的按钮，常用于工具栏或列表项中的快捷操作，**不支持文字标题**。继承 MuButton 的全部属性（`size` / `color` / `button-style` / `disabled` / `toggle` 等）。
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `icon` | String | 按钮图标，必填 |
-| `toggle` | Boolean | 开关模式：按下后切换选中状态 |
-| `active` | Boolean | 双向绑定选中状态 |
-| `size` | String | `small` \| `normal` \| `large` |
 | `animation` | String | 动画效果 |
+| (其他) | — | 继承 MuButton 属性（`toggle` / `active` / `size` / `color` / `button-style` / `disabled` 等） |
 
 ```html
 <!-- 工具栏中使用 -->
-<mu-tool-button icon="refresh" @click="reload" />
-<mu-tool-button icon="filter" toggle v-model:active="filterVisible" />
+<mu-icon-button icon="refresh" @click="reload" />
+<mu-icon-button icon="filter" toggle v-model:active="filterVisible" />
+<mu-icon-button icon="chevron-up" button-style="text" @click="scrollTop" />
 ```
 
 ---

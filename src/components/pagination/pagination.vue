@@ -2,43 +2,40 @@
   <div
     :class="['mu-pagination', small && 'mu-pagination--small']"
     @sizechange="calcMaxPageButtonsCount">
-    <mu-button
-      button-style="text"
-      icon="key-left"
+    <mu-icon-button
+      icon="chevronLeft"
       :title="$t('Pagination.PREV_PAGE')"
-      :disabled="disabled || index < 1 || null"
-      @click="goto(index - 1)" />
+      :disabled="pageIndex < 1 || null"
+      @click="goto(pageIndex - 1)" />
     <template v-for="el in pages">
       <span v-if="['L', 'R'].includes(el)" :key="`···-${el}`">···</span>
       <mu-button
         v-else
         :key="`num-${el}`"
-        :active="el === index || null"
-        :disabled="disabled || null"
+        :active="el === pageIndex || null"
         :button-style="buttonStyle"
         :caption="String(el + 1)"
         @click="goto(el)" />
     </template>
     <label v-if="middleText">{{ middleText }}</label>
-    <mu-button
-      button-style="text"
-      icon="key-right"
+    <mu-icon-button
+      icon="chevronRight"
       :title="$t('Pagination.NEXT_PAGE')"
-      :disabled="disabled || eof || index === count - 1 || null"
-      @click="goto(index + 1)" />
+      :disabled="pageIndex === count - 1 || null"
+      @click="goto(pageIndex + 1)" />
     <template v-if="sizeOptions?.length">
       <div class="mu-tool-divider" />
-      <mu-combo-box
+      <mu-dropdown-button
         class="mu-pagination__size-select"
-        :options="sizeOptions"
-        :clear-button="false"
-        :value="size"
-        @change="updatePageSize" />
+        button-style="normal"
+        :caption="`${pageSize} ${$t('Pagination.PER_PAGE')}`"
+        :dropdown-items="sizeOptions"
+        @dropdown:itemclick="onSizeItemClick" />
     </template>
-    <label v-else-if="size && !middleText">{{ `${size} ${$t('Pagination.PER_PAGE')}` }}</label>
+    <label v-else-if="pageSize && !middleText">{{ `${pageSize} ${$t('Pagination.PER_PAGE')}` }}</label>
     <template v-if="quickJumper">
       <label>{{ $t('Pagination.GOTO') }}</label>
-      <mu-input class="mu-pagination__quick-jumper" type="number" @keydown.enter="doJump" />
+      <mu-input class="mu-pagination__quick-jumper" @keydown.enter="doJump" />
       <label>{{ $t('Pagination.PAGE') }}</label>
     </template>
   </div>
@@ -47,56 +44,45 @@
 <script setup>
   import { ref, computed, watch } from 'vue'
   import { throttle } from 'throttle-debounce'
+
   import { t as $t } from '@/langs'
+  import { toolbarProps, useToolbar } from '../bar/toolbar.js'
 
   defineOptions({ name: 'MusselPagination' })
 
   const props = defineProps({
-    eof: Boolean,
-    small: Boolean,
-    disabled: Boolean,
+    ...toolbarProps,
     quickJumper: Boolean,
     pageSizeOptions: Array,
-    limit: { type: Number },
-    offset: { type: Number, default: 0 },
-    dataCount: { type: Number, default: 0 },
-    pageSize: { type: Number },
-    pageIndex: { type: Number },
-    pageCount: { type: Number },
-    buttonStyle: { type: String, validate: v => ['text', 'normal'].includes(v) }
+    pageIndex: { type: Number, default: 0 },
+    pageSize: { type: Number, default: 20 },
+    total: { type: Number, default: 0 }
   })
 
   const emit = defineEmits([
-    'update:limit',
-    'update:offset',
-    'update:page-size',
-    'update:page-index'
+    'update:page-index',
+    'update:page-size'
   ])
+
+  useToolbar(props)
 
   const maxPageButtonsCount = ref(0)
 
+  // 总页数：由 记录总数 / 每页大小 派生
   const count = computed(() =>
-    props.pageCount ?? (props.limit && Math.ceil(props.dataCount / props.limit))
-  )
-
-  const index = computed(() =>
-    props.pageIndex ?? (props.limit && Math.floor(props.offset / props.limit))
-  )
-
-  const size = computed(() =>
-    props.pageSize ?? props.limit
+    props.pageSize ? Math.ceil(props.total / props.pageSize) : 0
   )
 
   const sizeOptions = computed(() =>
-    props.pageSizeOptions?.map(value => ({ value, label: `${value} ${$t('Pagination.PER_PAGE')}` }))
+    props.pageSizeOptions?.map(value => ({ action: value, label: `${value} ${$t('Pagination.PER_PAGE')}` }))
   )
 
   const pages = computed(() => {
     const c = count.value
-    const i = index.value
+    const i = props.pageIndex
     const t = maxPageButtonsCount.value
 
-    if (!c || isNaN(i) || !t) return
+    if (!c || !t) return
     if (c <= t + 1) return [...Array(c).keys()]
 
     const ret = [0]
@@ -119,17 +105,17 @@
     if (pages.value?.length) return ''
 
     // 有 size 且无 sizeOptions: "第 X 页，Y / 页"
-    if (!sizeOptions.value?.length && size.value) {
-      return $t('Pagination.CURRENT_AND_SIZE', index.value + 1, size.value)
+    if (!sizeOptions.value?.length && props.pageSize) {
+      return $t('Pagination.CURRENT_AND_SIZE', props.pageIndex + 1, props.pageSize)
     }
 
     // 有 total: "第 X 页，共 Z 页"
     if (count.value) {
-      return $t('Pagination.CURRENT_AND_TOTAL', index.value + 1, count.value)
+      return $t('Pagination.CURRENT_AND_TOTAL', props.pageIndex + 1, count.value)
     }
 
     // 只有当前页: "第 X 页"
-    return $t('Pagination.CURRENT', index.value + 1)
+    return $t('Pagination.CURRENT', props.pageIndex + 1)
   })
 
   const calcMaxPageButtonsCount = throttle(
@@ -137,7 +123,7 @@
     event => {
       const clientWidth = event.target.clientWidth
       const btnWidth = props.small ? 28 : 32
-      const w = clientWidth - 16 - (sizeOptions.value ? 105 : (size.value ? 55 : 0)) - (props.quickJumper ? 115 : 0)
+      const w = clientWidth - 16 - (sizeOptions.value ? 105 : (props.pageSize ? 55 : 0)) - (props.quickJumper ? 115 : 0)
       const t = w / (btnWidth + 5) - 4
 
       maxPageButtonsCount.value = t >= 11 ? 11 : (t >= 9 ? 9 : (t >= 7 ? 7 : 0))
@@ -146,8 +132,7 @@
   )
 
   function goto (pageIndex) {
-    if (!isNaN(props.pageIndex)) emit('update:page-index', pageIndex)
-    else if (!isNaN(props.offset)) emit('update:offset', pageIndex * size.value)
+    emit('update:page-index', pageIndex)
   }
 
   function doJump (event) {
@@ -157,9 +142,8 @@
     else goto(i - 1)
   }
 
-  function updatePageSize (pageSize) {
-    if (!isNaN(props.pageSize)) emit('update:page-size', pageSize)
-    else if (!isNaN(props.limit)) emit('update:limit', pageSize)
+  function onSizeItemClick (item) {
+    emit('update:page-size', item.action)
   }
 
   watch(() => props.small, calcMaxPageButtonsCount)
@@ -176,7 +160,7 @@
 
     padding: 0 var(--mu-base-spacing);
 
-    font-size: 12px;
+    font-size: var(--mu-font-size-small);
 
     & > label {
       display: inline-block;
@@ -184,42 +168,34 @@
     }
 
     & > .mu-button {
-      flex: none;
-      min-width: var(--mu-common-tool-height);
       padding: 0 4px;
     }
 
-    & .mu-button, & .mu-input {
+    & > .mu-button,
+    & > .mu-input {
+      flex: none;
       font-size: inherit;
     }
 
     & > .mu-pagination__size-select {
-      width: 100px;
+      min-width: 80px;
     }
 
     & > .mu-pagination__quick-jumper {
-      width: 55px;
-      padding: 8px;
-      appearance: textfield;
+      width: 50px;
+      padding: 0 8px;
 
-      &::-webkit-outer-spin-button,
-      &::-webkit-inner-spin-button {
-        appearance: none;
+      & > input {
+        text-align: center;
+
+        &:focus {
+          text-align: left;
+        }
       }
     }
   }
 
   .mu-pagination--small {
-    & > .mu-icon-button {
-      width: 24px;
-      padding: 0;
-    }
-
-    & > .mu-button {
-      min-width: 24px;
-      height: 24px;
-    }
-
     & > .mu-input {
       height: 24px;
     }

@@ -14,8 +14,7 @@
   }
 }
 
-.mu-icon,
-.mu-tool-button {
+.mu-icon {
   &[animation="spin"] > svg {
     animation: -mu-ani-rotate-360 2s linear infinite;
   }

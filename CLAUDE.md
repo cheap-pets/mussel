@@ -75,10 +75,10 @@ src/
 | | MuFlexDivider / MuFlexSpace / MuFlexBreak | 分隔线 / 弹性占位 / 换行（函数式组件） | index.js（h 函数） | flex-splitter.vue/scss（未注册） |
 | `bar/` | | 条形容器与工具栏 | `index.js` | |
 | | MuBar | 通用条形容器 | bar.vue | bar.scss |
-| | MuToolbar | 工具栏 | toolbar.vue | toolbar.scss |
+| | MuToolbar | 工具栏 | toolbar.vue | toolbar.scss, toolbar.js |
 | `button/` | | 按钮 | `index.js` | |
-| | MuButton | 按钮 | button.vue | button.scss |
-| | MuToolButton | 图标快捷按钮 | tool-button.vue | tool-button.scss |
+| | MuButton | 按钮 | button.vue | button.scss, button.js |
+| | MuIconButton | 图标按钮（仅图标） | icon-button.vue | button.scss |
 | | MuButtonGroup | 按钮组 | button-group.vue | button-group.scss |
 | `form/` | | 表单与输入控件 | `index.js` | |
 | | MuInput | 文本输入框 | input.vue | input.scss, input.js |

@@ -1,3 +1,7 @@
+.bg-none {
+  background: none;
+}
+
 @each $v in ('normal', 'strong', 'fill', 'disabled', 'overlay', 'mask') {
   .bg-#{$v},
   .mu-bg-#{$v} {

@@ -264,6 +264,15 @@ installIcons({
 
 工具栏，具有特殊样式的 MuBar，常用于页面顶部操作区。
 
+| 属性名称     | 类型    | 默认值   | 说明                                                         |
+| ------------ | ------- | -------- | ------------------------------------------------------------ |
+| small        | Boolean | —        | 小尺寸模式，内部按钮默认按 `small` 尺寸渲染                  |
+| button-style | String  | `text`  | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link`  |
+
+> [!NOTE]
+>
+> `MuToolbar` 通过 `provide` 向内部的 `MuButton` / `MuIconButton` / `MuPagination` 注入 `small` 与 `button-style`，作为这些组件未显式设置时的默认值。子组件显式传入对应属性时优先使用自身设置。
+
 
 
 ## 2 - 容器与面板
@@ -294,7 +303,7 @@ installIcons({
 ```html
 <mu-tabs v-model:active-tab="activeTab" tab-style="button">
   <template #tab-bar-append>
-    <mu-tool-button icon="refresh" @click="reload" />
+    <mu-icon-button icon="refresh" @click="reload" />
   </template>
   <mu-tab-panel name="list" caption="列表" icon="list">
     <!-- 列表内容 -->
@@ -541,8 +550,9 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 | button-style | String  | `normal` | 按钮风格：`normal` \| `outline` \| `text` \| `link` |
 | color        | String  | `'normal'`| `'normal'` \| `'primary'` \| `'secondary'` \| `'danger'`，推荐使用 |
 | pill         | Boolean | —        | 左右圆弧形态                                      |
-| active       | Boolean | —        | 选中状态                                          |
-| disabled     | Boolean | —        | 禁用状态                                          |
+| toggle      | Boolean | —        | 开关模式：开启后点击切换 `active`，需配合 `v-model:active` |
+| active      | Boolean | —        | 选中状态（`toggle` 开启时双向绑定）               |
+| disabled    | Boolean | —        | 禁用状态                                          |
 
 > [!WARNING]
 >
@@ -580,21 +590,20 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 
 
 
-### MuToolButton
+### MuIconButton
 
-用在快速工具栏或列表项中的快捷按钮，仅支持图标，不包含文字标题。
+仅图标的按钮，常用于工具栏或列表项中的快捷操作，不包含文字标题。继承 MuButton 的全部属性。
 
 | 属性名称  | 类型    | 说明                                                |
 | --------- | ------- | --------------------------------------------------- |
 | icon      | String  | 按钮图标，必填                                      |
-| toggle    | Boolean | 是否开关按钮，若为 true，按下后切换选中状态         |
-| active    | Boolean | 双向绑定属性，表示选中状态                          |
-| size      | String  | 按钮尺寸：`small` \| `normal` \| `large`            |
 | animation | String  | 动画效果                                            |
+| (其他)    | —       | 继承 MuButton 属性（`toggle` / `active` / `size` / `color` / `button-style` / `disabled` 等）|
 
 ```html
-<mu-tool-button icon="refresh" @click="reload" />
-<mu-tool-button icon="filter" toggle v-model:active="filterVisible" />
+<mu-icon-button icon="refresh" @click="reload" />
+<mu-icon-button icon="filter" toggle v-model:active="filterVisible" />
+<mu-icon-button icon="chevron-up" button-style="text" @click="scrollTop" />
 ```
 
 
@@ -1442,6 +1451,47 @@ const columns = [
 ]
 </script>
 ```
+
+
+
+### MuPagination
+
+分页组件，常与 `MuTable` 配合使用（作为表格的平级兄弟节点，置于表格下方）。
+
+| 属性名称           | 类型    | 默认值 | 说明                                                         |
+| ------------------ | ------- | ------ | ------------------------------------------------------------ |
+| page-index         | Number  | `0`    | 双向绑定，当前页码（从 0 开始）                              |
+| page-size          | Number  | `20`   | 双向绑定，每页条数                                           |
+| total              | Number  | `0`    | 记录总数（总页数由 `total / page-size` 派生）                |
+| page-size-options  | Array   | —      | 可选每页条数，如 `[20, 50, 100]`；提供后渲染下拉切换         |
+| small              | Boolean | —      | 小尺寸模式，控制内部按钮尺寸                                 |
+| button-style       | String  | `text` | 内部按钮风格：`normal` \| `outline` \| `text` \| `link`      |
+| quick-jumper       | Boolean | —      | 是否显示快速跳页输入框                                       |
+
+| 事件                | 参数      | 说明               |
+| ------------------- | --------- | ------------------ |
+| update:page-index   | pageIndex | 页码变更           |
+| update:page-size    | pageSize  | 每页条数变更       |
+
+> [!WARNING]
+>
+> 早期版本的 `offset` / `limit` / `data-count` / `page-count` / `eof` / `disabled` props 已移除，统一为 `page-index` / `page-size` / `total` 模型。
+
+```html
+<mu-table :records="records" :columns="columns" />
+<mu-pagination
+  v-model:page-index="pageIndex"
+  v-model:page-size="pageSize"
+  :total="total"
+  :page-size-options="[20, 50, 100]"
+  small
+  quick-jumper
+  class="mt-1x" />
+```
+
+> [!NOTE]
+>
+> `MuPagination` 自身具备工具栏行为：内部会向自己的按钮（`mu-button` / `mu-icon-button` / `mu-dropdown-button`）注入 `small` 与 `button-style`，效果与放在 `<mu-toolbar>` 内一致，因此通常无需再外层包裹 `<mu-toolbar>`。
 
 
 

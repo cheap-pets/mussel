@@ -260,9 +260,7 @@
 
   watch(
     () => props.visible,
-    v => {
-      if (!v && maximized.value && props.maximizeToFullscreen) toggleWindowState()
-    }
+    v => !v && maximized.value && props.maximizeToFullscreen && toggleWindowState()
   )
 
   watchEffect(() => {

@@ -36,9 +36,10 @@
   }
 
   & > .mu-tree-node__button {
+    --size: 24px;
+
     width: 20px;
     line-height: 0;
-    text-align: center;
 
     &[hover] {
       display: none;

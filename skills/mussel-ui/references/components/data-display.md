@@ -209,3 +209,37 @@ const columns = [
 ]
 </script>
 ```
+
+---
+
+### MuPagination
+
+分页组件，常与 `MuTable` 配合使用（作为表格的平级兄弟节点，置于表格下方）。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `page-index` | Number | `0` | 双向绑定，当前页码（从 0 开始） |
+| `page-size` | Number | `20` | 双向绑定，每页条数 |
+| `total` | Number | `0` | 记录总数（总页数由 `total / page-size` 派生） |
+| `page-size-options` | Array | — | 可选每页条数，如 `[20, 50, 100]`；提供后渲染下拉切换 |
+| `small` | Boolean | — | 小尺寸模式，控制内部按钮尺寸 |
+| `button-style` | String | `text` | 内部按钮风格：`normal` \| `outline` \| `text` \| `link` |
+| `quick-jumper` | Boolean | — | 是否显示快速跳页输入框 |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `update:page-index` | `pageIndex` | 页码变更 |
+| `update:page-size` | `pageSize` | 每页条数变更 |
+
+
+```html
+<mu-table :records="records" :columns="columns" />
+<mu-pagination
+  v-model:page-index="pageIndex"
+  v-model:page-size="pageSize"
+  :total="total"
+  :page-size-options="[20, 50, 100]"
+  small
+  quick-jumper
+  class="mt-1x" />
+```

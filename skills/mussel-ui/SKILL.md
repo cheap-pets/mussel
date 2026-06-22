@@ -102,9 +102,9 @@ description: >
 
 | 组件 | 用途 |
 |------|------|
-| `<mu-button>` | 常规按钮；`color` 设主/次/危险色，`button-style` 设 normal/outline/text/link |
+| `<mu-button>` | 常规按钮；`color` 设主/次/危险色，`button-style` 设 normal/outline/text/link，`toggle` 开关模式 |
 | `<mu-button-group>` | 多按钮视觉成组，共享 size/style/color |
-| `<mu-tool-button>` | 工具栏纯图标按钮，无文字；`toggle` 开关模式 |
+| `<mu-icon-button>` | 仅图标按钮，常用于工具栏/列表项；`toggle` 开关模式 |
 | `<mu-dropdown-button>` | 按钮带下拉菜单；`split-button` 分割为主按钮+下拉箭头 |
 
 ### 4. 表单

@@ -25,8 +25,8 @@
           :caption="currentButtonCaption"
           @click="onCurrentButtonClick()" />
         <template v-if="isDateMode">
-          <mu-tool-button icon="chevronUp" @click="prevMonth" />
-          <mu-tool-button icon="chevronDown" @click="nextMonth" />
+          <mu-icon-button icon="chevronUp" @click="prevMonth" />
+          <mu-icon-button icon="chevronDown" @click="nextMonth" />
         </template>
       </mu-toolbar>
       <month-picker

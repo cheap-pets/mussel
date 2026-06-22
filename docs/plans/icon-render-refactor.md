@@ -3,7 +3,7 @@
 | 项目 | 内容 |
 |---|---|
 | 状态 | 草案，待评审 |
-| 范围 | `mu-icon`、`mu-tool-button` 两个组件的 SVG 渲染路径 |
+| 范围 | `mu-icon`、`mu-icon-button` 两个组件的 SVG 渲染路径 |
 | 不在范围 | `message.vue` / `message-box.vue` 的 `v-html`（用户内容，需独立 sanitize 评估）|
 | 目标 | 消除图标链路上的 `v-html`；收敛两条渲染路径；减小运行时数据体积 |
 
@@ -87,7 +87,7 @@ sprite 模式下宿主是 `<svg>`、内容是 `<use>`，`> svg` 选择器**会�
 ```js
 // src/icons/sprite.js（新增）
 let host = null
-const installed = new Set()
+const symbols = new Map()  // id -> { hash, el }
 
 function ensureHost () {
   if (host) return host
@@ -99,8 +99,16 @@ function ensureHost () {
   return host
 }
 
-export function addSymbol (id, svgString) {
-  if (installed.has(id)) return
+export function addSymbol (id, svgString, hash) {
+  const prev = symbols.get(id)
+
+  if (prev) {
+    // 内容相同 → 真幂等，跳过
+    if (prev.hash === hash) return
+    // 内容变了 → 覆盖：移除旧 symbol，重新注入
+    prev.el.remove()
+  }
+
   const doc = new DOMParser().parseFromString(svgString, 'image/svg+xml')
   const el = doc.documentElement
   const symbol = document.createElementNS(
@@ -113,11 +121,13 @@ export function addSymbol (id, svgString) {
   }
   symbol.innerHTML = '' // 内部 path 直插
   ensureHost().appendChild(symbol)
-  installed.add(id)
+  symbols.set(id, { hash, el: symbol })
 }
 ```
 
-> 注：实现时建议用 `<symbol>` 而非 `<g id>`——`<symbol>` 自带 viewBox，`<use>` 时不用重复声明。
+> 注 1：实现时建议用 `<symbol>` 而非 `<g id>`——`<symbol>` 自带 viewBox，`<use>` 时不用重复声明。
+>
+> 注 2：`addSymbol` 用 `hash` 区分"真幂等"和"覆盖"——**不能**简单按 id 跳过，否则业务方 `install({ windowClose: 新svg })` 覆盖默认图标时，`icons[key]` 已更新但 sprite 里仍是旧 symbol，`<use>` 引用到旧内容，既不生效也不报错。原"按 id 幂等"的实现是这条覆盖路径的隐性 bug，本方案必须按内容判断。
 
 ### 3.2 install 改造
 
@@ -129,13 +139,16 @@ if (icon.svg) icon.svg = sanitizeHTML(icon.svg)
 
 // 改造后
 if (icon.svg) {
-  icon.symbolId = `mu-i-${key}`          // 稳定 id，hash 不变即可
-  addSymbol(icon.symbolId, icon.svg)
+  icon.hash = generateHash(icon.svg)      // 见下方约束：必须在所有环境计算
+  icon.symbolId = `mu-i-${key}`           // 稳定 id，hash 不变即可
+  addSymbol(icon.symbolId, icon.svg, icon.hash)
   delete icon.svg                          // 字符串不再需要保留
 }
 ```
 
 cls 项**不动**，保持 `{ cls: '...' }`。
+
+> **⚠️ hash 必须在所有环境计算。** 当前 `solveIconHash` 被 `if (isDev) solveIconHash(...)` 包裹（`index.js:73`），生产环境不计算 hash，`icon.hash` 为 `undefined`。改造后 `addSymbol` 依赖 hash 区分"真幂等"和"覆盖"，如果生产环境 hash 缺失，第二次 install 同名图标会被当成"内容相同"跳过，覆盖静默失效。必须把 hash 计算从 `solveIconHash` 中拆出来，**无条件执行**；`solveIconHash` 的剩余逻辑（hashMap 维护 + dev 警告）仍可保留在 `isDev` 下。
 
 ### 3.3 useIcon / 消费组件改造
 
@@ -220,6 +233,8 @@ cls 项**不动**，保持 `{ cls: '...' }`。
 | sprite 容器在路由切换/HMR 时丢失 | 低 | 单例挂 `document.body`，HMR 时模块状态保留；如担心，可监听 reload |
 | 多个 mussel 实例同页（微前端）sprite id 冲突 | 中 | `symbolId` 加版本/实例前缀（`mu-i-${version}-${key}`），或检测重复时跳过 |
 | 动态 `install()` 时机晚于首次渲染 | 中 | `<use href="#不存在的-id">` 不报错，图标只是不显示；可加 console.warn |
+| 覆盖默认图标后 `<use>` 未刷新 | 中 | 标准行为：替换 `<symbol>` 后，引用它的 `<use>` 在 Chrome/Firefox 自动重新引用；Safari 历史版本需验证。覆盖路径必须实机回归（见 §7 验证清单） |
+| 覆盖场景下 hash 缺失导致静默失败 | 中 | hash 必须无条件计算（见 §3.2 约束）；改造时把 `generateHash` 调用从 `solveIconHash` 内拆出，不依赖 `isDev` |
 
 ---
 
@@ -243,6 +258,8 @@ cls 项**不动**，保持 `{ cls: '...' }`。
 - [ ] 切换主题色（primary/danger）后图标颜色跟随
 - [ ] 禁用态（`[disabled]`）样式正常
 - [ ] 生产构建产物中能看到 sprite `<svg>` 注入
+- [ ] **覆盖默认图标**：`install({ windowClose: 新svg })` 后，所有引用 `windowClose` 的位置都显示新图标（生产构建也要验证，不只是 dev）
+- [ ] **重复 install 相同内容**：同名同内容图标重复 install 不重复注入 symbol（真幂等）
 
 ---
 
@@ -257,3 +274,5 @@ cls 项**不动**，保持 `{ cls: '...' }`。
 1. **`svg` 字段是否保留？** 保留则零破坏，删除则更干净。倾向保留。
 2. **`symbolId` 前缀策略？** 纯 `mu-i-${key}` 还是带版本前缀防微前端冲突？倾向后者。
 3. **是否抽出 `IconSvg.vue` 公用组件？** 两个消费端结构一致，但当前只有 2 处，抽组件 ROI 不高，建议先观察。
+4. **覆盖默认图标的语义如何对齐？** 业务方覆盖时是"替换 symbol 内容"还是"换 symbolId"？当前方案选前者（同 id 替换 symbol），保持 `icons[key].symbolId` 不变，`<use>` 无需感知；但需确认业务方期望——若期望"原默认图标保留 + 新图标并存"，则应分配新 symbolId。倾向前者（默认即替换）。
+5. **hash 计算移出 `isDev` 后的体积影响？** `generateHash` 对每个 svg 调用一次，生产环境 icon 表通常几十到几百项，开销可忽略；但需确认不是一次性全量哈希（当前是逐项，OK）。

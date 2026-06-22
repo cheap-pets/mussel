@@ -24,7 +24,7 @@
 ```html
 <mu-tabs v-model:active-tab="activeTab" tab-style="button">
   <template #tab-bar-append>
-    <mu-tool-button icon="refresh" @click="reload" />
+    <mu-icon-button icon="refresh" @click="reload" />
   </template>
   <mu-tab-panel name="list" caption="列表" icon="list">
     <!-- 列表内容 -->

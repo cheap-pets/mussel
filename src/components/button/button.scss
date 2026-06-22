@@ -1,5 +1,5 @@
 .mu-button {
-  --height: var(--mu-control-height-normal);
+  --size: var(--mu-control-height-normal);
 
   cursor: pointer;
   user-select: none;
@@ -12,8 +12,8 @@
   align-items: center;
   justify-content: center;
 
-  min-width: var(--height);
-  height: var(--height);
+  min-width: var(--size);
+  height: var(--size);
   padding: 0 15px;
   border-radius: var(--mu-common-border-radius);
 
@@ -31,18 +31,18 @@
 }
 
 .mu-button--pill {
-  border-radius: calc(var(--height) / 2);
+  border-radius: calc(var(--size) / 2);
 }
 
 .mu-button--small {
-  --height: var(--mu-control-height-small);
+  --size: var(--mu-control-height-small);
 
   padding: 0 7px;
   font-size: 12px;
 }
 
 .mu-button--large {
-  --height: var(--mu-control-height-large);
+  --size: var(--mu-control-height-large);
 
   padding: 0 23px;
   font-size: 16px;
@@ -136,5 +136,25 @@
 }
 
 .mu-icon-button {
+  flex: none;
+
+  width: var(--size);
   padding: 0 !important;
+
+  font-size: 18px;
+  font-weight: 400;
+
+  &.mu-button--small {
+    font-size: 14px;
+  }
+
+  &.mu-button--large {
+    font-size: 22px;
+  }
+
+  & > svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
 }

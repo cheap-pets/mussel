@@ -35,14 +35,12 @@
           :class="(selectedRecKey != null && getRecordKey(rec) === selectedRecKey) ? 'mu-table__tr--selected' : null" />
       </tbody>
     </table>
+    <div class="mu-table__bottom-shadow" />
     <div
       v-if="!scrolling"
       class="mu-table__hover-indicator"
       :class="`mu-table__hover-indicator--${hoverMode}`"
       :style="hoverStyle" />
-    <div v-if="$slots.footer" class="mu-table__footer">
-      <slot name="footer" />
-    </div>
   </div>
 </template>
 

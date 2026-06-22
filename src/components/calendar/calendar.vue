@@ -6,7 +6,6 @@
         :caption="caption"
         icon="calendar"
         class="mu-caption"
-        button-style="text"
         dropdown-class="mu-calendar__dropdown">
         <template #dropdown>
           <month-picker
@@ -17,9 +16,9 @@
         </template>
       </mu-dropdown-button>
       <template v-if="!monthDropdown?.dropdownVisible">
-        <mu-button :caption="$t('Calendar.THIS_MONTH')" button-style="text" @click="setCurrent(today)" />
-        <mu-tool-button icon="chevronUp" @click="prevMonth" />
-        <mu-tool-button icon="chevronDown" @click="nextMonth" />
+        <mu-button :caption="$t('Calendar.THIS_MONTH')" @click="setCurrent(today)" />
+        <mu-icon-button icon="chevronUp" @click="prevMonth" />
+        <mu-icon-button icon="chevronDown" @click="nextMonth" />
       </template>
     </mu-toolbar>
     <date-table

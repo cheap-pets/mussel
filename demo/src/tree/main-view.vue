@@ -71,13 +71,13 @@
           </label>
         </template>
         <template #buttons="scoped">
-          <mu-icon
+          <mu-icon-button
             v-if="scoped.node.id % 3 > 0"
             icon="x"
             danger
             hover
-            class="mu-icon-button mu-tree-node__button"
-            @click="tree.emit('nodeButtonClick', node, { title: 'Custom Button' })" />
+            button-style="text"
+            class="mu-tree-node__button" />
         </template>
       </mu-tree>
     </div>

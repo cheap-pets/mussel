@@ -5,12 +5,12 @@
       <theme-switch />
     </h2>
 
-    <div class="group">
+    <div class="px-2x">
       <h3>Simple</h3>
       <mu-table
         :columns="columns"
         :records="records"
-        :records-offset="offset"
+        :records-offset="pageIndex * pageSize"
         :selected-record-key="selectedId"
         :header-checked="headerChecked"
         :order-by="orderByOption"
@@ -28,20 +28,15 @@
         @cell-item-click="onCellItemClick"
         @update:header-checked="onHeaderCheckedChange"
         @update:cell-value="onCellValueChange"
-        @update:selected-record-key="selectedId = $event">
-        <template #footer>
-          <mu-pagination
-            small
-            quick-jumper
-            :offset="offset"
-            :limit="limit"
-            :data-count="1000"
-            :page-size1="pageSize"
-            :page-size-options1="[20, 50, 100, 100]"
-            @update:offset="offset = $event"
-            @update:limit="limit = $event" />
-        </template>
-      </mu-table>
+        @update:selected-record-key="selectedId = $event" />
+      <mu-pagination
+        v-model:page-index="pageIndex"
+        v-model:page-size="pageSize"
+        class="mt-1x"
+        :small1="true"
+        :quick-jumper="true"
+        :total="1000"
+        :page-size-options="[20, 50, 100]" />
     </div>
   </div>
 </template>
@@ -51,8 +46,7 @@
   import { faker } from '@faker-js/faker'
   import ThemeSwitch from '../common/theme-switch.vue'
 
-  const offset = ref(0)
-  const limit = ref(50)
+  const pageIndex = ref(0)
   const pageSize = ref(50)
   const selectedId = ref(null)
   const orderByOption = ref('username')

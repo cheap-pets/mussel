@@ -29,12 +29,12 @@
       </label>
     </slot>
     <slot name="buttons" :node="node">
-      <mu-icon
+      <mu-icon-button
         v-for="btn in buttons"
         :key="btn"
+        button-style="text"
         v-bind="btn"
-        tag="a"
-        class="mu-tool-button mu-tree-node__button"
+        class="mu-tree-node__button"
         @click="tree.emit('nodeButtonClick', node, btn)" />
     </slot>
   </a>

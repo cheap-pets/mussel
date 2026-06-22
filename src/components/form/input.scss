@@ -137,9 +137,7 @@ div.mu-input {
     border-radius: 0 !important;
   }
 
-  & > .mu-icon,
-  & > .mu-tool-button {
-    justify-content: center;
+  & > .mu-icon {
     width: var(--mu-control-height-normal);
     padding: 0;
     font-size: calc(1em + 2px);

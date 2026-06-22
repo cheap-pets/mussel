@@ -6,11 +6,12 @@
 
 <script setup>
   import './toolbar.scss'
-  import { provide } from 'vue'
+
+  import { toolbarProps, useToolbar } from './toolbar.js'
 
   defineOptions({ name: 'MusselToolbar' })
 
-  provide('defaultButtonOptions', {
-    buttonStyle: 'text'
-  })
+  const props = defineProps({ ...toolbarProps })
+
+  useToolbar(props)
 </script>

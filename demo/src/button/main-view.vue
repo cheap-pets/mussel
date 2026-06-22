@@ -1,13 +1,13 @@
 <template>
   <div>
-    <H2>
+    <h2>
       BUTTON, BUTTON GROUP & TOOL BUTTON
       <theme-switch />
-    </H2>
+    </h2>
     <div class="group button-w-100">
       <h3>NORMAL STYLE</h3>
       <div class="group-row">
-        <mu-button x>
+        <mu-button>
           NORMAL
         </mu-button>
         <mu-button active>
@@ -274,22 +274,22 @@
       </mu-button-group>
     </div>
     <div class="group">
-      <h3>TOOL BUTTON</h3>
-      <mu-tool-button size="small" icon="chevronUp" />
-      <mu-tool-button size="small" icon="chevronRight" danger />
-      <mu-tool-button size="small" icon="chevronDown" disabled />
-      <mu-tool-button v-model:active="active1" size="small" icon="dots" toggle />
-      <mu-tool-button v-model:active="active2" size="small" icon="album" danger toggle />
-      <mu-tool-button icon="chevronUp" />
-      <mu-tool-button icon="chevronRight" danger />
-      <mu-tool-button icon="chevronDown" disabled />
-      <mu-tool-button v-model:active="active1" icon="dots" toggle />
-      <mu-tool-button v-model:active="active2" icon="album" danger toggle />
-      <mu-tool-button size="large" icon="chevronUp" />
-      <mu-tool-button size="large" icon="chevronRight" danger />
-      <mu-tool-button size="large" icon="chevronDown" disabled />
-      <mu-tool-button v-model:active="active1" size="large" icon="dots" toggle />
-      <mu-tool-button v-model:active="active2" size="large" icon="album" danger toggle />
+      <h3>ICON BUTTON</h3>
+      <mu-icon-button size="small" icon="chevronUp" />
+      <mu-icon-button size="small" icon="chevronRight" danger />
+      <mu-icon-button size="small" icon="chevronDown" disabled />
+      <mu-icon-button v-model:active="active1" size="small" icon="dots" toggle />
+      <mu-icon-button v-model:active="active2" size="small" icon="album" danger toggle />
+      <mu-icon-button icon="chevronUp" />
+      <mu-icon-button icon="chevronRight" danger />
+      <mu-icon-button icon="chevronDown" disabled />
+      <mu-icon-button v-model:active="active1" icon="dots" toggle />
+      <mu-icon-button v-model:active="active2" icon="album" danger toggle />
+      <mu-icon-button size="large" icon="chevronUp" />
+      <mu-icon-button size="large" icon="chevronRight" danger />
+      <mu-icon-button size="large" icon="chevronDown" disabled />
+      <mu-icon-button v-model:active="active1" size="large" icon="dots" toggle />
+      <mu-icon-button v-model:active="active2" size="large" icon="album" danger toggle />
     </div>
   </div>
 </template>
