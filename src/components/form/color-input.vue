@@ -47,7 +47,6 @@
   import './color-input.scss'
 
   import { ref, computed, watch } from 'vue'
-  import { inputProps } from './input'
   import { useFieldModel } from '../form/validation'
   import { normalizeHex } from '@/utils/color'
   import { MUSSEL_PALETTE } from './color-palette'
@@ -57,7 +56,6 @@
   defineOptions({ name: 'MusselColorInput' })
 
   const props = defineProps({
-    ...inputProps,
     modelValue: String,
     dropdownClass: null
   })
