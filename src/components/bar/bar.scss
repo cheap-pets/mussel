@@ -1,22 +1,20 @@
-.mu-bar {
+.mu-bar,
+.mu-toolbar {
   position: relative;
 
   display: flex;
   gap: var(--mu-base-spacing);
   align-items: center;
 
-  height: 40px;
-  padding: 0 var(--mu-base-spacing);
-
   font-size: var(--mu-font-size-normal);
-
-  & > .mu-caption {
-    font-weight: 500;
-  }
 
   & > .flex-divider {
     align-self: center;
     height: calc(1em + 2px);
     margin: 0 var(--mu-base-spacing);
   }
+}
+
+.mu-bar {
+  height: 40px;
 }

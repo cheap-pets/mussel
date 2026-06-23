@@ -8,9 +8,3 @@
     background-color: var(--mu-bg-#{$v});
   }
 }
-
-.mu-masked {
-  pointer-events: none;
-  background-color: var(--mu-bg-mask);
-  filter: blur(4px);
-}

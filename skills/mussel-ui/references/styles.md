@@ -264,8 +264,8 @@
 | ------------- | -------------- |
 | .flex-none    | flex: none     |
 | .flex-0       | flex: 0        |
-| .flex-1       | flex: 1        |
-| .flex-2 ~ .flex-8 | flex: 2 ~ flex: 8 |
+| .flex-1       | flex: 1 1 0    |
+| .flex-2 ~ .flex-8 | flex: 2 2 0 ~ flex: 8 8 0 |
 | .flex-auto    | flex: auto     |
 | .flex-initial | flex: 0 auto   |
 | .flex-grow    | flex-grow: 1   |
@@ -337,6 +337,7 @@
 | .flex-space[space="1x"] ~ [space="4x"] | 等间距变体，flex: 0 0 (n × 8px)              |
 | .flex-divider                       | 垂直分隔线，flex: 0 0 2px，默认浅色背景       |
 | .flex-divider[line-width="1"] ~ [line-width="4"] | 分隔线宽度，1 ~ 4px                         |
+| .flex-divider.flex-divider--pill    | 胶囊形分隔条，宽度 4px、圆角 2px             |
 | .flex-break                         | 强制换行，flex: 0 0 100%                     |
 
 ```html

@@ -96,9 +96,9 @@
     const el = thisEl.value
     const style = {}
 
-    const { width: sw, top: st, right: sr, bottom: sb, left: sl } = ctx.snapTo.getBoundingClientRect()
+    const { width: sw, top: st, /* right: sr, */ bottom: sb, left: sl } = ctx.snapTo.getBoundingClientRect()
     const { width: _dw, height: dh } = el.getBoundingClientRect()
-    const { innerWidth: tw, innerHeight: th } = window
+    const { /* innerWidth: tw, */ innerHeight: th } = window
 
     let dw = _dw
 
@@ -107,11 +107,14 @@
       style.width = `${dw}px`
     }
 
+    style.left = `${sl}px`
+    /*
     if ((dw > sw) && ((tw - sl >= dw) || (sr < dw))) {
       style.left = `${sl}px`
     } else {
       style.right = `${tw - sr}px`
     }
+    */
 
     if (th - sb > dh || st < dh) {
       el.setAttribute('position', 'bottom')

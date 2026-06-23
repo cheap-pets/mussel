@@ -1,4 +1,6 @@
-import { toRefs, reactive, provide } from 'vue'
+import './toolbar.scss'
+
+import { toRefs, reactive, computed, provide } from 'vue'
 
 export const toolbarProps = {
   small: Boolean,
@@ -10,5 +12,12 @@ export function useToolbar (props, emit) {
     ...toRefs(props)
   })
 
+  const toolbarClass =
+    computed(() => ({ 'mu-toolbar--small': props.small }))
+
   provide('toolbar', toolbar)
+
+  return {
+    toolbarClass
+  }
 }

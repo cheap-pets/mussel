@@ -24,10 +24,10 @@ const SPECIAL_COLORS = {
   secondary: generateAccentColor('#008cd6')
 }
 
-function complementColors (colors) {
-  const { primary, secondary, neutral, ...result } = colors
+function complementColors (incoming) {
+  const { primary, secondary, neutral, ...result } = incoming
 
-  function appendColors (colorName, baseColor, palette) {
+  function addColors (colorName, baseColor, palette) {
     palette ||= generatePalette(baseColor)
 
     palette.forEach((color, i) => {
@@ -37,13 +37,9 @@ function complementColors (colors) {
     result[colorName] ||= baseColor
   }
 
-  ;['primary', 'success', 'warning', 'danger'].forEach(key =>
-    colors[key] && appendColors(key, colors[key])
+  ;[...Object.keys(SPECIAL_COLORS), ...Object.keys(BASE_COLORS)].forEach(key =>
+    incoming[key] && addColors(key, incoming[key])
   )
-
-  if (secondary || (primary && secondary !== false)) {
-    appendColors('secondary', secondary || generateAccentColor(primary))
-  }
 
   const grayBase = neutral ?? primary
 
@@ -51,23 +47,33 @@ function complementColors (colors) {
     const options = { count: 20, densityFactor: 1.2, saturationRatio: 0.2, hueShift: 0 }
     const palette = generateNeutralPalette(grayBase, options)
 
-    appendColors('gray', palette[10], palette)
+    addColors('gray', palette[10], palette)
   }
 
   return result
 }
 
-export function setupColors (options = {}) {
-  const { root = document.body, darkMode, colors = {} } = options
+export const colors =
+  complementColors({ ...BASE_COLORS, ...SPECIAL_COLORS })
 
-  if (darkMode) root.classList.add('mu-root', 'mu-dark')
-  else root.classList.add('mu-root')
+function updateColors (customColors = {}) {
+  const incomingColors = complementColors(customColors)
+
+  Object.assign(colors, incomingColors)
+
+  return incomingColors
+}
+
+export function setupColors (rootElement, customColors = {}) {
+  if (!Object.keys(customColors).count) return
+
+  const incomingColors = updateColors(customColors)
 
   Object
-    .entries(complementColors(colors))
+    .entries(incomingColors)
     .forEach(([key, value]) =>
       value &&
-      root.style.setProperty(
+      rootElement.style.setProperty(
         '--mu-' + kebabCase(
           key.replace(
             /^(neutral|primary|secondary|success|warning|danger)(\d*)$/,
@@ -77,24 +83,4 @@ export function setupColors (options = {}) {
         value
       )
     )
-}
-
-export function getComputedXColor (xColor, el) {
-  if (!el) return
-
-  xColor =
-    (xColor in BASE_COLORS && `var(--mu-${xColor})`) ||
-    (xColor in SPECIAL_COLORS && `var(--mu-${xColor}-color)`) ||
-    xColor
-
-  const match = xColor.match(/var\((.+?)\)/)
-  const prop = match && match[1]
-
-  return prop
-    ? window.getComputedStyle(el).getPropertyValue(prop)
-    : xColor
-}
-
-export function generatePreCssVariables (customColors) {
-  return complementColors({ ...BASE_COLORS, ...SPECIAL_COLORS, ...customColors })
 }

@@ -79,6 +79,7 @@
     graphics: '集成显卡',
     price: '14999',
     color: '深空灰色',
+    themeColor: '#1c7ed6',
     weight: '1.61',
     warranty: 1,
     stock: 50,
@@ -160,6 +161,10 @@
         ]
       }
     },
+    'hr',
+    [
+      { prop: 'themeColor', label: '主题色', input: 'color' }
+    ],
     'hr',
     '日期选项',
     [

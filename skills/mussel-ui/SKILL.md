@@ -63,7 +63,7 @@ description: >
 | 属性 | 说明 |
 | ---- | ---- |
 | root | 根元素（选择器或 DOM），注入主题 class 与 CSS 变量，默认 `document.body` |
-| darkMode | `true` 强制暗色 \| `'auto'` 跟随系统 \| 否则亮色 |
+| dark | `true` 强制暗色 \| `'auto'` 跟随系统 \| 否则亮色 |
 | colors | 主题色 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral`，自动派生 `--mu-*` 变量 |
 | icons | 初始图标集，等价于 `installIcons(icons)` |
 | locale | `'zh'` \| `'en'`，未指定时按浏览器语言判断 |
@@ -117,6 +117,7 @@ description: >
 | `<mu-combo-box>` | 单选下拉，`editable` 可手动输入 |
 | `<mu-multi-select>` | 多选下拉 |
 | `<mu-date-input>` | 日期/月份选择 |
+| `<mu-color-input>` | 颜色选择（HEX 输入 + 内置 180 色色板） |
 | `<mu-check>` / `<mu-check-group>` | 复选框及组 |
 | `<mu-radio>` / `<mu-radio-group>` | 单选框及组 |
 | `<mu-segmented>` | 分段控件（互斥选项条） |

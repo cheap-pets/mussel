@@ -4,6 +4,7 @@ export const INPUT_TYPES = {
   date: ['mu-date-input'],
   month: ['mu-date-input', { type: 'month', format: 'yyyy-MM', valueType: 'string' }],
   year: ['mu-date-input', { type: 'year', format: 'yyyy', valueType: 'string' }],
+  color: ['mu-color-input'],
   segmented: ['mu-segmented'],
   select: ['mu-select'],
   'multi-select': ['mu-multi-select'],

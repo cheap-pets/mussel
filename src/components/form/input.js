@@ -15,7 +15,12 @@ export const inputProps = {
   clearable: {
     type: Boolean,
     default: () => inject('$mussel').options.input?.clearable
-  }
+  },
+  size: {
+    type: String,
+    validator: v => ['small', 'normal'].includes(v)
+  },
+  pill: Boolean
 }
 
 export const inputEmits = [
@@ -31,9 +36,14 @@ export const inputEmits = [
 ]
 
 export function useInput (model, props, emit) {
+  const toolbar = inject('toolbar', {})
   const formField = inject('formField', {})
 
   const wrapperAttrs = computed(() => ({
+    class: {
+      'mu-input--pill': props.pill,
+      'mu-input--small': props.size ? props.size === 'small' : toolbar.small
+    },
     tabindex: props.tabindex,
     disabled: props.disabled || null,
     readonly: props.readonly || null,

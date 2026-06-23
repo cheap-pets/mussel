@@ -42,16 +42,61 @@ $FLEX_DIRECTIONS: (
   ('col-reverse', 'column-reverse')
 );
 
+
+.flex-divider {
+  display: block;
+  flex: 0 0 2px;
+  align-self: stretch;
+  background-color: var(--mu-border-color-soft);
+
+  @for $i from 1 through 4 {
+    &[line-width="#{$i}"] {
+      flex-basis: #{$i}px;
+    }
+  }
+
+  &.flex-divider--pill {
+    flex-basis: 4px;
+    border-radius: 2px;
+  }
+}
+
+.flex-space {
+  display: block;
+  flex: 1 1 0;
+
+  @for $i from 1 through 4 {
+    $v: calc($i * var(--mu-base-spacing));
+
+    &[space="#{$i}x"] {
+      flex: 0 0 $v;
+    }
+  }
+}
+
+.flex-break {
+  display: block;
+  flex: 0 0 100%;
+}
+
 @each $k, $v in $FLEX_DIRECTIONS {
   .flex-#{$k} {
     flex-direction: #{$v};
   }
 }
 
-@each $v in (0, 1, 2, 3, 4, 5, 6, 7, 8, 'none', 'auto') {
+@each $v in (0, 1, 2, 3, 4, 5, 6, 7, 8) {
   .flex-#{$v} {
-    flex: #{$v};
+    flex: #{$v} #{$v} 0;
   }
+}
+
+.flex-none {
+  flex: none;
+}
+
+.flex-auto {
+  flex: auto;
 }
 
 .flex-initial {
@@ -111,35 +156,4 @@ $FLEX_DIRECTIONS: (
   .gap-#{$i}x {
     gap: calc($i * var(--mu-base-spacing));
   }
-}
-
-.flex-divider {
-  display: block;
-  flex: 0 0 2px;
-  align-self: stretch;
-  background-color: var(--mu-border-color-soft);
-
-  @for $i from 1 through 4 {
-    &[line-width="#{$i}"] {
-      flex-basis: #{$i}px;
-    }
-  }
-}
-
-.flex-space {
-  display: block;
-  flex: 1 1 0;
-
-  @for $i from 1 through 4 {
-    $v: calc($i * var(--mu-base-spacing));
-
-    &[space="#{$i}x"] {
-      flex: 0 0 $v;
-    }
-  }
-}
-
-.flex-break {
-  display: block;
-  flex: 0 0 100%;
 }

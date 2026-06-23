@@ -86,6 +86,7 @@
   { prop: 'date', label: '日期', input: 'date' }          // <mu-date-input>
   { prop: 'month', label: '月份', input: 'month' }        // <mu-date-input type="month">
   { prop: 'year', label: '年份', input: 'year' }          // <mu-date-input type="year">
+  { prop: 'color', label: '主题色', input: 'color' }      // <mu-color-input>
   { prop: 'type', label: '类型', input: 'select' }        // <mu-select>
   { prop: 'tags', label: '标签', input: 'multi-select' }  // <mu-multi-select>
   { prop: 'view', label: '视图', input: 'segmented' }     // <mu-segmented>
@@ -159,6 +160,8 @@ const items = [
 | `type` | String | `text` | 原生 input type |
 | `placeholder` | String | — | 占位文本 |
 | `clearable` | Boolean | 全局配置 | 是否显示清除按钮 |
+| `size` | String | `normal` | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`small`）内时自动继承小尺寸 |
+| `pill` | Boolean | — | 左右圆弧形态（胶囊形） |
 | `invalid` | Boolean | — | 校验失败样式 |
 | `readonly` / `disabled` | Boolean | — | 只读 / 禁用 |
 | `prefix` | String\|Object | — | 前置文本或按钮 |
@@ -318,6 +321,30 @@ const filteredItems = computed(() =>
 > - `type="year"`：直接进入年份选择网格（每屏 10 年，左右翻页切换十年区间），选中即提交并关闭。
 > - `type="month"`：月份选择网格，含十年区间内年份切换 + 12 月份格。
 > - 翻页按钮：日期模式翻月，月份/年份模式翻十年区间；「本月/本年」按钮跳回当前。
+
+---
+
+## MuColorInput
+
+颜色选择框。前置显示当前色块，右侧为可输入的 HEX 文本框；展开下拉面板显示 Mussel 内置色板（18 个色组 × 10 级色阶 = 180 色），点击色格即选中。`modelValue` 为 HEX 字符串（如 `'#1C7ED6'`）。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `modelValue` | String | — | 双向绑定值，HEX 字符串（`#RGB` 或 `#RRGGBB`，内部规范化为大写 `#RRGGBB`） |
+| `placeholder` | String | — | 占位文本 |
+| `dropdown-class` | String | — | 下拉面板附加 class |
+| `disabled` / `readonly` | Boolean | — | 禁用 / 只读 |
+| (其他) | — | — | 继承 `MuInput` 属性（options 相关除外）|
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `update:modelValue` | hex | 值变更（HEX 字符串） |
+| `change` | hex | 值确认变更（选中色格 / 输入框回车 / 失焦时通过校验） |
+| `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
+
+> - 内置色板由 `colors` 对象派生（12 基础色 + 6 语义色，每色 10 级色阶），随主题色配置动态变化。
+> - HEX 输入框允许临时非法值，仅在回车、失焦、ESC（回滚）时规范化提交。
+> - 在 `MuFormField` 的 `input` 中用 `'color'` 即可数据驱动渲染。
 
 ---
 

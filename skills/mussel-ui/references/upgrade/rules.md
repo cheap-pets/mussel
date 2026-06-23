@@ -87,6 +87,7 @@ installIcons({ edit: EditIcon })
 - [ ] 图标注册：`registerIcons` → `installIcons`（或并入 `install` 的 `options.icons`）
 - [ ] `theme: { 逐项 CSS 变量 }` → `colors: { 基础色 }`（自动派生调色板，见下「主题变量映射变更」）
 - [ ] `theme: false` 跳过颜色初始化已不支持，V4 始终初始化颜色系统
+- [ ] `darkMode` 选项重命名为 `dark`（取值不变：`true` \| `'auto'`）
 - [ ] `autoComplementColors` 已移除，V4 始终自动补全衍生色
 - [ ] `root` 默认值由 `document.documentElement` 改为 `document.body`；若原样式依赖根元素为 `<html>`，需显式传 `root`
 - [ ] 命令式对话框/通知统一改走 `inject('$mussel').messageBox`（详见 5.11）
@@ -119,7 +120,7 @@ app.use(pluginMussel, {
 // Mussel 4
 app.use(pluginMussel, {
   root: '#app',              // 挂载根元素（选择器或 DOM 元素）
-  darkMode: true | 'auto',   // 暗色模式
+  dark: true | 'auto',       // 暗色模式
   colors: {
     // 仅需指定基础色/语义色，自动生成调色板（10 级衍生色 + 20 级灰阶）
     primary: '#1c7ed6',
@@ -144,7 +145,7 @@ app.use(pluginMussel, {
 |----------|----------|------|
 | `theme: { primary: '...', ... }` | `colors: { primary: '...', ... }` | 重命名。V3 手动指定每个 CSS 变量值；V4 仅指定基础色，自动生成调色板 |
 | `theme: false` | _(已移除)_ | V4 始终初始化颜色系统 |
-| `darkMode` | `darkMode`（不变） | 但根元素 class 变更：V3 加 `dark-mode` 属性，V4 加 `mu-dark` class |
+| `darkMode` | `dark` | 重命名。根元素 class 变更：V3 加 `dark-mode` 属性，V4 加 `mu-dark` class |
 | `autoComplementColors` | _(已移除)_ | V4 始终自动补全，不可关闭 |
 | `root` | `root`（不变） | 默认值变更：V3 默认 `document.documentElement`，V4 默认 `document.body` |
 | `icons` | `icons`（不变） | |
@@ -174,6 +175,7 @@ V3 `theme` 中手动指定的变量，在 V4 中改为 `colors` 只需指定基�
 
 | | Mussel 3 | Mussel 4 |
 |---|----------|----------|
+| 配置项 | `darkMode: true \| 'auto'` | `dark: true \| 'auto'`（重命名） |
 | 根元素标记 | `root.setAttribute('dark-mode', '')` | `root.classList.add('mu-dark')` |
 | CSS 变量覆盖 | `[dark-mode] .mu-root { --mu-xxx: ... }` | `.mu-root.mu-dark { --mu-xxx: ... }` |
 
@@ -184,8 +186,10 @@ V3 `theme` 中手动指定的变量，在 V4 中改为 `colors` 只需指定基�
 export { install, components, icons, registerIcons, scrollbar }
 
 // Mussel 4
-export { install, installIcons }  // 仅导出 install 和 installIcons
+export { install, installIcons, EventInterceptor, colors }  // 导出 install、installIcons、EventInterceptor、colors
 ```
+
+> `colors` 为包含全部派生色（基础色、语义色及其调色板/灰阶）的运行时对象，可在运行时读取色板或用于自定义渲染（如色板选择器）。早期 4.x 曾导出的 `generatePreCssVariables` / `getComputedXColor` 已移除，统一改用 `colors`。
 
 ---
 
@@ -346,6 +350,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | `class="mu-h-box"` / `class="mu-v-box"` 作为纯 CSS 类 | 不再具有 `display: flex` / `display: flex; flex-direction: column` 的效果 |
 | `class="mu-space"` | 改为 `class="flex-space"` |
 | `class="mu-divider"` | 改为 `class="flex-divider"` |
+| `class="mu-bar_divider"` | 改为 `class="flex-divider"` |
 | `class="mu-flex-item"` | 无对应样式 |
 
 ### 3.2 组件变更
@@ -1377,6 +1382,7 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuSelect | 下拉单选框 |
 | MuMultiSelect | 下拉多选框（带标签显示） |
 | MuDateInput | 日期/月份选择器 |
+| MuColorInput | 颜色选择器（HEX 输入 + 内置 180 色色板） |
 | MuTable | 数据表格，支持多种列类型（text、check、bool、enum、date、link、tag 等） |
 | MuBigTable | 大数据量表格，支持虚拟滚动 |
 | MuList | 列表容器，支持滚动条 |

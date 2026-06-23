@@ -1,6 +1,7 @@
 <template>
   <div
-    :class="['mu-pagination', small && 'mu-pagination--small']"
+    class="mu-toolbar mu-pagination"
+    :class="toolbarClass"
     @sizechange="calcMaxPageButtonsCount">
     <mu-icon-button
       icon="chevronLeft"
@@ -24,7 +25,7 @@
       :disabled="pageIndex === count - 1 || null"
       @click="goto(pageIndex + 1)" />
     <template v-if="sizeOptions?.length">
-      <div class="mu-tool-divider" />
+      <div class="flex-divider" />
       <mu-dropdown-button
         class="mu-pagination__size-select"
         button-style="normal"
@@ -35,7 +36,7 @@
     <label v-else-if="pageSize && !middleText">{{ `${pageSize} ${$t('Pagination.PER_PAGE')}` }}</label>
     <template v-if="quickJumper">
       <label>{{ $t('Pagination.GOTO') }}</label>
-      <mu-input class="mu-pagination__quick-jumper" @keydown.enter="doJump" />
+      <mu-input class="mu-pagination__quick-jumper" @keydown.enter="jump" />
       <label>{{ $t('Pagination.PAGE') }}</label>
     </template>
   </div>
@@ -64,7 +65,7 @@
     'update:page-size'
   ])
 
-  useToolbar(props)
+  const { toolbarClass } = useToolbar(props)
 
   const maxPageButtonsCount = ref(0)
 
@@ -135,7 +136,7 @@
     emit('update:page-index', pageIndex)
   }
 
-  function doJump (event) {
+  function jump (event) {
     const i = parseInt(event.target.value)
 
     if (isNaN(i) || i < 1 || i > count.value) event.target.value = ''
@@ -152,23 +153,17 @@
 <style>
   .mu-pagination {
     cursor: default;
-
-    display: flex;
-    gap: 5px;
-    align-items: center;
+    gap: 4px;
     justify-content: center;
-
-    padding: 0 var(--mu-base-spacing);
-
     font-size: var(--mu-font-size-small);
 
     & > label {
       display: inline-block;
-      padding: 0 3px;
+      padding: 0 4px;
     }
 
     & > .mu-button {
-      padding: 0 4px;
+      padding: 0 3px;
     }
 
     & > .mu-button,
@@ -183,7 +178,7 @@
 
     & > .mu-pagination__quick-jumper {
       width: 50px;
-      padding: 0 8px;
+      padding: 0 7px;
 
       & > input {
         text-align: center;
@@ -192,16 +187,6 @@
           text-align: left;
         }
       }
-    }
-  }
-
-  .mu-pagination--small {
-    & > .mu-input {
-      height: 24px;
-    }
-
-    & .mu-tool-divider {
-      height: 16px;
     }
   }
 </style>

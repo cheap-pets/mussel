@@ -4,6 +4,20 @@ const RGB_MAX = 255
 const HUE_MAX = 360
 const SV_MAX = 100
 
+export function normalizeHex (input) {
+  if (!input) return null
+
+  let s = String(input).trim().replace(/^#/, '')
+
+  if (/^[0-9a-f]{3}$/i.test(s)) {
+    s = s.split('').map(c => c + c).join('')
+  }
+
+  if (!/^[0-9a-f]{6}$/i.test(s)) return null
+
+  return '#' + s.toUpperCase()
+}
+
 function hex2rgb (hex) {
   const result = /^#?([a-f\d]{1,2})([a-f\d]{1,2})([a-f\d]{1,2})$/i.exec(hex)
 

@@ -7,21 +7,16 @@
     :dropdown-class="[dropdownClass, 'mu-calendar']"
     @dropdown:show="currentView = type">
     <template #dropdown>
-      <mu-toolbar>
-        <div v-if="type !== 'date'" class="mu-caption">
+      <mu-toolbar class="bg-strong p-half">
+        <div v-if="type !== 'date'" class="px-1x">
           {{ caption }}
         </div>
-        <mu-button
-          v-else
-          class="mu-caption"
-          button-style="text"
-          :active="currentView !== 'date'"
-          @click="toggleMonthMode">
+        <mu-button v-else :active="currentView !== 'date'" @click="toggleMonthMode">
           {{ caption }}
           <mu-icon icon="dropdownExpand" :expanded="currentView !== 'date' || null" />
         </mu-button>
         <mu-button
-          button-style="text"
+          class="ml-auto"
           :caption="currentButtonCaption"
           @click="onCurrentButtonClick()" />
         <template v-if="isDateMode">

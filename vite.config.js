@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs'
 
 import { optimize } from 'svgo'
 import { defineConfig } from 'vite'
-import { generatePreCssVariables } from './src/colors.js'
+import { colors } from './src/colors.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -24,7 +24,7 @@ const targetBrowsers = {
 const colorMaps =
   '$colors: (\n' +
   Object
-    .entries(generatePreCssVariables())
+    .entries(colors)
     .map(([key, value]) => `  "${key}": ${value},`)
     .join('\n') +
   '\n);'

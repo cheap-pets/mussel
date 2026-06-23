@@ -1,0 +1,67 @@
+// 输入框内的色块前置
+.mu-color-input {
+  & > .mu-color-input__swatch {
+    pointer-events: auto;
+    cursor: pointer;
+
+    flex: none;
+
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+
+    background: var(--mu-bg-normal);
+
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  & > .mu-color-input__field {
+    text-transform: uppercase;
+  }
+}
+
+// 下拉面板（仅色格网格）
+.mu-dropdown-panel.mu-color-input__panel {
+  width: auto !important;
+
+  .mu-color-input__row {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 3px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .mu-color-input__cell {
+    cursor: pointer;
+
+    flex: none;
+
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+
+    outline: none;
+
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+    &:hover {
+      z-index: 1;
+      transform: scale(1.15);
+    }
+
+    &[active] {
+      border-color: var(--mu-primary-color);
+      box-shadow: 0 0 0 2px var(--mu-primary-translucent);
+    }
+  }
+}

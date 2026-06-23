@@ -5,11 +5,7 @@
     v-bind="wrapperAttrs"
     @click="onWrapperClick"
     @sizechange="updateDropdownPosition">
-    <component
-      :is="pre.is"
-      v-if="pre"
-      v-bind="pre.attrs"
-      @click.stop="onPrefixClick">
+    <component :is="pre.is" v-if="pre" v-bind="pre.attrs" @click.stop="onPrefixClick">
       {{ pre.content }}
     </component>
     <slot v-bind="inputAttrs">

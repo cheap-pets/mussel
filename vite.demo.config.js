@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { readdirSync, readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs'
 import { optimize } from 'svgo'
-import { generatePreCssVariables } from './src/colors.js'
+import { colors } from './src/colors.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const isWatch = process.argv.includes('--watch')
@@ -23,7 +23,7 @@ const targetBrowsers = {
 const colorMaps =
   '$colors: (\n' +
   Object
-    .entries(generatePreCssVariables())
+    .entries(colors)
     .map(([key, value]) => `  "${key}": ${value},`)
     .join('\n') +
   '\n);'

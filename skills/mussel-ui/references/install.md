@@ -8,7 +8,7 @@ import { install, installIcons } from 'mussel'
 
 install(app, {
   root: '#app',
-  darkMode: 'auto',
+  dark: 'auto',
   colors: { primary: '#1c7ed6' },
   icons: { edit: EditIcon },
   locale: 'zh',
@@ -28,7 +28,7 @@ install(app, {
 | 属性 | 类型 | 默认值 | 说明 |
 | ---- | ---- | ------ | ---- |
 | root | String \| Element | `document.body` | 应用根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
-| darkMode | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
+| dark | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
 | colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
@@ -37,7 +37,7 @@ install(app, {
 
 > [!NOTE]
 >
-> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置语言（`setupLocale`）→ 设置主题色（`setupColors`）→ 注册图标（`installIcons`）→ 注册全部组件。
+> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置根元素 class（`mu-root` + `mu-dark`，由 `dark` 决定）→ 设置主题色（`setupColors`）→ 设置语言（`setupLocale`）→ 注册图标（`installIcons`）→ 注册全部组件。
 
 ## 全局 `$mussel` 上下文
 
@@ -52,7 +52,7 @@ messageBox.alert('操作完成')
 | 属性 | 说明 |
 | ---- | ---- |
 | rootElement | Element，`root` 解析后的根 DOM 元素 |
-| options | Object，传入的 `componentOptions`（剔除 `root`/`darkMode`/`colors`/`icons`/`locale`/`localeResources` 之后的部分） |
+| options | Object，传入的 `componentOptions`（剔除 `root`/`dark`/`colors`/`icons`/`locale`/`localeResources` 之后的部分） |
 | messageBox | 命令式对话框与通知 API（`alert` / `confirm` / `error` / `warn` / `notify`） |
 
 ## installIcons(icons)
@@ -66,4 +66,17 @@ installIcons({
   refresh: RefreshIcon,        // svg data
   bolt: 'icon icon-bolt'       // icon-font class
 })
+```
+
+## 主题色
+
+`install` 时通过 `options.colors` 配置主题色，内部将自定义色合并到内置色板（`BASE_COLORS` + `SPECIAL_COLORS`），自动派生调色板与灰阶，并写入根元素的 `--mu-*` CSS 变量。
+
+库同时导出包含全部派生色的 `colors` 对象，可在运行时读取色板或用于自定义渲染（如色板选择器）：
+
+```javascript
+import { colors } from 'mussel'
+
+// colors 是包含基础色、语义色及其调色板/灰阶的完整对象
+// 如 colors.primary、colors.blue0、colors.gray10 等
 ```

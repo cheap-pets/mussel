@@ -1,11 +1,11 @@
 <template>
   <div class="mu-calendar">
-    <mu-toolbar>
+    <mu-toolbar class="bg-strong p-half">
       <mu-dropdown-button
         ref="monthDropdown"
         :caption="caption"
         icon="calendar"
-        class="mu-caption"
+        class="mr-auto"
         dropdown-class="mu-calendar__dropdown">
         <template #dropdown>
           <month-picker
@@ -22,7 +22,7 @@
       </template>
     </mu-toolbar>
     <date-table
-      :class="{ 'mu-masked': monthDropdown?.dropdownVisible }"
+      :class="{ 'mu-calendar-grid--masked': monthDropdown?.dropdownVisible }"
       :year="year"
       :month="month"
       :selected="selected"

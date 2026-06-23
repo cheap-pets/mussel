@@ -1,6 +1,5 @@
 .mu-input {
   --height: var(--mu-control-height-normal);
-  --line-height: 20px;
   --bg: var(--mu-bg-normal);
   --border-color: var(--mu-border-color-normal);
   --border-radius: var(--mu-common-border-radius);
@@ -12,19 +11,20 @@
 
   width: 200px;
   height: var(--height);
-  padding: 5px 11px;
+  padding: 0 11px;
   border-radius: var(--border-radius);
 
   font-size: var(--mu-font-size-normal);
-  line-height: var(--line-height);
 
   outline: none;
 
-  &[small] {
+  &--small {
     --height: var(--mu-control-height-small);
+
+    padding: 0 7px;
   }
 
-  &[round] {
+  &--pill {
     --border-radius: calc(var(--height) / 2);
   }
 }
@@ -40,12 +40,12 @@
       resize: none;
       display: unset;
       padding: 5px 11px;
+      line-height: 20px;
     }
 
     textarea#{&},
     input#{&},
     #{&} > input {
-      line-height: var(--line-height);
       color: var(--mu-text-color-strong);
       outline: none;
 

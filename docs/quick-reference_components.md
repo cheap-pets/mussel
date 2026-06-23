@@ -16,7 +16,7 @@ const app = createApp(App)
 
 install(app, {
   root: '#app',
-  darkMode: 'auto',
+  dark: 'auto',
   colors: { primary: '#1c7ed6' },
   icons: { edit: EditIcon },
   locale: 'zh',
@@ -36,7 +36,7 @@ install(app, {
 | 属性 | 类型 | 默认值 | 说明 |
 | ---- | ---- | ------ | ---- |
 | root | String \| Element | `document.body` | 应用根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
-| darkMode | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
+| dark | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
 | colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
@@ -45,7 +45,7 @@ install(app, {
 
 > [!NOTE]
 >
-> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置语言（`setupLocale`）→ 设置主题色（`setupColors`）→ 注册图标（`installIcons`）→ 注册全部组件。
+> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置根元素 class（`mu-root` + `mu-dark`，由 `dark` 决定）→ 设置主题色（`setupColors`）→ 设置语言（`setupLocale`）→ 注册图标（`installIcons`）→ 注册全部组件。
 
 ### 全局 `$mussel` 上下文
 
@@ -60,7 +60,7 @@ messageBox.alert('操作完成')
 | 属性 | 说明 |
 | ---- | ---- |
 | rootElement | Element，`root` 解析后的根 DOM 元素 |
-| options | Object，传入的 `componentOptions`（剔除 `root`/`darkMode`/`colors`/`icons`/`locale`/`localeResources` 之后的部分） |
+| options | Object，传入的 `componentOptions`（剔除 `root`/`dark`/`colors`/`icons`/`locale`/`localeResources` 之后的部分） |
 | messageBox | 命令式对话框与通知 API（`alert` / `confirm` / `error` / `warn` / `notify`） |
 
 ### installIcons(icons)
@@ -757,6 +757,7 @@ const items = [
 | `'date'`         | mu-date-input               |
 | `'month'`        | mu-date-input(type=month)   |
 | `'year'`         | mu-date-input(type=year)    |
+| `'color'`        | mu-color-input              |
 | `'select'`       | mu-select                   |
 | `'multi-select'` | mu-multi-select             |
 | `'segmented'`    | mu-segmented                |
@@ -801,6 +802,8 @@ const items = [
 | type       | String           | `text` | 原生 Input 元素的 type                                       |
 | placeholder| String           | —      | 占位文本                                                     |
 | clearable  | Boolean          | 全局配置| 是否显示清除按钮，以全局 `$mussel.options.input.clearButton` 为默认值 |
+| size       | String           | `normal` | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（small）内时自动继承小尺寸 |
+| pill       | Boolean          | —      | 左右圆弧形态（胶囊形）                                       |
 | invalid    | Boolean          | —      | 校验失败样式                                                 |
 | readonly   | Boolean          | —      | 是否只读                                                     |
 | disabled   | Boolean          | —      | 是否禁用                                                     |
@@ -984,6 +987,32 @@ const filteredItems = computed(() =>
 > - `type="year"`：直接进入年份选择网格（每屏 10 年，左右翻页切换十年区间），选中即提交并关闭
 > - `type="month"`：月份选择网格，含十年区间内年份切换 + 12 月份格
 > - 翻页按钮：日期模式翻月，月份/年份模式翻十年区间；「本月/本年」按钮跳回当前
+
+
+
+### MuColorInput
+
+颜色选择框。前置显示当前色块，右侧为可输入的 HEX 文本框；展开下拉面板显示 Mussel 内置色板（18 色组 × 10 级色阶 = 180 色），点击色格即选中。
+
+| 属性名称   | 类型    | 默认值 | 说明                                                                 |
+| ---------- | ------- | ------ | -------------------------------------------------------------------- |
+| modelValue | String  | —      | 双向绑定值，HEX 字符串（`#RGB` 或 `#RRGGBB`，内部规范化为大写 `#RRGGBB`） |
+| placeholder| String  | —      | 占位文本                                                             |
+| dropdown-class | String | —     | 下拉面板附加 class                                                   |
+| disabled   | Boolean | —      | 是否禁用                                                             |
+| readonly   | Boolean | —      | 是否只读                                                             |
+| (其他)     | —       | —      | 包含 MuInput 属性（options 相关除外）                                |
+
+| 事件              | 参数 | 说明                                                 |
+| ----------------- | ---- | ---------------------------------------------------- |
+| update:modelValue | hex  | 值变更（HEX 字符串）                                 |
+| change            | hex  | 值确认变更（选中色格 / 输入框回车 / 失焦时通过校验） |
+| dropdown:show     | —    | 下拉面板展开                                         |
+| dropdown:hide     | —    | 下拉面板收起                                         |
+
+> [!NOTE]
+>
+> 内置色板由 `colors` 对象派生（12 基础色 + 6 语义色，每色 10 级色阶），随主题色配置动态变化。HEX 输入框允许临时非法值，仅在回车、失焦、ESC（回滚）时规范化提交。在 `MuFormField` 的 `input` 中用 `'color'` 即可数据驱动渲染。
 
 
 

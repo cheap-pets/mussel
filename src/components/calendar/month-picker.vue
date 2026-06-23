@@ -22,7 +22,7 @@
         </tr>
       </tbody>
     </table>
-    <div class="flex-divider" line-width="1" />
+    <div class="self-center flex-divider flex-divider--pill" style="width: 64px;" />
     <table class="mu-calendar-grid" cellpadding="0" cellspacing="0">
       <tbody>
         <tr>
