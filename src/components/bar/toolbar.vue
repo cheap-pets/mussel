@@ -5,7 +5,6 @@
 </template>
 
 <script setup>
-
   import { toolbarProps, useToolbar } from './toolbar.js'
 
   defineOptions({ name: 'MusselToolbar' })

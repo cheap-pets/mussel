@@ -1,67 +1,49 @@
-// 输入框内的色块前置
-.mu-color-input {
-  & > .mu-color-input__swatch {
-    pointer-events: auto;
-    cursor: pointer;
+.mu-color-input__grid {
+  display: flex;
+  gap: 2px;
+  width: auto !important;
+}
 
-    flex: none;
+.mu-color-input__grid-row {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+}
 
-    width: 16px;
-    height: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 4px;
+.mu-color-input__color-block {
+  cursor: pointer;
 
-    background: var(--mu-bg-normal);
+  flex: none;
 
-    transition: transform 0.15s ease;
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
 
-    &:hover {
-      transform: scale(1.1);
-    }
+  text-align: center;
+
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+  &[active] {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    animation: mu-color-block-breathing 1.2s ease-in-out infinite;
   }
 
-  & > .mu-color-input__field {
-    text-transform: uppercase;
+  &:hover {
+    z-index: 1;
+    transform: scale(1.15);
+    animation: none;
   }
 }
 
-// 下拉面板（仅色格网格）
-.mu-dropdown-panel.mu-color-input__panel {
-  width: auto !important;
-
-  .mu-color-input__row {
-    display: flex;
-    gap: 3px;
-    margin-bottom: 3px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
+@keyframes mu-color-block-breathing {
+  0%,
+  100% {
+    transform: scale(1);
   }
 
-  .mu-color-input__cell {
-    cursor: pointer;
-
-    flex: none;
-
-    width: 18px;
-    height: 18px;
-    padding: 0;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 4px;
-
-    outline: none;
-
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-
-    &:hover {
-      z-index: 1;
-      transform: scale(1.15);
-    }
-
-    &[active] {
-      border-color: var(--mu-primary-color);
-      box-shadow: 0 0 0 2px var(--mu-primary-translucent);
-    }
+  50% {
+    transform: scale(1.15);
   }
 }

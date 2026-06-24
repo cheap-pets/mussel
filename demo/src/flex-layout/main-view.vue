@@ -50,9 +50,9 @@
           </mu-split-v-box>
         </template>
         <template #right>
-          <div class="block">
+          <mu-v-box class="block" flex-center>
             3
-          </div>
+          </mu-v-box>
         </template>
       </mu-split-h-box>
     </div>

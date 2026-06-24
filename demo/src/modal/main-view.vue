@@ -26,7 +26,7 @@
     </div>
 
     <!-- Dialog -->
-    <my-dialog ref="myDialogRef" />
+    <my-dialog ref="myDialogRef" container="#div1" />
 
     <!-- Drawer -->
     <mu-drawer

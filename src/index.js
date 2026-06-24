@@ -49,4 +49,5 @@ export * from './env'
 
 export { EventInterceptor } from './events'
 export { colors } from './colors.js'
+export { icons } from './icons/index.js'
 export { install, installIcons }

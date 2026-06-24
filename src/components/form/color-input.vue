@@ -3,41 +3,29 @@
     ref="wrapper"
     v-model="model"
     class="mu-color-input"
-    dropdown-icon="dropdownExpand"
-    :dropdown-class="['mu-color-input__panel', dropdownClass]"
-    :editable="false"
-    @dropdown:show="onDropdownShow"
-    @dropdown:hide="onDropdownHide">
-    <!-- 默认 slot：色块 + HEX 输入（覆盖 combo-wrapper 内置 input） -->
-    <span
-      class="mu-color-input__swatch"
-      :style="swatchStyle"
-      @click.stop="onSwatchClick" />
+    :disabled="disabled"
+    :readonly="readonly"
+    :dropdown-class="['mu-color-input__grid', dropdownClass]">
+    <a class="mu-color-input__color-block" :style="{ background: normalized }" @click.stop="onSwatchClick" />
     <input
       v-model="hexInput"
-      class="mu-color-input__field"
+      class="uppercase"
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
-      @keydown.enter.prevent="onFieldEnter"
-      @keydown.esc.prevent="onFieldEsc"
+      @keydown.enter.prevent="onInputEnter"
+      @keydown.esc.prevent="onInputEsc"
       @blur="onFieldBlur">
     <template #dropdown>
-      <div class="mu-color-input__grid">
-        <div
-          v-for="(group, gi) in palette.groups"
-          :key="gi"
-          class="mu-color-input__row">
-          <button
-            v-for="c in group.colors"
-            :key="c"
-            type="button"
-            class="mu-color-input__cell"
-            :style="{ background: c }"
-            :active="isActive(c) || null"
-            :title="c"
-            @click="select(c)" />
-        </div>
+      <div v-for="(group, idx) in palette" :key="idx" class="mu-color-input__grid-row">
+        <a
+          v-for="color in group"
+          :key="color"
+          class="mu-color-input__color-block"
+          :style="{ background: color }"
+          :active="color.toUpperCase() === normalized || null"
+          :title="color"
+          @click="select(color)" />
       </div>
     </template>
   </combo-wrapper>
@@ -49,7 +37,7 @@
   import { ref, computed, watch } from 'vue'
   import { useFieldModel } from '../form/validation'
   import { normalizeHex } from '@/utils/color'
-  import { MUSSEL_PALETTE } from './color-palette'
+  import { palette } from './color-palette'
 
   import ComboWrapper from './combo-wrapper.vue'
 
@@ -57,6 +45,9 @@
 
   const props = defineProps({
     modelValue: String,
+    disabled: Boolean,
+    readonly: Boolean,
+    placeholder: String,
     dropdownClass: null
   })
 
@@ -73,20 +64,7 @@
 
   // HEX 输入框文本（允许临时非法值，仅在确认时规范化提交）
   const hexInput = ref(model.value || '')
-
-  const palette = MUSSEL_PALETTE
-
-  const swatchStyle = computed(() => {
-    const hex = normalizeHex(model.value)
-
-    return { background: hex || 'transparent' }
-  })
-
-  function isActive (c) {
-    const cur = normalizeHex(model.value)
-
-    return cur && c.toUpperCase() === cur.toUpperCase()
-  }
+  const normalized = computed(() => normalizeHex(model.value))
 
   function select (hex) {
     model.value = hex
@@ -96,45 +74,37 @@
   }
 
   function onSwatchClick () {
-    if (props.disabled || props.readonly) return
-    wrapper.value?.expand()
+    if (!props.disabled && !props.readonly) {
+      wrapper.value?.expand()
+    }
   }
 
   function commitHexInput () {
-    const normalized = normalizeHex(hexInput.value)
+    const value = normalized.value
 
-    if (normalized) {
-      model.value = normalized
-      hexInput.value = normalized
-      emit('change', normalized)
+    if (value) {
+      emit('change', (model.value = hexInput.value = value))
       return true
     }
 
-    // 非法：回滚到当前值
     hexInput.value = model.value || ''
-    return false
   }
 
-  function onFieldEnter () {
-    if (commitHexInput()) wrapper.value?.collapse()
+  function onInputEnter () {
+    if (commitHexInput()) {
+      wrapper.value?.collapse()
+    }
   }
 
-  function onFieldEsc () {
+  function onInputEsc () {
     hexInput.value = model.value || ''
     wrapper.value?.collapse()
   }
 
   function onFieldBlur () {
-    if (hexInput.value !== (model.value || '')) commitHexInput()
-  }
-
-  function onDropdownShow () {
-    hexInput.value = model.value || ''
-    emit('dropdown:show')
-  }
-
-  function onDropdownHide () {
-    emit('dropdown:hide')
+    if (hexInput.value !== (model.value || '')) {
+      commitHexInput()
+    }
   }
 
   // 外部修改 modelValue 时同步输入框

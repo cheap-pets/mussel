@@ -1,3 +1,10 @@
+$FLEX_DIRECTIONS: (
+  ('row', 'row'),
+  ('row-reverse', 'row-reverse'),
+  ('col', 'column'),
+  ('col-reverse', 'column-reverse')
+);
+
 @each $v in ('static', 'fixed', 'absolute', 'relative', 'sticky') {
   .#{$v} {
     position: #{$v};
@@ -35,14 +42,6 @@
   }
 }
 
-$FLEX_DIRECTIONS: (
-  ('row', 'row'),
-  ('row-reverse', 'row-reverse'),
-  ('col', 'column'),
-  ('col-reverse', 'column-reverse')
-);
-
-
 .flex-divider {
   display: block;
   flex: 0 0 2px;
@@ -50,13 +49,19 @@ $FLEX_DIRECTIONS: (
   background-color: var(--mu-border-color-soft);
 
   @for $i from 1 through 4 {
-    &[line-width="#{$i}"] {
+    &--stroke-#{$i} {
       flex-basis: #{$i}px;
     }
   }
 
-  &.flex-divider--pill {
+  &--pill {
     flex-basis: 4px;
+    align-self: center;
+
+    width: 64px;
+    max-width: 50%;
+    height: 64px;
+    max-height: 50%;
     border-radius: 2px;
   }
 }

@@ -8,16 +8,10 @@ export const toolbarProps = {
 }
 
 export function useToolbar (props, emit) {
-  const toolbar = reactive({
-    ...toRefs(props)
-  })
-
-  const toolbarClass =
-    computed(() => ({ 'mu-toolbar--small': props.small }))
+  const toolbar = reactive({ ...toRefs(props) })
+  const toolbarClass = computed(() => ({ 'mu-toolbar--small': props.small }))
 
   provide('toolbar', toolbar)
 
-  return {
-    toolbarClass
-  }
+  return { toolbarClass }
 }

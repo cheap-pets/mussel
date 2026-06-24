@@ -1,6 +1,6 @@
 .mu-dropdown-panel.mu-calendar {
-  width: 320px;
-  height: 280px;
+  max-width: 320px;
+  height: 240px;
 
   & > .mu-bar {
     border-radius: var(--mu-common-border-radius);

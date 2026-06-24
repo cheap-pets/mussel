@@ -6,13 +6,12 @@
 
 ### MuFlexBox（基类）
 
-**内部组件，无法直接使用**，Flex 布局容器，MuHBox / MuVBox 基类。
+**内部组件，无法直接使用**，Flex 布局容器，MuHBox / MuVBox 基类。方向由子类通过组件选项 `direction` 静态指定（`'row'` / `'col'`），不再作为可传 prop。
 
 | 属性 | 类型 | 默认 | 取值 | 等价原子类 |
 |------|------|------|------|-----------|
 | `inline` | Boolean | `false` | — | `.inline-flex`（默认 `.flex`） |
-| `direction` | String | `'row'` | `row` \| `row-reverse` \| `col` \| `col-reverse` | `.flex-row` 等 |
-| `gap` | String | — | `none` \| `1x` \| `2x` \| `3x` \| `4x` | `.gap-{n}x` / `.gap-none` |
+| `gap` | String | — | `none` \| `half` \| `1x` \| `2x` \| `3x` \| `4x` | `.gap-{n}x` / `.gap-half` / `.gap-none` |
 | `align-items` | String | — | `center` \| `start` \| `end` \| `baseline` \| `stretch` \| `flex-start` \| `flex-end` | `.items-{value}` |
 | `justify-content` | String | — | `start` \| `end` \| `left` \| `right` \| `baseline` \| `center` \| `stretch` \| `flex-start` \| `flex-end` \| `space-around` \| `space-between` \| `space-evenly` | `.justify-{value}` |
 | `flex-wrap` | Boolean\|String | — | `true` \| `nowrap` \| `wrap` \| `wrap-reverse` | `.flex-wrap` / `.flex-nowrap` |
@@ -23,10 +22,10 @@
 
 ### MuHBox / MuVBox
 
-水平 / 垂直方向的 Flex 布局容器，继承 MuFlexBox 全部 props。
+水平 / 垂直方向的 Flex 布局容器，继承 MuFlexBox 全部 props。方向固定且不可更改：
 
-- **MuHBox**：`direction` 固定为 `'row'`，**只接受** `row` / `row-reverse`（传入其他值无效）
-- **MuVBox**：`direction` 固定为 `'col'`，**只接受** `col` / `col-reverse`（传入其他值无效）
+- **MuHBox**：方向固定为 `'row'`（`.flex-row`），配合 `flex-reverse` 可得到 `flex-row-reverse`
+- **MuVBox**：方向固定为 `'col'`（`.flex-col`），配合 `flex-reverse` 可得到 `flex-col-reverse`
 
 > 简单场景推荐直接用原子类，省去组件标签：
 > ```html

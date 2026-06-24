@@ -7,6 +7,10 @@
 
   transition-duration: .2s;
 
+  &.absolute {
+    position: absolute
+  }
+
   &.mu-modal-mask--invisible {
     pointer-events: none;
     background: none;

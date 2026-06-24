@@ -106,13 +106,13 @@
 
 | 变量名称                | 原子类          | 适用场景                                       |
 | ----------------------- | --------------- | ---------------------------------------------- |
-| --mu-text-color-strong  | .mu-text-strong | 用户输入内容、文章正文、强调标题               |
-| --mu-text-color-normal  | .mu-text-normal | 默认正文、常规名称、普通标签（页面主文本）     |
-| --mu-text-color-subtle  | .mu-text-subtle | 次要信息、描述文字                             |
-| --mu-text-color-soft    | .mu-text-soft   | 副标题、提示文字                               |
-| --mu-text-color-muted   | .mu-text-muted  | 禁用状态文字                                   |
+| --mu-text-color-strong  | .text-strong | 用户输入内容、文章正文、强调标题               |
+| --mu-text-color-normal  | .text-normal | 默认正文、常规名称、普通标签（页面主文本）     |
+| --mu-text-color-subtle  | .text-subtle | 次要信息、描述文字                             |
+| --mu-text-color-soft    | .text-soft   | 副标题、提示文字                               |
+| --mu-text-color-muted   | .text-muted  | 禁用状态文字                                   |
 
-功能色文本：`.mu-text-primary` / `.mu-text-secondary` / `.mu-text-success` / `.mu-text-warning` / `.mu-text-danger`
+功能色文本：`.text-primary` / `.text-secondary` / `.text-success` / `.text-warning` / `.text-danger`
 
 
 
@@ -372,8 +372,8 @@
 | .flex-space                         | 弹性占位，flex: 1 1 0                         |
 | .flex-space[space="1x"] ~ [space="4x"] | 等间距变体，flex: 0 0 (n × 8px)            |
 | .flex-divider                       | 垂直分隔线，flex: 0 0 2px，默认浅色背景       |
-| .flex-divider[line-width="1"] ~ [line-width="4"] | 分隔线宽度，1 ~ 4px              |
-| .flex-divider.flex-divider--pill    | 胶囊形分隔条，宽度 4px、圆角 2px             |
+| .flex-divider--stroke-1 ~ --stroke-4 | 分隔线宽度，1 ~ 4px                          |
+| .flex-divider--pill                 | 胶囊形分隔条，居中、宽高 64px（最大占 50%）、圆角 2px |
 | .flex-break                         | 强制换行，flex: 0 0 100%                      |
 
 ```html
@@ -463,25 +463,24 @@
 | 类名          | 说明             |
 | ------------- | ---------------- |
 | .bg-none      | 清除背景（`background: none`）|
-| .mu-bg-normal | 默认背景色       |
-| .mu-bg-strong | 强调区域背景色   |
-| .mu-bg-fill   | 填充背景色       |
-| .mu-bg-disabled | 禁用状态背景色   |
-| .mu-bg-overlay| 弹出层背景色     |
-| .mu-bg-mask   | 遮罩层背景色     |
+| .bg-normal | 默认背景色       |
+| .bg-strong | 强调区域背景色   |
+| .bg-fill   | 填充背景色       |
+| .bg-disabled | 禁用状态背景色   |
+| .bg-overlay| 弹出层背景色     |
+| .bg-mask   | 遮罩层背景色     |
 
-> ⚠️ 背景类前缀是 `.mu-bg-*`（注意 `mu-` 前缀），与 `.mu-text-*` / `.z-*` / `.border-*` 等原子类不同。
 
 **阴影：**
 
 | 类名                    | 说明                          |
 | ----------------------- | ----------------------------- |
-| .mu-shadow-float        | 突出元素阴影                  |
-| .mu-shadow-popup        | 弹出元素阴影                  |
-| .mu-shadow-layer        | 浮动层阴影                    |
-| .mu-shadow-modal        | 模态窗口阴影                  |
-| .mu-shadow-focus        | 焦点阴影（需 :focus）         |
-| .mu-shadow-focus-within | 焦点阴影（需 :focus-within）  |
+| .shadow-float        | 突出元素阴影                  |
+| .shadow-popup        | 弹出元素阴影                  |
+| .shadow-layer        | 浮动层阴影                    |
+| .shadow-modal        | 模态窗口阴影                  |
+| .shadow-focus        | 焦点阴影（需 :focus）         |
+| .shadow-focus-within | 焦点阴影（需 :focus-within）  |
 
 **边框宽度 (n: 1 ~ 4, 像素值)：**
 
@@ -527,21 +526,21 @@
 
 | 类名                  | 变量名                   | 说明                           |
 | --------------------- | ------------------------ | ------------------------------ |
-| .mu-text-strong       | --mu-text-color-strong   | 清晰，常用于用户输入或文章正文 |
-| .mu-text-normal       | --mu-text-color-normal   | 常规，常用于各类名称显示       |
-| .mu-text-subtle       | --mu-text-color-subtle   | 次要，用于次级文字信息显示     |
-| .mu-text-soft         | --mu-text-color-soft     | 柔和，常用于副标题或提示文字   |
-| .mu-text-muted        | --mu-text-color-muted    | 淡雅，常用于禁用组件文字       |
+| .text-strong       | --mu-text-color-strong   | 清晰，常用于用户输入或文章正文 |
+| .text-normal       | --mu-text-color-normal   | 常规，常用于各类名称显示       |
+| .text-subtle       | --mu-text-color-subtle   | 次要，用于次级文字信息显示     |
+| .text-soft         | --mu-text-color-soft     | 柔和，常用于副标题或提示文字   |
+| .text-muted        | --mu-text-color-muted    | 淡雅，常用于禁用组件文字       |
 
 **功能色文本颜色：**
 
 | 类名                   | 变量名               | 说明       |
 | ---------------------- | -------------------- | ---------- |
-| .mu-text-primary       | --mu-primary-color   | 主色文本   |
-| .mu-text-secondary     | --mu-secondary-color | 次要色文本 |
-| .mu-text-success       | --mu-success-color   | 成功色文本 |
-| .mu-text-warning       | --mu-warning-color   | 警告色文本 |
-| .mu-text-danger        | --mu-danger-color    | 危险色文本 |
+| .text-primary       | --mu-primary-color   | 主色文本   |
+| .text-secondary     | --mu-secondary-color | 次要色文本 |
+| .text-success       | --mu-success-color   | 成功色文本 |
+| .text-warning       | --mu-warning-color   | 警告色文本 |
+| .text-danger        | --mu-danger-color    | 危险色文本 |
 
 **文本对齐：**
 
@@ -550,6 +549,14 @@
 | .text-left   | text-align: left |
 | .text-center | text-align: center |
 | .text-right  | text-align: right |
+
+**文本大小写：**
+
+| 类名        | 说明                      |
+| ----------- | ------------------------- |
+| .uppercase  | text-transform: uppercase |
+| .lowercase  | text-transform: lowercase |
+| .capitalize | text-transform: capitalize |
 
 **空白处理：**
 
@@ -567,7 +574,6 @@
 | 类名              | 说明                     |
 | ----------------- | ------------------------ |
 | .text-ellipsis    | 单行省略，溢出显示省略号 |
-| .mu-text-ellipsis | 同上                     |
 
 实现方式：
 
@@ -583,7 +589,7 @@ white-space: nowrap;
 | ----------- | --------------------------------- |
 | .line-clamp | 多行省略，通过 CSS 变量控制行数   |
 
-使用方式：通过设置 `--line-clamp` CSS 变量来控制显示行数。
+使用方式：通过设置 `--line-clamp` CSS 变量来控制显示行数，未设置时默认 2 行。
 
 ```html
 <p class="line-clamp" style="--line-clamp: 3">超长正文...</p>
@@ -595,16 +601,9 @@ white-space: nowrap;
 overflow: hidden;
 display: -webkit-box;
 -webkit-box-orient: vertical;
--webkit-line-clamp: var(--line-clamp);
+-webkit-line-clamp: var(--line-clamp, 2);
 white-space: pre-line;
 ```
-
-**标签样式：**
-
-| 类名     | 说明                                                              |
-| -------- | ----------------------------------------------------------------- |
-| .mu-label | 固定样式的表单标签（灰色 500、加粗、单行省略、最小宽度 20px）    |
-
 
 
 ## 3 - 常用布局模式

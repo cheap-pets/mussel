@@ -54,7 +54,7 @@
 
    **CSS 变量与 CSS 类**：
    - 废弃 CSS 变量：`--mu-gray-dark`、`--mu-text-color-reversed`、`--mu-text-color-weak`、`--mu-background-normal`、`--mu-background-hover`、`--mu-background-disabled`、`--mu-primary-color-shadow`、`--mu-unit-spacing-size`、`--mu-editor-text-color`、`--mu-text-color-placeholder`
-   - 废弃 CSS 类：`mu-editor`→`mu-input`、`mu-text-ellipsis`→`text-ellipsis`、`mu-text-color-weak`→`mu-text-color-muted`
+   - 废弃 CSS 类：`mu-editor`→`mu-input`、`mu-text-ellipsis`→`text-ellipsis`、`mu-text-color-weak`→`text-muted`
 
    **布局系统**：
    - 已移除组件：`<mu-box>`、`<mu-h-box>`、`<mu-v-box>`
@@ -67,7 +67,7 @@
    **组件迁移**：
    - 已移除组件：`<mu-editor>`、`<mu-tabs-buttons>`、`<mu-tree-view>`、`<mu-tree-nodes>`
    - 推荐迁移：`<mu-option>`、`<mu-tree-node>`、`<mu-dropdown-item>` 等
-   - 废弃属性：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`container`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
+   - 废弃属性：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
    - 废弃事件：`@tab-click`、`@tab-change`、`@close-button-click`、`@mask-click`
    - 废弃插槽：`<template #left>`/`#right`（ComboBox→`prefix`/`suffix` 属性）、`<template #tab-bar>`（Tabs→`#tab-bar-prepend`/`#tab-bar-append`）、`<template #client>`/`#header-prepend`/`#header-append`/`#footer-prepend`/`#footer-append`（Dialog→`#body`/`#header`/`#footer`）
    - 废弃子组件属性：`title`（TabButton）、`divider`（ListDivider）、`value`（ListItem）

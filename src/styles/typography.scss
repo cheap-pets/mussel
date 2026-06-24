@@ -32,16 +32,20 @@
 }
 
 .line-clamp {
-  --line-clamp: 2;
-
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: var(--line-clamp);
+  -webkit-line-clamp: var(--line-clamp, 2);
 
   white-space: pre-line;
 }
 
 .leading-none {
   line-height: 1;
+}
+
+@each $v in ('uppercase', 'lowercase', 'capitalize') {
+  .#{$v} {
+    text-transform: #{$v};
+  }
 }

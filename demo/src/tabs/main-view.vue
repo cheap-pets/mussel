@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-normal">
+  <div class="flex flex-col">
     <div class="mu-bar bg-strong">
       <label>Tab Position</label>
       <mu-combo-box
@@ -37,7 +37,7 @@
       </mu-tab-panel>
     </mu-tabs>
 
-    <div class="flex-divider mx-2x" line-width="1" />
+    <div class="flex-divider flex-divider--pill mx-2x" />
 
     <mu-tabs
       :active-tab="activeTab2"
@@ -46,7 +46,7 @@
       style="--active-bar-width: 1px;"
       @update:active-tab="updateActiveTab2">
       <template #tab-bar-prepend>
-        <label class="mu-label">Customized Tab Bar</label>
+        <label>Customized Tab Bar</label>
         <div class="flex-space" />
         <div class="flex-divider" />
       </template>

@@ -16,16 +16,19 @@ const BASE_COLORS = {
   orange: '#f76707'
 }
 
-const SPECIAL_COLORS = {
+const SPEC_COLORS = {
   primary: '#1c7ed6',
+  secondary: generateAccentColor('#008cd6'),
   success: '#37b24d',
   warning: '#f76707',
-  danger: '#f03e3e',
-  secondary: generateAccentColor('#008cd6')
+  danger: '#f03e3e'
 }
 
+const baseColorNames = Object.keys(BASE_COLORS)
+const specColorNames = Object.keys(SPEC_COLORS)
+
 function complementColors (incoming) {
-  const { primary, secondary, neutral, ...result } = incoming
+  const { primary, secondary, neutral, gray, ...result } = incoming
 
   function addColors (colorName, baseColor, palette) {
     palette ||= generatePalette(baseColor)
@@ -37,15 +40,15 @@ function complementColors (incoming) {
     result[colorName] ||= baseColor
   }
 
-  ;[...Object.keys(SPECIAL_COLORS), ...Object.keys(BASE_COLORS)].forEach(key =>
+  ;[...specColorNames, ...baseColorNames].forEach(key =>
     incoming[key] && addColors(key, incoming[key])
   )
 
-  const grayBase = neutral ?? primary
+  const baseGray = neutral || gray || primary
 
-  if (grayBase) {
+  if (baseGray) {
     const options = { count: 20, densityFactor: 1.2, saturationRatio: 0.2, hueShift: 0 }
-    const palette = generateNeutralPalette(grayBase, options)
+    const palette = generateNeutralPalette(baseGray, options)
 
     addColors('gray', palette[10], palette)
   }
@@ -53,8 +56,7 @@ function complementColors (incoming) {
   return result
 }
 
-export const colors =
-  complementColors({ ...BASE_COLORS, ...SPECIAL_COLORS })
+const colors = complementColors({ ...BASE_COLORS, ...SPEC_COLORS })
 
 function updateColors (customColors = {}) {
   const incomingColors = complementColors(customColors)
@@ -64,7 +66,7 @@ function updateColors (customColors = {}) {
   return incomingColors
 }
 
-export function setupColors (rootElement, customColors = {}) {
+function setupColors (rootElement, customColors = {}) {
   if (!Object.keys(customColors).count) return
 
   const incomingColors = updateColors(customColors)
@@ -83,4 +85,11 @@ export function setupColors (rootElement, customColors = {}) {
         value
       )
     )
+}
+
+export {
+  baseColorNames,
+  specColorNames,
+  colors,
+  setupColors
 }

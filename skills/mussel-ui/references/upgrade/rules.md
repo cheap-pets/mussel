@@ -213,10 +213,10 @@ export { install, installIcons, EventInterceptor, colors }  // 导出 install、
 
 | Mussel 3 | Mussel 4 |
 |----------|----------|
-| `.mu-text-color-weak` | `.mu-text-color-muted` |
-| _(无)_ | `.mu-text-color-strong`（新增） |
-| _(无)_ | `.mu-text-color-subtle`（新增） |
-| _(无)_ | `.mu-text-color-soft`（新增） |
+| `.mu-text-color-weak` | `.text-muted` |
+| _(无)_ | `.text-strong`（新增） |
+| _(无)_ | `.text-subtle`（新增） |
+| _(无)_ | `.text-soft`（新增） |
 
 ### 背景颜色
 
@@ -328,9 +328,9 @@ Mussel 4 新增了完整的原子类系统。完整列表见 `references/styles.
 
 **边框**：`.border`、`.border-2`、`.border-3`、`.border-4`、`.border-primary`、`.border-danger`、`.border-soft`、`.border-strong`、`.border-dashed`、`.border-dotted`
 
-**文本**：`.mu-text-strong`、`.mu-text-normal`、`.mu-text-muted`、`.mu-text-subtle`、`.mu-text-soft`、`.mu-text-primary`、`.mu-text-secondary`、`.mu-text-success`、`.mu-text-warning`、`.mu-text-danger`、`.text-ellipsis`、`.line-clamp`
+**文本**：`.text-strong`、`.text-normal`、`.text-muted`、`.text-subtle`、`.text-soft`、`.text-primary`、`.text-secondary`、`.text-success`、`.text-warning`、`.text-danger`、`.text-ellipsis`、`.line-clamp`
 
-**背景**：`.mu-bg-normal`、`.mu-bg-strong`、`.mu-bg-fill`、`.mu-bg-disabled`、`.mu-bg-overlay`、`.mu-bg-mask`（斑马纹只有 `--mu-bg-stripe` 变量，无对应原子类）
+**背景**：`.bg-normal`、`.bg-strong`、`.bg-fill`、`.bg-disabled`、`.bg-overlay`、`.bg-mask`（斑马纹只有 `--mu-bg-stripe` 变量，无对应原子类）
 
 **溢出**：`.overflow-auto`、`.overflow-hidden`、`.overflow-visible`、`.overflow-clip`
 
@@ -509,8 +509,8 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | Mussel 3 | Mussel 4 | 说明 |
 |----------|----------|------|
 | `<div class="mu-divider" />` | `<div class="flex-divider" />` | 默认 2px |
-| `<div class="mu-divider" thin />` | `<div class="flex-divider" line-width="1" />` | 1px 细分隔线 |
-| 像素值变体 | `class="flex-divider" line-width="{n}"` | 1 ~ 4px |
+| `<div class="mu-divider" thin />` | `<div class="flex-divider flex-divider--stroke-1" />` | 1px 细分隔线 |
+| 像素值变体 | `class="flex-divider flex-divider--stroke-{n}"` | 1 ~ 4px |
 
 ### 3.4 升级示例
 
@@ -561,7 +561,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 ```html
 <!-- 升级前 -->
 <template #tab-bar-prepend>
-  <label class="mu-label">Customized Tab Bar</label>
+  <label>Customized Tab Bar</label>
   <div class="mu-space" />
   <div class="mu-divider" />
 </template>
@@ -573,7 +573,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 
 <!-- 升级后 -->
 <template #tab-bar-prepend>
-  <label class="mu-label">Customized Tab Bar</label>
+  <label>Customized Tab Bar</label>
   <div class="flex-space" />
   <div class="flex-divider" />
 </template>
@@ -626,7 +626,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 - [ ] `overflow=` → `class="overflow-*"`
 - [ ] `content-center` → `class="flex-center"`
 - [ ] `class="mu-space"` → `class="flex-space"`（`space="Nx"` 保留为属性选择器）
-- [ ] `class="mu-divider"` → `class="flex-divider"`（`thin` 改为 `line-width="1"`）
+- [ ] `class="mu-divider"` → `class="flex-divider"`（`thin` 改为 `flex-divider--stroke-1`）
 - [ ] `class="mu-box mu-bg-normal"` → `class="bg-normal"`
 - [ ] `<mu-grid-box>` 上非 props 的属性（`width`、`height`、`padding`）→ `style` 或原子类（已包含在上条通用规则中）
 - [ ] `<mu-grid-cell>` 上的 `margin=` → `class="m-*x"`
@@ -655,7 +655,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | `render-to-body` | _(已移除，自动处理)_ | |
 | `moveable` | _(已移除)_ | 拖拽始终可用，无需配置 |
 | `dialog-style` | _(已移除)_ | 用标准 `style` 属性传入（通过 `$attrs` fallthrough 到 `.mu-dialog`） |
-| `container` | _(已移除)_ | 自动挂载到 body |
+| `container` | `container`（保留） | 语义增强：仍用于指定挂载容器（CSS 选择器或 DOM 元素），不设则挂到全局根容器（`$mussel.rootElement`）。Mussel 4 中设值后遮罩会自动改为 `position: absolute`，使弹窗相对该容器而非视口定位 |
 | `easy-hide` | `dismissible` | 早期 Mussel 4 曾用 `easy-hide`，现已改为 `dismissible` |
 | _(无)_ | `header` prop | `'auto'`\|Boolean，控制头部显隐 |
 | _(无)_ | `footer` prop | `'auto'`\|Boolean，控制底部显隐 |
@@ -1382,7 +1382,7 @@ Mussel 4 新增了以下组件，可用于替代手工实现：
 | MuSelect | 下拉单选框 |
 | MuMultiSelect | 下拉多选框（带标签显示） |
 | MuDateInput | 日期/月份选择器 |
-| MuColorInput | 颜色选择器（HEX 输入 + 内置 180 色色板） |
+| MuColorInput | 颜色选择器（HEX 输入 + 内置 130 色色板） |
 | MuTable | 数据表格，支持多种列类型（text、check、bool、enum、date、link、tag 等） |
 | MuBigTable | 大数据量表格，支持虚拟滚动 |
 | MuList | 列表容器，支持滚动条 |

@@ -1,12 +1,12 @@
 <template>
-  <Teleport v-if="visible || ready" :to="container">
+  <Teleport v-if="visible || ready" :to="teleportTo">
     <Transition name="mu-dialog-">
       <div
         v-show="modalVisible"
         ref="maskEl"
         v-bind="maskAttrs"
         class="mu-modal-mask flex flex-center"
-        :class="maskClass"
+        :class="[maskClass, isAbsolutePosition && 'absolute']"
         :style="{ zIndex }"
         @click="onMaskClick"
         @sizechange="debounceCorrectPosition">
@@ -110,8 +110,9 @@
 
   const {
     ready,
-    container,
+    teleportTo,
     modalVisible,
+    isAbsolutePosition,
     hide,
     onMaskClick
   } = useModal(props, emit)

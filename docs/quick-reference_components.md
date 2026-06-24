@@ -37,7 +37,7 @@ install(app, {
 | ---- | ---- | ------ | ---- |
 | root | String \| Element | `document.body` | 应用根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
 | dark | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
-| colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
+| colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `gray`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
 | localeResources | Object | — | 自定义语言包，写入指定 `locale` 下；Mussel 内置 `zh` / `en` |
@@ -74,6 +74,14 @@ installIcons({
   refresh: RefreshIcon,        // svg data
   bolt: 'icon icon-bolt'       // icon-font class
 })
+```
+
+库还导出内置图标注册表 `icons`（已注册图标的集合，`key → { svg?, cls?, animation? }`），可用于运行时查询可用图标：
+
+```javascript
+import { icons } from 'mussel'
+
+Object.keys(icons)  // 列出所有可用图标名
 ```
 
 
@@ -378,6 +386,7 @@ installIcons({
 | keep-position          | Boolean             | —        | 再次打开时是否保留上次关闭的位置                                     |
 | dispose-on-hide        | Boolean             | —        | 隐藏时销毁内容                                                       |
 | z-index                | String              | —        | 自定义层级                                                           |
+| container              | String \| HTMLElement | —      | 挂载容器。CSS 选择器或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设值后遮罩自动改为 `position: absolute`，使弹窗相对该容器而非视口定位 |
 | mask-class             | —                   | —        | 遮罩 class                                                           |
 | mask-attrs             | Object              | —        | 透传给遮罩的额外属性                                                 |
 
@@ -512,6 +521,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 | mask      | Boolean           | `true`   | 是否显示遮罩                                                         |
 | rounded   | Boolean           | —        | 是否圆角                                                             |
 | teleport  | Boolean           | `true`   | 是否渲染到页面根容器                                                 |
+| container | String \| HTMLElement | —      | 挂载容器。CSS 选择器或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设值后遮罩自动改为 `position: absolute`，使抽屉相对该容器而非视口定位 |
 | lazy      | Boolean           | `true`   | 首次打开时才渲染内容                                                 |
 | dispose-on-hide | Boolean      | —        | 隐藏时销毁内容                                                       |
 | mask-class| —                 | —        | 遮罩 class                                                           |
@@ -526,7 +536,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 ```html
 <mu-drawer v-model:visible="drawerVisible" position="right" width="400px" dismissible>
   <div class="mu-v-box" style="height: 100%">
-    <div class="flex-none px-2x py-1x border-b border-soft mu-text-normal">详情</div>
+    <div class="flex-none px-2x py-1x border-b border-soft text-normal">详情</div>
     <mu-scroll-box class="flex-1 p-2x">内容区域</mu-scroll-box>
   </div>
 </mu-drawer>
@@ -992,7 +1002,7 @@ const filteredItems = computed(() =>
 
 ### MuColorInput
 
-颜色选择框。前置显示当前色块，右侧为可输入的 HEX 文本框；展开下拉面板显示 Mussel 内置色板（18 色组 × 10 级色阶 = 180 色），点击色格即选中。
+颜色选择框。前置显示当前色块，右侧为可输入的 HEX 文本框；展开下拉面板显示 Mussel 内置色板（12 色组 + 1 组灰阶，每组 10 级色阶 = 130 色），点击色格即选中。
 
 | 属性名称   | 类型    | 默认值 | 说明                                                                 |
 | ---------- | ------- | ------ | -------------------------------------------------------------------- |
@@ -1012,7 +1022,7 @@ const filteredItems = computed(() =>
 
 > [!NOTE]
 >
-> 内置色板由 `colors` 对象派生（12 基础色 + 6 语义色，每色 10 级色阶），随主题色配置动态变化。HEX 输入框允许临时非法值，仅在回车、失焦、ESC（回滚）时规范化提交。在 `MuFormField` 的 `input` 中用 `'color'` 即可数据驱动渲染。
+> 内置色板由 `colors` 对象派生（12 基础色 + 1 组灰阶，各 10 级色阶），随主题色配置动态变化。HEX 输入框默认大写，允许临时非法值，仅在回车、失焦、ESC（回滚）时规范化提交。在 `MuFormField` 的 `input` 中用 `'color'` 即可数据驱动渲染。
 
 
 

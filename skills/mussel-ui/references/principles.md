@@ -23,11 +23,11 @@
 
 ```html
 <!-- ✅ 正确：使用语义文本色（5 档：strong/normal/subtle/soft/muted） -->
-<h2 class="mu-text-strong">文章标题</h2>
-<p class="mu-text-normal">订单列表</p>
-<p class="mu-text-subtle">共 32 条记录</p>
-<p class="mu-text-soft">副标题或提示</p>
-<span class="mu-text-muted">已禁用</span>
+<h2 class="text-strong">文章标题</h2>
+<p class="text-normal">订单列表</p>
+<p class="text-subtle">共 32 条记录</p>
+<p class="text-soft">副标题或提示</p>
+<span class="text-muted">已禁用</span>
 
 <!-- ❌ 错误：硬编码颜色 -->
 <h2 style="color: #333">订单列表</h2>
@@ -37,9 +37,9 @@
 ### 规范 1-B：背景色必须使用背景变量
 
 ```html
-<!-- ✅ 正确：有对应原子类的优先用原子类（.mu-bg-normal/.mu-bg-strong/.mu-bg-fill/.mu-bg-disabled/.mu-bg-overlay/.mu-bg-mask） -->
-<header class="mu-bg-strong">...</header>
-<div class="mu-bg-overlay">弹出层</div>
+<!-- ✅ 正确：有对应原子类的优先用原子类（.bg-normal/.bg-strong/.bg-fill/.bg-disabled/.bg-overlay/.bg-mask） -->
+<header class="bg-strong">...</header>
+<div class="bg-overlay">弹出层</div>
 
 <!-- ✅ 正确：无对应原子类时才用 style + 变量（如 stripe） -->
 <div style="background: var(--mu-bg-stripe)">斑马纹行</div>
@@ -53,8 +53,8 @@
 
 ```html
 <!-- ✅ 正确：成功/警告/危险场景用语义色 -->
-<span class="mu-text-success">支付成功</span>
-<span class="mu-text-danger">余额不足</span>
+<span class="text-success">支付成功</span>
+<span class="text-danger">余额不足</span>
 <div style="background: var(--mu-danger-faint); color: var(--mu-danger-color)">
   表单验证失败
 </div>
@@ -288,8 +288,8 @@ body    { font-family: 'PingFang SC', sans-serif; }
 
 ```html
 <!-- ✅ 正确：背景优先用原子类，z-index 用类 -->
-<div class="mu-bg-mask z-modal">遮罩</div>
-<div class="mu-bg-overlay z-modal">弹窗</div>
+<div class="bg-mask z-modal">遮罩</div>
+<div class="bg-overlay z-modal">弹窗</div>
 
 <!-- ❌ 错误 -->
 <div style="background: rgba(0,0,0,0.4); z-index: 1000">遮罩</div>
@@ -303,7 +303,7 @@ body    { font-family: 'PingFang SC', sans-serif; }
 
 ```html
 <!-- ✅ 正确：背景用原子类，文字色用类 -->
-<div class="mu-bg-disabled mu-text-muted">已禁用区域</div>
+<div class="bg-disabled text-muted">已禁用区域</div>
 
 <!-- ❌ 错误 -->
 <div style="background: #f5f5f5; color: #ccc; cursor: not-allowed">
@@ -331,14 +331,14 @@ body    { font-family: 'PingFang SC', sans-serif; }
       判定：`grep "border-radius\s*:\s*\d"` 应只命中 `var()`
 - [ ] (核心规范 5) 字号用 `--mu-font-size-normal` / `-small` / `-large`，不手写 14px
       判定：`grep "font-size\s*:\s*\d"` 应只命中 `var()`
-- [ ] (核心规范 5) `box-shadow` 用 `--mu-shadow-*` 变量或 `.mu-shadow-*` 类，无手写阴影
+- [ ] (核心规范 5) `box-shadow` 用 `--mu-shadow-*` 变量或 `.shadow-*` 类，无手写阴影
       判定：`grep "box-shadow\s*:\s*\d"` 应只命中 `var()`
 
 **优先级要求**
 
 - [ ] (核心规范 1) 无硬编码颜色值，`#xxx` / `rgb()` / 颜色名应仅出现在 SVG 内联色、第三方深层覆盖等例外
-      - 文字色：用 `.mu-text-*` 类或 `--mu-text-color-*` 变量
-      - 背景色：优先 `.mu-bg-*` 类，其次 `--mu-bg-*` 变量
+      - 文字色：用 `.text-*` 类或 `--mu-text-color-*` 变量
+      - 背景色：优先 `.bg-*` 类，其次 `--mu-bg-*` 变量
       - 状态色：成功/警告/危险用语义扩展色，非 `--mu-green`/`--mu-red` 等基本色
       - hover/激活背景：用 `-translucent` 变体，不手写 `rgba`
       - 边框颜色：用 `.border-soft` / `-strong` 等类

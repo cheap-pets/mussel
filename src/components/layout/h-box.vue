@@ -1,20 +1,15 @@
 <template>
-  <div class="flex" :class="cls">
+  <div :class="cls">
     <slot />
   </div>
 </template>
 
 <script>
-  import FlexBox from './flex-box.vue'
+  import FlexBox from './flex-box.js'
 
   export default {
+    name: 'MusselHBox',
     extends: FlexBox,
-    props: {
-      direction: {
-        type: String,
-        default: 'row',
-        validator: v => ['row', 'row-reverse'].includes(v)
-      }
-    }
+    direction: 'row'
   }
 </script>

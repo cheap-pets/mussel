@@ -326,7 +326,7 @@ const filteredItems = computed(() =>
 
 ## MuColorInput
 
-颜色选择框。前置显示当前色块，右侧为可输入的 HEX 文本框；展开下拉面板显示 Mussel 内置色板（18 个色组 × 10 级色阶 = 180 色），点击色格即选中。`modelValue` 为 HEX 字符串（如 `'#1C7ED6'`）。
+颜色选择框。前置显示当前色块，右侧为可输入的 HEX 文本框；展开下拉面板显示 Mussel 内置色板（12 个基础色组 + 1 组灰阶，每组 10 级色阶，共 130 色），点击色格即选中。`modelValue` 为 HEX 字符串（如 `'#1C7ED6'`）。
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
@@ -340,10 +340,10 @@ const filteredItems = computed(() =>
 |------|------|------|
 | `update:modelValue` | hex | 值变更（HEX 字符串） |
 | `change` | hex | 值确认变更（选中色格 / 输入框回车 / 失焦时通过校验） |
-| `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
+| `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起（由底层 combo 组件透传） |
 
-> - 内置色板由 `colors` 对象派生（12 基础色 + 6 语义色，每色 10 级色阶），随主题色配置动态变化。
-> - HEX 输入框允许临时非法值，仅在回车、失焦、ESC（回滚）时规范化提交。
+> - 内置色板由 `colors` 对象派生：12 个基础色组（red/pink/grape/violet/indigo/blue/cyan/teal/green/lime/yellow/orange，各 10 级色阶）+ 1 组灰阶（由主色派生的 10 级中性灰），随主题色配置动态变化。
+> - 前置色块点击展开下拉面板；HEX 输入框默认大写显示，允许临时非法值，仅在回车、失焦、ESC（回滚）时规范化提交。
 > - 在 `MuFormField` 的 `input` 中用 `'color'` 即可数据驱动渲染。
 
 ---

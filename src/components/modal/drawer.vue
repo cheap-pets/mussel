@@ -1,11 +1,11 @@
 <template>
-  <Teleport v-if="visible || ready" :to="container" :disabled="!teleport">
+  <Teleport v-if="visible || ready" :to="teleportTo" :disabled="!teleport">
     <Transition name="mu-drawer-">
       <div
         v-show="modalVisible"
         v-bind="maskAttrs"
         class="mu-drawer-mask mu-modal-mask"
-        :class="{ 'mu-modal-mask--invisible': !mask }"
+        :class="[maskClass, isAbsolutePosition && 'absolute', !mask && 'mu-modal-mask--invisible']"
         :style="{ zIndex }"
         @click="onMaskClick">
         <div
@@ -46,7 +46,12 @@
 
   const emit = defineEmits([...modalEvents])
 
-  const { ready, container, modalVisible, onMaskClick } = useModal(props, emit)
+  const {
+    ready,
+    teleportTo,
+    modalVisible,
+    onMaskClick
+  } = useModal(props, emit)
 
   const drawerSize = computed(() => ({
     width: resolveSize(props.width),

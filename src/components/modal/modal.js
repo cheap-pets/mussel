@@ -2,9 +2,11 @@ import './modal-mask.scss'
 
 import { ref, shallowRef, inject, watch, onMounted } from 'vue'
 import { useModalManager } from '@/components/common/popup'
+import { isString, isHtmlElement } from '@/utils/type'
 import { delay } from '@/utils/timer'
 
 export const modalProps = {
+  container: null,
   maskClass: null,
   maskAttrs: Object,
   visible: Boolean,
@@ -28,10 +30,11 @@ function targetIsMask (event) {
 
 export function useModal (props, emit) {
   const rootEl = inject('$mussel').rootElement
-  const container = shallowRef(rootEl)
 
   const ready = ref()
   const modalVisible = ref()
+  const teleportTo = shallowRef()
+  const isAbsolutePosition = ref(false)
 
   useModalManager(modalVisible, {
     hide,
@@ -42,6 +45,27 @@ export function useModal (props, emit) {
 
   let isMouseDownInMask
   let isMouseUpInMask
+
+  function setTeleportTo () {
+    const ctr = props.container
+
+    let target = document.fullscreenElement
+
+    if (target) {
+      const element = isString(ctr)
+        ? document.querySelector(ctr)
+        : ctr
+
+      if (isHtmlElement(element) && target.contains(element)) {
+        target = ctr
+      }
+    } else {
+      target = ctr || rootEl
+    }
+
+    teleportTo.value = target
+    isAbsolutePosition.value = target === ctr
+  }
 
   function hide (trigger) {
     emit('update:visible', false, trigger)
@@ -78,7 +102,7 @@ export function useModal (props, emit) {
 
   async function setModalVisible (value) {
     if (value) {
-      container.value = document.fullscreenElement || rootEl
+      setTeleportTo()
 
       if (!ready.value) {
         ready.value = true
@@ -104,6 +128,7 @@ export function useModal (props, emit) {
   watch(() => props.visible, setModalVisible)
 
   onMounted(() => {
+    setTeleportTo()
     ready.value = !props.lazy
 
     if (props.visible) {
@@ -113,8 +138,9 @@ export function useModal (props, emit) {
 
   return {
     ready,
-    container,
+    teleportTo,
     modalVisible,
+    isAbsolutePosition,
     hide,
     onMaskClick
   }

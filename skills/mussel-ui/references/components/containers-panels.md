@@ -95,6 +95,7 @@
 | `keep-position` | Boolean | — | 再次打开时保留上次位置 |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `z-index` | String | — | 自定义层级 |
+| `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使弹窗相对该容器而非视口定位。详见下方「嵌入容器」 |
 | `mask-class` | — | — | 遮罩 class |
 | `mask-attrs` | Object | — | 透传给遮罩的额外属性 |
 
@@ -222,6 +223,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 | `mask` | Boolean | `true` | 是否显示遮罩 |
 | `rounded` | Boolean | — | 是否圆角 |
 | `teleport` | Boolean | `true` | 渲染到页面根容器 |
+| `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使抽屉相对该容器而非视口定位。详见下方「嵌入容器」 |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
 | `mask-class` | — | — | 遮罩 class |
@@ -235,8 +237,40 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 ```html
 <mu-drawer v-model:visible="drawerVisible" position="right" width="400px" dismissible>
   <div class="flex flex-col" style="height: 100%">
-    <div class="flex-none px-2x py-1x border-b border-soft mu-text-normal">详情</div>
+    <div class="flex-none px-2x py-1x border-b border-soft text-normal">详情</div>
     <mu-scroll-box class="flex-1 p-2x">内容区域</mu-scroll-box>
   </div>
 </mu-drawer>
+```
+
+#### 嵌入容器（`container`）
+
+MuDialog 和 MuDrawer 默认通过 `<Teleport>` 挂载到全局根容器（`$mussel.rootElement`，通常是 `<body>`），遮罩为 `position: fixed`，铺满整个视口。
+
+设置 `container` 后，弹窗会被 Teleport 到该元素内，并自动切换遮罩为 `position: absolute`，于是遮罩与弹窗都**相对该容器定位、铺满该容器**，而不是整个视口。适用于「在某面板内弹出」的场景（如 IDE 右侧面板内的设置抽屉、卡片内的确认对话框）。
+
+| 取值 | 行为 |
+|------|------|
+| 不设（默认） | Teleport 到 `$mussel.rootElement`，遮罩 `position: fixed` 铺满视口 |
+| CSS 选择器字符串 | 首个匹配元素（`document.querySelector`）作为容器 |
+| HTMLElement | 该元素作为容器 |
+
+**注意**：
+- 容器元素需 `position: relative`（或 `absolute`/`fixed`），否则 `absolute` 定位的遮罩会参照更外层的定位祖先，遮罩位置会偏。
+- 若页面处于浏览器全屏（`document.fullscreenElement`）且 `container` 在全屏元素内，则会在全屏元素内渲染（全屏元素若脱离 DOM 树，Teleport 目标也会随之消失）。
+- `container` 变更不会实时跟随：在弹窗**显示时**（及首次挂载）解析一次目标，运行期改变容器需重新打开才生效。
+
+```html
+<!-- 容器需设为定位元素 -->
+<div ref="panelEl" style="position: relative; width: 600px; height: 400px">
+  <mu-button caption="面板内打开" @click="dialogVisible = true" />
+  <!-- dialog 仅铺满 panelEl，而非整个视口 -->
+  <mu-dialog
+    v-model:visible="dialogVisible"
+    title="面板内对话框"
+    :container="panelEl"
+    dismissible>
+    此对话框相对父级面板定位。
+  </mu-dialog>
+</div>
 ```

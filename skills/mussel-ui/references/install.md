@@ -29,7 +29,7 @@ install(app, {
 | ---- | ---- | ------ | ---- |
 | root | String \| Element | `document.body` | 应用根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
 | dark | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
-| colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
+| colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral` / `gray`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
 | localeResources | Object | — | 自定义语言包，写入指定 `locale` 下；Mussel 内置 `zh` / `en` |
@@ -70,13 +70,16 @@ installIcons({
 
 ## 主题色
 
-`install` 时通过 `options.colors` 配置主题色，内部将自定义色合并到内置色板（`BASE_COLORS` + `SPECIAL_COLORS`），自动派生调色板与灰阶，并写入根元素的 `--mu-*` CSS 变量。
+`install` 时通过 `options.colors` 配置主题色，内部将自定义色合并到内置色板（`BASE_COLORS` + `SPEC_COLORS`），自动派生调色板与灰阶，并写入根元素的 `--mu-*` CSS 变量。灰阶的基准色按 `neutral → gray → primary` 的优先级选取（前三者均未设置时回退到主色）。
 
-库同时导出包含全部派生色的 `colors` 对象，可在运行时读取色板或用于自定义渲染（如色板选择器）：
+库同时导出包含全部派生色的 `colors` 对象，以及内置图标注册表 `icons`，可在运行时读取色板 / 图标或用于自定义渲染（如色板选择器）：
 
 ```javascript
-import { colors } from 'mussel'
+import { colors, icons } from 'mussel'
 
 // colors 是包含基础色、语义色及其调色板/灰阶的完整对象
 // 如 colors.primary、colors.blue0、colors.gray10 等
+
+// icons 是已注册图标的集合（key → { svg?, cls?, animation? }）
+// 如 Object.keys(icons) 可列出所有可用图标名
 ```
