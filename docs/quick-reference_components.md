@@ -96,7 +96,7 @@ Object.keys(icons)  // 列出所有可用图标名
 
 > [!NOTE]
 >
-> 推荐直接使用 `<div class="mu-h-box" />`，语义等价且更轻量。
+> 推荐直接使用 `<div class="flex" />`，语义等价且更轻量。
 
 
 
@@ -106,7 +106,7 @@ Object.keys(icons)  // 列出所有可用图标名
 
 > [!NOTE]
 >
-> 推荐直接使用 `<div class="mu-v-box" />`，语义等价且更轻量。
+> 推荐直接使用 `<div class="flex flex-col" />`，语义等价且更轻量。
 
 
 
@@ -330,10 +330,14 @@ Object.keys(icons)  // 列出所有可用图标名
 
 | 属性名称    | 类型   | 说明                                            |
 | ----------- | ------ | ----------------------------------------------- |
-| active-tab  | String | 双向绑定属性，当前活动页签                      |
-| tab-style   | String | `button` \| `small-button` \| `simple`          |
-| tab-buttons | Array  | 页签按钮数据                                    |
-| tab-position| String | `top` \| `bottom` \| `left` \| `right`          |
+| tab-buttons | Array  | 页签按钮数据（唯一声明的 prop）                 |
+| active-tab  | String | 双向绑定（`v-model:active-tab`），当前活动页签 |
+| tab-style   | String | 透传：`button` \| `small-button` \| `simple`    |
+| tab-position| String | 透传：`top` \| `bottom` \| `left` \| `right`    |
+
+> [!NOTE]
+>
+> 除 `tab-buttons` 外，`active-tab` 通过 `defineModel` 实现，`tab-style` / `tab-position` 经 `$attrs` 透传给内部按钮渲染，用法上等同于普通 prop。
 
 | 插槽名称 | 说明     |
 | -------- | -------- |
@@ -352,7 +356,7 @@ Object.keys(icons)  // 列出所有可用图标名
 
 | 属性名称  | 类型    | 说明                                             |
 | --------- | ------- | ------------------------------------------------ |
-| name      | String  | 页签名称，在 Tabs 内唯一，必填                   |
+| name      | String  | 页签名称，在 Tabs 内唯一（建议必填，用于激活与切换定位）|
 | caption   | String  | 对应页签栏按钮的标题                             |
 | icon      | String  | 对应页签栏按钮的图标                             |
 | title     | String  | 对应页签栏按钮的 tooltip 标题                    |
@@ -392,8 +396,8 @@ Object.keys(icons)  // 列出所有可用图标名
 
 | 事件           | 参数                                  | 说明                                   |
 | -------------- | ------------------------------------- | -------------------------------------- |
-| update:visible | value, action, trigger                | 可见状态变更，可在事件中判断触发原因   |
-| button-click   | button                                | 底部按钮点击                           |
+| update:visible | value, trigger                        | 可见状态变更。仅关闭时触发（显示由外层 `v-model:visible` 驱动）；`trigger` 表示关闭来源：`'$X'`（右上角关闭按钮）/ `'$ESC'`（ESC 键）/ `'$MASK'`（遮罩点击）/ 按钮的 `name`（如 `'CANCEL'`、`'OK'`） |
+| button-click   | button                                | 底部按钮点击，payload 为对象 `{ key, name, caption, action, ...attrs }`；自定义按钮建议用 `name` 字段判断来源 |
 | show           | —                                     | 显示时触发                             |
 | hide           | —                                     | 隐藏时触发                             |
 
@@ -535,7 +539,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 
 ```html
 <mu-drawer v-model:visible="drawerVisible" position="right" width="400px" dismissible>
-  <div class="mu-v-box" style="height: 100%">
+  <div class="flex flex-col" style="height: 100%">
     <div class="flex-none px-2x py-1x border-b border-soft text-normal">详情</div>
     <mu-scroll-box class="flex-1 p-2x">内容区域</mu-scroll-box>
   </div>
@@ -812,7 +816,7 @@ const items = [
 | type       | String           | `text` | 原生 Input 元素的 type                                       |
 | placeholder| String           | —      | 占位文本                                                     |
 | clearable  | Boolean          | 全局配置| 是否显示清除按钮，以全局 `$mussel.options.input.clearButton` 为默认值 |
-| size       | String           | `normal` | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（small）内时自动继承小尺寸 |
+| size       | String           | —      | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（small）内时自动继承小尺寸，未设置时由上下文决定 |
 | pill       | Boolean          | —      | 左右圆弧形态（胶囊形）                                       |
 | invalid    | Boolean          | —      | 校验失败样式                                                 |
 | readonly   | Boolean          | —      | 是否只读                                                     |
@@ -986,7 +990,7 @@ const filteredItems = computed(() =>
 | 属性名称       | 类型   | 默认值        | 说明                                                  |
 | -------------- | ------ | ------------- | ----------------------------------------------------- |
 | type           | String | `date`        | `date`（选日期）\| `month`（选月份）\| `year`（选年份）|
-| format         | String | `yyyy-MM-dd`  | 日期格式                                              |
+| format         | String | —             | 日期格式（未设置时 date 类型按 `yyyy-MM-dd` 渲染）    |
 | valueType      | String | `date`        | 返回值类型：`date` \| `string` \| `object`            |
 | dropdown-class | String | —             | 下拉面板附加 class                                    |
 | (其他)         | —      | —             | 包含 MuInput 属性（options 相关除外）                 |
@@ -1009,9 +1013,8 @@ const filteredItems = computed(() =>
 | modelValue | String  | —      | 双向绑定值，HEX 字符串（`#RGB` 或 `#RRGGBB`，内部规范化为大写 `#RRGGBB`） |
 | placeholder| String  | —      | 占位文本                                                             |
 | dropdown-class | String | —     | 下拉面板附加 class                                                   |
-| disabled   | Boolean | —      | 是否禁用                                                             |
-| readonly   | Boolean | —      | 是否只读                                                             |
-| (其他)     | —       | —      | 包含 MuInput 属性（options 相关除外）                                |
+| disabled   | Boolean | —      | 是否禁用（透传给内部输入框与色块）                                   |
+| readonly   | Boolean | —      | 是否只读（透传给内部输入框与色块）                                   |
 
 | 事件              | 参数 | 说明                                                 |
 | ----------------- | ---- | ---------------------------------------------------- |
@@ -1191,11 +1194,14 @@ const filteredItems = computed(() =>
 | dropdown-items     | Array   | 下拉项列表                                       |
 | dropdown-width     | String  | 下拉面板宽度                                     |
 | dropdown-height    | String  | 下拉面板高度                                     |
+| dropdown-class     | String  | 下拉面板附加 class                               |
+| dropdown-style     | Object \| String | 下拉面板附加 style                      |
 | dropdown-trigger   | String  | 弹出触发方式，默认 `hover`：`click` \| `hover`   |
 | dropdown-position  | String  | 弹出位置：`auto` \| `fixed` \| `top` \| `bottom` |
 | dropdown-icon      | String  | 下拉按钮图标，默认为下箭头                       |
 | dropdown-disabled  | Boolean | 下拉面板禁用状态                                 |
 | dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`       |
+| dropdown-panel     | Object  | 自定义下拉面板组件（覆盖默认 MuDropdownPanel）   |
 | dropdown-attrs     | Object  | 透传给面板的额外属性                             |
 | dropdown-snap-to   | —       | 下拉面板吸附目标，默认为组件根元素               |
 
@@ -1245,30 +1251,6 @@ const ctxMenu = shallowRef()
 
 
 ## 6 - 数据展示
-
-
-
-### MuList
-
-列表
-
-> [!WARNING]
->
-> MuList 为内部组件，未全局注册。需局部 import 使用：
-> ```javascript
-> import { MuList } from 'mussel/components/list'
-> ```
-
-| 属性名称    | 类型    | 说明                                    |
-| ----------- | ------- | --------------------------------------- |
-| items       | Array   | 列表项数据                              |
-| scrollbar   | Boolean | 是否显示滚动条                          |
-| itemClass   | String  | 列表项 class                            |
-| itemTagName | String  | 列表项标签名，默认 `a`，可选 `a` \| `div` |
-
-| 事件       | 参数 | 说明         |
-| ---------- | ---- | ------------ |
-| item-click | item | 列表项点击时 |
 
 
 
@@ -1348,7 +1330,7 @@ const ctxMenu = shallowRef()
 | 属性名称    | 类型                              | 默认值        | 说明                                                 |
 | ----------- | --------------------------------- | ------------- | ---------------------------------------------------- |
 | model-value | Date \| String \| Object \| Array | —             | 双向绑定的日期值                                     |
-| format      | String                            | `yyyy-MM-dd`  | String 类型下的日期格式                              |
+| format      | String                            | —             | String 类型下的日期格式（未设置时按 `yyyy-MM-dd`）   |
 | value-type  | String                            | `date`        | 返回值类型：`date` \| `string` \| `object`           |
 | range       | Boolean                           | —             | 范围选择模式                                         |
 | min         | Date \| String                    | —             | 最小可选日期                                         |
@@ -1370,19 +1352,19 @@ const ctxMenu = shallowRef()
 | gridlines            | String           | —             | 网格线：`none` \| `all` \| `row` \| `column`      |
 | selected-record      | Object           | —             | 当前选中记录（双向绑定）                          |
 | selected-record-key  | String \| Number | —             | 当前选中记录的 key（双向绑定）                    |
+| header-checked       | Object           | —             | check 列头部全选状态（双向绑定），结构 `{ [field]: boolean }` |
 | order-by             | String           | —             | 排序字段，格式 `field:asc` / `field:desc`         |
 | records-offset       | Number           | —             | 记录偏移量，用于计算行号                          |
 | fixed-left-columns   | Number           | —             | 固定左侧列数                                      |
 | virtual-scroll       | Boolean          | —             | 虚拟滚动（大数据量时使用）                        |
 | placeholder          | String           | —             | 空单元格占位文本                                  |
-| table-width          | String           | `fit-content` | 表格宽度                                          |
-| table-min-width      | String           | `100%`        | 表格最小宽度                                      |
 
 | 事件                       | 参数                               | 说明                       |
 | -------------------------- | ---------------------------------- | -------------------------- |
 | header-click               | column                             | 表头点击                   |
 | cell-click                 | { record, recordIndex, column }    | 单元格点击                 |
 | cell-item-click            | { record, column, link/tag }       | 单元格内项目点击（链接/标签） |
+| update:header-checked      | checked                            | check 列头部全选状态变更   |
 | update:selected-record     | record                             | 选中记录变更               |
 | update:selected-record-key | key                                | 选中记录 key 变更          |
 | update:cell-value          | { record, column, value }          | 单元格值变更（check 列）   |

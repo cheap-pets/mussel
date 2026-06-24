@@ -639,8 +639,8 @@ white-space: pre-line;
 
 ```html
 <div class="flex items-center gap-1x px-2x py-1x border-b border-soft">
-  <span class="mu-text-normal">数据列表</span>
-  <span class="mu-text-soft ml-2x">共 128 条</span>
+  <span class="text-normal">数据列表</span>
+  <span class="text-soft ml-2x">共 128 条</span>
   <div class="ml-auto flex items-center gap-1x">
     <button>筛选</button>
     <button>导出</button>
