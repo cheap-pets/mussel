@@ -76,7 +76,7 @@
    - Dialog CSS 选择器 `> .mu-dialog`（Mussel 4 改为绑在 dialog 层）
    - Dialog 默认 slot 内边距丢失（Mussel 4 `.mu-dialog__body` 无 padding，需加 `p-2x` 或 `padding: 16px 24px`）
 
-   > 以上清单是迁移规则的**检索索引**（便于分析阶段 grep 目标），权威定义见 `rules.md` 对应章节。两者改动需同步。
+   > ⚠️ **同步约束（SYNC-RULES）**：以上清单仅为分析阶段的 **grep 线索**，权威定义在 `rules.md` 对应章节。改动任一处（新增/移除/重命名废弃项）**必须同步另一处**，否则会出现「grep 命中但无迁移规则」或「有规则但分析漏检」的不一致。修改前先确认对方文件的对应章节是否需要同步更新。
 
 4. 检查 `package.json` 的 mussel 依赖版本与全局插件配置（`app.use(pluginMussel, {...})`）。
 5. 检查所有 CSS/SCSS 文件对 mussel 变量的引用。

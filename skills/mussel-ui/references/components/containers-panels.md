@@ -101,9 +101,9 @@
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
-| `update:visible` | `value, action, trigger` | 可见状态变更（可通过 action 判断关闭原因） |
-| `button-click` | `button` | 底部按钮点击 |
-| `show` / `hide` | — | 显示/隐藏时触发 |
+| `update:visible` | `value, trigger` | 可见状态变更。仅关闭时触发（显示由外层 `v-model:visible` 驱动）；`trigger` 表示关闭来源：`'$X'`（右上角关闭按钮）/ `'$ESC'`（ESC 键）/ `'$MASK'`（遮罩点击）/ 按钮的 `name`（如 `'CANCEL'`、`'OK'`） |
+| `button-click` | `button` | 底部按钮点击，payload 为对象 `{ key, name, caption, action, ...attrs }`；自定义按钮建议用 `name` 字段判断来源 |
+| `show` / `hide` | — | 显示/隐藏动画完成后触发 |
 
 | 插槽 | 说明 |
 |------|------|
@@ -111,6 +111,14 @@
 | `body` | 主体内容（推荐使用） |
 | `default` | 主体内容（兼容旧版，`body` slot 存在时忽略） |
 | `footer` | 底部附加内容（插入在按钮之前） |
+
+**方法（通过 ref 调用）：**
+
+| 方法 / 属性 | 类型 | 说明 |
+|------|------|------|
+| `hide()` | Function | 关闭对话框。等价于把 `visible` 设为 `false`，封装组件对外暴露该方法即可让父组件通过 ref 关闭，无需再暴露 `visible` |
+| `maskEl` | Element | 遮罩层 DOM（`.mu-modal-mask`） |
+| `dialogEl` | Element | 对话框 DOM（`.mu-dialog`） |
 
 **buttons 写法（字符串快速定义 / 对象完整定义）：**
 

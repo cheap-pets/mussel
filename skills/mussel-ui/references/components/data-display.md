@@ -1,25 +1,5 @@
 # 数据展示组件 API
 
-### MuList
-
-> ⚠️ MuList 为内部组件，未全局注册。需局部 import 使用：
-> ```javascript
-> import { MuList } from 'mussel/components/list'
-> ```
-
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `items` | Array | 列表项数据 |
-| `scrollbar` | Boolean | 是否显示 Mussel 滚动条 |
-| `itemClass` | String | 列表项 class |
-| `itemTagName` | String | 列表项标签：`a`（默认）\| `div` |
-
-| 事件 | 参数 | 说明 |
-|------|------|------|
-| `item-click` | `item` | 列表项点击 |
-
----
-
 ### MuListItem
 
 | 属性 | 类型 | 说明 |

@@ -239,4 +239,9 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 | `small` | Boolean | — | 小尺寸模式：内部按钮默认按 `small` 渲染，内部 `MuInput` 自动缩小尺寸（注入 `mu-toolbar--small`） |
 | `button-style` | String | `text` | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
 
-> `MuToolbar` 通过 `provide` 向内部的 `MuButton` / `MuIconButton` / `MuPagination` 注入 `small` 与 `button-style`，作为这些组件未显式设置时的默认值；同时向 `MuInput` 注入 `small`（控制输入框尺寸）。子组件显式传入对应属性时优先使用自身设置。
+> `MuToolbar` 通过 `provide('toolbar', ...)` 向内部子组件注入 `small` 与 `button-style`：
+> - `MuButton` / `MuIconButton`：继承 `small`（转为小尺寸）和 `button-style`（作为未显式设置时的默认风格）；
+> - `MuInput`：仅继承 `small`（缩小尺寸）。
+>
+> 子组件显式传入对应属性时优先使用自身设置。
+> 另注：`MuPagination` 自身复用 `toolbarProps` / `useToolbar`，它本身就是一个工具栏容器（根元素带 `mu-toolbar` class），向其内部按钮提供 `small` / `button-style`；**它不是 `MuToolbar` 的注入消费者**，而是独立的等价容器。

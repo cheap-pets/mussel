@@ -1,8 +1,7 @@
 ---
 name: mussel-ui
 description: >
-  编写或修改使用 MUSSEL 4 组件库的 Vue 界面代码时使用，
-  包括新建页面、调整已有 UI、Review 代码合规性。
+  编写、修改、Review 使用 MUSSEL 4 组件库的 Vue 界面代码时使用。
   用户明确要求将 Mussel 3 代码升级到 Mussel 4 时也需使用，
   如："升级到 Mussel 4"、"迁移到新版 Mussel"。
 ---
@@ -12,8 +11,9 @@ description: >
 > 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token、M3→4 迁移），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
 
 > **版本检查**：
-本文档及 `references/` 基于 MUSSEL `4.0.*`。
+本文档及 `references/` 基于 MUSSEL `4.0.*`，最后核对日期 **2026-06-24**（对照仓库 `4.0` 分支源码）。
 开始前确认项目中依赖的 `mussel` 版本，若不符合，需进行提示确认。
+若组件库源码与本文档描述出现冲突，**以源码为准**，并按实际情况订正对应 `references/` 文件。
 
 ## 工作流程
 
@@ -136,7 +136,7 @@ description: >
 | 组件 | 用途 |
 |------|------|
 | `<mu-table>` | 数据表格；列类型丰富（text/enum/link/tag/check/date 等） |
-| `<mu-list-item>` + `<mu-list-divider>` | 列表项与分隔线（无 `<mu-list>` 全局组件，需局部 import） |
+| `<mu-list-item>` + `<mu-list-divider>` | 列表项与分隔线（需自行用容器包裹渲染） |
 | `<mu-tree>` + `<mu-tree-node>` | 树形结构；支持勾选、懒加载、节点按钮 |
 | `<mu-tags>` | 标签组；`removable` 可删除，`max` 截断省略 |
 | `<mu-calendar>` | 内嵌月历，用于页面内日期展示与选择 |

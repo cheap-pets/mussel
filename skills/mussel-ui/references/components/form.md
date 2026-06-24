@@ -333,8 +333,7 @@ const filteredItems = computed(() =>
 | `modelValue` | String | — | 双向绑定值，HEX 字符串（`#RGB` 或 `#RRGGBB`，内部规范化为大写 `#RRGGBB`） |
 | `placeholder` | String | — | 占位文本 |
 | `dropdown-class` | String | — | 下拉面板附加 class |
-| `disabled` / `readonly` | Boolean | — | 禁用 / 只读 |
-| (其他) | — | — | 继承 `MuInput` 属性（options 相关除外）|
+| `disabled` / `readonly` | Boolean | — | 禁用 / 只读（透传给内部输入框与色块） |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|

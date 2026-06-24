@@ -315,24 +315,19 @@ body    { font-family: 'PingFang SC', sans-serif; }
 
 ## 快速自检清单
 
-生成或修改 UI 代码后逐项核对。`(核心规范 N)` 为该条对应的规则来源；核心规范 1 为优先级要求（有合理例外），2–5 为硬性禁止（违反即不合规）。
+生成或修改 UI 代码后逐项核对。`(核心规范 N)` 为该条对应的规则来源；核心规范 1 为优先级要求（有合理例外），2–5 为硬性禁止（违反即不合规）。**带 `[G]` 标记的条目可用下方「可机器执行的合规检查」的 grep 命令自动判定。**
 
 **硬性禁止**
 
-- [ ] (核心规范 2) z-index 无裸数字，只用 `var(--mu-z-index-*)` 或 `.z-*` 类
-      判定：`grep "z-index\s*:\s*\d"` 应只命中 `var()`
-- [ ] (核心规范 3) 间距无非法裸值，padding/margin/gap 只用 `-0` / `-half` / `-1x`~`-4x` 后缀；
+- [ ] [G] (核心规范 2) z-index 无裸数字，只用 `var(--mu-z-index-*)` 或 `.z-*` 类
+- [ ] (核心规范 3) 间距无非法裸值，padding/margin/gap 只用 `-0` / `-half` / `-{1~4}x` 后缀；
       行内元素间距用 `--mu-content-spacing`
-      判定：其余 px 裸值（7px/13px 等）均为违规，`grep "margin.*:\s*5px"` 应为空
 - [ ] (核心规范 4) 样式尽量原子化，能用原子类的（布局/间距/对齐/显示性）一律用原子类，
       不写进 `style`/`<style>`；组件内不得堆砌大段一次性 CSS
 - [ ] (核心规范 5) 不自造 `--mu-*` 变量，所有 `--mu-*` 均可在 `styles.md` 第 1 节查到出处
-- [ ] (核心规范 5) `border-radius` 用 `--mu-common-border-radius` / `--mu-window-border-radius`，无 4px/8px 裸值
-      判定：`grep "border-radius\s*:\s*\d"` 应只命中 `var()`
-- [ ] (核心规范 5) 字号用 `--mu-font-size-normal` / `-small` / `-large`，不手写 14px
-      判定：`grep "font-size\s*:\s*\d"` 应只命中 `var()`
-- [ ] (核心规范 5) `box-shadow` 用 `--mu-shadow-*` 变量或 `.shadow-*` 类，无手写阴影
-      判定：`grep "box-shadow\s*:\s*\d"` 应只命中 `var()`
+- [ ] [G] (核心规范 5) `border-radius` 用 `--mu-common-border-radius` / `--mu-window-border-radius`，无 4px/8px 裸值
+- [ ] [G] (核心规范 5) 字号用 `--mu-font-size-normal` / `-small` / `-large`，不手写 14px
+- [ ] [G] (核心规范 5) `box-shadow` 用 `--mu-shadow-*` 变量或 `.shadow-*` 类，无手写阴影
 
 **优先级要求**
 
@@ -341,9 +336,26 @@ body    { font-family: 'PingFang SC', sans-serif; }
       - 背景色：优先 `.bg-*` 类，其次 `--mu-bg-*` 变量
       - 状态色：成功/警告/危险用语义扩展色，非 `--mu-green`/`--mu-red` 等基本色
       - hover/激活背景：用 `-translucent` 变体，不手写 `rgba`
-      - 边框颜色：用 `.border-soft` / `-strong` 等类
-        判定：`grep "border.*:\s*1px solid #"` 应为空
+      - [G] 边框颜色：用 `.border-soft` / `-strong` 等类
+
+---
+
+## 可机器执行的合规检查
+
+把以下 grep / 正则做成 lint 规则或 CI 检查，可直接覆盖上方带 `[G]` 标记的自检项。命中以下任一模式即视为不合规（须排除 `var(...)` 内部命中的情况）。
+
+| 检查项 | grep 模式（ripgrep） | 合规判定 |
+|--------|----------------------|----------|
+| z-index 无裸数字 | `z-index\s*:\s*\d` | 只能命中 `var()` 包裹的值 |
+| border-radius 无裸像素 | `border-radius\s*:\s*\d` | 只能命中 `var()` 包裹的值 |
+| font-size 无裸像素 | `font-size\s*:\s*\d` | 只能命中 `var()` 包裹的值 |
+| box-shadow 无手写阴影 | `box-shadow\s*:\s*\d` | 应为空（仅用 `var(--mu-shadow-*)` 或 `.shadow-*` 类） |
+| 边框无硬编码颜色 | `border[^:]*:\s*1px\s+solid\s+#` | 应为空 |
+| 间距无非法裸值 | `(margin\|padding\|gap)[^:]*:\s*(5\|6\|7\|9\|10\|11\|13\|14\|15\|17\|18\|19\|20\|...)px` | 合法值仅 `0` / `4px`(half) / `8/16/24/32px`(1x~4x)；行内元素用 `--mu-content-spacing` |
+
+> **间距检查提示**：基准倍数为 `--mu-base-spacing`（8px），合法 px 值只有 `0 / 4 / 8 / 16 / 24 / 32`。`5px` 等行内场景应改用 `var(--mu-content-spacing)`，其余非基准值一律向上取整到最近的 `n×8px`。上面间距行的裸值正则仅作示意，建议按项目实际维护一个「合法像素集合」白名单。
 
 ---
 
 > **已废弃 API 不在本文件列出**。Mussel 3 → 4 的属性废弃与替代方案集中在 `references/upgrade/rules.md`「迁移规则 5 组件迁移」中，生成迁移相关代码时查阅该文件。
+

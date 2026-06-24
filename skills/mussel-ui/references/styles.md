@@ -327,6 +327,8 @@
 | .z-popup   | z-index: var(--mu-z-index-popup)  |
 | .z-ontop   | z-index: var(--mu-z-index-ontop)  |
 
+> 上述 `.z-*` 类实际值为 `calc(var(--mu-z-index-*) + var(--z-offset, 0))`，可通过局部设置 `--z-offset` CSS 变量在同一层级内做细粒度的层叠叠加（默认 `0`，不叠加）。
+
 
 
 **Flex 辅助元素：**
@@ -539,6 +541,12 @@
 | .text-left | text-align: left   |
 | .text-center | text-align: center |
 | .text-right | text-align: right  |
+
+**行高：**
+
+| 类名        | 说明            |
+| ----------- | --------------- |
+| .leading-none | line-height: 1  |
 
 **文本大小写：**
 
