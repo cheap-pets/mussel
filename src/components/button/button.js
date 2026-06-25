@@ -62,7 +62,7 @@ export function useButton (props) {
 
   const extraClass = computed(() => {
     const {
-      size = toolbar.small ? 'small' : 'normal',
+      size = toolbar.size,
       buttonStyle = toolbar.buttonStyle,
       pill
     } = group || props

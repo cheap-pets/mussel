@@ -206,10 +206,11 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { shallowRef } from 'vue'
+
   import MyDialog from './my-dialog.vue'
 
-  const dialogRef = ref()
+  const dialogRef = shallowRef()
 
   function open () {
     dialogRef.value?.show({ id: 1, name: 'Tom' })

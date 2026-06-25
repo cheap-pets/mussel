@@ -9,7 +9,7 @@
         管理控制台
       </div>
       <div class="ml-auto flex items-center gap-1x">
-        <mu-tool-button icon="icon icon-bell" @click="showNotifications" />
+        <mu-icon-button icon="icon icon-bell" @click="showNotifications" />
         <div class="border-l" style="height: 20px; margin: 0 4px;" />
         <span style="font-size: 13px;">Admin</span>
         <theme-switch />

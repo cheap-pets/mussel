@@ -100,7 +100,8 @@ $SEMANTIC_COLORS:
   --mu-z-index-ontop: 10000;
 
   --mu-base-spacing: 8px;
-  --mu-content-spacing: 5px;
+  --mu-half-spacing: calc(var(--mu-base-spacing) / 2);
+  --mu-inline-spacing: 6px;
 
   --mu-font-size-small: 12px;
   --mu-font-size-normal: 14px;

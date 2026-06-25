@@ -12,7 +12,9 @@
     :dismissible="dismissible"
     @button-click="onButtonClick"
     @update:visible="onVisibleChange">
-    <div class="mu-message-box__message px-4x" v-html="html" />
+    <template #body>
+      <div class="mu-message-box__message px-4x" v-html="html" />
+    </template>
   </mu-dialog>
 </template>
 

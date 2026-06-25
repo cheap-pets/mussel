@@ -1,4 +1,4 @@
-import './root.scss'
+// import './root.scss'
 import './pointer.scss'
 import './layout.scss'
 import './spacing.scss'

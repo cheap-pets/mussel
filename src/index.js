@@ -1,4 +1,4 @@
-import './styles/index.js'
+import './styles/root.scss'
 
 import { setupLocale } from './langs/index.js'
 import { setupColors } from './colors.js'
@@ -7,6 +7,8 @@ import { install as installIcons } from './icons/index.js'
 import { install as installComponents } from './components/index.js'
 
 import { resolveElement } from './utils/dom.js'
+
+import './styles/atomic.js'
 
 const isSysDark = window.matchMedia('(prefers-color-scheme: dark)').matches
 

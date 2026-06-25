@@ -15,7 +15,7 @@ export function useDropdownItem (props) {
     emitItemClick
   } = inject('popup')
 
-  function handleClick () {
+  function onClick () {
     collapse()
     emitItemClick(props)
 
@@ -25,6 +25,6 @@ export function useDropdownItem (props) {
   }
 
   return {
-    handleClick
+    onClick
   }
 }

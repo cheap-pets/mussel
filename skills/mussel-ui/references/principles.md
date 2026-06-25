@@ -11,7 +11,7 @@
 
 1. **优先使用语义颜色**：优先使用 `styles.md` 中定义的语义 CSS 变量，仅在变量无法覆盖的场景（SVG 内联色、第三方组件深层覆盖、动态计算色等）才使用具体颜色值
 2. **禁止手写 z-index 数值**：不得出现 `z-index: 999`、`z-index: 9999` 等裸数字，必须使用 `--mu-z-index-*` 变量
-3. **禁止使用非基准倍数的间距**：间距必须取 `0`（`.p-0` / `.m-0` / `.gap-none`）、`half`（`.p-half` / `.m-half` / `.gap-half`，=4px）、`1x` ~ `4x`（=8/16/24/32px）等基准倍数，不得出现无法换算为这些倍数的裸值（如 `7px`、`13px`）。行内元素（图标与文字间距等）例外，使用 `--mu-content-spacing`
+3. **禁止使用非基准倍数的间距**：间距必须取 `0`（`.p-0` / `.m-0` / `.gap-none`）、`half`（`.p-half` / `.m-half` / `.gap-half`，=4px）、`1x` ~ `4x`（=8/16/24/32px）等基准倍数，不得出现无法换算为这些倍数的裸值（如 `7px`、`13px`）。行内元素（图标与文字间距等）例外，使用 `--mu-inline-spacing`
 4. **禁止用 `style`/`<style>` 写可被原子类替代的样式**：布局、间距、对齐、显示性等能用原子类表达的，一律用原子类；仅当原子类无法覆盖（如动态值、特殊动画）才写 `style`，且不得在组件内堆砌大段一次性 CSS
 5. **禁止自造 `--mu-*` 变量**：不得声明未在 `styles.md` 中列出的 `--mu-*` 变量（含颜色、尺寸、z-index 等）
 
@@ -99,17 +99,17 @@
 <div style="margin-top: 24px">上方留白区域</div>
 ```
 
-### 规范 2-B：行内元素间距使用 `--mu-content-spacing`
+### 规范 2-B：行内元素间距使用 `--mu-inline-spacing`
 
 ```css
 /* ✅ 正确：图标与文字之间的间距 */
 .icon + .label {
-  margin-left: var(--mu-content-spacing);
+  margin-left: var(--mu-inline-spacing);
 }
 
 /* ❌ 错误 */
 .icon + .label {
-  margin-left: 5px;
+  margin-left: 6px;
 }
 ```
 
@@ -120,7 +120,7 @@
 
 | 错误值 | 建议替代 |
 |--------|----------|
-| `6px` / `5px` | `gap-half`（4px）或 `1x`（8px）；图标-文字间距用 `--mu-content-spacing` |
+| `5px` / `6px` / `7px` | `gap-half`（4px）或 `1x`（8px）；图标-文字等行内间距用 `--mu-inline-spacing`（=6px） |
 | `10px` / `12px` | `1x`（8px）或 `2x`（16px）向上取整 |
 | `20px` / `28px` | `2x`（16px）或 `3x`（24px）向上取整 |
 
@@ -321,7 +321,7 @@ body    { font-family: 'PingFang SC', sans-serif; }
 
 - [ ] [G] (核心规范 2) z-index 无裸数字，只用 `var(--mu-z-index-*)` 或 `.z-*` 类
 - [ ] (核心规范 3) 间距无非法裸值，padding/margin/gap 只用 `-0` / `-half` / `-{1~4}x` 后缀；
-      行内元素间距用 `--mu-content-spacing`
+      行内元素间距用 `--mu-inline-spacing`
 - [ ] (核心规范 4) 样式尽量原子化，能用原子类的（布局/间距/对齐/显示性）一律用原子类，
       不写进 `style`/`<style>`；组件内不得堆砌大段一次性 CSS
 - [ ] (核心规范 5) 不自造 `--mu-*` 变量，所有 `--mu-*` 均可在 `styles.md` 第 1 节查到出处
@@ -351,9 +351,9 @@ body    { font-family: 'PingFang SC', sans-serif; }
 | font-size 无裸像素 | `font-size\s*:\s*\d` | 只能命中 `var()` 包裹的值 |
 | box-shadow 无手写阴影 | `box-shadow\s*:\s*\d` | 应为空（仅用 `var(--mu-shadow-*)` 或 `.shadow-*` 类） |
 | 边框无硬编码颜色 | `border[^:]*:\s*1px\s+solid\s+#` | 应为空 |
-| 间距无非法裸值 | `(margin\|padding\|gap)[^:]*:\s*(5\|6\|7\|9\|10\|11\|13\|14\|15\|17\|18\|19\|20\|...)px` | 合法值仅 `0` / `4px`(half) / `8/16/24/32px`(1x~4x)；行内元素用 `--mu-content-spacing` |
+| 间距无非法裸值 | `(margin\|padding\|gap)[^:]*:\s*(5\|6\|7\|9\|10\|11\|13\|14\|15\|17\|18\|19\|20\|...)px` | 合法值仅 `0` / `4px`(half) / `8/16/24/32px`(1x~4x)；行内元素用 `--mu-inline-spacing` |
 
-> **间距检查提示**：基准倍数为 `--mu-base-spacing`（8px），合法 px 值只有 `0 / 4 / 8 / 16 / 24 / 32`。`5px` 等行内场景应改用 `var(--mu-content-spacing)`，其余非基准值一律向上取整到最近的 `n×8px`。上面间距行的裸值正则仅作示意，建议按项目实际维护一个「合法像素集合」白名单。
+> **间距检查提示**：基准倍数为 `--mu-base-spacing`（8px），合法 px 值只有 `0 / 4 / 8 / 16 / 24 / 32`。行内场景（图标与文字间距等）应改用 `var(--mu-inline-spacing)`（=6px），其余非基准值一律向上取整到最近的 `n×8px`。上面间距行的裸值正则仅作示意，建议按项目实际维护一个「合法像素集合」白名单。
 
 ---
 

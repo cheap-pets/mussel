@@ -75,6 +75,12 @@ export default {
     ]
   },
 
+  Time: {
+    HOUR: '时',
+    MINUTE: '分',
+    SECOND: '秒'
+  },
+
   Validation: {
     DEFAULT_LABEL: '此字段',
     REQUIRED: '{0}不能为空',

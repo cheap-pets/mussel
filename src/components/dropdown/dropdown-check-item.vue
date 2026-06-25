@@ -1,5 +1,5 @@
 <template>
-  <label class="mu-check mu-list-item mu-dropdown-item" @click="handleClick">
+  <label class="mu-check mu-list-item mu-dropdown-item" @click="onClick">
     <input v-model="model" type="checkbox" :value="value" @click.stop>
     <span>{{ label ?? value }}</span>
   </label>
@@ -13,5 +13,5 @@
   const model = defineModel({ type: [Boolean, Array] })
   const props = defineProps({ ...dropdownItemProps, value: null })
 
-  const { handleClick } = useDropdownItem(props)
+  const { onClick } = useDropdownItem(props)
 </script>

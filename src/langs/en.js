@@ -74,6 +74,12 @@ export default {
     ]
   },
 
+  Time: {
+    HOUR: 'Hour',
+    MINUTE: 'Minute',
+    SECOND: 'Second'
+  },
+
   Validation: {
     DEFAULT_LABEL: 'This field',
     REQUIRED: '{0} is required.',

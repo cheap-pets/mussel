@@ -173,3 +173,29 @@ export function formatDate (date, format = 'yyyy-MM-dd') {
 
   return result
 }
+
+export function parseTime (value) {
+  if (!value) return null
+
+  const m = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(value)
+
+  if (!m) return null
+
+  const hour = +m[1]
+  const minute = +m[2]
+  const second = m[3] != null ? +m[3] : 0
+
+  if (hour > 23 || minute > 59 || second > 59) return null
+
+  return { hour, minute, second }
+}
+
+export function formatTime (time, includeSecond = false) {
+  if (!time) return null
+
+  const hour = String(time.hour ?? 0).padStart(2, '0')
+  const minute = String(time.minute ?? 0).padStart(2, '0')
+  const second = String(time.second ?? 0).padStart(2, '0')
+
+  return includeSecond ? `${hour}:${minute}:${second}` : `${hour}:${minute}`
+}

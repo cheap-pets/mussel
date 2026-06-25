@@ -236,12 +236,12 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
-| `small` | Boolean | — | 小尺寸模式：内部按钮默认按 `small` 渲染，内部 `MuInput` 自动缩小尺寸（注入 `mu-toolbar--small`） |
+| `size` | String | `normal` | 工具栏尺寸：`small` \| `normal`（默认）\| `large`；内部按钮按此尺寸渲染，内部 `MuInput` 继承尺寸（根元素带 `mu-toolbar--small` / `mu-toolbar--large` class） |
 | `button-style` | String | `text` | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
 
-> `MuToolbar` 通过 `provide('toolbar', ...)` 向内部子组件注入 `small` 与 `button-style`：
-> - `MuButton` / `MuIconButton`：继承 `small`（转为小尺寸）和 `button-style`（作为未显式设置时的默认风格）；
-> - `MuInput`：仅继承 `small`（缩小尺寸）。
+> `MuToolbar` 通过 `provide('toolbar', ...)` 向内部子组件注入 `size` 与 `button-style`：
+> - `MuButton` / `MuIconButton`：继承 `size`（设置尺寸）和 `button-style`（作为未显式设置时的默认风格）；
+> - `MuInput`：仅继承 `size`（缩小尺寸）。
 >
 > 子组件显式传入对应属性时优先使用自身设置。
-> 另注：`MuPagination` 自身复用 `toolbarProps` / `useToolbar`，它本身就是一个工具栏容器（根元素带 `mu-toolbar` class），向其内部按钮提供 `small` / `button-style`；**它不是 `MuToolbar` 的注入消费者**，而是独立的等价容器。
+> 另注：`MuPagination` 自身复用 `toolbarProps` / `useToolbar`，它本身就是一个工具栏容器（根元素带 `mu-toolbar` class），向其内部按钮提供 `size` / `button-style`；**它不是 `MuToolbar` 的注入消费者**，而是独立的等价容器。

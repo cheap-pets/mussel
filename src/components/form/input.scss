@@ -24,6 +24,12 @@
     padding: 0 7px;
   }
 
+  &--large {
+    --height: var(--mu-control-height-large);
+
+    // padding: 0 15px;
+  }
+
   &--pill {
     --border-radius: calc(var(--height) / 2);
   }
@@ -258,4 +264,11 @@ div.mu-input {
       --border-color: var(--mu-danger-color-4);
     }
   }
+}
+
+.mu-input.mu-input--inset {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }

@@ -202,7 +202,7 @@ const columns = [
 | `page-size` | Number | `20` | 双向绑定，每页条数 |
 | `total` | Number | `0` | 记录总数（总页数由 `total / page-size` 派生） |
 | `page-size-options` | Array | — | 可选每页条数，如 `[20, 50, 100]`；提供后渲染下拉切换 |
-| `small` | Boolean | — | 小尺寸模式，控制内部按钮尺寸 |
+| `size` | String | `normal` | 工具栏尺寸：`small` \| `normal`（默认）；控制内部按钮尺寸 |
 | `button-style` | String | `text` | 内部按钮风格：`normal` \| `outline` \| `text` \| `link` |
 | `quick-jumper` | Boolean | — | 是否显示快速跳页输入框 |
 
@@ -219,7 +219,7 @@ const columns = [
   v-model:page-size="pageSize"
   :total="total"
   :page-size-options="[20, 50, 100]"
-  small
+  size="small"
   quick-jumper
   class="mt-1x" />
 ```

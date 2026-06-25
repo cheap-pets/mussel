@@ -150,11 +150,11 @@ $FLEX_DIRECTIONS: (
 }
 
 .gap-none {
-  gap: unset
+  gap: unset;
 }
 
 .gap-half {
-  gap: calc(var(--mu-base-spacing) / 2);
+  gap: var(--mu-half-spacing);
 }
 
 @for $i from 1 through 4 {

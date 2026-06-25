@@ -251,7 +251,7 @@ UMD 格式库文件：
 - **颜色**：语义扩展色优先（`--mu-primary-color` 等），不用基本色；状态色用语义色；hover 用 `-translucent` 变体
 - **文本**：`.mu-text-strong` / `.mu-text-normal` / `.mu-text-subtle` / `.mu-text-soft` / `.mu-text-muted`
 - **背景**：`--mu-bg-normal` / `--mu-bg-strong` / `--mu-bg-fill` / `--mu-bg-stripe` / `--mu-bg-disabled` / `--mu-bg-mask` / `--mu-bg-overlay`
-- **间距**：`-0` / `-half` / `-1x`~`-4x` 后缀（0/4/8/16/24/32px），行内元素间距用 `--mu-content-spacing`
+- **间距**：`-0` / `-half` / `-1x`~`-4x` 后缀（0/4/8/16/24/32px），行内元素间距用 `--mu-inline-spacing`
 - **阴影**：`--mu-shadow-focus` / `--mu-shadow-float` / `--mu-shadow-popup` / `--mu-shadow-layer` / `--mu-shadow-modal`
 - **布局**：全屏布局用 flex + `flex-1`，不用 `calc(100vh - Xpx)`；平级间距用 `gap`，不给每个子项加 margin
 

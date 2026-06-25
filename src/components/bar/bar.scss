@@ -7,12 +7,12 @@
   align-items: center;
 
   font-size: var(--mu-font-size-normal);
+}
 
-  & > .flex-divider {
-    align-self: center;
-    height: calc(1em + 2px);
-    margin: 0 var(--mu-base-spacing);
-  }
+.mu-bar > .flex-divider,
+.mu-toolbar > .flex-divider {
+  align-self: center;
+  height: calc(1em + 2px);
 }
 
 .mu-bar {

@@ -57,7 +57,11 @@
     pageSizeOptions: Array,
     pageIndex: { type: Number, default: 0 },
     pageSize: { type: Number, default: 20 },
-    total: { type: Number, default: 0 }
+    total: { type: Number, default: 0 },
+    size: {
+      type: String,
+      validator: v => ['small', 'normal'].includes(v)
+    }
   })
 
   const emit = defineEmits([
@@ -123,7 +127,7 @@
     50,
     event => {
       const clientWidth = event.target.clientWidth
-      const btnWidth = props.small ? 28 : 32
+      const btnWidth = props.size === 'small' ? 28 : 32
       const w = clientWidth - 16 - (sizeOptions.value ? 105 : (props.pageSize ? 55 : 0)) - (props.quickJumper ? 115 : 0)
       const t = w / (btnWidth + 5) - 4
 
@@ -147,19 +151,17 @@
     emit('update:page-size', item.action)
   }
 
-  watch(() => props.small, calcMaxPageButtonsCount)
+  watch(() => props.size, calcMaxPageButtonsCount)
 </script>
 
 <style>
   .mu-pagination {
-    cursor: default;
-    gap: 4px;
+    gap: var(--mu-half-spacing);
     justify-content: center;
     font-size: var(--mu-font-size-small);
 
     & > label {
-      display: inline-block;
-      padding: 0 4px;
+      margin: 0 4px;
     }
 
     & > .mu-button {
@@ -170,6 +172,10 @@
     & > .mu-input {
       flex: none;
       font-size: inherit;
+    }
+
+    & > .flex-divider {
+      margin: 0 var(--mu-half-spacing);
     }
 
     & > .mu-pagination__size-select {

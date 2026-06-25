@@ -160,7 +160,7 @@ const items = [
 | `type` | String | `text` | 原生 input type |
 | `placeholder` | String | — | 占位文本 |
 | `clearable` | Boolean | 全局配置 | 是否显示清除按钮 |
-| `size` | String | `normal` | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`small`）内时自动继承小尺寸 |
+| `size` | String | `normal` | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`size="small"`）内时自动继承小尺寸 |
 | `pill` | Boolean | — | 左右圆弧形态（胶囊形） |
 | `invalid` | Boolean | — | 校验失败样式 |
 | `readonly` / `disabled` | Boolean | — | 只读 / 禁用 |

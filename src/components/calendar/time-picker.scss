@@ -1,0 +1,65 @@
+.mu-time-picker {
+  display: flex;
+  flex-direction: row;
+  height: 220px;
+  padding: 4px 0;
+
+  &__col {
+    overflow-y: auto;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    min-width: 64px;
+  }
+
+  &__header {
+    flex: none;
+
+    height: 32px;
+    padding: 0 4px;
+
+    font-size: var(--mu-font-size-small);
+    line-height: 32px;
+    color: var(--mu-text-color-soft);
+    text-align: center;
+  }
+
+  &__list {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+  }
+
+  &__item {
+    cursor: pointer;
+
+    flex: none;
+
+    height: 32px;
+    padding: 0 4px;
+    border-radius: var(--mu-common-border-radius);
+
+    line-height: 32px;
+    color: var(--mu-text-color-normal);
+    text-align: center;
+
+    &:hover {
+      background-color: var(--mu-gray-translucent);
+    }
+
+    &[present] {
+      color: var(--mu-secondary-color);
+    }
+
+    &[selected] {
+      color: var(--mu-primary-color);
+      background-color: var(--mu-primary-translucent);
+    }
+  }
+
+  &__pad {
+    flex: none;
+    height: 78px;
+  }
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-list-item mu-dropdown-item" @click="handleClick">
+  <div class="mu-list-item mu-dropdown-item" @click="onClick">
     <slot>
       <mu-icon v-if="icon != null" :icon="icon" />
       <label v-if="label">{{ label }}</label>
@@ -14,5 +14,5 @@
 
   const props = defineProps({ ...dropdownItemProps })
 
-  const { handleClick } = useDropdownItem(props)
+  const { onClick } = useDropdownItem(props)
 </script>

@@ -18,7 +18,7 @@ export const inputProps = {
   },
   size: {
     type: String,
-    validator: v => ['small', 'normal'].includes(v)
+    validator: v => ['small', 'normal', 'large'].includes(v)
   },
   pill: Boolean
 }
@@ -35,15 +35,19 @@ export const inputEmits = [
   'suffixClick'
 ]
 
+function resolveClassName (value) {
+  return value && value !== 'normal' && `mu-input--${value}`
+}
+
 export function useInput (model, props, emit) {
   const toolbar = inject('toolbar', {})
   const formField = inject('formField', {})
 
   const wrapperAttrs = computed(() => ({
-    class: {
-      'mu-input--pill': props.pill,
-      'mu-input--small': props.size ? props.size === 'small' : toolbar.small
-    },
+    class: [
+      resolveClassName(props.pill && 'pill'),
+      resolveClassName(props.size || toolbar.size)
+    ],
     tabindex: props.tabindex,
     disabled: props.disabled || null,
     readonly: props.readonly || null,

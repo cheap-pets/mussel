@@ -272,14 +272,14 @@ Object.keys(icons)  // 列出所有可用图标名
 
 工具栏，具有特殊样式的 MuBar，常用于页面顶部操作区。
 
-| 属性名称     | 类型    | 默认值   | 说明                                                         |
-| ------------ | ------- | -------- | ------------------------------------------------------------ |
-| small        | Boolean | —        | 小尺寸模式，内部按钮默认按 `small` 尺寸渲染                  |
-| button-style | String  | `text`  | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link`  |
+| 属性名称     | 类型   | 默认值  | 说明                                                        |
+| ------------ | ------ | ------- | ----------------------------------------------------------- |
+| size         | String | `normal`| 工具栏尺寸：`small` \| `normal`（默认）\| `large`；内部按钮默认按此尺寸渲染 |
+| button-style | String | `text`  | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
 
 > [!NOTE]
 >
-> `MuToolbar` 通过 `provide` 向内部的 `MuButton` / `MuIconButton` / `MuPagination` 注入 `small` 与 `button-style`，作为这些组件未显式设置时的默认值。子组件显式传入对应属性时优先使用自身设置。
+> `MuToolbar` 通过 `provide` 向内部的 `MuButton` / `MuIconButton` / `MuPagination` 注入 `size` 与 `button-style`，作为这些组件未显式设置时的默认值。子组件显式传入对应属性时优先使用自身设置。
 
 
 
@@ -494,10 +494,11 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { shallowRef } from 'vue'
+
   import MyDialog from './my-dialog.vue'
 
-  const dialogRef = ref()
+  const dialogRef = shallowRef()
 
   function open () {
     dialogRef.value?.show({ id: 1, name: 'Tom' })
@@ -816,7 +817,7 @@ const items = [
 | type       | String           | `text` | 原生 Input 元素的 type                                       |
 | placeholder| String           | —      | 占位文本                                                     |
 | clearable  | Boolean          | 全局配置| 是否显示清除按钮，以全局 `$mussel.options.input.clearButton` 为默认值 |
-| size       | String           | —      | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（small）内时自动继承小尺寸，未设置时由上下文决定 |
+| size       | String           | —      | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`size="small"`）内时自动继承小尺寸，未设置时由上下文决定 |
 | pill       | Boolean          | —      | 左右圆弧形态（胶囊形）                                       |
 | invalid    | Boolean          | —      | 校验失败样式                                                 |
 | readonly   | Boolean          | —      | 是否只读                                                     |
@@ -1484,9 +1485,9 @@ const columns = [
 | page-index         | Number  | `0`    | 双向绑定，当前页码（从 0 开始）                              |
 | page-size          | Number  | `20`   | 双向绑定，每页条数                                           |
 | total              | Number  | `0`    | 记录总数（总页数由 `total / page-size` 派生）                |
-| page-size-options  | Array   | —      | 可选每页条数，如 `[20, 50, 100]`；提供后渲染下拉切换         |
-| small              | Boolean | —      | 小尺寸模式，控制内部按钮尺寸                                 |
-| button-style       | String  | `text` | 内部按钮风格：`normal` \| `outline` \| `text` \| `link`      |
+| page-size-options  | Array   | —        | 可选每页条数，如 `[20, 50, 100]`；提供后渲染下拉切换           |
+| size               | String  | `normal` | 工具栏尺寸：`small` \| `normal`（默认）；控制内部按钮尺寸      |
+| button-style       | String  | `text`   | 内部按钮风格：`normal` \| `outline` \| `text` \| `link`        |
 | quick-jumper       | Boolean | —      | 是否显示快速跳页输入框                                       |
 
 | 事件                | 参数      | 说明               |
@@ -1505,14 +1506,14 @@ const columns = [
   v-model:page-size="pageSize"
   :total="total"
   :page-size-options="[20, 50, 100]"
-  small
+  size="small"
   quick-jumper
   class="mt-1x" />
 ```
 
 > [!NOTE]
 >
-> `MuPagination` 自身具备工具栏行为：内部会向自己的按钮（`mu-button` / `mu-icon-button` / `mu-dropdown-button`）注入 `small` 与 `button-style`，效果与放在 `<mu-toolbar>` 内一致，因此通常无需再外层包裹 `<mu-toolbar>`。
+> `MuPagination` 自身具备工具栏行为：内部会向自己的按钮（`mu-button` / `mu-icon-button` / `mu-dropdown-button`）注入 `size` 与 `button-style`，效果与放在 `<mu-toolbar>` 内一致，因此通常无需再外层包裹 `<mu-toolbar>`。
 
 
 

@@ -20,7 +20,7 @@ $DIRECTIONS: (
   }
 
   .p#{$k}-half {
-    padding#{$v}: calc(var(--mu-base-spacing) / 2);
+    padding#{$v}: var(--mu-half-spacing);
   }
 
   .p#{$k}-auto {
@@ -40,7 +40,7 @@ $DIRECTIONS: (
   }
 
   .m#{$k}-half {
-    margin#{$v}: calc(var(--mu-base-spacing) / 2);
+    margin#{$v}: var(--mu-half-spacing);
   }
 
   .m#{$k}-auto {

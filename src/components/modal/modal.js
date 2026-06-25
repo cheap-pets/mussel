@@ -33,7 +33,7 @@ export function useModal (props, emit) {
 
   const ready = ref()
   const modalVisible = ref()
-  const teleportTo = shallowRef()
+  const teleportTo = shallowRef(rootEl)
   const isAbsolutePosition = ref(false)
 
   useModalManager(modalVisible, {

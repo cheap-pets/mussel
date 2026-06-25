@@ -54,7 +54,6 @@
       <div class="group">
         <mu-dropdown-button
           split-button
-          x-color="grape"
           caption="Check & Radio"
           @dropdown:itemclick="onItemClick"
           @action="onAction">
@@ -87,6 +86,20 @@
             </mu-scroll-box>
           </template>
         </mu-dropdown>
+      </div>
+      <div class="group">
+        <mu-toolbar class="bg-fill" size="large" style="gap: 0;">
+          <mu-search-input class="flex-1 mu-input--inset" />
+          <mu-flex-divider />
+          <mu-dropdown-button
+            class="mu-icon-button"
+            button-style="link"
+            dropdown-icon="folder"
+            dropdown-snap-to="$parent"
+            :dropdown-items="artists"
+            @dropdown:itemclick="onItemClick"
+            @action="onAction" />
+        </mu-toolbar>
       </div>
       <div id="divX" class="group">
         <mu-dropdown-button
@@ -155,6 +168,10 @@
 </script>
 
 <style>
+  .filter-bar.mu-toolbar {
+    gap: 0;
+  }
+
   .dropdown-max-height-200 {
     overflow: hidden;
     width: 300px;

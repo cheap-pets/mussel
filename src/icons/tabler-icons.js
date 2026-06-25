@@ -26,6 +26,7 @@ export { default as chevronRight } from '~icons/outline/chevron-right.svg'
 
 export { default as search } from '~icons/outline/search.svg'
 export { default as calendar } from '~icons/outline/calendar-month.svg'
+export { default as clock } from '~icons/outline/clock.svg'
 
 export const loading = {
   svg: loaderSvg,

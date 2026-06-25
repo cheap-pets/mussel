@@ -47,13 +47,13 @@
       <h3>Input Group</h3>
       <div class="mu-input-group">
         <span>http://</span>
-        <mu-input v-model="value" />
+        <mu-input v-model="value" input-style="solid" />
         <span>.com</span>
       </div>
       <div class="mu-input-group">
         <a class="mu-link">Link</a>
         <mu-input v-model="value" />
-        <mu-tool-button icon="search" />
+        <mu-icon-button icon="search" />
         <mu-button class="mu-input-addon">
           Button
         </mu-button>

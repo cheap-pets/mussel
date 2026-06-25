@@ -7,8 +7,7 @@
   position: relative;
 
   display: inline-flex;
-  flex: none;
-  gap: var(--mu-content-spacing);
+  gap: var(--mu-inline-spacing);
   align-items: center;
   justify-content: center;
 
@@ -25,8 +24,9 @@
 
   outline: none;
 
+  &.mu-icon,
   & > .mu-icon {
-    font-size: calc(1em + 2px);
+    font-size: 16px;
   }
 }
 
@@ -39,6 +39,12 @@
 
   padding: 0 7px;
   font-size: 12px;
+
+
+  &.mu-icon,
+  & > .mu-icon {
+    font-size: 14px;
+  }
 }
 
 .mu-button--large {
@@ -46,6 +52,11 @@
 
   padding: 0 23px;
   font-size: 16px;
+
+  &.mu-icon,
+  & > .mu-icon {
+    font-size: 18px;
+  }
 }
 
 .mu-button--link {
@@ -136,21 +147,8 @@
 }
 
 .mu-icon-button {
-  flex: none;
-
   width: var(--size);
   padding: 0 !important;
-
-  font-size: 18px;
-  font-weight: 400;
-
-  &.mu-button--small {
-    font-size: 14px;
-  }
-
-  &.mu-button--large {
-    font-size: 22px;
-  }
 
   & > svg {
     display: block;

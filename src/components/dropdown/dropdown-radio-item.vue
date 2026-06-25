@@ -1,5 +1,5 @@
 <template>
-  <label class="mu-radio mu-list-item mu-dropdown-item" @click="handleClick">
+  <label class="mu-radio mu-list-item mu-dropdown-item" @click="onClick">
     <input v-model="model" type="radio" :value="value" @click.stop>
     <span>{{ label ?? value }}</span>
   </label>
@@ -13,5 +13,5 @@
   const model = defineModel()
   const props = defineProps({ ...dropdownItemProps, value: { required: true } })
 
-  const { handleClick } = useDropdownItem(props)
+  const { onClick } = useDropdownItem(props)
 </script>
