@@ -1,5 +1,3 @@
-import { install as installScrollbarDirective } from './scrollbar/directive'
-
 // import * as SvgComponents from './svg'
 import * as IconComponents from './icon'
 import * as LayoutComponents from './layout'
@@ -19,6 +17,8 @@ import MuBadge from './badge/badge.vue'
 import MuTable from './table/table.vue'
 import MuScrollBox from './scrollbar/scroll-box.vue'
 import MuPagination from './pagination/pagination.vue'
+
+import { install as installScrollbarDirective } from './scrollbar/directive'
 
 function installComponents (app, options) {
   function _install (components) {
@@ -55,6 +55,6 @@ function installComponents (app, options) {
 }
 
 export function install (app, options) {
-  installScrollbarDirective(app)
   installComponents(app, options)
+  installScrollbarDirective(app)
 }

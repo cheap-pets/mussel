@@ -127,10 +127,7 @@ $FLEX_DIRECTIONS: (
   justify-content: center;
 }
 
-@each $v in (
-  center, start, end, baseline, stretch,
-  flex-start, flex-end, unset, inherit
-) {
+@each $v in (center, start, end, baseline, stretch, flex-start, flex-end, unset, inherit) {
   .items-#{$v} {
     align-items: $v;
   }
@@ -140,12 +137,61 @@ $FLEX_DIRECTIONS: (
   }
 }
 
-@each $v in (
-  start, end, left, right, baseline, center, stretch,
-  flex-start, flex-end, space-around, space-between, space-evenly
-) {
+.self-auto {
+  align-self: auto;
+}
+
+@each $v in (start, center, end, baseline, stretch, flex-start, flex-end) {
+  .content-#{$v} {
+    align-content: $v;
+  }
+}
+
+@each $v in (around, between, evenly) {
+  .content-#{$v} {
+    align-content: space-#{$v};
+  }
+}
+
+@each $v in (normal, start, center, end, baseline, stretch, flex-start, flex-end) {
   .justify-#{$v} {
     justify-content: $v;
+  }
+}
+
+@each $v in (center, end) {
+  .justify-#{$v}-safe {
+    justify-content: safe #{$v};
+  }
+}
+
+@each $v in (around, between, evenly) {
+  .justify-#{$v} {
+    justify-content: space-#{$v};
+  }
+}
+
+@each $v in (normal, start, center, end, stretch) {
+  .justify-items-#{$v} {
+    justify-items: space-#{$v};
+  }
+}
+
+@each $v in (center, end) {
+  .justify-items-#{$v}-safe {
+    justify-items: safe #{$v};
+  }
+}
+
+@each $v in (auto, start, center, end, stretch) {
+  .justify-self-#{$v} {
+    justify-self: space-#{$v};
+  }
+}
+
+@each $v in (center, end) {
+  .justify-self-#{$v}-safe {
+    justify-self: safe #{$v};
   }
 }
 

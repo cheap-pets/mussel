@@ -1,4 +1,8 @@
-.mu-dropdown-panel.mu-calendar {
+.mu-date-dropdown {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 280px;
   max-width: 320px;
   height: 240px;
 
@@ -9,6 +13,6 @@
   &  > .mu-month-picker,
   &  > .mu-year-picker {
     flex: 1 1 0;
-    margin-top: 4px;
+    margin-top: var(--mu-half-spacing);
   }
 }

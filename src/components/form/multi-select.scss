@@ -3,11 +3,11 @@
 
   &.mu-input {
     height: auto;
-    min-height: var(--mu-input_height);
+    min-height: var(--height);
   }
 
   &[nowrap] {
     justify-content: center;
-    height: var(--mu-input_height);
+    height: var(--height);
   }
 }

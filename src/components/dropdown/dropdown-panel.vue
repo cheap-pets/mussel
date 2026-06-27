@@ -2,7 +2,7 @@
   <Teleport v-if="ready" :to="container">
     <div
       v-show="popupStyle"
-      ref="thisEl"
+      ref="panelEl"
       v-bind="$attrs"
       v-mu-scrollbar="scrollbar"
       class="mu-dropdown-panel"
@@ -51,12 +51,12 @@
       type: String,
       default: 'click',
       validator: v => ['hover', 'click'].includes(v)
-    },
-    position: {
-      type: String,
-      default: 'auto',
-      validator: v => ['auto', 'fixed', 'top', 'bottom'].includes(v)
     }
+    // position: {
+    //   type: String,
+    //   default: 'auto',
+    //   validator: v => ['auto', 'fixed', 'top', 'bottom'].includes(v)
+    // }
   })
 
   const rootEl = inject('$mussel').rootElement
@@ -65,7 +65,7 @@
   const visible = ref()
   const popupStyle = ref()
 
-  const thisEl = shallowRef()
+  const panelEl = shallowRef()
   const container = shallowRef(rootEl)
   const ctx = shallowReactive({})
 
@@ -87,13 +87,13 @@
   }
 
   function isPositionAssignable () {
-    return visible.value && popupStyle.value && props.position === 'auto'
+    return visible.value && popupStyle.value // && props.position === 'auto'
   }
 
   function updatePosition () {
     if (!isPositionAssignable()) return
 
-    const el = thisEl.value
+    const el = panelEl.value
     const style = {}
 
     const { width: sw, top: st, /* right: sr, */ bottom: sb, left: sl } = ctx.snapTo.getBoundingClientRect()
@@ -102,7 +102,7 @@
 
     let dw = _dw
 
-    if ((ctx.width === '$same') || (!ctx.width && dw <= sw)) {
+    if ((ctx.width === '$same') /* || (!ctx.width && dw <= sw) */) {
       dw = sw
       style.width = `${dw}px`
     }
@@ -159,14 +159,16 @@
       Promise
         .resolve((!ready.value) && (ready.value = true) && delay())
         .then(() => {
-          const el = thisEl.value
+          const el = panelEl.value
 
           el.removeAttribute('pop-up')
           el.style.transition = 'none'
 
-          popupStyle.value = props.position === 'auto'
-            ? { transform: 'none', visibility: 'hidden' }
-            : {}
+          // 暂时全是 auto，没处理其他情况
+          // popupStyle.value = props.position === 'auto'
+          //   ? { transform: 'none', visibility: 'hidden' }
+          //   : {}
+          popupStyle.value = { transform: 'none', visibility: 'hidden' }
 
           delay()
             .then(() => updatePosition() && delay())
@@ -189,7 +191,7 @@
 
       emit('hide')
 
-      const el = thisEl.value
+      const el = panelEl.value
       const duration = getTransitionDuration(el)
 
       el.removeAttribute('pop-up')
@@ -212,7 +214,7 @@
       event.target.classList.contains('mu-popup-mask') ||
       findUp(event.target, el => {
         if (el.classList.contains('mu-popup-off')) return true
-        if (el === thisEl.value) return false
+        if (el === panelEl.value) return false
       })
     ) {
       hide()
@@ -227,7 +229,7 @@
     if (
       visible.value &&
       !ctx.snapTo?.contains(event.target) &&
-      !thisEl.value?.contains(event.target)
+      !panelEl.value?.contains(event.target)
     ) hide()
   }
 

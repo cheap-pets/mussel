@@ -5,25 +5,30 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue'
+  import { computed, inject } from 'vue'
 
   defineOptions({ name: 'MusselGridCell' })
 
   const props = defineProps({
-    colStart: null,
-    colSpan: null,
-    colEnd: null,
-    rowStart: null,
-    rowSpan: null,
-    rowEnd: null
+    colStart: Number,
+    colSpan: Number,
+    colEnd: Number,
+    rowStart: Number,
+    rowSpan: Number,
+    rowEnd: Number,
+    endOffset: {
+      type: Number,
+      validator: v => [0, 1].includes(v),
+      default: () => inject('$mussel').options.gridCell?.endOffset || 0
+    }
   })
 
   const style = computed(() => ({
     gridColumnStart: props.colStart,
     gridColumnSpan: props.colSpan,
-    gridColumnEnd: props.colEnd,
+    gridColumnEnd: isNaN(props.colEnd) ? null : parseInt(props.colEnd) + props.endOffset,
     gridRowStart: props.rowStart,
     gridRowSpan: props.rowSpan,
-    gridRowEnd: props.rowEnd
+    gridRowEnd: isNaN(props.rowEnd) ? null : parseInt(props.rowEnd) + props.endOffset
   }))
 </script>

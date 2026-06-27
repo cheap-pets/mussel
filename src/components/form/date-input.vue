@@ -4,7 +4,7 @@
     v-model="value"
     class="mu-date-input"
     dropdown-icon="calendar"
-    :dropdown-class="[dropdownClass, 'mu-calendar']"
+    :dropdown-class="['mu-date-dropdown', dropdownClass]"
     @dropdown:show="currentView = type">
     <template #dropdown>
       <mu-toolbar class="bg-strong p-half">
@@ -36,7 +36,7 @@
         v-model="current"
         value-type="Object"
         @year-cell-click="selectYear" />
-      <calendar-grid
+      <date-grid
         v-else
         :year="year"
         :month="month"
@@ -58,7 +58,7 @@
   import { useFieldModel } from '../form/validation'
 
   import ComboWrapper from './combo-wrapper.vue'
-  import CalendarGrid from '../calendar/date-table.vue'
+  import DateGrid from '../calendar/date-grid.vue'
   import MonthPicker from '../calendar/month-picker.vue'
   import YearPicker from '../calendar/year-picker.vue'
 

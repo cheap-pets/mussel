@@ -5,10 +5,10 @@
     class="mu-color-input"
     :disabled="disabled"
     :readonly="readonly"
-    :dropdown-class="['mu-color-input__grid', dropdownClass]">
+    :dropdown-class="['mu-color-input__dropdown', dropdownClass]">
     <a class="mu-color-input__color-block" :style="{ background: normalized }" @click.stop="onSwatchClick" />
     <input
-      v-model="hexInput"
+      v-model="inputValue"
       class="uppercase"
       :placeholder="placeholder"
       :disabled="disabled"
@@ -17,7 +17,7 @@
       @keydown.esc.prevent="onInputEsc"
       @blur="onFieldBlur">
     <template #dropdown>
-      <div v-for="(group, idx) in palette" :key="idx" class="mu-color-input__grid-row">
+      <div v-for="(group, idx) in palette" :key="idx" class="mu-color-input__color-group">
         <a
           v-for="color in group"
           :key="color"
@@ -53,7 +53,6 @@
 
   const emit = defineEmits([
     'update:modelValue',
-    'change',
     'dropdown:show',
     'dropdown:hide'
   ])
@@ -63,13 +62,11 @@
   const wrapper = ref()
 
   // HEX 输入框文本（允许临时非法值，仅在确认时规范化提交）
-  const hexInput = ref(model.value || '')
-  const normalized = computed(() => normalizeHex(model.value))
+  const inputValue = ref(model.value || '')
+  const normalized = computed(() => normalizeHex(inputValue.value))
 
   function select (hex) {
-    model.value = hex
-    hexInput.value = hex
-    emit('change', hex)
+    model.value = inputValue.value = hex
     wrapper.value?.collapse()
   }
 
@@ -79,38 +76,38 @@
     }
   }
 
-  function commitHexInput () {
+  function commitInput () {
     const value = normalized.value
 
     if (value) {
-      emit('change', (model.value = hexInput.value = value))
+      model.value = inputValue.value = value
       return true
     }
 
-    hexInput.value = model.value || ''
+    inputValue.value = model.value || ''
   }
 
   function onInputEnter () {
-    if (commitHexInput()) {
+    if (commitInput()) {
       wrapper.value?.collapse()
     }
   }
 
   function onInputEsc () {
-    hexInput.value = model.value || ''
+    inputValue.value = model.value || ''
     wrapper.value?.collapse()
   }
 
   function onFieldBlur () {
-    if (hexInput.value !== (model.value || '')) {
-      commitHexInput()
+    if (inputValue.value !== (model.value || '')) {
+      commitInput()
     }
   }
 
   // 外部修改 modelValue 时同步输入框
   watch(model, v => {
-    if (normalizeHex(hexInput.value) !== (normalizeHex(v))) {
-      hexInput.value = v || ''
+    if (normalizeHex(inputValue.value) !== normalizeHex(v)) {
+      inputValue.value = v || ''
     }
   })
 </script>

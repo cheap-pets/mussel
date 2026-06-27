@@ -19,7 +19,6 @@
     <mu-dropdown-panel
       v-if="!dropdownPanel"
       ref="dropdownPanelRef"
-      class="mu-input__dropdown-panel"
       v-bind="dropdownPanelAttrs"
       v-on="dropdownPanelEvents">
       <slot name="dropdown" />
@@ -28,8 +27,6 @@
 </template>
 
 <script setup>
-  import './combo-wrapper.scss'
-
   import { computed } from 'vue'
   import { inputProps, inputEmits, useInput } from './input'
   import { dropdownProps, dropdownEvents, useDropdown } from '../dropdown/dropdown-wrapper'

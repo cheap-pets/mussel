@@ -1,6 +1,7 @@
 .mu-form {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   align-items: flex-start;
 
   padding: var(--mu-base-spacing);

@@ -1,6 +1,6 @@
 <template>
-  <div class="mu-year-picker gap-half">
-    <table class="mu-calendar-grid" cellpadding="0" cellspacing="0">
+  <div class="mu-year-picker">
+    <table class="mu-date-grid">
       <tbody>
         <tr>
           <td @click="setFirstYear(firstYear - 10)">

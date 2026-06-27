@@ -1,12 +1,12 @@
-$BASE_COLORS:
-  (
-    'gray',
-    'red', 'pink', 'grape', 'violet', 'indigo', 'blue',
-    'cyan', 'teal', 'green', 'lime', 'yellow', 'orange'
-  );
+$BASE_COLORS: (
+  'gray',
+  'red', 'pink', 'grape', 'violet', 'indigo', 'blue',
+  'cyan', 'teal', 'green', 'lime', 'yellow', 'orange'
+);
 
-$SEMANTIC_COLORS:
-  ('primary', 'secondary', 'success', 'warning', 'danger');
+$SEMANTIC_COLORS: (
+  'primary', 'secondary', 'success', 'warning', 'danger'
+);
 
 .mu-root {
   @each $v in $BASE_COLORS {

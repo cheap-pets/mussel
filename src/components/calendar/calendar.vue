@@ -6,7 +6,7 @@
         :caption="caption"
         icon="calendar"
         class="mr-auto"
-        dropdown-class="mu-calendar__dropdown">
+        dropdown-class="mu-date-dropdown">
         <template #dropdown>
           <month-picker
             ref="monthSelector"
@@ -21,8 +21,8 @@
         <mu-icon-button icon="chevronDown" @click="nextMonth" />
       </template>
     </mu-toolbar>
-    <date-table
-      :class="{ 'mu-calendar-grid--masked': monthDropdown?.dropdownVisible }"
+    <date-grid
+      :class="{ 'mu-date-grid--masked': monthDropdown?.dropdownVisible }"
       :year="year"
       :month="month"
       :selected="selected"
@@ -31,13 +31,11 @@
 </template>
 
 <script setup>
-  import './calendar.scss'
-
   import { ref, computed } from 'vue'
   import { calendarProps, useCalendar } from './calendar'
-
   import { t as $t } from '@/langs'
-  import DateTable from './date-table.vue'
+
+  import DateGrid from './date-grid.vue'
   import MonthPicker from './month-picker.vue'
 
   defineOptions({ name: 'MusselCalendar' })
@@ -69,3 +67,11 @@
       : $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS')[month.value])
   )
 </script>
+
+<style>
+  .mu-calendar {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--mu-bg-normal);
+  }
+</style>

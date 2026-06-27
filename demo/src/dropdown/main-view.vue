@@ -81,7 +81,7 @@
           <mu-button>Search & Select</mu-button>
           <template #dropdown>
             <mu-search-input v-model="searchKey" class="flex-none" input-style="solid" style="width: 100%;" />
-            <mu-scroll-box class="flex-1">
+            <mu-scroll-box class="flex-auto">
               <mu-dropdown-item v-for="el in filteredItems" :key="el" :label="el" />
             </mu-scroll-box>
           </template>

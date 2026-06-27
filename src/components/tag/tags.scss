@@ -5,13 +5,8 @@
   flex-wrap: wrap;
   gap: 5px;
 
-
   &::before {
     display: none;
-  }
-
-  &:first-child {
-    margin-left: -6px;
   }
 
   &:empty {
@@ -34,7 +29,8 @@
   }
 }
 
-.mu-tags[nowrap], [nowrap] > .mu-tags  {
+.mu-tags[nowrap],
+[nowrap] > .mu-tags  {
   flex-wrap: nowrap;
 }
 

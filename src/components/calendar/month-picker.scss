@@ -1,6 +1,8 @@
 .mu-month-picker {
   display: flex;
   flex-direction: column;
+  font-size: var(--mu-font-size-normal);
+  color: var(--mu-text-color-normal);
 
   & td[data-year]:before {
     content: attr(data-year);

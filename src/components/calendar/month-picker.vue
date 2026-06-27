@@ -1,6 +1,6 @@
 <template>
   <div class="mu-month-picker gap-half">
-    <table class="mu-calendar-grid" cellpadding="0" cellspacing="0">
+    <table class="mu-date-grid">
       <tbody>
         <tr>
           <td @click="setFirstYear(firstYear - 10)">
@@ -23,7 +23,7 @@
       </tbody>
     </table>
     <div class="flex-divider flex-divider--pill" />
-    <table class="mu-calendar-grid" cellpadding="0" cellspacing="0">
+    <table class="mu-date-grid">
       <tbody>
         <tr>
           <td
@@ -46,10 +46,11 @@
   import './month-picker.scss'
 
   import { ref, computed, watchEffect } from 'vue'
+
+  import { monthEquals, toObject, toString } from '@/utils/date'
   import { pick } from '@/utils/object'
-  import { monthEquals, toObject, toString } from '../../utils/date'
-  import { valueTypeProp } from './calendar'
   import { t as $t } from '@/langs'
+  import { valueTypeProp } from './calendar'
 
   defineOptions({ name: 'MusselMonthPicker' })
 

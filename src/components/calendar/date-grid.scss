@@ -1,4 +1,4 @@
-.mu-calendar-grid {
+.mu-date-grid {
   position: relative;
 
   table-layout: fixed;
@@ -7,6 +7,8 @@
   flex: 1 0 0;
 
   width: 100%;
+
+  font-size: var(--mu-font-size-normal);
 
   & th, & td {
     padding: 8px;
@@ -49,9 +51,8 @@
   }
 }
 
-.mu-calendar-grid--masked {
+.mu-date-grid--masked {
   pointer-events: none;
-  filter: blur(1px);
 
   &::after {
     content: '';
@@ -61,7 +62,9 @@
   }
 }
 
-.mu-dropdown-panel .mu-calendar-grid {
+.mu-dropdown-panel .mu-date-grid {
+  width: auto;
+
   & th, & td {
     border: none;
     text-align: center;

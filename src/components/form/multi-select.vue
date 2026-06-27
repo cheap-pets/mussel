@@ -6,7 +6,7 @@
     :disabled="disabled"
     :readonly="readonly"
     :dropdown-width="dropdownWidth"
-    :dropdown-class="dropdownClass"
+    :dropdown-class="['mu-select__dropdown-panel', dropdownClass]"
     :dropdown-scrollbar="dropdownScrollbar"
     :editable="false"
     @keydown="onKeyDown">
@@ -21,7 +21,7 @@
         :placeholder="placeholder"
         :dropdown-snap-to="wrapper"
         :dropdown-width="dropdownWidth"
-        :dropdown-class="dropdownClass"
+        :dropdown-class="['mu-select__dropdown-panel', dropdownClass]"
         :dropdown-scrollbar="dropdownScrollbar"
         @tag-remove="onItemRemove" />
     </template>

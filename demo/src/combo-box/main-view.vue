@@ -51,7 +51,7 @@
             class="flex-none"
             input-style="solid"
             style="width: 100%;" />
-          <mu-scroll-box class="flex-1">
+          <mu-scroll-box class="flex-auto">
             <mu-option
               v-for="el in filteredItems"
               :key="el"

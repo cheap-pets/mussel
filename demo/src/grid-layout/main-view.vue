@@ -5,6 +5,7 @@
       :columns="config.columns" :rows="config.rows">
       <mu-grid-cell
         v-for="(cell, idx) in config.cells" :key="cell" :col-start="cell.colStart" :col-end="cell.colEnd"
+        :end-offset="1"
         :row-start="cell.rowStart" :row-end="cell.rowEnd" style="background-color: rgba(0, 47, 167, 1);" class="m-1x">
         {{ idx + 1 }}
       </mu-grid-cell>
@@ -49,8 +50,7 @@
         colEnd: 7,
         rowStart: 3,
         rowEnd: 5
-      },
-      {}
+      }
     ]
   })
 </script>

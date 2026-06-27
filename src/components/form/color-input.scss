@@ -1,10 +1,9 @@
-.mu-color-input__grid {
+.mu-color-input__dropdown {
   display: flex;
   gap: 2px;
-  width: auto !important;
 }
 
-.mu-color-input__grid-row {
+.mu-color-input__color-group {
   display: flex;
   flex: none;
   flex-direction: column;

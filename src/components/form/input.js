@@ -12,10 +12,7 @@ export const inputProps = {
   prefix: [String, Object],
   suffix: [String, Object],
   tabindex: { default: '-1' },
-  clearable: {
-    type: Boolean,
-    default: () => inject('$mussel').options.input?.clearable
-  },
+  clearable: Boolean,
   size: {
     type: String,
     validator: v => ['small', 'normal', 'large'].includes(v)

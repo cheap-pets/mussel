@@ -95,23 +95,23 @@
 
   provide('formField', reactive({
     error: fieldError,
-    validate: () => props.prop && form?.validateField(props.prop)
+    validate: () => props.prop && form.validateField?.(props.prop)
   }))
 
   watch(
     () => props.required,
-    value => form.setRequired(props.prop, value),
+    value => form.setRequired?.(props.prop, value),
     { immediate: true }
   )
 
   watch(
     () => props.label,
-    value => form.setLabel(props.prop, value),
+    value => form.setLabel?.(props.prop, value),
     { immediate: true }
   )
 
   onBeforeUnmount(() => {
-    form.setRequired(props.prop)
-    form.setLabel(props.prop)
+    form.setRequired?.(props.prop)
+    form.setLabel?.(props.prop)
   })
 </script>

@@ -80,6 +80,7 @@
 }
 
 .mu-dialog__body {
+  overflow: hidden;
   flex: 1 1 auto;
 }
 
@@ -107,6 +108,7 @@
   cursor: pointer;
   flex: none;
   font-size: 20px;
+  color: var(--mu-text-color-subtle);
 
   &:hover {
     color: var(--mu-primary-color-4);
