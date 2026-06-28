@@ -11,7 +11,7 @@ export const dropdownProps = {
   dropdownPanel: Object,
   dropdownClass: null,
   dropdownStyle: null,
-  dropdownSnapTo: null,
+  dropdownAnchor: null,
   dropdownAttrs: Object,
   dropdownWidth: String,
   dropdownHeight: String,
@@ -78,9 +78,9 @@ export function useDropdown (props, emit, options = {}) {
 
   const dropdownVisible = readonly(expanded)
 
-  const snapTo = computed(() => {
+  const anchor = computed(() => {
     const hostEl = wrapperRef.value?.$el || wrapperRef.value
-    const target = props.dropdownSnapTo
+    const target = props.dropdownAnchor
 
     return target
       ? target === '$parent'
@@ -103,7 +103,7 @@ export function useDropdown (props, emit, options = {}) {
     if (props.dropdownDisabled) return
 
     dropdownPanel.value.show({
-      snapTo: snapTo.value,
+      anchor: anchor.value,
       width: props.dropdownWidth,
       height: props.dropdownHeight,
       trigger: props.dropdownTrigger
@@ -154,7 +154,7 @@ export function useDropdown (props, emit, options = {}) {
     dropdownPanelAttrs,
     dropdownPanelEvents,
     dropdownIconAttrs,
-    snapTo,
+    anchor,
     toggle,
     expand,
     collapse,

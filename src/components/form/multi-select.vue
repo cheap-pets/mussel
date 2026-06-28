@@ -19,7 +19,7 @@
         :tag-shrink="tagShrink || null"
         :removable="!disabled && !readonly"
         :placeholder="placeholder"
-        :dropdown-snap-to="wrapper"
+        :dropdown-anchor="wrapper"
         :dropdown-width="dropdownWidth"
         :dropdown-class="['mu-select__dropdown-panel', dropdownClass]"
         :dropdown-scrollbar="dropdownScrollbar"

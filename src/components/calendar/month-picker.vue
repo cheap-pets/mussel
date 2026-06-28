@@ -1,50 +1,37 @@
 <template>
   <div class="mu-month-picker gap-half">
-    <table class="mu-date-grid">
-      <tbody>
-        <tr>
-          <td @click="setFirstYear(firstYear - 10)">
-            <mu-icon icon="chevronLeft" />
-          </td>
-          <td
-            v-for="i in 5" :key="i"
-            v-bind="getYearCellAttrs(firstYear + i - 1)"
-            @click="onYearCellClick(firstYear + i - 1)" />
-        </tr>
-        <tr>
-          <td
-            v-for="i in 5" :key="i"
-            v-bind="getYearCellAttrs(firstYear + i + 4)"
-            @click="onYearCellClick(firstYear + i + 4)" />
-          <td @click="setFirstYear(firstYear + 10)">
-            <mu-icon icon="chevronRight" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="mu-date-grid flex-1">
+      <div class="mu-date-cell" @click="setFirstYear(firstYear - 10)">
+        <mu-icon icon="chevronLeft" />
+      </div>
+      <div
+        v-for="y in years" :key="y"
+        :present="y === thisMonth.year || null"
+        :selected="y === chosenYear || null"
+        class="mu-date-cell"
+        @click="onYearCellClick(y)">
+        {{ y }}
+      </div>
+      <div class="mu-date-cell" @click="setFirstYear(firstYear + 10)">
+        <mu-icon icon="chevronRight" />
+      </div>
+    </div>
     <div class="flex-divider flex-divider--pill" />
-    <table class="mu-date-grid">
-      <tbody>
-        <tr>
-          <td
-            v-for="i in 6" :key="i"
-            v-bind="getMonthCellAttrs(i - 1)"
-            @click="onMonthCellClick(i - 1)" />
-        </tr>
-        <tr>
-          <td
-            v-for="i in 6" :key="i"
-            v-bind="getMonthCellAttrs(i + 5)"
-            @click="onMonthCellClick(i + 5)" />
-        </tr>
-      </tbody>
-    </table>
+    <div class="mu-date-grid flex-1">
+      <div
+        v-for="(label, m) in months" :key="m"
+        :muted="!isCurrentDecade || null"
+        :present="isCurrentDecade && monthEquals({ year: chosenYear, month: m }, thisMonth) || null"
+        :selected="isCurrentDecade && monthEquals({ year: chosenYear, month: m }, selected) || null"
+        class="mu-date-cell"
+        @click="onMonthCellClick(m)">
+        {{ label }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-  import './month-picker.scss'
-
   import { ref, computed, watchEffect } from 'vue'
 
   import { monthEquals, toObject, toString } from '@/utils/date'
@@ -79,29 +66,8 @@
     return year && first <= year && first + 10 > year
   })
 
-  function getYearCellAttrs (year) {
-    return {
-      'data-year': year,
-      present: (year === thisMonth.value.year) || null,
-      selected: (year === chosenYear.value) || null
-    }
-  }
-
-  function getMonthCellAttrs (month) {
-    const year = chosenYear.value
-
-    return {
-      'data-month': $t('Calendar.MONTHS_SHORT')[month],
-      ...(
-        isCurrentDecade.value
-          ? {
-            present: monthEquals({ year, month }, thisMonth.value) || null,
-            selected: monthEquals({ year, month }, selected.value) || null
-          }
-          : { muted: '' }
-      )
-    }
-  }
+  const years = computed(() => Array.from({ length: 10 }, (_, idx) => firstYear.value + idx))
+  const months = $t('Calendar.MONTHS_SHORT')
 
   function setFirstYear (year) {
     firstYear.value = parseInt(year / 10) * 10
@@ -149,3 +115,14 @@
     setYear
   })
 </script>
+
+<style>
+  .mu-month-picker {
+    display: flex;
+    flex-direction: column;
+
+    & > .mu-date-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+</style>

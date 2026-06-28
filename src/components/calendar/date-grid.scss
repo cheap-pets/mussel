@@ -1,77 +1,40 @@
 .mu-date-grid {
-  position: relative;
+  cursor: default;
 
-  table-layout: fixed;
-  border-spacing: 0;
-  border-collapse: collapse;
-  flex: 1 0 0;
-
-  width: 100%;
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: var(--mu-half-spacing);
 
   font-size: var(--mu-font-size-normal);
-
-  & th, & td {
-    padding: 8px;
-    line-height: 1;
-  }
-  
-  & th {
-    height: 40px;
-    font-weight: 500;
-    color: var(--mu-text-color-soft);
-  }
-  
-  & td {
-    cursor: pointer;
-
-    border: 1px solid var(--mu-border-color-soft);
-
-    font-weight: 400;
-    color: var(--mu-text-color-normal);
-    vertical-align: top;
-
-    &:hover {
-      background-color: var(--mu-gray-translucent);
-    }
-
-    &[muted] {
-      cursor: default;
-      color: var(--mu-text-color-muted);
-      background: none;
-    }
-
-    &[present] {
-      color: var(--mu-secondary-color);
-    }
-
-    &[selected] {
-      color: var(--mu-primary-color);
-      background-color: var(--mu-primary-translucent);
-    }
-  }
+  font-weight: 400;
+  color: var(--mu-text-color-normal);
 }
 
-.mu-date-grid--masked {
-  pointer-events: none;
+.mu-date-cell {
+  cursor: pointer;
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgb(0 0 0 / 10%);
-  }
-}
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.mu-dropdown-panel .mu-date-grid {
-  width: auto;
+  border-radius: var(--mu-common-border-radius);
 
-  & th, & td {
-    border: none;
-    text-align: center;
-    vertical-align: middle;
+  &:hover {
+    background-color: var(--mu-gray-translucent);
   }
 
-  & td {
-    border-radius: var(--mu-common-border-radius);
+  &[muted] {
+    cursor: default;
+    color: var(--mu-text-color-muted);
+    background: none;
+  }
+
+  &[present] {
+    color: var(--mu-secondary-color);
+  }
+
+  &[selected] {
+    color: var(--mu-primary-color);
+    background-color: var(--mu-primary-translucent);
   }
 }

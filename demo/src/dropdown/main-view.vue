@@ -95,7 +95,7 @@
             class="mu-icon-button"
             button-style="link"
             dropdown-icon="folder"
-            dropdown-snap-to="$parent"
+            dropdown-anchor="$parent"
             :dropdown-items="artists"
             @dropdown:itemclick="onItemClick"
             @action="onAction" />

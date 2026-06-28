@@ -6,7 +6,7 @@ const selectProps = {
   optionKey: { type: String, default: 'value' },
   valueMode: { type: String, default: 'normal', validator: v => ['normal', 'composite'].includes(v) },
   dropdownClass: null,
-  dropdownWidth: { type: String, default: '$same' },
+  dropdownWidth: { type: String, default: 'anchor' },
   dropdownScrollbar: Boolean
 }
 

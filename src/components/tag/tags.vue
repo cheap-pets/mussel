@@ -42,7 +42,7 @@
     max: { type: Number },
     tags: { type: Array, default: () => [] },
     tooltip: { type: Boolean, default: true },
-    dropdownSnapTo: { default: '$parent' }
+    dropdownAnchor: { default: '$parent' }
   })
 
   const attrs = useAttrs()
@@ -57,10 +57,10 @@
   )
 
   const dropdownBindings = computed(() => ({
-    'dropdown-width': '$same',
+    'dropdown-width': 'anchor',
     'dropdown-trigger': 'click',
     'dropdown-disabled': !props.expandable,
-    'dropdown-snap-to': props.dropdownSnapTo,
+    'dropdown-anchor': props.dropdownAnchor,
     ...pickBy(attrs, key => key.startsWith('dropdown'))
   }))
 

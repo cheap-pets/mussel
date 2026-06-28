@@ -1,39 +1,24 @@
 <template>
-  <div class="mu-year-picker">
-    <table class="mu-date-grid">
-      <tbody>
-        <tr>
-          <td @click="setFirstYear(firstYear - 10)">
-            <mu-icon icon="chevronLeft" />
-          </td>
-          <td
-            v-for="i in 3" :key="i"
-            v-bind="getYearCellAttrs(firstYear + i - 1)"
-            @click="onYearCellClick(firstYear + i - 1)" />
-        </tr>
-        <tr>
-          <td
-            v-for="i in 4" :key="i"
-            v-bind="getYearCellAttrs(firstYear + i + 2)"
-            @click="onYearCellClick(firstYear + i + 2)" />
-        </tr>
-        <tr>
-          <td
-            v-for="i in 3" :key="i"
-            v-bind="getYearCellAttrs(firstYear + i + 6)"
-            @click="onYearCellClick(firstYear + i + 6)" />
-          <td @click="setFirstYear(firstYear + 10)">
-            <mu-icon icon="chevronRight" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="mu-year-picker mu-date-grid">
+    <div class="mu-date-cell" @click="setFirstYear(firstYear - 10)">
+      <mu-icon icon="chevronLeft" />
+    </div>
+    <div
+      v-for="y in years"
+      :key="y"
+      :present="y === thisYear || null"
+      :selected="y === chosenYear || null"
+      class="mu-date-cell"
+      @click="onYearCellClick(y)">
+      {{ y }}
+    </div>
+    <div class="mu-date-cell" @click="setFirstYear(firstYear + 10)">
+      <mu-icon icon="chevronRight" />
+    </div>
   </div>
 </template>
 
 <script setup>
-  import './year-picker.scss'
-
   import { ref, computed, watchEffect } from 'vue'
   import { toObject, toString } from '../../utils/date'
   import { valueTypeProp } from './calendar'
@@ -54,16 +39,9 @@
   const firstYear = ref()
   const chosenYear = ref()
 
-  const selected = computed(() => toObject(model.value)?.year)
   const thisYear = computed(() => new Date().getFullYear())
-
-  function getYearCellAttrs (year) {
-    return {
-      'data-year': year,
-      present: (year === thisYear.value) || null,
-      selected: (year === chosenYear.value) || null
-    }
-  }
+  const selected = computed(() => toObject(model.value)?.year)
+  const years = computed(() => Array.from({ length: 10 }, (_, idx) => firstYear.value + idx))
 
   function setFirstYear (year) {
     firstYear.value = parseInt(year / 10) * 10
@@ -103,3 +81,9 @@
     setYear
   })
 </script>
+
+<style>
+  .mu-year-picker {
+    grid-template-columns: repeat(4, 1fr);
+  }
+</style>

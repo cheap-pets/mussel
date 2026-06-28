@@ -70,7 +70,7 @@
   const ctx = shallowReactive({})
 
   const sizeStyle = computed(() => ({
-    width: ctx.width === '$same' ? undefined : ctx.width,
+    width: ctx.width === 'anchor' ? undefined : ctx.width,
     height: ctx.height
   }))
 
@@ -96,13 +96,13 @@
     const el = panelEl.value
     const style = {}
 
-    const { width: sw, top: st, /* right: sr, */ bottom: sb, left: sl } = ctx.snapTo.getBoundingClientRect()
+    const { width: sw, top: st, /* right: sr, */ bottom: sb, left: sl } = ctx.anchor.getBoundingClientRect()
     const { width: _dw, height: dh } = el.getBoundingClientRect()
     const { /* innerWidth: tw, */ innerHeight: th } = window
 
     let dw = _dw
 
-    if ((ctx.width === '$same') /* || (!ctx.width && dw <= sw) */) {
+    if ((ctx.width === 'anchor') /* || (!ctx.width && dw <= sw) */) {
       dw = sw
       style.width = `${dw}px`
     }
@@ -129,20 +129,20 @@
     return true
   }
 
-  function show (snapOptions = {}) {
+  function show (options = {}) {
     clearHideTimer()
 
     const {
-      snapTo,
+      anchor,
       width = props.width,
       height = props.height,
       trigger = props.trigger,
       onHideCallback
-    } = snapOptions
+    } = options
 
-    if (ctx.snapTo !== snapTo) {
+    if (ctx.anchor !== anchor) {
       ctx.onHide?.()
-      ctx.snapTo = snapTo
+      ctx.anchor = anchor
     }
 
     ctx.width = width
@@ -228,7 +228,7 @@
   function onCaptureMouseDown (event) {
     if (
       visible.value &&
-      !ctx.snapTo?.contains(event.target) &&
+      !ctx.anchor?.contains(event.target) &&
       !panelEl.value?.contains(event.target)
     ) hide()
   }
@@ -236,7 +236,7 @@
   function onCaptureWindowResize () {
     if (visible.value) updatePosition()
 
-    if (!isElementInViewport(ctx.snapTo)) {
+    if (!isElementInViewport(ctx.anchor)) {
       hide()
     } else {
       updatePosition()
@@ -246,9 +246,9 @@
   function onCaptureScroll (event) {
     if (!isPositionAssignable()) return
 
-    if (!isElementInViewport(ctx.snapTo)) {
+    if (!isElementInViewport(ctx.anchor)) {
       hide()
-    } else if (event.target.contains(ctx.snapTo)) {
+    } else if (event.target.contains(ctx.anchor)) {
       updatePosition()
     }
   }

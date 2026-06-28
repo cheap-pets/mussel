@@ -11,6 +11,7 @@
           <month-picker
             ref="monthSelector"
             v-model="current"
+            class="flex-1"
             value-type="Object"
             @month-cell-click="monthDropdown.collapse()" />
         </template>
@@ -21,8 +22,9 @@
         <mu-icon-button icon="chevronDown" @click="nextMonth" />
       </template>
     </mu-toolbar>
-    <date-grid
-      :class="{ 'mu-date-grid--masked': monthDropdown?.dropdownVisible }"
+    <date-picker
+      class="flex-1"
+      :class="[monthDropdown?.dropdownVisible && 'mu-date-picker--masked']"
       :year="year"
       :month="month"
       :selected="selected"
@@ -32,10 +34,10 @@
 
 <script setup>
   import { ref, computed } from 'vue'
-  import { calendarProps, useCalendar } from './calendar'
   import { t as $t } from '@/langs'
+  import { calendarProps, useCalendar } from './calendar'
 
-  import DateGrid from './date-grid.vue'
+  import DatePicker from './date-picker.vue'
   import MonthPicker from './month-picker.vue'
 
   defineOptions({ name: 'MusselCalendar' })
@@ -64,7 +66,7 @@
   const caption = computed(() =>
     selectingMonth.value
       ? `${firstYear.value} ~ ${firstYear.value + 9}`
-      : $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS')[month.value])
+      : $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS_SHORT')[month.value])
   )
 </script>
 
@@ -73,5 +75,14 @@
     display: flex;
     flex-direction: column;
     background-color: var(--mu-bg-normal);
+
+    & > .mu-date-picker {
+      width: 100%;
+    }
+
+    & .mu-date-cell {
+      padding: var(--mu-base-spacing);
+      border: 1px solid var(--mu-border-color-soft);
+    }
   }
 </style>

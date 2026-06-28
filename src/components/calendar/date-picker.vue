@@ -1,23 +1,20 @@
 <template>
-  <table class="mu-date-grid" @sizechange="onResize">
-    <thead>
-      <th v-for="v in daysOfWeek" :key="v">
-        {{ v }}
-      </th>
-    </thead>
-    <tbody>
-      <tr v-for="(row, i) in data" :key="i">
-        <td
-          v-for="(cell, j) in row" :key="j"
-          :muted="cell.prev || cell.next"
-          :present="equals(cell, today) || null"
-          :selected="equals(cell, selected) || null"
-          @click="$emit('cellClick', cell)">
-          {{ cell.date }}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="mu-date-picker" @sizechange="onResize">
+    <div class="mu-date-grid mu-date-picker__head">
+      <span v-for="w in daysOfWeek" :key="w">{{ w }}</span>
+    </div>
+    <div class="mu-date-grid mu-date-picker__body">
+      <div
+        v-for="(cell, i) in data" :key="i"
+        class="mu-date-cell"
+        :muted="cell.prev || cell.next"
+        :present="equals(cell, today) || null"
+        :selected="equals(cell, selected) || null"
+        @click="$emit('cellClick', cell)">
+        {{ cell.date }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -53,17 +50,16 @@
     const next = getNextMonth(y, m)
     const prevCount = getMonthDaysCount(prev.year, prev.month)
 
-    const rows = []
+    const cells = []
 
     let i = 1
-    let row = []
 
     while (true) {
       const v = i - first
       const isPrev = v < 1
       const isNext = v > count
 
-      row.push(
+      cells.push(
         isPrev
           ? { ...prev, date: prevCount + v, prev: true }
           : isNext
@@ -71,17 +67,12 @@
             : { year: y, month: m, date: v }
       )
 
-      if (i % 7 === 0) {
-        rows.push(row)
-
-        if (v < count) row = []
-        else break
-      }
+      if (i % 7 === 0 && v >= count) break
 
       i++
     }
 
-    return rows
+    return cells
   })
 
   const onResize = throttle(300, event => {
@@ -90,3 +81,38 @@
       : $t('Calendar.DAYS_OF_WEEK_SHORT')
   })
 </script>
+
+<style>
+  .mu-date-picker {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    &--masked {
+      pointer-events: none;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgb(0 0 0 / 10%);
+      }
+    }
+  }
+
+  .mu-date-picker__head,
+  .mu-date-picker__body {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .mu-date-picker__head {
+    place-items: center;
+    height: 32px;
+    font-weight: 600;
+    color: var(--mu-text-color-soft);
+  }
+
+  .mu-date-picker__body {
+    flex: 1;
+  }
+</style>

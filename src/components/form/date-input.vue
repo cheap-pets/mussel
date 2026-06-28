@@ -28,16 +28,19 @@
         v-if="currentView === 'month'"
         ref="monthSelector"
         v-model="current"
+        class="flex-1"
         value-type="Object"
         @month-cell-click="selectMonth" />
       <year-picker
         v-else-if="currentView === 'year'"
         ref="yearSelector"
         v-model="current"
+        class="flex-1"
         value-type="Object"
         @year-cell-click="selectYear" />
-      <date-grid
+      <date-picker
         v-else
+        class="flex-1"
         :year="year"
         :month="month"
         :selected="selected"
@@ -47,20 +50,18 @@
 </template>
 
 <script setup>
-  import './date-input.scss'
-
   import { ref, computed } from 'vue'
 
   import { toString, monthEquals, yearEquals } from '@/utils/date'
   import { t as $t } from '@/langs'
 
-  import { calendarProps, useCalendar } from '../calendar/calendar'
   import { useFieldModel } from '../form/validation'
+  import { calendarProps, useCalendar } from '../calendar/calendar'
 
   import ComboWrapper from './combo-wrapper.vue'
-  import DateGrid from '../calendar/date-grid.vue'
-  import MonthPicker from '../calendar/month-picker.vue'
   import YearPicker from '../calendar/year-picker.vue'
+  import MonthPicker from '../calendar/month-picker.vue'
+  import DatePicker from '../calendar/date-picker.vue'
 
   defineOptions({ name: 'MusselDateInput' })
 
@@ -106,7 +107,7 @@
 
   const caption = computed(() =>
     currentView.value === 'date'
-      ? $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS')[month.value])
+      ? $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS_SHORT')[month.value])
       : `${firstYear.value} ~ ${firstYear.value + 9}`
   )
 
@@ -164,3 +165,19 @@
     }
   }
 </script>
+
+<style>
+  .mu-date-dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mu-half-spacing);
+
+    min-width: 300px;
+    max-width: 400px;
+    height: 250px;
+
+    & > .mu-bar {
+      border-radius: var(--mu-common-border-radius);
+    }
+  }
+</style>
