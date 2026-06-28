@@ -8,8 +8,8 @@
         v-for="(cell, i) in data" :key="i"
         class="mu-date-cell"
         :muted="cell.prev || cell.next"
-        :present="equals(cell, today) || null"
-        :selected="equals(cell, selected) || null"
+        :present="dateEquals(cell, today) || null"
+        :selected="dateEquals(cell, selected) || null"
         @click="$emit('cellClick', cell)">
         {{ cell.date }}
       </div>
@@ -23,8 +23,8 @@
   import { t as $t } from '@/langs'
 
   import {
-    equals,
-    toObject,
+    dateEquals,
+    toDateObject,
     getPrevMonth,
     getNextMonth,
     getMonthFirstDay,
@@ -37,7 +37,7 @@
 
   const daysOfWeek = shallowRef($t('Calendar.DAYS_OF_WEEK_SHORT'))
 
-  const today = computed(() => toObject(new Date()))
+  const today = computed(() => toDateObject(new Date()))
 
   const data = computed(() => {
     const y = props.year

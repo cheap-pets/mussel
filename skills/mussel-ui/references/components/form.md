@@ -159,7 +159,7 @@ const items = [
 | `modelValue` | — | — | 双向绑定值 |
 | `type` | String | `text` | 原生 input type |
 | `placeholder` | String | — | 占位文本 |
-| `clearable` | Boolean | 全局配置 | 是否显示清除按钮 |
+| `clearable` | Boolean | `false` | 是否显示清除按钮（不再读取全局 `input.clearButton` 配置） |
 | `size` | String | `normal` | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`size="small"`）内时自动继承小尺寸 |
 | `pill` | Boolean | — | 左右圆弧形态（胶囊形） |
 | `invalid` | Boolean | — | 校验失败样式 |
@@ -338,7 +338,6 @@ const filteredItems = computed(() =>
 | 事件 | 参数 | 说明 |
 |------|------|------|
 | `update:modelValue` | hex | 值变更（HEX 字符串） |
-| `change` | hex | 值确认变更（选中色格 / 输入框回车 / 失焦时通过校验） |
 | `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起（由底层 combo 组件透传） |
 
 > - 内置色板由 `colors` 对象派生：12 个基础色组（red/pink/grape/violet/indigo/blue/cyan/teal/green/lime/yellow/orange，各 10 级色阶）+ 1 组灰阶（由主色派生的 10 级中性灰），随主题色配置动态变化。

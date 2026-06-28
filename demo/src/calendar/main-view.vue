@@ -5,12 +5,12 @@
       <theme-switch />
     </h2>
     <div class="group" :class="[['test3'], 'test1', { test2: true }]">
-      <mu-calendar v-model="date" class="calendar1" value-type="object" />
+      <mu-calendar v-model="date" class="calendar1" output-type="object" />
     </div>
     <div class="group">
       <mu-date-input v-model="date" prefix="日期选择" />
-      <mu-date-input v-model="date" prefix="月份选择" type="month" format="yyyy-MM" value-type="object" />
-      <mu-date-input v-model="date" prefix="年份选择" type="year" format="yyyy" value-type="object" />
+      <mu-date-input v-model="date" prefix="月份选择" type="month" format="yyyy-MM" output-type="object" />
+      <mu-date-input v-model="date" prefix="年份选择" type="year" format="yyyy" output-type="object" />
     </div>
     <div class="group">
       <mu-time-input v-model="time1" placeholder="时分选择" prefix="时分" />

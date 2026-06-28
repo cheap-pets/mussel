@@ -12,7 +12,7 @@
             ref="monthSelector"
             v-model="current"
             class="flex-1"
-            value-type="Object"
+            output-type="Object"
             @month-cell-click="monthDropdown.collapse()" />
         </template>
       </mu-dropdown-button>

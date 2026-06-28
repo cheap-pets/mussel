@@ -29,14 +29,14 @@
         ref="monthSelector"
         v-model="current"
         class="flex-1"
-        value-type="Object"
+        output-type="Object"
         @month-cell-click="selectMonth" />
       <year-picker
         v-else-if="currentView === 'year'"
         ref="yearSelector"
         v-model="current"
         class="flex-1"
-        value-type="Object"
+        output-type="Object"
         @year-cell-click="selectYear" />
       <date-picker
         v-else
@@ -52,7 +52,7 @@
 <script setup>
   import { ref, computed } from 'vue'
 
-  import { toString, monthEquals, yearEquals } from '@/utils/date'
+  import { toDateString, monthEquals, yearEquals } from '@/utils/date'
   import { t as $t } from '@/langs'
 
   import { useFieldModel } from '../form/validation'
@@ -117,7 +117,7 @@
 
   const value = computed({
     get () {
-      return toString(model.value, props.format)
+      return toDateString(model.value, props.format)
     },
     set (v) {
       model.value = v

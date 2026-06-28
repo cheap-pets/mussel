@@ -17,7 +17,7 @@
 
 <script setup>
   import { ref, computed, watch } from 'vue'
-  import { parseTime, formatTime } from '@/utils/date'
+  import { toTimeObject, toTimeString } from '@/utils/date'
   import { useFieldModel } from '../form/validation'
 
   import ComboWrapper from './combo-wrapper.vue'

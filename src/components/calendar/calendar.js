@@ -2,23 +2,23 @@ import { ref, computed, watchEffect } from 'vue'
 import { pick } from '@/utils/object'
 
 import {
-  equals,
-  toObject,
-  toString,
+  dateEquals,
+  toDateObject,
+  toDateString,
   getPrevMonth,
   getNextMonth
 } from '@/utils/date'
 
-export const valueTypeProp = {
+export const outputTypeProp = {
   type: String,
   default: 'date',
-  validator: v => ['date', 'string', 'object'].includes(v?.toLowerCase?.())
+  validator: v => ['date', 'string', 'object'].includes(v)
 }
 
 export const calendarProps = {
-  range: Boolean,
+  outputType: outputTypeProp,
   format: String,
-  valueType: valueTypeProp,
+  // range: Boolean,
   min: [Date, String],
   max: [Date, String]
 }
@@ -26,8 +26,8 @@ export const calendarProps = {
 export function useCalendar (model, props) {
   const current = ref()
 
-  const today = computed(() => toObject(new Date()))
-  const selected = computed(() => toObject(model.value))
+  const today = computed(() => toDateObject(new Date()))
+  const selected = computed(() => toDateObject(model.value))
 
   const year = computed(() => current.value.year)
   const month = computed(() => current.value.month)
@@ -45,17 +45,17 @@ export function useCalendar (model, props) {
   }
 
   function updateModelValue (value) {
-    const vType = props.valueType.toLowerCase()
+    const vType = props.outputType.toLowerCase()
 
     model.value = vType === 'object'
       ? value
       : vType === 'date'
         ? new Date(value.year, value.month, value.date ?? 1)
-        : toString(value, props.format)
+        : toDateString(value, props.format)
   }
 
   function onDateCellClick (cell) {
-    if (!equals(cell, selected.value)) {
+    if (!dateEquals(cell, selected.value)) {
       updateModelValue(pick(cell, ['year', 'month', 'date']))
     }
   }

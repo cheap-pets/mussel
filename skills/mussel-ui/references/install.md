@@ -33,11 +33,11 @@ install(app, {
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
 | localeResources | Object | — | 自定义语言包，写入指定 `locale` 下；Mussel 内置 `zh` / `en` |
-| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `input.clearButton` 等） |
+| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `gridCell.endOffset`、`splitter.*`、`tree.*` 等） |
 
 > [!NOTE]
 >
-> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置根元素 class（`mu-root` + `mu-dark`，由 `dark` 决定）→ 设置主题色（`setupColors`）→ 设置语言（`setupLocale`）→ 注册图标（`installIcons`）→ 注册全部组件。
+> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置根元素 class（`mu-root` + `mu-dark`，由 `dark` 决定）→ 设置主题色（`setupColors`）→ 设置语言（`setupLocale`）→ 注册图标（`installIcons`）→ 注册全部组件 → 注册滚动指令（`v-mu-scrollbar`）。
 
 ## 全局 `$mussel` 上下文
 

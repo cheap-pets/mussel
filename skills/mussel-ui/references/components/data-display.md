@@ -54,7 +54,7 @@
 | `removable` | Boolean | — | 是否可删除 |
 | `expandable` | Boolean | — | 是否可下拉展开所有标签 |
 | `tooltip` | Boolean | `true` | 标签是否显示 tooltip |
-| `dropdown-snap-to` | — | 父节点 | 下拉面板吸附目标 |
+| `dropdown-anchor` | — | 父节点 | 下拉面板锚点目标 |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|

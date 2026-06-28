@@ -31,13 +31,13 @@
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `dropdown-items` | Array | 下拉项列表 |
-| `dropdown-width` / `dropdown-height` | String | 面板尺寸 |
+| `dropdown-width` / `dropdown-height` | String | 面板尺寸；`dropdown-width: 'anchor'` 表示与锚点元素同宽（MuSelect 默认即此值） |
 | `dropdown-trigger` | String | `hover`（默认）\| `click` |
 | `dropdown-position` | String | `auto` \| `fixed` \| `top` \| `bottom` |
 | `dropdown-icon` | String | 下拉箭头图标，默认下箭头 |
 | `dropdown-disabled` | Boolean | 禁用下拉 |
 | `dropdown-attrs` | Object | 透传给面板的额外属性 |
-| `dropdown-snap-to` | — | 面板吸附目标，默认组件根元素 |
+| `dropdown-anchor` | — | 面板锚点目标，默认组件根元素 |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|

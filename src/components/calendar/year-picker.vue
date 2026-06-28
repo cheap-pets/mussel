@@ -20,15 +20,15 @@
 
 <script setup>
   import { ref, computed, watchEffect } from 'vue'
-  import { toObject, toString } from '../../utils/date'
-  import { valueTypeProp } from './calendar'
+  import { toDateObject, toDateString } from '../../utils/date'
+  import { outputTypeProp } from './calendar'
 
   defineOptions({ name: 'MusselYearPicker' })
 
   const model = defineModel({ type: Object })
 
   const props = defineProps({
-    valueType: valueTypeProp,
+    outputType: outputTypeProp,
     format: { type: String, default: 'yyyy' }
   })
 
@@ -40,7 +40,7 @@
   const chosenYear = ref()
 
   const thisYear = computed(() => new Date().getFullYear())
-  const selected = computed(() => toObject(model.value)?.year)
+  const selected = computed(() => toDateObject(model.value)?.year)
   const years = computed(() => Array.from({ length: 10 }, (_, idx) => firstYear.value + idx))
 
   function setFirstYear (year) {
@@ -56,20 +56,20 @@
     chosenYear.value = year
 
     if (year !== selected.value) {
-      const vType = props.valueType.toLowerCase()
+      const vType = props.outputType.toLowerCase()
 
       model.value = vType === 'object'
         ? { year, month: 0 }
         : vType === 'date'
           ? new Date(year, 0)
-          : toString({ year, month: 0 }, props.format)
+          : toDateString({ year, month: 0 }, props.format)
     }
 
     emit('yearCellClick', year)
   }
 
   watchEffect(() => {
-    chosenYear.value = toObject(model.value)?.year
+    chosenYear.value = toDateObject(model.value)?.year
   })
 
   watchEffect(() => {

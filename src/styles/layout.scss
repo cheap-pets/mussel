@@ -173,7 +173,7 @@ $FLEX_DIRECTIONS: (
 
 @each $v in (normal, start, center, end, stretch) {
   .justify-items-#{$v} {
-    justify-items: space-#{$v};
+    justify-items: #{$v};
   }
 }
 
@@ -185,7 +185,7 @@ $FLEX_DIRECTIONS: (
 
 @each $v in (auto, start, center, end, stretch) {
   .justify-self-#{$v} {
-    justify-self: space-#{$v};
+    justify-self: #{$v};
   }
 }
 

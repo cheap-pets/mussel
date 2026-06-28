@@ -1,10 +1,10 @@
-import { formatDate } from '../../../utils/date'
+import { toDateString } from '@/utils/date'
 
 export const DateColumn = {
   align: 'right',
   compile (column) {
     const {
-      formatter = formatDate,
+      formatter = toDateString,
       format = 'yyyy-MM-dd'
     } = column
 
@@ -16,7 +16,7 @@ export const DateTimeColumn = {
   align: 'right',
   compile (column) {
     const {
-      formatter = formatDate,
+      formatter = toDateString,
       format = 'yyyy-MM-dd hh:mm'
     } = column
 

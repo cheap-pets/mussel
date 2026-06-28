@@ -331,8 +331,17 @@
 | -------------- | ----------- |
 | .items-{value} | align-items |
 | .self-{value}  | align-self  |
+| .self-auto     | align-self: auto |
 
-可用值：center, start, end, baseline, stretch, flex-start, flex-end, unset, inherit
+可用值（items/self）：center, start, end, baseline, stretch, flex-start, flex-end, unset, inherit
+
+**align-content：**
+
+| 类名             | 说明           |
+| ---------------- | -------------- |
+| .content-{value} | align-content  |
+
+可用值：start, center, end, baseline, stretch, flex-start, flex-end, around, between, evenly（`around`/`between`/`evenly` 对应 `space-*`）
 
 **justify-content：**
 
@@ -340,7 +349,40 @@
 | ---------------- | -------------- |
 | .justify-{value} | justify-content |
 
-可用值：start, end, left, right, baseline, center, stretch, flex-start, flex-end, space-around, space-between, space-evenly
+可用值：normal, start, end, left, right, baseline, center, stretch, flex-start, flex-end, around, between, evenly（`around`/`between`/`evenly` 对应 `space-*`）
+
+**justify-content（安全对齐，防溢出截断）：**
+
+| 类名                   | 说明                    |
+| ---------------------- | ----------------------- |
+| .justify-center-safe   | justify-content: safe center |
+| .justify-end-safe      | justify-content: safe end    |
+
+**justify-items（Grid 列方向对齐）：**
+
+| 类名                  | 说明         |
+| --------------------- | ------------ |
+| .justify-items-{value} | justify-items |
+
+可用值：normal, start, center, end, stretch
+
+| 类名                          | 说明                       |
+| ----------------------------- | -------------------------- |
+| .justify-items-center-safe    | justify-items: safe center |
+| .justify-items-end-safe       | justify-items: safe end    |
+
+**justify-self（Grid 单元格列方向对齐）：**
+
+| 类名                 | 说明        |
+| -------------------- | ----------- |
+| .justify-self-{value} | justify-self |
+
+可用值：auto, start, center, end, stretch
+
+| 类名                       | 说明                      |
+| -------------------------- | ------------------------- |
+| .justify-self-center-safe  | justify-self: safe center |
+| .justify-self-end-safe     | justify-self: safe end    |
 
 
 

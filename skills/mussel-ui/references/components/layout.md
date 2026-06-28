@@ -52,7 +52,7 @@
 
 ### MuGridBox / MuGridCell
 
-CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `rows` / `columns` 自动生成 `repeat(n, 1fr)` 模板。
+CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `rows` / `columns` 自动生成网格模板。
 
 > **推荐直接使用原子类**：`<div class="grid">` + 原生 `grid-template-*` 内联样式，无需组件。
 
@@ -60,19 +60,20 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
-| `columns` | Number | — | 列数，自动生成 `grid-template-columns: repeat(n, 1fr)`；非数字值忽略 |
-| `rows` | Number | — | 行数，自动生成 `grid-template-rows: repeat(n, 1fr)`；非数字值忽略 |
+| `columns` | String \| Number | — | 列数：数字生成 `grid-template-columns: repeat(n, 1fr)`；`'auto'` 生成 `grid-auto-columns: 1fr` |
+| `rows` | String \| Number | — | 行数：数字生成 `grid-template-rows: repeat(n, 1fr)`；`'auto'` 生成 `grid-auto-rows: 1fr` |
 
 **MuGridCell 属性：**
 
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `col-start` | Number | `grid-column-start` |
-| `col-span` | Number | `grid-column-span` |
-| `col-end` | Number | `grid-column-end` |
-| `row-start` | Number | `grid-row-start` |
-| `row-span` | Number | `grid-row-span` |
-| `row-end` | Number | `grid-row-end` |
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `col-start` | Number | — | `grid-column-start` |
+| `col-span` | Number | — | `grid-column-span` |
+| `col-end` | Number | — | `grid-column-end`（实际值为 `colEnd + end-offset`） |
+| `row-start` | Number | — | `grid-row-start` |
+| `row-span` | Number | — | `grid-row-span` |
+| `row-end` | Number | — | `grid-row-end`（实际值为 `rowEnd + end-offset`） |
+| `end-offset` | Number | `0` | 列/行结束偏移量，取值 `0` \| `1`；默认可由全局 `$mussel.options.gridCell.endOffset` 配置 |
 
 ```html
 <!-- 组件形式 -->

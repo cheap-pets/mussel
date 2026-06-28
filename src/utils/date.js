@@ -1,19 +1,23 @@
-import { isString, isObject, isDate } from '@/utils/type'
+import { typeOf, isObject, isDate } from '@/utils/type'
 
-export function resolveDate (value) {
-  value = isObject(value)
-    ? new Date(value.year, value.month || 0, value.date || 1)
-    : isString(value)
-      ? new Date(value)
-      : value
+export function toDate (value) {
+  if (value == null || value === '') return null
+
+  const type = typeOf(value)
+
+  if (type === 'object') {
+    value = new Date(value.year, value.month || 0, value.date || 1)
+  } else if (type !== 'date') {
+    value = new Date(value)
+  }
 
   return isDate(value) ? value : null
 }
 
-export function toObject (value) {
+export function toDateObject (value) {
   if (isObject(value)) return value
 
-  const date = resolveDate(value)
+  const date = toDate(value)
 
   return date && {
     year: date.getFullYear(),
@@ -22,8 +26,8 @@ export function toObject (value) {
   }
 }
 
-export function toString (date, format = 'yyyy-MM-dd') {
-  date = resolveDate(date)
+export function toDateString (date, format = 'yyyy-MM-dd') {
+  date = toDate(date)
 
   if (!date) return null
 
@@ -94,7 +98,7 @@ export function getNextMonth (year, month) {
 
 export function filterDatesByMonth (dates, year, month) {
   return dates.reduce((t, el) => {
-    el = toObject(el)
+    el = toDateObject(el)
 
     if (el && el.year === year && el.month === month) {
       t.push(el)
@@ -104,9 +108,9 @@ export function filterDatesByMonth (dates, year, month) {
   }, [])
 }
 
-export function equals (a, b) {
-  a = toObject(a)
-  b = toObject(b)
+export function dateEquals (a, b) {
+  a = toDateObject(a)
+  b = toDateObject(b)
 
   return (
     a?.year &&
@@ -118,63 +122,20 @@ export function equals (a, b) {
 }
 
 export function monthEquals (a, b) {
-  a = toObject(a)
-  b = toObject(b)
+  a = toDateObject(a)
+  b = toDateObject(b)
 
   return a?.year && b?.year && a.year === b.year && a.month === b.month
 }
 
 export function yearEquals (a, b) {
-  a = toObject(a)
-  b = toObject(b)
+  a = toDateObject(a)
+  b = toDateObject(b)
 
   return a?.year && b?.year && a.year === b.year
 }
 
-export function formatDate (date, format = 'yyyy-MM-dd') {
-  if (date == null) return date
-
-  date = isDate(date) ? date : new Date(date)
-
-  let result = /(y+)/i.test(format)
-    ? format.replace(
-      RegExp.$1,
-      ('' + date.getFullYear()).substr(4 - RegExp.$1.length)
-    )
-    : format
-
-  const patterns = {
-    '(M+)': date.getMonth() + 1,
-    '(d+)': date.getDate(),
-    '(h+)': date.getHours(),
-    '(m+)': date.getMinutes(),
-    '(s+)': date.getSeconds(),
-    '(S+)': date.getMilliseconds()
-  }
-
-  Object.keys(patterns).forEach(p => {
-    const re = new RegExp(p, (p === '(d+)' || p === '(h+)') ? 'i' : undefined)
-
-    if (re.test(result)) {
-      const len = RegExp.$1.length
-      const str = '' + patterns[p]
-      const from = str.length
-
-      result = result.replace(
-        RegExp.$1,
-        len === 2
-          ? ('00' + str).substr(from)
-          : len === 3
-            ? ('000' + str).substr(from)
-            : str
-      )
-    }
-  })
-
-  return result
-}
-
-export function parseTime (value) {
+export function toTimeObject (value) {
   if (!value) return null
 
   const m = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(value)
@@ -190,7 +151,7 @@ export function parseTime (value) {
   return { hour, minute, second }
 }
 
-export function formatTime (time, includeSecond = false) {
+export function toTimeString (time, includeSecond = false) {
   if (!time) return null
 
   const hour = String(time.hour ?? 0).padStart(2, '0')

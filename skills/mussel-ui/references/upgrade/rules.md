@@ -1080,7 +1080,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
 | `dropdown-align` | `dropdown-position` | 值：auto / fixed / top / bottom |
-| `sticky-target` | `dropdown-snap-to` | 默认：组件根元素 |
+| `sticky-target` | `dropdown-anchor` | 默认：组件根元素 |
 | `reserve-icon-place` | _(已移除)_ | |
 
 #### MuDropdownPanel

@@ -34,17 +34,17 @@
 <script setup>
   import { ref, computed, watchEffect } from 'vue'
 
-  import { monthEquals, toObject, toString } from '@/utils/date'
+  import { monthEquals, toDateObject, toDateString } from '@/utils/date'
   import { pick } from '@/utils/object'
   import { t as $t } from '@/langs'
-  import { valueTypeProp } from './calendar'
+  import { outputTypeProp } from './calendar'
 
   defineOptions({ name: 'MusselMonthPicker' })
 
   const model = defineModel({ type: Object })
 
   const props = defineProps({
-    valueType: valueTypeProp,
+    outputType: outputTypeProp,
     format: { type: String, default: 'yyyy-MM' }
   })
 
@@ -56,8 +56,8 @@
   const firstYear = ref()
   const chosenYear = ref()
 
-  const selected = computed(() => pick(toObject(model.value), ['year', 'month']))
-  const thisMonth = computed(() => pick(toObject(new Date()), ['year', 'month']))
+  const selected = computed(() => pick(toDateObject(model.value), ['year', 'month']))
+  const thisMonth = computed(() => pick(toDateObject(new Date()), ['year', 'month']))
 
   const isCurrentDecade = computed(() => {
     const first = firstYear.value
@@ -90,20 +90,20 @@
     const value = { year, month }
 
     if (!monthEquals(value, selected.value)) {
-      const vType = props.valueType.toLowerCase()
+      const vType = props.outputType.toLowerCase()
 
       model.value = vType === 'object'
         ? value
         : vType === 'date'
           ? new Date(year, month)
-          : toString(value, props.format)
+          : toDateString(value, props.format)
     }
 
     emit('monthCellClick', year, month)
   }
 
   watchEffect(() => {
-    chosenYear.value = toObject(model.value)?.year
+    chosenYear.value = toDateObject(model.value)?.year
   })
 
   watchEffect(() => {

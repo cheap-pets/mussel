@@ -41,11 +41,11 @@ install(app, {
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
 | localeResources | Object | — | 自定义语言包，写入指定 `locale` 下；Mussel 内置 `zh` / `en` |
-| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `input.clearButton` 等） |
+| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `gridCell.endOffset`、`splitter.*`、`tree.*` 等） |
 
 > [!NOTE]
 >
-> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置根元素 class（`mu-root` + `mu-dark`，由 `dark` 决定）→ 设置主题色（`setupColors`）→ 设置语言（`setupLocale`）→ 注册图标（`installIcons`）→ 注册全部组件。
+> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置根元素 class（`mu-root` + `mu-dark`，由 `dark` 决定）→ 设置主题色（`setupColors`）→ 设置语言（`setupLocale`）→ 注册图标（`installIcons`）→ 注册全部组件 → 注册滚动指令（`v-mu-scrollbar`）。
 
 ### 全局 `$mussel` 上下文
 
@@ -118,10 +118,10 @@ Object.keys(icons)  // 列出所有可用图标名
 >
 > 推荐直接使用 `<div class="grid">` + 原生 CSS Grid 属性，无需组件。
 
-| 属性名称 | 类型   | 说明                            |
-| -------- | ------ | ------------------------------- |
-| columns  | Number | 列数（自动生成 `repeat(n, 1fr)`）|
-| rows     | Number | 行数（自动生成 `repeat(n, 1fr)`）|
+| 属性名称 | 类型            | 默认值 | 说明                                                                 |
+| -------- | --------------- | ------ | -------------------------------------------------------------------- |
+| columns  | String \| Number | —      | 列数：数字生成 `repeat(n, 1fr)`；`'auto'` 生成 `grid-auto-columns: 1fr` |
+| rows     | String \| Number | —      | 行数：数字生成 `repeat(n, 1fr)`；`'auto'` 生成 `grid-auto-rows: 1fr`    |
 
 
 
@@ -129,14 +129,15 @@ Object.keys(icons)  // 列出所有可用图标名
 
 网格布局单元格容器
 
-| 属性名称   | 类型   | 说明     |
-| ---------- | ------ | -------- |
-| col-start  | Number | 起始列   |
-| col-span   | Number | 跨列数   |
-| col-end    | Number | 结束列   |
-| row-start  | Number | 起始行   |
-| row-span   | Number | 跨行数   |
-| row-end    | Number | 结束行   |
+| 属性名称   | 类型   | 默认值 | 说明                                                                       |
+| ---------- | ------ | ------ | -------------------------------------------------------------------------- |
+| col-start  | Number | —      | 起始列                                                                     |
+| col-span   | Number | —      | 跨列数                                                                     |
+| col-end    | Number | —      | 结束列（实际值为 `colEnd + end-offset`）                                   |
+| row-start  | Number | —      | 起始行                                                                     |
+| row-span   | Number | —      | 跨行数                                                                     |
+| row-end    | Number | —      | 结束行（实际值为 `rowEnd + end-offset`）                                   |
+| end-offset | Number | `0`    | 列/行结束偏移量，取值 `0` \| `1`；默认可由全局 `$mussel.options.gridCell.endOffset` 配置 |
 
 ```html
 <mu-grid-box :columns="6" :rows="6">
@@ -816,7 +817,7 @@ const items = [
 | modelValue | —                | —      | 双向绑定输入值                                               |
 | type       | String           | `text` | 原生 Input 元素的 type                                       |
 | placeholder| String           | —      | 占位文本                                                     |
-| clearable  | Boolean          | 全局配置| 是否显示清除按钮，以全局 `$mussel.options.input.clearButton` 为默认值 |
+| clearable  | Boolean          | `false` | 是否显示清除按钮（覆盖全局默认值）                                                       |
 | size       | String           | —      | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`size="small"`）内时自动继承小尺寸，未设置时由上下文决定 |
 | pill       | Boolean          | —      | 左右圆弧形态（胶囊形）                                       |
 | invalid    | Boolean          | —      | 校验失败样式                                                 |
@@ -845,7 +846,7 @@ const items = [
 
 > [!WARNING]
 >
-> `clear-button` 已更名为 `clearable`；`label` 已废弃，使用 `prefix` / `suffix`；`solid` / `underline` 已废弃，使用 `input-style`。
+> `clear-button` 已更名为 `clearable`（现为纯 `Boolean`，不再读取全局 `input.clearButton` 配置）；`label` 已废弃，使用 `prefix` / `suffix`；`solid` / `underline` 已废弃，使用 `input-style`。
 
 
 
@@ -992,7 +993,7 @@ const filteredItems = computed(() =>
 | -------------- | ------ | ------------- | ----------------------------------------------------- |
 | type           | String | `date`        | `date`（选日期）\| `month`（选月份）\| `year`（选年份）|
 | format         | String | —             | 日期格式（未设置时 date 类型按 `yyyy-MM-dd` 渲染）    |
-| valueType      | String | `date`        | 返回值类型：`date` \| `string` \| `object`            |
+| value-type      | String | `date`        | 返回值类型：`date` \| `string` \| `object`            |
 | dropdown-class | String | —             | 下拉面板附加 class                                    |
 | (其他)         | —      | —             | 包含 MuInput 属性（options 相关除外）                 |
 
@@ -1017,12 +1018,11 @@ const filteredItems = computed(() =>
 | disabled   | Boolean | —      | 是否禁用（透传给内部输入框与色块）                                   |
 | readonly   | Boolean | —      | 是否只读（透传给内部输入框与色块）                                   |
 
-| 事件              | 参数 | 说明                                                 |
-| ----------------- | ---- | ---------------------------------------------------- |
-| update:modelValue | hex  | 值变更（HEX 字符串）                                 |
-| change            | hex  | 值确认变更（选中色格 / 输入框回车 / 失焦时通过校验） |
-| dropdown:show     | —    | 下拉面板展开                                         |
-| dropdown:hide     | —    | 下拉面板收起                                         |
+| 事件              | 参数 | 说明                       |
+| ----------------- | ---- | -------------------------- |
+| update:modelValue | hex  | 值变更（HEX 字符串）       |
+| dropdown:show     | —    | 下拉面板展开               |
+| dropdown:hide     | —    | 下拉面板收起               |
 
 > [!NOTE]
 >
@@ -1193,7 +1193,7 @@ const filteredItems = computed(() =>
 | 属性名称           | 类型    | 说明                                             |
 | ------------------ | ------- | ------------------------------------------------ |
 | dropdown-items     | Array   | 下拉项列表                                       |
-| dropdown-width     | String  | 下拉面板宽度                                     |
+| dropdown-width     | String  | 下拉面板宽度；`'anchor'` 表示与锚点元素同宽（MuSelect 默认即此值）|
 | dropdown-height    | String  | 下拉面板高度                                     |
 | dropdown-class     | String  | 下拉面板附加 class                               |
 | dropdown-style     | Object \| String | 下拉面板附加 style                      |
@@ -1204,7 +1204,7 @@ const filteredItems = computed(() =>
 | dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`       |
 | dropdown-panel     | Object  | 自定义下拉面板组件（覆盖默认 MuDropdownPanel）   |
 | dropdown-attrs     | Object  | 透传给面板的额外属性                             |
-| dropdown-snap-to   | —       | 下拉面板吸附目标，默认为组件根元素               |
+| dropdown-anchor    | —       | 下拉面板锚点目标，默认为组件根元素               |
 
 | 事件               | 参数                         | 说明                         |
 | ------------------ | ---------------------------- | ---------------------------- |
@@ -1316,7 +1316,7 @@ const ctxMenu = shallowRef()
 | removable        | Boolean | —       | 是否可删除                                   |
 | expandable       | Boolean | —       | 是否可下拉展开显示所有标签项                 |
 | tooltip          | Boolean | `true`  | 是否显示标签标题 tooltip                     |
-| dropdown-snap-to | —       | 父节点  | 下拉面板吸附目标，默认为当前组件根元素父节点 |
+| dropdown-anchor | —       | 父节点  | 下拉面板锚点目标，默认为当前组件根元素父节点 |
 
 | 事件       | 参数 | 说明                   |
 | ---------- | ---- | ---------------------- |
