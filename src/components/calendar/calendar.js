@@ -12,13 +12,12 @@ import {
 export const outputTypeProp = {
   type: String,
   default: 'date',
-  validator: v => ['date', 'string', 'object'].includes(v)
+  validator: v => ['date', 'string'].includes(v)
 }
 
 export const calendarProps = {
   outputType: outputTypeProp,
   format: String,
-  // range: Boolean,
   min: [Date, String],
   max: [Date, String]
 }
@@ -32,8 +31,19 @@ export function useCalendar (model, props) {
   const year = computed(() => current.value.year)
   const month = computed(() => current.value.month)
 
-  function setCurrent (value) {
-    Object.assign(current.value, { year: value.year, month: value.month })
+  const currentProxy = computed({
+    get () {
+      return new Date(current.value.year, current.value.month)
+    },
+    set (value) {
+      const dateObj = toDateObject(value)
+
+      if (dateObj) setCurrent(dateObj)
+    }
+  })
+
+  function setCurrent (dateObj) {
+    Object.assign(current.value, dateObj)
   }
 
   function prevMonth () {
@@ -47,11 +57,9 @@ export function useCalendar (model, props) {
   function updateModelValue (value) {
     const vType = props.outputType.toLowerCase()
 
-    model.value = vType === 'object'
-      ? value
-      : vType === 'date'
-        ? new Date(value.year, value.month, value.date ?? 1)
-        : toDateString(value, props.format)
+    model.value = vType === 'date'
+      ? new Date(value.year, value.month, value.date ?? 1)
+      : toDateString(value, props.format)
   }
 
   function onDateCellClick (cell) {
@@ -70,6 +78,7 @@ export function useCalendar (model, props) {
     today,
     current,
     selected,
+    currentProxy,
     prevMonth,
     nextMonth,
     setCurrent,

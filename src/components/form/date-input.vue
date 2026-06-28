@@ -27,16 +27,14 @@
       <month-picker
         v-if="currentView === 'month'"
         ref="monthSelector"
-        v-model="current"
+        v-model="currentProxy"
         class="flex-1"
-        output-type="Object"
         @month-cell-click="selectMonth" />
       <year-picker
         v-else-if="currentView === 'year'"
         ref="yearSelector"
-        v-model="current"
+        v-model="currentProxy"
         class="flex-1"
-        output-type="Object"
         @year-cell-click="selectYear" />
       <date-picker
         v-else
@@ -72,7 +70,7 @@
       default: 'date',
       validator: v => ['date', 'month', 'year'].includes(v)
     },
-    modelValue: { type: [Date, String, Object, Array] },
+    modelValue: { type: [Date, String] },
     ...calendarProps
   })
 
@@ -85,6 +83,7 @@
     month,
     today,
     current,
+    currentProxy,
     selected,
     prevMonth,
     nextMonth,
@@ -129,12 +128,15 @@
   }
 
   function onCurrentButtonClick () {
-    if (currentView.value === 'date') {
-      setCurrent(today.value)
-    } else if (currentView.value === 'month') {
-      monthSelector.value.setYear(today.value.year)
-    } else if (currentView.value === 'year') {
-      yearSelector.value.setYear(today.value.year)
+    switch (currentView.value) {
+      case 'date':
+        setCurrent(today)
+        break
+      case 'month':
+        monthSelector.value.setYear(today.value.year)
+        break
+      case 'year':
+        yearSelector.value.setYear(today.value.year)
     }
   }
 

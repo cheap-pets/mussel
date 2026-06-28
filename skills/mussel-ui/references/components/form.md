@@ -311,9 +311,10 @@ const filteredItems = computed(() =>
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
+| `modelValue` | Date\|String | — | 双向绑定值（Date 或格式化字符串） |
 | `type` | String | `date` | `date`（选日期）\| `month`（选月份）\| `year`（选年份） |
 | `format` | String | `yyyy-MM-dd` | 日期格式 |
-| `valueType` | String | `date` | 返回值类型：`date` \| `string` \| `object` |
+| `output-type` | String | `date` | 返回值类型：`date` \| `string` |
 | `dropdown-class` | String | — | 下拉面板附加 class |
 | (其他) | — | — | 继承 `MuInput` 属性（options 相关除外）|
 

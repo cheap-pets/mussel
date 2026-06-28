@@ -41,7 +41,7 @@
 
   defineOptions({ name: 'MusselMonthPicker' })
 
-  const model = defineModel({ type: Object })
+  const model = defineModel({ type: [Date, String] })
 
   const props = defineProps({
     outputType: outputTypeProp,
@@ -92,11 +92,9 @@
     if (!monthEquals(value, selected.value)) {
       const vType = props.outputType.toLowerCase()
 
-      model.value = vType === 'object'
-        ? value
-        : vType === 'date'
-          ? new Date(year, month)
-          : toDateString(value, props.format)
+      model.value = vType === 'date'
+        ? new Date(year, month)
+        : toDateString(value, props.format)
     }
 
     emit('monthCellClick', year, month)

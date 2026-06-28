@@ -25,7 +25,7 @@
 
   defineOptions({ name: 'MusselYearPicker' })
 
-  const model = defineModel({ type: Object })
+  const model = defineModel({ type: [Date, String] })
 
   const props = defineProps({
     outputType: outputTypeProp,
@@ -58,11 +58,9 @@
     if (year !== selected.value) {
       const vType = props.outputType.toLowerCase()
 
-      model.value = vType === 'object'
-        ? { year, month: 0 }
-        : vType === 'date'
-          ? new Date(year, 0)
-          : toDateString({ year, month: 0 }, props.format)
+      model.value = vType === 'date'
+        ? new Date(year, 0)
+        : toDateString({ year, month: 0 }, props.format)
     }
 
     emit('yearCellClick', year)

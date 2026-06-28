@@ -10,9 +10,8 @@
         <template #dropdown>
           <month-picker
             ref="monthSelector"
-            v-model="current"
+            v-model="currentProxy"
             class="flex-1"
-            output-type="Object"
             @month-cell-click="monthDropdown.collapse()" />
         </template>
       </mu-dropdown-button>
@@ -42,14 +41,14 @@
 
   defineOptions({ name: 'MusselCalendar' })
 
-  const model = defineModel({ type: [Date, String, Object, Array] })
+  const model = defineModel({ type: [Date, String] })
   const props = defineProps({ ...calendarProps })
 
   const {
     year,
     month,
     today,
-    current,
+    currentProxy,
     selected,
     prevMonth,
     nextMonth,

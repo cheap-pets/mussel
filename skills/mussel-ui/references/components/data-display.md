@@ -68,10 +68,9 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
-| `model-value` | Date\|String\|Object\|Array | — | 双向绑定日期值 |
+| `model-value` | Date\|String | — | 双向绑定日期值 |
 | `format` | String | `yyyy-MM-dd` | String 类型下的格式 |
-| `value-type` | String | `date` | 返回类型：`date` \| `string` \| `object` |
-| `range` | Boolean | — | 范围选择模式 |
+| `output-type` | String | `date` | 返回类型：`date` \| `string` |
 | `min` | Date\|String | — | 最小可选日期 |
 | `max` | Date\|String | — | 最大可选日期 |
 

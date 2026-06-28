@@ -989,13 +989,14 @@ const filteredItems = computed(() =>
 
 日期选择框。下拉面板含工具栏（标题、本月/本年按钮、上下翻页）与对应选择网格。
 
-| 属性名称       | 类型   | 默认值        | 说明                                                  |
-| -------------- | ------ | ------------- | ----------------------------------------------------- |
-| type           | String | `date`        | `date`（选日期）\| `month`（选月份）\| `year`（选年份）|
-| format         | String | —             | 日期格式（未设置时 date 类型按 `yyyy-MM-dd` 渲染）    |
-| value-type      | String | `date`        | 返回值类型：`date` \| `string` \| `object`            |
-| dropdown-class | String | —             | 下拉面板附加 class                                    |
-| (其他)         | —      | —             | 包含 MuInput 属性（options 相关除外）                 |
+| 属性名称       | 类型         | 默认值        | 说明                                                  |
+| -------------- | ------------ | ------------- | ----------------------------------------------------- |
+| model-value    | Date\|String | —             | 双向绑定值（Date 或格式化字符串）                     |
+| type           | String       | `date`        | `date`（选日期）\| `month`（选月份）\| `year`（选年份）|
+| format         | String       | —             | 日期格式（未设置时 date 类型按 `yyyy-MM-dd` 渲染）    |
+| output-type    | String       | `date`        | 返回值类型：`date` \| `string`                        |
+| dropdown-class | String       | —             | 下拉面板附加 class                                    |
+| (其他)         | —            | —             | 包含 MuInput 属性（options 相关除外）                 |
 
 > [!NOTE]
 >
@@ -1328,14 +1329,13 @@ const ctxMenu = shallowRef()
 
 月历，用于页面内嵌日期展示与选择
 
-| 属性名称    | 类型                              | 默认值        | 说明                                                 |
-| ----------- | --------------------------------- | ------------- | ---------------------------------------------------- |
-| model-value | Date \| String \| Object \| Array | —             | 双向绑定的日期值                                     |
-| format      | String                            | —             | String 类型下的日期格式（未设置时按 `yyyy-MM-dd`）   |
-| value-type  | String                            | `date`        | 返回值类型：`date` \| `string` \| `object`           |
-| range       | Boolean                           | —             | 范围选择模式                                         |
-| min         | Date \| String                    | —             | 最小可选日期                                         |
-| max         | Date \| String                    | —             | 最大可选日期                                         |
+| 属性名称    | 类型            | 默认值        | 说明                                                 |
+| ----------- | --------------- | ------------- | ---------------------------------------------------- |
+| model-value | Date \| String  | —             | 双向绑定的日期值                                     |
+| format      | String          | —             | String 类型下的日期格式（未设置时按 `yyyy-MM-dd`）   |
+| output-type | String          | `date`        | 返回值类型：`date` \| `string`                       |
+| min         | Date \| String  | —             | 最小可选日期                                         |
+| max         | Date \| String  | —             | 最大可选日期                                         |
 
 
 
