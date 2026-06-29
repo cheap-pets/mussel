@@ -8,7 +8,7 @@
       <mu-calendar v-model="date" class="calendar1" />
     </div>
     <div class="group">
-      <mu-date-input v-model="date" prefix="日期选择" />
+      <mu-date-input  prefix="日期选择" />
       <mu-date-input v-model="date" prefix="月份选择" type="month" format="yyyy-MM" />
       <mu-date-input v-model="date" prefix="年份选择" type="year" format="yyyy" />
     </div>

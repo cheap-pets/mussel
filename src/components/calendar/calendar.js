@@ -9,67 +9,54 @@ import {
   getNextMonth
 } from '@/utils/date'
 
-export const outputTypeProp = {
-  type: String,
-  default: 'date',
-  validator: v => ['date', 'string'].includes(v)
-}
-
 export const calendarProps = {
-  outputType: outputTypeProp,
   format: String,
   min: [Date, String],
-  max: [Date, String]
+  max: [Date, String],
+  outputType: { type: String, default: 'date', validator: v => ['date', 'string'].includes(v) }
 }
 
 export function useCalendar (model, props) {
   const current = ref()
-
-  const today = computed(() => toDateObject(new Date()))
-  const selected = computed(() => toDateObject(model.value))
-
-  const year = computed(() => current.value.year)
-  const month = computed(() => current.value.month)
 
   const currentProxy = computed({
     get () {
       return new Date(current.value.year, current.value.month)
     },
     set (value) {
-      const dateObj = toDateObject(value)
-
-      if (dateObj) setCurrent(dateObj)
+      const object = toDateObject(value)
+      if (object) setCurrent(object)
     }
   })
+
+  const today = toDateObject(new Date())
+  const selected = computed(() => toDateObject(model.value))
+
+  const year = computed(() => current.value.year)
+  const month = computed(() => current.value.month)
 
   function setCurrent (dateObj) {
     Object.assign(current.value, dateObj)
   }
 
-  function prevMonth () {
+  function goPrevMonth () {
     setCurrent(getPrevMonth(year.value, month.value))
   }
 
-  function nextMonth () {
+  function goNextMonth () {
     setCurrent(getNextMonth(year.value, month.value))
   }
 
   function updateModelValue (value) {
-    const vType = props.outputType.toLowerCase()
+    if (dateEquals(value, model.value)) return
 
-    model.value = vType === 'date'
+    model.value = props.outputType === 'date'
       ? new Date(value.year, value.month, value.date ?? 1)
       : toDateString(value, props.format)
   }
 
-  function onDateCellClick (cell) {
-    if (!dateEquals(cell, selected.value)) {
-      updateModelValue(pick(cell, ['year', 'month', 'date']))
-    }
-  }
-
   watchEffect(() => {
-    current.value = pick(selected.value || today.value, ['year', 'month'])
+    current.value = pick(selected.value || today, ['year', 'month'])
   })
 
   return {
@@ -79,10 +66,9 @@ export function useCalendar (model, props) {
     current,
     selected,
     currentProxy,
-    prevMonth,
-    nextMonth,
+    goPrevMonth,
+    goNextMonth,
     setCurrent,
-    onDateCellClick,
     updateModelValue
   }
 }

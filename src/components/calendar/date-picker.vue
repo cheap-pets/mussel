@@ -8,9 +8,9 @@
         v-for="(cell, i) in data" :key="i"
         class="mu-date-cell"
         :muted="cell.prev || cell.next"
-        :present="dateEquals(cell, today) || null"
-        :selected="dateEquals(cell, selected) || null"
-        @click="$emit('cellClick', cell)">
+        :present="cell.present"
+        :selected="cell.selected"
+        @click="onCellClick(cell)">
         {{ cell.date }}
       </div>
     </div>
@@ -24,24 +24,35 @@
 
   import {
     dateEquals,
+    monthEquals,
     toDateObject,
+    toDateString,
     getPrevMonth,
     getNextMonth,
     getMonthFirstDay,
     getMonthDaysCount
   } from '@/utils/date'
 
-  defineEmits(['cellClick'])
+  const emit = defineEmits(['dateCellClick'])
 
-  const props = defineProps({ year: Number, month: Number, selected: Object })
+  const model = defineModel({ type: [Date, String] })
+
+  const props = defineProps({
+    year: Number,
+    month: Number,
+    outputType: { type: String, default: 'date', validator: v => ['date', 'string'].includes(v) }
+  })
 
   const daysOfWeek = shallowRef($t('Calendar.DAYS_OF_WEEK_SHORT'))
 
-  const today = computed(() => toDateObject(new Date()))
-
   const data = computed(() => {
-    const y = props.year
-    const m = props.month
+    const today = toDateObject(new Date())
+    const selected = toDateObject(model.value)
+
+    const { year: y, month: m } =
+      props.year != null && props.month != null
+        ? props
+        : selected || today
 
     const first = getMonthFirstDay(y, m)
     const count = getMonthDaysCount(y, m)
@@ -50,22 +61,40 @@
     const next = getNextMonth(y, m)
     const prevCount = getMonthDaysCount(prev.year, prev.month)
 
+    const isCurrentMonth = monthEquals({ year: y, month: m }, today)
+    const isDisplayMonth = monthEquals({ year: y, month: m }, selected)
+
     const cells = []
+
+    function buildCell (v) {
+      if (v < 1) {
+        return { prev: true, ...prev, date: prevCount + v }
+      }
+
+      if (v > count) {
+        return { next: true, ...next, date: v - count }
+      }
+
+      const cell = { year: y, month: m, date: v }
+
+      if (isCurrentMonth && v === today.date) {
+        cell.present = true
+      }
+
+      if (isDisplayMonth && v === selected.date) {
+        cell.selected = true
+      }
+
+      return cell
+    }
 
     let i = 1
 
     while (true) {
       const v = i - first
-      const isPrev = v < 1
-      const isNext = v > count
+      const cell = buildCell(v)
 
-      cells.push(
-        isPrev
-          ? { ...prev, date: prevCount + v, prev: true }
-          : isNext
-            ? { ...next, date: v - count, next: true }
-            : { year: y, month: m, date: v }
-      )
+      cells.push(cell)
 
       if (i % 7 === 0 && v >= count) break
 
@@ -74,6 +103,18 @@
 
     return cells
   })
+
+  function onCellClick (cell) {
+    if (!dateEquals(cell, model.value)) {
+      const date = new Date(cell.year, cell.month, cell.date)
+
+      model.value = props.outputType === 'date'
+        ? date
+        : toDateString(date, props.format)
+    }
+
+    emit('dateCellClick', cell)
+  }
 
   const onResize = throttle(300, event => {
     daysOfWeek.value = event.target.clientWidth >= 480
@@ -87,16 +128,16 @@
     position: relative;
     display: flex;
     flex-direction: column;
+  }
 
-    &--masked {
-      pointer-events: none;
+  .mu-date-picker--masked {
+    pointer-events: none;
 
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: rgb(0 0 0 / 10%);
-      }
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgb(0 0 0 / 10%);
     }
   }
 

@@ -16,18 +16,18 @@
         </template>
       </mu-dropdown-button>
       <template v-if="!monthDropdown?.dropdownVisible">
-        <mu-button :caption="$t('Calendar.THIS_MONTH')" @click="setCurrent(today)" />
-        <mu-icon-button icon="chevronUp" @click="prevMonth" />
-        <mu-icon-button icon="chevronDown" @click="nextMonth" />
+        <mu-button :caption="$t('Calendar.TODAY')" @click="onTodayClick" />
+        <mu-icon-button icon="chevronUp" @click="goPrevMonth" />
+        <mu-icon-button icon="chevronDown" @click="goNextMonth" />
       </template>
     </mu-toolbar>
     <date-picker
+      v-model="model"
       class="flex-1"
+      :output-type="outputType"
       :class="[monthDropdown?.dropdownVisible && 'mu-date-picker--masked']"
       :year="year"
-      :month="month"
-      :selected="selected"
-      @cell-click="onDateCellClick" />
+      :month="month" />
   </div>
 </template>
 
@@ -49,24 +49,27 @@
     month,
     today,
     currentProxy,
-    selected,
-    prevMonth,
-    nextMonth,
     setCurrent,
-    onDateCellClick
+    goPrevMonth,
+    goNextMonth,
+    updateModelValue
   } = useCalendar(model, props)
 
   const monthDropdown = ref()
   const monthSelector = ref()
 
-  const selectingMonth = computed(() => monthDropdown.value?.dropdownVisible)
   const firstYear = computed(() => monthSelector.value?.firstYear)
 
   const caption = computed(() =>
-    selectingMonth.value
+    monthDropdown.value?.dropdownVisible
       ? `${firstYear.value} ~ ${firstYear.value + 9}`
       : $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS_SHORT')[month.value])
   )
+
+  function onTodayClick () {
+    updateModelValue(today)
+    setCurrent(today)
+  }
 </script>
 
 <style>
@@ -80,6 +83,8 @@
     }
 
     & .mu-date-cell {
+      align-items: flex-start;
+      justify-content: flex-start;
       padding: var(--mu-base-spacing);
       border: 1px solid var(--mu-border-color-soft);
     }

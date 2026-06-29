@@ -37,19 +37,17 @@
   import { monthEquals, toDateObject, toDateString } from '@/utils/date'
   import { pick } from '@/utils/object'
   import { t as $t } from '@/langs'
-  import { outputTypeProp } from './calendar'
 
   defineOptions({ name: 'MusselMonthPicker' })
 
   const model = defineModel({ type: [Date, String] })
 
   const props = defineProps({
-    outputType: outputTypeProp,
-    format: { type: String, default: 'yyyy-MM' }
+    format: { type: String, default: 'yyyy-MM' },
+    outputType: { type: String, default: 'date', validator: v => ['date', 'string'].includes(v) }
   })
 
   const emit = defineEmits([
-    'yearCellClick',
     'monthCellClick'
   ])
 
@@ -80,7 +78,6 @@
 
   function onYearCellClick (year) {
     chosenYear.value = year
-    emit('yearCellClick', year)
   }
 
   function onMonthCellClick (month) {

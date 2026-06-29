@@ -20,29 +20,29 @@
           :caption="currentButtonCaption"
           @click="onCurrentButtonClick()" />
         <template v-if="isDateMode">
-          <mu-icon-button icon="chevronUp" @click="prevMonth" />
-          <mu-icon-button icon="chevronDown" @click="nextMonth" />
+          <mu-icon-button icon="chevronUp" @click="goPrevMonth" />
+          <mu-icon-button icon="chevronDown" @click="goNextMonth" />
         </template>
       </mu-toolbar>
-      <month-picker
-        v-if="currentView === 'month'"
-        ref="monthSelector"
-        v-model="currentProxy"
-        class="flex-1"
-        @month-cell-click="selectMonth" />
       <year-picker
-        v-else-if="currentView === 'year'"
+        v-if="currentView === 'year'"
         ref="yearSelector"
         v-model="currentProxy"
         class="flex-1"
         @year-cell-click="selectYear" />
+      <month-picker
+        v-else-if="currentView === 'month'"
+        ref="monthSelector"
+        v-model="currentProxy"
+        class="flex-1"
+        @month-cell-click="selectMonth" />
       <date-picker
         v-else
+        v-model="model"
         class="flex-1"
         :year="year"
         :month="month"
-        :selected="selected"
-        @cell-click="selectDate" />
+        @date-cell-click="wrapper.collapse()" />
     </template>
   </combo-wrapper>
 </template>
@@ -64,13 +64,9 @@
   defineOptions({ name: 'MusselDateInput' })
 
   const props = defineProps({
-    dropdownClass: null,
-    type: {
-      type: String,
-      default: 'date',
-      validator: v => ['date', 'month', 'year'].includes(v)
-    },
+    type: { type: String, default: 'date', validator: v => ['date', 'month', 'year'].includes(v) },
     modelValue: { type: [Date, String] },
+    dropdownClass: null,
     ...calendarProps
   })
 
@@ -85,11 +81,10 @@
     current,
     currentProxy,
     selected,
-    prevMonth,
-    nextMonth,
     setCurrent,
-    updateModelValue,
-    onDateCellClick
+    goPrevMonth,
+    goNextMonth,
+    updateModelValue
   } = useCalendar(model, props)
 
   const wrapper = ref()
@@ -110,9 +105,13 @@
       : `${firstYear.value} ~ ${firstYear.value + 9}`
   )
 
-  const currentButtonCaption = computed(() =>
-    $t(currentView.value === 'date' ? 'Calendar.THIS_MONTH' : 'Calendar.THIS_YEAR')
-  )
+  const currentButtonCaption = computed(() => $t(
+    currentView.value === 'date'
+      ? 'Calendar.TODAY'
+      : currentView.value === 'month'
+        ? 'Calendar.THIS_MONTH'
+        : 'Calendar.THIS_YEAR'
+  ))
 
   const value = computed({
     get () {
@@ -128,21 +127,23 @@
   }
 
   function onCurrentButtonClick () {
+    const { year: y, month: m } = today
+
     switch (currentView.value) {
       case 'date':
-        setCurrent(today)
+        updateModelValue(today)
+        setCurrent({ year: y, month: m, date: 1 })
+        wrapper.value.collapse()
         break
       case 'month':
-        monthSelector.value.setYear(today.value.year)
+        setCurrent({ year: y, month: m, date: 1 })
+        selectMonth()
         break
       case 'year':
-        yearSelector.value.setYear(today.value.year)
+        setCurrent({ year: y, month: 0, date: 1 })
+        selectYear()
+        break
     }
-  }
-
-  function selectDate (cell) {
-    onDateCellClick(cell)
-    wrapper.value.collapse()
   }
 
   function selectMonth () {
@@ -158,13 +159,11 @@
   }
 
   function selectYear () {
-    if (props.type === 'year') {
-      if (!yearEquals(current.value, selected.value)) {
-        updateModelValue(current.value)
-      }
-
-      wrapper.value.collapse()
+    if (!yearEquals(current.value, selected.value)) {
+      updateModelValue(current.value)
     }
+
+    wrapper.value.collapse()
   }
 </script>
 

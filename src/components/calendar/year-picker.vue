@@ -21,15 +21,14 @@
 <script setup>
   import { ref, computed, watchEffect } from 'vue'
   import { toDateObject, toDateString } from '../../utils/date'
-  import { outputTypeProp } from './calendar'
 
   defineOptions({ name: 'MusselYearPicker' })
 
   const model = defineModel({ type: [Date, String] })
 
   const props = defineProps({
-    outputType: outputTypeProp,
-    format: { type: String, default: 'yyyy' }
+    format: { type: String, default: 'yyyy' },
+    outputType: { type: String, default: 'date', validator: v => ['date', 'string'].includes(v) }
   })
 
   const emit = defineEmits([
@@ -56,9 +55,7 @@
     chosenYear.value = year
 
     if (year !== selected.value) {
-      const vType = props.outputType.toLowerCase()
-
-      model.value = vType === 'date'
+      model.value = props.outputType === 'date'
         ? new Date(year, 0)
         : toDateString({ year, month: 0 }, props.format)
     }
