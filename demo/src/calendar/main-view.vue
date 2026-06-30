@@ -8,11 +8,12 @@
       <mu-calendar v-model="date" class="calendar1" />
     </div>
     <div class="group">
-      <mu-date-input  prefix="日期选择" />
+      <mu-date-input v-model="date" prefix="日期选择" />
       <mu-date-input v-model="date" prefix="月份选择" type="month" format="yyyy-MM" />
       <mu-date-input v-model="date" prefix="年份选择" type="year" format="yyyy" />
     </div>
     <div class="group">
+      <mu-time-picker />
       <mu-time-input v-model="time1" placeholder="时分选择" prefix="时分" />
       <mu-time-input v-model="time2" type="time" placeholder="时分秒选择" prefix="时分秒" />
       <mu-time-input v-model="time3" :minute-step="15" placeholder="15 分步进" prefix="步进" />
@@ -24,7 +25,7 @@
   import { ref } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
-  const date = ref(new Date())
+  const date = ref()
   const time1 = ref('09:30')
   const time2 = ref('09:30:45')
   const time3 = ref('09:00')

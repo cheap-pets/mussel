@@ -1,35 +1,42 @@
 <template>
   <div class="mu-time-picker">
-    <div
-      v-for="unit in units"
-      :key="unit.key"
-      ref="colRefs"
-      class="mu-time-picker__col"
-      @scroll.passive="onScroll(unit.key, $event)">
-      <div class="mu-time-picker__header">
-        {{ unit.label }}
+    <div class="mu-time-picker__header">
+      <span>{{ $t('Datetime.HOUR') }}</span>
+      <span>{{ $t('Datetime.MINUTE') }}</span>
+      <span>{{ $t('Datetime.SECOND') }}</span>
+    </div>
+    <div class="mu-time-picker__body">
+      <div class="mu-time-picker__flag">
+        <span />
+        <span style="flex: none">:</span>
+        <span />
+        <span style="flex: none">:</span>
+        <span />
       </div>
-      <div class="mu-time-picker__pad" />
-      <div class="mu-time-picker__list">
-        <a
-          v-for="n in unit.items"
-          :key="n"
-          class="mu-time-picker__item"
-          :present="isPresent(unit.key, n) || null"
-          :selected="isSelected(unit.key, n) || null"
-          @click="onItemClick(unit.key, n)">
-          {{ pad(n) }}
+      <div class="mu-time-picker__hour-col" @scroll.passive="onScrollEnd('hour', $event)">
+        <a v-for="(h, idx) in hours" :key="idx" :disabled="!h || null" @click="scrollToCenter">
+          {{ h }}
         </a>
       </div>
-      <div class="mu-time-picker__pad" />
+      <div class="mu-time-picker__minute-col" @scroll.passive="onScrollEnd('minute', $event)">
+        <a v-for="(m, idx) in minutes" :key="idx" :disabled="!m || null" @click="scrollToCenter">
+          {{ m }}
+        </a>
+      </div>
+      <div class="mu-time-picker__second-col" @scroll.passive="onScrollEnd('second', $event)">
+        <a v-for="(s, idx) in seconds" :key="idx" :disabled="!s || null" @click="scrollToCenter">
+          {{ s }}
+        </a>
+      </div>
+    </div>
+    <div class="mu-time-picker__footer">
+      <mu-button :caption="$t('Button.OK')" button-style="text" color="primary" size="small" />
     </div>
   </div>
 </template>
 
 <script setup>
-  import './time-picker.scss'
-
-  import { ref, computed, watch, nextTick, onMounted } from 'vue'
+  import { ref, computed } from 'vue'
   import { t as $t } from '@/langs'
 
   defineOptions({ name: 'MusselTimePicker' })
@@ -37,159 +44,162 @@
   const model = defineModel({ type: Object })
 
   const props = defineProps({
-    type: {
-      type: String,
-      default: 'minute',
-      validator: v => ['minute', 'time'].includes(v)
-    },
-    minuteStep: { type: Number, default: 5 },
-    secondStep: { type: Number, default: 5 }
+    format: { type: String, default: 'HH:mm' },
+    minuteStep: { type: Number, default: 5, validator: v => [0, 1, 5, 10, 15, 30].includes(v) },
+    secondStep: { type: Number, default: 0, validator: v => [0, 1, 5, 10, 15, 30].includes(v) }
   })
 
-  const emit = defineEmits(['change'])
+  const hour = ref(0)
+  const minute = ref(0)
+  const second = ref(0)
 
-  const ITEM_HEIGHT = 32
-  const HEADER_HEIGHT = 32
-
-  const colRefs = ref([])
-  // 动画锁：程序触发的平滑滚动期间置 true，其产生的 scroll 事件不再触发吸附，避免死循环
-  const animatingKeys = new Set()
-  // 内部变化标志：滚动/点击自身改的 model 不应再回弹定位，仅外部变化才需要滚动到选中项
-  let internalChange = false
-  const scrollTimers = {}
-
-  const cur = computed(() => model.value || { hour: 0, minute: 0, second: 0 })
-
-  function genItems (max, step) {
-    const arr = []
-    for (let i = 0; i < max; i += step) arr.push(i)
-    return arr
-  }
-
-  const hours = computed(() => genItems(24, 1))
-  const minutes = computed(() => genItems(60, props.minuteStep))
-  const seconds = computed(() => genItems(60, props.secondStep))
-
-  const units = computed(() => {
-    const list = [
-      { key: 'hour', label: $t('Time.HOUR'), items: hours.value }
-    ]
-    list.push({ key: 'minute', label: $t('Time.MINUTE'), items: minutes.value })
-    if (props.type === 'time') {
-      list.push({ key: 'second', label: $t('Time.SECOND'), items: seconds.value })
-    }
-    return list
-  })
-
-  function pad (n) {
+  function padZero (n) {
     return String(n).padStart(2, '0')
   }
 
-  function isSelected (key, n) {
-    return cur.value[key] === n
+  function getItems (step) {
+    return step
+      ? Array.from({ length: Math.ceil(60 / step) }, (_, i) => padZero(i * step))
+      : ['00']
   }
 
-  const now = ref(getNow())
-  function getNow () {
-    const d = new Date()
-    return { hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds() }
-  }
-  function isPresent (key, n) {
-    return now.value[key] === n
+  function padItems (items) {
+    return ['', '', ...items, '', '']
   }
 
-  function onItemClick (key, n) {
-    if (cur.value[key] === n) return
-    internalChange = true
-    model.value = { ...cur.value, [key]: n }
-    emit('change', { from: 'click' })
-    // 点击后平滑滚到该项
-    const items = key === 'hour'
-      ? hours.value
-      : key === 'minute' ? minutes.value : seconds.value
-    const idx = items.indexOf(n)
-    const el = colRefs.value[units.value.findIndex(u => u.key === key)]
-    if (el && idx >= 0) smoothScrollTo(el, key, idx, items)
+  const hours = padItems(Array.from({ length: 24 }, (_, i) => padZero(i)))
+  const minutes = computed(() => padItems(getItems(props.minuteStep)))
+  const seconds = computed(() => padItems(getItems(props.secondStep)))
+
+  // 点击某一项时，将其平滑滚动到所在列的视口中心
+  function scrollToCenter (e) {
+    const el = e.currentTarget
+    const col = el.parentElement
+    const targetTop = el.offsetTop - (col.clientHeight - el.offsetHeight) / 2
+
+    col.scrollTo({ top: targetTop, behavior: 'smooth' })
   }
 
-  // 取某单位在当前 scrollTop 下最近的合法项 idx
-  function getNearestIdx (key, scrollTop) {
-    const items = key === 'hour'
-      ? hours.value
-      : key === 'minute' ? minutes.value : seconds.value
-    const idx = Math.round((scrollTop - HEADER_HEIGHT) / ITEM_HEIGHT)
-    return {
-      items,
-      idx: Math.max(0, Math.min(idx, items.length - 1))
-    }
-  }
+  // 读取视口正中的有效项，将其数值写入对应 ref
+  const targets = { hour, minute, second }
+  const scrollTimers = new WeakMap()
 
-  // 平滑滚动到某列的指定 idx，动画期间加锁防 scroll 事件回环
-  function smoothScrollTo (el, key, idx, items) {
-    const targetTop = HEADER_HEIGHT + idx * ITEM_HEIGHT
-    if (Math.abs(el.scrollTop - targetTop) < 1) return
-
-    animatingKeys.add(key)
-    el.scrollTo({ top: targetTop, behavior: 'smooth' })
-
-    // 浏览器无 scrollend 或动画被打断时，兜底解锁
-    const onEnd = () => animatingKeys.delete(key)
-    if ('onscrollend' in el) {
-      el.addEventListener('scrollend', onEnd, { once: true })
-    }
-    setTimeout(onEnd, 500)
-  }
-
-  function onScroll (key, e) {
-    // 程序触发的吸附动画期间，忽略其产生的 scroll 事件
-    if (animatingKeys.has(key)) return
-
-    const el = e.target
-    clearTimeout(scrollTimers[key])
-    scrollTimers[key] = setTimeout(() => {
-      const { items, idx } = getNearestIdx(key, el.scrollTop)
-      // 用户停止滚动 → 平滑吸附到最近项
-      smoothScrollTo(el, key, idx, items)
-      const n = items[idx]
-      if (n != null && cur.value[key] !== n) {
-        internalChange = true
-        model.value = { ...cur.value, [key]: n }
-        emit('change', { from: 'scroll' })
-      }
-    }, 100)
-  }
-
-  function scrollToSelected () {
-    nextTick(() => {
-      units.value.forEach((unit, i) => {
-        const el = colRefs.value[i]
-        if (!el) return
-        const items = unit.items
-        const val = cur.value[unit.key]
-        // 向下吸附：选不大于 val 的最大项
-        let idx = 0
-        for (let j = 0; j < items.length; j++) {
-          if (items[j] <= val) idx = j
-          else break
+  function onScrollEnd (key, e) {
+    const col = e.currentTarget
+    clearTimeout(scrollTimers.get(col))
+    scrollTimers.set(col, setTimeout(() => {
+      const items = col.querySelectorAll(':scope > a:not([disabled])')
+      const center = col.clientHeight / 2
+      let nearest = null
+      let minOffset = Infinity
+      items.forEach(item => {
+        const mid = item.offsetTop - col.scrollTop + item.offsetHeight / 2
+        const offset = Math.abs(mid - center)
+        if (offset < minOffset) {
+          minOffset = offset
+          nearest = item
         }
-        smoothScrollTo(el, unit.key, idx, items)
       })
-    })
+      if (nearest) targets[key].value = Number(nearest.textContent)
+    }, 150))
+  }
+</script>
+
+<style>
+  .mu-time-picker {
+    --cell-height: 32px;
+
+    width: 200px;
+    background-color: var(--mu-bg-normal);
   }
 
-  defineExpose({ scrollToSelected })
+  .mu-time-picker__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  onMounted(scrollToSelected)
-  watch(
-    () => model.value,
-    () => {
-      // 内部滚动/点击引起的变化不再回弹定位，避免与进行中的动画冲突
-      if (internalChange) {
-        internalChange = false
-        return
+    width: 100%;
+    height: 32px;
+    border-radius: var(--mu-common-border-radius);
+
+    background-color: var(--mu-bg-strong);
+
+    & > span {
+      flex: 1 1 0;
+      text-align: center;
+    }
+  }
+
+  .mu-time-picker__body {
+    position: relative;
+
+    overflow: visible;
+    display: flex;
+    align-items: stretch;
+
+    width: 100%;
+    height: calc(var(--cell-height) * 5);
+
+    & > .mu-time-picker__flag {
+      position: absolute;
+      top: calc(var(--cell-height) * 2);
+      right: 0;
+      left: 0;
+
+      display: flex;
+      align-items: center;
+
+      height: var(--cell-height);
+      border-radius: var(--mu-common-border-radius);
+
+      background-color: var(--mu-primary-translucent);
+
+      & > span {
+        flex: 1 1 0;
       }
-      scrollToSelected()
-    },
-    { deep: true }
-  )
-</script>
+    }
+
+    & > div {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      scroll-snap-type: y mandatory;
+
+      position: relative;
+      z-index: 1;
+
+      overflow: auto;
+      flex: 1 1 0;
+
+      &::-webkit-scrollbar {
+        display:none;
+      }
+
+      & > a {
+        cursor: pointer;
+        scroll-snap-align: center;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: var(--cell-height);
+        border-radius: var(--mu-common-border-radius);
+
+        &:hover {
+          color: var(--mu-primary-color);
+        }
+
+        &[disabled] {
+          pointer-events: none;
+          scroll-snap-align: none;
+        }
+      }
+    }
+  }
+
+  .mu-time-picker__footer {
+    z-index: 1;
+    height: 32px;
+    text-align: right;
+  }
+</style>

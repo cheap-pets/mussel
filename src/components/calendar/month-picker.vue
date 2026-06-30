@@ -65,7 +65,7 @@
   })
 
   const years = computed(() => Array.from({ length: 10 }, (_, idx) => firstYear.value + idx))
-  const months = $t('Calendar.MONTHS_SHORT')
+  const months = $t('Datetime.MONTHS_SHORT')
 
   function setFirstYear (year) {
     firstYear.value = parseInt(year / 10) * 10

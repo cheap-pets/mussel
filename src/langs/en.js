@@ -17,7 +17,7 @@ export default {
     WARN: 'Warning'
   },
 
-  Calendar: {
+  Datetime: {
     TODAY: 'Today',
     THIS_YEAR: 'This Year',
     THIS_MONTH: 'This Month',
@@ -71,10 +71,8 @@ export default {
       'Oct',
       'Nov',
       'Dec'
-    ]
-  },
+    ],
 
-  Time: {
     HOUR: 'Hour',
     MINUTE: 'Minute',
     SECOND: 'Second'

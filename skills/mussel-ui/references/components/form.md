@@ -307,21 +307,28 @@ const filteredItems = computed(() =>
 
 ## MuDateInput
 
-日期选择框。下拉面板含工具栏（标题、本月/本年按钮、上下翻页）与对应选择网格。
+日期选择框。下拉面板含工具栏（标题、今天/本月/本年按钮、上下翻页）与对应选择网格。
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `modelValue` | Date\|String | — | 双向绑定值（Date 或格式化字符串） |
 | `type` | String | `date` | `date`（选日期）\| `month`（选月份）\| `year`（选年份） |
-| `format` | String | `yyyy-MM-dd` | 日期格式 |
-| `output-type` | String | `date` | 返回值类型：`date` \| `string` |
+| `format` | String | `yyyy-MM-dd` | 输入框显示格式，以及 `output-type="string"` 时的输出格式 |
+| `output-type` | String | `date` | 返回值类型：`date`（Date 对象）\| `string`（按 `format` 格式化的字符串） |
 | `dropdown-class` | String | — | 下拉面板附加 class |
-| (其他) | — | — | 继承 `MuInput` 属性（options 相关除外）|
+| (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
 
-> - `type="date"`：标题按钮可切换到月份/年份选择网格（标题显示 `年 ~ 年+9` 的十年区间），用于快速跨年跳转。
-> - `type="year"`：直接进入年份选择网格（每屏 10 年，左右翻页切换十年区间），选中即提交并关闭。
-> - `type="month"`：月份选择网格，含十年区间内年份切换 + 12 月份格。
-> - 翻页按钮：日期模式翻月，月份/年份模式翻十年区间；「本月/本年」按钮跳回当前。
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `update:modelValue` | value | 值变更 |
+| `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
+| (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
+
+> - `type="date"`：默认显示日期网格；点击标题按钮在「日期网格 ↔ 月份网格」间切换（月份网格内可切换十年区间、先选年份再选月），用于快速跨月/跨年跳转；选中日期即提交并关闭。
+> - `type="month"`：直接进入月份网格（含十年区间年份切换 + 12 月份格），选中月份即提交并关闭。
+> - `type="year"`：直接进入年份网格（每屏 10 年），选中年份即提交并关闭。
+> - 顶部上下翻页按钮**仅在日期视图**出现，用于翻月；月份/年份视图切换十年区间由面板内部的左右箭头格子完成。
+> - 「今天/本月/本年」按钮跳回当前并提交，文案随当前视图变化。
 
 ---
 

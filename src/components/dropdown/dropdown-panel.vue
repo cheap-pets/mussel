@@ -96,32 +96,36 @@
     const el = panelEl.value
     const style = {}
 
-    const { width: sw, top: st, /* right: sr, */ bottom: sb, left: sl } = ctx.anchor.getBoundingClientRect()
+    const { width: aw, top: at, right: ar, bottom: ab, left: al } = ctx.anchor.getBoundingClientRect()
     const { width: _dw, height: dh } = el.getBoundingClientRect()
-    const { /* innerWidth: tw, */ innerHeight: th } = window
+    const { innerWidth: tw, innerHeight: th } = window
 
     let dw = _dw
 
     if ((ctx.width === 'anchor') /* || (!ctx.width && dw <= sw) */) {
-      dw = sw
+      dw = aw
       style.width = `${dw}px`
     }
 
-    style.left = `${sl}px`
     /*
-    if ((dw > sw) && ((tw - sl >= dw) || (sr < dw))) {
-      style.left = `${sl}px`
+    if ((dw > aw) && ((tw - al >= dw) || (ar < dw))) {
+      style.left = `${al}px`
     } else {
-      style.right = `${tw - sr}px`
+      style.right = `${tw - ar}px`
     }
     */
+    if (tw - al < dw && ar > tw - al) {
+      style.right = `${tw - ar}px`
+    } else {
+      style.left = `${al}px`
+    }
 
-    if (th - sb > dh || st < dh) {
+    if (th - ab > dh || at < dh) {
       el.setAttribute('position', 'bottom')
-      style.top = `${sb}px`
+      style.top = `${ab}px`
     } else {
       el.setAttribute('position', 'top')
-      style.bottom = `${th - st}px`
+      style.bottom = `${th - at}px`
     }
 
     popupStyle.value = style

@@ -101,16 +101,16 @@
 
   const caption = computed(() =>
     currentView.value === 'date'
-      ? $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS_SHORT')[month.value])
+      ? $t('Datetime.YEAR_AND_MONTH', year.value, $t('Datetime.MONTHS_SHORT')[month.value])
       : `${firstYear.value} ~ ${firstYear.value + 9}`
   )
 
   const currentButtonCaption = computed(() => $t(
     currentView.value === 'date'
-      ? 'Calendar.TODAY'
+      ? 'Datetime.TODAY'
       : currentView.value === 'month'
-        ? 'Calendar.THIS_MONTH'
-        : 'Calendar.THIS_YEAR'
+        ? 'Datetime.THIS_MONTH'
+        : 'Datetime.THIS_YEAR'
   ))
 
   const value = computed({

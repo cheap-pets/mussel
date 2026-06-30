@@ -43,7 +43,7 @@
     outputType: { type: String, default: 'date', validator: v => ['date', 'string'].includes(v) }
   })
 
-  const daysOfWeek = shallowRef($t('Calendar.DAYS_OF_WEEK_SHORT'))
+  const daysOfWeek = shallowRef($t('Datetime.DAYS_OF_WEEK_SHORT'))
 
   const data = computed(() => {
     const today = toDateObject(new Date())
@@ -118,8 +118,8 @@
 
   const onResize = throttle(300, event => {
     daysOfWeek.value = event.target.clientWidth >= 480
-      ? $t('Calendar.DAYS_OF_WEEK')
-      : $t('Calendar.DAYS_OF_WEEK_SHORT')
+      ? $t('Datetime.DAYS_OF_WEEK')
+      : $t('Datetime.DAYS_OF_WEEK_SHORT')
   })
 </script>
 

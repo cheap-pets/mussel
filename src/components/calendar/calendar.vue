@@ -16,7 +16,7 @@
         </template>
       </mu-dropdown-button>
       <template v-if="!monthDropdown?.dropdownVisible">
-        <mu-button :caption="$t('Calendar.TODAY')" @click="onTodayClick" />
+        <mu-button :caption="$t('Datetime.TODAY')" @click="onTodayClick" />
         <mu-icon-button icon="chevronUp" @click="goPrevMonth" />
         <mu-icon-button icon="chevronDown" @click="goNextMonth" />
       </template>
@@ -63,7 +63,7 @@
   const caption = computed(() =>
     monthDropdown.value?.dropdownVisible
       ? `${firstYear.value} ~ ${firstYear.value + 9}`
-      : $t('Calendar.YEAR_AND_MONTH', year.value, $t('Calendar.MONTHS_SHORT')[month.value])
+      : $t('Datetime.YEAR_AND_MONTH', year.value, $t('Datetime.MONTHS_SHORT')[month.value])
   )
 
   function onTodayClick () {

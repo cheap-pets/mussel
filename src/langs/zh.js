@@ -18,7 +18,7 @@ export default {
     WARN: '警告'
   },
 
-  Calendar: {
+  Datetime: {
     TODAY: '今日',
     THIS_MONTH: '本月',
     THIS_YEAR: '本年',
@@ -72,10 +72,8 @@ export default {
       '10 月',
       '11 月',
       '12 月'
-    ]
-  },
+    ],
 
-  Time: {
     HOUR: '时',
     MINUTE: '分',
     SECOND: '秒'
