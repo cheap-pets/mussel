@@ -13,17 +13,18 @@
         <span style="flex: none">:</span>
         <span />
       </div>
-      <div class="mu-time-picker__hour-col" @scroll.passive="onScrollEnd('hour', $event)">
-        <a v-for="(h, idx) in hours" :key="idx" :disabled="!h || null" @click="scrollToCenter">
+      <div class="mu-time-picker__hour-col" @scrollend="onScrollEnd('hour', $event)">
+        <a
+          v-for="(h, idx) in hours" :key="idx" :disabled="!h || null" @click="scrollToCenter">
           {{ h }}
         </a>
       </div>
-      <div class="mu-time-picker__minute-col" @scroll.passive="onScrollEnd('minute', $event)">
+      <div class="mu-time-picker__minute-col" @scrollend="onScrollEnd('minute', $event)">
         <a v-for="(m, idx) in minutes" :key="idx" :disabled="!m || null" @click="scrollToCenter">
           {{ m }}
         </a>
       </div>
-      <div class="mu-time-picker__second-col" @scroll.passive="onScrollEnd('second', $event)">
+      <div class="mu-time-picker__second-col" @scrollend="onScrollEnd('second', $event)">
         <a v-for="(s, idx) in seconds" :key="idx" :disabled="!s || null" @click="scrollToCenter">
           {{ s }}
         </a>
@@ -80,28 +81,15 @@
     col.scrollTo({ top: targetTop, behavior: 'smooth' })
   }
 
-  // 读取视口正中的有效项，将其数值写入对应 ref
+  // 滚动停止后，将视口正中的有效项写入对应 ref
   const targets = { hour, minute, second }
-  const scrollTimers = new WeakMap()
 
   function onScrollEnd (key, e) {
     const col = e.currentTarget
-    clearTimeout(scrollTimers.get(col))
-    scrollTimers.set(col, setTimeout(() => {
-      const items = col.querySelectorAll(':scope > a:not([disabled])')
-      const center = col.clientHeight / 2
-      let nearest = null
-      let minOffset = Infinity
-      items.forEach(item => {
-        const mid = item.offsetTop - col.scrollTop + item.offsetHeight / 2
-        const offset = Math.abs(mid - center)
-        if (offset < minOffset) {
-          minOffset = offset
-          nearest = item
-        }
-      })
-      if (nearest) targets[key].value = Number(nearest.textContent)
-    }, 150))
+    // 项等高 + scroll-snap 居中对齐：直接由 scrollTop 反推居中项索引
+    const cell = col.firstElementChild.offsetHeight
+    const idx = Math.round((col.scrollTop + (col.clientHeight - cell) / 2) / cell)
+    targets[key].value = Number(col.children[idx].textContent)
   }
 </script>
 
