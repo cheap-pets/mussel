@@ -7,6 +7,7 @@ import { onTrackXMouseDown, onTrackYMouseDown } from './track-mouse-events'
 import { updateTracks, updateThumbX, updateThumbY } from './update-positions'
 
 const SYMBOL = Symbol('mussel.scrollbar')
+const EVENT_PASSIVE_OPTION = { passive: true }
 
 export function attach (el) {
   const computedStyle = window.getComputedStyle(el)
@@ -33,15 +34,18 @@ export function attach (el) {
   const updateTracksHF = throttle(30, updateTracks)
   const updateTracksLF = throttle(2000, updateTracks)
 
-  const updatePosition = throttle(30, updateTracksQuickly => {
+  const updatePosition = throttle(30, () => {
     if (!ctx.ready || ctx.hideTracksTimer) return
 
-    if (updateTracksQuickly) {
-      updateTracksHF(el, ctx)
-    } else {
-      updateTracksLF(el, ctx)
-    }
+    updateTracksHF(el, ctx)
+    updateThumbX(el, ctx)
+    updateThumbY(el, ctx)
+  })
 
+  const updatePositionLF = throttle(30, () => {
+    if (!ctx.ready || ctx.hideTracksTimer) return
+
+    updateTracksLF(el, ctx)
     updateThumbX(el, ctx)
     updateThumbY(el, ctx)
   })
@@ -54,7 +58,7 @@ export function attach (el) {
       ctx.hideTracksTimer = null
       ctx.elements.tracks.style.display = null
 
-      updatePosition(true)
+      updatePosition()
     }, 300)
 
     ctx.elements.tracks.style.display = 'none'
@@ -68,7 +72,7 @@ export function attach (el) {
         if (isScrollSizeChanged()) {
           hideTracksShortly()
         } else if (isClientSizeChanged()) {
-          updatePosition(true)
+          updatePosition()
         }
       })
     )
@@ -101,9 +105,9 @@ export function attach (el) {
     trackX.addEventListener('mousedown', event => onTrackXMouseDown(event, el, ctx))
     trackY.addEventListener('mousedown', event => onTrackYMouseDown(event, el, ctx))
 
-    el.addEventListener('scroll', () => updatePosition())
     el.addEventListener('sizechange', hideTracksShortly)
-    el.addEventListener('mouseenter', () => updatePosition(true))
+    el.addEventListener('mouseenter', updatePosition)
+    el.addEventListener('scroll', updatePositionLF, EVENT_PASSIVE_OPTION)
 
     ctx.elements = {
       tracks,
@@ -119,6 +123,8 @@ export function attach (el) {
     ctx.mutationObserver.disconnect()
 
     el.removeEventListener('sizechange', hideTracksShortly)
+    el.removeEventListener('mouseenter', updatePosition)
+    el.removeEventListener('scroll', updatePositionLF, EVENT_PASSIVE_OPTION)
 
     const { tracks, trackX, trackY } = ctx.elements
 
@@ -144,7 +150,7 @@ export function attach (el) {
 
   window.requestAnimationFrame(() => {
     ctx.ready ??= true
-    updatePosition(true)
+    updatePosition()
   })
 }
 

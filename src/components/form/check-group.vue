@@ -20,15 +20,10 @@
   import MuCheck from './check.vue'
 
   defineOptions({ name: 'MusselCheckGroup' })
+  defineProps({ options: Array, disabled: Boolean })
 
-  const props = defineProps({
-    options: Array,
-    disabled: Boolean,
-    modelValue: Array
-  })
-  const emit = defineEmits(['update:modelValue'])
-
-  const { model } = useFieldModel(props, 'modelValue', emit)
+  const rawModel = defineModel({ type: Array })
+  const model = useFieldModel(rawModel).modelProxy
 
   provide('checkGroup', { model })
 </script>

@@ -18,10 +18,9 @@ function useMultiSelect (model, props) {
   } = useOptions(props)
 
   const comboValue = computed({
-    get () {
-      return isEmpty(model.value) ? null : 'any'
-    },
-    set (v) {
+    get: () =>
+      isEmpty(model.value) ? null : 'any',
+    set: v => {
       model.value = v == null ? [] : v
     }
   })

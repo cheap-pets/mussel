@@ -10,8 +10,7 @@
         <template #dropdown>
           <month-picker
             ref="monthSelector"
-            v-model="currentProxy"
-            class="flex-1"
+            v-model="monthProxy"
             @month-cell-click="monthDropdown.collapse()" />
         </template>
       </mu-dropdown-button>
@@ -22,17 +21,15 @@
       </template>
     </mu-toolbar>
     <date-picker
-      v-model="model"
-      class="flex-1"
-      :output-type="outputType"
+      v-model="modelProxy"
       :class="[monthDropdown?.dropdownVisible && 'mu-date-picker--masked']"
-      :year="year"
-      :month="month" />
+      :year="displayYear"
+      :month="displayMonth" />
   </div>
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue'
+  import { shallowRef, computed } from 'vue'
   import { t as $t } from '@/langs'
   import { calendarProps, useCalendar } from './calendar'
 
@@ -45,30 +42,31 @@
   const props = defineProps({ ...calendarProps })
 
   const {
-    year,
-    month,
     today,
-    currentProxy,
-    setCurrent,
+    monthProxy,
+    modelProxy,
+    displayYear,
+    displayMonth,
     goPrevMonth,
     goNextMonth,
+    setDisplayMonth,
     updateModelValue
   } = useCalendar(model, props)
 
-  const monthDropdown = ref()
-  const monthSelector = ref()
+  const monthDropdown = shallowRef()
+  const monthSelector = shallowRef()
 
-  const firstYear = computed(() => monthSelector.value?.firstYear)
+  const caption = computed(() => {
+    const startY = monthDropdown.value?.dropdownVisible && monthSelector.value?.startYear
 
-  const caption = computed(() =>
-    monthDropdown.value?.dropdownVisible
-      ? `${firstYear.value} ~ ${firstYear.value + 9}`
-      : $t('Datetime.YEAR_AND_MONTH', year.value, $t('Datetime.MONTHS_SHORT')[month.value])
-  )
+    return startY
+      ? `${startY} ~ ${startY + 9}`
+      : $t('Datetime.YEAR_AND_MONTH', displayYear.value, $t('Datetime.MONTHS_SHORT')[displayMonth.value])
+  })
 
   function onTodayClick () {
     updateModelValue(today)
-    setCurrent(today)
+    setDisplayMonth(today)
   }
 </script>
 
@@ -79,6 +77,7 @@
     background-color: var(--mu-bg-normal);
 
     & > .mu-date-picker {
+      flex: 1 1 0;
       width: 100%;
     }
 

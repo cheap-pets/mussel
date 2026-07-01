@@ -25,10 +25,10 @@
 
   defineOptions({ name: 'MusselComboBox' })
 
-  const props = defineProps({ ...selectProps, editable: Boolean, modelValue: null })
-  const emit = defineEmits(['update:modelValue'])
+  const props = defineProps({ ...selectProps, editable: Boolean })
 
-  const { model } = useFieldModel(props, 'modelValue', emit)
+  const rawModel = defineModel()
+  const model = useFieldModel(rawModel).modelProxy
 
   const { comboValue, optionComponents } = useSelect(model, props)
 </script>

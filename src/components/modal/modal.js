@@ -64,7 +64,7 @@ export function useModal (props, emit) {
     }
 
     teleportTo.value = target
-    isAbsolutePosition.value = target === ctr
+    isAbsolutePosition.value = (target !== document.body) && (target !== document.fullscreenElement)
   }
 
   function hide (trigger) {

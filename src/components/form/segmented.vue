@@ -30,13 +30,11 @@
 
   const props = defineProps({
     options: Array,
-    iconPosition: { type: String, default: 'left', validator: v => ['left', 'top'].includes(v) },
-    modelValue: null
+    iconPosition: { type: String, default: 'left', validator: v => ['left', 'top'].includes(v) }
   })
 
-  const emit = defineEmits(['update:modelValue'])
-
-  const { model } = useFieldModel(props, 'modelValue', emit)
+  const rawModel = defineModel()
+  const model = useFieldModel(rawModel).modelProxy
 
   const itemRefs = ref([])
   const thumbStyle = ref({})
@@ -75,5 +73,5 @@
   }
 
   watch(activeIndex, () => updateThumb())
-  onMounted(updateThumb)
+  onMounted(() => updateThumb())
 </script>

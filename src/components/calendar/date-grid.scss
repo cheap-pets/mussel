@@ -30,12 +30,12 @@
     background: none;
   }
 
-  &[present] {
-    color: var(--mu-secondary-color);
-  }
-
   &[selected] {
     color: var(--mu-primary-color);
     background-color: var(--mu-primary-translucent);
+  }
+
+  &[present] {
+    color: var(--mu-secondary-color);
   }
 }

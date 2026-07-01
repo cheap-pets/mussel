@@ -1,18 +1,18 @@
 <template>
   <div class="mu-month-picker gap-half">
     <div class="mu-date-grid flex-1">
-      <div class="mu-date-cell" @click="setFirstYear(firstYear - 10)">
+      <div class="mu-date-cell" @click="setStartYear(startYear - 10)">
         <mu-icon icon="chevronLeft" />
       </div>
       <div
         v-for="y in years" :key="y"
-        :present="y === thisMonth.year || null"
+        :present="y === current.year || null"
         :selected="y === chosenYear || null"
         class="mu-date-cell"
         @click="onYearCellClick(y)">
         {{ y }}
       </div>
-      <div class="mu-date-cell" @click="setFirstYear(firstYear + 10)">
+      <div class="mu-date-cell" @click="setStartYear(startYear + 10)">
         <mu-icon icon="chevronRight" />
       </div>
     </div>
@@ -20,9 +20,9 @@
     <div class="mu-date-grid flex-1">
       <div
         v-for="(label, m) in months" :key="m"
-        :muted="!isCurrentDecade || null"
-        :present="isCurrentDecade && monthEquals({ year: chosenYear, month: m }, thisMonth) || null"
-        :selected="isCurrentDecade && monthEquals({ year: chosenYear, month: m }, selected) || null"
+        :muted="!isActiveDecade || null"
+        :present="m === currentMonth || null"
+        :selected="m === selectedMonth || null"
         class="mu-date-cell"
         @click="onMonthCellClick(m)">
         {{ label }}
@@ -37,43 +37,44 @@
   import { monthEquals, toDateObject, toDateString } from '@/utils/date'
   import { pick } from '@/utils/object'
   import { t as $t } from '@/langs'
+  import { outputTypeProp } from './props'
 
   defineOptions({ name: 'MusselMonthPicker' })
 
+  const emit = defineEmits(['monthCellClick'])
   const model = defineModel({ type: [Date, String] })
 
   const props = defineProps({
     format: { type: String, default: 'yyyy-MM' },
-    outputType: { type: String, default: 'date', validator: v => ['date', 'string'].includes(v) }
+    outputType: outputTypeProp
   })
 
-  const emit = defineEmits([
-    'monthCellClick'
-  ])
+  const current = pick(toDateObject(new Date()), ['year', 'month'])
+  const selected = computed(() => pick(toDateObject(model.value), ['year', 'month']))
 
-  const firstYear = ref()
+  const startYear = ref(parseInt(current.year / 10) * 10)
   const chosenYear = ref()
 
-  const selected = computed(() => pick(toDateObject(model.value), ['year', 'month']))
-  const thisMonth = computed(() => pick(toDateObject(new Date()), ['year', 'month']))
-
-  const isCurrentDecade = computed(() => {
-    const first = firstYear.value
-    const year = chosenYear.value
-
-    return year && first <= year && first + 10 > year
-  })
-
-  const years = computed(() => Array.from({ length: 10 }, (_, idx) => firstYear.value + idx))
+  const years = computed(() => Array.from({ length: 10 }, (_, idx) => startYear.value + idx))
   const months = $t('Datetime.MONTHS_SHORT')
 
-  function setFirstYear (year) {
-    firstYear.value = parseInt(year / 10) * 10
-  }
+  const isActiveDecade = computed(() => {
+    const start = startYear.value
+    const year = chosenYear.value
 
-  function setYear (year) {
-    setFirstYear(year)
-    chosenYear.value = year
+    return year && start <= year && start + 10 > year
+  })
+
+  const currentMonth = computed(() =>
+    isActiveDecade.value && chosenYear.value === current.year && current.month
+  )
+
+  const selectedMonth = computed(() =>
+    isActiveDecade.value && chosenYear.value === selected.value?.year && selected.value?.month
+  )
+
+  function setStartYear (year) {
+    startYear.value = parseInt(year / 10) * 10
   }
 
   function onYearCellClick (year) {
@@ -81,15 +82,13 @@
   }
 
   function onMonthCellClick (month) {
-    if (!isCurrentDecade.value) return
+    if (!isActiveDecade.value) return
 
     const year = chosenYear.value
     const value = { year, month }
 
     if (!monthEquals(value, selected.value)) {
-      const vType = props.outputType.toLowerCase()
-
-      model.value = vType === 'date'
+      model.value = props.outputType
         ? new Date(year, month)
         : toDateString(value, props.format)
     }
@@ -102,13 +101,10 @@
   })
 
   watchEffect(() => {
-    setFirstYear(chosenYear.value || thisMonth.value.year)
+    setStartYear(chosenYear.value || current.year)
   })
 
-  defineExpose({
-    firstYear,
-    setYear
-  })
+  defineExpose({ startYear })
 </script>
 
 <style>

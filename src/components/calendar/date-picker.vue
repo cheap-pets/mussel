@@ -20,7 +20,9 @@
 <script setup>
   import { shallowRef, computed } from 'vue'
   import { throttle } from 'throttle-debounce'
+
   import { t as $t } from '@/langs'
+  import { outputTypeProp } from './props'
 
   import {
     dateEquals,
@@ -34,14 +36,8 @@
   } from '@/utils/date'
 
   const emit = defineEmits(['dateCellClick'])
-
   const model = defineModel({ type: [Date, String] })
-
-  const props = defineProps({
-    year: Number,
-    month: Number,
-    outputType: { type: String, default: 'date', validator: v => ['date', 'string'].includes(v) }
-  })
+  const props = defineProps({ year: Number, month: Number, outputType: outputTypeProp })
 
   const daysOfWeek = shallowRef($t('Datetime.DAYS_OF_WEEK_SHORT'))
 

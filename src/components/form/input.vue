@@ -17,10 +17,11 @@
 
   defineOptions({ name: 'MusselInput' })
 
-  const props = defineProps({ ...inputProps, type: String, modelValue: null })
-  const emit = defineEmits([...inputEmits, 'update:modelValue'])
+  const emit = defineEmits([...inputEmits])
+  const props = defineProps({ ...inputProps, type: String })
 
-  const { model } = useFieldModel(props, 'modelValue', emit)
+  const rawModel = defineModel()
+  const model = useFieldModel(rawModel).modelProxy
 
   const {
     wrapperAttrs,

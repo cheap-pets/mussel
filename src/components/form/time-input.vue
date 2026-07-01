@@ -1,56 +1,75 @@
 <template>
   <combo-wrapper
     ref="wrapper"
-    v-model="textInput"
+    v-model="comboValue"
     class="mu-time-input"
     dropdown-icon="clock"
+    :dropdown-width="dropdownWidth"
     :dropdown-class="['mu-time-input__dropdown', dropdownClass]"
-    @dropdown:show="onDropdownShow"
-    @enter.prevent="onInputEnter"
-    @esc.prevent="onInputEsc"
-    @blur="onInputBlur">
+    @dropdown:show="picker?.updatePosition()">
     <template #dropdown>
-
+      <time-picker
+        ref="picker"
+        v-model="editingTime"
+        :minute-step="minuteStep"
+        :second-step="secondStep" />
+      <mu-button
+        :caption="t('Button.OK')"
+        class="mu-time-input__accept-button"
+        button-style="text"
+        size="small"
+        @click="updateModelValue" />
     </template>
   </combo-wrapper>
 </template>
 
 <script setup>
-  import { ref, computed, watch } from 'vue'
-  import { toTimeObject, toTimeString } from '@/utils/date'
+  import { ref, shallowRef, computed, watchEffect } from 'vue'
+
+  import { toTimeString } from '@/utils/date'
+  import { t } from '@/langs'
+
   import { useFieldModel } from '../form/validation'
+  import { timeSteProp } from '../calendar/props'
 
   import ComboWrapper from './combo-wrapper.vue'
+  import TimePicker from '../calendar/time-picker.vue'
 
   defineOptions({ name: 'MusselTimeInput' })
 
   const props = defineProps({
-    modelValue: String,
-    second: Boolean,
-    minuteStep: { type: Number, default: 5 },
-    secondStep: { type: Number, default: 5 },
+    format: { type: String, default: 'HH:mm:ss' },
+    minuteStep: timeSteProp,
+    secondStep: timeSteProp,
+    dropdownWidth: { default: 'anchor' },
     dropdownClass: null
   })
 
-  const emit = defineEmits([
-    'update:modelValue',
-    'dropdown:show',
-    'dropdown:hide'
-  ])
+  const rawModel = defineModel({ type: String })
+  const model = useFieldModel(rawModel).modelProxy
 
-  function onDropdownShow () {
+  const wrapper = shallowRef()
+  const picker = shallowRef()
+  const editingTime = ref(model.value)
 
+  const comboValue = computed({
+    get: () => toTimeString(model.value, props.format),
+    set: v => { model.value = v }
+  })
+
+  function updateModelValue () {
+    model.value = toTimeString(editingTime.value, props.format)
+    wrapper.value.collapse()
   }
 
-  function onInputEnter () {
-
-  }
-
-  function onInputEsc () {
-
-  }
-
-  function onInputBlur () {
-    
-  }
+  watchEffect(() => {
+    editingTime.value = model.value
+  })
 </script>
+
+<style>
+  .mu-time-input__accept-button {
+    width: 100%;
+    margin-top: var(--mu-half-spacing);
+  }
+</style>

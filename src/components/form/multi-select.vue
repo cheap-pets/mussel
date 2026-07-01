@@ -51,13 +51,11 @@
   const props = defineProps({
     disabled: Boolean,
     readonly: Boolean,
-    modelValue: null,
     ...multiSelectProps
   })
 
-  const emit = defineEmits(['update:modelValue'])
-
-  const { model } = useFieldModel(props, 'modelValue', emit)
+  const rawModel = defineModel()
+  const model = useFieldModel(rawModel).modelProxy
 
   const {
     comboValue,

@@ -55,22 +55,17 @@ export function executeValidator (validator, value, params) {
       : undefined
 }
 
-export function useFieldModel (props, modelProp, emit) {
-  const field = inject('formField', {})
+export function useFieldModel (model) {
+  const field = inject('formField', null)
+  const debounceValidate = field && debounce(300, field.validate)
 
-  const debounceValidate = debounce(300, () => field.validate?.())
-
-  const model = computed({
-    get () {
-      return props[modelProp]
-    },
-    set (v) {
-      emit(`update:${modelProp}`, v)
-      debounceValidate()
+  const modelProxy = computed({
+    get: () => model.value,
+    set: v => {
+      model.value = v
+      debounceValidate?.()
     }
   })
 
-  return {
-    model
-  }
+  return { modelProxy }
 }

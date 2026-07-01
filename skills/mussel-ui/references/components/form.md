@@ -332,6 +332,39 @@ const filteredItems = computed(() =>
 
 ---
 
+## MuTimeInput
+
+时间选择框。点击展开下拉面板，内部为「时 / 分 / 秒」三列滚动选择器（始终 24 小时制），底部「确定」按钮提交并关闭。`modelValue` 为 `"HH:mm[:ss]"` 形态的时间字符串。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `modelValue` | String | — | 双向绑定值，时间字符串（按 `format` 显示与输出，如 `'HH:mm:ss'`） |
+| `format` | String | `HH:mm:ss` | 输入框显示与输出格式，支持 `HH`/`mm`/`ss` 占位符；设为 `'HH:mm'` 即可选到分钟 |
+| `minute-step` | Number | `5` | 分钟列步进：`0` \| `1` \| `5` \| `10` \| `15` \| `30`；`0` 时分钟固定为 `00` |
+| `second-step` | Number | `5` | 秒列步进，取值同 `minute-step`；`0` 时秒固定为 `00` |
+| `dropdown-class` | String | — | 下拉面板附加 class |
+| (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `update:modelValue` | value | 值变更 |
+| `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
+| (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
+
+> - 输入框本身不可编辑，时间仅通过下拉面板选择；在面板内滚动或点击数字选中后，点击底部「确定」按钮提交并关闭面板。
+> - `format` 同时控制显示与输出：设为 `'HH:mm'` 且 `second-step="0"` 即得到「时分」选择器。
+> - 列项默认按步进 5（0、5、10…55）生成；如需精确到每一分钟/秒，将对应 step 设为 `1`。
+
+```html
+<mu-time-input v-model="time" placeholder="时分秒" prefix="时间" />
+<!-- 时分选择（隐藏秒） -->
+<mu-time-input v-model="time" format="HH:mm" :second-step="0" />
+<!-- 秒按 15 分步进 -->
+<mu-time-input v-model="time" :second-step="15" />
+```
+
+---
+
 ## MuColorInput
 
 颜色选择框。前置显示当前色块，右侧为可输入的 HEX 文本框；展开下拉面板显示 Mussel 内置色板（12 个基础色组 + 1 组灰阶，每组 10 级色阶，共 130 色），点击色格即选中。`modelValue` 为 HEX 字符串（如 `'#1C7ED6'`）。

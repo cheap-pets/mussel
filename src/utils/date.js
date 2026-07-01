@@ -26,35 +26,18 @@ export function toDateObject (value) {
   }
 }
 
-export function toDateString (date, format = 'yyyy-MM-dd') {
-  date = toDate(date)
-
-  if (!date) return null
-
-  let result = /(y+)/i.test(format)
-    ? format.replace(RegExp.$1, ('' + date.getFullYear()).substr(4 - RegExp.$1.length))
-    : format
-
-  const patterns = {
-    '(M+)': date.getMonth() + 1,
-    '(d+)': date.getDate(),
-    '(h+)': date.getHours(),
-    '(m+)': date.getMinutes(),
-    '(s+)': date.getSeconds(),
-    '(S+)': date.getMilliseconds()
-  }
-
+function replaceByPatterns (str, patterns) {
   Object
     .keys(patterns)
     .forEach(p => {
       const re = new RegExp(p, ['(d+)', '(h+)'].includes(p) ? 'i' : undefined)
 
-      if (re.test(result)) {
+      if (re.test(str)) {
         const len = RegExp.$1.length
         const value = '' + patterns[p]
         const start = value.length
 
-        result = result.replace(
+        str = str.replace(
           RegExp.$1,
           len === 3
             ? ('000' + value).substr(start)
@@ -67,7 +50,93 @@ export function toDateString (date, format = 'yyyy-MM-dd') {
       }
     })
 
-  return result
+  return str
+}
+
+export function toDateString (date, format = 'yyyy-MM-dd') {
+  date = toDate(date)
+
+  if (!date) return null
+
+  const str = /(y+)/i.test(format)
+    ? format.replace(RegExp.$1, ('' + date.getFullYear()).substr(4 - RegExp.$1.length))
+    : format
+
+  const patterns = {
+    '(M+)': date.getMonth() + 1,
+    '(d+)': date.getDate(),
+    '(h+)': date.getHours(),
+    '(m+)': date.getMinutes(),
+    '(s+)': date.getSeconds(),
+    '(S+)': date.getMilliseconds()
+  }
+
+  return replaceByPatterns(str, patterns)
+}
+
+const TOKEN_RUN = /[yY]+|M+|[dD]+|[hH]+|m+|s+|S+/g
+
+const TOKEN_FIELDS = {
+  y: 'year',
+  Y: 'year',
+  M: 'month',
+  d: 'date',
+  D: 'date',
+  h: 'hour',
+  H: 'hour',
+  m: 'minute',
+  s: 'second',
+  S: 'millisecond'
+}
+
+function escapeRegExp (str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+export function dateStringToObject (str, format = 'yyyy-MM-dd') {
+  if (str == null || str === '') return null
+
+  str = String(str)
+  format = String(format)
+
+  const tokens = []
+  const parts = []
+  let lastIndex = 0
+
+  for (const match of format.matchAll(TOKEN_RUN)) {
+    if (match.index > lastIndex) {
+      parts.push(escapeRegExp(format.slice(lastIndex, match.index)))
+    }
+
+    tokens.push(match[0][0])
+    parts.push('(\\d+)')
+    lastIndex = match.index + match[0].length
+  }
+
+  if (lastIndex < format.length) {
+    parts.push(escapeRegExp(format.slice(lastIndex)))
+  }
+
+  if (!tokens.length) return null
+
+  const matched = str.match(new RegExp('^' + parts.join('') + '$'))
+
+  if (!matched) return null
+
+  const obj = {}
+
+  tokens.forEach((char, i) => {
+    const field = TOKEN_FIELDS[char]
+
+    if (!field) return
+
+    const value = parseInt(matched[i + 1], 10)
+
+    // month is 1-based in the format string, 0-based in the object
+    obj[field] = field === 'month' ? value - 1 : value
+  })
+
+  return obj
 }
 
 export function isLeapYear (year) {
@@ -136,27 +205,53 @@ export function yearEquals (a, b) {
 }
 
 export function toTimeObject (value) {
-  if (!value) return null
+  if (value == null || value === '') return null
 
-  const m = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(value)
+  const type = typeOf(value)
 
-  if (!m) return null
+  let parts
 
-  const hour = +m[1]
-  const minute = +m[2]
-  const second = m[3] != null ? +m[3] : 0
+  if (type === 'string') {
+    parts = value.split(':')
+  } else if (type === 'object') {
+    parts = [
+      value.hour,
+      value.minute,
+      value.second,
+      value.millisecond
+    ]
+  } else {
+    value = type === 'date' ? value : new Date(value)
 
-  if (hour > 23 || minute > 59 || second > 59) return null
+    if (!isDate(value)) return null
 
-  return { hour, minute, second }
+    parts = [
+      value.getHours(),
+      value.getMinutes(),
+      value.getSeconds(),
+      value.getMilliseconds()
+    ]
+  }
+
+  const [hour, minute = 0, second = 0, millisecond = 0] =
+    parts.map((el, idx) => idx ? Number(el) || 0 : Number(el))
+
+  return hour >= 0 && hour < 24
+    ? { hour, minute, second, millisecond }
+    : null
 }
 
-export function toTimeString (time, includeSecond = false) {
+export function toTimeString (time, format = 'HH:mm:ss') {
+  time = toTimeObject(time)
+
   if (!time) return null
 
-  const hour = String(time.hour ?? 0).padStart(2, '0')
-  const minute = String(time.minute ?? 0).padStart(2, '0')
-  const second = String(time.second ?? 0).padStart(2, '0')
+  const patterns = {
+    '(h+)': time.hour,
+    '(m+)': time.minute,
+    '(s+)': time.second,
+    '(S+)': time.millisecond
+  }
 
-  return includeSecond ? `${hour}:${minute}:${second}` : `${hour}:${minute}`
+  return replaceByPatterns(format, patterns)
 }

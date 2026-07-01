@@ -1,56 +1,50 @@
 <template>
   <combo-wrapper
     ref="wrapper"
-    v-model="value"
+    v-model="comboValue"
     class="mu-date-input"
     dropdown-icon="calendar"
     :dropdown-class="['mu-date-dropdown', dropdownClass]"
-    @dropdown:show="currentView = type">
+    @dropdown:show="view = type">
     <template #dropdown>
       <mu-toolbar class="bg-strong p-half">
         <div v-if="type !== 'date'" class="px-1x">
           {{ caption }}
         </div>
-        <mu-button v-else :active="currentView !== 'date'" @click="toggleMonthMode">
+        <mu-button v-else :active="view !== 'date'" @click="toggleMonthView">
           {{ caption }}
-          <mu-icon icon="dropdownExpand" :expanded="currentView !== 'date' || null" />
+          <mu-icon icon="dropdownExpand" :expanded="view !== 'date' || null" />
         </mu-button>
-        <mu-button
-          class="ml-auto"
-          :caption="currentButtonCaption"
-          @click="onCurrentButtonClick()" />
-        <template v-if="isDateMode">
+        <mu-button class="ml-auto" :caption="presentCaption" @click="goPresent" />
+        <template v-if="view === 'date'">
           <mu-icon-button icon="chevronUp" @click="goPrevMonth" />
           <mu-icon-button icon="chevronDown" @click="goNextMonth" />
         </template>
       </mu-toolbar>
       <year-picker
-        v-if="currentView === 'year'"
-        ref="yearSelector"
-        v-model="currentProxy"
-        class="flex-1"
-        @year-cell-click="selectYear" />
+        v-if="view === 'year'"
+        ref="yearPanel"
+        v-model="modelProxy"
+        @year-cell-click="wrapper.collapse()" />
       <month-picker
-        v-else-if="currentView === 'month'"
-        ref="monthSelector"
-        v-model="currentProxy"
-        class="flex-1"
+        v-else-if="view === 'month'"
+        ref="monthPanel"
+        v-model="monthProxy"
         @month-cell-click="selectMonth" />
       <date-picker
         v-else
-        v-model="model"
-        class="flex-1"
-        :year="year"
-        :month="month"
+        v-model="modelProxy"
+        :year="displayYear"
+        :month="displayMonth"
         @date-cell-click="wrapper.collapse()" />
     </template>
   </combo-wrapper>
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, shallowRef, computed } from 'vue'
 
-  import { toDateString, monthEquals, yearEquals } from '@/utils/date'
+  import { toDateString, monthEquals } from '@/utils/date'
   import { t as $t } from '@/langs'
 
   import { useFieldModel } from '../form/validation'
@@ -64,106 +58,94 @@
   defineOptions({ name: 'MusselDateInput' })
 
   const props = defineProps({
-    type: { type: String, default: 'date', validator: v => ['date', 'month', 'year'].includes(v) },
-    modelValue: { type: [Date, String] },
-    dropdownClass: null,
-    ...calendarProps
+    ...calendarProps,
+    type: {
+      type: String,
+      default: 'date',
+      validator: v => ['date', 'month', 'year'].includes(v)
+    },
+    dropdownClass: null
   })
 
-  const emit = defineEmits(['update:modelValue'])
-
-  const { model } = useFieldModel(props, 'modelValue', emit)
+  const rawModel = defineModel({ type: [Date, String] })
+  const model = useFieldModel(rawModel).modelProxy
 
   const {
-    year,
-    month,
     today,
-    current,
-    currentProxy,
     selected,
-    setCurrent,
+    monthProxy,
+    modelProxy,
+    displayYear,
+    displayMonth,
     goPrevMonth,
     goNextMonth,
+    setDisplayMonth,
     updateModelValue
   } = useCalendar(model, props)
 
-  const wrapper = ref()
-  const monthSelector = ref()
-  const yearSelector = ref()
-  const currentView = ref()
+  const wrapper = shallowRef()
+  const yearPanel = shallowRef()
+  const monthPanel = shallowRef()
+  const view = ref()
 
-  const isDateMode = computed(() => currentView.value === 'date')
-  const firstYear = computed(() =>
-    currentView.value === 'year'
-      ? yearSelector.value?.firstYear
-      : monthSelector.value?.firstYear
+  const comboValue = computed({
+    get: () => toDateString(model.value, props.format),
+    set: v => updateModelValue(v)
+  })
+
+  const startYear = computed(() =>
+    view.value === 'year'
+      ? yearPanel.value?.startYear
+      : monthPanel.value?.startYear
   )
 
   const caption = computed(() =>
-    currentView.value === 'date'
-      ? $t('Datetime.YEAR_AND_MONTH', year.value, $t('Datetime.MONTHS_SHORT')[month.value])
-      : `${firstYear.value} ~ ${firstYear.value + 9}`
-  )
+    view.value === 'date'
+      ? $t('Datetime.YEAR_AND_MONTH', displayYear.value, $t('Datetime.MONTHS_SHORT')[displayMonth.value])
+      : `${startYear.value} ~ ${startYear.value + 9}`)
 
-  const currentButtonCaption = computed(() => $t(
-    currentView.value === 'date'
+  const presentCaption = computed(() => $t(
+    view.value === 'date'
       ? 'Datetime.TODAY'
-      : currentView.value === 'month'
+      : view.value === 'month'
         ? 'Datetime.THIS_MONTH'
         : 'Datetime.THIS_YEAR'
   ))
 
-  const value = computed({
-    get () {
-      return toDateString(model.value, props.format)
-    },
-    set (v) {
-      model.value = v
-    }
-  })
-
-  function toggleMonthMode () {
-    currentView.value = currentView.value === 'date' ? 'month' : 'date'
+  function toggleMonthView () {
+    view.value = view.value === 'date' ? 'month' : 'date'
   }
 
-  function onCurrentButtonClick () {
+  function goPresent () {
     const { year: y, month: m } = today
 
-    switch (currentView.value) {
+    switch (view.value) {
       case 'date':
         updateModelValue(today)
-        setCurrent({ year: y, month: m, date: 1 })
+        setDisplayMonth({ year: y, month: m })
         wrapper.value.collapse()
         break
       case 'month':
-        setCurrent({ year: y, month: m, date: 1 })
+        setDisplayMonth({ year: y, month: m })
         selectMonth()
         break
       case 'year':
-        setCurrent({ year: y, month: 0, date: 1 })
-        selectYear()
+        updateModelValue({ year: y, month: 0, date: 1 })
+        wrapper.value.collapse()
         break
     }
   }
 
   function selectMonth () {
     if (props.type === 'month') {
-      if (!monthEquals(current.value, selected.value)) {
-        updateModelValue(current.value)
+      if (!monthEquals(monthProxy.value, selected.value)) {
+        updateModelValue(monthProxy.value)
       }
 
       wrapper.value.collapse()
     } else {
-      currentView.value = props.type
+      view.value = props.type
     }
-  }
-
-  function selectYear () {
-    if (!yearEquals(current.value, selected.value)) {
-      updateModelValue(current.value)
-    }
-
-    wrapper.value.collapse()
   }
 </script>
 
@@ -180,5 +162,11 @@
     & > .mu-bar {
       border-radius: var(--mu-common-border-radius);
     }
+  }
+
+  .mu-date-dropdown > .mu-year-picker,
+  .mu-date-dropdown > .mu-month-picker,
+  .mu-date-dropdown > .mu-date-picker {
+    flex: 1 1 0;
   }
 </style>

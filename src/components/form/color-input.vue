@@ -34,7 +34,7 @@
 <script setup>
   import './color-input.scss'
 
-  import { ref, computed, watch } from 'vue'
+  import { ref, shallowRef, computed, watch } from 'vue'
   import { useFieldModel } from '../form/validation'
   import { normalizeHex } from '@/utils/color'
   import { palette } from './color-palette'
@@ -44,22 +44,16 @@
   defineOptions({ name: 'MusselColorInput' })
 
   const props = defineProps({
-    modelValue: String,
     disabled: Boolean,
     readonly: Boolean,
     placeholder: String,
     dropdownClass: null
   })
 
-  const emit = defineEmits([
-    'update:modelValue',
-    'dropdown:show',
-    'dropdown:hide'
-  ])
+  const rawModel = defineModel({ type: String })
+  const model = useFieldModel(rawModel).modelProxy
 
-  const { model } = useFieldModel(props, 'modelValue', emit)
-
-  const wrapper = ref()
+  const wrapper = shallowRef()
 
   // HEX 输入框文本（允许临时非法值，仅在确认时规范化提交）
   const inputValue = ref(model.value || '')

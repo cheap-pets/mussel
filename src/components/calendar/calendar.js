@@ -1,5 +1,4 @@
 import { ref, computed, watchEffect } from 'vue'
-import { pick } from '@/utils/object'
 
 import {
   dateEquals,
@@ -9,66 +8,72 @@ import {
   getNextMonth
 } from '@/utils/date'
 
+import { outputTypeProp } from './props'
+
 export const calendarProps = {
-  format: String,
+  format: { type: String, default: 'yyyy-MM-dd' },
+  outputType: outputTypeProp,
   min: [Date, String],
-  max: [Date, String],
-  outputType: { type: String, default: 'date', validator: v => ['date', 'string'].includes(v) }
+  max: [Date, String]
 }
 
 export function useCalendar (model, props) {
-  const current = ref()
-
-  const currentProxy = computed({
-    get () {
-      return new Date(current.value.year, current.value.month)
-    },
-    set (value) {
-      const object = toDateObject(value)
-      if (object) setCurrent(object)
-    }
-  })
-
   const today = toDateObject(new Date())
+
+  const displayYear = ref(today.year)
+  const displayMonth = ref(today.month)
+
   const selected = computed(() => toDateObject(model.value))
 
-  const year = computed(() => current.value.year)
-  const month = computed(() => current.value.month)
+  const modelProxy = computed({
+    get: () => model.value,
+    set: v => updateModelValue(v)
+  })
 
-  function setCurrent (dateObj) {
-    Object.assign(current.value, dateObj)
+  const monthProxy = computed({
+    get: () => new Date(displayYear.value, displayMonth.value),
+    set: v => setDisplayMonth(toDateObject(v))
+  })
+
+  function setDisplayMonth (dateObj) {
+    if (dateObj) {
+      displayYear.value = dateObj.year
+      displayMonth.value = dateObj.month
+    }
   }
 
   function goPrevMonth () {
-    setCurrent(getPrevMonth(year.value, month.value))
+    setDisplayMonth(getPrevMonth(displayYear.value, displayMonth.value))
   }
 
   function goNextMonth () {
-    setCurrent(getNextMonth(year.value, month.value))
+    setDisplayMonth(getNextMonth(displayYear.value, displayMonth.value))
   }
 
   function updateModelValue (value) {
+    value = toDateObject(value)
+
     if (dateEquals(value, model.value)) return
 
-    model.value = props.outputType === 'date'
-      ? new Date(value.year, value.month, value.date ?? 1)
-      : toDateString(value, props.format)
+    model.value = !value
+      ? null
+      : props.outputType === 'date'
+        ? new Date(value.year, value.month, value.date ?? 1)
+        : toDateString(value, props.format)
   }
 
-  watchEffect(() => {
-    current.value = pick(selected.value || today, ['year', 'month'])
-  })
+  watchEffect(() => setDisplayMonth(selected.value || today))
 
   return {
-    year,
-    month,
     today,
-    current,
     selected,
-    currentProxy,
+    modelProxy,
+    monthProxy,
+    displayYear,
+    displayMonth,
     goPrevMonth,
     goNextMonth,
-    setCurrent,
+    setDisplayMonth,
     updateModelValue
   }
 }

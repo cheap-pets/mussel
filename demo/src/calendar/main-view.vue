@@ -13,10 +13,9 @@
       <mu-date-input v-model="date" prefix="年份选择" type="year" format="yyyy" />
     </div>
     <div class="group">
-      <mu-time-picker />
-      <mu-time-input v-model="time1" placeholder="时分选择" prefix="时分" />
-      <mu-time-input v-model="time2" type="time" placeholder="时分秒选择" prefix="时分秒" />
-      <mu-time-input v-model="time3" :minute-step="15" placeholder="15 分步进" prefix="步进" />
+      <mu-time-input v-model="time" placeholder="时分秒" :second-step="15" prefix="时分秒" />
+      <mu-time-input v-model="time" :second-step="0" prefix="时分" />
+      <mu-time-input v-model="time" :minute-step="0" :second-step="0" prefix="小时" />
     </div>
   </div>
 </template>
@@ -26,9 +25,7 @@
   import ThemeSwitch from '../common/theme-switch.vue'
 
   const date = ref()
-  const time1 = ref('09:30')
-  const time2 = ref('09:30:45')
-  const time3 = ref('09:00')
+  const time = ref('09:30')
 </script>
 
 <style>

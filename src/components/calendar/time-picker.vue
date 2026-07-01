@@ -5,60 +5,61 @@
       <span>{{ $t('Datetime.MINUTE') }}</span>
       <span>{{ $t('Datetime.SECOND') }}</span>
     </div>
-    <div class="mu-time-picker__body">
+    <div ref="body" class="mu-time-picker__body">
       <div class="mu-time-picker__flag">
-        <span />
-        <span style="flex: none">:</span>
-        <span />
-        <span style="flex: none">:</span>
-        <span />
+        <span>:</span>
+        <span>:</span>
       </div>
-      <div class="mu-time-picker__hour-col" @scrollend="onScrollEnd('hour', $event)">
+      <div
+        v-for="key in ['hour', 'minute', 'second']"
+        :key="key"
+        :class="['mu-time-picker__col', `mu-time-picker__${key}-col`]"
+        @scrollend="onScrollEnd(key, $event)">
         <a
-          v-for="(h, idx) in hours" :key="idx" :disabled="!h || null" @click="scrollToCenter">
-          {{ h }}
+          v-for="(v, idx) in columns[key].options"
+          :key="idx"
+          :active="(v && parseInt(v) === time[key]) || null"
+          :disabled="!v || null"
+          :data-key="v ? parseInt(v) : undefined"
+          @click="scrollToCenter(key, parseInt(v))">
+          {{ v }}
         </a>
       </div>
-      <div class="mu-time-picker__minute-col" @scrollend="onScrollEnd('minute', $event)">
-        <a v-for="(m, idx) in minutes" :key="idx" :disabled="!m || null" @click="scrollToCenter">
-          {{ m }}
-        </a>
-      </div>
-      <div class="mu-time-picker__second-col" @scrollend="onScrollEnd('second', $event)">
-        <a v-for="(s, idx) in seconds" :key="idx" :disabled="!s || null" @click="scrollToCenter">
-          {{ s }}
-        </a>
-      </div>
-    </div>
-    <div class="mu-time-picker__footer">
-      <mu-button :caption="$t('Button.OK')" button-style="text" color="primary" size="small" />
     </div>
   </div>
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue'
+  import { shallowRef, reactive, computed, watchEffect, onMounted, onUpdated } from 'vue'
+  import { debounce } from 'throttle-debounce'
+
   import { t as $t } from '@/langs'
+  import { timeSteProp } from './props.js'
+  import { toTimeObject, toTimeString } from '@/utils/date.js'
 
   defineOptions({ name: 'MusselTimePicker' })
 
-  const model = defineModel({ type: Object })
+  const model = defineModel({ type: String })
 
   const props = defineProps({
-    format: { type: String, default: 'HH:mm' },
-    minuteStep: { type: Number, default: 5, validator: v => [0, 1, 5, 10, 15, 30].includes(v) },
-    secondStep: { type: Number, default: 0, validator: v => [0, 1, 5, 10, 15, 30].includes(v) }
+    format: { type: String, default: 'HH:mm:ss' },
+    minuteStep: timeSteProp,
+    secondStep: timeSteProp
   })
 
-  const hour = ref(0)
-  const minute = ref(0)
-  const second = ref(0)
+  const body = shallowRef()
+
+  const time = reactive({
+    hour: 0,
+    minute: 0,
+    second: 0
+  })
 
   function padZero (n) {
     return String(n).padStart(2, '0')
   }
 
-  function getItems (step) {
+  function genItems (step) {
     return step
       ? Array.from({ length: Math.ceil(60 / step) }, (_, i) => padZero(i * step))
       : ['00']
@@ -69,42 +70,72 @@
   }
 
   const hours = padItems(Array.from({ length: 24 }, (_, i) => padZero(i)))
-  const minutes = computed(() => padItems(getItems(props.minuteStep)))
-  const seconds = computed(() => padItems(getItems(props.secondStep)))
+  const minutes = computed(() => padItems(genItems(props.minuteStep)))
+  const seconds = computed(() => padItems(genItems(props.secondStep)))
 
-  // 点击某一项时，将其平滑滚动到所在列的视口中心
-  function scrollToCenter (e) {
-    const el = e.currentTarget
+  const columns = reactive({
+    hour: {
+      label: $t('Datetime.HOUR'),
+      options: hours
+    },
+    minute: {
+      label: $t('Datetime.MINUTE'),
+      options: minutes
+    },
+    second: {
+      label: $t('Datetime.SECOND'),
+      options: seconds
+    }
+  })
+
+  function scrollToCenter (key, v) {
+    const el = body.value?.querySelector(`.mu-time-picker__${key}-col > a[data-key="${v}"]`)
+    if (!el) return
+
     const col = el.parentElement
-    const targetTop = el.offsetTop - (col.clientHeight - el.offsetHeight) / 2
+    const top = el.offsetTop - (col.clientHeight - el.offsetHeight) / 2
 
-    col.scrollTo({ top: targetTop, behavior: 'smooth' })
+    col.scrollTo({ top, behavior: 'smooth' })
   }
-
-  // 滚动停止后，将视口正中的有效项写入对应 ref
-  const targets = { hour, minute, second }
 
   function onScrollEnd (key, e) {
     const col = e.currentTarget
-    // 项等高 + scroll-snap 居中对齐：直接由 scrollTop 反推居中项索引
     const cell = col.firstElementChild.offsetHeight
     const idx = Math.round((col.scrollTop + (col.clientHeight - cell) / 2) / cell)
-    targets[key].value = Number(col.children[idx].textContent)
+
+    time[key] = Number(col.children[idx].textContent)
+    model.value = toTimeString(time, props.format)
   }
+
+  const updatePosition = debounce(100, () => {
+    ['hour', 'minute', 'second'].forEach(key => scrollToCenter(key, time[key]))
+  })
+
+  watchEffect(() => {
+    Object.assign(time, toTimeObject(model.value))
+  })
+
+  onMounted(updatePosition)
+  onUpdated(updatePosition)
+
+  defineExpose({
+    updatePosition
+  })
 </script>
 
 <style>
   .mu-time-picker {
     --cell-height: 32px;
 
-    width: 200px;
+    width: 100%;
+    min-width: 180px;
+    max-width: 240px;
     background-color: var(--mu-bg-normal);
   }
 
   .mu-time-picker__header {
     display: flex;
     align-items: center;
-    justify-content: center;
 
     width: 100%;
     height: 32px;
@@ -119,14 +150,17 @@
   }
 
   .mu-time-picker__body {
+    user-select: none;
+
     position: relative;
 
-    overflow: visible;
     display: flex;
     align-items: stretch;
 
     width: 100%;
     height: calc(var(--cell-height) * 5);
+
+    font-weight: 400;
 
     & > .mu-time-picker__flag {
       position: absolute;
@@ -142,12 +176,16 @@
 
       background-color: var(--mu-primary-translucent);
 
-      & > span {
-        flex: 1 1 0;
+      & > :first-child {
+        margin-inline: auto;
+      }
+
+      & > :last-child {
+        margin-right: auto;
       }
     }
 
-    & > div {
+    & > .mu-time-picker__col {
       scroll-behavior: smooth;
       scrollbar-width: none;
       scroll-snap-type: y mandatory;
@@ -171,9 +209,13 @@
         justify-content: center;
 
         height: var(--cell-height);
-        border-radius: var(--mu-common-border-radius);
 
         &:hover {
+          color: var(--mu-primary-color);
+        }
+
+        &[active] {
+          font-weight: 600;
           color: var(--mu-primary-color);
         }
 
@@ -183,11 +225,5 @@
         }
       }
     }
-  }
-
-  .mu-time-picker__footer {
-    z-index: 1;
-    height: 32px;
-    text-align: right;
   }
 </style>

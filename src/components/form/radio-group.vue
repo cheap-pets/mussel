@@ -18,15 +18,10 @@
   import MuRadio from './radio.vue'
 
   defineOptions({ name: 'MusselRadioGroup' })
+  defineProps({ options: Array, disabled: Boolean })
 
-  const props = defineProps({
-    options: Array,
-    disabled: Boolean,
-    modelValue: null
-  })
-  const emit = defineEmits(['update:modelValue'])
-
-  const { model } = useFieldModel(props, 'modelValue', emit)
+  const rawModel = defineModel()
+  const model = useFieldModel(rawModel).modelProxy
 
   provide('radioGroup', { model })
 </script>
