@@ -68,6 +68,10 @@
 </script>
 
 <style>
+  .mu-time-input__dropdown > .mu-time-picker {
+    background: none;
+  }
+
   .mu-time-input__accept-button {
     width: 100%;
     margin-top: var(--mu-half-spacing);

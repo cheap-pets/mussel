@@ -56,6 +56,30 @@ $SEMANTIC_COLORS: (
   --mu-bg-overlay: var(--mu-bg-normal);
   --mu-bg-fill: var(--mu-gray-1);
   --mu-bg-stripe: var(--mu-gray-0);
+
+  --mu-shadow-hairline: 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+  --mu-shadow-float:
+    var(--mu-shadow-hairline),
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.04);
+
+  --mu-shadow-popup:
+    var(--mu-shadow-hairline),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.06);
+
+  --mu-shadow-layer:
+    var(--mu-shadow-hairline),
+    0 4px 8px rgba(0, 0, 0, 0.10),
+    0 8px 16px rgba(0, 0, 0, 0.08);
+
+  --mu-shadow-modal:
+    var(--mu-shadow-hairline),
+    0 8px 16px rgba(0, 0, 0, 0.12),
+    0 16px 32px rgba(0, 0, 0, 0.10);
+
+  --mu-shadow-focus: 0 0 0 2px;
 }
 
 .mu-dark {
@@ -86,6 +110,8 @@ $SEMANTIC_COLORS: (
   --mu-bg-fill: var(--mu-gray-16);
   --mu-bg-stripe: var(--mu-gray-18);
 
+  --mu-shadow-hairline: 0 0 0 1px rgba(255, 255, 255, 0.10);
+
   color-scheme: dark;
 }
 
@@ -113,12 +139,6 @@ $SEMANTIC_COLORS: (
 
   --mu-common-border-radius: 4px;
   --mu-window-border-radius: 8px;
-
-  --mu-shadow-focus: 0 0 0 2px;
-  --mu-shadow-float: 0 1px 2px rgba(0, 0, 0, 0.1), 0 2px 3px rgba(0, 0, 0, 0.06);
-  --mu-shadow-popup: 0 2px 4px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.08);
-  --mu-shadow-layer: 0 4px 8px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.12);
-  --mu-shadow-modal: 0 6px 12px rgba(0, 0, 0, 0.16), 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
 .mu-root {
