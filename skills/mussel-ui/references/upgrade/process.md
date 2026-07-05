@@ -60,6 +60,7 @@
    - 已移除组件：`<mu-box>`、`<mu-h-box>`、`<mu-v-box>`
    - 废弃 CSS 类：`mu-box`、`mu-h-box`、`mu-v-box`、`mu-space`→`flex-space`、`mu-divider`→`flex-divider`、`mu-flex-item`、`mu-bg-transparent`、`mu-bg-white`、`mu-bg-black`、`mu-bg-x-color`
    - 废弃属性选择器：`layout="flex"`、`flex="..."`、`margin="..."`、`padding="..."`、`padding-x/y`、`margin-x/y`、`margin-top/bottom/left/right`、`padding-top/bottom/left/right`、`border`/`border-right` 等、`position="..."`、`width="..."`、`height="..."`、`overflow="..."`、`align-items="..."`、`align-self="..."`、`justify-content="..."`、`content-center`、`flex-wrap`、`inline`、`reverse`、`collapsible`、`gap="..."`
+   - ref 连带变更：`<mu-box ref="...">` / `<mu-h-box ref="...">` / `<mu-v-box ref="...">`（模板）+ 对应 `{refName}.value.$el`（脚本），见 rules.md 3.5
 
    **图标**：
    - `icon="dropdown"` → `icon="chevronDown"`
@@ -69,6 +70,7 @@
    - 推荐迁移：`<mu-option>`、`<mu-tree-node>`、`<mu-dropdown-item>` 等
    - 废弃属性：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
    - 废弃事件：`@tab-click`、`@tab-change`、`@close-button-click`、`@mask-click`
+   - 行为差异（非废弃，需人工审核）：`<mu-dialog>` 同时使用 `action: 'hide'`/`'close'` 按钮与 `@button-click` handler（V3 hide 按钮不触发，V4 全触发，见 rules.md 5.1）
    - 废弃插槽：`<template #left>`/`#right`（ComboBox→`prefix`/`suffix` 属性）、`<template #tab-bar>`（Tabs→`#tab-bar-prepend`/`#tab-bar-append`）、`<template #client>`/`#header-prepend`/`#header-append`/`#footer-prepend`/`#footer-append`（Dialog→`#body`/`#header`/`#footer`）
    - 废弃子组件属性：`title`（TabButton）、`divider`（ListDivider）、`value`（ListItem）
    - 缺少 `mu-box` class 的 `<mu-form-field>`/`<mu-form>`

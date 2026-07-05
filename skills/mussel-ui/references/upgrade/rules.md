@@ -609,7 +609,49 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 </mu-grid-box>
 ```
 
-### 3.5 升级检查清单
+### 3.5 ref 访问根 DOM 的连带变更
+
+> ⚠️ 此项涉及 JS 逻辑变更（事件监听器绑定/解绑、DOM 操作等），**无法完全自动升级**，需人工逐个审核 ref 用法。
+
+V3 中 `<mu-box>`（含 `<mu-h-box>`、`<mu-v-box>`）是 Vue 组件，`ref` 拿到的是组件实例，需通过 `.$el` 才能访问根 DOM。V4 中这些标签退化为原生 `<div>`，`ref` 直接拿到 DOM 元素，**多余的 `.$el` 必须去掉**，否则取到 `undefined`。
+
+适用范围：`ref` 直接标在 `<mu-box>` / `<mu-h-box>` / `<mu-v-box>` 元素上（同一模板内）。
+
+```html
+<!-- 升级前：ref 在 mu-box 组件上 -->
+<template>
+  <mu-box ref="root" overflow="auto">…</mu-box>
+</template>
+
+<script setup>
+const root = ref(null)
+// V3：root.value 是 MuBox 组件实例，需 .$el 才能拿到 DOM
+root.value.$el.addEventListener(…)
+</script>
+
+<!-- 升级后：mu-box 退化为原生 div -->
+<template>
+  <div class="overflow-auto" ref="root">…</div>
+</template>
+
+<script setup>
+const root = ref(null)
+// V4：root.value 直接就是 DOM 元素，去掉 .$el
+root.value.addEventListener(…)
+</script>
+```
+
+迁移要点：
+
+| 项 | 变更 |
+|----|------|
+| 模板侧 | `<mu-box ref="x">` / `<mu-h-box ref="x">` / `<mu-v-box ref="x">` → `<div ref="x">`（ref 名保持不变） |
+| 脚本侧 | `x.value.$el` → `x.value`（`x` 为上述 ref 名） |
+| 不适用场景 | ref 标在「以 mu-box 为根的子组件」上（如 `<Child ref="c" />`，Child 的 template 根是 mu-box）：`c.value.$el` 仍按 Vue 标准方式取根 DOM，**不要去掉 `.$el`**（`c.value` 是组件实例，不是 DOM） |
+
+**升级检查方法**：先 grep `<mu-box ref=` / `<mu-h-box ref=` / `<mu-v-box ref=` 找出所有「带 ref 的 mu-box」，记下 ref 名，再到对应文件的 `<script>` 中搜索 `{refName}.value.$el` 逐一改写。
+
+### 3.6 升级检查清单
 
 对每个涉及 `mu-box` 的文件，逐一检查：
 
@@ -632,6 +674,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 - [ ] `class="mu-box mu-bg-normal"` → `class="bg-normal"`
 - [ ] `<mu-grid-box>` 上非 props 的属性（`width`、`height`、`padding`）→ `style` 或原子类（已包含在上条通用规则中）
 - [ ] `<mu-grid-cell>` 上的 `margin=` → `class="m-*x"`
+- [ ] `<mu-box ref="x">` / `<mu-h-box ref="x">` / `<mu-v-box ref="x">`：脚本中 `x.value.$el` → `x.value`（见 3.5，注意区分 ref 是否在子组件上）
 
 ---
 
@@ -673,6 +716,23 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 |----------|----------|------|
 | `@close-button-click` | _(已移除)_ | 关闭按钮点击触发 `hide` 事件 |
 | `@mask-click` | _(已移除)_ | 用 `dismissible` 控制遮罩行为 |
+| `@button-click`（`action: 'hide'` 的按钮不触发） | `@button-click`（**所有按钮都触发**） | V3 中 `action: 'hide'` 的按钮直接关闭、不 emit；V4 中所有按钮先 emit 再按 `action` 决定是否关闭。`buttonClick` payload 为按钮对象（含 `name`、`action`、`key` 及用户自定义 attrs） |
+
+> ⚠️ **`@button-click` 行为差异需人工审核**：若老代码同时存在 `action: 'hide'`（或 `'close'`）的按钮和 `@button-click` handler，V3 下该按钮不会进入 handler，V4 下会进入。需在 handler 中增加按钮判断，跳过关闭类按钮：
+
+```js
+// 升级前：V3 下 hide 按钮不触发，handler 只处理业务按钮
+function onButtonClick (btn) {
+  // 只会收到业务按钮，hide 按钮不会进来
+  doBusinessAction(btn)
+}
+
+// 升级后：V4 下所有按钮都触发，需手动跳过 hide/close 按钮
+function onButtonClick (btn) {
+  if (['hide', 'close'].includes(btn.action)) return  // 跳过关闭类按钮
+  doBusinessAction(btn)
+}
+```
 
 ```js
 // Mussel 4：新的事件签名
