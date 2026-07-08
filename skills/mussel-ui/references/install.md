@@ -44,9 +44,10 @@ install(app, {
 `install` 后，组件内可通过 `inject('$mussel')` 或 `this.$mussel` 获取上下文：
 
 ```javascript
-const { rootElement, options, messageBox } = inject('$mussel')
+const { rootElement, options, messageBox, setupColors } = inject('$mussel')
 
 messageBox.alert('操作完成')
+setupColors({ primary: '#be4bdb' })  // 运行时换肤，默认写入当前应用根元素
 ```
 
 | 属性 | 说明 |
@@ -54,6 +55,7 @@ messageBox.alert('操作完成')
 | rootElement | Element，`root` 解析后的根 DOM 元素 |
 | options | Object，传入的 `componentOptions`（剔除 `root`/`dark`/`colors`/`icons`/`locale`/`localeResources` 之后的部分） |
 | messageBox | 命令式对话框与通知 API（`alert` / `confirm` / `error` / `warn` / `notify`） |
+| setupColors | 主题色设置函数（已绑定到当前上下文），见下文「运行时换肤」 |
 
 ## installIcons(icons)
 
@@ -83,3 +85,24 @@ import { colors, icons } from 'mussel'
 // icons 是已注册图标的集合（key → { svg?, cls?, animation? }）
 // 如 Object.keys(icons) 可列出所有可用图标名
 ```
+
+如需在 `install` 之后动态切换主题色，使用 `$mussel` 上下文中的 `setupColors`（见下文「运行时换肤」）。
+
+## 运行时换肤 — `$mussel.setupColors`
+
+主题色设置函数**挂载在 `$mussel` 上下文上**（非顶层导出），已绑定到当前应用上下文，可在 `install` 之后任意时机调用——运行时换肤、动态切换主题。
+
+```javascript
+// 组件内
+const { setupColors } = inject('$mussel')
+setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
+```
+
+| 参数 | 类型 | 默认值 | 说明 |
+| ---- | ---- | ------ | ---- |
+| customColors | Object | `{}` | 自定义主题色，key 同 `options.colors`：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral` / `gray`，自动派生调色板与灰阶，并写入 `--mu-*` CSS 变量 |
+| rootElement | Element | `$mussel.rootElement` | 写入 CSS 变量的根元素；未传时回退到当前上下文的 `rootElement`，再回退到 `document.body` |
+
+> [!NOTE]
+>
+> `setupColors` 会把传入色合并到运行时 `colors` 对象并更新根元素的 `--mu-*` 变量。它**只写入 CSS 变量**，不改变 `$mussel.rootElement`。

@@ -46,7 +46,7 @@ description: >
 
 **样式 Token**：颜色、间距、原子类、布局模式等查阅 `references/styles.md`。
 
-**安装初始化**：`install(app, options)`、options 字段、`$mussel` 上下文、`installIcons` 查阅 `references/install.md`。
+**安装初始化**：`install(app, options)`、options 字段、`$mussel` 上下文（含运行时换肤 `setupColors`）、`installIcons` 查阅 `references/install.md`。
 
 ### 步骤 3：生成后自检
 

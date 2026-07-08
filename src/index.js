@@ -10,12 +10,13 @@ import { resolveElement } from './utils/dom.js'
 
 import './styles/atomic.js'
 
-const isSysDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-function setupRootClass (rootElement, dark) {
+function setupRootClass (dark, rootElement) {
   rootElement.classList.add('mu-root')
 
-  if ((dark === true) || (dark === 'auto' && isSysDark)) {
+  if (
+    (dark === true) ||
+    (dark === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  ) {
     rootElement.classList.add('mu-dark')
   }
 }
@@ -34,12 +35,13 @@ function install (app, options = {}) {
   const rootElement = resolveElement(root) || document.body
   const context = { rootElement, options: componentOptions }
 
+  context.setupColors = setupColors.bind(context)
   app.provide('$mussel', context)
   app.config.globalProperties.$mussel = context
 
-  setupRootClass(rootElement, dark)
-  setupColors(rootElement, colors)
   setupLocale(locale, localeResources)
+  setupRootClass(dark, rootElement)
+  setupColors(colors, rootElement)
 
   installIcons(icons)
   installComponents(app)

@@ -37,7 +37,7 @@ install(app, {
 | ---- | ---- | ------ | ---- |
 | root | String \| Element | `document.body` | 应用根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
 | dark | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
-| colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `gray`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
+| colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral` / `gray`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
 | localeResources | Object | — | 自定义语言包，写入指定 `locale` 下；Mussel 内置 `zh` / `en` |
@@ -52,7 +52,7 @@ install(app, {
 `install` 后，组件内可通过 `inject('$mussel')` 或 `this.$mussel` 获取上下文：
 
 ```javascript
-const { rootElement, options, messageBox } = inject('$mussel')
+const { rootElement, options, messageBox, setupColors } = inject('$mussel')
 
 messageBox.alert('操作完成')
 ```
@@ -62,6 +62,7 @@ messageBox.alert('操作完成')
 | rootElement | Element，`root` 解析后的根 DOM 元素 |
 | options | Object，传入的 `componentOptions`（剔除 `root`/`dark`/`colors`/`icons`/`locale`/`localeResources` 之后的部分） |
 | messageBox | 命令式对话框与通知 API（`alert` / `confirm` / `error` / `warn` / `notify`） |
+| setupColors | 主题色设置函数（已绑定到当前上下文），用于运行时换肤，见下文「运行时换肤」 |
 
 ### installIcons(icons)
 
@@ -83,6 +84,27 @@ import { icons } from 'mussel'
 
 Object.keys(icons)  // 列出所有可用图标名
 ```
+
+
+
+## 运行时换肤 — `$mussel.setupColors`
+
+主题色设置函数**挂载在 `$mussel` 上下文上**（非顶层导出），已绑定到当前应用上下文，可在 `install` 之后任意时机调用——运行时换肤、动态切换主题。
+
+```javascript
+const { setupColors } = inject('$mussel')
+
+setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
+```
+
+| 参数 | 类型 | 默认值 | 说明 |
+| ---- | ---- | ------ | ---- |
+| customColors | Object | `{}` | 自定义主题色，key 同 `options.colors`：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral` / `gray`，自动派生调色板与灰阶，并写入 `--mu-*` CSS 变量 |
+| rootElement | Element | `$mussel.rootElement` | 写入 CSS 变量的根元素；未传时回退到当前上下文的 `rootElement`，再回退到 `document.body` |
+
+> [!NOTE]
+>
+> `setupColors` 会把传入色合并到运行时 `colors` 对象并更新根元素的 `--mu-*` 变量。它**只写入 CSS 变量**，不改变 `$mussel.rootElement`。
 
 
 

@@ -192,6 +192,8 @@ export { install, installIcons, EventInterceptor, colors }  // 导出 install、
 ```
 
 > `colors` 为包含全部派生色（基础色、语义色及其调色板/灰阶）的运行时对象，可在运行时读取色板或用于自定义渲染（如色板选择器）。早期 4.x 曾导出的 `generatePreCssVariables` / `getComputedXColor` 已移除，统一改用 `colors`。
+>
+> M3 运行时换肤函数 `setTheme(option)` 在 M4 中不再导出，改为挂载到 `$mussel` 上下文：`$mussel.setupColors(customColors, rootElement?)`，已绑定当前应用根元素。详见 `references/install.md`「运行时换肤」。
 
 ---
 
