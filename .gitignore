@@ -7,10 +7,17 @@ node_modules/
 
 # Output directories
 dist/
-.DS_Store
+
 
 # Claude Code 本地配置与记忆文件（项目本地）
 .claude/settings.local.json
 .claude/memory/
 
+# playwright mcp 临时文件
+.playwright-mcp/
+
+# codegraph 索引
+.codegraph
+
+.DS_Store
 AGENTS.md

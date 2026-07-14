@@ -20,6 +20,7 @@
     "change-case": "^5.4.4",
     "lightningcss": "^1.32.0",
     "sass-embedded": "^1.98.0",
+    "serve": "^14.2.6",
     "svgo": "^4.0.1",
     "throttle-debounce": "^5.0.2",
     "valibot": "^1.4.0",

@@ -32,38 +32,32 @@
 </template>
 
 <script setup>
-  import { ref, computed, watchEffect } from 'vue'
+  // 月份选择器：model 仅接受 Date 对象（null 表示未选）。
+  // 当外层 model 为 String 时，由 useDate 负责序列化/反序列化。
+  import { computed } from 'vue'
 
-  import { monthEquals, toDateObject, toDateString } from '@/utils/date'
-  import { pick } from '@/utils/object'
+  import { monthEquals, toDateObject } from '@/utils/date'
   import { t as $t } from '@/langs'
-  import { outputTypeProp } from './props'
+  import { useDecadePicker } from './use-decade-picker'
 
   defineOptions({ name: 'MusselMonthPicker' })
 
   const emit = defineEmits(['monthCellClick'])
-  const model = defineModel({ type: [Date, String] })
+  const model = defineModel({ type: Date, default: null })
 
-  const props = defineProps({
-    format: { type: String, default: 'yyyy-MM' },
-    outputType: outputTypeProp
-  })
-
-  const current = pick(toDateObject(new Date()), ['year', 'month'])
-  const selected = computed(() => pick(toDateObject(model.value), ['year', 'month']))
-
-  const startYear = ref(parseInt(current.year / 10) * 10)
-  const chosenYear = ref()
-
-  const years = computed(() => Array.from({ length: 10 }, (_, idx) => startYear.value + idx))
+  const today = new Date()
+  const current = { year: today.getFullYear(), month: today.getMonth() }
+  const selected = computed(() => toDateObject(model.value))
   const months = $t('Datetime.MONTHS_SHORT')
 
-  const isActiveDecade = computed(() => {
-    const start = startYear.value
-    const year = chosenYear.value
-
-    return year && start <= year && start + 10 > year
-  })
+  const {
+    startYear,
+    chosenYear,
+    years,
+    isActiveDecade,
+    setStartYear,
+    onYearCellClick
+  } = useDecadePicker(model, toDateObject, current.year)
 
   const currentMonth = computed(() =>
     isActiveDecade.value && chosenYear.value === current.year && current.month
@@ -73,36 +67,17 @@
     isActiveDecade.value && chosenYear.value === selected.value?.year && selected.value?.month
   )
 
-  function setStartYear (year) {
-    startYear.value = parseInt(year / 10) * 10
-  }
-
-  function onYearCellClick (year) {
-    chosenYear.value = year
-  }
-
   function onMonthCellClick (month) {
     if (!isActiveDecade.value) return
 
     const year = chosenYear.value
-    const value = { year, month }
 
-    if (!monthEquals(value, selected.value)) {
-      model.value = props.outputType
-        ? new Date(year, month)
-        : toDateString(value, props.format)
+    if (!monthEquals({ year, month }, selected.value)) {
+      model.value = new Date(year, month)
     }
 
     emit('monthCellClick', year, month)
   }
-
-  watchEffect(() => {
-    chosenYear.value = toDateObject(model.value)?.year
-  })
-
-  watchEffect(() => {
-    setStartYear(chosenYear.value || current.year)
-  })
 
   defineExpose({ startYear })
 </script>

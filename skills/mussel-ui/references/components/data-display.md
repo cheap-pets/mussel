@@ -69,8 +69,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `model-value` | Date\|String | — | 双向绑定日期值 |
-| `format` | String | `yyyy-MM-dd` | String 类型下的格式 |
-| `output-type` | String | `date` | 返回类型：`date` \| `string` |
+| `value-format` | String | `yyyy-MM-dd` | 当 `model-value` 为 String 时的输出格式 |
 | `min` | Date\|String | — | 最小可选日期 |
 | `max` | Date\|String | — | 最大可选日期 |
 

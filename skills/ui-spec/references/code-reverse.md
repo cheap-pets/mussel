@@ -152,7 +152,7 @@ MUSSEL 4 的 `MuTable` 用 `:columns` **JS 数组**配置（**不是** `<mu-tabl
 | `<mu-select>` / `input: 'select'` | `select` |
 | `<mu-multi-select>` / `input: 'multi-select'` | `multi-select` |
 | `<mu-combo-box>` / `input: 'combo'` | `combo` |
-| `<mu-date-input>` / `input: 'date'`/`'month'`/`'year'` | `date` |
+| `<mu-date-input>` / `input: 'date'`/`'month'`/`'quarter'`/`'year'` | `date` |
 | `<mu-time-input>` / `input: 'time'` | `time` |
 | `<mu-switch>` / `input: 'switch'` | `switch` |
 | `<mu-radio-group>` + `<mu-radio>` / `input: 'radio-group'` | `radio` |

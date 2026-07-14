@@ -115,9 +115,9 @@ src/
 | `list/` | | 列表 | `index.js` | list.vue, list-items.js |
 | | MuListItem | 列表项 | list-item.vue | list-item.scss |
 | | MuListDivider | 列表分隔线 | list-divider.vue | list-divider.scss |
-| `calendar/` | | 日历 | `index.js` | calendar-grid.scss |
-| | MuCalendar | 月历 | calendar.vue | calendar.scss, calendar.js |
-| | （内部子组件） | 日期表 / 月份 / 年份选择器 | date-table.vue | month-picker.vue/scss, year-picker.vue/scss |
+| `calendar/` | | 日历 | `index.js` | date-grid.scss |
+| | MuCalendar | 月历 | calendar.vue | date-hook.js |
+| | （内部子组件） | 日期 / 月份 / 季度 / 年份 / 时间选择器 | date-picker.vue | month-picker.vue, quarter-picker.vue, year-picker.vue, time-picker.vue, date-hook.js, use-decade-picker.js |
 | `table/` | | 表格 | —（无 index.js） | |
 | | MuTable | 常规表格（多种列类型） | table.vue | table.scss, table-row.vue, column-types/, utils.js |
 | `modal/` | | 模态 | `index.js` | modal.js, modal-mask.scss, button-presets.js |

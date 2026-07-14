@@ -31,22 +31,11 @@ function replaceByPatterns (str, patterns) {
     .keys(patterns)
     .forEach(p => {
       const re = new RegExp(p, ['(d+)', '(h+)'].includes(p) ? 'i' : undefined)
+      const matched = re.exec(str)
 
-      if (re.test(str)) {
-        const len = RegExp.$1.length
-        const value = '' + patterns[p]
-        const start = value.length
-
-        str = str.replace(
-          RegExp.$1,
-          len === 3
-            ? ('000' + value).substr(start)
-            : (
-                len === 2
-                  ? ('00' + value).substr(start)
-                  : value
-              )
-        )
+      if (matched) {
+        const token = matched[1]
+        str = str.replace(token, String(patterns[p]).padStart(token.length, '0'))
       }
     })
 
@@ -58,8 +47,11 @@ export function toDateString (date, format = 'yyyy-MM-dd') {
 
   if (!date) return null
 
-  const str = /(y+)/i.test(format)
-    ? format.replace(RegExp.$1, ('' + date.getFullYear()).substr(4 - RegExp.$1.length))
+  const year = String(date.getFullYear())
+  const matched = /(y+)/i.exec(format)
+
+  const str = matched
+    ? format.replace(matched[1], year.slice(year.length - matched[1].length))
     : format
 
   const patterns = {
@@ -72,71 +64,6 @@ export function toDateString (date, format = 'yyyy-MM-dd') {
   }
 
   return replaceByPatterns(str, patterns)
-}
-
-const TOKEN_RUN = /[yY]+|M+|[dD]+|[hH]+|m+|s+|S+/g
-
-const TOKEN_FIELDS = {
-  y: 'year',
-  Y: 'year',
-  M: 'month',
-  d: 'date',
-  D: 'date',
-  h: 'hour',
-  H: 'hour',
-  m: 'minute',
-  s: 'second',
-  S: 'millisecond'
-}
-
-function escapeRegExp (str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-export function dateStringToObject (str, format = 'yyyy-MM-dd') {
-  if (str == null || str === '') return null
-
-  str = String(str)
-  format = String(format)
-
-  const tokens = []
-  const parts = []
-  let lastIndex = 0
-
-  for (const match of format.matchAll(TOKEN_RUN)) {
-    if (match.index > lastIndex) {
-      parts.push(escapeRegExp(format.slice(lastIndex, match.index)))
-    }
-
-    tokens.push(match[0][0])
-    parts.push('(\\d+)')
-    lastIndex = match.index + match[0].length
-  }
-
-  if (lastIndex < format.length) {
-    parts.push(escapeRegExp(format.slice(lastIndex)))
-  }
-
-  if (!tokens.length) return null
-
-  const matched = str.match(new RegExp('^' + parts.join('') + '$'))
-
-  if (!matched) return null
-
-  const obj = {}
-
-  tokens.forEach((char, i) => {
-    const field = TOKEN_FIELDS[char]
-
-    if (!field) return
-
-    const value = parseInt(matched[i + 1], 10)
-
-    // month is 1-based in the format string, 0-based in the object
-    obj[field] = field === 'month' ? value - 1 : value
-  })
-
-  return obj
 }
 
 export function isLeapYear (year) {
@@ -202,6 +129,42 @@ export function yearEquals (a, b) {
   b = toDateObject(b)
 
   return a?.year && b?.year && a.year === b.year
+}
+
+export function toQuarterObject (value) {
+  if (value == null || value === '') return null
+
+  const obj = toDateObject(value)
+
+  if (obj) {
+    return { year: obj.year, quarter: Math.floor(obj.month / 3) }
+  }
+
+  if (typeof value === 'string') {
+    const matched = value.match(/(\d{4})\D*[Qq]?([1-4])/)
+
+    if (matched) {
+      return { year: parseInt(matched[1], 10), quarter: parseInt(matched[2], 10) - 1 }
+    }
+  }
+
+  return null
+}
+
+export function quarterEquals (a, b) {
+  a = toQuarterObject(a)
+  b = toQuarterObject(b)
+
+  return a?.year && b?.year && a.year === b.year && a.quarter === b.quarter
+}
+
+export function toQuarterString (year, quarter, format = 'yyyy-Qq') {
+  quarter = quarter + 1
+
+  return String(format)
+    .replace(/yyyy/g, year)
+    .replace(/yy/g, String(year).slice(-2))
+    .replace(/q/g, quarter)
 }
 
 export function toTimeObject (value) {

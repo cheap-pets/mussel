@@ -9,8 +9,9 @@
     </div>
     <div class="group">
       <mu-date-input v-model="date" prefix="日期选择" />
-      <mu-date-input v-model="date" prefix="月份选择" type="month" format="yyyy-MM" />
-      <mu-date-input v-model="date" prefix="年份选择" type="year" format="yyyy" />
+      <mu-date-input v-model="date" prefix="月份选择" type="month" />
+      <mu-date-input v-model="date" prefix="季度选择" type="quarter" />
+      <mu-date-input v-model="date" prefix="年份选择" type="year" />
     </div>
     <div class="group">
       <mu-time-input v-model="time" placeholder="时分秒" :second-step="15" prefix="时分秒" />
@@ -24,7 +25,7 @@
   import { ref } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
-  const date = ref()
+  const date = ref(null)
   const time = ref('09:30')
 </script>
 

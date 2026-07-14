@@ -30,7 +30,7 @@
   import { t } from '@/langs'
 
   import { useFieldModel } from '../form/validation'
-  import { timeSteProp } from '../calendar/props'
+  import { timeStepProp } from '../calendar/props'
 
   import ComboWrapper from './combo-wrapper.vue'
   import TimePicker from '../calendar/time-picker.vue'
@@ -39,8 +39,8 @@
 
   const props = defineProps({
     format: { type: String, default: 'HH:mm:ss' },
-    minuteStep: timeSteProp,
-    secondStep: timeSteProp,
+    minuteStep: timeStepProp,
+    secondStep: timeStepProp,
     dropdownWidth: { default: 'anchor' },
     dropdownClass: null
   })

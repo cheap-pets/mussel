@@ -23,9 +23,9 @@ function hex2rgb (hex) {
 
   return result
     ? {
-        r: parseInt((result[1] + result[1]).substr(0, 2), 16),
-        g: parseInt((result[2] + result[2]).substr(0, 2), 16),
-        b: parseInt((result[3] + result[3]).substr(0, 2), 16)
+        r: parseInt((result[1] + result[1]).slice(0, 2), 16),
+        g: parseInt((result[2] + result[2]).slice(0, 2), 16),
+        b: parseInt((result[3] + result[3]).slice(0, 2), 16)
       }
     : null
 }

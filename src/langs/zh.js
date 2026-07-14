@@ -21,6 +21,7 @@ export default {
   Datetime: {
     TODAY: '今日',
     THIS_MONTH: '本月',
+    THIS_QUARTER: '本季度',
     THIS_YEAR: '本年',
     YEAR_AND_MONTH: '{0} 年 {1}',
 
@@ -72,6 +73,13 @@ export default {
       '10 月',
       '11 月',
       '12 月'
+    ],
+
+    QUARTERS_SHORT: [
+      '一季度',
+      '二季度',
+      '三季度',
+      '四季度'
     ],
 
     HOUR: '时',

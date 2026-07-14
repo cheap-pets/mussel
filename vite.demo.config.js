@@ -1,8 +1,10 @@
 import vue from '@vitejs/plugin-vue'
 
+import http from 'node:http'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { readdirSync, readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs'
+import serveHandler from 'serve-handler'
 import { optimize } from 'svgo'
 import { colors } from './src/colors.js'
 
@@ -100,12 +102,46 @@ function copyHtmlFiles() {
   }
 }
 
+// 插件:在 watch 模式下启动静态服务器托管 demo/dist
+function serveDemoDist () {
+  const port = Number(process.env.SERVE_PORT) || 3000
+  const root = resolve(__dirname, 'demo/dist')
+
+  let server
+
+  const stop = () => {
+    server?.close()
+    server = null
+    process.off('SIGINT', stop)
+    process.off('SIGTERM', stop)
+  }
+
+  const start = () => {
+    server = http.createServer((req, res) =>
+      serveHandler(req, res, { public: root, cleanUrls: true })
+    )
+
+    server.listen(port, () => {
+      console.log(`\n  demo 静态服务已启动 → http://localhost:${port}\n`)
+    })
+
+    process.on('SIGINT', stop)
+    process.on('SIGTERM', stop)
+  }
+
+  return {
+    name: 'serve-demo-dist',
+    buildStart () { if (isWatch && !server) start() },
+    closeWatcher () { stop() }
+  }
+}
+
 export default {
   define: {
     __version__: JSON.stringify(version),
     __env__: '"development"'
   },
-  plugins: [svg(), vue(), copyHtmlFiles()],
+  plugins: [svg(), vue(), copyHtmlFiles(), serveDemoDist()],
   resolve: {
     alias: {
       'vue': resolve(__dirname, 'node_modules/vue/dist/vue.esm-browser.js'),

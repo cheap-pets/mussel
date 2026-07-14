@@ -19,38 +19,31 @@
 </template>
 
 <script setup>
+  // 年份选择器：model 仅接受 Date 对象（null 表示未选）。
+  // 当外层 model 为 String 时，由 useDate 负责序列化/反序列化。
   import { ref, computed, watchEffect } from 'vue'
-  import { toDateObject, toDateString } from '../../utils/date'
-  import { outputTypeProp } from './props'
+  import { toDateObject } from '@/utils/date'
 
   defineOptions({ name: 'MusselYearPicker' })
 
   const emit = defineEmits(['yearCellClick'])
-  const model = defineModel({ type: [Date, String] })
-
-  const props = defineProps({
-    format: { type: String, default: 'yyyy' },
-    outputType: outputTypeProp
-  })
+  const model = defineModel({ type: Date, default: null })
 
   const currentYear = (new Date()).getFullYear()
-  const startYear = ref(parseInt(currentYear / 10) * 10)
+  const startYear = ref(Math.floor(currentYear / 10) * 10)
 
   const selected = computed(() => toDateObject(model.value)?.year)
   const years = computed(() => Array.from({ length: 10 }, (_, idx) => startYear.value + idx))
 
   function setStartYear (year) {
     if (year >= 0) {
-      startYear.value = parseInt(year / 10) * 10
+      startYear.value = Math.floor(year / 10) * 10
     }
   }
 
   function onYearCellClick (year) {
     if (year !== selected.value) {
-      model.value =
-        props.outputType === 'date'
-          ? new Date(year, 0)
-          : toDateString({ year, month: 0 }, props.format)
+      model.value = new Date(year, 0)
     }
 
     emit('yearCellClick', year)

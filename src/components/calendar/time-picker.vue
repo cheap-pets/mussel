@@ -14,7 +14,7 @@
         v-for="key in ['hour', 'minute', 'second']"
         :key="key"
         :class="['mu-time-picker__col', `mu-time-picker__${key}-col`]"
-        @scrollend="onScrollEnd(key, $event)">
+        @scroll="onScroll(key, $event)">
         <a
           v-for="(v, idx) in columns[key].options"
           :key="idx"
@@ -30,21 +30,24 @@
 </template>
 
 <script setup>
-  import { shallowRef, reactive, computed, watchEffect, onMounted, onUpdated } from 'vue'
+  import { shallowRef, reactive, computed, watch, nextTick, onMounted } from 'vue'
   import { debounce } from 'throttle-debounce'
 
   import { t as $t } from '@/langs'
-  import { timeSteProp } from './props.js'
+  import { timeStepProp } from './props.js'
   import { toTimeObject, toTimeString } from '@/utils/date.js'
 
   defineOptions({ name: 'MusselTimePicker' })
+
+  // 标记 model 变化是否由内部滚动引起，避免 watch 回写时再次 scrollToCenter。
+  let internalChange = false
 
   const model = defineModel({ type: String })
 
   const props = defineProps({
     format: { type: String, default: 'HH:mm:ss' },
-    minuteStep: timeSteProp,
-    secondStep: timeSteProp
+    minuteStep: timeStepProp,
+    secondStep: timeStepProp
   })
 
   const body = shallowRef()
@@ -98,25 +101,52 @@
     col.scrollTo({ top, behavior: 'smooth' })
   }
 
-  function onScrollEnd (key, e) {
-    const col = e.currentTarget
+  // 滚动停止后同步选中项（debounce 100ms 模拟 scrollend，兼容老浏览器）。
+  function syncFromScroll (key, col) {
     const cell = col.firstElementChild.offsetHeight
-    const idx = Math.round((col.scrollTop + (col.clientHeight - cell) / 2) / cell)
 
-    time[key] = Number(col.children[idx].textContent)
+    // padItems 在数据项前后各加了 2 个空占位项，数据项位于 [padStart, len - padEnd)。
+    const len = col.children.length
+    const padStart = 2
+    const padEnd = 2
+
+    let idx = Math.round((col.scrollTop + (col.clientHeight - cell) / 2) / cell)
+    // 钳位到有效数据项范围，避免越界取到空占位项。
+    idx = Math.max(padStart, Math.min(idx, len - padEnd - 1))
+
+    const v = Number(col.children[idx].textContent)
+    if (Number.isNaN(v)) return
+
+    time[key] = v
+    internalChange = true
     model.value = toTimeString(time, props.format)
+    nextTick(() => { internalChange = false })
+  }
+
+  // 每列一个稳定的 debounce 实例，否则每次 scroll 新建实例会导致去抖失效。
+  const debouncedSync = {
+    hour: debounce(100, col => syncFromScroll('hour', col)),
+    minute: debounce(100, col => syncFromScroll('minute', col)),
+    second: debounce(100, col => syncFromScroll('second', col))
+  }
+
+  function onScroll (key, e) {
+    debouncedSync[key](e.currentTarget)
   }
 
   const updatePosition = debounce(100, () => {
     ['hour', 'minute', 'second'].forEach(key => scrollToCenter(key, time[key]))
   })
 
-  watchEffect(() => {
-    Object.assign(time, toTimeObject(model.value))
-  })
+  // model 变化时同步 time；外部变化（非内部滚动）还需滚动定位。
+  // immediate 分支仅同步 time，定位交给 onMounted（此时 DOM 已挂载）。
+  watch(model, value => {
+    Object.assign(time, toTimeObject(value))
+    if (!internalChange) nextTick(updatePosition)
+  }, { immediate: true })
 
+  // 初始定位（dropdown 展开后 col 已有尺寸）。
   onMounted(updatePosition)
-  onUpdated(updatePosition)
 
   defineExpose({
     updatePosition

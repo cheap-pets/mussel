@@ -21,6 +21,7 @@ export default {
     TODAY: 'Today',
     THIS_YEAR: 'This Year',
     THIS_MONTH: 'This Month',
+    THIS_QUARTER: 'This Quarter',
     YEAR_AND_MONTH: '{0} {1}',
 
     DAYS_OF_WEEK: [
@@ -71,6 +72,13 @@ export default {
       'Oct',
       'Nov',
       'Dec'
+    ],
+
+    QUARTERS_SHORT: [
+      'Q1',
+      'Q2',
+      'Q3',
+      'Q4'
     ],
 
     HOUR: 'Hour',

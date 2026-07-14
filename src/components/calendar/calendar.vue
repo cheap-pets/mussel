@@ -31,7 +31,7 @@
 <script setup>
   import { shallowRef, computed } from 'vue'
   import { t as $t } from '@/langs'
-  import { calendarProps, useCalendar } from './calendar'
+  import { dateProps, useDate } from './date-hook'
 
   import DatePicker from './date-picker.vue'
   import MonthPicker from './month-picker.vue'
@@ -39,7 +39,7 @@
   defineOptions({ name: 'MusselCalendar' })
 
   const model = defineModel({ type: [Date, String] })
-  const props = defineProps({ ...calendarProps })
+  const props = defineProps({ ...dateProps })
 
   const {
     today,
@@ -51,7 +51,7 @@
     goNextMonth,
     setDisplayMonth,
     updateModelValue
-  } = useCalendar(model, props)
+  } = useDate(model, props)
 
   const monthDropdown = shallowRef()
   const monthSelector = shallowRef()

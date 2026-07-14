@@ -48,12 +48,6 @@ $FLEX_DIRECTIONS: (
   align-self: stretch;
   background-color: var(--mu-border-color-soft);
 
-  @for $i from 1 through 4 {
-    &--stroke-#{$i} {
-      flex-basis: #{$i}px;
-    }
-  }
-
   &--pill {
     flex-basis: 4px;
     align-self: center;
@@ -63,6 +57,12 @@ $FLEX_DIRECTIONS: (
     height: 64px;
     max-height: 50%;
     border-radius: 2px;
+  }
+
+  @for $i from 1 through 4 {
+    &--stroke-#{$i} {
+      flex-basis: #{$i}px;
+    }
   }
 }
 

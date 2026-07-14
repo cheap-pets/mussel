@@ -18,17 +18,17 @@
 </template>
 
 <script setup>
+  // 日期选择器：model 仅接受 Date 对象（null 表示未选）。
+  // 当外层 model 为 String 时，由 useDate 负责序列化/反序列化。
   import { shallowRef, computed } from 'vue'
   import { throttle } from 'throttle-debounce'
 
   import { t as $t } from '@/langs'
-  import { outputTypeProp } from './props'
 
   import {
     dateEquals,
     monthEquals,
     toDateObject,
-    toDateString,
     getPrevMonth,
     getNextMonth,
     getMonthFirstDay,
@@ -36,8 +36,8 @@
   } from '@/utils/date'
 
   const emit = defineEmits(['dateCellClick'])
-  const model = defineModel({ type: [Date, String] })
-  const props = defineProps({ year: Number, month: Number, outputType: outputTypeProp })
+  const model = defineModel({ type: Date, default: null })
+  const props = defineProps({ year: Number, month: Number })
 
   const daysOfWeek = shallowRef($t('Datetime.DAYS_OF_WEEK_SHORT'))
 
@@ -102,11 +102,7 @@
 
   function onCellClick (cell) {
     if (!dateEquals(cell, model.value)) {
-      const date = new Date(cell.year, cell.month, cell.date)
-
-      model.value = props.outputType === 'date'
-        ? date
-        : toDateString(date, props.format)
+      model.value = new Date(cell.year, cell.month, cell.date)
     }
 
     emit('dateCellClick', cell)

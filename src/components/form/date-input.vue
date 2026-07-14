@@ -31,6 +31,11 @@
         ref="monthPanel"
         v-model="monthProxy"
         @month-cell-click="selectMonth" />
+      <quarter-picker
+        v-else-if="view === 'quarter'"
+        ref="quarterPanel"
+        v-model="quarterProxy"
+        @quarter-cell-click="selectQuarter" />
       <date-picker
         v-else
         v-model="modelProxy"
@@ -44,28 +49,49 @@
 <script setup>
   import { ref, shallowRef, computed } from 'vue'
 
-  import { toDateString, monthEquals } from '@/utils/date'
+  import {
+    toDateString,
+    toQuarterObject,
+    toQuarterString,
+    monthEquals,
+    quarterEquals
+  } from '@/utils/date'
   import { t as $t } from '@/langs'
 
   import { useFieldModel } from '../form/validation'
-  import { calendarProps, useCalendar } from '../calendar/calendar'
+  import { dateProps, useDate } from '../calendar/date-hook'
 
   import ComboWrapper from './combo-wrapper.vue'
   import YearPicker from '../calendar/year-picker.vue'
   import MonthPicker from '../calendar/month-picker.vue'
+  import QuarterPicker from '../calendar/quarter-picker.vue'
   import DatePicker from '../calendar/date-picker.vue'
 
   defineOptions({ name: 'MusselDateInput' })
 
   const props = defineProps({
-    ...calendarProps,
+    ...dateProps,
+    // `format` 控制输入框显示；为 null 时按 type 取默认值。
+    format: { type: String, default: null },
     type: {
       type: String,
       default: 'date',
-      validator: v => ['date', 'month', 'year'].includes(v)
+      validator: v => ['date', 'month', 'quarter', 'year'].includes(v)
     },
     dropdownClass: null
   })
+
+  // 各 type 最合适的显示格式。
+  const DEFAULT_FORMAT = {
+    date: 'yyyy-MM-dd',
+    month: 'yyyy-MM',
+    quarter: 'yyyy-Qq',
+    year: 'yyyy'
+  }
+
+  const displayFormat = computed(() =>
+    props.format || DEFAULT_FORMAT[props.type]
+  )
 
   const rawModel = defineModel({ type: [Date, String] })
   const model = useFieldModel(rawModel).modelProxy
@@ -74,30 +100,43 @@
     today,
     selected,
     monthProxy,
+    quarterProxy,
     modelProxy,
     displayYear,
     displayMonth,
+    displayQuarter,
     goPrevMonth,
     goNextMonth,
     setDisplayMonth,
+    setDisplayQuarter,
     updateModelValue
-  } = useCalendar(model, props)
+  } = useDate(model, props)
 
   const wrapper = shallowRef()
   const yearPanel = shallowRef()
   const monthPanel = shallowRef()
+  const quarterPanel = shallowRef()
   const view = ref()
 
   const comboValue = computed({
-    get: () => toDateString(model.value, props.format),
+    get: () => props.type === 'quarter'
+      ? formatQuarter(model.value)
+      : toDateString(model.value, displayFormat.value),
     set: v => updateModelValue(v)
   })
 
-  const startYear = computed(() =>
-    view.value === 'year'
-      ? yearPanel.value?.startYear
-      : monthPanel.value?.startYear
-  )
+  const startYear = computed(() => {
+    switch (view.value) {
+      case 'year':
+        return yearPanel.value?.startYear
+      case 'month':
+        return monthPanel.value?.startYear
+      case 'quarter':
+        return quarterPanel.value?.startYear
+      default:
+        return null
+    }
+  })
 
   const caption = computed(() =>
     view.value === 'date'
@@ -109,11 +148,19 @@
       ? 'Datetime.TODAY'
       : view.value === 'month'
         ? 'Datetime.THIS_MONTH'
-        : 'Datetime.THIS_YEAR'
+        : view.value === 'quarter'
+          ? 'Datetime.THIS_QUARTER'
+          : 'Datetime.THIS_YEAR'
   ))
 
   function toggleMonthView () {
     view.value = view.value === 'date' ? 'month' : 'date'
+  }
+
+  function formatQuarter (value) {
+    const obj = toQuarterObject(value)
+
+    return obj && toQuarterString(obj.year, obj.quarter, displayFormat.value)
   }
 
   function goPresent () {
@@ -121,7 +168,7 @@
 
     switch (view.value) {
       case 'date':
-        updateModelValue(today)
+        updateModelValue(new Date(y, m, today.date))
         setDisplayMonth({ year: y, month: m })
         wrapper.value.collapse()
         break
@@ -129,8 +176,12 @@
         setDisplayMonth({ year: y, month: m })
         selectMonth()
         break
+      case 'quarter':
+        setDisplayQuarter({ year: y, quarter: Math.floor(m / 3) })
+        selectQuarter()
+        break
       case 'year':
-        updateModelValue({ year: y, month: 0, date: 1 })
+        updateModelValue(new Date(y, 0, 1))
         wrapper.value.collapse()
         break
     }
@@ -138,14 +189,28 @@
 
   function selectMonth () {
     if (props.type === 'month') {
-      if (!monthEquals(monthProxy.value, selected.value)) {
-        updateModelValue(monthProxy.value)
+      const year = displayYear.value
+      const month = displayMonth.value
+
+      if (!monthEquals({ year, month }, selected.value)) {
+        updateModelValue(new Date(year, month))
       }
 
       wrapper.value.collapse()
     } else {
       view.value = props.type
     }
+  }
+
+  function selectQuarter () {
+    const year = displayYear.value
+    const quarter = displayQuarter.value
+
+    if (!quarterEquals({ year, quarter }, selected.value)) {
+      updateModelValue(new Date(year, quarter * 3))
+    }
+
+    wrapper.value.collapse()
   }
 </script>
 
@@ -166,6 +231,7 @@
 
   .mu-date-dropdown > .mu-year-picker,
   .mu-date-dropdown > .mu-month-picker,
+  .mu-date-dropdown > .mu-quarter-picker,
   .mu-date-dropdown > .mu-date-picker {
     flex: 1 1 0;
   }
