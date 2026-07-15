@@ -1,4 +1,4 @@
-import vue from '@vitejs/plugin-vue'
+import pluginVue from '@vitejs/plugin-vue'
 
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
@@ -29,12 +29,11 @@ const colorMaps =
     .join('\n') +
   '\n);'
 
-
-function svg() {
+function pluginSvg () {
   return {
     name: 'svg-plugin',
     enforce: 'pre',
-    load(id) {
+    load (id) {
       if (id.endsWith('.svg')) {
         const content = readFileSync(id, 'utf-8')
         const optimized = optimize(content).data
@@ -55,8 +54,8 @@ export default defineConfig(({ mode }) => {
       __env__: isDev ? '"development"' : '"production"'
     },
     plugins: [
-      svg(),
-      vue()
+      pluginSvg(),
+      pluginVue()
     ],
     resolve: {
       alias: {
@@ -96,7 +95,7 @@ export default defineConfig(({ mode }) => {
           assetFileNames: isDev ? '[name].[ext]' : '[name].min.[ext]',
           entryFileNames: isDev ? 'mussel.js' : 'mussel.min.js'
         },
-        onwarn(warning, warn) {
+        onwarn (warning, warn) {
           if (!isWatch || warning.code !== 'FILE_NAME_CONFLICT') {
             warn(warning)
           }
@@ -105,7 +104,7 @@ export default defineConfig(({ mode }) => {
       minify: !isDev,
       sourcemap: true,
       cssMinify: !isDev,
-      cssCodeSplit: false,
+      cssCodeSplit: false
     }
   }
 })

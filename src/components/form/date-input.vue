@@ -49,29 +49,21 @@
 <script setup>
   import { ref, shallowRef, computed } from 'vue'
 
-  import {
-    toDateString,
-    toQuarterObject,
-    toQuarterString,
-    monthEquals,
-    quarterEquals
-  } from '@/utils/date'
   import { t as $t } from '@/langs'
-
   import { useFieldModel } from '../form/validation'
-  import { dateProps, useDate } from '../calendar/date-hook'
+  import { DEFAULT_FORMAT, dateProps, useDate } from '../calendar/date-hook'
+  import { toDateString, toQuarterObject, toQuarterString, monthEquals, quarterEquals } from '@/utils/date'
 
   import ComboWrapper from './combo-wrapper.vue'
   import YearPicker from '../calendar/year-picker.vue'
-  import MonthPicker from '../calendar/month-picker.vue'
   import QuarterPicker from '../calendar/quarter-picker.vue'
+  import MonthPicker from '../calendar/month-picker.vue'
   import DatePicker from '../calendar/date-picker.vue'
 
   defineOptions({ name: 'MusselDateInput' })
 
   const props = defineProps({
     ...dateProps,
-    // `format` 控制输入框显示；为 null 时按 type 取默认值。
     format: { type: String, default: null },
     type: {
       type: String,
@@ -80,14 +72,6 @@
     },
     dropdownClass: null
   })
-
-  // 各 type 最合适的显示格式。
-  const DEFAULT_FORMAT = {
-    date: 'yyyy-MM-dd',
-    month: 'yyyy-MM',
-    quarter: 'yyyy-Qq',
-    year: 'yyyy'
-  }
 
   const displayFormat = computed(() =>
     props.format || DEFAULT_FORMAT[props.type]

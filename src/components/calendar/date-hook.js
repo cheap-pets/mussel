@@ -10,6 +10,13 @@ import {
   getNextMonth
 } from '@/utils/date'
 
+export const DEFAULT_FORMAT = {
+  date: 'yyyy-MM-dd',
+  month: 'yyyy-MM',
+  quarter: 'yyyy-Qq',
+  year: 'yyyy'
+}
+
 export const dateProps = {
   valueFormat: { type: String, default: 'yyyy-MM-dd' },
   min: [Date, String],

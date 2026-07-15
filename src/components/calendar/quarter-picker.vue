@@ -16,7 +16,7 @@
         <mu-icon icon="chevronRight" />
       </div>
     </div>
-    <div class="flex-divider flex-divider--stroke-1" />
+    <div class="flex-divider flex-divider--pill" />
     <div class="mu-date-grid flex-1">
       <div
         v-for="(label, q) in quarters" :key="q"

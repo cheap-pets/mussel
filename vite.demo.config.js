@@ -1,10 +1,12 @@
-import vue from '@vitejs/plugin-vue'
-
 import http from 'node:http'
+import serveHandler from 'serve-handler'
+
+import pluginVue from '@vitejs/plugin-vue'
+
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { readdirSync, readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs'
-import serveHandler from 'serve-handler'
+
 import { optimize } from 'svgo'
 import { colors } from './src/colors.js'
 
@@ -31,14 +33,15 @@ const colorMaps =
   '\n);'
 
 // SVG 处理插件
-function svg() {
+function pluginSvg () {
   return {
     name: 'svg-plugin',
     enforce: 'pre',
-    load(id) {
+    load (id) {
       if (id.endsWith('.svg')) {
         const content = readFileSync(id, 'utf-8')
         const optimized = optimize(content).data
+
         return `export default ${JSON.stringify(optimized)}`
       }
     }
@@ -50,8 +53,8 @@ const demoSrcDir = resolve(__dirname, 'demo/src')
 
 const demoModules = existsSync(demoSrcDir)
   ? readdirSync(demoSrcDir, { withFileTypes: true })
-      .filter(dirent => dirent.isDirectory())
-      .map(dirent => dirent.name)
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name)
   : []
 
 // 为每个示例生成入口点
@@ -66,10 +69,10 @@ demoModules.forEach(el => {
 })
 
 // 插件:复制 HTML 文件到 dist 目录并修复路径
-function copyHtmlFiles() {
+function copyHtmlFiles () {
   return {
     name: 'copy-html-files',
-    writeBundle(options, bundle) {
+    writeBundle (options, bundle) {
       const templatePath = resolve(__dirname, 'demo/src/common/template.html')
 
       if (!existsSync(templatePath)) return
@@ -112,8 +115,6 @@ function serveDemoDist () {
   const stop = () => {
     server?.close()
     server = null
-    process.off('SIGINT', stop)
-    process.off('SIGTERM', stop)
   }
 
   const start = () => {
@@ -131,7 +132,7 @@ function serveDemoDist () {
 
   return {
     name: 'serve-demo-dist',
-    buildStart () { if (isWatch && !server) start() },
+    configResolved () { if (isWatch) start() },
     closeWatcher () { stop() }
   }
 }
@@ -141,13 +142,13 @@ export default {
     __version__: JSON.stringify(version),
     __env__: '"development"'
   },
-  plugins: [svg(), vue(), copyHtmlFiles(), serveDemoDist()],
+  plugins: [pluginSvg(), pluginVue(), copyHtmlFiles(), serveDemoDist()],
   resolve: {
     alias: {
-      'vue': resolve(__dirname, 'node_modules/vue/dist/vue.esm-browser.js'),
+      mussel: resolve(__dirname, 'src/index.js'),
+      vue: resolve(__dirname, 'node_modules/vue/dist/vue.esm-browser.js'),
       '~icons': resolve(__dirname, 'node_modules/@tabler/icons/icons'),
-      '@': resolve(__dirname, 'src'),
-      'mussel': resolve(__dirname, 'src/index.js')
+      '@': resolve(__dirname, 'src')
     }
   },
   css: {
@@ -184,7 +185,7 @@ export default {
             : 'assets/[name].[ext]'
         }
       },
-      onwarn(warning, warn) {
+      onwarn (warning, warn) {
         if (!isWatch || warning.code !== 'FILE_NAME_CONFLICT') {
           warn(warning)
         }
