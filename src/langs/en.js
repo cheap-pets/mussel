@@ -19,6 +19,7 @@ export default {
 
   Datetime: {
     TODAY: 'Today',
+    THIS_WEEK: 'This Week',
     THIS_YEAR: 'This Year',
     THIS_MONTH: 'This Month',
     THIS_QUARTER: 'This Quarter',

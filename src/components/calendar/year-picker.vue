@@ -19,8 +19,6 @@
 </template>
 
 <script setup>
-  // 年份选择器：model 仅接受 Date 对象（null 表示未选）。
-  // 当外层 model 为 String 时，由 useDate 负责序列化/反序列化。
   import { ref, computed, watchEffect } from 'vue'
   import { toDateObject } from '@/utils/date'
 

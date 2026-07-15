@@ -34,7 +34,7 @@
   import { debounce } from 'throttle-debounce'
 
   import { t as $t } from '@/langs'
-  import { timeStepProp } from './props.js'
+  import { timeStepProp } from './constants'
   import { toTimeObject, toTimeString } from '@/utils/date.js'
 
   defineOptions({ name: 'MusselTimePicker' })

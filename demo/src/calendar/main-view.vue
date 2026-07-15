@@ -5,18 +5,19 @@
       <theme-switch />
     </h2>
     <div class="group" :class="[['test3'], 'test1', { test2: true }]">
-      <mu-calendar v-model="date" class="calendar1" />
+      <mu-calendar v-model="date" class="calendar1" :week-starts-on="1" />
     </div>
     <div class="group">
       <mu-date-input v-model="date" prefix="日期选择" />
+      <mu-date-input v-model="date" prefix="周选择" type="week" format="yyyy-MM-Ww" />
       <mu-date-input v-model="date" prefix="月份选择" type="month" />
       <mu-date-input v-model="date" prefix="季度选择" type="quarter" />
       <mu-date-input v-model="date" prefix="年份选择" type="year" />
     </div>
     <div class="group">
       <mu-time-input v-model="time" placeholder="时分秒" :second-step="15" prefix="时分秒" />
-      <mu-time-input v-model="time" :second-step="0" prefix="时分" />
-      <mu-time-input v-model="time" :minute-step="0" :second-step="0" prefix="小时" />
+      <mu-time-input v-model="time" :second-step="0" format="HH:mm" prefix="时分" />
+      <mu-time-input v-model="time" :minute-step="0" :second-step="0" format="HH:mm" prefix="小时" />
     </div>
   </div>
 </template>

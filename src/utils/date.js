@@ -167,6 +167,108 @@ export function toQuarterString (year, quarter, format = 'yyyy-Qq') {
     .replace(/q/g, quarter)
 }
 
+/**
+ * 计算给定日期的 ISO 8601 周年份与周序号。
+ *
+ * ISO 周以周一为起始；每年第一周是包含当年第一个周四的那一周，
+ * 因此年末/年初的几天可能归属相邻年份的周。
+ *
+ * @param {Date} date
+ * @returns {{ year: number, week: number }}
+ */
+function getISOWeek (date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  // 将当天对齐到本周周四：ISO 周序号以周四所属年份为准。
+  const day = d.getUTCDay() || 7
+  d.setUTCDate(d.getUTCDate() + 4 - day)
+
+  const year = d.getUTCFullYear()
+  const yearStart = new Date(Date.UTC(year, 0, 1))
+  const week = Math.floor(((d - yearStart) / 86400000) / 7) + 1
+
+  return { year, week }
+}
+
+export function toWeekObject (value) {
+  if (value == null || value === '') return null
+
+  const date = toDate(value)
+
+  if (date) {
+    return {
+      ...getISOWeek(date),
+      date
+    }
+  }
+
+  if (typeof value === 'string') {
+    const matched = value.match(/(\d{4})\D*[Ww]?(\d{1,2})/)
+
+    if (matched) {
+      return { year: parseInt(matched[1], 10), week: parseInt(matched[2], 10) }
+    }
+  }
+
+  return null
+}
+
+export function weekEquals (a, b) {
+  a = toWeekObject(a)
+  b = toWeekObject(b)
+
+  return a?.year && b?.year && a.year === b.year && a.week === b.week
+}
+
+/**
+ * 计算某日是其所在月的第几周（按 weekStartsOn 划分行）。
+ *
+ * @param {Date} date
+ * @param {number} weekStartsOn - 周起始日（0=周日 … 6=周六）。
+ * @returns {number}
+ */
+function getWeekOfMonth (date, weekStartsOn = 0) {
+  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay()
+  const offset = (firstDay - weekStartsOn + 7) % 7
+
+  return Math.floor((date.getDate() + offset - 1) / 7) + 1
+}
+
+/**
+ * 格式化周字符串。
+ *
+ * - format 不含 M（月）时，w 为 ISO 周序号（如 2026-W29）；
+ * - format 含 M（月）时，w 改为该月的第几周（如 2026-07-W1）。
+ *
+ * @param {number} year - ISO 周年份。
+ * @param {number} week - ISO 周序号。
+ * @param {string} [format]
+ * @param {{ date?: Date, weekStartsOn?: number }} [options]
+ *   date 用于计算月内周；weekStartsOn 决定行划分（默认周日）。
+ */
+export function toWeekString (year, week, format = 'yyyy-Www', options = {}) {
+  const { date, weekStartsOn = 0 } = options
+
+  // format 含 M（月）时，w 改为月内第几周；否则用 ISO 周序号。
+  const w = date && /[Mm]/.test(format)
+    ? getWeekOfMonth(date, weekStartsOn)
+    : week
+
+  let str = String(format)
+    .replace(/yyyy/g, year)
+    .replace(/yy/g, String(year).slice(-2))
+
+  if (date && /[Mm]/.test(format)) {
+    const month = date.getMonth() + 1
+    str = str
+      .replace(/MM/g, String(month).padStart(2, '0'))
+      .replace(/M/g, month)
+  }
+
+  return str
+    .replace(/ww/g, String(w).padStart(2, '0'))
+    .replace(/w/g, w)
+}
+
 export function toTimeObject (value) {
   if (value == null || value === '') return null
 

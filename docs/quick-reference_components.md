@@ -793,8 +793,11 @@ const items = [
 | `'text'`         | mu-input                    |
 | `'memo'`         | textarea.mu-input           |
 | `'date'`         | mu-date-input               |
+| `'week'`         | mu-date-input(type=week)    |
 | `'month'`        | mu-date-input(type=month)   |
+| `'quarter'`      | mu-date-input(type=quarter) |
 | `'year'`         | mu-date-input(type=year)    |
+| `'time'`         | mu-time-input               |
 | `'color'`        | mu-color-input              |
 | `'select'`       | mu-select                   |
 | `'multi-select'` | mu-multi-select             |
@@ -1009,14 +1012,18 @@ const filteredItems = computed(() =>
 
 ### MuDateInput
 
-日期选择框。下拉面板含工具栏（标题、今天/本月/本季/本年按钮、上下翻页）与对应选择网格。
+日期选择框。下拉面板含工具栏（标题、今天/本周/本月/本季/本年按钮、上下翻页）与对应选择网格。
 
 | 属性名称       | 类型         | 默认值        | 说明                                                  |
 | -------------- | ------------ | ------------- | ----------------------------------------------------- |
 | model-value    | Date\|String | —             | 双向绑定值（Date 或格式化字符串）                     |
-| type           | String       | `date`        | `date`（选日期）\| `month`（选月份）\| `quarter`（选季度）\| `year`（选年份）|
-| format         | String       | `null`        | 输入框显示格式；为 `null` 时按 `type` 取默认值（`yyyy-MM-dd` / `yyyy-MM` / `yyyy-Qq` / `yyyy`） |
+| type           | String       | `date`        | `date`（选日期）\| `week`（选周）\| `month`（选月份）\| `quarter`（选季度）\| `year`（选年份）|
+| format         | String       | `null`        | 输入框显示格式；为 `null` 时按 `type` 取默认值（`yyyy-MM-dd` / `yyyy-Www` / `yyyy-MM` / `yyyy-Qq` / `yyyy`） |
+| value-type     | String       | `date`        | 返回值类型：`date`（Date 对象）\| `string`（格式化字符串） |
 | value-format   | String       | `yyyy-MM-dd`  | 当 `model-value` 为 String 时的输出格式               |
+| week-starts-on | Number       | `0`           | 周起始日：`0`=周日 … `6`=周六；影响 `week` 模式的行划分与显示。未单独指定时取全局 `calendar.weekStartsOn` 配置 |
+| min            | Date\|String | —             | 最小可选日期                                          |
+| max            | Date\|String | —             | 最大可选日期                                          |
 | dropdown-class | String       | —             | 下拉面板附加 class                                    |
 | (其他)         | —            | —             | 透传 MuInput 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`disabled`/`readonly` 等）及 MuDropdown 的 `dropdown-` 前缀属性 |
 
@@ -1030,11 +1037,12 @@ const filteredItems = computed(() =>
 > [!NOTE]
 >
 > - `type="date"`：默认显示日期网格；点击标题按钮在「日期网格 ↔ 月份网格」间切换（月份网格内可切换十年区间、先选年份再选月），用于快速跨月/跨年跳转；选中日期即提交并关闭
+> - `type="week"`：显示日期网格但以**行选**方式选择整周（点击任一单元格选中其所在行），返回该周第一天；若该行第一天属上月则返回当月 1 号。默认显示格式为 ISO 周序号（如 `2026-W29`）；当 `format` 含 `M`（月）时改为当月第几周（如 `2026-07-W3`）
 > - `type="month"`：直接进入月份网格（含十年区间年份切换 + 12 月份格），选中月份即提交并关闭
 > - `type="quarter"`：进入季度网格（含十年区间年份切换 + 4 季度格），选中季度即提交并关闭
 > - `type="year"`：直接进入年份网格（每屏 10 年），选中年份即提交并关闭
-> - 顶部上下翻页按钮**仅在日期视图**出现，用于翻月；月份/季度/年份视图切换十年区间由面板内部的左右箭头格子完成
-> - 「今天/本月/本季/本年」按钮跳回当前并提交，文案随当前视图变化
+> - 顶部上下翻页按钮**仅在日期/周视图**出现，用于翻月；月份/季度/年份视图切换十年区间由面板内部的左右箭头格子完成
+> - 「今天/本周/本月/本季/本年」按钮跳回当前并提交，文案随当前视图变化
 
 
 
@@ -1396,12 +1404,14 @@ const ctxMenu = shallowRef()
 
 月历，用于页面内嵌日期展示与选择
 
-| 属性名称    | 类型            | 默认值        | 说明                                                 |
-| ----------- | --------------- | ------------- | ---------------------------------------------------- |
-| model-value | Date \| String  | —             | 双向绑定的日期值                                     |
-| value-format | String         | `yyyy-MM-dd`  | 当 `model-value` 为 String 时的输出格式              |
-| min         | Date \| String  | —             | 最小可选日期                                         |
-| max         | Date \| String  | —             | 最大可选日期                                         |
+| 属性名称     | 类型            | 默认值        | 说明                                                 |
+| ------------ | --------------- | ------------- | ---------------------------------------------------- |
+| model-value  | Date \| String  | —             | 双向绑定的日期值                                     |
+| value-type   | String          | `date`        | 返回值类型：`date`（Date 对象）\| `string`（格式化字符串） |
+| value-format | String          | `yyyy-MM-dd`  | 当 `model-value` 为 String 时的输出格式              |
+| week-starts-on | Number        | `0`           | 周起始日：`0`=周日 … `6`=周六。未指定时取全局 `calendar.weekStartsOn` 配置 |
+| min          | Date \| String  | —             | 最小可选日期                                         |
+| max          | Date \| String  | —             | 最大可选日期                                         |
 
 
 

@@ -32,8 +32,6 @@
 </template>
 
 <script setup>
-  // 月份选择器：model 仅接受 Date 对象（null 表示未选）。
-  // 当外层 model 为 String 时，由 useDate 负责序列化/反序列化。
   import { computed } from 'vue'
 
   import { monthEquals, toDateObject } from '@/utils/date'

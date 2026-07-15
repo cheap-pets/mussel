@@ -5,11 +5,11 @@
     </div>
     <div class="mu-date-grid mu-date-picker__body">
       <div
-        v-for="(cell, i) in data" :key="i"
+        v-for="(cell, i) in cells" :key="i"
         class="mu-date-cell"
         :muted="cell.prev || cell.next"
         :present="cell.present"
-        :selected="cell.selected"
+        :selected="cell.selected || null"
         @click="onCellClick(cell)">
         {{ cell.date }}
       </div>
@@ -18,86 +18,29 @@
 </template>
 
 <script setup>
-  // 日期选择器：model 仅接受 Date 对象（null 表示未选）。
-  // 当外层 model 为 String 时，由 useDate 负责序列化/反序列化。
-  import { shallowRef, computed } from 'vue'
-  import { throttle } from 'throttle-debounce'
+  import { computed } from 'vue'
 
-  import { t as $t } from '@/langs'
+  import { dateEquals, toDateObject } from '@/utils/date'
+  import { useDateGrid } from './use-date-grid'
 
-  import {
-    dateEquals,
-    monthEquals,
-    toDateObject,
-    getPrevMonth,
-    getNextMonth,
-    getMonthFirstDay,
-    getMonthDaysCount
-  } from '@/utils/date'
+  defineOptions({ name: 'MusselDatePicker' })
 
   const emit = defineEmits(['dateCellClick'])
   const model = defineModel({ type: Date, default: null })
-  const props = defineProps({ year: Number, month: Number })
+  const props = defineProps({ year: Number, month: Number, weekStartsOn: Number })
 
-  const daysOfWeek = shallowRef($t('Datetime.DAYS_OF_WEEK_SHORT'))
+  const { daysOfWeek, data, onResize } = useDateGrid(model, props)
 
-  const data = computed(() => {
-    const today = toDateObject(new Date())
+  // 单选：在网格基础上为与 model 匹配的单元格追加 selected 标记。
+  const cells = computed(() => {
     const selected = toDateObject(model.value)
-
-    const { year: y, month: m } =
-      props.year != null && props.month != null
-        ? props
-        : selected || today
-
-    const first = getMonthFirstDay(y, m)
-    const count = getMonthDaysCount(y, m)
-
-    const prev = getPrevMonth(y, m)
-    const next = getNextMonth(y, m)
-    const prevCount = getMonthDaysCount(prev.year, prev.month)
-
-    const isCurrentMonth = monthEquals({ year: y, month: m }, today)
-    const isDisplayMonth = monthEquals({ year: y, month: m }, selected)
-
-    const cells = []
-
-    function buildCell (v) {
-      if (v < 1) {
-        return { prev: true, ...prev, date: prevCount + v }
-      }
-
-      if (v > count) {
-        return { next: true, ...next, date: v - count }
-      }
-
-      const cell = { year: y, month: m, date: v }
-
-      if (isCurrentMonth && v === today.date) {
-        cell.present = true
-      }
-
-      if (isDisplayMonth && v === selected.date) {
-        cell.selected = true
-      }
-
-      return cell
-    }
-
-    let i = 1
-
-    while (true) {
-      const v = i - first
-      const cell = buildCell(v)
-
-      cells.push(cell)
-
-      if (i % 7 === 0 && v >= count) break
-
-      i++
-    }
-
-    return cells
+    return data.value.map(cell =>
+      cell.year === selected?.year &&
+      cell.month === selected?.month &&
+      cell.date === selected?.date
+        ? { ...cell, selected: true }
+        : cell
+    )
   })
 
   function onCellClick (cell) {
@@ -107,12 +50,6 @@
 
     emit('dateCellClick', cell)
   }
-
-  const onResize = throttle(300, event => {
-    daysOfWeek.value = event.target.clientWidth >= 480
-      ? $t('Datetime.DAYS_OF_WEEK')
-      : $t('Datetime.DAYS_OF_WEEK_SHORT')
-  })
 </script>
 
 <style>

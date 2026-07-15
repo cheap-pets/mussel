@@ -8,15 +8,15 @@
     @dropdown:show="view = type">
     <template #dropdown>
       <mu-toolbar class="bg-strong p-half">
-        <div v-if="type !== 'date'" class="px-1x">
+        <div v-if="!isGridViewType" class="px-1x">
           {{ caption }}
         </div>
-        <mu-button v-else :active="view !== 'date'" @click="toggleMonthView">
+        <mu-button v-else :active="!isGridView" @click="toggleMonthView">
           {{ caption }}
-          <mu-icon icon="dropdownExpand" :expanded="view !== 'date' || null" />
+          <mu-icon icon="dropdownExpand" :expanded="!isGridView || null" />
         </mu-button>
         <mu-button class="ml-auto" :caption="presentCaption" @click="goPresent" />
-        <template v-if="view === 'date'">
+        <template v-if="isGridView">
           <mu-icon-button icon="chevronUp" @click="goPrevMonth" />
           <mu-icon-button icon="chevronDown" @click="goNextMonth" />
         </template>
@@ -37,10 +37,18 @@
         v-model="quarterProxy"
         @quarter-cell-click="selectQuarter" />
       <date-picker
+        v-else-if="type === 'date'"
+        v-model="modelProxy"
+        :year="displayYear"
+        :month="displayMonth"
+        :week-starts-on="weekStartsOn"
+        @date-cell-click="wrapper.collapse()" />
+      <week-picker
         v-else
         v-model="modelProxy"
         :year="displayYear"
         :month="displayMonth"
+        :week-starts-on="weekStartsOn"
         @date-cell-click="wrapper.collapse()" />
     </template>
   </combo-wrapper>
@@ -51,24 +59,30 @@
 
   import { t as $t } from '@/langs'
   import { useFieldModel } from '../form/validation'
-  import { DEFAULT_FORMAT, dateProps, useDate } from '../calendar/date-hook'
-  import { toDateString, toQuarterObject, toQuarterString, monthEquals, quarterEquals } from '@/utils/date'
+  import { DEFAULT_FORMAT, dateProps } from '../calendar/constants'
+  import { useDateCore } from '../calendar/date-core'
+  import { useQuarterPicker } from '../calendar/use-quarter-picker'
+  import { toDateString, toQuarterObject, toQuarterString, toWeekObject, toWeekString, monthEquals, quarterEquals } from '@/utils/date'
 
   import ComboWrapper from './combo-wrapper.vue'
   import YearPicker from '../calendar/year-picker.vue'
   import QuarterPicker from '../calendar/quarter-picker.vue'
   import MonthPicker from '../calendar/month-picker.vue'
+  import WeekPicker from '../calendar/week-picker.vue'
   import DatePicker from '../calendar/date-picker.vue'
 
   defineOptions({ name: 'MusselDateInput' })
 
   const props = defineProps({
     ...dateProps,
-    format: { type: String, default: null },
+    format: {
+      type: String,
+      default: null
+    },
     type: {
       type: String,
       default: 'date',
-      validator: v => ['date', 'month', 'quarter', 'year'].includes(v)
+      validator: v => ['date', 'week', 'month', 'quarter', 'year'].includes(v)
     },
     dropdownClass: null
   })
@@ -80,11 +94,13 @@
   const rawModel = defineModel({ type: [Date, String] })
   const model = useFieldModel(rawModel).modelProxy
 
+  const core = useDateCore(model, props)
+  const quarterProxy = useQuarterPicker(model, core).quarterProxy
+
   const {
-    today,
+    todayObj,
     selected,
     monthProxy,
-    quarterProxy,
     modelProxy,
     displayYear,
     displayMonth,
@@ -94,18 +110,25 @@
     setDisplayMonth,
     setDisplayQuarter,
     updateModelValue
-  } = useDate(model, props)
+  } = core
 
   const wrapper = shallowRef()
   const yearPanel = shallowRef()
   const monthPanel = shallowRef()
   const quarterPanel = shallowRef()
-  const view = ref()
+  // 当前面板视图：未指定时回退到与 type 一致的网格视图（date/week）。
+  const view = ref(props.type)
+
+  // date / week 均走月份网格视图，共用同一套月份导航与「本日/本周」入口。
+  const isGridViewType = computed(() => ['week', 'date'].includes(props.type))
+  const isGridView = computed(() => ['week', 'date'].includes(view.value))
 
   const comboValue = computed({
     get: () => props.type === 'quarter'
       ? formatQuarter(model.value)
-      : toDateString(model.value, displayFormat.value),
+      : props.type === 'week'
+        ? formatWeek(model.value)
+        : toDateString(model.value, displayFormat.value),
     set: v => updateModelValue(v)
   })
 
@@ -123,22 +146,24 @@
   })
 
   const caption = computed(() =>
-    view.value === 'date'
+    isGridView.value
       ? $t('Datetime.YEAR_AND_MONTH', displayYear.value, $t('Datetime.MONTHS_SHORT')[displayMonth.value])
       : `${startYear.value} ~ ${startYear.value + 9}`)
 
   const presentCaption = computed(() => $t(
     view.value === 'date'
       ? 'Datetime.TODAY'
-      : view.value === 'month'
-        ? 'Datetime.THIS_MONTH'
-        : view.value === 'quarter'
-          ? 'Datetime.THIS_QUARTER'
-          : 'Datetime.THIS_YEAR'
+      : view.value === 'week'
+        ? 'Datetime.THIS_WEEK'
+        : view.value === 'month'
+          ? 'Datetime.THIS_MONTH'
+          : view.value === 'quarter'
+            ? 'Datetime.THIS_QUARTER'
+            : 'Datetime.THIS_YEAR'
   ))
 
   function toggleMonthView () {
-    view.value = view.value === 'date' ? 'month' : 'date'
+    view.value = isGridView.value ? 'month' : props.type
   }
 
   function formatQuarter (value) {
@@ -147,12 +172,24 @@
     return obj && toQuarterString(obj.year, obj.quarter, displayFormat.value)
   }
 
+  function formatWeek (value) {
+    const obj = toWeekObject(value)
+
+    return obj && toWeekString(
+      obj.year,
+      obj.week,
+      displayFormat.value,
+      { date: obj.date, weekStartsOn: props.weekStartsOn }
+    )
+  }
+
   function goPresent () {
-    const { year: y, month: m } = today
+    const { year: y, month: m } = todayObj
 
     switch (view.value) {
       case 'date':
-        updateModelValue(new Date(y, m, today.date))
+      case 'week':
+        updateModelValue(new Date(y, m, todayObj.date))
         setDisplayMonth({ year: y, month: m })
         wrapper.value.collapse()
         break
@@ -211,12 +248,9 @@
     & > .mu-bar {
       border-radius: var(--mu-common-border-radius);
     }
-  }
 
-  .mu-date-dropdown > .mu-year-picker,
-  .mu-date-dropdown > .mu-month-picker,
-  .mu-date-dropdown > .mu-quarter-picker,
-  .mu-date-dropdown > .mu-date-picker {
-    flex: 1 1 0;
+    & > div:not(.mu-toolbar) {
+      flex: 1 1 0;
+    }
   }
 </style>

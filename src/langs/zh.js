@@ -20,6 +20,7 @@ export default {
 
   Datetime: {
     TODAY: '今日',
+    THIS_WEEK: '本周',
     THIS_MONTH: '本月',
     THIS_QUARTER: '本季度',
     THIS_YEAR: '本年',

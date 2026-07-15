@@ -20,14 +20,12 @@
 
   border-radius: var(--mu-common-border-radius);
 
-  &:hover {
-    background-color: var(--mu-gray-translucent);
+  &[muted] {
+    color: var(--mu-text-color-muted);
   }
 
-  &[muted] {
-    cursor: default;
-    color: var(--mu-text-color-muted);
-    background: none;
+  &:hover {
+    background-color: var(--mu-gray-translucent);
   }
 
   &[selected] {

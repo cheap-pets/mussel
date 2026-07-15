@@ -30,7 +30,7 @@
   import { t } from '@/langs'
 
   import { useFieldModel } from '../form/validation'
-  import { timeStepProp } from '../calendar/props'
+  import { timeStepProp } from '../calendar/constants'
 
   import ComboWrapper from './combo-wrapper.vue'
   import TimePicker from '../calendar/time-picker.vue'

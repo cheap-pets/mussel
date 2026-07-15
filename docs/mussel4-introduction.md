@@ -33,7 +33,7 @@ Mussel 4 引入完整的**原子类（utility classes）系统**，覆盖布局�
 |------|------|
 | `<mu-input>` | 替代 V3 `<mu-editor>`，API 更规范（`clearable`、`input-style`、`prefix`/`suffix` 属性） |
 | `<mu-select>` / `<mu-multi-select>` | 从 V3 `<mu-combo-box :multiple>` 拆分出专用单选/多选组件，职责清晰 |
-| `<mu-date-input>` | 日期/月份选择器 |
+| `<mu-date-input>` | 日期/周/月份/季度/年份选择器 |
 | `<mu-time-input>` |  时间选择器 |
 | `<mu-color-input>` | 颜色选择器（HEX 输入 + 内置 130 色色板） |
 | `<mu-table>` | 数据表格，内置丰富列类型（text/enum/link/tag/check/date 等） |

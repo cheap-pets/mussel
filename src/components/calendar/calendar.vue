@@ -24,25 +24,27 @@
       v-model="modelProxy"
       :class="[monthDropdown?.dropdownVisible && 'mu-date-picker--masked']"
       :year="displayYear"
-      :month="displayMonth" />
+      :month="displayMonth"
+      :week-starts-on="weekStartsOn" />
   </div>
 </template>
 
 <script setup>
   import { shallowRef, computed } from 'vue'
   import { t as $t } from '@/langs'
-  import { dateProps, useDate } from './date-hook'
+  import { dateProps } from './constants'
+  import { useDateCore } from './date-core'
 
   import DatePicker from './date-picker.vue'
   import MonthPicker from './month-picker.vue'
 
   defineOptions({ name: 'MusselCalendar' })
 
-  const model = defineModel({ type: [Date, String] })
+  const model = defineModel({ type: [Date, String], default: null })
   const props = defineProps({ ...dateProps })
 
   const {
-    today,
+    todayObj,
     monthProxy,
     modelProxy,
     displayYear,
@@ -51,7 +53,7 @@
     goNextMonth,
     setDisplayMonth,
     updateModelValue
-  } = useDate(model, props)
+  } = useDateCore(model, props)
 
   const monthDropdown = shallowRef()
   const monthSelector = shallowRef()
@@ -65,8 +67,8 @@
   })
 
   function onTodayClick () {
-    updateModelValue(today)
-    setDisplayMonth(today)
+    updateModelValue(todayObj)
+    setDisplayMonth(todayObj)
   }
 </script>
 
