@@ -353,7 +353,7 @@ onMounted(() => {
   <mu-tabs
     v-model="activeTab"
     :tab-bar-attrs="{ compact: true }"
-    @button-click="onTabClick"
+    @tab-click="onTabClick"
     @update:active-tab="onTabChange"
   >
     <mu-tab-bar :tab-buttons="tabs" />
@@ -376,13 +376,12 @@ onMounted(() => {
 | # | 变更 |
 |---|------|
 | 1 | `:tab-bar-params` → `:tab-bar-attrs` |
-| 2 | `@tab-click` → `@button-click` |
-| 3 | `@tab-change` → `@update:active-tab` |
-| 4 | `<template #tab-bar>` 整体替换已移除 → 直接放 `<mu-tab-bar>` |
-| 5 | `:tab-items` → `:tab-buttons` |
-| 6 | `trigger-action="click"` → `dropdown-trigger="click"` |
-| 7 | `dropdown-icon="dropdown"` → `dropdown-icon="dropdownExpand"` |
-| 8 | `<mu-dropdown-item>` → `dropdown-items` 数组属性 |
+| 2 | `@tab-change` → `@update:active-tab`（`@tab-click` 事件名与 V3 一致，保留；但 payload 从完整 tab 对象变为 `name` 字符串，若 handler 用到对象字段需改用 `name` 查找） |
+| 3 | `<template #tab-bar>` 整体替换已移除 → 直接放 `<mu-tab-bar>` |
+| 4 | `:tab-items` → `:tab-buttons` |
+| 5 | `trigger-action="click"` → `dropdown-trigger="click"` |
+| 6 | `dropdown-icon="dropdown"` → `dropdown-icon="dropdownExpand"` |
+| 7 | `<mu-dropdown-item>` → `dropdown-items` 数组属性 |
 
 ---
 
@@ -669,7 +668,7 @@ onMounted(() => {
         <mu-tabs
           v-model="sideTab"
           :tab-bar-attrs="{ compact: true }"
-          @button-click="onSideTabClick"
+          @tab-click="onSideTabClick"
         >
           <mu-tab-panel name="tree">
             <mu-tree :data="treeData" :props="{ label: 'name', children: 'children' }" />
@@ -714,9 +713,8 @@ onMounted(() => {
 | 6 | `<mu-h-box flex="1">` → `<div class="flex flex-1">` |
 | 7 | `mu-box mu-v-box` + `width` + `border-right` → 原子类 |
 | 8 | `:tab-bar-params` → `:tab-bar-attrs` |
-| 9 | `@tab-click` → `@button-click` |
-| 10 | `<mu-tree-view>` + `<mu-tree-node>` + `<mu-tree-nodes>` → `<mu-tree>` 数据驱动 |
-| 11 | `<mu-editor>` → `<mu-input>` |
+| 9 | `<mu-tree-view>` + `<mu-tree-node>` + `<mu-tree-nodes>` → `<mu-tree>` 数据驱动 |
+| 10 | `<mu-editor>` → `<mu-input>` |
 | 12 | `#prefix` 插槽 → `prefix` 属性 |
 | 13 | `mu-text-ellipsis` → `text-ellipsis` |
 | 14 | `mu-text-color-weak` → `text-muted` |

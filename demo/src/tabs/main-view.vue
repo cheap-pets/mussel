@@ -17,9 +17,7 @@
       :tab-style="tabStyle"
       :tab-position="tabPosition"
       class="m-2x p-1x border border-dashed"
-      @button-click="console.log($event)"
-      @tab-click="console.log($event)"
-      @tab-change="console.log($event)">
+      @tab-click="console.log($event)">
       <template #tab-bar>
         My tab bar content
       </template>

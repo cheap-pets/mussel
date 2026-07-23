@@ -67,7 +67,7 @@ Mussel 4 引入完整的**原子类（utility classes）系统**，覆盖布局�
 - **MuDropdown 系列**：推荐 `dropdown-items` 数组属性驱动，减少模板嵌套；`dropdown-position` / `dropdown-anchor` 命名更直观。
 - **MuButton**：新增 `color`（统一颜色语义）与 `button-style`（normal/outline/text/link）属性，替代 V3 散落的布尔属性。
 - **MuInput**：事件对齐全生 Event 参数，新增 `@keydown` / `@prefix-click` / `@suffix-click`；`prefix`/`suffix` 改为属性，免去插槽。
-- **MuTabs**：事件语义化（`@button-click` / `@update:active-tab`），新增 `#tab-bar-prepend` / `#tab-bar-append` 插槽支持页签栏定制。
+- **MuTabs**：事件语义化（`@tab-click` / `@update:active-tab`），新增 `#tab-bar-prepend` / `#tab-bar-append` 插槽支持页签栏定制。
 
 ---
 

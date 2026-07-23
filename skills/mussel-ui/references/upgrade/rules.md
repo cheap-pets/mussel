@@ -1220,10 +1220,60 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 | 组件 | Mussel 3 | Mussel 4 | 备注 |
 |------|----------|----------|------|
-| MuTabs | `@tab-click` | `@button-click` | payload 从完整 tab 对象变为 tab `name` 字符串 |
 | MuTabs | `@tab-change` | `@update:active-tab` | |
+| MuTabs | `@tab-click`（payload 为 tab 对象）/ `@button-click`（payload 为 name） | `@tab-click`（payload 为 name） | V3 两个并存事件合并为一个，payload 统一为 name 字符串，见下方说明 |
 
-> **MuTabs 事件 payload 变更**：`@tab-click` 的 payload 是完整的 tab 对象，`@button-click` 的 payload 是 tab `name` 字符串。如果回调中使用了 tab 对象的其他字段（如 `caption`、`icon`），需改用 `name` 自行查找。
+> ⚠️ **`@tab-click` payload 变更需人工审核**：事件名与 V3 一致（无需重命名），但 payload 从完整的 tab 对象变为 tab `name` 字符串。如果回调中使用了 tab 对象的其他字段（如 `caption`、`icon`），需改用 `name` 自行查找：
+
+```js
+// 升级前：V3 payload 是完整 tab 对象
+function onTabClick (tab) {
+  console.log(tab.caption, tab.icon)
+}
+
+// 升级后：V4 payload 是 tab name 字符串，需自行查找 tab 元数据
+function onTabClick (name) {
+  const tab = tabButtons.find(t => t.name === name)
+  console.log(tab?.caption, tab?.icon)
+}
+```
+
+> ⚠️ **V3 的 `$attrs.onTabchange` 捕获机制已移除，改用受控模式**：V3 **没有定义任何 `tabchange` 事件**，而是利用 Vue 的 `$attrs` 机制——在 `onTabClick` 中通过 `this.$attrs.onTabchange?.(tab)` 捕获用户传入的自定义方法，在 tab 切换**前**调用它，**返回 `false` 可阻止切换**。这是一个未文档化的内部机制（用户需以 `:on-tabchange="fn"` 形式传入，而非事件监听）。V4 移除了这个机制，`onTabClick` 内无条件切换，不再有子组件层面的拦截点。
+>
+> **凡 V3 代码以 `:on-tabchange="fn"` 形式传入该自定义方法（无论是否同时绑定 `@tab-click`），一律升级为受控绑定**：用 `:active-tab`（单向 prop）+ `@update:active-tab`（手动监听）替代 `v-model:active-tab`，在回调中决定是否赋值：
+
+```vue
+<!-- 升级前：V3 用 :on-tabchange 拦截切换 -->
+<mu-tabs
+  v-model="activeTab"
+  :on-tabchange="guardChange"
+  @tab-click="onTabClick" />
+```
+```js
+// V3：拦截器返回 false 阻止切换
+function guardChange (tab) {
+  if (isFormDirty(tab.name)) return false
+  return true
+}
+```
+
+```vue
+<!-- 升级后：V4 受控模式，拦截逻辑移入 @update:active-tab 回调 -->
+<mu-tabs
+  :active-tab="activeTab"
+  @update:active-tab="onTabChange"
+  @tab-click="onTabClick" />
+```
+```js
+// V4：在回调中决定是否接受新值；不赋值即等于拒绝切换
+const activeTab = ref('tab1')
+function onTabChange (name) {
+  if (isFormDirty(name)) return     // 拒绝切换：不赋值
+  activeTab.value = name            // 接受切换：赋值，通过 :active-tab 下传
+}
+```
+
+> **注意（受控模式的行为差异）**：V4 子组件内部对 `activeTab` 维护一个 local 副本，点击 tab 时会先更新 local 副本并 emit `update:activeTab`。若父组件拒绝赋值（不改 `:active-tab`），local 副本不会立即回滚，高亮可能短暂停留在被拒绝的 tab 上，直到下一次 prop 变化才纠正。这是 V4 `defineModel` 的固有行为，V3 的 `:on-tabchange` 因在子组件更新前拦截而无此问题。多数场景下肉眼难察；若需严格避免，可在拒绝后主动触发一次 prop 变化（如先置空再 `nextTick` 恢复）。
 
 ---
 

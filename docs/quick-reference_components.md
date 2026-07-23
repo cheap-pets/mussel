@@ -327,9 +327,9 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | tab-bar-prepend | 页签按钮栏前置内容                  |
 | tab-bar-append  | 页签按钮栏后置内容（常放置工具按钮）|
 
-| 事件         | 参数   | 说明         |
-| ------------ | ------ | ------------ |
-| button-click | name   | 页签按钮点击 |
+| 事件      | 参数   | 说明         |
+| --------- | ------ | ------------ |
+| tab-click | name   | 页签按钮点击 |
 
 ```html
 <mu-tabs v-model:active-tab="activeTab" tab-style="button">
@@ -367,9 +367,9 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | prepend  | 前置内容 |
 | append   | 后置内容 |
 
-| 事件         | 参数 | 说明         |
-| ------------ | ---- | ------------ |
-| button-click | name | 页签按钮点击 |
+| 事件      | 参数 | 说明         |
+| --------- | ---- | ------------ |
+| tab-click | name | 页签按钮点击 |
 
 
 

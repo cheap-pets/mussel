@@ -6,7 +6,7 @@
       :tab-style="tabStyle"
       :tab-buttons="buttons"
       :tab-position="tabPosition"
-      @button-click="$emit('buttonClick', $event)">
+      @tab-click="$emit('tabClick', $event)">
       <template #prepend>
         <slot name="tab-bar-prepend" />
       </template>
@@ -25,7 +25,7 @@
   import { debounce } from 'throttle-debounce'
 
   defineOptions({ name: 'MusselTabs' })
-  defineEmits(['buttonClick'])
+  defineEmits(['tabClick'])
 
   const activeTab = defineModel('activeTab', { type: String })
 

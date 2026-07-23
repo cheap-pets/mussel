@@ -19,7 +19,7 @@
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
-| `button-click` | `name` | 页签按钮点击 |
+| `tab-click` | `name` | 页签按钮点击 |
 
 ```html
 <mu-tabs v-model:active-tab="activeTab" tab-style="button">
