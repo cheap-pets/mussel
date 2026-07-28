@@ -33,12 +33,14 @@
       <mu-combo-box v-model="artist" editable :options="artists" />
     </div>
     <div class="group flex flex-col gap-1x">
+      123
       <mu-select
         v-model="artist"
         class="my-select"
         dropdown-width="auto"
         placeholder="select an artist"
         prefix="Artist:"
+        :disabled="false"
         :options="artists" />
       <mu-select
         v-model="selectedItem"
@@ -89,9 +91,9 @@
     { is: '-', label: 'GROUP 1' },
     { value: 'Ludwig van Beethoven' },
     { value: 'Wolfgang Amadeus Mozart' },
-    { value: 'Frédéric François Chopin' },
+    { value: 'Frédéric François Chopin', disabled: true },
     { is: '-', label: 'GROUP 2' },
-    { value: 'Johann Baptist Strauss', disabled: true }
+    { value: 'Johann Baptist Strauss', disabled: false }
   ])
   const artistCn = ref()
   const searchKey = ref('')

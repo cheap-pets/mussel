@@ -5,7 +5,8 @@ import { inject } from 'vue'
 export const dropdownItemProps = {
   action: null,
   icon: String,
-  label: String
+  label: String,
+  disabled: Boolean
 }
 
 export function useDropdownItem (props) {

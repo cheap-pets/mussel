@@ -1,7 +1,7 @@
 <template>
   <a
     class="mu-button mu-icon mu-icon-button"
-    :class="[colorClass, extraClass]"
+    :class="[colorClass, extraClass, iconData.cls]"
     :disabled="isDisabled"
     :active="active || null"
     :animation="animation || iconData.animation"

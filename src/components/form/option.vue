@@ -1,5 +1,8 @@
 <template>
-  <div class="mu-list-item mu-dropdown-item mu-option" @click="onClick">
+  <div
+    class="mu-list-item mu-dropdown-item mu-option"
+    :disabled="disabled || null"
+    @click="onClick">
     <slot :selected="selected">
       <mu-icon v-if="isMultiple" :icon="selected ? 'check' : ''" />
       <mu-icon v-if="icon != null" :icon="icon" />

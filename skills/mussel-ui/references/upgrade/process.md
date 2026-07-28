@@ -26,6 +26,14 @@
 
 ## 前置步骤：确认源目录
 
+0. **退出检查**（先做，命中任一即停止升级流程，回到 `SKILL.md` 步骤 2）：
+   - 用户消息未出现"升级 / 迁移 / V4"等明确意图词；
+   - `package.json` 中 mussel 版本 ≥ 4，且用户未要求迁移既有代码；
+   - 任务是新增/修改类，目标文件在 git 中为 untracked / 新建；
+   - 检测到的 V3 模式仅出现在 `demo/`、`docs/`、`node_modules/` 或测试夹具中，业务源码已为 V4。
+
+   > 升级流程是 opt-in。若不确定是否应进入，先询问用户，不要凭代码中存在 V3 痕迹自动启动。
+
 1. 查找并初步判断需升级的目录：
   - 项目中前端源码目录；
   - 若项目中同时包含 vue2、vue3 版本源码的目录，通常是名称包含 vue3 的目录。
@@ -66,7 +74,8 @@
    - `icon="dropdown"` → `icon="chevronDown"`
 
    **组件迁移**：
-   - 已移除组件：`<mu-editor>`、`<mu-tabs-buttons>`、`<mu-tree-view>`、`<mu-tree-nodes>`
+   - 已移除组件：`<mu-editor>`、`<mu-tabs-buttons>`
+   - Tree 相关：`<mu-tree-nodes>`（V4 不再注册，见 rules.md 5.7）
    - 推荐迁移：`<mu-option>`、`<mu-tree-node>`、`<mu-dropdown-item>` 等
    - 废弃属性：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
    - 废弃事件：`@tab-change`、`@close-button-click`、`@mask-click`

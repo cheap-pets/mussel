@@ -53,8 +53,8 @@ export function useInput (model, props, emit) {
 
   const inputAttrs = computed(() => ({
     type: props.type || 'text',
-    disabled: props.disabled,
-    readonly: props.readonly || props.editable === false,
+    disabled: props.disabled || null,
+    readonly: props.readonly || props.editable === false || null,
     placeholder: props.placeholder
   }))
 

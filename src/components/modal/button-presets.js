@@ -42,6 +42,12 @@ export const ButtonPresets = {
     buttonStyle: 'text',
     get caption () { return tb('CANCEL') }
   },
+  '#CLOSE': {
+    name: 'CLOSE',
+    action: 'close',
+    buttonStyle: 'text',
+    get caption () { return tb('CLOSE') }
+  },
   ' ': { is: 'div', class: 'flex-space' },
   '-': { is: 'div', class: 'flex-divider' }
 }

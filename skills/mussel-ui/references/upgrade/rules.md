@@ -2,6 +2,8 @@
 
 所有已知 API 变更的完整参考。升级过程中以此文件为权威依据。
 
+> 本文件仅在用户**明确要求** M3→M4 迁移时按需查阅；新功能开发不要读本文件。
+
 **升级流程**（分析 → 计划 → 执行）见同级目录 `process.md`。
 
 > ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**，否则会出现「分析漏检」或「grep 命中但无规则」的不一致。
@@ -1319,33 +1321,40 @@ items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数
 
 ### 5.7 MuTree
 
-`<mu-tree-view>` 和 `<mu-tree-nodes>` 已移除。`<mu-tree-node>` 仍保留但推荐使用数据驱动方式。
-三个组件推荐统一由 `<mu-tree>` 数据驱动方式替代。
+> ⚠️ 纠正常见误解：Mussel 3 中树组件的注册标签就是 `<mu-tree>`（源码文件名为 `tree-view.vue`，但**注册名是 `mu-tree`，不存在 `<mu-tree-view>` 标签**）。V3 的 `<mu-tree>` **本就是数据驱动**，V4 沿用同一 API，对外用法基本不变，无需"迁移到数据驱动"。
+
+#### 属性 / 事件 / 插槽（V3 与 V4 一致，无需迁移）
+
+- **属性**：`data`、`props`、`buttons`、`checkbox`、`cascaded-check`、`checked-nodes-keys`、`auto-expand-level`、`active-node`、`node-icons`、`expand-icons`
+- **事件**：`node-click`、`node-expand`/`node-collapse`、`node-button-click`、`node-check-change`
+- **插槽**：`default`（作用域参数 `node`）、`buttons`（作用域参数 `node`）
+
+> V3 曾定义 `ui` prop，V4 已移除（V3 中未实际使用，通常无需处理）。
+
+#### 实际变更
+
+| 项 | Mussel 3 | Mussel 4 | 说明 |
+|----|----------|----------|------|
+| 默认展开图标 | `expandIcons` 默认值用 `'dropdown'` | 默认值用 `'treeNodeExpand'` | 未自定义 `expand-icons` 时自动生效，无需处理。若代码显式传入了图标名 `'dropdown'`，按第 4 节规则改为 `'chevronDown'` |
+| CSS 变量 | `--mu-tree-node-height`、`--mu-tree-node-indent`、`--mu-tree-node-padding-x`、`--mu-tree-node-padding-y` | `--mu-tree_node-height`、`--mu-tree_node-indent`（连字符改下划线）；两个 padding 变量移除，节点 padding 改为内联 `4px 8px` | 仅影响自定义过树节点高度/缩进/内边距的样式，需更改变量名 |
+| 内部子组件 | 同时注册 `<mu-tree-node>`、`<mu-tree-nodes>`（均为 `<mu-tree>` 的内部渲染组件） | 仅 `<mu-tree-node>` 保留注册；`<mu-tree-nodes>` 不再导出/注册 | 用户应通过 `<mu-tree :data="...">` 驱动，不应直接使用这两个内部组件。若 V3 代码中直接写了 `<mu-tree-nodes>`，需改为由 `data` 数据驱动 |
+| 全局 tree 选项 | `install(app, { tree: {...} })`，组件内读 `inject('$mussel').globalTreeOptions` | `install(app, { tree: {...} })`，组件内读 `inject('$mussel').options.tree` | **配置方式不变**，仅组件内部读取路径调整，使用方无感知 |
+
+#### 示例（V3 与 V4 写法相同）
 
 ```html
-<!-- 升级前 -->
-<mu-tree-view>
-  <mu-tree-node ... />
-  <mu-tree-nodes>
-    <mu-tree-node ... />
-  </mu-tree-nodes>
-</mu-tree-view>
-
-<!-- 升级后 -->
-<mu-tree :data="treeData" :props="treeProps" @node-click="onNodeClick" />
-```
-
-```html
-<!-- 完整示例 -->
 <mu-tree
   :data="treeData"
-  :props="{ label: 'name', children: 'children' }"
-  :checkbox="true"
+  :props="{ label: 'name', childNodes: 'children' }"
+  checkbox
   :cascaded-check="true"
+  :active-node="activeNode"
   @node-click="onNodeClick"
   @node-check-change="onCheckChange"
 />
 ```
+
+> `:props` 中的键（如 `childNodes`）是组件识别的**字段名**，值为用户数据中对应的属性名（如 `'children'`）；键名不要改，只改值。
 
 ---
 
@@ -1458,6 +1467,7 @@ Mussel 3 使用无前缀字符串 `'OK'`、`'CANCEL'` 等。Mussel 4 使用 `#` 
 | `'CANCEL'` | `'#CANCEL'` | 取消按钮（text 样式） |
 | `'YES'` | `'#YES'` | 确认按钮 |
 | `'NO'` | `'#NO'` | 否定按钮（text 样式） |
+| _(无)_ | `'#CLOSE'` | 关闭按钮（text 样式，V4 新增） |
 
 `#` 后缀加 `!` 表示危险样式：`'#OK!'`（danger 主按钮）、`'#YES!'`（danger 确认）。
 

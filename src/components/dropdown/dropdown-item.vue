@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-list-item mu-dropdown-item" @click="onClick">
+  <div class="mu-list-item mu-dropdown-item" :disabled="disabled || null" @click="onClick">
     <slot>
       <mu-icon v-if="icon != null" :icon="icon" />
       <label v-if="label">{{ label }}</label>
