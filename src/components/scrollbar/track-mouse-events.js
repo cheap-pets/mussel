@@ -12,6 +12,7 @@ export function onTrackXMouseDown (event, el, ctx) {
   const max = trackX.clientWidth - thbWidth
 
   function updateScrollLeft (x) {
+    if (ctx.ratioX <= 0) return
     el.scrollLeft = Math.max(Math.min(x - halfWidth, max), 0) / ctx.ratioX
   }
 
@@ -47,6 +48,7 @@ export function onTrackYMouseDown (event, el, ctx) {
   const max = trackY.clientHeight - thbHeight
 
   function updateScrollTop (y) {
+    if (ctx.ratioY <= 0) return
     el.scrollTop = Math.max(Math.min(y - halfHeight, max), 0) / ctx.ratioY
   }
 
