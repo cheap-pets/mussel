@@ -16,7 +16,14 @@ export function useDropdownItem (props) {
     emitItemClick
   } = inject('popup')
 
-  function onClick () {
+  function onClick (event) {
+    // 带 action 时由父组件通过 itemclick/action 处理状态变更，
+    // 需阻止 label 默认行为将点击转发给原生 checkbox/radio，
+    // 否则会在 Vue 将 checked 同步到新值后再次翻转，导致勾选被撤销。
+    if (props.action) {
+      event?.preventDefault()
+    }
+
     collapse()
     emitItemClick(props)
 
