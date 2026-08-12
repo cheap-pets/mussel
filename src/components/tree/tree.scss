@@ -12,12 +12,12 @@
 
   overflow: visible;
   display: flex;
-  gap: var(--mu-inline-spacing);
+  gap: var(--mu-base-spacing);
   align-items: center;
 
   width: 100%;
   min-height: var(--mu-tree_node-height);
-  padding: 4px 8px;
+  padding: var(--mu-half-spacing) var(--mu-base-spacing);
 
   font-size: var(--mu-font-size-normal);
   color: var(--mu-text-color-normal);

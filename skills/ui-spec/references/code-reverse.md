@@ -118,7 +118,7 @@ MUSSEL 4 的 `MuTable` 用 `:columns` **JS 数组**配置（**不是** `<mu-tabl
 | `tag` | `tag` | |
 | `img` / `image` | （登记为图片列） | spec 列类型无 `image`，写到说明 |
 
-> 对照权威：`mussel-ui/references/components/data-display.md` 的「Column 配置」与「列类型」表。源码与文档冲突时以源码为准。
+> 对照权威：`mussel-ui/references/components/data.md` 的「Column 配置」与「列类型」表。源码与文档冲突时以源码为准。
 
 ### 表单字段映射（`mu-form-field` / `items` 数组 → spec 2.5 节）
 

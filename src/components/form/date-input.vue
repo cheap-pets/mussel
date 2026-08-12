@@ -246,7 +246,7 @@
     height: 250px;
 
     & > .mu-bar {
-      border-radius: var(--mu-common-border-radius);
+      border-radius: var(--mu-radius-control);
     }
 
     & > div:not(.mu-toolbar) {

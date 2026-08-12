@@ -231,9 +231,9 @@
   - 3 按钮与操作：`references/components/buttons.md`
   - 4 表单 / 输入：`references/components/form.md`
   - 5 导航与菜单：`references/components/navigation.md`
-  - 6 数据展示（含表格）：`references/components/data-display.md`
+  - 6 数据展示（含表格）：`references/components/data.md`
   - 7 反馈：`references/components/feedback.md`
-  - 8 基础元素：`references/components/basic-elements.md`
+  - 8 基础元素：`references/components/basic.md`
 - **组件选型**：`SKILL.md` 组件速查表
 - **安装初始化**：`install(app, options)`、options 字段、`$mussel` 上下文、`installIcons` 查阅 `references/install.md`
 

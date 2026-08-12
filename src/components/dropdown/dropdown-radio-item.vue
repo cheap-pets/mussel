@@ -1,5 +1,8 @@
 <template>
-  <label class="mu-radio mu-list-item mu-dropdown-item" @click="onClick">
+  <label
+    class="mu-radio mu-list-item mu-dropdown-item"
+    :disabled="disabled || null"
+    @click="onClick">
     <input v-model="model" type="radio" :value="value" @click.stop>
     <span>{{ label ?? value }}</span>
   </label>

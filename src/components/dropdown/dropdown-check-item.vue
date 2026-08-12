@@ -1,5 +1,8 @@
 <template>
-  <label class="mu-check mu-list-item mu-dropdown-item" @click="onClick">
+  <label
+    class="mu-check mu-list-item mu-dropdown-item"
+    :disabled="disabled || null"
+    @click="onClick">
     <input v-model="model" type="checkbox" :value="value" @click.stop>
     <span>{{ label ?? value }}</span>
   </label>

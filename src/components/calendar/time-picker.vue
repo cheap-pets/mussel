@@ -169,7 +169,7 @@
 
     width: 100%;
     height: 32px;
-    border-radius: var(--mu-common-border-radius);
+    border-radius: var(--mu-radius-control);
 
     background-color: var(--mu-bg-strong);
 
@@ -202,7 +202,7 @@
       align-items: center;
 
       height: var(--cell-height);
-      border-radius: var(--mu-common-border-radius);
+      border-radius: var(--mu-radius-control);
 
       background-color: var(--mu-primary-translucent);
 

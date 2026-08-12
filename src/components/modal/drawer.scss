@@ -20,7 +20,7 @@
   transition: transform .2s, opacity .2s;
 
   &.mu-drawer--rounded {
-    border-radius: var(--mu-window-border-radius);
+    border-radius: var(--mu-radius-modal);
   }
 
   &.mu-drawer--top {

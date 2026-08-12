@@ -1,29 +1,13 @@
-.shadow-float,
-.mu-shadow-float {
-  box-shadow: var(--mu-shadow-float);
-}
-
-.shadow-popup,
-.mu-shadow-popup {
-  box-shadow: var(--mu-shadow-popup);
-}
-
-.shadow-layer,
-.mu-shadow-layer {
-  box-shadow: var(--mu-shadow-layer);
-}
-
-.shadow-modal,
-.mu-shadow-modal {
-  box-shadow: var(--mu-shadow-modal);
+@each $v in ('float', 'popup', 'layer', 'modal') {
+  .shadow-#{$v},
+  .mu-shadow-#{$v} {
+    box-shadow: var(--mu-shadow-#{$v});
+  }
 }
 
 .shadow-focus:focus,
-.mu-shadow-focus:focus {
-  box-shadow: var(--mu-shadow-focus) rgb(from var(--mu-primary-color) r g b / 0.15);
-}
-
-.shadow-focus-within,
+.mu-shadow-focus:focus,
+.shadow-focus-within:focus-within,
 .mu-shadow-focus-within:focus-within {
   box-shadow: var(--mu-shadow-focus) rgb(from var(--mu-primary-color) r g b / 0.15);
 }

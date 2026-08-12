@@ -129,16 +129,17 @@ $SEMANTIC_COLORS: (
   --mu-half-spacing: calc(var(--mu-base-spacing) / 2);
   --mu-inline-spacing: 6px;
 
-  --mu-font-size-small: 12px;
-  --mu-font-size-normal: 14px;
-  --mu-font-size-large: 16px;
-
   --mu-control-height-small: 24px;
   --mu-control-height-normal: 32px;
   --mu-control-height-large: 40px;
 
-  --mu-common-border-radius: 4px;
-  --mu-window-border-radius: 8px;
+  --mu-radius-control: 4px;
+  --mu-radius-panel: 8px;
+  --mu-radius-modal: 12px;
+
+  --mu-font-size-small: 12px;
+  --mu-font-size-normal: 14px;
+  --mu-font-size-large: 16px;
 }
 
 .mu-root {

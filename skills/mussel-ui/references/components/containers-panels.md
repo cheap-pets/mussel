@@ -7,9 +7,10 @@
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `active-tab` | String | 双向绑定，当前活动页签名称 |
-| `tab-style` | String | `button` \| `small-button` \| `simple` \| `card` \| `border-card` |
+| `tab-style` | String | `button` \| `simple` \| `card` \| `border-card` |
 | `tab-buttons` | Array | 手动指定页签按钮，默认由内部 `MuTabPanel` 自动生成 |
 | `tab-position` | String | `top`（默认）\| `bottom` \| `left` \| `right` |
+| `bar-size` | String | `normal` \| `small`，控制页签按钮尺寸 |
 | `tab-bar-attrs` | Object | 传递给内置 `MuTabBar` 的额外属性 |
 
 | 插槽 | 说明 |
@@ -59,7 +60,7 @@
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `active-tab` | String | 双向绑定，当前活动页签 |
-| `tab-style` | String | `button` \| `small-button` \| `simple` |
+| `tab-style` | String | `button` \| `simple` |
 | `tab-buttons` | Array | 页签按钮数据 |
 | `tab-position` | String | `top` \| `bottom` \| `left` \| `right` |
 

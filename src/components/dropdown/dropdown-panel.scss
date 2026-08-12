@@ -4,9 +4,9 @@
 
   overflow: hidden;
 
-  padding: 4px;
+  padding: var(--mu-half-spacing);
   // border: 1px solid var(--mu-border-color-soft);
-  border-radius: var(--mu-common-border-radius);
+  border-radius: var(--mu-radius-panel);
 
   text-align: start;
   
@@ -33,12 +33,12 @@
 
   &[position="bottom"] {
     transform-origin: top;
-    margin-top: 4px;
+    margin-top: var(--mu-half-spacing);
   }
 
   &[position="top"] {
     transform-origin: bottom;
-    margin-bottom: 4px;
+    margin-bottom: var(--mu-half-spacing);
   }
 
   &[pop-up] {

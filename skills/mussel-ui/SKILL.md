@@ -48,9 +48,9 @@ description: >
 | 3 按钮与操作 | `references/components/buttons.md` |
 | 4 表单 / 输入 | `references/components/form.md` |
 | 5 导航与菜单 | `references/components/navigation.md` |
-| 6 数据展示（含表格） | `references/components/data-display.md` |
+| 6 数据展示（含表格） | `references/components/data.md` |
 | 7 反馈 | `references/components/feedback.md` |
-| 8 基础元素 | `references/components/basic-elements.md` |
+| 8 基础元素 | `references/components/basic.md` |
 
 **样式 Token**：颜色、间距、原子类、布局模式等查阅 `references/styles.md`。
 
@@ -113,7 +113,6 @@ description: >
 | `<mu-button>` | 常规按钮；`color` 设主/次/危险色，`button-style` 设 normal/outline/text/link，`toggle` 开关模式 |
 | `<mu-button-group>` | 多按钮视觉成组，共享 size/style/color |
 | `<mu-icon-button>` | 仅图标按钮，常用于工具栏/列表项；`toggle` 开关模式 |
-| `<mu-dropdown-button>` | 按钮带下拉菜单；`split-button` 分割为主按钮+下拉箭头 |
 
 ### 4. 表单
 
@@ -138,6 +137,7 @@ description: >
 |------|------|
 | `<mu-dropdown>` | 为任意元素附加下拉菜单（包裹触发器） |
 | `<mu-dropdown-panel>` | 独立下拉面板，自行管理触发器 |
+| `<mu-dropdown-button>` | 按钮型下拉触发器；`split-button` 分割为主按钮+下拉箭头，`dropdown-items` 配置菜单项 |
 | `<mu-context-menu>` | 右键上下文菜单 |
 
 ### 6. 数据展示

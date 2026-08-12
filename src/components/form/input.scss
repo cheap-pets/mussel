@@ -2,7 +2,7 @@
   --height: var(--mu-control-height-normal);
   --bg: var(--mu-bg-normal);
   --border-color: var(--mu-border-color-normal);
-  --border-radius: var(--mu-common-border-radius);
+  --border-radius: var(--mu-radius-control);
   --focus-shadow: var(--mu-shadow-focus) rgb(from var(--border-color) r g b / 0.15);
 }
 
@@ -167,13 +167,13 @@ div.mu-input {
 
   & > :first-child {
     margin-left: 0;
-    border-top-left-radius: var(--mu-common-border-radius) !important;
-    border-bottom-left-radius: var(--mu-common-border-radius) !important;
+    border-top-left-radius: var(--mu-radius-control) !important;
+    border-bottom-left-radius: var(--mu-radius-control) !important;
   }
 
   & > :last-child {
-    border-top-right-radius: var(--mu-common-border-radius) !important;
-    border-bottom-right-radius: var(--mu-common-border-radius) !important;
+    border-top-right-radius: var(--mu-radius-control) !important;
+    border-bottom-right-radius: var(--mu-radius-control) !important;
   }
 }
 

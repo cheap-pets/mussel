@@ -9,7 +9,7 @@
 
   min-height: var(--mu-segmented-height);
   padding: 2px;
-  border-radius: var(--mu-common-border-radius);
+  border-radius: var(--mu-radius-control);
 
   background-color: var(--mu-bg-fill);
 
@@ -27,7 +27,7 @@
 
   align-items: stretch;
 
-  border-radius: var(--mu-common-border-radius);
+  border-radius: var(--mu-radius-control);
 
   background-color: var(--mu-primary-color);
 
@@ -44,12 +44,12 @@
   display: inline-flex;
   flex: 1 1 0;
   flex-direction: row;
-  gap: var(--mu-base-spacing);
+  gap: var(--mu-inline-spacing);
   align-items: center;
   justify-content: center;
 
-  padding: 4px calc(var(--mu-base-spacing) * 2);
-  border-radius: var(--mu-common-border-radius);
+  padding: var(--mu-half-spacing) calc(var(--mu-base-spacing) * 2);
+  border-radius: var(--mu-radius-control);
 
   font-size: var(--mu-font-size-normal);
   color: var(--mu-text-color-normal);
@@ -75,6 +75,7 @@
 
 .mu-segmented[icon-position="top"] > .mu-segmented__item {
   flex-direction: column;
+  gap: var(--mu-base-spacing);
   padding: var(--mu-base-spacing);
 
   & > .mu-icon {

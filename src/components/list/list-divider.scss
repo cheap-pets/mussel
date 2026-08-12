@@ -1,11 +1,11 @@
 .mu-list-divider {
-  margin-top: 4px;
+  margin-top: var(--mu-half-spacing);
   padding-top: 10px;
   border-top: 1px solid var(--mu-border-color-soft);
   color: var(--mu-text-color-muted);
 
   &:empty {
-    margin-bottom: 4px;
+    margin-bottom: var(--mu-half-spacing);
     padding: 0;
 
     &:first-child,

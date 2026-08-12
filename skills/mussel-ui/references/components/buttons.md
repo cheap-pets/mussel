@@ -61,30 +61,3 @@
 <mu-icon-button icon="filter" toggle v-model:active="filterVisible" />
 <mu-icon-button icon="chevron-up" button-style="text" @click="scrollTop" />
 ```
-
----
-
-### MuDropdownButton
-
-带下拉菜单的按钮，支持分割形式。自身仅定义 `icon`/`caption`/`splitButton` 三个 prop，其他 MuButton 属性（如 `color`、`button-style`、`size`、`disabled`）通过 `$attrs` 透传。
-
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `icon` | String | 按钮图标 |
-| `caption` | String | 按钮文字 |
-| `split-button` | Boolean | 是否分割按钮形式 |
-| (透传) | — | MuButton 属性（`color`、`button-style`、`size` 等）+ MuDropdown 属性 |
-
-```html
-<mu-dropdown-button
-  caption="新建"
-  color="primary"
-  split-button
-  :dropdown-items="[
-    { caption: '从模板创建', action: 'from-template' },
-    { caption: '导入文件',   action: 'import' }
-  ]"
-  @click="onCreate"
-  @action="onDropdownAction"
-/>
-```

@@ -317,9 +317,10 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | 属性名称      | 类型   | 说明                                            |
 | ------------- | ------ | ----------------------------------------------- |
 | active-tab    | String | 双向绑定属性，当前活动页签名称                  |
-| tab-style     | String | `button` \| `small-button` \| `simple` \| `card` \| `border-card` |
+| tab-style     | String | `button` \| `simple` \| `card` \| `border-card` |
 | tab-buttons   | Array  | 页签按钮，默认按内部 tab-panel 组件自动生成     |
 | tab-position  | String | `top` \| `bottom` \| `left` \| `right`          |
+| bar-size      | String | `normal` \| `small`，控制页签按钮尺寸          |
 | tab-bar-attrs | Object | 透传给内置 MuTabBar 的额外属性                  |
 
 | 插槽名称        | 说明                                |
@@ -355,7 +356,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | ----------- | ------ | ----------------------------------------------- |
 | tab-buttons | Array  | 页签按钮数据（唯一声明的 prop）                 |
 | active-tab  | String | 双向绑定（`v-model:active-tab`），当前活动页签 |
-| tab-style   | String | 透传：`button` \| `small-button` \| `simple`    |
+| tab-style   | String | 透传：`button` \| `simple`                      |
 | tab-position| String | 透传：`top` \| `bottom` \| `left` \| `right`    |
 
 > [!NOTE]
@@ -663,8 +664,8 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
   color="primary"
   split-button
   :dropdown-items="[
-    { caption: '从模板创建', action: 'from-template' },
-    { caption: '导入文件',   action: 'import' }
+    { label: '从模板创建', action: 'from-template' },
+    { label: '导入文件',   action: 'import' }
   ]"
   @click="onCreate"
   @action="onDropdownAction"
@@ -1293,11 +1294,70 @@ const filteredItems = computed(() =>
 
 ```javascript
 [
-  { caption: '编辑', icon: 'edit', action: 'edit' },
-  { caption: '删除', icon: 'delete', action: 'delete', danger: true },
-  { type: 'divider' },  // 分隔线
-  { caption: '导出', disabled: true }
+  { label: '编辑', icon: 'edit', action: 'edit' },
+  { label: '删除', icon: 'delete', action: 'delete' },
+  { is: '-' },  // 分隔线
+  { label: '导出', disabled: true }
 ]
+```
+
+
+
+### MuDropdownItem
+
+下拉项，下拉面板内的基础菜单项。点击后自动收起面板；若设置了 `action`，面板会额外触发 `action` 事件。
+
+| 属性名称 | 类型    | 说明                                                    |
+| -------- | ------- | ------------------------------------------------------- |
+| label    | String  | 项文字                                                  |
+| icon     | String  | 前置图标                                                |
+| action   | —       | 点击时触发的动作标识，由父级下拉面板向上 emit `action`  |
+| disabled | Boolean | 是否禁用                                                |
+
+```html
+<mu-dropdown-item label="编辑" icon="edit" action="edit" />
+<mu-dropdown-item label="导出" disabled />
+```
+
+
+
+### MuDropdownCheckItem
+
+带勾选框的下拉项，用于多选场景。
+
+| 属性名称 | 类型              | 说明                                                     |
+| -------- | ----------------- | -------------------------------------------------------- |
+| v-model  | Boolean \| Array  | 选中状态；多选时绑定数组（结合 `value` 标识当前项）      |
+| value    | —                 | 当前项标识，多选模式下被收集进 v-model 数组              |
+| label    | String            | 项文字；未设置时回退显示 `value`                         |
+| icon     | String            | 前置图标                                                 |
+| action   | —                 | 点击时触发的动作标识                                     |
+| disabled | Boolean           | 是否禁用                                                 |
+
+```html
+<!-- 多选：用数组收集各勾选项的 value -->
+<mu-dropdown-check-item v-model="checked" value="apple" label="苹果" />
+<mu-dropdown-check-item v-model="checked" value="banana" label="香蕉" />
+```
+
+
+
+### MuDropdownRadioItem
+
+带单选框的下拉项，用于多选一场景。
+
+| 属性名称 | 类型    | 说明                                  |
+| -------- | ------- | ------------------------------------- |
+| v-model  | —       | 当前选中值，与被选中项的 `value` 匹配 |
+| value    | —       | 当前项标识，**必填**                  |
+| label    | String  | 项文字；未设置时回退显示 `value`      |
+| icon     | String  | 前置图标                              |
+| action   | —       | 点击时触发的动作标识                  |
+| disabled | Boolean | 是否禁用                              |
+
+```html
+<mu-dropdown-radio-item v-model="picked" value="a" label="选项 A" />
+<mu-dropdown-radio-item v-model="picked" value="b" label="选项 B" />
 ```
 
 

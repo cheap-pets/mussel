@@ -1172,15 +1172,15 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 <mu-dropdown>
   <mu-button>菜单</mu-button>
   <template #dropdown>
-    <mu-dropdown-item caption="选项1" />
-    <mu-dropdown-check-item caption="勾选1" />
+    <mu-dropdown-item label="选项1" />
+    <mu-dropdown-check-item label="勾选1" />
   </template>
 </mu-dropdown>
 
 <!-- 升级后（推荐） -->
 <mu-dropdown :dropdown-items="[
-  { caption: '选项1', action: 'opt1' },
-  { caption: '勾选1', type: 'check', value: 'check1' }
+  { label: '选项1', action: 'opt1' },
+  { label: '勾选1', type: 'check', value: 'check1' }
 ]">
   <mu-button>菜单</mu-button>
 </mu-dropdown>
@@ -1189,8 +1189,8 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 <mu-dropdown>
   <mu-button>菜单</mu-button>
   <template #dropdown>
-    <mu-dropdown-item caption="选项1" />
-    <mu-dropdown-check-item caption="勾选1" />
+    <mu-dropdown-item label="选项1" />
+    <mu-dropdown-check-item label="勾选1" />
   </template>
 </mu-dropdown>
 ```

@@ -128,11 +128,11 @@
     border-radius: 0;
 
     &:nth-child(7n + 1) {
-      border-radius: var(--mu-common-border-radius) 0 0 var(--mu-common-border-radius);
+      border-radius: var(--mu-radius-control) 0 0 var(--mu-radius-control);
     }
 
     &:nth-child(7n) {
-      border-radius: 0 var(--mu-common-border-radius) var(--mu-common-border-radius) 0;
+      border-radius: 0 var(--mu-radius-control) var(--mu-radius-control) 0;
     }
   }
 </style>

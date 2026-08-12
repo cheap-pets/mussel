@@ -449,14 +449,14 @@ accordion
 | 按钮与操作 | `mussel-ui/references/components/buttons.md` |
 | 表单 / 输入 | `mussel-ui/references/components/form.md` |
 | 导航与菜单 | `mussel-ui/references/components/navigation.md` |
-| 数据展示（表格/树/列表） | `mussel-ui/references/components/data-display.md` |
+| 数据展示（表格/树/列表） | `mussel-ui/references/components/data.md` |
 | 反馈（消息/状态占位） | `mussel-ui/references/components/feedback.md` |
-| 基础元素（图标/徽标） | `mussel-ui/references/components/basic-elements.md` |
+| 基础元素（图标/徽标） | `mussel-ui/references/components/basic.md` |
 
 **MUSSEL 4 常见能力边界（避免误选不存在的组件）**：
 
 - **无应用级 Layout 全家桶**：没有 `Layout/Header/Content/Sidebar`。整体骨架用 `MuHBox` / `MuVBox` / `MuSplitHBox` / `MuSplitVBox` / `MuGridBox` 组合。
-- **分页用 `MuPagination`**：常与 `MuTable` 配合作兄弟节点（置于表格下方）。查阅 `data-display.md`。
+- **分页用 `MuPagination`**：常与 `MuTable` 配合作兄弟节点（置于表格下方）。查阅 `data.md`。
 - **无 Popconfirm / Spin / Loader / Skeleton**：删除确认用 `messageBox.confirm`（命令式 API，非组件）；加载/空/错误态用 `MuStatusBox`（声明式组件）；浮动通知用 `messageBox.notify`（命令式 API）。注意区分：命令式 API 不进组件清单。
 - **弹窗选型**：模态对话框用 `MuDialog`，边缘滑出用 `MuDrawer`。没有名为 `Modal` 的组件。
 - **日期选择**：`MuDateInput`（不是 `MDatePicker`）；时间用 `MuTimeInput`。

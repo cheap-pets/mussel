@@ -3,7 +3,7 @@
   display: flex;
   flex: 1 1 0;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: var(--mu-half-spacing);
 
   &::before {
     display: none;
@@ -38,7 +38,7 @@
 .mu-tags__more {
   height: 20px;
   padding: 0 5px;
-  border-radius: 4px;
+  border-radius: var(--mu-radius-control);
 
   background-color: var(--mu-gray-translucent);
   outline: none;
@@ -57,7 +57,7 @@
   overflow: hidden;
   display: inline-flex;
   flex: none;
-  gap: 4px;
+  gap: var(--mu-half-spacing);
   align-items: center;
 
   min-width: 40px;

@@ -17,9 +17,6 @@ $COLORS:
     'danger': 'danger-color',
   );
 
-$STYLES:
-  ('dashed', 'dotted', 'double');
-
 @each $dk, $dv in $DIRECTIONS {
   .border#{$dk} {
     border#{$dv}: 1px solid var(--mu-border-color-normal);
@@ -37,9 +34,16 @@ $STYLES:
     }
   }
 
-  @each $s in $STYLES {
+  @each $s in ('dashed', 'dotted', 'double') {
     .border#{$dk}-#{$s} {
       border#{$dv}-style: #{$s};
     }
+  }
+}
+
+@each $v in ('control', 'panel', 'modal') {
+  .radius-#{$v},
+  .mu-radius-#{$v} {
+    border-radius: var(--mu-radius-#{$v});
   }
 }

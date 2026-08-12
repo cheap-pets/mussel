@@ -22,7 +22,7 @@
     <mu-icon-button
       icon="chevronRight"
       :title="$t('Pagination.NEXT_PAGE')"
-      :disabled="pageIndex === count - 1 || null"
+      :disabled="pageIndex >= count - 1 || null"
       @click="goto(pageIndex + 1)" />
     <template v-if="sizeOptions?.length">
       <div class="flex-divider" />
@@ -161,7 +161,7 @@
     font-size: var(--mu-font-size-small);
 
     & > label {
-      margin: 0 4px;
+      margin: 0 var(--mu-half-spacing);
     }
 
     & > .mu-button {

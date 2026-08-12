@@ -123,7 +123,7 @@
 
 | 变量 | 用途 |
 |------|------|
-| `--mu-common-border-radius` | 输入框、按钮、标签等常规组件 |
+| `--mu-radius-control` | 输入框、按钮、标签等常规组件 |
 | `--mu-window-border-radius` | 弹窗、抽屉、浮出面板 |
 
 ---
