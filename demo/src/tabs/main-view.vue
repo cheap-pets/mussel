@@ -67,6 +67,11 @@
         This is Tab 4
       </mu-tab-panel>
     </mu-tabs>
+
+    <div class="tab-bar mx-2x bg-strong radius-control">
+      <span class="tab-btn">页签一</span>
+      <span class="tab-btn" active>页签二</span>
+    </div>
   </div>
 </template>
 
@@ -119,5 +124,54 @@
 <style>
   .mu-tabs {
     height: 200px;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+
+    height: 40px;
+    padding: 4px;
+
+    background-color: var(--mu-bg-fill);
+  }
+
+  .tab-btn {
+    cursor: pointer;
+
+    position: relative;
+
+    overflow: visible;
+
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 8px;
+
+    line-height: 32px;
+
+    background-color: var(--mu-bg-fill);
+
+    &:hover {
+      background-color: var(--mu-bg-strong);
+    }
+
+    &[active] {
+      color: #fff;
+      background-color: #999;
+
+      &::before {
+        content: '';
+
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: -8px;
+
+        width: 8px;
+
+        background-color: var(--mu-bg-fill);
+      }
+    }
   }
 </style>

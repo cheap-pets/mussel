@@ -2,7 +2,6 @@
   <div ref="thisEl" class="mu-tabs" :tab-position="tabPosition">
     <mu-tab-bar
       v-model:active-tab="activeTab"
-      v-bind="tabBarAttrs"
       :tab-style="tabStyle"
       :tab-buttons="buttons"
       :tab-position="tabPosition"
@@ -40,7 +39,6 @@
       default: 'top',
       validator: v => ['top', 'right', 'bottom', 'left'].includes(v)
     },
-    tabBarAttrs: Object,
     tabButtons: Array
   })
 

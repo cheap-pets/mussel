@@ -1,14 +1,24 @@
 <template>
-  <div class="mu-toolbar" :class="extraClass">
+  <div class="mu-toolbar">
     <slot />
   </div>
 </template>
 
 <script setup>
-  import { toolbarProps, useToolbar } from './toolbar.js'
+  import './toolbar.scss'
+
+  import { toRef, provide } from 'vue'
 
   defineOptions({ name: 'MusselToolbar' })
 
-  const props = defineProps({ ...toolbarProps })
-  const extraClass = useToolbar(props).toolbarClass
+  const props = defineProps({
+    size: {
+      type: String,
+      validator: v => ['small', 'normal'].includes(v)
+    },
+    defaultButtonStyle: String
+  })
+
+  provide('toolSize', toRef(props, 'toolSize'))
+  provide('defaultButtonStyle', toRef(props, 'defaultButtonStyle'))
 </script>

@@ -1,5 +1,11 @@
 <template>
-  <div ref="wrapEl" v-mu-scrollbar class="mu-table" :class="wrapClass" @scroll="onScroll" @sizechange="onResize">
+  <div
+    ref="wrapEl"
+    v-mu-scrollbar
+    class="mu-table"
+    :class="wrapClass"
+    @scroll="onScroll"
+    @sizechange="onResize">
     <table ref="tableEl" cellspacing="0" @sizechange="onResize">
       <colgroup>
         <col v-for="col in internalColumns" :key="col._key" :style="col._colStyle">

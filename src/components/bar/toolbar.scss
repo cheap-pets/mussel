@@ -1,5 +1,9 @@
 .mu-toolbar {
   cursor: default;
+
+  & > label {
+    margin-left: var(--mu-half-spacing);
+  }
   
   & > .mu-button {
     padding: 0 7px;

@@ -439,7 +439,7 @@
 
   function handleDeleteOrder (record) {
     messageBox.confirm(`确认删除订单 #${record.id} 吗？`).then((btn) => {
-      if (btn === 'ok') {
+      if (btn === 'OK') {
         const index = orders.value.findIndex(o => o.id === record.id)
         if (index > -1) orders.value.splice(index, 1)
         messageBox.notify({ title: '成功', message: '订单已删除', type: 'success' })
@@ -622,7 +622,7 @@
 
   function handleDeleteUser (record) {
     messageBox.confirm(`确认删除用户「${record.name}」吗？`).then((btn) => {
-      if (btn === 'ok') {
+      if (btn === 'OK') {
         const index = users.value.findIndex(u => u.id === record.id)
         if (index > -1) users.value.splice(index, 1)
         messageBox.notify({ title: '成功', message: '用户已删除', type: 'success' })
@@ -653,7 +653,7 @@
 
   function resetSettings () {
     messageBox.confirm('确认重置所有设置为默认值吗？').then((btn) => {
-      if (btn === 'ok') {
+      if (btn === 'OK') {
         Object.assign(settings, {
           siteName: 'Mussel Admin',
           siteDesc: '基于 Mussel 4 组件库的管理控制台',

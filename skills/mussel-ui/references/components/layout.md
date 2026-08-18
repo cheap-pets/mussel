@@ -237,8 +237,8 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
-| `size` | String | `normal` | 工具栏尺寸：`small` \| `normal`（默认）\| `large`；内部按钮按此尺寸渲染，内部 `MuInput` 继承尺寸（根元素带 `mu-toolbar--small` / `mu-toolbar--large` class） |
-| `button-style` | String | `text` | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
+| `size` | String | `normal` | 工具栏尺寸：`small` \| `normal`（默认）；内部 `MuInput`、`MuButton` 等组件按此尺寸渲染 |
+| `default-button-style` | String | `text` | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
 
 > `MuToolbar` 通过 `provide('toolbar', ...)` 向内部子组件注入 `size` 与 `button-style`：
 > - `MuButton` / `MuIconButton`：继承 `size`（设置尺寸）和 `button-style`（作为未显式设置时的默认风格）；

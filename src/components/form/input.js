@@ -37,13 +37,13 @@ function resolveClassName (value) {
 }
 
 export function useInput (model, props, emit) {
-  const toolbar = inject('toolbar', {})
+  const toolSize = inject('toolSize', {})
   const formField = inject('formField', {})
 
   const wrapperAttrs = computed(() => ({
     class: [
       resolveClassName(props.pill && 'pill'),
-      resolveClassName(props.size || toolbar.size)
+      resolveClassName(props.size || toolSize.value)
     ],
     tabindex: props.tabindex,
     disabled: props.disabled || null,

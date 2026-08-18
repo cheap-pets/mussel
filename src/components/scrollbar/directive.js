@@ -1,4 +1,4 @@
-import { attach, detach } from './scrollbar'
+import { attach, detach, ensureClass } from './scrollbar'
 
 // 'none' 为历史兼容写法，等价于 false
 const DISABLED = new Set([false, 'none'])
@@ -16,6 +16,7 @@ export function install (app) {
     mounted: (el, { value }) => sync(el, value),
     updated: (el, { value, oldValue }) => {
       if (value !== oldValue) sync(el, value)
+      else ensureClass(el)
     },
     beforeUnmount: detach
   })

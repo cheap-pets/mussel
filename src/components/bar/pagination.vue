@@ -1,10 +1,8 @@
 <template>
-  <div
-    class="mu-toolbar mu-pagination"
-    :class="toolbarClass"
-    @sizechange="calcMaxPageButtonsCount">
+  <div class="mu-toolbar mu-pagination" @sizechange="calcMaxPageButtonsCount">
     <mu-icon-button
       icon="chevronLeft"
+      button-style="text"
       :title="$t('Pagination.PREV_PAGE')"
       :disabled="pageIndex < 1 || null"
       @click="goto(pageIndex - 1)" />
@@ -13,14 +11,15 @@
       <mu-button
         v-else
         :key="`num-${el}`"
+        button-style="text"
         :active="el === pageIndex || null"
-        :button-style="buttonStyle"
         :caption="String(el + 1)"
         @click="goto(el)" />
     </template>
     <label v-if="middleText">{{ middleText }}</label>
     <mu-icon-button
       icon="chevronRight"
+      button-style="text"
       :title="$t('Pagination.NEXT_PAGE')"
       :disabled="pageIndex >= count - 1 || null"
       @click="goto(pageIndex + 1)" />
@@ -43,25 +42,19 @@
 </template>
 
 <script setup>
-  import { ref, computed, watch } from 'vue'
+  import { ref, computed, provide, inject, watch } from 'vue'
   import { throttle } from 'throttle-debounce'
-
   import { t as $t } from '@/langs'
-  import { toolbarProps, useToolbar } from '../bar/toolbar.js'
 
   defineOptions({ name: 'MusselPagination' })
 
   const props = defineProps({
-    ...toolbarProps,
     quickJumper: Boolean,
     pageSizeOptions: Array,
     pageIndex: { type: Number, default: 0 },
     pageSize: { type: Number, default: 20 },
     total: { type: Number, default: 0 },
-    size: {
-      type: String,
-      validator: v => ['small', 'normal'].includes(v)
-    }
+    size: { type: String, validator: v => ['small', 'normal'].includes(v) }
   })
 
   const emit = defineEmits([
@@ -69,7 +62,8 @@
     'update:page-size'
   ])
 
-  const { toolbarClass } = useToolbar(props)
+  const injectedToolSize = inject('toolSize', {})
+  provide('toolSize', computed(() => props.size || injectedToolSize.value))
 
   const maxPageButtonsCount = ref(0)
 

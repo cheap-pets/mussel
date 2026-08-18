@@ -167,3 +167,7 @@ export function detach (el) {
   ctxMap.get(el)?.remove()
   ctxMap.delete(el)
 }
+
+export function ensureClass (el) {
+  if (ctxMap.has(el)) el.classList.add('mu-scrollbar')
+}

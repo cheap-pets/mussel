@@ -26,7 +26,6 @@
 
   function onTabClick (name) {
     activeTab.value = name
-
     emit('tabClick', name)
   }
 </script>

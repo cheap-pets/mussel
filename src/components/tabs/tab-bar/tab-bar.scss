@@ -1,6 +1,11 @@
 .mu-tab-bar {
-  flex: none;
+  --active-bar-width: 2px;
+
   background: var(--mu-bg-strong);
+}
+
+.mu-tabs > .mu-tab-bar {
+  flex: none;
 }
 
 .mu-tab-bar__buttons {

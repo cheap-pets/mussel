@@ -26,7 +26,8 @@ export const buttonProps = {
 
 export function useButton (props) {
   const group = inject('buttonGroup', null)
-  const toolbar = !group && inject('toolbar', {})
+  const toolSize = !group && inject('toolSize', {})
+  const defaultButtonStyle = !group && inject('defaultButtonStyle', {})
 
   const isDisabled = computed(() =>
     props.disabled || group?.disabled || null
@@ -61,11 +62,10 @@ export function useButton (props) {
   })
 
   const extraClass = computed(() => {
-    const {
-      size = toolbar.size,
-      buttonStyle = toolbar.buttonStyle,
-      pill
-    } = group || props
+    let { size, buttonStyle, pill } = group || props
+
+    size ||= toolSize.value
+    buttonStyle ||= defaultButtonStyle.value
 
     return [
       resolveClassName(size),

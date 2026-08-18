@@ -9,7 +9,7 @@ const { messageBox } = inject('$mussel')
 
 messageBox.alert('操作完成')
 messageBox.confirm('确认删除该记录？').then(btn => {
-  if (btn === 'ok') doDelete()
+  if (btn === 'OK') doDelete()
 })
 messageBox.error('服务器异常，请稍后重试')
 messageBox.warn('此操作不可撤销，请确认')
