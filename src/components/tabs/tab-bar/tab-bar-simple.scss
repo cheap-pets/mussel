@@ -1,4 +1,4 @@
-.mu-tab-bar[tab-style=simple] {
+.mu-tab-bar--simple {
   box-sizing: content-box;
   padding: 0;
   border-color: var(--mu-border-color-soft);
@@ -32,15 +32,15 @@
     }
   }
 
-  &[tab-position=left],
-  &[tab-position=right] {
+  &.mu-tab-bar--left,
+  &.mu-tab-bar--right {
     & .mu-tab-button {
       height: 40px;
       padding: 0 calc(var(--mu-base-spacing) * 2);
     }
   }
 
-  &[tab-position=top] {
+  &.mu-tab-bar--top {
     border-bottom-width: var(--active-bar-width);
 
     & > .mu-tab-bar__buttons {
@@ -52,7 +52,7 @@
     }
   }
 
-  &[tab-position=bottom] {
+  &.mu-tab-bar--bottom {
     border-top-width: var(--active-bar-width);
 
     & > .mu-tab-bar__buttons {
@@ -64,7 +64,7 @@
     }
   }
 
-  &[tab-position=left] {
+  &.mu-tab-bar--left {
     border-right-width: var(--active-bar-width);
 
     & > .mu-tab-bar__buttons {
@@ -76,7 +76,7 @@
     }
   }
 
-  &[tab-position=right] {
+  &.mu-tab-bar--right {
     border-left-width: var(--active-bar-width);
 
     & > .mu-tab-bar__buttons {

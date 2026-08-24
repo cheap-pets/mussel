@@ -1,9 +1,5 @@
 <template>
-  <div
-    ref="thisEl"
-    :class="cls"
-    @dblclick="onDblClick"
-    @mousedown="onMouseDown">
+  <div ref="rootRef" :class="cls" @dblclick="onDblClick" @mousedown="onMouseDown">
     <slot v-if="isStriped" name="stripe">
       <svg-stripe
         class="mu-flex-splitter__stripe"
@@ -19,7 +15,7 @@
 
   import SvgStripe from '../svg/svg-stripe.vue'
 
-  const thisEl = ref()
+  const rootRef = ref()
   const direction = ref()
 
   const props = defineProps({
@@ -80,7 +76,7 @@
 
   function updateSiblingsFlexSize () {
     Array
-      .from(thisEl.value.parentNode.children)
+      .from(rootRef.value.parentNode.children)
       .reduce((result, child) => {
         if (isResizableElement(child)) {
           const style = direction.value === 'row'
@@ -103,7 +99,7 @@
   }
 
   function getResizeSiblings () {
-    let prevSibling = thisEl.value.previousElementSibling
+    let prevSibling = rootRef.value.previousElementSibling
 
     while (prevSibling) {
       if (isResizableElement(prevSibling)) break
@@ -113,7 +109,7 @@
 
     if (!prevSibling) return
 
-    let nextSibling = thisEl.value.nextElementSibling
+    let nextSibling = rootRef.value.nextElementSibling
 
     while (nextSibling) {
       if (isResizableElement(nextSibling)) break
@@ -127,7 +123,7 @@
   function getResizeRange (prevSibling, nextSibling) {
     const isRowDirection = direction.value === 'row'
 
-    const parentNode = thisEl.value.parentNode
+    const parentNode = rootRef.value.parentNode
     const parentSize = isRowDirection ? parentNode.clientWidth : parentNode.clientHeight
 
     function calcPixelValue (value) {
@@ -316,7 +312,7 @@
             : null
 
       if (!collapseTarget) {
-        thisEl.value.removeAttribute('collapsed')
+        rootRef.value.removeAttribute('collapsed')
 
         prevSibling.classList.remove('mu-flex-collapsed')
         nextSibling.classList.remove('mu-flex-collapsed')
@@ -328,7 +324,7 @@
         ? [nextSibling, prevMargin]
         : [prevSibling, nextMargin]
 
-      thisEl.value.setAttribute('collapsed', '')
+      rootRef.value.setAttribute('collapsed', '')
 
       collapseTarget.classList.add('mu-flex-collapsed')
       collapseTarget.style.flexBasis = 0
@@ -352,14 +348,14 @@
     }
 
     function onMouseUp () {
-      thisEl.value.removeAttribute('active')
+      rootRef.value.removeAttribute('active')
       document.body.classList.remove('mu-resizing')
 
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
     }
 
-    thisEl.value.setAttribute('active', true)
+    rootRef.value.setAttribute('active', true)
     document.body.classList.add('mu-resizing')
 
     window.addEventListener('mousemove', onMouseMove)
@@ -367,7 +363,7 @@
   }
 
   onMounted(() => {
-    const parent = thisEl.value.parentNode
+    const parent = rootRef.value.parentNode
     const value = window.getComputedStyle(parent).flexDirection
 
     direction.value = value && (value.startsWith('column') ? 'column' : 'row')

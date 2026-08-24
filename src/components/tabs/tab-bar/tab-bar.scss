@@ -4,10 +4,6 @@
   background: var(--mu-bg-strong);
 }
 
-.mu-tabs > .mu-tab-bar {
-  flex: none;
-}
-
 .mu-tab-bar__buttons {
   display: flex;
   gap: var(--mu-inline-spacing);
@@ -15,25 +11,23 @@
   align-self: stretch;
 }
 
-.mu-tab-bar {
-  &[tab-position=left],
-  &[tab-position=right] {
+.mu-tab-bar--left,
+.mu-tab-bar--right {
+  flex-direction: column;
+  align-items: stretch;
+  height: unset;
+  padding: var(--mu-base-spacing);
+
+  & > .mu-tab-bar__buttons {
     flex-direction: column;
     align-items: stretch;
-    height: unset;
-    padding: var(--mu-base-spacing);
-
-    & > .mu-tab-bar__buttons {
-      flex-direction: column;
-      align-items: stretch;
-    }
   }
+}
 
-  &[tab-position=left] .mu-tab-button {
-    justify-content: end;
-  }
+.mu-tab-bar--left .mu-tab-button {
+  justify-content: end;
+}
 
-  &[tab-position=right] .mu-tab-button {
-    justify-content: start;
-  }
+.mu-tab-bar--right .mu-tab-button {
+  justify-content: start;
 }

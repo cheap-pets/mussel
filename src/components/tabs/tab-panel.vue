@@ -5,8 +5,6 @@
 </template>
 
 <script setup>
-  import './tab-panel.scss'
-
   import { shallowRef, computed, inject, onMounted, onBeforeUnmount } from 'vue'
 
   defineOptions({ name: 'MusselTabPanel' })
@@ -31,3 +29,10 @@
   onMounted(() => tabs.mountTab?.(props, el.value))
   onBeforeUnmount(() => tabs.unmountTab?.(props, el.value))
 </script>
+
+<style>
+  .mu-tab-panel {
+    flex: 1 1 0;
+    background: var(--mu-bg-normal);
+  }
+</style>

@@ -4,18 +4,16 @@
     :class="{ 'mu-form-field--required': fieldRequired, 'mu-form-field--invalid': !!fieldError }"
     :label-align="labelAlignment"
     :style="size">
-    <span v-if="label" class="mu-form-field__label text-ellipsis" :style="labelStyle">
-      {{ label }}
-    </span>
-    <slot>
-      <div class="mu-form-field__input">
-        <slot name="input">
-          <component :is="control.is" v-if="control.vModel" v-bind="control.attrs" v-model="form.model[prop]" />
-          <component :is="control.is" v-else v-bind="control.attrs" />
-        </slot>
-        <span v-if="fieldError" class="mu-form-field__error text-ellipsis">{{ fieldError }}</span>
-      </div>
-    </slot>
+    <label v-if="label" class="mu-form-field__label" :style="labelStyle">
+      <span class="text-ellipsis">{{ label }}</span>
+    </label>
+    <div class="mu-form-field__input">
+      <slot>
+        <component :is="control.is" v-if="control.vModel" v-bind="control.attrs" v-model="form.model[prop]" />
+        <component :is="control.is" v-else v-bind="control.attrs" />
+      </slot>
+      <span v-if="fieldError && fieldError !== true" class="mu-form-field__error text-ellipsis">{{ fieldError }}</span>
+    </div>
     <span v-if="suffix" class="mu-form-field__suffix">{{ suffix }}</span>
   </div>
 </template>
@@ -41,7 +39,7 @@
     labelAlign: { type: String, validator: v => ['left', 'right', 'top'].includes(v) },
     required: Boolean,
     suffix: String,
-    error: String
+    error: [Boolean, String]
   })
 
   const form = inject('form', {})

@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-bar mu-tab-bar">
+  <div class="mu-bar mu-tab-bar" :class="[`mu-tab-bar--${tabPosition}`, `mu-tab-bar--${tabStyle}`]">
     <slot name="prepend" />
     <div class="mu-tab-bar__buttons">
       <mu-tab-button
@@ -19,7 +19,20 @@
   import MuTabButton from './tab-button.vue'
 
   defineOptions({ name: 'MusselTabBar' })
-  defineProps({ tabButtons: Array })
+
+  defineProps({
+    tabButtons: Array,
+    tabStyle: {
+      type: String,
+      default: 'button',
+      validator: v => ['button', 'small-button', 'simple'].includes(v)
+    },
+    tabPosition: {
+      type: String,
+      default: 'top',
+      validator: v => ['top', 'bottom', 'left', 'right'].includes(v)
+    }
+  })
 
   const emit = defineEmits(['tabClick'])
   const activeTab = defineModel('activeTab', { type: String })

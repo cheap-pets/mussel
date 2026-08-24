@@ -42,7 +42,7 @@
   }
 }
 
-.mu-tab-bar[tab-style=small-button] {
+.mu-tab-bar--small-button {
   & .mu-tab-button {
     height: var(--mu-control-height-small);
     padding: 0 8px;
