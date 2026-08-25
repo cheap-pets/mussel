@@ -11,10 +11,6 @@
   & .mu-tab-button {
     height: auto;
     min-height: var(--mu-control-height-small);
-
-    &:hover {
-      color: var(--mu-primary-color-4);
-    }
   }
 
   & .mu-tab-button.mu-tab-button--active {
@@ -29,7 +25,7 @@
       z-index: -1;
       inset: 0;
 
-      border: 0 solid var(--mu-border-color-soft);
+      border: var(--mu-tab-bar_card-border-width) solid var(--mu-border-color-soft);
 
       background: var(--mu-bg-normal);
     }
@@ -59,17 +55,7 @@
 
       & .mu-tab-button--active::after {
         #{$side}: calc((var(--mu-tab-bar_card-border-width) + var(--mu-half-spacing)) * -1);
-        border-#{$pos}-width: 1px;
-
-        @if $pos == top or $pos == bottom {
-          border-right-width: 1px;
-          border-left-width: 1px;
-        }
-
-        @else {
-          border-top-width: 1px;
-          border-bottom-width: 1px;
-        }
+        border-#{$side}-width: 0;
       }
     }
   }

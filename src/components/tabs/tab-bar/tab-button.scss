@@ -11,7 +11,7 @@
   justify-content: center;
 
   height: var(--mu-control-height-normal);
-  padding: 0 var(--mu-base-spacing);
+  padding: 0 12px;
   border-radius: var(--mu-radius-control);
 
   font-size: var(--mu-font-size-normal);
@@ -35,6 +35,7 @@
   }
 }
 
-.mu-tab-button.mu-tab-button--small {
+.mu-tab-button--small {
   height: var(--mu-control-height-small) !important;
+  padding: 0 var(--mu-base-spacing);
 }
