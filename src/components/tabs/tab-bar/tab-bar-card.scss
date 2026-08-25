@@ -1,0 +1,83 @@
+.mu-tab-bar--card {
+  --mu-tab-bar_card-border-width: 1px;
+
+  min-height: calc(40px + var(--mu-tab-bar_card-border-width));
+  border: 0 solid var(--mu-border-color-soft);
+
+  & > .mu-tab-bar__buttons {
+    align-items: stretch;
+  }
+
+  & .mu-tab-button {
+    height: auto;
+    min-height: var(--mu-control-height-small);
+
+    &:hover {
+      color: var(--mu-primary-color-4);
+    }
+  }
+
+  & .mu-tab-button.mu-tab-button--active {
+    isolation: isolate;
+    color: var(--mu-primary-color);
+    background: unset;
+
+    &::after {
+      content: '';
+
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+
+      border: 0 solid var(--mu-border-color-soft);
+
+      background: var(--mu-bg-normal);
+    }
+  }
+
+  @each $pos, $side in (top: bottom, bottom: top, left: right, right: left) {
+    &.mu-tab-bar--#{$pos} {
+      border-#{$side}-width: var(--mu-tab-bar_card-border-width);
+
+      & .mu-tab-button--active::after {
+        @if $pos == top {
+          border-radius: var(--mu-radius-control) var(--mu-radius-control) 0 0;
+        }
+
+        @else if $pos == bottom {
+          border-radius: 0 0 var(--mu-radius-control) var(--mu-radius-control);
+        }
+
+        @else if $pos == left {
+          border-radius: var(--mu-radius-control) 0 0 var(--mu-radius-control);
+        }
+
+        @else {
+          border-radius: 0 var(--mu-radius-control) var(--mu-radius-control) 0;
+        }
+      }
+
+      & .mu-tab-button--active::after {
+        #{$side}: calc((var(--mu-tab-bar_card-border-width) + var(--mu-half-spacing)) * -1);
+        border-#{$pos}-width: 1px;
+
+        @if $pos == top or $pos == bottom {
+          border-right-width: 1px;
+          border-left-width: 1px;
+        }
+
+        @else {
+          border-top-width: 1px;
+          border-bottom-width: 1px;
+        }
+      }
+    }
+  }
+
+  &.mu-tab-bar--left,
+  &.mu-tab-bar--right {
+    & .mu-tab-button {
+      height: var(--mu-control-height-normal);
+    }
+  }
+}

@@ -1,11 +1,8 @@
 .mu-tab-bar--simple {
-  box-sizing: content-box;
-  padding: 0;
-  border-color: var(--mu-border-color-soft);
-  border-style: solid;
-  border-width: 0;
+  --mu-tab-bar_indicator-size: 2px;
 
-  background: var(--mu-bg-normal);
+  border: 0 solid var(--mu-border-color-soft);
+  background: unset;
 
   & > .mu-tab-bar__buttons {
     align-items: stretch;
@@ -13,78 +10,49 @@
 
   & .mu-tab-button {
     height: auto;
-    border: 0 solid transparent;
+    min-height: var(--mu-control-height-small);
     border-radius: 0;
     background: unset;
 
     &::after {
+      content: '';
+
+      position: absolute;
+      inset: 0;
+
       display: none;
+
+      border: 0 solid var(--mu-primary-color);
     }
 
     &:hover {
       color: var(--mu-primary-color-4);
-      background: unset;
     }
   
-    &[active] {
-      border-color: var(--mu-primary-color);
+    &.mu-tab-button--active {
       color: var(--mu-primary-color);
+
+      &::after {
+        display: block;
+      }
+    }
+  }
+
+  @each $pos, $side in (top: bottom, bottom: top, left: right, right: left) {
+    &.mu-tab-bar--#{$pos} {
+      border-#{$side}-width: var(--mu-tab-bar_indicator-size);
+
+      & .mu-tab-button--active::after {
+        #{$side}: calc((var(--mu-tab-bar_indicator-size) + var(--mu-half-spacing)) * -1);
+        border-#{$side}-width: var(--mu-tab-bar_indicator-size);
+      }
     }
   }
 
   &.mu-tab-bar--left,
   &.mu-tab-bar--right {
     & .mu-tab-button {
-      height: 40px;
-      padding: 0 calc(var(--mu-base-spacing) * 2);
-    }
-  }
-
-  &.mu-tab-bar--top {
-    border-bottom-width: var(--active-bar-width);
-
-    & > .mu-tab-bar__buttons {
-      margin-bottom: calc(var(--active-bar-width) * -1);
-    }
-
-    & .mu-tab-button {
-      border-bottom-width: var(--active-bar-width);
-    }
-  }
-
-  &.mu-tab-bar--bottom {
-    border-top-width: var(--active-bar-width);
-
-    & > .mu-tab-bar__buttons {
-      margin-top: calc(var(--active-bar-width) * -1);
-    }
-
-    & .mu-tab-button {
-      border-top-width: var(--active-bar-width);
-    }
-  }
-
-  &.mu-tab-bar--left {
-    border-right-width: var(--active-bar-width);
-
-    & > .mu-tab-bar__buttons {
-      margin-right: calc(var(--active-bar-width) * -1);
-    }
-
-    & .mu-tab-button {
-      border-right-width: var(--active-bar-width);
-    }
-  }
-
-  &.mu-tab-bar--right {
-    border-left-width: var(--active-bar-width);
-
-    & > .mu-tab-bar__buttons {
-      margin-left: calc(var(--active-bar-width) * -1);
-    }
-
-    & .mu-tab-button {
-      border-left-width: var(--active-bar-width);
+      height: var(--mu-control-height-normal);
     }
   }
 }

@@ -1,17 +1,18 @@
 <template>
   <a
-    class="mu-tab-button"
-    :active="active || null"
-    :disabled="disabled || null">
-    <slot>
-      <mu-icon v-if="icon" :icon="icon" />
-      <span v-if="buttonCaption">{{ buttonCaption }}</span>
-    </slot>
+    :class="[
+      'mu-tab-button',
+      size === 'small' && 'mu-tab-button--small',
+      active && 'mu-tab-button--active',
+      disabled && 'mu-tab-button--disabled'
+    ]">
+    <mu-icon v-if="icon" :icon="icon" />
+    <span v-if="buttonCaption">{{ buttonCaption }}</span>
   </a>
 </template>
 
 <script setup>
-  import { computed } from 'vue'
+  import { inject, computed } from 'vue'
 
   defineOptions({ name: 'MusselTabButton' })
 
@@ -23,5 +24,6 @@
     disabled: Boolean
   })
 
+  const size = inject('toolSize', null)
   const buttonCaption = computed(() => props.caption || props.name)
 </script>

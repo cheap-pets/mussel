@@ -12,7 +12,7 @@
   defineOptions({ name: 'MusselToolbar' })
 
   const props = defineProps({
-    size: {
+    toolSize: {
       type: String,
       validator: v => ['small', 'normal'].includes(v)
     },

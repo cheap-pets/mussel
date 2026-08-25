@@ -1,14 +1,15 @@
 <template>
   <div class="flex flex-col">
-    <div class="mu-bar bg-strong">
+    <div class="mu-toolbar bg-strong py-1x px-2x">
       <label>Tab Position</label>
       <mu-combo-box
         v-model="tabPosition" :clear-button="false"
-        style="width: 100px;" :options="positions" />
+        style="width: 100px;" :options="positionOptions" />
       <label>Tab Style</label>
       <mu-combo-box
         v-model="tabStyle" :clear-button="false"
-        style="width: 125px;" :options="styles" />
+        style="width: 125px;" :options="styleOptions" />
+      <mu-flex-space />
       <theme-switch />
     </div>
 
@@ -30,7 +31,7 @@
       <mu-tab-panel name="Tab_3" :tab-order="2" caption="Tab Charlie">
         This is Tab 3
       </mu-tab-panel>
-      <mu-tab-panel v-if="tab4Visible" name="Tab_4" :tab-order="1" caption="Tab Delta" disabled>
+      <mu-tab-panel v-if="tab4Visible" name="Tab_4" :tab-order="3" caption="Tab Delta" disabled>
         This is Tab 4
       </mu-tab-panel>
     </mu-tabs>
@@ -38,10 +39,9 @@
     <div class="flex-divider flex-divider--pill mx-2x" />
 
     <mu-tabs
+      class="m-2x p-1x border border-soft"
       :active-tab="activeTab2"
       :tab-style="tabStyle"
-      class="m-2x p-1x border border-soft"
-      style="--active-bar-width: 1px;"
       @update:active-tab="updateActiveTab2">
       <template #tab-bar-prepend>
         <label>Customized Tab Bar</label>
@@ -80,17 +80,18 @@
 
   import ThemeSwitch from '../common/theme-switch.vue'
 
-  const positions = [
+  const positionOptions = [
     { value: 'top' },
     { value: 'bottom' },
     { value: 'left' },
     { value: 'right' }
   ]
 
-  const styles = [
+  const styleOptions = [
+    { value: 'simple' },
     { value: 'button' },
     { value: 'small-button' },
-    { value: 'simple' }
+    { value: 'card' }
   ]
 
   const activeTab = ref()

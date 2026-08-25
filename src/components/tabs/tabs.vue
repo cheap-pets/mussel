@@ -33,7 +33,8 @@
       validator: v => ['top', 'right', 'bottom', 'left'].includes(v)
     },
     tabStyle: String,
-    tabButtons: Array
+    tabButtons: Array,
+    tabToolSize: String
   })
 
   const TABS_FLEX_DIRECTION_CLASS = {

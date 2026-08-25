@@ -1,5 +1,10 @@
+.mu-bar {
+  height: 40px;
+}
+
 .mu-bar,
-.mu-toolbar {
+.mu-toolbar,
+.mu-sidebar {
   position: relative;
 
   display: flex;
@@ -15,6 +20,6 @@
   height: calc(1em + 2px);
 }
 
-.mu-bar {
-  height: 40px;
+.mu-sidebar {
+  flex-direction: column;
 }
