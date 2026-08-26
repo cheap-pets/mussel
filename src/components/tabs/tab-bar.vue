@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-  import './index.scss'
+  import './tab-bar.scss'
 
   import { provide, computed } from 'vue'
 

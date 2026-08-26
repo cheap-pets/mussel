@@ -29,10 +29,3 @@
   onMounted(() => tabs.mountTab?.(props, el.value))
   onBeforeUnmount(() => tabs.unmountTab?.(props, el.value))
 </script>
-
-<style>
-  .mu-tab-panel {
-    flex: 1 1 0;
-    background: var(--mu-bg-normal);
-  }
-</style>

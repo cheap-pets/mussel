@@ -110,7 +110,7 @@ src/
 | | MuTreeNode | 树节点 | tree-node.vue | |
 | `tabs/` | | 页签 | `index.js` | |
 | | MuTabs | 页签容器 | tabs.vue | tabs.scss |
-| | MuTabBar | 页签按钮栏 | tab-bar/tab-bar.vue | tab-bar/ |
+| | MuTabBar | 页签按钮栏 | tab-bar.vue | tab-button.vue, tab-bar.scss |
 | | MuTabPanel | 页签面板 | tab-panel.vue | tab-panel.scss |
 | `list/` | | 列表 | `index.js` | list.vue, list-items.js |
 | | MuListItem | 列表项 | list-item.vue | list-item.scss |

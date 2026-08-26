@@ -1,0 +1,190 @@
+.mu-tab-bar {
+  padding: var(--mu-half-spacing);
+  background: var(--mu-bg-strong);
+}
+
+.mu-tab-bar__buttons {
+  display: flex;
+  gap: var(--mu-half-spacing);
+  align-items: center;
+  align-self: stretch;
+}
+
+.mu-tab-bar--left,
+.mu-tab-bar--right {
+  align-items: stretch;
+
+  & > .mu-tab-bar__buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  & .mu-tab-button {
+    padding: 0 calc(var(--mu-base-spacing) * 2);
+  }
+}
+
+.mu-tab-bar--left .mu-tab-button {
+  justify-content: end;
+}
+
+.mu-tab-bar--right .mu-tab-button {
+  justify-content: start;
+}
+
+.mu-tab-bar--simple,
+.mu-tab-bar--card {
+  border: 0 solid var(--mu-border-color-soft);
+
+  & > .mu-tab-bar__buttons {
+    align-items: stretch;
+  }
+
+  & .mu-tab-button {
+    height: auto;
+    min-height: var(--mu-control-height-small);
+  }
+
+  &.mu-tab-bar--left,
+  &.mu-tab-bar--right {
+    & .mu-tab-button {
+      height: var(--mu-control-height-normal);
+    }
+  }
+
+  @each $pos, $side in (top: bottom, bottom: top, left: right, right: left) {
+    &.mu-tab-bar--#{$pos} {
+      border-#{$side}-width: var(--mu-tab-bar_edge-size);
+
+      & .mu-tab-button--active::after {
+        #{$side}: calc((var(--mu-tab-bar_edge-size) + var(--mu-half-spacing)) * -1);
+      }
+    }
+  }
+}
+
+.mu-tab-button {
+  cursor: pointer;
+  user-select: none;
+
+  position: relative;
+
+  display: flex;
+  flex: none;
+  gap: var(--mu-inline-spacing);
+  align-items: center;
+  justify-content: center;
+
+  height: var(--mu-control-height-normal);
+  padding: 0 12px;
+  border-radius: var(--mu-radius-control);
+
+  font-size: var(--mu-font-size-normal);
+  font-weight: 500;
+  color: var(--mu-text-color-normal);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--mu-gray-translucent);
+  }
+
+  &.mu-tab-button--active {
+    color: #fff;
+    background: var(--mu-primary-color);
+  }
+
+  &.mu-tab-button--disabled {
+    pointer-events: none;
+    cursor: default;
+    color: var(--mu-text-color-muted);
+  }
+}
+
+.mu-tab-button--small {
+  height: var(--mu-control-height-small);
+  padding: 0 var(--mu-base-spacing);
+}
+
+.mu-tab-bar--simple {
+  --mu-tab-bar_edge-size: 2px;
+
+  background: unset;
+
+  & .mu-tab-button {
+    border-radius: 0;
+    background: unset;
+
+    &:hover {
+      color: var(--mu-primary-color-4);
+    }
+
+    &.mu-tab-button--active {
+      color: var(--mu-primary-color);
+    }
+  }
+
+  & .mu-tab-button--active::after {
+    content: '';
+
+    position: absolute;
+    inset: 0;
+
+    border: 0 solid var(--mu-primary-color);
+  }
+
+  @each $pos, $side in (top: bottom, bottom: top, left: right, right: left) {
+    &.mu-tab-bar--#{$pos} {
+      & .mu-tab-button--active::after {
+        border-#{$side}-width: var(--mu-tab-bar_edge-size);
+      }
+    }
+  }
+}
+
+.mu-tab-bar--card {
+  --mu-tab-bar_edge-size: 1px;
+
+  min-height: calc(var(--mu-control-height-normal) + var(--mu-base-spacing) + var(--mu-tab-bar_edge-size));
+
+  & .mu-tab-button--active {
+    isolation: isolate;
+    color: var(--mu-primary-color);
+    background: unset;
+
+    &::after {
+      content: '';
+
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+
+      border: var(--mu-tab-bar_edge-size) solid var(--mu-border-color-soft);
+
+      background: var(--mu-bg-normal);
+    }
+  }
+
+  @each $pos, $side in (top: bottom, bottom: top, left: right, right: left) {
+    &.mu-tab-bar--#{$pos} {
+      & .mu-tab-button--active::after {
+        border-#{$side}-width: 0;
+
+        @if $pos == top {
+          border-radius: var(--mu-radius-control) var(--mu-radius-control) 0 0;
+        }
+
+        @else if $pos == bottom {
+          border-radius: 0 0 var(--mu-radius-control) var(--mu-radius-control);
+        }
+
+        @else if $pos == left {
+          border-radius: var(--mu-radius-control) 0 0 var(--mu-radius-control);
+        }
+
+        @else {
+          border-radius: 0 var(--mu-radius-control) var(--mu-radius-control) 0;
+        }
+      }
+    }
+  }
+}

@@ -102,5 +102,9 @@
     & > .mu-tab-bar {
       flex: none;
     }
+
+    & > .mu-tab-panel {
+      flex: 1 1 0;
+    }
   }
 </style>
