@@ -109,8 +109,9 @@ src/
 | | MuTree | 树容器 | tree.vue | tree.scss, tree.js |
 | | MuTreeNode | 树节点 | tree-node.vue | |
 | `tabs/` | | 页签 | `index.js` | |
-| | MuTabs | 页签容器 | tabs.vue | tabs.scss |
-| | MuTabBar | 页签按钮栏 | tab-bar.vue | tab-button.vue, tab-bar.scss |
+| | MuTabs | 页签容器 | tabs.vue | |
+| | MuTabBar | 页签按钮栏 | tab-bar.vue | tab-button.vue, tab-buttons.vue, tab-bar.scss |
+| | MuTabButtons | 页签按钮容器（溢出位移按钮滚动） | tab-buttons.vue | tab-buttons.scss |
 | | MuTabPanel | 页签面板 | tab-panel.vue | tab-panel.scss |
 | `list/` | | 列表 | `index.js` | list.vue, list-items.js |
 | | MuListItem | 列表项 | list-item.vue | list-item.scss |

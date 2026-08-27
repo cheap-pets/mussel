@@ -68,6 +68,22 @@
       </mu-tab-panel>
     </mu-tabs>
 
+    <div class="flex-divider flex-divider--pill mx-2x" />
+
+    <mu-tabs
+      v-model:active-tab="activeTab3"
+      :tab-style="tabStyle"
+      :tab-position="tabPosition"
+      class="m-2x p-1x border border-dashed">
+      <mu-tab-panel
+        v-for="i in 16"
+        :key="i"
+        :name="`Tab_${i}`"
+        :caption="`Tab Button ${i}`">
+        This is Tab {{ i }}
+      </mu-tab-panel>
+    </mu-tabs>
+
     <div class="tab-bar mx-2x bg-strong radius-control">
       <span class="tab-btn">页签一</span>
       <span class="tab-btn" active>页签二</span>
@@ -96,6 +112,7 @@
 
   const activeTab = ref()
   const activeTab2 = ref()
+  const activeTab3 = ref()
   const tabStyle = ref('simple')
   const tabPosition = ref('top')
 

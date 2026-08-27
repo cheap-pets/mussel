@@ -7,7 +7,7 @@
       ['left', 'right'].includes(tabPosition) ? 'mu-sidebar': 'mu-toolbar'
     ]">
     <slot name="prepend" />
-    <div class="mu-tab-bar__buttons">
+    <mu-tab-buttons :vertical="isVertical">
       <mu-tab-button
         v-for="el in tabButtons"
         :key="el.name"
@@ -17,7 +17,7 @@
         :disabled="el.disabled"
         :active="activeTab === el.name"
         @click="onTabClick(el.name)" />
-    </div>
+    </mu-tab-buttons>
     <slot name="append" />
   </div>
 </template>
@@ -28,6 +28,7 @@
   import { provide, computed } from 'vue'
 
   import MuTabButton from './tab-button.vue'
+  import MuTabButtons from './tab-buttons.vue'
 
   defineOptions({ name: 'MusselTabBar' })
 
@@ -47,6 +48,8 @@
 
   const activeTab = defineModel('activeTab', { type: String })
   const emit = defineEmits(['tabClick'])
+
+  const isVertical = computed(() => ['left', 'right'].includes(props.tabPosition))
 
   provide('toolSize', computed(() => props.tabStyle === 'small-button' ? 'small' : undefined))
 
