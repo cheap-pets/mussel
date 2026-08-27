@@ -138,7 +138,7 @@
   }))
 
   const dlgIconAttrs = computed(() => isString(props.icon) ? { icon: props.icon } : props.icon)
-  const dlgStateIcon = computed(() => maximized.value ? 'windowNormalize' : 'windowMaximize')
+  const dlgStateIcon = computed(() => maximized.value ? 'arrowDownLeft' : 'arrowUpRight')
 
   const footerButtons = computed(() =>
     props.buttons?.map(el => {

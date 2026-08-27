@@ -1,0 +1,51 @@
+.mu-scroll-area {
+  position: relative;
+
+  display: flex;
+  flex: 0 1 auto;
+  gap: var(--mu-half-spacing);
+  align-self: stretch;
+
+  min-width: 0;
+}
+
+.mu-scroll-area__container {
+  scrollbar-width: none;
+
+  overflow: auto;
+  display: flex;
+  flex: 1 1 auto;
+
+  min-width: 0;
+}
+
+.mu-scroll-area__content {
+  display: flex;
+  flex: none;
+}
+
+.mu-scroll-area__buttons {
+  display: flex;
+  flex: none;
+  align-self: center;
+
+  & > .mu-button {
+    touch-action: none;
+  }
+}
+
+.mu-scroll-area--vertical {
+  flex-direction: column;
+  min-width: auto;
+  min-height: 0;
+
+  & > .mu-scroll-area__container {
+    flex-direction: column;
+    min-width: auto;
+    min-height: 0;
+  }
+
+  & .mu-scroll-area__content {
+    flex-direction: column;
+  }
+}

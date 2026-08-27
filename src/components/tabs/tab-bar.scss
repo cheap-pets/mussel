@@ -1,11 +1,23 @@
+// tab 位置 -> 对侧边
+$opposite-sides: (top: bottom, bottom: top, left: right, right: left);
+
 .mu-tab-bar {
   padding: var(--mu-half-spacing);
   background: var(--mu-bg-strong);
+
+  & .mu-scroll-area__content {
+    gap: var(--mu-half-spacing);
+    align-items: center;
+  }
 }
 
 .mu-tab-bar--left,
 .mu-tab-bar--right {
   align-items: stretch;
+
+  & .mu-scroll-area__content {
+    align-items: stretch;
+  }
 
   & .mu-tab-button {
     padding: 0 calc(var(--mu-base-spacing) * 2);
@@ -22,30 +34,40 @@
 
 .mu-tab-bar--simple,
 .mu-tab-bar--card {
+  --mu-tab-bar_edge-offset: calc(var(--mu-tab-bar_edge-size) + var(--mu-half-spacing));
+  --mu-tab-bar_edge-offset-inverted: calc(var(--mu-tab-bar_edge-offset) * -1);
+
   border: 0 solid var(--mu-border-color-soft);
 
-  & .mu-tab-buttons__content {
+  & .mu-scroll-area__content {
     align-items: stretch;
   }
 
-  & .mu-tab-button {
+  & .mu-tab-button--active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  // 纵向按钮保持基础固定高度，仅横向改为随内容自适应
+  &:not(.mu-tab-bar--left):not(.mu-tab-bar--right) .mu-tab-button {
     height: auto;
     min-height: var(--mu-control-height-small);
   }
 
-  &.mu-tab-bar--left,
-  &.mu-tab-bar--right {
-    & .mu-tab-button {
-      height: var(--mu-control-height-normal);
-    }
-  }
-
-  @each $pos, $side in (top: bottom, bottom: top, left: right, right: left) {
+  @each $pos, $side in $opposite-sides {
     &.mu-tab-bar--#{$pos} {
       border-#{$side}-width: var(--mu-tab-bar_edge-size);
 
+      // 滚动容器向外扩到边框内侧（负 margin），再以内侧 padding 保持内容位置不变，
+      // 使指示条 / 卡片背景的负偏移始终落在滚动容器裁剪范围内
+      & .mu-scroll-area__container {
+        margin-#{$side}: var(--mu-tab-bar_edge-offset-inverted);
+        padding-#{$side}: var(--mu-tab-bar_edge-offset);
+      }
+
       & .mu-tab-button--active::after {
-        #{$side}: calc((var(--mu-tab-bar_edge-size) + var(--mu-half-spacing)) * -1);
+        #{$side}: var(--mu-tab-bar_edge-offset-inverted);
       }
     }
   }
@@ -112,13 +134,10 @@
   }
 
   & .mu-tab-button--active::after {
-    content: '';
-    position: absolute;
-    inset: 0;
     border: 0 solid var(--mu-primary-color);
   }
 
-  @each $pos, $side in (top: bottom, bottom: top, left: right, right: left) {
+  @each $pos, $side in $opposite-sides {
     &.mu-tab-bar--#{$pos} {
       & .mu-tab-button--active::after {
         border-#{$side}-width: var(--mu-tab-bar_edge-size);
@@ -138,37 +157,26 @@
     background: unset;
 
     &::after {
-      content: '';
-
-      position: absolute;
       z-index: -1;
-      inset: 0;
-
       border: var(--mu-tab-bar_edge-size) solid var(--mu-border-color-soft);
-
       background: var(--mu-bg-normal);
     }
   }
 
-  @each $pos, $side in (top: bottom, bottom: top, left: right, right: left) {
+  @each $pos, $side in $opposite-sides {
     &.mu-tab-bar--#{$pos} {
       & .mu-tab-button--active::after {
         border-#{$side}-width: 0;
 
-        @if $pos == top {
-          border-radius: var(--mu-radius-control) var(--mu-radius-control) 0 0;
-        }
-
-        @else if $pos == bottom {
-          border-radius: 0 0 var(--mu-radius-control) var(--mu-radius-control);
-        }
-
-        @else if $pos == left {
-          border-radius: var(--mu-radius-control) 0 0 var(--mu-radius-control);
+        // 保留 #{$pos} 一侧两角的圆角
+        @if $pos == top or $pos == bottom {
+          border-#{$pos}-left-radius: var(--mu-radius-control);
+          border-#{$pos}-right-radius: var(--mu-radius-control);
         }
 
         @else {
-          border-radius: 0 var(--mu-radius-control) var(--mu-radius-control) 0;
+          border-top-#{$pos}-radius: var(--mu-radius-control);
+          border-bottom-#{$pos}-radius: var(--mu-radius-control);
         }
       }
     }
