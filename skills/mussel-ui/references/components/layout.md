@@ -231,18 +231,37 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 
 ---
 
+### MuScrollArea
+
+单轴滚动容器，不渲染滚动条：内容溢出时，横向布局在右侧显示左右位移按钮，`vertical` 纵向布局在底部显示上下位移按钮；轻点位移一步，按住连续滚动，到达边界后对应按钮自动禁用。`MuTabBar` 的按钮区即由它实现。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `vertical` | Boolean | `false` | 纵向布局（子项竖排，溢出时底部显示上下位移按钮） |
+
+| 插槽 | 说明 |
+|------|------|
+| default | 滚动内容 |
+| `overflow-buttons` | 追加到位移按钮区的额外按钮（仅溢出时渲染） |
+
+**方法（通过 ref 调用）：** `scrollIntoView(el)` — 将指定子元素滚动到可视区（已在区内不滚动）。
+
+> 与 `MuScrollBox` 的区别：`MuScrollBox` 渲染 Mussel 风格自定义滚动条，适合任意方向的内容区；`MuScrollArea` 以位移按钮代替滚动条，适合工具栏、页签栏等单轴排布场景。
+
+---
+
 ### MuToolbar
 
 工具栏容器，自带 Flex 布局（`display: flex` + `align-items: center` + `gap`），常用于页面顶部操作区。与 `MuBar` 共享基础条形样式，但无固定高度。
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
-| `size` | String | `normal` | 工具栏尺寸：`small` \| `normal`（默认）；内部 `MuInput`、`MuButton` 等组件按此尺寸渲染 |
-| `default-button-style` | String | `text` | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
+| `tool-size` | String | — | 工具栏尺寸：`small` \| `normal`；内部 `MuInput`、`MuButton` 等组件按此尺寸渲染 |
+| `default-button-style` | String | — | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
 
-> `MuToolbar` 通过 `provide('toolbar', ...)` 向内部子组件注入 `size` 与 `button-style`：
-> - `MuButton` / `MuIconButton`：继承 `size`（设置尺寸）和 `button-style`（作为未显式设置时的默认风格）；
-> - `MuInput`：仅继承 `size`（缩小尺寸）。
+> `MuToolbar` 通过 `provide` 向内部子组件注入 `toolSize` 与 `defaultButtonStyle`：
+> - `MuButton` / `MuIconButton`：消费两者（`toolSize` 设置尺寸，`defaultButtonStyle` 作为未显式设置时的默认风格）；
+> - `MuInput`：仅消费 `toolSize`（缩小尺寸）。
 >
 > 子组件显式传入对应属性时优先使用自身设置。
-> 另注：`MuPagination` 自身复用 `toolbarProps` / `useToolbar`，它本身就是一个工具栏容器（根元素带 `mu-toolbar` class），向其内部按钮提供 `size` / `button-style`；**它不是 `MuToolbar` 的注入消费者**，而是独立的等价容器。
+> 另注：`MuPagination` 自身注入并向其内部按钮透传 `toolSize`（根元素带 `mu-toolbar` class）；它不是 `MuToolbar` 的注入消费者，而是独立的等价容器。

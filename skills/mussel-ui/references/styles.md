@@ -50,7 +50,7 @@
 
 ### 1.3 透明色变体（`-translucent`）
 
-所有基本色和语义色均有 10% 透明度的 `-translucent` 变体，适用于 hover 背景、标签底色等场景。
+所有基本色和语义色均有 `-translucent` 变体（亮色主题 10%、暗色主题 20% 透明度），适用于 hover 背景、标签底色等场景。
 
 | 变量 | 用途示例 |
 |------|---------|
@@ -121,10 +121,13 @@
 
 ### 1.8 边框弧度
 
-| 变量 | 用途 |
-|------|------|
-| `--mu-radius-control` | 输入框、按钮、标签等常规组件 |
-| `--mu-window-border-radius` | 弹窗、抽屉、浮出面板 |
+| 变量 | 默认值 | 用途 |
+|------|--------|------|
+| `--mu-radius-control` | `4px` | 输入框、按钮、标签等常规组件 |
+| `--mu-radius-panel` | `8px` | 浮出面板、抽屉等面板级容器 |
+| `--mu-radius-modal` | `12px` | 模态对话框 |
+
+> ⚠️ 老版本 `--mu-common-border-radius` / `--mu-window-border-radius` 已废弃，4.0 统一为 `--mu-radius-*`。
 
 ---
 
@@ -147,6 +150,7 @@
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
 | `--mu-base-spacing` | `8px` | 布局间距基准，所有 `{n}x` 类均以此为倍数 |
+| `--mu-half-spacing` | `4px` | 半倍间距（base-spacing / 2），组件内紧凑间距 |
 | `--mu-inline-spacing` | `6px` | 行内元素间距，图标与文字之间等 |
 
 间距倍数对照（原子类后缀）：
@@ -168,6 +172,7 @@
 
 | 变量 | 适用元素 |
 |------|---------|
+| `--mu-shadow-hairline` | 发丝线描边，并作为以下阴影的第一层 |
 | `--mu-shadow-focus` | 聚焦的输入控件 |
 | `--mu-shadow-float` | 悬浮突出的卡片、按钮 |
 | `--mu-shadow-popup` | 下拉菜单、Tooltip、消息提示 |
@@ -440,6 +445,14 @@
 | .shadow-modal            | 模态窗口阴影         |
 | .shadow-focus            | 焦点阴影（需 :focus）  |
 | .shadow-focus-within     | 焦点阴影（需 :focus-within） |
+
+**圆角（类名带 `mu-` 前缀）：**
+
+| 类名            | 说明                 |
+| --------------- | -------------------- |
+| .radius-control | 一般组件圆角（4px）  |
+| .radius-panel   | 面板圆角（8px）      |
+| .radius-modal   | 模态窗口圆角（12px） |
 
 **边框宽度 (n: 1 ~ 4, 像素值)：**
 

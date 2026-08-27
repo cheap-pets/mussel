@@ -1203,7 +1203,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `:tab-bar-params` | `tab-bar-attrs` | |
+| `:tab-bar-params` | _(已移除)_ | 无透传属性机制；`tab-style` / `tab-position` 等为 MuTabs 直接属性 |
 | `<template #tab-bar>` | _(已移除)_ | 无法再整体替换 tab-bar，改用 `#tab-bar-prepend` / `#tab-bar-append` 插槽 |
 
 #### MuTabBar

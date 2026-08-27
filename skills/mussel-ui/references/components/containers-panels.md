@@ -7,11 +7,9 @@
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `active-tab` | String | 双向绑定，当前活动页签名称 |
-| `tab-style` | String | `button` \| `simple` \| `card` \| `border-card` |
+| `tab-style` | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
 | `tab-buttons` | Array | 手动指定页签按钮，默认由内部 `MuTabPanel` 自动生成 |
 | `tab-position` | String | `top`（默认）\| `bottom` \| `left` \| `right` |
-| `bar-size` | String | `normal` \| `small`，控制页签按钮尺寸 |
-| `tab-bar-attrs` | Object | 传递给内置 `MuTabBar` 的额外属性 |
 
 | 插槽 | 说明 |
 |------|------|
@@ -21,6 +19,8 @@
 | 事件 | 参数 | 说明 |
 |------|------|------|
 | `tab-click` | `name` | 页签按钮点击 |
+
+> 页签按钮溢出时，按钮区两端自动显示位移按钮（轻点位移一步，按住连续滚动）与列表下拉按钮，可在列表中直接切换页签；活动页签变化时自动滚动到可视区。
 
 ```html
 <mu-tabs v-model:active-tab="activeTab" tab-style="button">
@@ -60,14 +60,20 @@
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `active-tab` | String | 双向绑定，当前活动页签 |
-| `tab-style` | String | `button` \| `simple` |
 | `tab-buttons` | Array | 页签按钮数据 |
-| `tab-position` | String | `top` \| `bottom` \| `left` \| `right` |
+| `tab-style` | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
+| `tab-position` | String | `top`（默认）\| `bottom` \| `left` \| `right` |
 
 | 插槽 | 说明 |
 |------|------|
 | `prepend` | 前置内容 |
 | `append` | 后置内容 |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `tab-click` | `name` | 页签按钮点击 |
+
+> `tab-style` 为 `small-button` 时内部页签按钮按小尺寸渲染。按钮区基于 `MuScrollArea` 实现：溢出时显示位移按钮与列表下拉按钮（点击列表项切换页签），活动页签变化时自动滚入可视区。
 
 ---
 

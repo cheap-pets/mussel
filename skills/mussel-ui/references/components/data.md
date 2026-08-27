@@ -200,8 +200,7 @@ const columns = [
 | `page-size` | Number | `20` | 双向绑定，每页条数 |
 | `total` | Number | `0` | 记录总数（总页数由 `total / page-size` 派生） |
 | `page-size-options` | Array | — | 可选每页条数，如 `[20, 50, 100]`；提供后渲染下拉切换 |
-| `size` | String | `normal` | 工具栏尺寸：`small` \| `normal`（默认）；控制内部按钮尺寸 |
-| `button-style` | String | `text` | 内部按钮风格：`normal` \| `outline` \| `text` \| `link` |
+| `size` | String | — | 按钮尺寸：`small` \| `normal`；未设置时继承外层 MuToolbar 的 `tool-size` |
 | `quick-jumper` | Boolean | — | 是否显示快速跳页输入框 |
 
 | 事件 | 参数 | 说明 |

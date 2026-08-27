@@ -295,14 +295,14 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 工具栏，具有特殊样式的 MuBar，常用于页面顶部操作区。
 
-| 属性名称     | 类型   | 默认值  | 说明                                                        |
-| ------------ | ------ | ------- | ----------------------------------------------------------- |
-| size         | String | `normal`| 工具栏尺寸：`small` \| `normal`（默认）\| `large`；内部按钮默认按此尺寸渲染 |
-| button-style | String | `text`  | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
+| 属性名称             | 类型   | 说明                                                          |
+| -------------------- | ------ | ------------------------------------------------------------- |
+| tool-size            | String | 工具栏尺寸：`small` \| `normal`，内部控件默认按此尺寸渲染     |
+| default-button-style | String | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link`   |
 
 > [!NOTE]
 >
-> `MuToolbar` 通过 `provide` 向内部的 `MuButton` / `MuIconButton` / `MuPagination` 注入 `size` 与 `button-style`，作为这些组件未显式设置时的默认值。子组件显式传入对应属性时优先使用自身设置。
+> `MuToolbar` 通过 `provide` 注入 `toolSize`（`MuButton` / `MuIconButton` / `MuInput` / `MuPagination` 消费）与 `defaultButtonStyle`（`MuButton` / `MuIconButton` 消费），作为这些组件未显式设置对应属性时的默认值。子组件显式传入对应属性时优先使用自身设置。
 
 
 
@@ -314,14 +314,12 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 多页签容器
 
-| 属性名称      | 类型   | 说明                                            |
-| ------------- | ------ | ----------------------------------------------- |
-| active-tab    | String | 双向绑定属性，当前活动页签名称                  |
-| tab-style     | String | `button` \| `simple` \| `card` \| `border-card` |
-| tab-buttons   | Array  | 页签按钮，默认按内部 tab-panel 组件自动生成     |
-| tab-position  | String | `top` \| `bottom` \| `left` \| `right`          |
-| bar-size      | String | `normal` \| `small`，控制页签按钮尺寸          |
-| tab-bar-attrs | Object | 透传给内置 MuTabBar 的额外属性                  |
+| 属性名称      | 类型   | 说明                                                  |
+| ------------- | ------ | ----------------------------------------------------- |
+| active-tab    | String | 双向绑定属性，当前活动页签名称                        |
+| tab-style     | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
+| tab-buttons   | Array  | 页签按钮，默认按内部 tab-panel 组件自动生成           |
+| tab-position  | String | `top`（默认）\| `bottom` \| `left` \| `right`         |
 
 | 插槽名称        | 说明                                |
 | --------------- | ----------------------------------- |
@@ -331,6 +329,10 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | 事件      | 参数   | 说明         |
 | --------- | ------ | ------------ |
 | tab-click | name   | 页签按钮点击 |
+
+> [!NOTE]
+>
+> 页签按钮溢出时，按钮区两端自动显示位移按钮（轻点位移一步，按住连续滚动）与列表下拉按钮，可在列表中直接切换页签；活动页签变化时自动滚动到可视区。
 
 ```html
 <mu-tabs v-model:active-tab="activeTab" tab-style="button">
@@ -352,16 +354,16 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 独立使用的页签栏，不含内容区，用于自定义页签 + 内容分离的布局。
 
-| 属性名称    | 类型   | 说明                                            |
-| ----------- | ------ | ----------------------------------------------- |
-| tab-buttons | Array  | 页签按钮数据（唯一声明的 prop）                 |
-| active-tab  | String | 双向绑定（`v-model:active-tab`），当前活动页签 |
-| tab-style   | String | 透传：`button` \| `simple`                      |
-| tab-position| String | 透传：`top` \| `bottom` \| `left` \| `right`    |
+| 属性名称     | 类型   | 说明                                                    |
+| ------------ | ------ | ------------------------------------------------------- |
+| active-tab   | String | 双向绑定（`v-model:active-tab`），当前活动页签          |
+| tab-buttons  | Array  | 页签按钮数据                                            |
+| tab-style    | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
+| tab-position | String | `top`（默认）\| `bottom` \| `left` \| `right`           |
 
 > [!NOTE]
 >
-> 除 `tab-buttons` 外，`active-tab` 通过 `defineModel` 实现，`tab-style` / `tab-position` 经 `$attrs` 透传给内部按钮渲染，用法上等同于普通 prop。
+> `active-tab` 通过 `defineModel` 实现，其余属性均为直接声明的 prop。`tab-style` 为 `small-button` 时内部页签按钮按小尺寸渲染；按钮区溢出时显示位移按钮与列表下拉按钮（点击列表项切换页签），活动页签变化时自动滚入可视区。
 
 | 插槽名称 | 说明     |
 | -------- | -------- |
@@ -384,9 +386,16 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | -------- | ------- | ------------------------------------------------ |
 | vertical | Boolean | 纵向布局（子项竖排，溢出时底部显示上下位移按钮） |
 
-| 插槽名称 | 说明     |
-| -------- | -------- |
-| default  | 滚动内容 |
+| 插槽名称         | 说明                                       |
+| ---------------- | ------------------------------------------ |
+| default          | 滚动内容                                   |
+| overflow-buttons | 追加到位移按钮区的额外按钮（仅溢出时渲染） |
+
+**方法（通过 ref 调用）：**
+
+| 方法           | 参数 | 说明                                     |
+| -------------- | ---- | ---------------------------------------- |
+| scrollIntoView | el   | 将指定子元素滚动到可视区（已在区内不滚动）|
 
 
 
@@ -860,7 +869,7 @@ const items = [
 | type       | String           | `text` | 原生 Input 元素的 type                                       |
 | placeholder| String           | —      | 占位文本                                                     |
 | clearable  | Boolean          | `false` | 是否显示清除按钮（覆盖全局默认值）                                                       |
-| size       | String           | —      | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`size="small"`）内时自动继承小尺寸，未设置时由上下文决定 |
+| size       | String           | —      | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`tool-size="small"`）内时自动继承小尺寸，未设置时由上下文决定 |
 | pill       | Boolean          | —      | 左右圆弧形态（胶囊形）                                       |
 | invalid    | Boolean          | —      | 校验失败样式                                                 |
 | readonly   | Boolean          | —      | 是否只读                                                     |
@@ -1637,9 +1646,8 @@ const columns = [
 | page-index         | Number  | `0`    | 双向绑定，当前页码（从 0 开始）                              |
 | page-size          | Number  | `20`   | 双向绑定，每页条数                                           |
 | total              | Number  | `0`    | 记录总数（总页数由 `total / page-size` 派生）                |
-| page-size-options  | Array   | —        | 可选每页条数，如 `[20, 50, 100]`；提供后渲染下拉切换           |
-| size               | String  | `normal` | 工具栏尺寸：`small` \| `normal`（默认）；控制内部按钮尺寸      |
-| button-style       | String  | `text`   | 内部按钮风格：`normal` \| `outline` \| `text` \| `link`        |
+| page-size-options  | Array   | —      | 可选每页条数，如 `[20, 50, 100]`；提供后渲染下拉切换           |
+| size               | String  | —      | 按钮尺寸：`small` \| `normal`；未设置时继承外层 MuToolbar 的 `tool-size` |
 | quick-jumper       | Boolean | —      | 是否显示快速跳页输入框                                       |
 
 | 事件                | 参数      | 说明               |
@@ -1665,7 +1673,7 @@ const columns = [
 
 > [!NOTE]
 >
-> `MuPagination` 自身具备工具栏行为：内部会向自己的按钮（`mu-button` / `mu-icon-button` / `mu-dropdown-button`）注入 `size` 与 `button-style`，效果与放在 `<mu-toolbar>` 内一致，因此通常无需再外层包裹 `<mu-toolbar>`。
+> `MuPagination` 自身具备工具栏行为：向内部按钮透传 `toolSize`（自身 `size` 优先，未设置时继承外层 `<mu-toolbar>`），效果与放在 `<mu-toolbar>` 内一致，因此通常无需再外层包裹。
 
 
 

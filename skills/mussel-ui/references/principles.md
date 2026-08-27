@@ -180,8 +180,8 @@
 ```css
 /* ✅ 正确 */
 .input    { border-radius: var(--mu-radius-control); }
-.modal    { border-radius: var(--mu-window-border-radius); }
-.dropdown { border-radius: var(--mu-window-border-radius); }
+.modal    { border-radius: var(--mu-radius-modal); }
+.dropdown { border-radius: var(--mu-radius-panel); }
 
 /* ❌ 错误 */
 .input { border-radius: 4px; }
@@ -325,7 +325,7 @@ body    { font-family: 'PingFang SC', sans-serif; }
 - [ ] (核心规范 4) 样式尽量原子化，能用原子类的（布局/间距/对齐/显示性）一律用原子类，
       不写进 `style`/`<style>`；组件内不得堆砌大段一次性 CSS
 - [ ] (核心规范 5) 不自造 `--mu-*` 变量，所有 `--mu-*` 均可在 `styles.md` 第 1 节查到出处
-- [ ] [G] (核心规范 5) `border-radius` 用 `--mu-radius-control` / `--mu-window-border-radius`，无 4px/8px 裸值
+- [ ] [G] (核心规范 5) `border-radius` 用 `--mu-radius-control` / `--mu-radius-panel` / `--mu-radius-modal`，无 4px/8px 裸值
 - [ ] [G] (核心规范 5) 字号用 `--mu-font-size-normal` / `-small` / `-large`，不手写 14px
 - [ ] [G] (核心规范 5) `box-shadow` 用 `--mu-shadow-*` 变量或 `.shadow-*` 类，无手写阴影
 

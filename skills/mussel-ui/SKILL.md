@@ -11,7 +11,7 @@ description: >
 > 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token、M3→4 迁移），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
 
 > **版本检查**：
-本文档及 `references/` 基于 MUSSEL `4.0.*`，最后核对日期 **2026-06-30**（对照仓库 `4.0` 分支源码）。
+本文档及 `references/` 基于 MUSSEL `4.0.*`，最后核对日期 **2026-08-27**（对照仓库 `4.0` 分支源码）。
 开始前确认项目中依赖的 `mussel` 版本，若不符合，需进行提示确认。
 若组件库源码与本文档描述出现冲突，**以源码为准**，并按实际情况订正对应 `references/` 文件。
 
@@ -95,6 +95,7 @@ description: >
 | `<mu-grid-box>` + `<mu-grid-cell>` / `grid` | 二维网格布局 |
 | `<mu-split-h-box>` / `<mu-split-v-box>` | 面板可拖拽分隔；`collapsible` 支持收拢，双击重置 |
 | `<mu-scroll-box>` / `v-mu-scrollbar` | 替换原生滚动条为 Mussel 风格 |
+| `<mu-scroll-area>` | 单轴滚动区，溢出时以位移按钮代替滚动条（工具栏/页签栏场景） |
 | `<mu-toolbar>` | 工具栏容器，常置于页面/面板顶部 |
 
 ### 2. 容器与面板
