@@ -229,7 +229,10 @@ const items = [
 | `dropdown-scrollbar` | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`（关闭后由内部容器负责滚动） |
 | (其他) | — | 继承全部 `MuInput` 属性及 `MuDropdown` 的 `dropdown-` 前缀属性 |
 
-**options 结构：** `[{ label: '管理员', value: 'admin' }]`
+**options 结构：** `[{ label: '管理员', value: 'admin' }]`。共享定义规则同 `dropdown-items`（见 `navigation.md`「dropdown-items 数据结构」：对象字段透传给项组件、`'-'` 为分隔线快捷方式、`is` 覆写默认项组件），差异：
+
+- 默认渲染 `MuOption` 而非 `MuDropdownItem`（`is` 覆写的基线组件，如混入 `{ is: 'mu-dropdown-item', action: 'edit' }` 动作项）
+- 纯字符串项视为 `{ value }`（如 `['admin', 'user']`），而非 `{ label }`
 
 **带过滤搜索框的下拉列表：** 不使用 `options`，而是通过 `#dropdown` 插槽自定义下拉内容，配合 `MuSearchInput`（输入过滤）+ `MuScrollBox`（滚动容器）+ `MuOption`（选项）实现可搜索列表。
 

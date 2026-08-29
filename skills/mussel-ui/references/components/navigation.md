@@ -8,7 +8,7 @@
 |------|------|------|------|
 | `width` / `height` | String | — | 面板尺寸 |
 | `trigger` | String | `click` | 触发方式：`click` \| `hover` |
-| `dropdown-items` | Array | — | 列表项数据 |
+| `dropdown-items` | Array | — | 列表项数据，结构见「dropdown-items 数据结构」 |
 | `scrollbar` | Boolean | — | 是否渲染 Mussel 滚动条 |
 
 | 事件 | 参数 | 说明 |
@@ -71,7 +71,7 @@
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
-| `dropdown-items` | Array | 下拉项列表 |
+| `dropdown-items` | Array | 下拉项列表，结构见「dropdown-items 数据结构」 |
 | `dropdown-width` / `dropdown-height` | String | 面板尺寸；`dropdown-width: 'anchor'` 表示与锚点元素同宽（MuSelect 默认即此值） |
 | `dropdown-trigger` | String | mu-dropdown 默认 `hover`（mu-dropdown-button 默认 `click`） |
 | `dropdown-icon` | Boolean\|String | 下拉箭头图标；mu-dropdown **默认不显示**箭头（未设置），mu-dropdown-button 默认显示下箭头（`'dropdownExpand'`）；传图标名自定义 |
@@ -88,16 +88,6 @@
 | `dropdown:itemclick` | `item` | 下拉项点击 |
 | `dropdown:show` / `dropdown:hide` | — | 面板显示/隐藏 |
 
-**dropdown-items 结构：**（每项对象的字段即下方三个 Dropdown Item 组件的 prop）
-```javascript
-[
-  { label: '编辑', icon: 'edit', action: 'edit' },
-  { label: '删除', icon: 'delete', action: 'delete' },
-  { is: '-' },  // 分隔线
-  { label: '导出', disabled: true }
-]
-```
-
 | 插槽 | 说明 |
 |------|------|
 | `default` | 触发器内容，包裹任意元素作为下拉锚点 |
@@ -113,6 +103,26 @@
   </template>
 </mu-dropdown>
 ```
+
+---
+
+### dropdown-items 数据结构
+
+`dropdown-items`（MuDropdownPanel / MuDropdown / MuDropdownButton）与 `menus`（MuContextMenu）共用的下拉项数组定义：
+
+```javascript
+[
+  { label: '编辑', icon: 'edit', action: 'edit' },
+  { label: '删除', icon: 'delete', action: 'delete' },
+  { is: '-' },  // 分隔线
+  { is: 'check', label: '全选', value: 'all' },  // 简写，等价 is: 'mu-dropdown-check-item'
+  { label: '导出', disabled: true }
+]
+```
+
+- 对象项的各字段即项组件的 prop（默认 `MuDropdownItem`，即下方三个 Dropdown Item 组件），透传给渲染出的项组件
+- `is`：覆写默认项组件，支持简写：`'-'`（分隔线）、`'item'`、`'check'`（勾选项）、`'radio'`（单选项）；也可写完整组件名（如 `{ is: 'mu-dropdown-check-item', value: 'x' }`）
+- `'-'`：纯字符串项的分隔线快捷方式，其余纯字符串项视为 `{ label: 字符串 }`
 
 ---
 
@@ -183,7 +193,7 @@
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
-| `menus` | Array | 菜单项列表，结构同 `dropdown-items` |
+| `menus` | Array | 菜单项列表，结构见「dropdown-items 数据结构」 |
 
 事件与方法同 `MuDropdownPanel`，插槽同 `MuDropdownPanel`（`default` 自定义菜单内容，缺省渲染 `menus`）。
 

@@ -1,4 +1,6 @@
-import { ref, shallowRef, readonly, computed } from 'vue'
+import { ref, shallowRef, readonly, computed, toRef } from 'vue'
+
+import { useDropdownItems } from './dropdown-items'
 
 export const dropdownEvents = [
   'action',
@@ -50,6 +52,10 @@ export function useDropdown (props, emit, options = {}) {
 
   const dropdownPanel = computed(() => props.dropdownPanel || dropdownPanelRef.value)
 
+  const { items: dropdownItems } = useDropdownItems(
+    toRef(props, 'dropdownItems')
+  )
+
   const dropdownIconAttrs = computed(() => (
     props.dropdownIcon &&
     {
@@ -66,7 +72,7 @@ export function useDropdown (props, emit, options = {}) {
     trigger: props.dropdownTrigger,
     // position: props.dropdownPosition,
     scrollbar: props.dropdownScrollbar,
-    dropdownItems: props.dropdownItems
+    dropdownItems: dropdownItems.value
   }))
 
   const dropdownPanelEvents = {

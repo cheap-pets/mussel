@@ -6,6 +6,7 @@
     :disabled="disabled"
     :readonly="readonly"
     :dropdown-width="dropdownWidth"
+    :dropdown-items="dropdownItems"
     :dropdown-class="['mu-select__dropdown-panel', dropdownClass]"
     :dropdown-scrollbar="dropdownScrollbar"
     :editable="false"
@@ -26,12 +27,7 @@
         @tag-remove="onItemRemove" />
     </template>
     <template #dropdown>
-      <slot name="dropdown">
-        <component
-          :is="el.is"
-          v-for="el in optionComponents" :key="el.key"
-          v-bind="el.bindings" />
-      </slot>
+      <slot name="dropdown" />
     </template>
   </combo-wrapper>
 </template>
@@ -60,7 +56,7 @@
   const {
     comboValue,
     selectedItems,
-    optionComponents,
+    dropdownItems,
     toggleOption
   } = useMultiSelect(model, props)
 

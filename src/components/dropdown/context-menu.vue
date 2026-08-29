@@ -23,7 +23,7 @@
 <script setup>
   import { ref, shallowRef, toRef, computed, provide, inject } from 'vue'
   import { usePopupManager } from '@/components/common/popup'
-  import { useListItems } from '../list/list-items'
+  import { useDropdownItems } from './dropdown-items'
 
   import { getTransitionDuration } from '@/utils/style'
   import { findUp } from '@/utils/dom'
@@ -44,10 +44,7 @@
 
   const popupVisible = computed(() => visible.value)
 
-  const { items } = useListItems(
-    toRef(props, 'menus'),
-    { defaultComponent: 'mu-dropdown-item' }
-  )
+  const { items } = useDropdownItems(toRef(props, 'menus'))
 
   function updatePosition ({ pageX, pageY }) {
     if (!popupStyle.value) return

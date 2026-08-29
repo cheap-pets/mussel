@@ -2,17 +2,13 @@
   <combo-wrapper
     v-model="comboValue"
     class="mu-select"
+    :dropdown-items="dropdownItems"
     :dropdown-class="['mu-select__dropdown-panel', dropdownClass]"
     :dropdown-width="dropdownWidth"
     :dropdown-scrollbar="dropdownScrollbar"
     :editable="false">
     <template #dropdown>
-      <slot name="dropdown">
-        <component
-          :is="el.is"
-          v-for="el in optionComponents" :key="el.key"
-          v-bind="el.bindings" />
-      </slot>
+      <slot name="dropdown" />
     </template>
   </combo-wrapper>
 </template>
@@ -30,5 +26,5 @@
   const rawModel = defineModel()
   const model = useFieldModel(rawModel).modelProxy
 
-  const { comboValue, optionComponents } = useSelect(model, props)
+  const { comboValue, dropdownItems } = useSelect(model, props)
 </script>

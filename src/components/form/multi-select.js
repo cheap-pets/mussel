@@ -12,7 +12,7 @@ const multiSelectProps = {
 function useMultiSelect (model, props) {
   const {
     optionLabels,
-    optionComponents,
+    dropdownItems,
     mountOption,
     unmountOption
   } = useOptions(props)
@@ -71,7 +71,7 @@ function useMultiSelect (model, props) {
   return {
     comboValue,
     selectedItems,
-    optionComponents,
+    dropdownItems,
     toggleOption
   }
 }

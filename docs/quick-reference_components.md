@@ -930,7 +930,7 @@ const items = [
 
 | 属性名称   | 类型   | 说明                                                         |
 | ---------- | ------ | ------------------------------------------------------------ |
-| options    | Array  | 下拉选项列表，结构 `[{ label, value }]`                      |
+| options    | Array  | 下拉选项列表，结构 `[{ label, value }]`。共享定义规则同 dropdown-items（见「dropdown-items 数据结构」：对象字段透传、`'-'` 分隔线、`is` 覆写默认项组件），差异：默认渲染 `mu-option` 而非 `mu-dropdown-item`；纯字符串项视为 `{ value }` 而非 `{ label }` |
 | option-key | String | 下拉选项的 key 属性，默认为 `value`                          |
 | value-mode | String | `normal`（默认）\| `composite`（modelValue 为 `{ label, value }`） |
 | dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`（关闭后由 `mu-scroll-box` 等内部容器负责滚动） |
@@ -1271,7 +1271,7 @@ const filteredItems = computed(() =>
 | height         | String  | —       | 面板高度                                 |
 | trigger        | String  | `click` | 显示触发方式：`hover` \| `click`         |
 | position       | String  | `auto`  | 弹出位置：`auto` \| `fixed` \| `top` \| `bottom` |
-| dropdown-items | Array   | —       | 列表项                                   |
+| dropdown-items | Array   | —       | 列表项，结构见「dropdown-items 数据结构」 |
 | scrollbar      | Boolean | —       | 是否渲染 Mussel 滚动条                   |
 
 | 事件      | 参数                         | 说明                         |
@@ -1294,7 +1294,7 @@ const filteredItems = computed(() =>
 
 | 属性名称           | 类型    | 说明                                             |
 | ------------------ | ------- | ------------------------------------------------ |
-| dropdown-items     | Array   | 下拉项列表                                       |
+| dropdown-items     | Array   | 下拉项列表，结构见「dropdown-items 数据结构」  |
 | dropdown-width     | String  | 下拉面板宽度；`'anchor'` 表示与锚点元素同宽（MuSelect 默认即此值）|
 | dropdown-height    | String  | 下拉面板高度                                     |
 | dropdown-class     | String  | 下拉面板附加 class                               |
@@ -1315,16 +1315,25 @@ const filteredItems = computed(() =>
 | dropdown:show      | —                            | 下拉面板弹出时触发           |
 | dropdown:hide      | —                            | 下拉面板关闭时触发           |
 
-**dropdown-items 结构：**
+
+
+### dropdown-items 数据结构
+
+`dropdown-items`（MuDropdownPanel / MuDropdown）与 `menus`（MuContextMenu）共用的下拉项数组定义：
 
 ```javascript
 [
   { label: '编辑', icon: 'edit', action: 'edit' },
   { label: '删除', icon: 'delete', action: 'delete' },
   { is: '-' },  // 分隔线
+  { is: 'check', label: '全选', value: 'all' },  // 简写，等价 is: 'mu-dropdown-check-item'
   { label: '导出', disabled: true }
 ]
 ```
+
+- 对象项的各字段即项组件的 prop（默认 `mu-dropdown-item`，即下方三个 Dropdown Item 组件），透传给渲染出的项组件
+- `is`：覆写默认项组件，支持简写：`'-'`（分隔线）、`'item'`、`'check'`（勾选项）、`'radio'`（单选项）；也可写完整组件名（如 `{ is: 'mu-dropdown-check-item', value: 'x' }`）
+- `'-'`：纯字符串项的分隔线快捷方式，其余纯字符串项视为 `{ label: 字符串 }`
 
 
 
@@ -1406,7 +1415,7 @@ const ctxMenu = shallowRef()
 
 | 属性名称 | 类型  | 说明                           |
 | -------- | ----- | ------------------------------ |
-| menus    | Array | 菜单项列表，结构同 dropdown-items |
+| menus    | Array | 菜单项列表，结构见「dropdown-items 数据结构」 |
 
 事件与方法同 MuDropdownPanel
 

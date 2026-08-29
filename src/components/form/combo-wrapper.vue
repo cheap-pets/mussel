@@ -40,6 +40,7 @@
   const props = defineProps({
     ...inputProps,
     ...dropdownProps,
+    dropdownItems: Array,
     editable: Boolean
   })
 

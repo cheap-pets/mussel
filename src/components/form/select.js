@@ -1,5 +1,5 @@
 import { provide, ref, toRef, computed } from 'vue'
-import { useListItems } from '../list/list-items'
+import { useDropdownItems } from '../dropdown/dropdown-items'
 
 const selectProps = {
   options: Array,
@@ -32,10 +32,11 @@ function useOptions (props) {
     return result
   })
 
-  const { items: optionComponents } = useListItems(
+  const { items: dropdownItems } = useDropdownItems(
     toRef(props, 'options'),
     {
       key: props.optionKey,
+      nonObjectSetToProp: 'value',
       defaultComponent: 'mu-option'
     }
   )
@@ -54,7 +55,7 @@ function useOptions (props) {
 
   return {
     optionLabels,
-    optionComponents,
+    dropdownItems,
     mountOption,
     unmountOption
   }
@@ -63,7 +64,7 @@ function useOptions (props) {
 function useSelect (model, props) {
   const {
     optionLabels,
-    optionComponents,
+    dropdownItems,
     mountOption,
     unmountOption
   } = useOptions(props)
@@ -99,7 +100,7 @@ function useSelect (model, props) {
 
   return {
     comboValue,
-    optionComponents
+    dropdownItems
   }
 }
 
