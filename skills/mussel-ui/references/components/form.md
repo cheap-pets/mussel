@@ -33,10 +33,11 @@
 
 **方法（通过 ref 调用）：**
 
-| 方法 | 参数 | 返回值 | 说明 |
+| 方法 / 属性 | 参数 | 返回值 | 说明 |
 |------|------|--------|------|
 | `validate()` | — | `{ ok: true }` \| `{ errors }` | 校验全部字段 |
 | `resetValidation()` | — | — | 清除所有校验错误状态 |
+| `errors` | — | Object | 各字段当前校验错误（`{ 字段名: 错误信息 }`），可直接读取 |
 
 **items 数组支持的元素类型：**
 
@@ -75,7 +76,7 @@
 | `width` | String\|Number | 字段宽度 |
 | `suffix` | String | 字段后缀文字（如单位） |
 | `required` | Boolean | 是否必填（添加必填样式并参与表单校验） |
-| `error` | String | 手动设置校验错误信息 |
+| `error` | Boolean\|String | 手动设置校验错误：字符串显示错误文案，`true` 仅显示错误样式不显示文案 |
 
 **input 配置：**
 
@@ -84,9 +85,11 @@
   { prop: 'name', label: '姓名', input: 'text' }          // <mu-input>
   { prop: 'memo', label: '备注', input: 'memo' }          // <textarea class="mu-input">
   { prop: 'date', label: '日期', input: 'date' }          // <mu-date-input>
+  { prop: 'week', label: '周', input: 'week' }            // <mu-date-input type="week">
   { prop: 'month', label: '月份', input: 'month' }        // <mu-date-input type="month">
   { prop: 'year', label: '年份', input: 'year' }          // <mu-date-input type="year">
-  // quarter 类型需用对象形式：{ prop: 'q', label: '季度', input: { is: 'mu-date-input', type: 'quarter' } }
+  { prop: 'q', label: '季度', input: 'quarter' }          // <mu-date-input type="quarter">
+  { prop: 'time', label: '时间', input: 'time' }          // <mu-time-input>
   { prop: 'color', label: '主题色', input: 'color' }      // <mu-color-input>
   { prop: 'type', label: '类型', input: 'select' }        // <mu-select>
   { prop: 'tags', label: '标签', input: 'multi-select' }  // <mu-multi-select>
@@ -160,8 +163,8 @@ const items = [
 | `modelValue` | — | — | 双向绑定值 |
 | `type` | String | `text` | 原生 input type |
 | `placeholder` | String | — | 占位文本 |
-| `clearable` | Boolean | `false` | 是否显示清除按钮（不再读取全局 `input.clearButton` 配置） |
-| `size` | String | `normal` | 控件尺寸：`small` \| `normal`；置于 `MuToolbar`（`tool-size="small"`）内时自动继承小尺寸 |
+| `clearable` | Boolean | `false` | 是否显示清除按钮 |
+| `size` | String | — | 控件尺寸：`small` \| `normal` \| `large`；未设置时等效 `normal`，置于 `MuToolbar`（`tool-size="small"`）内时自动继承小尺寸 |
 | `pill` | Boolean | — | 左右圆弧形态（胶囊形） |
 | `invalid` | Boolean | — | 校验失败样式 |
 | `readonly` / `disabled` | Boolean | — | 只读 / 禁用 |
@@ -177,8 +180,8 @@ const items = [
 | `blur` | Event | 失焦 |
 | `click` | Event | 点击 |
 | `keydown` | Event | 键盘按下 |
-| `enter` | — | 回车键（keyCode 13） |
-| `esc` | — | ESC 键（keyCode 27） |
+| `enter` | Event | 回车键（keyCode 13），参数为原始键盘事件对象 |
+| `esc` | Event | ESC 键（keyCode 27），参数为原始键盘事件对象 |
 | `prefix-click` | — | 前置按钮点击 |
 | `suffix-click` | — | 后置按钮点击 |
 
@@ -198,6 +201,19 @@ const items = [
 | (其他) | — | — | 继承全部 `MuInput` 属性与事件 |
 
 > 内部维护 `localValue` 以保证输入即时显示；`update:modelValue` 仅在用户停止输入 `debounce-delay` 毫秒后才触发（且仅当值确实变化时）。其余事件（`input`、`focus`、`blur`、`enter` 等）即时触发。点击清除按钮会把值置为空字符串 `''`。
+
+---
+
+## MuInputGroup
+
+输入框成组容器（`div.mu-input-group`），无 props、仅默认插槽，用于把多个相邻输入控件包装为视觉整体。
+
+```html
+<mu-input-group>
+  <mu-input v-model="min" placeholder="最小值" />
+  <mu-input v-model="max" placeholder="最大值" />
+</mu-input-group>
+```
 
 ---
 
@@ -308,14 +324,18 @@ const filteredItems = computed(() =>
 
 ## MuDateInput
 
-日期选择框。下拉面板含工具栏（标题、今天/本月/本季/本年按钮、上下翻页）与对应选择网格。
+日期选择框。下拉面板含工具栏（标题、今天/本周/本月/本季/本年按钮、上下翻页）与对应选择网格。
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
-| `modelValue` | Date\|String | — | 双向绑定值（Date 或格式化字符串） |
-| `type` | String | `date` | `date`（选日期）\| `month`（选月份）\| `quarter`（选季度）\| `year`（选年份） |
-| `format` | String | `null` | 输入框显示格式；为 `null` 时按 `type` 取默认值（`yyyy-MM-dd` / `yyyy-MM` / `yyyy-Qq` / `yyyy`） |
-| `value-format` | String | `yyyy-MM-dd` | 当 `modelValue` 为 String 时的输出格式 |
+| `modelValue` | Date\|String | — | 双向绑定值；输出形态由 `value-type` 控制 |
+| `type` | String | `date` | `date`（选日期）\| `week`（选周）\| `month`（选月份）\| `quarter`（选季度）\| `year`（选年份） |
+| `format` | String | `null` | 输入框显示格式；为 `null` 时按 `type` 取默认值（`yyyy-MM-dd` / `yyyy-Www` / `yyyy-MM` / `yyyy-Qq` / `yyyy`） |
+| `value-type` | String | `'date'` | 输出值类型：`'date'`（默认，输出 Date 对象）\| `'string'`（按 `value-format` 输出字符串） |
+| `value-format` | String | `yyyy-MM-dd` | 仅 `value-type="string"` 时生效的输出格式 |
+| `week-starts-on` | Number | `0` | 每周起始日（0=周日 ~ 6=周六）；默认读全局 `calendar.weekStartsOn` 配置 |
+| `min` | Date\|String | — | 最小可选值 |
+| `max` | Date\|String | — | 最大可选值 |
 | `dropdown-class` | String | — | 下拉面板附加 class |
 | (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
 
@@ -326,11 +346,12 @@ const filteredItems = computed(() =>
 | (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
 
 > - `type="date"`：默认显示日期网格；点击标题按钮在「日期网格 ↔ 月份网格」间切换（月份网格内可切换十年区间、先选年份再选月），用于快速跨月/跨年跳转；选中日期即提交并关闭。
+> - `type="week"`：与 `date` 同走月份网格，选中后提交所在周；「今天」按钮在 week 视图显示为「本周」。
 > - `type="month"`：直接进入月份网格（含十年区间年份切换 + 12 月份格），选中月份即提交并关闭。
 > - `type="quarter"`：进入季度网格（含十年区间年份切换 + 4 季度格），选中季度即提交并关闭。
 > - `type="year"`：直接进入年份网格（每屏 10 年），选中年份即提交并关闭。
-> - 顶部上下翻页按钮**仅在日期视图**出现，用于翻月；月份/季度/年份视图切换十年区间由面板内部的左右箭头格子完成。
-> - 「今天/本月/本季/本年」按钮跳回当前并提交，文案随当前视图变化。
+> - 顶部上下翻页按钮**仅在日期/周网格视图**出现，用于翻月；月份/季度/年份视图切换十年区间由面板内部的左右箭头格子完成。
+> - 「今天/本周/本月/本季/本年」按钮跳回当前并提交，文案随当前视图变化。
 
 ---
 
@@ -477,8 +498,12 @@ const filteredItems = computed(() =>
 |------|------|------|------|
 | `modelValue` | — | — | 双向绑定值（当前选中项 value） |
 | `options` | Array | — | 选项数组，支持 `[{ value, label, icon?, disabled? }]` 或简单值 `[1, 2, 3]` |
-| `disabled` | Boolean | — | 禁用整组 |
+| `disabled` | Boolean | — | 禁用整组（组件级，禁用后所有选项不可选） |
 | `icon-position` | String | `left` | 图标位置：`left`（图标在文字左侧）\| `top`（图标在文字上方） |
+
+| 插槽 | 说明 |
+|------|------|
+| `default` | 选项内容模板，作用域参数 `{ option }`（含 value/label/icon/disabled） |
 
 ```html
 <mu-segmented v-model="viewMode" :options="[

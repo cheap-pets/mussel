@@ -10,8 +10,7 @@
           type="number"
           size="small"
           class="num-input"
-          @update:model-value="onDimensionChange('columns', $event)"
-        />
+          @update:model-value="onDimensionChange('columns', $event)" />
       </span>
       <span class="field">
         <label>行</label>
@@ -20,8 +19,7 @@
           type="number"
           size="small"
           class="num-input"
-          @update:model-value="onDimensionChange('rows', $event)"
-        />
+          @update:model-value="onDimensionChange('rows', $event)" />
       </span>
       <mu-button color="primary" caption="添加单元格" @click="addCell" />
       <mu-button caption="重置" @click="reset" />
@@ -36,8 +34,7 @@
       <div
         ref="gridEl"
         class="designer-grid"
-        :style="gridStyle"
-      >
+        :style="gridStyle">
         <!-- 网格引导线（独立层，避免与背景简写冲突） -->
         <div class="grid-lines" aria-hidden="true" />
         <mu-grid-cell
@@ -47,14 +44,11 @@
           :col-end="cell.colEnd"
           :row-start="cell.rowStart"
           :row-end="cell.rowEnd"
-          :end-offset="1"
           class="designer-cell"
-          :class="{ 'is-dragging': draggingId === cell.id, 'is-resizing': resizingId === cell.id }"
-        >
+          :class="{ 'is-dragging': draggingId === cell.id, 'is-resizing': resizingId === cell.id }">
           <div
             class="cell-body"
-            @mousedown.stop.prevent="onMoveStart($event, cell)"
-          >
+            @mousedown.stop.prevent="onMoveStart($event, cell)">
             <span class="cell-label">{{ cell.id }}</span>
             <a class="cell-remove" title="删除" @mousedown.stop @click="removeCell(cell.id)">×</a>
           </div>
@@ -64,8 +58,7 @@
             :key="h"
             class="resize-handle"
             :class="'handle-' + h"
-            @mousedown.stop.prevent="onResizeStart($event, cell, h)"
-          />
+            @mousedown.stop.prevent="onResizeStart($event, cell, h)" />
         </mu-grid-cell>
       </div>
     </div>
@@ -73,7 +66,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, onUnmounted } from 'vue'
+  import { ref, computed, onUnmounted } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
   // ── 维度 ──────────────────────────────────────────────
@@ -247,9 +240,11 @@
     window.addEventListener('mouseup', onResizeEnd)
   }
 
+  // eslint-disable-next-line complexity
   function onResizeMove (e) {
     const ctx = resizeCtx
     if (!ctx) return
+
     const cell = cells.value.find(c => c.id === ctx.id)
     if (!cell) return
 
@@ -296,15 +291,15 @@
 
 <style scoped>
   .grid-designer {
-    background: var(--mu-background-color);
     color: var(--mu-text-color-normal);
+    background: var(--mu-background-color);
   }
 
   /* 工具栏 */
   .designer-toolbar {
-    padding: 8px 16px;
     gap: 12px;
     align-items: center;
+    padding: 8px 16px;
     border-bottom: 1px solid var(--mu-border-color-normal);
   }
 
@@ -312,14 +307,16 @@
     margin: 0;
     padding: 0;
     border: none;
+
     font-size: 1rem;
     font-weight: 600;
   }
 
   .designer-toolbar .field {
     display: inline-flex;
-    align-items: center;
     gap: 6px;
+    align-items: center;
+
     font-size: 0.85rem;
     color: var(--mu-text-color-light);
   }
@@ -334,54 +331,63 @@
 
   /* 画布 */
   .designer-canvas-wrap {
-    padding: 16px;
     overflow: auto;
+    padding: 16px;
   }
 
   .designer-grid {
+    position: relative;
+
+    overflow: hidden;
     display: grid;
+
     width: 100%;
     height: 100%;
     min-height: 420px;
-    position: relative;
-    overflow: hidden;
     border: 1px solid var(--mu-border-color-normal);
+
     background-color: var(--mu-bg-strong);
   }
 
   /* 网格引导线层：绝对定位覆盖整个画布，置于单元格之下 */
   .grid-lines {
-    position: absolute;
-    inset: 0;
     pointer-events: none;
+
+    position: absolute;
     z-index: 0;
+    inset: 0;
+
     background-image:
       linear-gradient(to right, var(--mu-border-color-normal) 1px, transparent 1px),
       linear-gradient(to bottom, var(--mu-border-color-normal) 1px, transparent 1px);
+    background-position: 0 0;
     background-size:
       calc(100% / var(--cols, 12)) calc(100% / var(--rows, 8));
-    background-position: 0 0;
   }
 
   /* 单元格 */
   .designer-cell {
     position: relative;
-    padding: 2px;
     z-index: 1;
+    padding: 2px;
   }
 
   .cell-body {
-    width: 100%;
-    height: 100%;
-    min-height: 24px;
-    background: var(--mu-primary-color, #5b7fff);
-    color: #fff;
-    border-radius: 4px;
+    cursor: move;
+    user-select: none;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: move;
-    user-select: none;
+
+    width: 100%;
+    height: 100%;
+    min-height: 24px;
+    border-radius: 4px;
+
+    color: #fff;
+
+    background: var(--mu-primary-color, #5b7fff);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   }
 
@@ -394,23 +400,26 @@
   }
 
   .cell-label {
+    pointer-events: none;
     font-size: 0.8rem;
     font-weight: 600;
-    pointer-events: none;
   }
 
   .cell-remove {
+    cursor: pointer;
+
     position: absolute;
     top: 0;
     right: 2px;
+
     width: 16px;
     height: 16px;
-    line-height: 14px;
-    text-align: center;
-    cursor: pointer;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.85);
     border-radius: 50%;
+
+    font-size: 14px;
+    line-height: 14px;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
   }
 
   .cell-remove:hover {
@@ -425,19 +434,19 @@
   }
 
   .handle-n, .handle-s {
-    left: 4px;
-    right: 4px;
-    height: 6px;
     cursor: ns-resize;
+    right: 4px;
+    left: 4px;
+    height: 6px;
   }
   .handle-n { top: -3px; }
   .handle-s { bottom: -3px; }
 
   .handle-e, .handle-w {
+    cursor: ew-resize;
     top: 4px;
     bottom: 4px;
     width: 6px;
-    cursor: ew-resize;
   }
   .handle-e { right: -3px; }
   .handle-w { left: -3px; }
@@ -446,8 +455,8 @@
     width: 10px;
     height: 10px;
   }
-  .handle-ne { top: -5px; right: -5px; cursor: nesw-resize; }
-  .handle-nw { top: -5px; left: -5px; cursor: nwse-resize; }
-  .handle-se { bottom: -5px; right: -5px; cursor: nwse-resize; }
-  .handle-sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
+  .handle-ne { cursor: nesw-resize; top: -5px; right: -5px; }
+  .handle-nw { cursor: nwse-resize; top: -5px; left: -5px; }
+  .handle-se { cursor: nwse-resize; right: -5px; bottom: -5px; }
+  .handle-sw { cursor: nesw-resize; bottom: -5px; left: -5px; }
 </style>

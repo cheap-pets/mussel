@@ -8,7 +8,6 @@
 |------|------|------|------|
 | `width` / `height` | String | — | 面板尺寸 |
 | `trigger` | String | `click` | 触发方式：`click` \| `hover` |
-| `position` | String | `auto` | 弹出位置：`auto` \| `fixed` \| `top` \| `bottom` |
 | `dropdown-items` | Array | — | 列表项数据 |
 | `scrollbar` | Boolean | — | 是否渲染 Mussel 滚动条 |
 
@@ -18,9 +17,19 @@
 | `action` | `action` | 含 action 的下拉项点击 |
 | `itemclick` | `item` | 任意下拉项点击 |
 
-| 方法 | 说明 |
+| 方法 / 状态 | 说明 |
 |------|------|
-| `show()` / `hide()` | 程序控制显示/隐藏 |
+| `show({ anchor, width, height, trigger })` | 程序控制显示。**必须传 `anchor`**（锚点元素，用于定位；无参调用会抛错），`width`/`height`/`trigger` 可选覆盖 |
+| `hide()` | 程序控制隐藏 |
+| `delayHide()` | 延迟隐藏（`trigger: 'hover'` 时 300ms，供 hover 场景手动调用） |
+| `updatePosition()` | 重新计算并更新面板位置（锚点尺寸/位置变化后调用） |
+| `visible` | 当前显示状态（ref） |
+
+| 插槽 | 说明 |
+|------|------|
+| `default` | 自定义面板内容（缺省渲染 `dropdown-items`） |
+
+> 弹出位置恒为自动计算（锚点下方优先、视口空间不足时翻转到上方，横向自动避让溢出），暂不支持手动指定。
 
 ---
 
@@ -49,22 +58,29 @@
 />
 ```
 
+| 插槽 | 说明 |
+|------|------|
+| `default` | 覆盖按钮内容（缺省渲染 icon + caption） |
+| `dropdown` | 自定义下拉面板内容，同 MuDropdown 的 `#dropdown` |
+
 ---
 
 ### MuDropdown
 
-下拉菜单 Mixin，为触发器元素附加下拉能力，属性均以 `dropdown-` 为前缀。
+下拉能力包裹组件（非 Mixin），为触发器元素附加下拉，属性均以 `dropdown-` 为前缀。
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `dropdown-items` | Array | 下拉项列表 |
 | `dropdown-width` / `dropdown-height` | String | 面板尺寸；`dropdown-width: 'anchor'` 表示与锚点元素同宽（MuSelect 默认即此值） |
-| `dropdown-trigger` | String | `hover`（默认）\| `click` |
-| `dropdown-position` | String | `auto` \| `fixed` \| `top` \| `bottom` |
-| `dropdown-icon` | String | 下拉箭头图标，默认下箭头 |
+| `dropdown-trigger` | String | mu-dropdown 默认 `hover`（mu-dropdown-button 默认 `click`） |
+| `dropdown-icon` | Boolean\|String | 下拉箭头图标；mu-dropdown **默认不显示**箭头（未设置），mu-dropdown-button 默认显示下箭头（`'dropdownExpand'`）；传图标名自定义 |
 | `dropdown-disabled` | Boolean | 禁用下拉 |
-| `dropdown-attrs` | Object | 透传给面板的额外属性 |
-| `dropdown-anchor` | — | 面板锚点目标，默认组件根元素 |
+| `dropdown-anchor` | — | 面板锚点目标，默认组件根元素；特殊值 `'$parent'` 指向父节点元素 |
+| `dropdown-class` | String | 面板附加 class |
+| `dropdown-style` | String\|Object | 面板附加 style |
+| `dropdown-scrollbar` | Boolean | 面板是否渲染 Mussel 滚动条 |
+| `dropdown-panel` | Object | 复用外部已有的 `MuDropdownPanel` 实例（传入组件实例），传入后不再渲染内部面板 |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
@@ -80,6 +96,22 @@
   { is: '-' },  // 分隔线
   { label: '导出', disabled: true }
 ]
+```
+
+| 插槽 | 说明 |
+|------|------|
+| `default` | 触发器内容，包裹任意元素作为下拉锚点 |
+| `dropdown` | 自定义下拉面板内容（缺省渲染 `dropdown-items`），与 `dropdown-items` 二选一 |
+
+```html
+<!-- 触发器 + 自定义面板内容 -->
+<mu-dropdown>
+  <mu-icon-button icon="more" />
+  <template #dropdown>
+    <mu-dropdown-item label="编辑" icon="edit" action="edit" />
+    <mu-dropdown-item label="删除" icon="delete" action="delete" />
+  </template>
+</mu-dropdown>
 ```
 
 ---
@@ -153,7 +185,7 @@
 |------|------|------|
 | `menus` | Array | 菜单项列表，结构同 `dropdown-items` |
 
-事件与方法同 `MuDropdownPanel`。
+事件与方法同 `MuDropdownPanel`，插槽同 `MuDropdownPanel`（`default` 自定义菜单内容，缺省渲染 `menus`）。
 
 ```html
 <template>

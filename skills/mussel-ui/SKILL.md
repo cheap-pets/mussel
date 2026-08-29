@@ -11,7 +11,7 @@ description: >
 > 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token、M3→4 迁移），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
 
 > **版本检查**：
-本文档及 `references/` 基于 MUSSEL `4.0.*`，最后核对日期 **2026-08-27**（对照仓库 `4.0` 分支源码）。
+本文档及 `references/` 基于 MUSSEL `4.1.*`，最后核对日期 **2026-08-28**（对照仓库 `4.0` 分支源码）。
 开始前确认项目中依赖的 `mussel` 版本，若不符合，需进行提示确认。
 若组件库源码与本文档描述出现冲突，**以源码为准**，并按实际情况订正对应 `references/` 文件。
 
@@ -44,7 +44,7 @@ description: >
 | 分类 | 参考文件 |
 |------|---------|
 | 1 布局 | `references/components/layout.md` |
-| 2 容器与面板（含模态/抽屉） | `references/components/containers-panels.md` |
+| 2 容器与面板（含模态/抽屉） | `references/components/containers.md` |
 | 3 按钮与操作 | `references/components/buttons.md` |
 | 4 表单 / 输入 | `references/components/form.md` |
 | 5 导航与菜单 | `references/components/navigation.md` |
@@ -58,7 +58,7 @@ description: >
 
 ### 步骤 3：生成后自检
 
-生成代码后，用 `references/principles.md` 的**硬性禁止清单**（5 条）和**自检清单**逐条核对，该文件每条均附 Good/Bad 示例。任意一条硬性禁止违反即视为不合规。
+生成代码后，用 `references/principles.md` 的**核心规范**（第 2–5 条为硬性禁止，共 4 条）和文末**快速自检清单**（「硬性禁止」7 项 + 「优先级要求」1 项）逐条核对，该文件每条均附 Good/Bad 示例。硬性禁止任一项违反即视为不合规。
 
 ---
 
@@ -72,7 +72,7 @@ description: >
 | ---- | ---- |
 | root | 根元素（选择器或 DOM），注入主题 class 与 CSS 变量，默认 `document.body` |
 | dark | `true` 强制暗色 \| `'auto'` 跟随系统 \| 否则亮色 |
-| colors | 主题色 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral` / `gray`，自动派生 `--mu-*` 变量 |
+| colors | 自定义主题色，自动派生调色板与 `--mu-*` 变量。合法 key：语义色 `primary` / `secondary` / `success` / `warning` / `danger` + 基本色名 `red` / `pink` / `grape` / `violet` / `indigo` / `blue` / `cyan` / `teal` / `green` / `lime` / `yellow` / `orange`；`neutral` / `gray` 不派生自身调色板，仅作灰阶基准（优先级 neutral → gray → primary） |
 | icons | 初始图标集，等价于 `installIcons(icons)` |
 | locale | `'zh'` \| `'en'`，未指定时按浏览器语言判断 |
 | localeResources | 自定义语言包，内置 `zh` / `en` |
@@ -96,7 +96,9 @@ description: >
 | `<mu-split-h-box>` / `<mu-split-v-box>` | 面板可拖拽分隔；`collapsible` 支持收拢，双击重置 |
 | `<mu-scroll-box>` / `v-mu-scrollbar` | 替换原生滚动条为 Mussel 风格 |
 | `<mu-scroll-area>` | 单轴滚动区，溢出时以位移按钮代替滚动条（工具栏/页签栏场景） |
+| `<mu-bar>` | 固定高 40px 的条形容器（无 props，默认插槽） |
 | `<mu-toolbar>` | 工具栏容器，常置于页面/面板顶部 |
+| `<mu-flex-divider>` / `<mu-flex-space>` / `<mu-flex-break>` | flex 辅助元素：垂直分隔线 / 弹性占位 / 强制换行 |
 
 ### 2. 容器与面板
 
@@ -121,6 +123,7 @@ description: >
 |------|------|
 | `<mu-form>` | 表单容器；声明式用 form-row/form-field，数据驱动用 :model/:items |
 | `<mu-input>` | 文本/数字/密码输入 |
+| `<mu-search-input>` | 带防抖与搜索图标的过滤输入框 |
 | `<mu-select>` | 单选下拉，不可输入 |
 | `<mu-combo-box>` | 单选下拉，`editable` 可手动输入 |
 | `<mu-multi-select>` | 多选下拉 |
@@ -140,6 +143,7 @@ description: >
 | `<mu-dropdown-panel>` | 独立下拉面板，自行管理触发器 |
 | `<mu-dropdown-button>` | 按钮型下拉触发器；`split-button` 分割为主按钮+下拉箭头，`dropdown-items` 配置菜单项 |
 | `<mu-context-menu>` | 右键上下文菜单 |
+| `<mu-dropdown-item>` / `<mu-dropdown-check-item>` / `<mu-dropdown-radio-item>` | 下拉菜单项的组件形式（普通 / 勾选 / 单选） |
 
 ### 6. 数据展示
 
@@ -150,6 +154,7 @@ description: >
 | `<mu-tree>` + `<mu-tree-node>` | 树形结构；支持勾选、懒加载、节点按钮 |
 | `<mu-tags>` | 标签组；`removable` 可删除，`max` 截断省略 |
 | `<mu-calendar>` | 内嵌月历，用于页面内日期展示与选择 |
+| `<mu-pagination>` | 分页，常与 `mu-table` 配合置于表格下方 |
 
 ### 7. 反馈
 

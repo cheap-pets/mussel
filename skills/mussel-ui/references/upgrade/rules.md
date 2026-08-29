@@ -16,7 +16,7 @@
 
 1. [全局配置](#1-全局配置)
    - [安装方式](#安装方式)
-   - [插件注册](#插件注册)
+   - [配置项变更对照](#配置项变更对照)
    - [导出变更](#导出变更)
 2. [CSS 变量与 CSS 类](#2-css-变量与-css-类)
 3. [布局系统](#3-布局系统)
@@ -96,54 +96,7 @@ installIcons({ edit: EditIcon })
 - [ ] `root` 默认值由 `document.documentElement` 改为 `document.body`；若原样式依赖根元素为 `<html>`，需显式传 `root`
 - [ ] 命令式对话框/通知统一改走 `inject('$mussel').messageBox`（详见 5.11）
 
-### 插件注册
-
-```js
-// Mussel 3
-app.use(pluginMussel, {
-  theme: {
-    // 主题变量（驼峰，直接映射 CSS 变量）
-    primary: '#008CD6',
-    danger: '#f57a79',
-    success: '#00b25a',
-    warning: '#f4af61',
-    primaryColorDark: '#006db0',
-    primaryColorLight: '#24a7e3',
-    commonFontSize: '12px',
-    textColorNormal: 'var(--mu-gray-8)',
-    borderColor: '#ebecf0',
-    dividerColor: '#ebecf0',
-    // ...
-  },
-  darkMode: true | 'auto',   // 暗色模式
-  autoComplementColors: true, // 自动补全衍生色（默认开启）
-  root: document.documentElement,  // 挂载根元素
-  icons: { ... }             // 图标注册
-})
-
-// Mussel 4
-app.use(pluginMussel, {
-  root: '#app',              // 挂载根元素（选择器或 DOM 元素）
-  dark: true | 'auto',       // 暗色模式
-  colors: {
-    // 仅需指定基础色/语义色，自动生成调色板（10 级衍生色 + 20 级灰阶）
-    primary: '#1c7ed6',
-    danger: '#f03e3e',
-    success: '#37b24d',
-    warning: '#f76707',
-    secondary: '#...',        // 可选，不指定则从 primary 自动生成
-    neutral: '#...'           // 可选，不指定则从 primary 生成灰阶
-  },
-  icons: { ... },            // 图标注册
-  locale: 'zh',              // 语言包（'zh' | 'en'）
-  localeResources: { ... },  // 自定义语言资源
-  // 其余属性作为 componentOptions 传入，通过 $mussel.options 访问
-  messageBox: { dismissible: false },  // MessageBox 默认配置
-  tree: { ... }                        // Tree 默认配置
-})
-```
-
-#### 配置项变更对照
+### 配置项变更对照
 
 | Mussel 3 | Mussel 4 | 说明 |
 |----------|----------|------|
@@ -193,7 +146,7 @@ export { install, components, icons, registerIcons, scrollbar }
 export { install, installIcons, EventInterceptor, colors }  // 导出 install、installIcons、EventInterceptor、colors
 ```
 
-> `colors` 为包含全部派生色（基础色、语义色及其调色板/灰阶）的运行时对象，可在运行时读取色板或用于自定义渲染（如色板选择器）。早期 4.x 曾导出的 `generatePreCssVariables` / `getComputedXColor` 已移除，统一改用 `colors`。
+> `colors` 为包含全部派生色（基础色、语义色及其调色板/灰阶）的运行时对象，可在运行时读取色板或用于自定义渲染（如色板选择器）。
 >
 > M3 运行时换肤函数 `setTheme(option)` 在 M4 中不再导出，改为挂载到 `$mussel` 上下文：`$mussel.setupColors(customColors, rootElement?)`，已绑定当前应用根元素。详见 `references/install.md`「运行时换肤」。
 
@@ -657,28 +610,14 @@ root.value.addEventListener(…)
 
 ### 3.6 升级检查清单
 
-对每个涉及 `mu-box` 的文件，逐一检查：
+对每个涉及 `mu-box` 的文件，按 3.1 / 3.3 各映射表逐项检查。表格之外需注意：
 
-- [ ] `class="mu-box"` → 移除，合并到其他 class 中
-- [ ] `class="mu-h-box"` / `class="mu-v-box"`（非组件用法）→ `class="flex"` / `class="flex flex-col"`
-- [ ] `<mu-h-box>` / `<mu-v-box>` 组件 → `<div class="flex ...">` / `<div class="flex flex-col ...">`
-- [ ] `<mu-box>` 组件 → `<div>` + 合并 class
-- [ ] `layout="flex"` / `layout="grid"` → `class="flex"` / `class="grid"`
-- [ ] `flex="N"` → `class="flex-N"` / `class="flex-none"` / `class="flex-auto"`（适用于 `mu-box` 及所有 `<mu-*>` 组件）
-- [ ] `padding=` / `margin=` 系列 → 原子类（`p-*x`、`m-*x`、`px-*x`、`mx-*x` 等）
-- [ ] `gap="Nx"` → `class="gap-Nx"`
-- [ ] `align-items=` / `align-self=` / `justify-content=` → 原子类（`items-*`、`self-*`、`justify-*`）
-- [ ] `border` / `border-right` 等 → `class="border"` / `class="border-r"` 等
-- [ ] `position="fixed fit"` → `class="fixed"` + `style="inset: 0"`
-- [ ] `width=` / `height=` → `style="width: ..."` / `style="height: ..."`（适用于 `mu-box` 及所有未声明 `width`/`height` props 的 `<mu-*>` 组件，如 `mu-form-field`、`mu-grid-box`）
-- [ ] `overflow=` → `class="overflow-*"`
-- [ ] `content-center` → `class="flex-center"`
-- [ ] `class="mu-space"` → `class="flex-space"`（`space="Nx"` 保留为属性选择器）
-- [ ] `class="mu-divider"` → `class="flex-divider"`（`thin` 改为 `flex-divider--stroke-1`）
-- [ ] `class="mu-box mu-bg-normal"` → `class="bg-normal"`
-- [ ] `<mu-grid-box>` 上非 props 的属性（`width`、`height`、`padding`）→ `style` 或原子类（已包含在上条通用规则中）
-- [ ] `<mu-grid-cell>` 上的 `margin=` → `class="m-*x"`
-- [ ] `<mu-box ref="x">` / `<mu-h-box ref="x">` / `<mu-v-box ref="x">`：脚本中 `x.value.$el` → `x.value`（见 3.5，注意区分 ref 是否在子组件上）
+- `flex="N"` 规则适用于所有 `<mu-*>` 组件（如 `mu-form-field`），不限 `mu-box`
+- `width=` / `height=` 规则适用于所有未声明 `width`/`height` props 的组件；例外（已声明 props）：`mu-form`、`mu-dialog`、`mu-tabs`
+- `class="mu-box mu-bg-normal"` → `class="bg-normal"`（`mu-box` 一并移除）
+- `<mu-grid-box>` 上非 props 的属性（`width`、`height`、`padding`）→ `style` 或原子类
+- `<mu-grid-cell>` 上的 `margin=` → `class="m-*x"`
+- `<mu-box ref="x">` / `<mu-h-box ref="x">` / `<mu-v-box ref="x">`：脚本中 `x.value.$el` → `x.value`（见 3.5，注意区分 ref 是否在子组件上）
 
 ---
 
@@ -694,7 +633,7 @@ root.value.addEventListener(…)
 
 ### 5.1 MuDialog
 
-> 完整 MuDialog API：`references/components/containers-panels.md`
+> 完整 MuDialog API：`references/components/containers.md`
 
 #### 属性变更
 
@@ -705,7 +644,6 @@ root.value.addEventListener(…)
 | `moveable` | _(已移除)_ | 拖拽始终可用，无需配置 |
 | `dialog-style` | _(已移除)_ | 用标准 `style` 属性传入（通过 `$attrs` fallthrough 到 `.mu-dialog`） |
 | `container` | `container`（保留） | 语义增强：仍用于指定挂载容器（CSS 选择器或 DOM 元素），不设则挂到全局根容器（`$mussel.rootElement`）。Mussel 4 中设值后遮罩会自动改为 `position: absolute`，使弹窗相对该容器而非视口定位 |
-| `easy-hide` | `dismissible` | 早期 Mussel 4 曾用 `easy-hide`，现已改为 `dismissible` |
 | _(无)_ | `header` prop | `'auto'`\|Boolean，控制头部显隐 |
 | _(无)_ | `footer` prop | `'auto'`\|Boolean，控制底部显隐 |
 | _(无)_ | `body-class` prop | 为 `.mu-dialog__body` 添加 class，用于内部布局（如 `flex flex-col`） |
@@ -819,11 +757,6 @@ function onDialogVisibleChange (value, trigger) {
 | `side-panel` 插槽已移除 | 侧面板不再支持，需自行实现 |
 | padding 模式变更 | Mussel 3 通过 `.mu-dialog_center > *` 自动给所有子元素加 padding；Mussel 4 用 `--mu-dialog-padding` 变量，仅 header/footer 有 padding，body 需手动添加 |
 | 关闭按钮变更 | Mussel 3 使用 `<mu-icon icon="x">`；Mussel 4 使用 `<mu-icon-button icon="windowClose" danger>` |
-| header/footer 显隐控制 | 新增 `header`/`footer` props（`'auto'`\|Boolean），`'auto'` 时根据内容自动判断，也可显式 `true`/`false` |
-| body 插槽 | 新增 `#body` 插槽（推荐），替代 default slot；default slot 保留作为兼容 |
-| body-scrollbar | 新增 `body-scrollbar` prop，为 body 区域启用自定义滚动条 |
-| body-class | 新增 `body-class` prop，为 `.mu-dialog__body` 添加 class（解决内部布局迁移） |
-| body-style | 新增 `body-style` prop，为 `.mu-dialog__body` 添加内联样式（解决内边距等） |
 | header 内部结构 | 新增 `mu-dialog__header-content` 包裹层（图标 + 标题 + header slot） |
 | 移除插槽 | `client`、`header-prepend`、`header-append`、`footer-prepend`、`footer-append` 已移除 |
 | 尺寸默认值变更 | `min-width` 360→320，`max-width/height` 90%→100% |
@@ -862,107 +795,9 @@ function onDialogVisibleChange (value, trigger) {
 }
 ```
 
-**示例 2：带内部元素样式**
+其余写法（深层 SCSS 嵌套、`mu-dialog_center` 包裹层、扁平 CSS）同模式处理：删去 `> .mu-dialog`（及 `> .mu-dialog_center`）中间层，子选择器降为平级；内部类名由 V3 的 `.mu-dialog_header` / `.mu-dialog_footer` / `.mu-dialog-body` 改为 V4 的 `.mu-dialog__header` / `.mu-dialog__footer` / `.mu-dialog__body`。
 
-```scss
-/* 升级前（Mussel 3） */
-.my-dialog {
-  & > .mu-dialog {
-    width: 800px;
-    height: 90%;
-
-    & > .mu-dialog-body {
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    & .mu-dialog_header, .mu-dialog_footer {
-      padding: 16px;
-    }
-  }
-}
-
-/* 升级后（Mussel 4）：去掉 > .mu-dialog 中间层，子元素改为平级选择器 */
-.my-dialog {
-  width: 800px;
-  height: 90%;
-
-  .mu-dialog__body {
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .mu-dialog__header, .mu-dialog__footer {
-    padding: 16px;
-  }
-}
-```
-
-**示例 3：`mu-dialog_center` 包裹层移除**
-
-Mussel 4 移除了 `.mu-dialog_center` 包裹层，`header`/`body`/`footer` 直接在 `.mu-dialog` 内。
-
-```scss
-/* 升级前（Mussel 3）：有 mu-dialog_center 中间层 */
-.dialog-message-center {
-  & > .mu-dialog {
-    width: 770px;
-
-    & > .mu-dialog_center {
-      width: 100%;
-
-      & .dialog-message-center_body {
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-    }
-
-    & .mu-dialog_header, .mu-dialog_footer {
-      padding: 16px;
-    }
-  }
-}
-
-/* 升级后（Mussel 4）：去掉 > .mu-dialog 和 > .mu-dialog_center 两层 */
-.dialog-message-center {
-  width: 770px;
-
-  .dialog-message-center_body {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .mu-dialog__header, .mu-dialog__footer {
-    padding: 16px;
-  }
-}
-```
-
-**示例 4：扁平写法（非 SCSS 嵌套）**
-
-```css
-/* 升级前 */
-.my-dialog > .mu-dialog {
-  width: 400px;
-}
-.my-dialog .mu-dialog-body {
-  min-height: 400px;
-}
-
-/* 升级后 */
-.my-dialog {
-  width: 400px;
-}
-.my-dialog .mu-dialog__body {
-  min-height: 400px;
-}
-```
-
-**示例 5：JS 中获取 Dialog DOM 元素**
+**示例 2：JS 中获取 Dialog DOM 元素**
 
 > ⚠️ 此项涉及 JS 逻辑变更（事件监听器绑定/解绑等），**无法安全自动升级**，需人工逐个审核。
 
@@ -1121,7 +956,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 | `class="mu-box"` | _(移除该 class)_ | |
 | `width="100%"` | `style="width: 100%;"` | |
 | `label`（属性） | `prefix` / `suffix` | |
-| `dropdown-align` | `dropdown-position` | 同 MuDropdown |
+| `dropdown-align` | _(暂无对应)_ | V4 弹出位置恒自动计算，暂不支持手动指定 |
 | `<template #left>` | `prefix` 属性 | `#left` 插槽已移除，用 `prefix` 属性代替 |
 | `<template #right>` | `suffix` 属性 | `#right` 插槽已移除，用 `suffix` 属性代替 |
 
@@ -1143,7 +978,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `dropdown-align` | `dropdown-position` | 值：auto / fixed / top / bottom |
+| `dropdown-align` | _(暂无对应)_ | V4 弹出位置恒自动计算，暂不支持手动指定（`dropdown-position` 未生效） |
 | `sticky-target` | `dropdown-anchor` | 默认：组件根元素 |
 | `reserve-icon-place` | _(已移除)_ | |
 
@@ -1152,15 +987,13 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
 | `items` | `dropdown-items` | |
-| `align` | `position` | |
+| `align` | _(暂无对应)_ | V4 弹出位置恒自动计算，暂不支持手动指定 |
 | `sticky-target` | _(已移除)_ | |
 
 #### MuDropdownButton
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `trigger-action="click"` | `dropdown-trigger="click"` | |
-| `trigger-action="press"` | _(已移除)_ | `'press'` 触发模式不再支持，仅 `'hover'` 和 `'click'` |
 | `dropdown-icon="dropdown"` | `dropdown-icon="dropdownExpand"` | 默认图标名变更 |
 
 #### MuDropdownItem / MuDropdownCheckItem / MuDropdownRadioItem
@@ -1325,7 +1158,7 @@ items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数
 
 #### 属性 / 事件 / 插槽（V3 与 V4 一致，无需迁移）
 
-- **属性**：`data`、`props`、`buttons`、`checkbox`、`cascaded-check`、`checked-nodes-keys`、`auto-expand-level`、`active-node`、`node-icons`、`expand-icons`
+- **属性**：`data`、`props`、`buttons`、`checkbox`、`cascaded-check`（**当前版本未生效**，prop 已声明但未实现）、`checked-nodes-keys`、`auto-expand-level`、`active-node`、`node-icons`、`expand-icons`
 - **事件**：`node-click`、`node-expand`/`node-collapse`、`node-button-click`、`node-check-change`
 - **插槽**：`default`（作用域参数 `node`）、`buttons`（作用域参数 `node`）
 
@@ -1347,12 +1180,13 @@ items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数
   :data="treeData"
   :props="{ label: 'name', childNodes: 'children' }"
   checkbox
-  :cascaded-check="true"
   :active-node="activeNode"
   @node-click="onNodeClick"
   @node-check-change="onCheckChange"
 />
 ```
+
+> `:cascaded-check="true"` 属性在 V4 中已声明但**未实现**（勾选为独立行为），迁移时可移除该属性。
 
 > `:props` 中的键（如 `childNodes`）是组件识别的**字段名**，值为用户数据中对应的属性名（如 `'children'`）；键名不要改，只改值。
 
@@ -1364,18 +1198,14 @@ items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `primary|secondary|danger`（Boolean） | `color="primary|secondary|danger"` | 旧布尔属性仍可用（deprecated），优先使用 `color` |
-| `x-color` | _(已移除)_ | 无替代 |
+| `primary|secondary|danger`（Boolean 属性） | `color="primary|secondary|danger"` | V3 靠属性选择器样式生效；V4 旧布尔属性仍可用（deprecated），优先使用 `color` |
 
 Mussel 4 推荐 `color` 属性：`'normal' | 'primary' | 'secondary' | 'danger'`。
 Mussel 4 新增 `buttonStyle` 属性：`'normal' | 'outline' | 'text' | 'link'`（控制按钮外观样式）。
 
 #### MuBadge
 
-| Mussel 3 | Mussel 4 | 备注 |
-|----------|----------|------|
-| `secondary` | `secondary`（不变） | |
-| `accent` | `secondary` | `accent` 已移除 |
+V3 仅有 `.mu-badge` CSS 类（无组件，`secondary` / `danger` 属性选择器变体）。V4 新增 `<mu-badge>` 组件（API 见 `references/components/basic.md`），无属性迁移。
 
 #### MuIcon
 
@@ -1498,36 +1328,31 @@ Mussel 3 中，`<mu-check>` 和 `<mu-radio>` 在没有 `label` 时渲染裸 `<in
 
 ## 6. 新增组件
 
-Mussel 4 新增了以下组件，可用于替代手工实现：
+Mussel 4 新增以下组件（V3 均无对应，`mu-*` 标签直接可用），可用于替代手工实现。完整 API 见 `SKILL.md` 组件速查表路由的对应参考文件。
 
 | 组件 | 用途 |
 |------|------|
-| MuInput | 替代 MuEditor |
 | MuSelect | 下拉单选框 |
 | MuMultiSelect | 下拉多选框（带标签显示） |
-| MuDateInput | 日期/月份选择器 |
+| MuDateInput | 日期/周/月/季度/年选择器 |
+| MuTimeInput | 时间选择器（时/分/秒列式滚动） |
 | MuColorInput | 颜色选择器（HEX 输入 + 内置 130 色色板） |
+| MuSearchInput | 带防抖与搜索图标的过滤输入框 |
+| MuSegmented | 分段选择器 |
+| MuCheckGroup / MuRadioGroup | 数据驱动复选/单选组（`options` 数组 + `v-model`） |
 | MuTable | 数据表格，支持多种列类型（text、check、bool、enum、date、link、tag 等） |
-| MuBigTable | 大数据量表格，支持虚拟滚动 |
-| MuList | 列表容器，支持滚动条 |
-| MuListItem | 列表项 |
-| MuListDivider | 列表分隔线 |
-| MuTree | 统一的树组件 |
-| MuTags | 标签组，支持展开/收起 |
 | MuCalendar | 月历组件 |
+| MuTags | 标签组，支持展开/收起 |
+| MuBadge | 徽章/角标（V3 仅有 `.mu-badge` CSS 类，无组件） |
+| MuList | 列表容器，支持滚动条（`MuListItem` / `MuListDivider` V3 已有） |
 | MuDrawer | 抽屉面板（上/右/下/左） |
 | MuContextMenu | 右键上下文菜单 |
 | MuSplitHBox / MuSplitVBox | 可拖拽、可收拢的弹性分隔布局（分隔条为内部组件） |
-| MuIconButton | 仅图标的快捷操作按钮 |
-| MuInputGroup | 输入框分组 |
-| MuToolbar | 工具栏组件 |
+| MuScrollArea | 单轴滚动区，溢出时以位移按钮代替滚动条 |
+| MuToolbar | 工具栏容器 |
 | MuBar | 通用条形容器 |
 | MuPagination | 分页组件 |
-| MuScrollBox | 可滚动容器（带自定义滚动条） |
-| MuSegmented | 分段选择器 |
-| MuFormRow | 表单行布局 |
-| MuStatusBox | 状态提示框 |
-| MuCheckGroup | 复选框组（数据驱动，`options` 数组 + `v-model`） |
-| MuRadioGroup | 单选框组（数据驱动，`options` 数组 + `v-model`） |
-| MuMessageBox | 消息弹框（插件式调用） |
-| MuNotifier | 通知提示（插件式调用） |
+| MuIconButton | 仅图标的快捷操作按钮 |
+| MuSortIcon | 排序方向指示图标 |
+| MuInputGroup | 输入框分组 |
+| MuFlexDivider / MuFlexSpace / MuFlexBreak | flex 辅助元素（V3 为 `mu-divider` / `mu-space` CSS 类） |

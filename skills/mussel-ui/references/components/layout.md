@@ -65,15 +65,24 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 
 **MuGridCell 属性：**
 
+通过 6 个 props 计算输出 `grid-column` / `grid-row` 两个样式属性（列、行规则相同）：
+
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
-| `col-start` | Number | — | `grid-column-start` |
-| `col-span` | Number | — | `grid-column-span` |
-| `col-end` | Number | — | `grid-column-end`（实际值为 `colEnd + end-offset`） |
-| `row-start` | Number | — | `grid-row-start` |
-| `row-span` | Number | — | `grid-row-span` |
-| `row-end` | Number | — | `grid-row-end`（实际值为 `rowEnd + end-offset`） |
-| `end-offset` | Number | `0` | 列/行结束偏移量，取值 `0` \| `1`；默认可由全局 `$mussel.options.gridCell.endOffset` 配置 |
+| `col-start` | Number | — | 起始网格线，输出 `grid-column` 的 start |
+| `col-span` | Number | — | 跨度轨道数；与 `col-end` 同设时 **span 优先** |
+| `col-end` | Number | — | **末轨道号（含端点）**，内部 `+1` 转为网格线 |
+| `row-start` | Number | — | 起始网格线，输出 `grid-row` 的 start |
+| `row-span` | Number | — | 跨度轨道数；与 `row-end` 同设时 **span 优先** |
+| `row-end` | Number | — | **末轨道号（含端点）**，内部 `+1` 转为网格线 |
+
+组合规则（以列为例，行同理）：
+
+- 仅 `col-start` → `grid-column: 2`
+- 仅 `col-span` → `grid-column: span 3`
+- 仅 `col-end` → `grid-column: auto / 5`（`colEnd + 1`）
+- `start` + `span` → `grid-column: 2 / span 3`；`start` + `end` → `grid-column: 1 / 3`
+- 三者均未设置时不输出该属性
 
 ```html
 <!-- 组件形式 -->
@@ -84,7 +93,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 
 <!-- 原子类形式（等价） -->
 <div class="grid" style="grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr)">
-  <div style="grid-column-span: 2; grid-row-span: 3">宽 2 高 3</div>
+  <div style="grid-column: span 2; grid-row: span 3">宽 2 高 3</div>
   <div>默认占 1 格</div>
 </div>
 ```
@@ -139,7 +148,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
-| `collapsible` | Boolean \| String | — | 可收拢面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`。拖动至该侧 `min-width` 一半以下即收拢为 0 宽（`display:none`），双击重置恢复 |
+| `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'left'`/`'right'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**两侧分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'left'` → 左面板、`'right'` → 右面板，`true` → 两侧）。拖动至该侧 `min-width` 一半以下即收拢为 0 宽，双击重置恢复 |
 | `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`（详见上方「分隔条」） |
 | `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始宽度）\| `none`（无响应） |
 | `left-width` | String | `'33.3%'` | 左侧面板初始宽度 |
@@ -178,7 +187,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false` |
-| `collapsible` | Boolean \| String | — | 可收拢面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false`。拖动至该侧 `min-height` 一半以下即收拢为 0 高（`display:none`），双击重置恢复 |
+| `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'top'`/`'bottom'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**上下分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'top'` → 顶部面板、`'bottom'` → 底部面板，`true` → 两侧）。拖动至该侧 `min-height` 一半以下即收拢为 0 高，双击重置恢复 |
 | `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`（详见上方「分隔条」） |
 | `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始高度）\| `none`（无响应） |
 | `top-height` | String | `'33.3%'` | 顶部面板初始高度 |
@@ -225,7 +234,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 <!-- 指令形式，为任意容器添加同款滚动条 -->
 <div v-mu-scrollbar style="overflow: auto; height: 400px">内容</div>
 
-<!-- 指令值为 false 时不渲染滚动条 -->
+<!-- 指令值为 false（或历史兼容值 'none'）时不渲染滚动条 -->
 <div v-mu-scrollbar="false" style="overflow: auto">内容</div>
 ```
 
@@ -260,8 +269,42 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 | `default-button-style` | String | — | 内部按钮默认风格：`normal` \| `outline` \| `text` \| `link` |
 
 > `MuToolbar` 通过 `provide` 向内部子组件注入 `toolSize` 与 `defaultButtonStyle`：
-> - `MuButton` / `MuIconButton`：消费两者（`toolSize` 设置尺寸，`defaultButtonStyle` 作为未显式设置时的默认风格）；
+> - `MuButton` / `MuIconButton`：消费两者（`toolSize` 设置尺寸，`defaultButtonStyle` 作为未显式设置时的默认风格）；**例外**：按钮位于 `mu-button-group` 内时完全不消费这两个注入（由 button-group 的 props 接管）；
 > - `MuInput`：仅消费 `toolSize`（缩小尺寸）。
 >
 > 子组件显式传入对应属性时优先使用自身设置。
-> 另注：`MuPagination` 自身注入并向其内部按钮透传 `toolSize`（根元素带 `mu-toolbar` class）；它不是 `MuToolbar` 的注入消费者，而是独立的等价容器。
+> 另注：`MuPagination` 根元素带 `mu-toolbar` class，自身注入 `toolSize`（可继承外层 `MuToolbar` 或由自身 `size` prop 指定）并向其内部按钮透传，是等价的条形容器。
+
+---
+
+### MuBar
+
+固定高 40px 的条形容器，与 `MuToolbar` 共享基础条形样式（flex + 垂直居中 + gap），无 props，仅默认插槽。`MuDateInput` 下拉面板的工具栏即基于它。
+
+```html
+<mu-bar class="px-2x bg-strong">
+  <span>标题</span>
+  <div class="flex-space" />
+  <mu-icon-button icon="X" button-style="text" />
+</mu-bar>
+```
+
+---
+
+### MuFlexDivider / MuFlexSpace / MuFlexBreak
+
+flex 辅助元素的组件形式，与同名原子类等价（原子类说明见 `styles.md` §2.1「Flex 辅助元素」），接受透传的 attrs（如 `class`、`space`）：
+
+| 组件 | 等价原子类 | 用途 |
+|------|-----------|------|
+| `<mu-flex-divider>` | `.flex-divider` | 垂直分隔线（`--stroke-1`~`4` / `--pill` 变体用 class 附加） |
+| `<mu-flex-space>` | `.flex-space` | 弹性占位；`space="1x"` ~ `"4x"` 等间距变体 |
+| `<mu-flex-break>` | `.flex-break` | 强制换行（`flex: 0 0 100%`） |
+
+```html
+<mu-h-box>
+  <mu-button caption="A" />
+  <mu-flex-space />
+  <mu-button caption="B" />
+</mu-h-box>
+```

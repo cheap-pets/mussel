@@ -4,10 +4,12 @@
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
-| `icon` | String | 已注册图标名，或以 `.` 开头的 icon-font class |
-| `tag` | String | 渲染的 DOM 标签，默认 `span` |
+| `icon` | String | 已注册图标名，或以 `.` 开头的 icon-font class；可带动画后缀 `name:animation`（如 `loading` 图标默认 `spin`） |
+| `animation` | String | 动画效果；单独设置时优先于 `icon` 值中的 `:animation` 后缀 |
+| `tag` | String | 渲染的 DOM 标签，默认 `span`（仅 `'a'` 渲染链接，其余值回退 `span`） |
 
 **图标注册（应用入口处统一注册）：**
+
 ```javascript
 import { install as installMussel, installIcons } from 'mussel'
 import EditIcon from '@/assets/icons/edit.svg'
@@ -15,7 +17,7 @@ import EditIcon from '@/assets/icons/edit.svg'
 // 安装时注册
 installMussel(app, {
   icons: {
-    edit: EditIcon,           // SVG 文件
+    edit: EditIcon,           // SVG 源码字符串
     bolt: 'icon icon-bolt'    // icon-font class
   }
 })
@@ -23,6 +25,8 @@ installMussel(app, {
 // 或后续补充注册
 installIcons({ refresh: RefreshIcon })
 ```
+
+> 当使用 vite 打包并未使用文本导入插件时，SVG 需以 `?raw` 导入源码字符串（直接 `import` 得到的是 URL，无法使用）。
 
 ```html
 <mu-icon icon="edit" />

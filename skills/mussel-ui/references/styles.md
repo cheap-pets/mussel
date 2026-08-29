@@ -24,7 +24,7 @@
 | `--mu-lime` | 青柠色 |
 | `--mu-yellow` | 黄色 |
 | `--mu-orange` | 橙色 |
-| `--mu-gray` | 中性灰（由主色计算） |
+| `--mu-gray` | 中性灰（灰阶基准色，按 neutral → gray → primary 优先级派生，见 `install.md`） |
 | `--mu-gray-0` ~ `--mu-gray-19` | 由浅到深的 20 级灰阶 |
 
 ---
@@ -50,7 +50,7 @@
 
 ### 1.3 透明色变体（`-translucent`）
 
-所有基本色和语义色均有 `-translucent` 变体（亮色主题 10%、暗色主题 20% 透明度），适用于 hover 背景、标签底色等场景。
+所有基本色和语义色均有 `-translucent` 变体，适用于 hover 背景、标签底色等场景。亮色主题透明度 10%；暗色主题（`.mu-dark`）下**语义色与 gray** 升至 20%，12 个基本色仍为 10%。
 
 | 变量 | 用途示例 |
 |------|---------|
@@ -65,12 +65,12 @@
 
 ### 1.4 极浅色变体（`-faint`）
 
-扩展语义色的极浅版本，适用于状态 Badge、Tag 等需要低饱和度底色的场景。
+扩展语义色的极浅版本，适用于状态 Badge、Tag 等需要低饱和度底色的场景。暗色主题（`.mu-dark`）下改用**最深色阶 `-9`**（如 `--mu-primary-faint: var(--mu-primary-color-9)`）。
 
 | 变量 | 用途示例 |
 |------|---------|
 | `--mu-primary-faint` | 主色标签底色 |
-| `--mu-secondary-faint` | 次要标签底色 |
+| `--mu-secondary-faint` | 次色标签底色 |
 | `--mu-success-faint` | 成功状态背景块 |
 | `--mu-warning-faint` | 警告状态背景块 |
 | `--mu-danger-faint` | 错误状态背景块 |
@@ -79,7 +79,7 @@
 
 ### 1.5 文本颜色（由深到浅）
 
-文本色由 20 级灰阶映射而来。近期已将 `normal` 加深，拉开与 `subtle` 的层级。
+文本色由 20 级灰阶映射而来，`normal` 与 `subtle` 层级明确拉开。
 
 | 变量 | 原子类 | 适用场景 |
 |------|--------|---------|
@@ -88,6 +88,7 @@
 | `--mu-text-color-subtle` | `.text-subtle` | 次要信息、描述文字 |
 | `--mu-text-color-soft` | `.text-soft` | 副标题、提示文字 |
 | `--mu-text-color-muted` | `.text-muted` | 禁用状态文字 |
+| `--mu-text-color-weak` | — | 兼容性变量（仅暗色主题定义，映射 gray-12），新代码用 `text-muted` |
 
 功能色文本：`.text-primary` / `.text-secondary` / `.text-success` / `.text-warning` / `.text-danger`
 
@@ -109,7 +110,7 @@
 
 ### 1.7 边框颜色
 
-边框色由灰阶映射而来。近期已整体调浅，使边框更柔和，避免喧宾夺主。三档由深到浅：
+边框色由灰阶映射而来，整体柔和、避免喧宾夺主。三档由深到浅：
 
 | 变量 | 原子类 | 用途 |
 |------|--------|------|
@@ -164,7 +165,7 @@
 | `3x` | 24px | 区块间距 |
 | `4x` | 32px | 大区域分隔 |
 
-> 间距原子类支持的后缀：`-0` / `-half` / `-1x` ~ `-4x`（padding/margin 同理），gap 支持 `gap-none` / `gap-half` / `gap-1x` ~ `gap-4x`。
+> 间距原子类支持的后缀：`-0` / `-half` / `-1x` ~ `-4x` / `-auto`（padding/margin 同理，`-auto` 即对应方向 `auto`），gap 支持 `gap-none` / `gap-half` / `gap-1x` ~ `gap-4x`。
 
 ---
 
@@ -203,7 +204,16 @@
 
 > 老版本使用 `--mu-input-size`，4.0 已统一为 `--mu-control-height-*`。
 
+---
 
+### 1.14 暗色主题（`.mu-dark`）
+
+`install` 时设置 `dark: true`（或 `'auto'` 且系统为暗色）会把 `mu-dark` class 加到根元素，token 随之重映射，无需手动覆盖变量：
+
+- **灰阶反转**：文本色改用浅灰——strong=gray-1、normal=gray-4、subtle=gray-7、soft=gray-10、muted=gray-12；
+- **边框**：strong=gray-6、normal=gray-9、soft=gray-12；
+- **背景**：bg-normal=gray-19、bg-overlay=gray-17、bg-fill=gray-16、bg-stripe=gray-18；
+- 透明/极浅变体变化见 §1.3 / §1.4；另设 `color-scheme: dark`。
 
 ## 2 - 原子类
 
@@ -222,9 +232,6 @@
 | .sticky           | position: sticky |
 | .inset-0          | inset: 0 |
 
-
-
-
 **显示：**
 
 | 类名           | 说明                    |
@@ -239,8 +246,6 @@
 | .contents      | display: contents       |
 | .hidden        | display: none           |
 
-
-
 **溢出：**
 
 | 类名             | 说明             |
@@ -250,8 +255,6 @@
 | .overflow-visible| overflow: visible|
 | .overflow-clip   | overflow: clip   |
 
-
-
 **Flex 方向：**
 
 | 类名              | 说明                           |
@@ -260,8 +263,6 @@
 | .flex-row-reverse | flex-direction: row-reverse    |
 | .flex-col         | flex-direction: column         |
 | .flex-col-reverse | flex-direction: column-reverse |
-
-
 
 **Flex 项目：**
 
@@ -282,8 +283,6 @@
 | ----------------- | ------------------------------------------- |
 | .flex-center      | 同时设置 `align-items: center; justify-content: center` |
 
-
-
 **Flex 换行：**
 
 | 类名               | 说明                    |
@@ -291,8 +290,6 @@
 | .flex-nowrap       | flex-wrap: nowrap       |
 | .flex-wrap         | flex-wrap: wrap         |
 | .flex-wrap-reverse | flex-wrap: wrap-reverse |
-
-
 
 **对齐：**
 
@@ -303,7 +300,7 @@
 | .items-{value}   | align-items      |
 | .self-{value}    | align-self       |
 
-可用值：center, start, end, baseline, stretch, flex-start, flex-end, unset, inherit
+可用值：center, start, end, baseline, stretch, flex-start, flex-end, unset, inherit；另提供 `.self-auto`
 
 **justify-content：**
 
@@ -311,8 +308,24 @@
 | ---------------- | ---------------- |
 | .justify-{value} | justify-content  |
 
-可用值：start, end, left, right, baseline, center, stretch, flex-start, flex-end, space-around, space-between, space-evenly
+可用值：normal, start, center, end, baseline, stretch, flex-start, flex-end；分布对齐为 `.justify-around` / `.justify-between` / `.justify-evenly`（对应 `space-around` 等）；另提供 `.justify-center-safe` / `.justify-end-safe`（`safe center` / `safe end`，溢出时不丢失起始端内容）
 
+**align-content：**
+
+| 类名               | 说明            |
+| ------------------ | --------------- |
+| .content-{value}   | align-content   |
+
+可用值：center, start, end, baseline, stretch, flex-start, flex-end；分布对齐为 `.content-around` / `.content-between` / `.content-evenly`
+
+**Grid 对齐（justify-items / justify-self）：**
+
+| 类名                     | 说明           |
+| ------------------------ | -------------- |
+| .justify-items-{value}   | justify-items  |
+| .justify-self-{value}    | justify-self   |
+
+justify-items 可用值：normal, start, center, end, stretch；justify-self 可用值：auto, start, center, end, stretch；另提供 `.justify-items-center-safe` / `.justify-items-end-safe` / `.justify-self-center-safe` / `.justify-self-end-safe`
 
 **Gap：**
 
@@ -333,8 +346,6 @@
 | .z-ontop   | z-index: var(--mu-z-index-ontop)  |
 
 > 上述 `.z-*` 类实际值为 `calc(var(--mu-z-index-*) + var(--z-offset, 0))`，可通过局部设置 `--z-offset` CSS 变量在同一层级内做细粒度的层叠叠加（默认 `0`，不叠加）。
-
-
 
 **Flex 辅助元素：**
 
@@ -388,17 +399,15 @@
 </div>
 ```
 
-
-
 ### 2.2 间距
 
-间距基于 `--mu-base-spacing`（默认 8px）的倍数，padding/margin 均支持后缀 `-0` / `-half` / `-{1~4}x`。
+间距基于 `--mu-base-spacing`（默认 8px）的倍数，padding/margin 均支持后缀 `-0` / `-half` / `-{1~4}x` / `-auto`（值为 `auto`）。
 
 **padding：**
 
 | 类名 | 说明 |
 | ---- | ---- |
-| .p-{s} | 上下左右 padding（s 取 0 / half / 1x ~ 4x） |
+| .p-{s} | 上下左右 padding（s 取 0 / half / 1x ~ 4x / auto） |
 | .px-{s} | 水平方向 padding |
 | .py-{s} | 垂直方向 padding |
 | .pt-{s} | padding-top |
@@ -410,16 +419,13 @@
 
 | 类名 | 说明 |
 | ---- | ---- |
-| .m-{s} | 上下左右 margin（s 取 0 / half / 1x ~ 4x） |
+| .m-{s} | 上下左右 margin（s 取 0 / half / 1x ~ 4x / auto） |
 | .mx-{s} | 水平方向 margin |
 | .my-{s} | 垂直方向 margin |
 | .mt-{s} | margin-top |
 | .mr-{s} | margin-right |
 | .mb-{s} | margin-bottom |
 | .ml-{s} | margin-left |
-| .m-auto / .mx-auto / .my-auto / .mt-auto / .mr-auto / .mb-auto / .ml-auto | 对应方向 margin: auto |
-
-
 
 ### 2.3 背景与边框
 
@@ -446,15 +452,17 @@
 | .shadow-focus            | 焦点阴影（需 :focus）  |
 | .shadow-focus-within     | 焦点阴影（需 :focus-within） |
 
-**圆角（类名带 `mu-` 前缀）：**
+**圆角：**
+
+`.radius-*` 与 `.mu-radius-*` 两套类名**均存在且等价**（`mu-` 前缀为命名空间隔离的别名，两者都生成）。
 
 | 类名            | 说明                 |
 | --------------- | -------------------- |
-| .radius-control | 一般组件圆角（4px）  |
-| .radius-panel   | 面板圆角（8px）      |
-| .radius-modal   | 模态窗口圆角（12px） |
+| .radius-control / .mu-radius-control | 一般组件圆角（4px）  |
+| .radius-panel / .mu-radius-panel     | 面板圆角（8px）      |
+| .radius-modal / .mu-radius-modal     | 模态窗口圆角（12px） |
 
-**边框宽度 (n: 1 ~ 4, 像素值)：**
+**边框宽度 (n: 2 ~ 4, 像素值；1px 用无后缀类)：**
 
 | 类名          | 说明                     |
 | ------------- | ------------------------ |
@@ -484,20 +492,7 @@
 | `-primary`      | 主色边框           |
 | `-danger`       | 危险色边框         |
 
-示例：
-
-| 类名               | 说明                  |
-| ------------------ | --------------------- |
-| .border-soft       | 四边浅色边框          |
-| .border-strong     | 四边深色边框          |
-| .border-primary    | 四边主色边框          |
-| .border-danger     | 四边危险色边框        |
-| .border-x-soft     | 水平方向浅色边框      |
-| .border-y-strong   | 垂直方向深色边框      |
-| .border-t-primary  | 上边主色边框          |
-| .border-b-danger   | 下边危险色边框        |
-
-> 颜色与方向可任意组合，共 4 色 × 7 方向（含四边）= 28 个类。
+颜色与方向可任意组合，共 4 色 × 7 方向（含四边）= 28 个类。
 
 **边框样式：**
 
@@ -509,19 +504,7 @@
 | `-dotted`       | 点线边框         |
 | `-double`       | 双线边框         |
 
-示例：
-
-| 类名                | 说明               |
-| ------------------- | ------------------ |
-| .border-dashed      | 四边虚线边框       |
-| .border-dotted      | 四边点线边框       |
-| .border-double      | 四边双线边框       |
-| .border-x-dashed    | 水平方向虚线边框   |
-| .border-y-dotted    | 垂直方向点线边框   |
-| .border-t-double    | 上边双线边框       |
-
-> 样式与方向可任意组合，共 3 样式 × 7 方向（含四边）= 21 个类。
-
+样式与方向可任意组合，共 3 样式 × 7 方向（含四边）= 21 个类。
 
 ### 2.4 文本排版
 
@@ -610,6 +593,27 @@ display: -webkit-box;
 white-space: pre-line;
 ```
 
+---
+
+### 2.5 其他工具类
+
+**`mu-` 前缀别名类：** 文本、背景、阴影、圆角四组原子类均有 `.mu-*` 前缀的等价别名（如 `.mu-text-strong` = `.text-strong`、`.mu-bg-normal` = `.bg-normal`、`.mu-shadow-popup` = `.shadow-popup`、`.mu-radius-control` = `.radius-control`），用于避免与项目内同名类冲突的场景。
+
+**指针与选择（pointer.scss）：**
+
+| 类名 | 说明 |
+| ---- | ---- |
+| .cursor-default / .cursor-auto / .cursor-pointer | cursor |
+| .select-none / .select-auto / .select-all / .select-text | user-select |
+| .pointer-event-none / .pointer-event-auto | pointer-events |
+
+**链接（link.scss，纯 CSS 类，无对应组件）：**
+
+| 类名 | 说明 |
+| ---- | ---- |
+| .mu-link | 主色链接样式：指针光标、hover 下划线 |
+| .mu-link--danger | 危险色变体 |
+| .mu-link[disabled] | 禁用态（灰色、不可点击），表格 link 列内部即使用 |
 
 ## 3 - 常用布局模式
 

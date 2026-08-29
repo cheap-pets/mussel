@@ -13,6 +13,8 @@
     "pub": "npm run build && npm publish"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^19.8.1",
     "@faker-js/faker": "^10.4.0",
     "@tabler/icons": "^3.29.0",
     "@vitejs/plugin-vue": "^6.0.5",

@@ -72,7 +72,6 @@
     orderBy: String,
     recordsOffset: { type: Number, default: 0 },
     fixedLeftColumns: Number,
-    virtualScroll: Boolean,
     gridlines: {
       default: 'all',
       validator: v => ['none', 'all', 'row', 'column'].includes(v)

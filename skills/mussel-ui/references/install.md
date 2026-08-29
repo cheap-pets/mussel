@@ -29,15 +29,15 @@ install(app, {
 | ---- | ---- | ------ | ---- |
 | root | String \| Element | `document.body` | 应用根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
 | dark | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
-| colors | Object | 内置默认色 | 自定义主题色，支持的 key：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral` / `gray`，会自动派生对应调色板与 `--mu-*` CSS 变量 |
+| colors | Object | 内置默认色 | 自定义主题色，自动派生对应调色板与 `--mu-*` CSS 变量。合法 key：语义色 `primary` / `secondary` / `success` / `warning` / `danger` + 基本色名 `red` / `pink` / `grape` / `violet` / `indigo` / `blue` / `cyan` / `teal` / `green` / `lime` / `yellow` / `orange`；`neutral` / `gray` 不派生自身调色板，仅作灰阶基准（优先级 neutral → gray → primary） |
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
-| localeResources | Object | — | 自定义语言包，写入指定 `locale` 下；Mussel 内置 `zh` / `en` |
-| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `gridCell.endOffset`、`splitter.*`、`tree.*` 等） |
+| localeResources | Object | — | 自定义语言包，**整包替换**写入指定 `locale` 下（不与内置键合并，只传部分字段会丢失该语言的内置键）；Mussel 内置 `zh` / `en` |
+| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `splitter.*`、`tree.nodeIcons`、`calendar.weekStartsOn` 等） |
 
 > [!NOTE]
 >
-> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置根元素 class（`mu-root` + `mu-dark`，由 `dark` 决定）→ 设置主题色（`setupColors`）→ 设置语言（`setupLocale`）→ 注册图标（`installIcons`）→ 注册全部组件 → 注册滚动指令（`v-mu-scrollbar`）。
+> `install` 内部执行顺序：注入 `$mussel` 上下文 → 设置语言（`setupLocale`）→ 设置根元素 class（`mu-root` + `mu-dark`，由 `dark` 决定）→ 设置主题色（`setupColors`）→ 注册图标（`installIcons`）→ 注册全部组件 → 注册滚动指令（`v-mu-scrollbar`）。
 
 ## 全局 `$mussel` 上下文
 
@@ -100,7 +100,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 | 参数 | 类型 | 默认值 | 说明 |
 | ---- | ---- | ------ | ---- |
-| customColors | Object | `{}` | 自定义主题色，key 同 `options.colors`：`primary` / `secondary` / `success` / `warning` / `danger` / `neutral` / `gray`，自动派生调色板与灰阶，并写入 `--mu-*` CSS 变量 |
+| customColors | Object | `{}` | 自定义主题色，key 同 `options.colors`：语义色 `primary` / `secondary` / `success` / `warning` / `danger` + 基本色名 `red` / `pink` / `grape` / `violet` / `indigo` / `blue` / `cyan` / `teal` / `green` / `lime` / `yellow` / `orange`；`neutral` / `gray` 仅作灰阶基准（优先级 neutral → gray → primary），自动派生调色板与灰阶，并写入 `--mu-*` CSS 变量 |
 | rootElement | Element | `$mussel.rootElement` | 写入 CSS 变量的根元素；未传时回退到当前上下文的 `rootElement`，再回退到 `document.body` |
 
 > [!NOTE]

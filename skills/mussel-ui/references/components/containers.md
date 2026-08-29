@@ -6,7 +6,7 @@
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
-| `active-tab` | String | 双向绑定，当前活动页签名称 |
+| `active-tab` | String | 双向绑定，当前活动页签；未设置时组件挂载后自动选中第一个页签 |
 | `tab-style` | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
 | `tab-buttons` | Array | 手动指定页签按钮，默认由内部 `MuTabPanel` 自动生成 |
 | `tab-position` | String | `top`（默认）\| `bottom` \| `left` \| `right` |
@@ -20,7 +20,7 @@
 |------|------|------|
 | `tab-click` | `name` | 页签按钮点击 |
 
-> 页签按钮溢出时，按钮区两端自动显示位移按钮（轻点位移一步，按住连续滚动）与列表下拉按钮，可在列表中直接切换页签；活动页签变化时自动滚动到可视区。
+> 页签按钮溢出时，滚动容器一端的按钮容器内自动显示位移按钮（×2，轻点位移一步，按住连续滚动）与列表下拉按钮（在列表中直接切换页签）；活动页签变化时自动滚动到可视区。
 
 ```html
 <mu-tabs v-model:active-tab="activeTab" tab-style="button">
@@ -44,7 +44,7 @@
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
-| `name` | String | 页签唯一标识，必填 |
+| `name` | String | 页签唯一标识；建议显式设置（省略时无法被 `active-tab` 匹配） |
 | `caption` | String | 页签按钮标题 |
 | `icon` | String | 页签按钮图标 |
 | `title` | String | 页签按钮 tooltip |
@@ -73,7 +73,7 @@
 |------|------|------|
 | `tab-click` | `name` | 页签按钮点击 |
 
-> `tab-style` 为 `small-button` 时内部页签按钮按小尺寸渲染。按钮区基于 `MuScrollArea` 实现：溢出时显示位移按钮与列表下拉按钮（点击列表项切换页签），活动页签变化时自动滚入可视区。
+> `tab-style` 为 `small-button` 时内部页签按钮按小尺寸渲染。按钮区基于 `MuScrollArea` 实现：溢出时在滚动容器一端的按钮容器内显示位移按钮（×2）与列表下拉按钮（点击列表项切换页签），活动页签变化时自动滚入可视区。
 
 ---
 
@@ -84,12 +84,14 @@
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `visible` | Boolean | — | 双向绑定可见状态 |
-| `title` | String | — | 对话框标题 |
+| `title` | String\|Object | — | 对话框标题，prop 类型为 `[String, Object]`，按文本渲染 |
 | `icon` | String\|Object | — | 标题图标 |
 | `width` | String\|Number | — | 窗口宽度 |
 | `height` | String\|Number | — | 窗口高度 |
-| `header` | `'auto'`\|Boolean | `'auto'` | 头部显隐。`'auto'` 时根据 title/icon/close-button/maximize-button/header slot 自动判断 |
+| `header` | `'auto'`\|Boolean | `'auto'` | 头部显隐。`'auto'` 时根据 title/close-button/maximize-button/header slot 自动判断 |
 | `footer` | `'auto'`\|Boolean | `'auto'` | 底部显隐。`'auto'` 时根据 buttons/footer slot 自动判断 |
+| `header-class` | String | — | 头部区域附加 class |
+| `footer-class` | String | — | 底部区域附加 class |
 | `body-class` | String | — | 传给 body 区域的 class，通常用于控制其布局方式、间距、背景等 |
 | `body-style` | Object | — | 传给 body 区域的 style |
 | `body-scrollbar` | Boolean | — | 为 body 区域启用滚动条（使用 `v-mu-scrollbar`） |
@@ -99,12 +101,14 @@
 | `maximize-button` | Boolean | — | 显示最大化按钮 |
 | `maximize-to-fullscreen` | Boolean | — | 最大化时进入全屏模式 |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
-| `keep-position` | Boolean | — | 再次打开时保留上次位置 |
+| `keep-position` | Boolean | — | 再次打开时保留上次位置（含拖拽后的位置） |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `z-index` | String | — | 自定义层级 |
 | `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使弹窗相对该容器而非视口定位。详见下方「嵌入容器」 |
 | `mask-class` | — | — | 遮罩 class |
 | `mask-attrs` | Object | — | 透传给遮罩的额外属性 |
+
+> 标题栏支持拖拽移动对话框（按住 header 区域拖动）；窗口尺寸变化或拖拽结束时自动做越界校正，保持对话框完整可见。
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
@@ -138,7 +142,7 @@
 | `'#OK!'` \| `'#YES!'` | 同名预设的危险色（红色）变体 |
 | `' '`（单个空格） | 弹性间距，把后续按钮推到右侧 |
 | `'-'`（连字符） | 分隔线 |
-| `{ name, caption, primary, buttonStyle, action, icon, ... }` | 完整对象，可任意覆盖以上字段 |
+| `{ name, caption, is, key, primary, danger, buttonStyle, action, icon, ... }` | 完整对象，可任意覆盖以上字段：`is` 自定义渲染组件（如 `is: '-'` / `' '` 即分隔线与弹性间距的等价写法）、`key` 列表 key、`danger` 危险色 |
 
 > ⚠️ **生成 dialog 按钮时优先使用上表中的 `#` 预设**，避免手写 `{ caption: '确定', primary: true }` 这类重复对象——预设已统一主色/文本样式/关闭行为/多语言文案，且 `name` 固定、便于在 `@button-click` 中判断点击来源。只有当预设无法满足（自定义文案、自定义图标、危险色以外的样式变体等）时，才用对象形式覆盖。
 
@@ -241,6 +245,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 | `mask` | Boolean | `true` | 是否显示遮罩 |
 | `rounded` | Boolean | — | 是否圆角 |
 | `teleport` | Boolean | `true` | 渲染到页面根容器 |
+| `z-index` | String | — | 自定义层级 |
 | `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使抽屉相对该容器而非视口定位。详见下方「嵌入容器」 |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |

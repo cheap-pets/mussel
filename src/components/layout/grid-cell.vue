@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-  import { computed, inject } from 'vue'
+  import { computed } from 'vue'
 
   defineOptions({ name: 'MusselGridCell' })
 
@@ -15,20 +15,21 @@
     colEnd: Number,
     rowStart: Number,
     rowSpan: Number,
-    rowEnd: Number,
-    endOffset: {
-      type: Number,
-      validator: v => [0, 1].includes(v),
-      default: () => inject('$mussel').options.gridCell?.endOffset || 0
-    }
+    rowEnd: Number
   })
 
+  // colEnd/rowEnd 为末轨道号（含端点），转为网格线需 +1；span 与 end 同时设置时 span 优先
+  function toGridLine (start, end, span) {
+    const tail = span ? `span ${span}` : (end == null ? null : end + 1)
+
+    if (start != null && tail != null) return `${start} / ${tail}`
+    if (start != null) return `${start}`
+    if (span) return tail
+    return end == null ? null : `auto / ${tail}`
+  }
+
   const style = computed(() => ({
-    gridColumnStart: props.colStart,
-    gridColumnSpan: props.colSpan,
-    gridColumnEnd: isNaN(props.colEnd) ? null : parseInt(props.colEnd) + props.endOffset,
-    gridRowStart: props.rowStart,
-    gridRowSpan: props.rowSpan,
-    gridRowEnd: isNaN(props.rowEnd) ? null : parseInt(props.rowEnd) + props.endOffset
+    gridColumn: toGridLine(props.colStart, props.colEnd, props.colSpan),
+    gridRow: toGridLine(props.rowStart, props.rowEnd, props.rowSpan)
   }))
 </script>

@@ -77,7 +77,7 @@
    - 已移除组件：`<mu-editor>`、`<mu-tabs-buttons>`
    - Tree 相关：`<mu-tree-nodes>`（V4 不再注册，见 rules.md 5.7）
    - 推荐迁移：`<mu-option>`、`<mu-tree-node>`、`<mu-dropdown-item>` 等
-   - 废弃属性：`mask-action`、`easy-hide`、`:moveable`、`dialog-style`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`trigger-action`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
+   - 废弃属性：`mask-action`、`:moveable`、`dialog-style`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
    - 废弃事件：`@tab-change`、`@close-button-click`、`@mask-click`
    - 行为差异（非废弃，需人工审核）：
      - `<mu-dialog>` 同时使用 `action: 'hide'`/`'close'` 按钮与 `@button-click` handler（V3 hide 按钮不触发，V4 全触发，见 rules.md 5.1）
@@ -222,19 +222,6 @@
 
 ## Mussel 4 速查表
 
-升级完成后编写新代码时参考以下文档：
-
-- **原子样式**（CSS 变量、原子类、间距、颜色）：`references/styles.md`
-- **组件 API**：按 8 大类 1:1 查阅对应参考文件（详见 `SKILL.md` 步骤 2 路由表）
-  - 1 布局：`references/components/layout.md`
-  - 2 容器与面板（含模态/抽屉）：`references/components/containers-panels.md`
-  - 3 按钮与操作：`references/components/buttons.md`
-  - 4 表单 / 输入：`references/components/form.md`
-  - 5 导航与菜单：`references/components/navigation.md`
-  - 6 数据展示（含表格）：`references/components/data.md`
-  - 7 反馈：`references/components/feedback.md`
-  - 8 基础元素：`references/components/basic.md`
-- **组件选型**：`SKILL.md` 组件速查表
-- **安装初始化**：`install(app, options)`、options 字段、`$mussel` 上下文、`installIcons` 查阅 `references/install.md`
+升级完成后编写新代码时，查阅 `SKILL.md` 的组件速查表与步骤 2 路由表（8 大类组件 API）、`references/styles.md`（原子样式）与 `references/install.md`（安装初始化）。
 
 > 迁移规则中的「目标写法」列均使用 Mussel 4 语法，具体属性/事件/插槽的完整 API 请查阅上述参考文件。

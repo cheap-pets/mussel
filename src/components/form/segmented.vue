@@ -7,7 +7,7 @@
       :ref="el => itemRefs[idx] = el"
       class="mu-segmented__item"
       :active="model === option.value || null"
-      :disabled="option.disabled || null"
+      :disabled="disabled || option.disabled || null"
       @click="select(option)"
       @sizechange="model === option.value && updateThumb(true)">
       <slot :option="option">
@@ -30,6 +30,7 @@
 
   const props = defineProps({
     options: Array,
+    disabled: Boolean,
     iconPosition: { type: String, default: 'left', validator: v => ['left', 'top'].includes(v) }
   })
 

@@ -67,7 +67,7 @@ function updateColors (customColors = {}) {
 }
 
 function setupColors (customColors = {}, rootElement) {
-  if (!Object.keys(customColors).count) return
+  if (!Object.keys(customColors).length) return
 
   rootElement ||= this.rootElement || document.body
   const incomingColors = updateColors(customColors)

@@ -445,7 +445,7 @@ accordion
 | 区域用途 | 查阅路径 |
 |---------|---------|
 | 布局原子组件 | `mussel-ui/references/components/layout.md` |
-| 容器与面板（弹窗/抽屉/Tab） | `mussel-ui/references/components/containers-panels.md` |
+| 容器与面板（弹窗/抽屉/Tab） | `mussel-ui/references/components/containers.md` |
 | 按钮与操作 | `mussel-ui/references/components/buttons.md` |
 | 表单 / 输入 | `mussel-ui/references/components/form.md` |
 | 导航与菜单 | `mussel-ui/references/components/navigation.md` |
