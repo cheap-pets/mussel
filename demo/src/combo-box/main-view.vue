@@ -33,7 +33,6 @@
       <mu-combo-box v-model="artist" editable :options="artists" />
     </div>
     <div class="group flex flex-col gap-1x">
-      123
       <mu-select
         v-model="artist"
         class="my-select"
@@ -59,6 +58,22 @@
               :key="el"
               :value="el" />
           </mu-scroll-box>
+        </template>
+      </mu-select>
+      <mu-select
+        v-model="slotItem"
+        placeholder="search & select (new slots)">
+        <template #dropdown-header>
+          <mu-search-input
+            v-model="slotSearchKey"
+            input-style="solid"
+            style="width: 100%; margin-bottom: var(--mu-half-spacing);" />
+        </template>
+        <template #dropdown-items>
+          <mu-option
+            v-for="el in slotFilteredItems"
+            :key="el"
+            :value="el" />
         </template>
       </mu-select>
       <mu-multi-select
@@ -96,6 +111,12 @@
     { value: 'Johann Baptist Strauss', disabled: false }
   ])
   const artistCn = ref()
+  const slotItem = ref()
+  const slotSearchKey = ref('')
+  const slotFilteredItems = computed(() =>
+    items.filter(item => !slotSearchKey.value || item.includes(slotSearchKey.value))
+  )
+
   const searchKey = ref('')
   const selectedItem = ref()
   const items = new Array(50).fill(0).map((el, idx) => `items${idx}`)

@@ -88,6 +88,34 @@
         </mu-dropdown>
       </div>
       <div class="group">
+        <mu-dropdown-button
+          split-button
+          caption="Items + Header & Footer"
+          @dropdown:itemclick="onItemClick"
+          @action="onAction">
+          <template #dropdown-header>
+            已选 {{ checkedArtists.length }} 位
+          </template>
+          <template #dropdown-items>
+            <mu-dropdown-check-item
+              v-model="checkedArtists"
+              value="Ludwig van Beethoven" />
+            <mu-dropdown-check-item
+              v-model="checkedArtists"
+              value="Wolfgang Amadeus Mozart" />
+            <mu-dropdown-check-item
+              v-model="checkedArtists"
+              value="Frédéric François Chopin" />
+            <mu-dropdown-check-item
+              v-model="checkedArtists"
+              value="Johann Baptist Strauss" />
+          </template>
+          <template #dropdown-footer>
+            <mu-button block caption="Clear" @click="checkedArtists = []" />
+          </template>
+        </mu-dropdown-button>
+      </div>
+      <div class="group">
         <mu-toolbar class="bg-fill" size="large" style="gap: 0;">
           <mu-search-input class="flex-1 mu-input--inset" />
           <mu-flex-divider />

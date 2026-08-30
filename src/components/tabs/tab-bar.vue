@@ -24,8 +24,6 @@
           size="small"
           button-style="text"
           dropdown-icon="list"
-          dropdown-style="max-height: 200px"
-          dropdown-scrollbar
           :dropdown-items="dropdownItems"
           @dropdown:itemclick="onTabClick($event.action)" />
       </template>

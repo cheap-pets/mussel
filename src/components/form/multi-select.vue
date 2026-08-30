@@ -26,8 +26,17 @@
         :dropdown-scrollbar="dropdownScrollbar"
         @tag-remove="onItemRemove" />
     </template>
-    <template #dropdown>
+    <template v-if="$slots['dropdown-header']" #dropdown-header>
+      <slot name="dropdown-header" />
+    </template>
+    <template v-if="$slots['dropdown-items']" #dropdown-items>
+      <slot name="dropdown-items" />
+    </template>
+    <template v-else-if="$slots.dropdown" #dropdown>
       <slot name="dropdown" />
+    </template>
+    <template v-if="$slots['dropdown-footer']" #dropdown-footer>
+      <slot name="dropdown-footer" />
     </template>
   </combo-wrapper>
 </template>

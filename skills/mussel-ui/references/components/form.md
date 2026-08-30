@@ -226,8 +226,14 @@ const items = [
 | `options` | Array | 下拉选项列表 |
 | `option-key` | String | 选项的 key 属性，默认 `value` |
 | `value-mode` | String | `normal`（默认）\| `composite`（modelValue 为 `{label, value}`）|
-| `dropdown-scrollbar` | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`（关闭后由内部容器负责滚动） |
+| `dropdown-scrollbar` | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`；仅当使用 `#dropdown` 插槽时生效，items 模式下由面板内置滚动容器接管 |
 | (其他) | — | 继承全部 `MuInput` 属性及 `MuDropdown` 的 `dropdown-` 前缀属性 |
+
+| 插槽 | 说明 |
+|------|------|
+| `dropdown-header` / `dropdown-footer` | 下拉面板顶部 / 底部区域（搜索框 / 操作按钮），仅 items 模式渲染 |
+| `dropdown-items` | 自定义下拉项内容，渲染于面板内置滚动容器内 |
+| `dropdown` | 自定义下拉面板整体内容（见下方示例），此模式下 `dropdown-header` / `dropdown-footer` 不渲染 |
 
 **options 结构：** `[{ label: '管理员', value: 'admin' }]`。共享定义规则同 `dropdown-items`（见 `navigation.md`「dropdown-items 数据结构」：对象字段透传给项组件、`'-'` 为分隔线快捷方式、`is` 覆写默认项组件），差异：
 
@@ -275,11 +281,40 @@ const filteredItems = computed(() =>
 
 > `dropdown-scrollbar` 默认为 `false`，下拉面板不渲染自定义滚动条，由内部的 `MuScrollBox` 负责滚动；通过 `dropdown-class` 控制面板宽度与最大高度，并用 flex 布局（`mu-search-input` 固定高度 + `mu-scroll-box` 自适应）让搜索框始终置顶。如需 Mussel 自定义滚动条，设置 `:dropdown-scrollbar="true"`。
 
+**新插槽方式的可搜索下拉：** `dropdown-header` 放搜索框、`dropdown-items` 放选项，选项渲染在面板内置滚动容器内（限高 160px），无需自建 `MuScrollBox`。
+
+```html
+<mu-select v-model="slotItem" placeholder="search & select">
+  <template #dropdown-header>
+    <mu-search-input
+      v-model="slotSearchKey"
+      input-style="solid"
+      style="width: 100%; margin-bottom: var(--mu-half-spacing);" />
+  </template>
+  <template #dropdown-items>
+    <mu-option
+      v-for="el in slotFilteredItems"
+      :key="el"
+      :value="el" />
+  </template>
+</mu-select>
+```
+
+```javascript
+const slotItem = ref()
+const slotSearchKey = ref('')
+const slotFilteredItems = computed(() =>
+  items.filter(item => !slotSearchKey.value || item.includes(slotSearchKey.value))
+)
+```
+
+> `dropdown-header` / `dropdown-footer` 仅在 items 模式（缺省渲染 `options` 列表或使用 `#dropdown-items` 插槽）下渲染；使用 `#dropdown` 自定义整体内容时不渲染。
+
 ---
 
 ## MuOption
 
-下拉选项，**必须置于 `MuSelect` / `MuMultiSelect` / `MuComboBox` 的 `#dropdown` 插槽内**。作为 `#dropdown` 插槽自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
+下拉选项，**必须置于 `MuSelect` / `MuMultiSelect` / `MuComboBox` 的 `#dropdown` 或 `#dropdown-items` 插槽内**。作为自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
@@ -309,6 +344,8 @@ const filteredItems = computed(() =>
 
 > 若无需用户输入，使用 `MuSelect`；设置 `editable` 后不支持选项 `label`，直接用 `value` 显示。
 
+插槽同 MuSelect（`dropdown-header` / `dropdown-items` / `dropdown` / `dropdown-footer`）。
+
 ---
 
 ## MuMultiSelect
@@ -322,6 +359,8 @@ const filteredItems = computed(() =>
 | `tag-tooltip` | Boolean | `true` | 已选标签是否显示 tooltip |
 | `disabled` / `readonly` | Boolean | — | 禁用 / 只读 |
 | (其他) | — | — | 继承全部 `MuSelect` 属性 |
+
+插槽同 MuSelect（`dropdown-header` / `dropdown-items` / `dropdown` / `dropdown-footer`）。
 
 ---
 

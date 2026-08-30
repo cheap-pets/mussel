@@ -4,19 +4,21 @@
       v-show="popupStyle"
       ref="panelEl"
       v-bind="$attrs"
-      v-mu-scrollbar="scrollbar"
+      v-mu-scrollbar="scrollbar && !!$slots.default"
       class="mu-dropdown-panel"
       :style="[sizeStyle, popupStyle, $attrs.style]"
       @click="onClick"
       @mouseover.stop="clearHideTimer"
       @mouseleave.stop="delayHide">
-      <div v-if="scrollbar" class="mu-scrollbar__tracks" />
+      <div v-if="scrollbar && !!$slots.default" class="mu-scrollbar__tracks" />
       <slot>
-        <component
-          :is="el.is"
-          v-for="el in items"
-          :key="el.key"
-          v-bind="el.bindings" />
+        <slot name="header" />
+        <mu-scroll-box v-if="$slots.items || items" class="mu-dropdown-panel__items">
+          <slot name="items">
+            <component :is="item.is" v-for="item in items" :key="item.key" v-bind="item.bindings" />
+          </slot>
+        </mu-scroll-box>
+        <slot name="footer" />
       </slot>
     </div>
   </Teleport>

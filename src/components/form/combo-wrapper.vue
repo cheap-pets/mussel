@@ -21,7 +21,18 @@
       ref="dropdownPanelRef"
       v-bind="dropdownPanelAttrs"
       v-on="dropdownPanelEvents">
-      <slot name="dropdown" />
+      <template v-if="$slots['dropdown-header']" #header>
+        <slot name="dropdown-header" />
+      </template>
+      <template v-if="$slots['dropdown-items']" #items>
+        <slot name="dropdown-items" />
+      </template>
+      <template v-else-if="$slots.dropdown" #default>
+        <slot name="dropdown" />
+      </template>
+      <template v-if="$slots['dropdown-footer']" #footer>
+        <slot name="dropdown-footer" />
+      </template>
     </mu-dropdown-panel>
   </div>
 </template>

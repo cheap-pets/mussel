@@ -697,6 +697,14 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 />
 ```
 
+| 插槽名称        | 说明                                                                                   |
+| --------------- | -------------------------------------------------------------------------------------- |
+| default         | 覆盖按钮内容（缺省渲染 icon + caption）                                                |
+| dropdown-header | 下拉面板顶部区域（仅 items 模式渲染）                                                  |
+| dropdown-items  | 自定义下拉项，渲染于面板内置滚动容器内                                                 |
+| dropdown        | 自定义下拉面板整体内容，此模式下 `dropdown-header` / `dropdown-footer` 不渲染；与 `dropdown-items` 插槽同时提供时优先渲染 `dropdown-items` |
+| dropdown-footer | 下拉面板底部区域（仅 items 模式渲染）                                                  |
+
 
 
 ## 4 - 表单
@@ -933,8 +941,15 @@ const items = [
 | options    | Array  | 下拉选项列表，结构 `[{ label, value }]`。共享定义规则同 dropdown-items（见「dropdown-items 数据结构」：对象字段透传、`'-'` 分隔线、`is` 覆写默认项组件），差异：默认渲染 `mu-option` 而非 `mu-dropdown-item`；纯字符串项视为 `{ value }` 而非 `{ label }` |
 | option-key | String | 下拉选项的 key 属性，默认为 `value`                          |
 | value-mode | String | `normal`（默认）\| `composite`（modelValue 为 `{ label, value }`） |
-| dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`（关闭后由 `mu-scroll-box` 等内部容器负责滚动） |
+| dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`；仅当使用 `#dropdown` 插槽时生效，items 模式下由面板内置滚动容器接管 |
 | (其他)     | —      | 包含全部 MuInput 属性、MuDropdown 中 `dropdown-` 为前缀的属性 |
+
+| 插槽名称        | 说明                                         |
+| --------------- | -------------------------------------------- |
+| dropdown-header | 下拉面板顶部区域（如搜索框；仅 items 模式渲染） |
+| dropdown-items  | 自定义下拉项内容，渲染于面板内置滚动容器内   |
+| dropdown        | 自定义下拉面板整体内容（见下方示例），此模式下 `dropdown-header` / `dropdown-footer` 不渲染 |
+| dropdown-footer | 下拉面板底部区域（如操作按钮；仅 items 模式渲染） |
 
 **带过滤搜索框的下拉列表：** 不使用 `options`，而是通过 `#dropdown` 插槽自定义下拉内容，配合 `mu-search-input`（输入过滤）+ `mu-scroll-box`（滚动容器）+ `mu-option`（选项）实现可搜索列表。
 
@@ -979,11 +994,42 @@ const filteredItems = computed(() =>
 >
 > `dropdown-scrollbar` 默认为 `false`，下拉面板不渲染自定义滚动条，由内部的 `mu-scroll-box` 负责滚动；通过 `dropdown-class` 控制面板宽度与最大高度，并用 flex 布局（`mu-search-input` 固定高度 + `mu-scroll-box` 自适应）让搜索框始终置顶。如需 Mussel 自定义滚动条，设置 `:dropdown-scrollbar="true"`。
 
+**新插槽方式的可搜索下拉：** `dropdown-header` 放搜索框、`dropdown-items` 放选项，选项渲染在面板内置滚动容器内（限高 160px），无需自建 `mu-scroll-box`。
+
+```html
+<mu-select v-model="slotItem" placeholder="search & select">
+  <template #dropdown-header>
+    <mu-search-input
+      v-model="slotSearchKey"
+      input-style="solid"
+      style="width: 100%; margin-bottom: var(--mu-half-spacing);" />
+  </template>
+  <template #dropdown-items>
+    <mu-option
+      v-for="el in slotFilteredItems"
+      :key="el"
+      :value="el" />
+  </template>
+</mu-select>
+```
+
+```javascript
+const slotItem = ref()
+const slotSearchKey = ref('')
+const slotFilteredItems = computed(() =>
+  items.filter(item => !slotSearchKey.value || item.includes(slotSearchKey.value))
+)
+```
+
+> [!NOTE]
+>
+> `dropdown-header` / `dropdown-footer` 仅在 items 模式（缺省渲染 `options` 列表或使用 `#dropdown-items` 插槽）下渲染；使用 `#dropdown` 自定义整体内容时不渲染。
+
 
 
 ### MuOption
 
-下拉选项，**必须置于 `mu-select` / `mu-multi-select` / `mu-combo-box` 的 `#dropdown` 插槽内**。作为 `#dropdown` 插槽自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
+下拉选项，**必须置于 `mu-select` / `mu-multi-select` / `mu-combo-box` 的 `#dropdown` 或 `#dropdown-items` 插槽内**。作为自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
 
 | 属性名称 | 类型   | 说明                                         |
 | -------- | ------ | -------------------------------------------- |
@@ -1019,6 +1065,8 @@ const filteredItems = computed(() =>
 >
 > 若设置为可编辑，则不支持选项中的 label 属性，直接使用 value 属性进行显示。
 
+插槽同 MuSelect（`dropdown-header` / `dropdown-items` / `dropdown` / `dropdown-footer`）。
+
 
 
 ### MuMultiSelect
@@ -1033,6 +1081,8 @@ const filteredItems = computed(() =>
 | disabled    | Boolean | —      | 是否禁用                                                     |
 | readonly    | Boolean | —      | 是否只读                                                     |
 | (其他)      | —       | —      | 包含全部 MuSelect 属性                                       |
+
+插槽同 MuSelect（`dropdown-header` / `dropdown-items` / `dropdown` / `dropdown-footer`）。
 
 
 
@@ -1286,6 +1336,13 @@ const filteredItems = computed(() =>
 | show | 弹出面板 |
 | hide | 关闭面板 |
 
+| 插槽名称 | 说明                                                    |
+| -------- | ------------------------------------------------------- |
+| default  | 自定义面板内容，提供时不再渲染 `dropdown-items` 列表，`header` / `footer` 插槽同样不渲染    |
+| items    | 自定义列表项，渲染于面板内置滚动容器内（限高 160px）    |
+| header   | 面板顶部区域（仅 items 模式渲染）                       |
+| footer   | 面板底部区域（仅 items 模式渲染）                       |
+
 
 
 ### MuDropdown
@@ -1303,7 +1360,7 @@ const filteredItems = computed(() =>
 | dropdown-position  | String  | 弹出位置：`auto` \| `fixed` \| `top` \| `bottom` |
 | dropdown-icon      | String  | 下拉按钮图标，默认为下箭头                       |
 | dropdown-disabled  | Boolean | 下拉面板禁用状态                                 |
-| dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`       |
+| dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`；仅当使用 `#dropdown` 插槽时生效，items 模式下由面板内置滚动容器接管 |
 | dropdown-panel     | Object  | 自定义下拉面板组件（覆盖默认 MuDropdownPanel）   |
 | dropdown-attrs     | Object  | 透传给面板的额外属性                             |
 | dropdown-anchor    | —       | 下拉面板锚点目标，默认为组件根元素               |
@@ -1314,6 +1371,14 @@ const filteredItems = computed(() =>
 | dropdown:itemclick | item - 下拉项属性            | 下拉项点击触发               |
 | dropdown:show      | —                            | 下拉面板弹出时触发           |
 | dropdown:hide      | —                            | 下拉面板关闭时触发           |
+
+| 插槽名称        | 说明                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------- |
+| default         | 触发器内容，包裹任意元素作为下拉锚点                                                  |
+| dropdown-header | 下拉面板顶部区域（仅 items 模式渲染）                                                 |
+| dropdown-items  | 自定义下拉项，渲染于面板内置滚动容器内                                                |
+| dropdown        | 自定义下拉面板整体内容（缺省渲染 `dropdown-items` 属性列表），此模式下 `dropdown-header` / `dropdown-footer` 不渲染；与 `dropdown-items` 插槽同时提供时优先渲染 `dropdown-items` |
+| dropdown-footer | 下拉面板底部区域（仅 items 模式渲染）                                                 |
 
 
 

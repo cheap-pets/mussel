@@ -60,3 +60,7 @@
   background-color: var(--mu-bg-mask);
   box-shadow: none;
 }
+
+.mu-dropdown-panel__items {
+  max-height: 160px;
+}
