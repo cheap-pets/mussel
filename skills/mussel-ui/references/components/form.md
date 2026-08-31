@@ -166,6 +166,7 @@ const items = [
 | `clearable` | Boolean | `false` | 是否显示清除按钮 |
 | `size` | String | — | 控件尺寸：`small` \| `normal` \| `large`；未设置时等效 `normal`，置于 `MuToolbar`（`tool-size="small"`）内时自动继承小尺寸 |
 | `pill` | Boolean | — | 左右圆弧形态（胶囊形） |
+| `input-style` | String | — | attribute（非 prop）：`solid` 填充式 \| `underline` 下划线式，透传到根元素经属性选择器生效 |
 | `invalid` | Boolean | — | 校验失败样式 |
 | `readonly` / `disabled` | Boolean | — | 只读 / 禁用 |
 | `prefix` | String\|Object | — | 前置文本或按钮 |
@@ -232,33 +233,39 @@ const items = [
 | 插槽 | 说明 |
 |------|------|
 | `dropdown-header` / `dropdown-footer` | 下拉面板顶部 / 底部区域（搜索框 / 操作按钮），仅 items 模式渲染 |
-| `dropdown-items` | 自定义下拉项内容，渲染于面板内置滚动容器内 |
-| `dropdown` | 自定义下拉面板整体内容（见下方示例），此模式下 `dropdown-header` / `dropdown-footer` 不渲染 |
+| `dropdown-items` | 自定义下拉项内容，渲染于面板内置滚动容器内；**自定义项内容时优先使用** |
+| `dropdown` | 完全自定义下拉面板整体内容（仅当需要非选项型内容时使用），此模式下 `dropdown-header` / `dropdown-footer` 与内置滚动容器均不渲染 |
 
 **options 结构：** `[{ label: '管理员', value: 'admin' }]`。共享定义规则同 `dropdown-items`（见 `navigation.md`「dropdown-items 数据结构」：对象字段透传给项组件、`'-'` 为分隔线快捷方式、`is` 覆写默认项组件），差异：
 
 - 默认渲染 `MuOption` 而非 `MuDropdownItem`（`is` 覆写的基线组件，如混入 `{ is: 'mu-dropdown-item', action: 'edit' }` 动作项）
 - 纯字符串项视为 `{ value }`（如 `['admin', 'user']`），而非 `{ label }`
 
-**带过滤搜索框的下拉列表：** 不使用 `options`，而是通过 `#dropdown` 插槽自定义下拉内容，配合 `MuSearchInput`（输入过滤）+ `MuScrollBox`（滚动容器）+ `MuOption`（选项）实现可搜索列表。
+**value-mode 使用场景：** 默认 `normal`，modelValue 为纯 `value`，回显文字靠从当前 `options`（或插槽选项）反查 `label`，查不到时直接显示原始 `value`。设为 `composite` 后 modelValue 为 `{ value, label }`（`MuMultiSelect` 为该结构的数组），选中时 `label` 随值一并存储，回显不再依赖 `options`。适用场景：
+
+- **options 动态变化 / 异步加载**（搜索过滤、级联联动、懒加载）：选中后 `options` 被替换或清空时，`normal` 回显会退化为原始 `value`（如显示 `admin` 而非 `管理员`）；`composite` 始终稳定回显。
+- **提交数据需同时携带 `label`**：后端要求 `{ value, label }` 结构时直接提交 modelValue，免去二次查表。
+
+```javascript
+const role = ref('admin')                              // normal
+const role = ref({ value: 'admin', label: '管理员' })   // composite
+```
+
+> `composite` 的初始值 / 回填值应提供完整 `{ value, label }`，缺 `label` 时回退显示 `value`；`MuComboBox` 设 `editable` 时输入框直接显示用户输入，不适用 `composite`。
+
+**带搜索框的可过滤下拉：** `options` 传入过滤结果，`#dropdown-header` 插槽放 `MuSearchInput`。选项渲染、限高（`--mu-list-item-height` × 8）与滚动由面板内置滚动容器接管，无需自建 `MuScrollBox`、无需 `dropdown-class`。
 
 ```html
 <mu-select
   v-model="selectedItem"
   placeholder="search & select"
-  dropdown-class="combo-search-panel flex flex-col gap-half">
-  <template #dropdown>
+  :options="filteredItems">
+  <template #dropdown-header>
     <mu-search-input
       v-model="searchKey"
-      class="flex-none"
       input-style="solid"
+      class="mb-half"
       style="width: 100%;" />
-    <mu-scroll-box class="flex-1">
-      <mu-option
-        v-for="el in filteredItems"
-        :key="el"
-        :value="el" />
-    </mu-scroll-box>
   </template>
 </mu-select>
 ```
@@ -272,49 +279,14 @@ const filteredItems = computed(() =>
 )
 ```
 
-```css
-.combo-search-panel {
-  width: 300px;
-  max-height: 240px;
-}
-```
-
-> `dropdown-scrollbar` 默认为 `false`，下拉面板不渲染自定义滚动条，由内部的 `MuScrollBox` 负责滚动；通过 `dropdown-class` 控制面板宽度与最大高度，并用 flex 布局（`mu-search-input` 固定高度 + `mu-scroll-box` 自适应）让搜索框始终置顶。如需 Mussel 自定义滚动条，设置 `:dropdown-scrollbar="true"`。
-
-**新插槽方式的可搜索下拉：** `dropdown-header` 放搜索框、`dropdown-items` 放选项，选项渲染在面板内置滚动容器内（限高 160px），无需自建 `MuScrollBox`。
-
-```html
-<mu-select v-model="slotItem" placeholder="search & select">
-  <template #dropdown-header>
-    <mu-search-input
-      v-model="slotSearchKey"
-      input-style="solid"
-      style="width: 100%; margin-bottom: var(--mu-half-spacing);" />
-  </template>
-  <template #dropdown-items>
-    <mu-option
-      v-for="el in slotFilteredItems"
-      :key="el"
-      :value="el" />
-  </template>
-</mu-select>
-```
-
-```javascript
-const slotItem = ref()
-const slotSearchKey = ref('')
-const slotFilteredItems = computed(() =>
-  items.filter(item => !slotSearchKey.value || item.includes(slotSearchKey.value))
-)
-```
-
-> `dropdown-header` / `dropdown-footer` 仅在 items 模式（缺省渲染 `options` 列表或使用 `#dropdown-items` 插槽）下渲染；使用 `#dropdown` 自定义整体内容时不渲染。
+> - `dropdown-header` / `dropdown-footer` 仅在 items 模式（缺省渲染 `options` 列表或使用 `#dropdown-items` 插槽）下渲染；`#dropdown-items` 用于完全自定义项内容，同样享受内置滚动容器。
+> - `#dropdown` 插槽用于完全接管面板内容（如嵌入树、表格等非选项型内容），此时无 `dropdown-header` / `dropdown-footer` 也无内置滚动容器，需自行处理滚动（可配 `dropdown-scrollbar`）。**不要用 `#dropdown` 实现带搜索框的下拉列表**，统一使用上面的 `options` + `#dropdown-header` 方式。
 
 ---
 
 ## MuOption
 
-下拉选项，**必须置于 `MuSelect` / `MuMultiSelect` / `MuComboBox` 的 `#dropdown` 或 `#dropdown-items` 插槽内**。作为自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
+下拉选项，**必须置于 `MuSelect` / `MuMultiSelect` / `MuComboBox` 的 `#dropdown-items` 或 `#dropdown` 插槽内**（自定义项内容优先 `#dropdown-items`，享受内置滚动容器；`#dropdown` 仅用于完全接管面板）。作为自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
 
 | 属性 | 类型 | 说明 |
 |------|------|------|

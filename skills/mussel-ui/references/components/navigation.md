@@ -27,8 +27,8 @@
 
 | 插槽 | 说明 |
 |------|------|
-| `default` | 自定义面板内容，提供时不再渲染 `dropdown-items` 列表，`header` / `footer` 插槽同样不渲染 |
-| `items` | 自定义列表项，渲染于面板内置滚动容器内（限高 160px） |
+| `default` | 完全自定义面板内容（仅当需要非列表型内容时使用），提供时不再渲染 `dropdown-items` 列表，`header` / `footer` 插槽同样不渲染 |
+| `items` | 自定义列表项，渲染于面板内置滚动容器内（限高 `--mu-list-item-height` × 8）；**自定义项内容时优先使用** |
 | `header` / `footer` | 面板顶部 / 底部区域，仅 items 模式渲染 |
 
 > 弹出位置恒为自动计算（锚点下方优先、视口空间不足时翻转到上方，横向自动避让溢出），暂不支持手动指定。
@@ -64,8 +64,8 @@
 |------|------|
 | `default` | 覆盖按钮内容（缺省渲染 icon + caption） |
 | `dropdown-header` / `dropdown-footer` | 下拉面板顶部 / 底部区域，仅 items 模式渲染 |
-| `dropdown-items` | 自定义下拉项，渲染于面板内置滚动容器内 |
-| `dropdown` | 自定义下拉面板整体内容，同 MuDropdown 的 `#dropdown`，此模式下 `dropdown-header` / `dropdown-footer` 不渲染；与 `dropdown-items` 插槽同时提供时优先渲染 `dropdown-items` |
+| `dropdown-items` | 自定义下拉项，渲染于面板内置滚动容器内；**自定义菜单项时优先使用** |
+| `dropdown` | 完全自定义下拉面板整体内容（仅当需要非选项型内容时使用），此模式下 `dropdown-header` / `dropdown-footer` 不渲染；与 `dropdown-items` 插槽同时提供时优先渲染 `dropdown-items` |
 
 ---
 
@@ -96,14 +96,14 @@
 |------|------|
 | `default` | 触发器内容，包裹任意元素作为下拉锚点 |
 | `dropdown-header` / `dropdown-footer` | 下拉面板顶部 / 底部区域，仅 items 模式渲染 |
-| `dropdown-items` | 自定义下拉项，渲染于面板内置滚动容器内 |
-| `dropdown` | 自定义下拉面板整体内容（缺省渲染 `dropdown-items` 属性列表），此模式下 `dropdown-header` / `dropdown-footer` 不渲染；与 `dropdown-items` 插槽同时提供时优先渲染 `dropdown-items` |
+| `dropdown-items` | 自定义下拉项，渲染于面板内置滚动容器内；**自定义菜单项时优先使用** |
+| `dropdown` | 完全自定义下拉面板整体内容（仅当需要非选项型内容时使用，如嵌入树、表格），此模式下 `dropdown-header` / `dropdown-footer` 不渲染；与 `dropdown-items` 插槽同时提供时优先渲染 `dropdown-items` |
 
 ```html
-<!-- 触发器 + 自定义面板内容 -->
+<!-- 触发器 + 自定义菜单项（优先 #dropdown-items，享受内置滚动容器） -->
 <mu-dropdown>
   <mu-icon-button icon="more" />
-  <template #dropdown>
+  <template #dropdown-items>
     <mu-dropdown-item label="编辑" icon="edit" action="edit" />
     <mu-dropdown-item label="删除" icon="delete" action="delete" />
   </template>
@@ -134,7 +134,7 @@
 
 ### MuDropdownItem
 
-下拉面板内的基础菜单项，即上方 `dropdown-items` 数组对应的组件形式。点击后自动收起面板；若设置了 `action`，面板会额外向上触发 `action` 事件。既可走数据驱动（`dropdown-items`），也可在 `#dropdown` 插槽中手写。
+下拉面板内的基础菜单项，即上方 `dropdown-items` 数组对应的组件形式。点击后自动收起面板；若设置了 `action`，面板会额外向上触发 `action` 事件。既可走数据驱动（`dropdown-items`），也可在 `#dropdown-items` 插槽中手写（优先）；`#dropdown` 插槽仅用于完全接管面板的场景。
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
@@ -201,7 +201,7 @@
 |------|------|------|
 | `menus` | Array | 菜单项列表，结构见「dropdown-items 数据结构」 |
 
-事件与方法同 `MuDropdownPanel`。仅 `default` 插槽（自定义菜单内容，缺省渲染 `menus`）；不支持 `header` / `items` / `footer`。
+事件（`show` / `hide` / `action` / `itemclick`）与 `hide` / `visible` 同 `MuDropdownPanel`；差异：`show(event)` 接收 `contextmenu` 事件对象，按 `pageX`/`pageY` 定位并阻止默认菜单（非 MuDropdownPanel 的 `{ anchor }` 形式）。仅 `default` 插槽（自定义菜单内容，缺省渲染 `menus`）；不支持 `header` / `items` / `footer`。
 
 ```html
 <template>

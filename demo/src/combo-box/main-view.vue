@@ -62,18 +62,14 @@
       </mu-select>
       <mu-select
         v-model="slotItem"
-        placeholder="search & select (new slots)">
+        placeholder="search & select (new slots)"
+        :options="slotFilteredItems">
         <template #dropdown-header>
           <mu-search-input
             v-model="slotSearchKey"
             input-style="solid"
-            style="width: 100%; margin-bottom: var(--mu-half-spacing);" />
-        </template>
-        <template #dropdown-items>
-          <mu-option
-            v-for="el in slotFilteredItems"
-            :key="el"
-            :value="el" />
+            class="mb-half"
+            style="width: 100%;" />
         </template>
       </mu-select>
       <mu-multi-select

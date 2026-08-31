@@ -62,5 +62,5 @@
 }
 
 .mu-dropdown-panel__items {
-  max-height: 160px;
+  max-height: calc(var(--mu-list-item-height) * 8);
 }

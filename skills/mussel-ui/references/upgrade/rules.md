@@ -998,7 +998,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 
 #### MuDropdownItem / MuDropdownCheckItem / MuDropdownRadioItem
 
-三个组件在 Mussel 4 中仍保留，但推荐使用 MuDropdown/MuDropdownPanel 的 `dropdown-items` 数组属性。
+三个组件在 Mussel 4 中仍保留，但推荐使用 MuDropdown/MuDropdownPanel 的 `dropdown-items` 数组属性。手写项组件时优先放 `#dropdown-items` 插槽（享受内置滚动容器），`#dropdown` 仅用于完全接管面板。
 
 ```html
 <!-- 升级前 -->
@@ -1013,7 +1013,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 <!-- 升级后（推荐） -->
 <mu-dropdown :dropdown-items="[
   { label: '选项1', action: 'opt1' },
-  { label: '勾选1', type: 'check', value: 'check1' }
+  { label: '勾选1', is: 'check', value: 'check1' }
 ]">
   <mu-button>菜单</mu-button>
 </mu-dropdown>
@@ -1021,7 +1021,7 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
 <!-- 升级后（兼容，仍可用） -->
 <mu-dropdown>
   <mu-button>菜单</mu-button>
-  <template #dropdown>
+  <template #dropdown-items>
     <mu-dropdown-item label="选项1" />
     <mu-dropdown-check-item label="勾选1" />
   </template>
@@ -1147,7 +1147,7 @@ const items = [
 ]
 ```
 
-`input` 属性支持的类型：`text`（默认）| `memo` | `date` | `month` | `select` | `multi-select`。
+`input` 属性支持的类型完整清单见 `references/components/form.md`（`text` / `memo` / `date` / `week` / `month` / `quarter` / `year` / `time` / `color` / `segmented` / `select` / `multi-select` / `check-group` / `radio-group`）。
 items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数组子行、`{ is: '组件名' }` 自定义组件。
 
 ---

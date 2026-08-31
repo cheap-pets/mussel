@@ -9,12 +9,18 @@
     <mu-dropdown
       v-if="moreCount || dropdownVisible"
       ref="dropdown"
-      v-bind="dropdownBindings"
       class="mu-tags__more"
       tabindex="-1"
+      dropdown-trigger="click"
+      :dropdown-icon="false"
+      :dropdown-class="dropdownClass"
+      :dropdown-style="dropdownStyle"
+      :dropdown-width="dropdownWidth"
+      :dropdown-anchor="dropdownAnchor"
+      :dropdown-disabled="!expandable"
       @click.stop>
       +{{ moreCount }}
-      <template #dropdown>
+      <template #dropdown-items>
         <mu-tags
           :tags="tags"
           :tooltip="tooltip"
@@ -28,8 +34,7 @@
 <script setup>
   import './tags.scss'
 
-  import { ref, computed, useAttrs } from 'vue'
-  import { pickBy } from '@/utils/object'
+  import { ref, computed } from 'vue'
   import { autoIncrementKeyBuilder } from '@/utils/key-builder'
 
   defineOptions({ name: 'MusselTags' })
@@ -42,10 +47,11 @@
     max: { type: Number },
     tags: { type: Array, default: () => [] },
     tooltip: { type: Boolean, default: true },
+    dropdownClass: null,
+    dropdownStyle: null,
+    dropdownWidth: { type: String, default: 'anchor' },
     dropdownAnchor: { default: '$parent' }
   })
-
-  const attrs = useAttrs()
 
   const getKey = autoIncrementKeyBuilder()
 
@@ -55,14 +61,6 @@
     props.tags.length &&
     dropdown.value?.dropdownVisible
   )
-
-  const dropdownBindings = computed(() => ({
-    'dropdown-width': 'anchor',
-    'dropdown-trigger': 'click',
-    'dropdown-disabled': !props.expandable,
-    'dropdown-anchor': props.dropdownAnchor,
-    ...pickBy(attrs, key => key.startsWith('dropdown'))
-  }))
 
   const moreCount = computed(() => {
     const max = props.max

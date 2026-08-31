@@ -3,14 +3,13 @@
 Mussel 通过 `install` 作为 Vue 插件挂载，完成组件注册、图标注册、主题色、多语言配置，并注入全局 `$mussel` 上下文。返回传入的 `app`，便于链式 `.mount()`。
 
 ```javascript
-import { createApp } from 'vue'
-import { install, installIcons } from 'mussel'
+import { install } from 'mussel'
 
 install(app, {
   root: '#app',
   dark: 'auto',
   colors: { primary: '#1c7ed6' },
-  icons: { edit: EditIcon },
+  icons: { /* 自定义图标 */ },
   locale: 'zh',
   localeResources: { /* 自定义语言包 */ }
 }).mount('#app')

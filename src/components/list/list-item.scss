@@ -30,7 +30,7 @@
 }
 
 .mu-list-item {
-  min-height: 32px;
+  min-height: var(--mu-list-item-height);
   color: var(--mu-text-color-normal);
 
   @at-root a#{&} {

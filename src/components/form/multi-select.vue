@@ -22,8 +22,7 @@
         :placeholder="placeholder"
         :dropdown-anchor="wrapper"
         :dropdown-width="dropdownWidth"
-        :dropdown-class="['mu-select__dropdown-panel', dropdownClass]"
-        :dropdown-scrollbar="dropdownScrollbar"
+        :dropdown-class="['mu-select__dropdown-panel']"
         @tag-remove="onItemRemove" />
     </template>
     <template v-if="$slots['dropdown-header']" #dropdown-header>

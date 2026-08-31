@@ -184,11 +184,9 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
   }
 
   function onButtonClick (button) {
-    // 用 name 判断点击来源
-    if (button.name === 'Find') {
-      // 自定义按钮：对象形式时 name 来自 { name }，字符串形式时即字符串本身
-    } else if (button.name === 'OK') {
-      // 预设按钮：'#OK' 的 name 固定为 'OK'
+    // 按 name 判断点击来源（预设按钮 name 固定，自定义按钮建议显式设 name）
+    if (button.name === 'OK') {
+      /* do something */
       visible.value = false
     }
   }
@@ -197,8 +195,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 </script>
 
 <style>
-  /* mu-dialog 仅有 width/height 属性，无 min/max 属性；
-     覆盖最大/最小尺寸需通过 class（透传到 .mu-dialog 根元素）在样式中设置。 */
+  /* mu-dialog 无 min/max 属性，最小/最大尺寸需通过 class（透传到 .mu-dialog）覆盖 */
   .my-dialog {
     width: 800px;
     min-width: 640px;

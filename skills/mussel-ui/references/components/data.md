@@ -189,7 +189,6 @@
     :columns="columns"
     key-field="id"
     striped
-    hover-mode="row"
     v-model:selected-record-key="selectedKey"
     :header-checked="headerChecked"
     @cell-item-click="onItemClick"

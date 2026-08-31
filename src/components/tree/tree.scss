@@ -1,5 +1,5 @@
 .mu-tree {
-  --mu-tree_node-height: 32px;
+  --mu-tree_node-height: var(--mu-list-item-height);
   --mu-tree_node-indent: 16px;
 
   overflow: auto;
