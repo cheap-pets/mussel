@@ -59,12 +59,17 @@
 
 .mu-form-field__input {
   position: relative;
+
+  display: flex;
   flex: 1 1 0;
+  gap: var(--mu-inline-spacing);
+  align-items: center;
+
   min-height: var(--mu-control-height-normal);
 
   & > .mu-input,
   & > .mu-input-group {
-    width: 100%;
+    flex: 1 1 0;
   }
 }
 
