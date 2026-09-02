@@ -7,7 +7,7 @@
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `active-tab` | String | 双向绑定，当前活动页签；未设置时组件挂载后自动选中第一个页签 |
-| `tab-style` | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
+| `tab-style` | String | `button`（默认）\| `small-button` \| `simple` \| `lined-simple` \| `card` |
 | `tab-buttons` | Array | 手动指定页签按钮，默认由内部 `MuTabPanel` 自动生成 |
 | `tab-position` | String | `top`（默认）\| `bottom` \| `left` \| `right` |
 
@@ -61,7 +61,7 @@
 |------|------|------|
 | `active-tab` | String | 双向绑定，当前活动页签 |
 | `tab-buttons` | Array | 页签按钮数据 |
-| `tab-style` | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
+| `tab-style` | String | `button`（默认）\| `small-button` \| `simple` \| `lined-simple` \| `card` |
 | `tab-position` | String | `top`（默认）\| `bottom` \| `left` \| `right` |
 
 | 插槽 | 说明 |

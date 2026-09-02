@@ -26,7 +26,8 @@ $SEMANTIC_COLORS: (
   }
 }
 
-.mu-root {
+.mu-root,
+.mu-light {
   --mu-translucent-alpha: 0.1;
 
   @each $v in $BASE_COLORS {

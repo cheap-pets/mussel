@@ -47,7 +47,7 @@
     tabStyle: {
       type: String,
       default: 'button',
-      validator: v => ['button', 'small-button', 'simple', 'card'].includes(v)
+      validator: v => ['button', 'small-button', 'simple', 'lined-simple', 'card'].includes(v)
     },
     tabPosition: {
       type: String,

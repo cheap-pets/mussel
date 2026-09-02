@@ -315,7 +315,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | 属性名称      | 类型   | 说明                                                  |
 | ------------- | ------ | ----------------------------------------------------- |
 | active-tab    | String | 双向绑定属性，当前活动页签名称                        |
-| tab-style     | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
+| tab-style     | String | `button`（默认）\| `small-button` \| `simple` \| `lined-simple` \| `card` |
 | tab-buttons   | Array  | 页签按钮，默认按内部 tab-panel 组件自动生成           |
 | tab-position  | String | `top`（默认）\| `bottom` \| `left` \| `right`         |
 
@@ -356,7 +356,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | ------------ | ------ | ------------------------------------------------------- |
 | active-tab   | String | 双向绑定（`v-model:active-tab`），当前活动页签          |
 | tab-buttons  | Array  | 页签按钮数据                                            |
-| tab-style    | String | `button`（默认）\| `small-button` \| `simple` \| `card` |
+| tab-style    | String | `button`（默认）\| `small-button` \| `simple` \| `lined-simple` \| `card` |
 | tab-position | String | `top`（默认）\| `bottom` \| `left` \| `right`           |
 
 > [!NOTE]

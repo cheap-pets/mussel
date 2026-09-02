@@ -32,15 +32,22 @@ $opposite-sides: (top: bottom, bottom: top, left: right, right: left);
   justify-content: start;
 }
 
+// 指示条 / 卡片背景的溢出结构；无边线时 edge-offset 退化为 half-spacing
 .mu-tab-bar--simple,
+.mu-tab-bar--lined-simple,
 .mu-tab-bar--card {
-  --mu-tab-bar_edge-offset: calc(var(--mu-tab-bar_edge-size) + var(--mu-half-spacing));
+  --mu-tab-bar_edge-offset: calc(var(--mu-tab-bar_edge-border-size, 0px) + var(--mu-half-spacing));
   --mu-tab-bar_edge-offset-inverted: calc(var(--mu-tab-bar_edge-offset) * -1);
-
-  border: 0 solid var(--mu-border-color-soft);
 
   & .mu-scroll-area__content {
     align-items: stretch;
+  }
+
+  // 横向页签按钮随内容高度撑满：指示条 / 卡片背景从按钮对侧边定位，
+  // 按钮须贴满内容区才能在更高的 tab-bar 中保持贴边
+  &:not(.mu-tab-bar--left):not(.mu-tab-bar--right) .mu-tab-button {
+    height: auto;
+    min-height: var(--mu-control-height-normal);
   }
 
   & .mu-tab-button--active::after {
@@ -49,17 +56,9 @@ $opposite-sides: (top: bottom, bottom: top, left: right, right: left);
     inset: 0;
   }
 
-  // 纵向按钮保持基础固定高度，仅横向改为随内容自适应
-  &:not(.mu-tab-bar--left):not(.mu-tab-bar--right) .mu-tab-button {
-    height: auto;
-    min-height: var(--mu-control-height-small);
-  }
-
   @each $pos, $side in $opposite-sides {
     &.mu-tab-bar--#{$pos} {
-      border-#{$side}-width: var(--mu-tab-bar_edge-size);
-
-      // 滚动容器向外扩到边框内侧（负 margin），再以内侧 padding 保持内容位置不变，
+      // 滚动容器向外扩到边线内侧（负 margin），再以内侧 padding 保持内容位置不变，
       // 使指示条 / 卡片背景的负偏移始终落在滚动容器裁剪范围内
       & .mu-scroll-area__container {
         margin-#{$side}: var(--mu-tab-bar_edge-offset-inverted);
@@ -69,6 +68,20 @@ $opposite-sides: (top: bottom, bottom: top, left: right, right: left);
       & .mu-tab-button--active::after {
         #{$side}: var(--mu-tab-bar_edge-offset-inverted);
       }
+    }
+  }
+}
+
+// 带对侧边线：边线宽度计入 edge-offset，指示条 / 卡片背景覆盖在边线上
+.mu-tab-bar--lined-simple,
+.mu-tab-bar--card {
+  --mu-tab-bar_edge-border-size: var(--mu-tab-bar_edge-size);
+
+  border: 0 solid var(--mu-border-color-soft);
+
+  @each $pos, $side in $opposite-sides {
+    &.mu-tab-bar--#{$pos} {
+      border-#{$side}-width: var(--mu-tab-bar_edge-border-size);
     }
   }
 }
@@ -115,10 +128,9 @@ $opposite-sides: (top: bottom, bottom: top, left: right, right: left);
   padding: 0 var(--mu-base-spacing);
 }
 
-.mu-tab-bar--simple {
-  --mu-tab-bar_edge-size: 2px;
-
-  background: unset;
+.mu-tab-bar--simple,
+.mu-tab-bar--lined-simple {
+  --mu-tab-bar_edge-size: 3px;
 
   & .mu-tab-button {
     border-radius: 0;
@@ -144,6 +156,10 @@ $opposite-sides: (top: bottom, bottom: top, left: right, right: left);
       }
     }
   }
+}
+
+.mu-tab-bar--lined-simple {
+  background: unset;
 }
 
 .mu-tab-bar--card {

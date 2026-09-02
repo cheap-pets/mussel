@@ -105,6 +105,7 @@
 
   const styleOptions = [
     { value: 'simple' },
+    { value: 'lined-simple' },
     { value: 'button' },
     { value: 'small-button' },
     { value: 'card' }
