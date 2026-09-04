@@ -1,6 +1,6 @@
 <template>
   <div class="mu-calendar">
-    <mu-toolbar class="bg-strong p-half">
+    <mu-toolbar class="p-half radius-control bg-strong" default-button-style="text">
       <mu-dropdown-button
         ref="monthDropdown"
         :caption="caption"

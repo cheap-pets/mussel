@@ -7,7 +7,7 @@
     :dropdown-class="['mu-date-dropdown', dropdownClass]"
     @dropdown:show="view = type">
     <template #dropdown>
-      <mu-toolbar class="bg-strong p-half">
+      <mu-toolbar class="p-half radius-control bg-strong" default-button-style="text">
         <div v-if="!isGridViewType" class="px-1x">
           {{ caption }}
         </div>
