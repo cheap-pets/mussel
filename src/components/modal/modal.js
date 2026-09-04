@@ -3,6 +3,7 @@ import './modal-mask.scss'
 import { ref, shallowRef, inject, watch, onMounted } from 'vue'
 import { useModalManager } from '@/components/common/popup'
 import { isString, isHtmlElement } from '@/utils/type'
+import { blurActiveButton } from '@/utils/dom'
 import { delay } from '@/utils/timer'
 
 export const modalProps = {
@@ -101,6 +102,8 @@ export function useModal (props, emit) {
   }
 
   async function setModalVisible (value) {
+    blurActiveButton()
+
     if (value) {
       setTeleportTo()
 

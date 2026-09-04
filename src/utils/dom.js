@@ -34,6 +34,14 @@ export function sanitizeHTML (htmlString = '') {
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // <script> node
 }
 
+export function blurActiveButton () {
+  const el = document.activeElement
+
+  if (el?.tagName === 'BUTTON') {
+    el.blur()
+  }
+}
+
 export function isElementInViewport (element) {
   const { top, bottom, left, right } = element.getBoundingClientRect()
 

@@ -4,6 +4,7 @@
     :class="['mu-button', colorClass, extraClass]"
     :active="active || null"
     :disabled="isDisabled"
+    @keydown="onKeydown"
     @click="onClick">
     <slot>
       <mu-icon v-if="icon" :icon="icon" />
@@ -30,6 +31,12 @@
     colorClass,
     extraClass
   } = useButton(props)
+
+  function onKeydown (event) {
+    if (event.repeat && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault()
+    }
+  }
 
   function onClick () {
     if (props.toggle) active.value = !active.value
