@@ -15,6 +15,10 @@
       <mu-date-input v-model="date" prefix="年份选择" type="year" />
     </div>
     <div class="group">
+      <mu-date-range-input v-model="range" prefix="日期范围" clearable />
+      <mu-date-range-input v-model="rangeStr" value-type="string" prefix="字符串值" clearable />
+    </div>
+    <div class="group">
       <mu-time-input v-model="time" placeholder="时分秒" :second-step="15" prefix="时分秒" />
       <mu-time-input v-model="time" :second-step="0" format="HH:mm" prefix="时分" />
       <mu-time-input v-model="time" :minute-step="0" :second-step="0" format="HH:mm" prefix="小时" />
@@ -28,10 +32,16 @@
 
   const date = ref(null)
   const time = ref('09:30')
+  const range = ref({ startDate: new Date(2026, 0, 8), endDate: new Date(2026, 0, 20) })
+  const rangeStr = ref({ startDate: '2026-02-01', endDate: '2026-02-10' })
 </script>
 
 <style>
   .mu-combo-box {
+    width: 300px;
+  }
+
+  .mu-date-range-input {
     width: 300px;
   }
 

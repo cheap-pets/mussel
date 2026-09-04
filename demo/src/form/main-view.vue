@@ -86,6 +86,7 @@
     os: 'macOS',
     releaseDate: '2024-11',
     purchaseDate: '2024-12-15',
+    promotionRange: { startDate: new Date(2026, 0, 8), endDate: new Date(2026, 0, 20) },
     description: '搭载 M3 Pro 芯片的 MacBook Pro，性能强劲，续航出色，适合专业用户使用。',
     features: ['touchbar', 'wifi6']
   })
@@ -170,6 +171,13 @@
     [
       { prop: 'releaseDate', label: '上市日期', input: 'month' },
       { prop: 'purchaseDate', label: '购买日期', input: 'date' }
+    ],
+    [
+      {
+        prop: 'promotionRange',
+        label: '促销区间',
+        input: { type: 'date-range', clearable: true }
+      }
     ],
     'hr',
     { prop: 'description', label: '商品描述', input: { type: 'memo', style: 'height: 200px' } }

@@ -6,6 +6,7 @@ export const INPUT_TYPES = {
   month: ['mu-date-input', { type: 'month' }],
   quarter: ['mu-date-input', { type: 'quarter' }],
   year: ['mu-date-input', { type: 'year' }],
+  'date-range': ['mu-date-range-input'],
   time: ['mu-time-input'],
   color: ['mu-color-input'],
   segmented: ['mu-segmented'],

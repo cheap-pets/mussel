@@ -128,6 +128,7 @@ description: >
 | `<mu-combo-box>` | 单选下拉，`editable` 可手动输入 |
 | `<mu-multi-select>` | 多选下拉 |
 | `<mu-date-input>` | 日期/月份选择 |
+| `<mu-date-range-input>` | 日期区间选择（单面板两次点击定区间） |
 | `<mu-time-input>` | 时间选择（时/分/秒列式滚动，下拉面板） |
 | `<mu-color-input>` | 颜色选择（HEX 输入 + 内置 130 色色板） |
 | `<mu-check>` / `<mu-check-group>` | 复选框及组 |

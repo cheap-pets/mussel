@@ -89,6 +89,7 @@
   { prop: 'month', label: '月份', input: 'month' }        // <mu-date-input type="month">
   { prop: 'year', label: '年份', input: 'year' }          // <mu-date-input type="year">
   { prop: 'q', label: '季度', input: 'quarter' }          // <mu-date-input type="quarter">
+  { prop: 'range', label: '区间', input: 'date-range' }   // <mu-date-range-input>
   { prop: 'time', label: '时间', input: 'time' }          // <mu-time-input>
   { prop: 'color', label: '主题色', input: 'color' }      // <mu-color-input>
   { prop: 'type', label: '类型', input: 'select' }        // <mu-select>
@@ -366,6 +367,36 @@ const filteredItems = computed(() =>
 > - `type="year"`：直接进入年份网格（每屏 10 年），选中年份即提交并关闭。
 > - 顶部上下翻页按钮**仅在日期/周网格视图**出现，用于翻月；月份/季度/年份视图切换十年区间由面板内部的左右箭头格子完成。
 > - 「今天/本周/本月/本季/本年」按钮跳回当前并提交，文案随当前视图变化。
+
+---
+
+## MuDateRangeInput
+
+日期区间选择框。单个下拉日期面板，两次点击确定区间：无开始日期时点击记为开始日期；仅有开始日期时，点击早于开始日期的单元格替换开始日期，点击相同或更晚的单元格记为结束日期；已有完整区间时再次点击将清空区间，并以点击日期重新开始。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `modelValue` | Object | — | 双向绑定值 `{ startDate, endDate }`；两侧类型由 `value-type` 控制，两侧皆空时为 `null` |
+| `format` | String | `null` | 输入框显示格式；为 `null` 时默认 `yyyy-MM-dd` |
+| `value-type` | String | `'date'` | 输出值类型：`'date'`（默认，输出 Date 对象）\| `'string'`（按 `value-format` 输出字符串） |
+| `value-format` | String | `yyyy-MM-dd` | 仅 `value-type="string"` 时生效的输出格式 |
+| `week-starts-on` | Number | `0` | 每周起始日（0=周日 ~ 6=周六）；默认读全局 `calendar.weekStartsOn` 配置 |
+| `min` | Date\|String | — | 最小可选值 |
+| `max` | Date\|String | — | 最大可选值 |
+| `dropdown-class` | String | — | 下拉面板附加 class |
+| (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `update:modelValue` | value | 值变更 |
+| `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
+| (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
+
+> - 面板在选中结束日期后**不关闭**，可继续点击调整：再次点击任一日期会清空区间并以该日期重新开始。
+> - 选定开始日期后，悬停更晚的单元格会以浅色预览候选区间。
+> - 「今天」按钮跳回当月，并按上述点击规则选中今天。
+> - 输入框可直接输入 `开始日期 ~ 结束日期`（如 `2026-01-08 ~ 2026-01-20`），任一侧可留空。
+> - 两侧皆空时 `modelValue` 为 `null`；配合 `clearable` 显示清空按钮。
 
 ---
 
