@@ -116,6 +116,9 @@
         </mu-dropdown-button>
       </div>
       <div class="group">
+        <mu-dropdown-button caption="短文本 Options 下拉宽度测试" :dropdown-items="shortOptions" />
+      </div>
+      <div class="group">
         <mu-toolbar class="bg-fill" size="large" style="gap: 0;">
           <mu-search-input class="flex-1 mu-input--inset" />
           <mu-flex-divider />
@@ -162,6 +165,9 @@
     { label: 'Frédéric François Chopin', icon: '', action: 'C' },
     { label: 'Johann Baptist Strauss', icon: 'ok', action: 'D' }
   ])
+
+  const shortOptions = ref(['1', '2', '3'])
+
   const checkedArtist = ref(null)
   const checkedArtists = ref([])
 

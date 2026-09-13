@@ -15,7 +15,7 @@ $FLEX_DIRECTIONS: (
   inset: 0;
 }
 
-@each $v in ('float', 'layer', 'modal', 'popup', 'ontop') {
+@each $v in ('float', 'above', 'layer', 'modal', 'popup', 'ontop') {
   .z-#{$v} {
     --z-offset: 0;
 

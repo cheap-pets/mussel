@@ -30,7 +30,7 @@
   }
 
   &:hover {
-    z-index: 1;
+    z-index: var(--mu-z-index-above);
     transform: scale(1.15);
     animation: none;
   }

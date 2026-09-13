@@ -152,7 +152,7 @@ div.mu-input {
   & > .mu-input {
     --height: var(--mu-control-height-normal);
 
-    z-index: 1;
+    z-index: var(--mu-z-index-above);
     flex: 1 1 0;
   }
 
@@ -162,7 +162,7 @@ div.mu-input {
   }
 
   & > :focus-within {
-    z-index: 2;
+    z-index: calc(var(--mu-z-index-above) + 1);
   }
 
   & > :first-child {

@@ -221,7 +221,7 @@
       scroll-snap-type: y mandatory;
 
       position: relative;
-      z-index: 1;
+      z-index: var(--mu-z-index-above);
 
       overflow: auto;
       flex: 1 1 0;

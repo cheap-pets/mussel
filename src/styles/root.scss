@@ -120,7 +120,8 @@ $SEMANTIC_COLORS: (
   --mu-font-sans: system-ui, -apple-system, "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
   --mu-font-mono: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace;  
 
-  --mu-z-index-float: 1;
+  --mu-z-index-float: 1; // 暂时兼容性保留
+  --mu-z-index-above: 1;
   --mu-z-index-layer: 10;
   --mu-z-index-modal: 100;
   --mu-z-index-popup: 1000;

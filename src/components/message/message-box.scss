@@ -1,5 +1,5 @@
 .mu-modal-mask.mu-message-mask {
-  z-index: calc(var(--mu-z-index-ontop) - 1);
+  z-index: var(--mu-z-index-ontop);
 }
 
 .mu-dialog.mu-message-box {

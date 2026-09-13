@@ -28,7 +28,7 @@
 
   & thead {
     position: sticky;
-    z-index: 2;
+    z-index: calc(var(--mu-z-index-above) + 1);
     top: 0;
 
     & > tr {
@@ -61,7 +61,7 @@
 
   &.fixed-col {
     position: sticky;
-    z-index: 1;
+    z-index: var(--mu-z-index-above);
   }
 }
 
@@ -141,7 +141,7 @@
   pointer-events: none;
 
   position: sticky;
-  z-index: 1;
+  z-index: var(--mu-z-index-above);
   bottom: 0;
   left: 0;
 
@@ -168,7 +168,7 @@
   &::after {
     content: '';
     position: absolute;
-    z-index: 1;
+    z-index: var(--mu-z-index-above);
     background-color: var(--hover-bg);
   }
 }

@@ -10,7 +10,7 @@ Mussel — Vue 3 组件库。
 - 新增或修改功能时，不要使用 mussel-ui skill。
 - style lint 错误，先尝试用 stylelint --fix 修复。
 - 项目使用 rollup -watch 打包，并启用了 serve 在 3000 端口监听。
-  使用 playwright 或类似 mcp 验证时，先尝试访问 3000 端口，不用每次执行打包。
+  使用 playwright 验证时，先尝试直接访问，不用每次执行打包。
 - 没有明确要求进行仓库提交时，不要提交。
 
 

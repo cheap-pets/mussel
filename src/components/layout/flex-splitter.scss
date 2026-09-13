@@ -17,7 +17,7 @@
   user-select: none;
 
   position: relative;
-  z-index: 10;
+  z-index: var(--mu-z-index-above);
 
   overflow: visible;
   display: none;
@@ -63,7 +63,7 @@
   }
 
   &[collapsed] {
-    z-index: 15;
+    z-index: calc(var(--mu-z-index-above) + 1);
 
     &::before {
       background: var(--mu-border-color-soft);
@@ -71,7 +71,7 @@
   }
 
   &:hover {
-    z-index: 15;
+    z-index: calc(var(--mu-z-index-above) + 1);
 
     &::before {
       background: var(--mu-primary-color);
@@ -79,7 +79,7 @@
   }
 
   &[active] {
-    z-index: 20;
+    z-index: calc(var(--mu-z-index-above) + 2);
 
     &::before {
       background: var(--mu-primary-color);

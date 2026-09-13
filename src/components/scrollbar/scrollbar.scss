@@ -19,7 +19,7 @@
   user-select: none;
 
   position: sticky !important;
-  z-index: 10;
+  z-index: var(--mu-z-index-layer);
   top: 0;
   left: 0;
 

@@ -133,10 +133,10 @@
 ### 规范 3-A：z-index 只能使用 Token 变量
 
 ```css
-/* ✅ 正确：按层级由低到高选用对应变量（默认值见右注释） */
-.floating-card { z-index: var(--mu-z-index-float); }   /* 1 */
-.drawer        { z-index: var(--mu-z-index-layer); }   /* 10 */
-.dialog        { z-index: var(--mu-z-index-modal); }   /* 100 */
+/* ✅ 正确：按"要盖住谁"选层级（默认值见右注释） */
+.active-item   { z-index: var(--mu-z-index-above); }   /* 1 */
+.scrollbar     { z-index: var(--mu-z-index-layer); }   /* 10 */
+.dialog-mask   { z-index: var(--mu-z-index-modal); }   /* 100 */
 .dropdown      { z-index: var(--mu-z-index-popup); }   /* 1000 */
 .toast         { z-index: var(--mu-z-index-ontop); }   /* 10000 */
 
@@ -149,7 +149,12 @@
 }
 ```
 
-层级高低顺序（由低到高）：`float`(1) < `layer`(10) < `modal`(100) < `popup`(1000) < `ontop`(10000)
+### 规范 3-B：按"要盖住的目标"选层级
+
+盖兄弟元素用 `above`，盖容器内全部内容用 `layer`，全局浮层用 `popup`——只与压盖目标比较，不贪高。`float` 兼容保留，新代码勿用。各级含义与适用场景详见 styles.md §1.12。
+
+- 层级（低到高）：`above`(1) < `layer`(10) < `modal`(100) < `popup`(1000) < `ontop`(10000)
+- 同级偏移：CSS 用 `calc(var(--mu-z-index-<level>) + N)`，模板用 `.z-*` 类 + 局部 `--z-offset`
 
 ---
 

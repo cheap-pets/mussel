@@ -3,7 +3,7 @@
     v-model="comboValue"
     class="mu-combo-box mu-select"
     :dropdown-items="dropdownItems"
-    :dropdown-class="['mu-select__dropdown-panel', dropdownClass]"
+    :dropdown-class="dropdownClass"
     :dropdown-width="dropdownWidth"
     :dropdown-scrollbar="dropdownScrollbar"
     :editable="editable">
