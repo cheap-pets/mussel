@@ -161,6 +161,7 @@ description: >
 
 | 组件 | 用途 |
 |------|------|
+| `<mu-tooltip>` / `v-mu-tooltip` | 文字提示气泡；指令挂纯文本，组件形态支持 `#tooltip` 富内容插槽；12 方向 placement + 箭头 |
 | `messageBox.alert/confirm/error/warn` | 命令式对话框，通过 `inject('$mussel')` 调用，返回 Promise |
 | `messageBox.notify` | 浮动通知，自动消失（默认 3s） |
 | `<mu-status-box>` | 状态占位（空数据/加载失败/无权限等） |

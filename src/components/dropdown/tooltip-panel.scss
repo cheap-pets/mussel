@@ -1,0 +1,88 @@
+.mu-tooltip-panel {
+  pointer-events: none;
+
+  position: fixed !important;
+  z-index: var(--mu-z-index-popup);
+
+  max-width: calc(var(--mu-base-spacing) * 40);
+  padding: var(--mu-half-spacing) var(--mu-base-spacing);
+  border-radius: var(--mu-radius-control);
+
+  font-size: var(--mu-font-size-small);
+  color: var(--mu-text-color-normal);
+
+  opacity: 0;
+  background: var(--mu-bg-overlay);
+  box-shadow: var(--mu-shadow-popup);
+
+  transition-duration: .1s;
+  transition-property: opacity, transform;
+
+  // 箭头：8px 旋转方块，clip-path 只保留外露一半，避免与面板阴影形成内侧双线
+  &::after {
+    content: '';
+
+    position: absolute;
+    transform: rotate(45deg);
+
+    width: 8px;
+    height: 8px;
+
+    background: var(--mu-bg-overlay);
+    box-shadow: var(--mu-shadow-hairline);
+  }
+
+  &[position='top'] {
+    transform-origin: bottom;
+    transform: scaleY(.9);
+
+    &::after {
+      bottom: -4px;
+      left: calc(50% - 4px + var(--mu-tooltip-arrow-offset, 0px));
+      clip-path: polygon(0 100%, 100% 0, 100% 100%);
+    }
+  }
+
+  &[position='bottom'] {
+    transform-origin: top;
+    transform: scaleY(.9);
+
+    &::after {
+      top: -4px;
+      left: calc(50% - 4px + var(--mu-tooltip-arrow-offset, 0px));
+      clip-path: polygon(0 0, 0 100%, 100% 0);
+    }
+  }
+
+  &[position='left'] {
+    transform-origin: right;
+    transform: scaleX(.9);
+
+    &::after {
+      top: calc(50% - 4px + var(--mu-tooltip-arrow-offset, 0px));
+      right: -4px;
+      clip-path: polygon(0 0, 100% 0, 100% 100%);
+    }
+  }
+
+  &[position='right'] {
+    transform-origin: left;
+    transform: scaleX(.9);
+
+    &::after {
+      top: calc(50% - 4px + var(--mu-tooltip-arrow-offset, 0px));
+      left: -4px;
+      clip-path: polygon(0 0, 0 100%, 100% 100%);
+    }
+  }
+
+  &[pop-up] {
+    pointer-events: auto;
+    transform: none;
+    opacity: 1;
+  }
+
+  &:not([arrow])::after {
+    display: none;
+  }
+}

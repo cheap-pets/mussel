@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>
-      DROPDOWN & CONTEXT-MENU
+      DROPDOWN & CONTEXT-MENU & TOOLTIP
       <theme-switch />
     </h2>
     <mu-context-menu ref="contextMenu" :menus="artists" />
@@ -119,6 +119,55 @@
         <mu-dropdown-button caption="短文本 Options 下拉宽度测试" :dropdown-items="shortOptions" />
       </div>
       <div class="group">
+        <mu-tooltip content="删除后不可恢复">
+          <mu-button danger>
+            删除
+          </mu-button>
+        </mu-tooltip>
+        <mu-tooltip placement="right" content="右侧提示（主轴空间不足自动翻转）">
+          <mu-icon-button icon="info" />
+        </mu-tooltip>
+        <mu-tooltip :arrow="false" content="无箭头提示">
+          <mu-button>无箭头</mu-button>
+        </mu-tooltip>
+        <mu-tooltip trigger="focus" content="聚焦时显示的提示">
+          <mu-input placeholder="focus 触发" />
+        </mu-tooltip>
+        <mu-tooltip trigger="click" content="点击触发的提示（外点 / ESC 关闭）">
+          <mu-button>Click Trigger</mu-button>
+        </mu-tooltip>
+      </div>
+      <div class="group">
+        <mu-tooltip placement="bottom">
+          <mu-icon-button icon="question" />
+          <template #tooltip>
+            支持 <b>富文本</b> 与 <mu-icon icon="info" /> 图标
+          </template>
+        </mu-tooltip>
+        <mu-tooltip content="长文本换行：提示内容超过最大宽度 320px 时会自动折行，保证在狭小视口内仍然可读。">
+          <mu-button>长文本</mu-button>
+        </mu-tooltip>
+        <mu-button v-mu-tooltip="'字符串指令提示'">
+          v-mu-tooltip
+        </mu-button>
+        <mu-button v-mu-tooltip="{ content: '对象配置 · bottom-end', placement: 'bottom-end' }">
+          对象 value
+        </mu-button>
+        <mu-button v-mu-tooltip="dynamicTip" @click="cycleTip">
+          动态 value
+        </mu-button>
+        <mu-button v-mu-tooltip="'disabled 控件不触发（已知限制）'" disabled>
+          Disabled
+        </mu-button>
+      </div>
+      <div class="group" style="flex-wrap: wrap;">
+        <mu-tooltip v-for="p in placements" :key="p" :content="`placement: ${p}`" :placement="p">
+          <mu-button button-style="outline">
+            {{ p }}
+          </mu-button>
+        </mu-tooltip>
+      </div>
+      <div class="group">
         <mu-toolbar class="bg-fill" size="large" style="gap: 0;">
           <mu-search-input class="flex-1 mu-input--inset" />
           <mu-flex-divider />
@@ -167,6 +216,20 @@
   ])
 
   const shortOptions = ref(['1', '2', '3'])
+
+  const dynamicTip = ref('动态提示 1')
+  const placements = [
+    'top-start', 'top', 'top-end',
+    'right-start', 'right', 'right-end',
+    'bottom-start', 'bottom', 'bottom-end',
+    'left-start', 'left', 'left-end'
+  ]
+
+  function cycleTip () {
+    dynamicTip.value = dynamicTip.value === '动态提示 1'
+      ? '动态提示 2（updated 字段 diff 同步，不重播动画）'
+      : '动态提示 1'
+  }
 
   const checkedArtist = ref(null)
   const checkedArtists = ref([])

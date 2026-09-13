@@ -38,6 +38,7 @@ function install (app, options = {}) {
 
   context.popupCoordinator = createPopupCoordinator()
   context.setupColors = setupColors.bind(context)
+
   app.provide('$mussel', context)
   app.config.globalProperties.$mussel = context
 

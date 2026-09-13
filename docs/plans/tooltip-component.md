@@ -2,10 +2,10 @@
 
 | 项目 | 内容 |
 |---|---|
-| 状态 | 方案定稿（形态与视觉均已确认），待实现 |
+| 状态 | **已实施（2026-09-13），Playwright DOM 断言 + 视觉抽查通过**。实现偏差：文件落在 `src/components/dropdown/`（`tooltip.vue` / `tooltip-panel.vue` + `.scss` / `tooltip-controller.js` / `tooltip-directive.js`，经 `dropdown/index.js` 的 `install` 接线），未建独立 `tooltip/` 目录；demo 未建独立页，示例并入 `demo/src/dropdown/main-view.vue` |
 | 范围 | **双形态**：`v-mu-tooltip` 指令（纯文本提示，零侵入）+ `<mu-tooltip>` 无包装组件（富内容，零 DOM 输出）；两形态共享单例浮层面板 |
 | 不在范围 | 受控 `v-model:visible`、指令形态的 HTML 内容（见 §10） |
-| 已确认决策 | 2026-09-12：视觉走**浅色浮层**（与 `mu-dropdown-panel` 同语言，不新增主题变量）；**带箭头**（可关）；形态选**指令 + 无包装组件双入口**（包裹式组件因额外 DOM 节点与布局干扰被否）；**placement 直接支持 12 方向**（主方向 × start / center / end 对齐） |
+| 已确认决策 | 2026-09-12：视觉走**浅色浮层**（与 `mu-dropdown-panel` 同语言，不新增主题变量）；**带箭头**（可关）；形态选**指令 + 无包装组件双入口**（包裹式组件因额外 DOM 节点与布局干扰被否）；**placement 直接支持 12 方向**（主方向 × start / center / end 对齐）；2026-09-13（popup 重构后复审）：显隐时序定为**直接复用 `runPopupSequence`**（否决同步直写变体，见 §5.1），controller 改 **per-app**（对齐 coordinator 隔离方向，见 §2.3），manager 回调补 `hide`（见 §6） |
 
 ---
 
@@ -20,12 +20,12 @@
 
 | 设施 | 位置 | 对 tooltip 的作用 |
 |---|---|---|
-| 锚点定位浮层 | `src/components/dropdown/dropdown-panel.vue` | fixed 定位 + `getBoundingClientRect()` 测量 + 主轴自动翻转 + `[pop-up]` 属性动画，照抄并扩展到 4 向；显隐时序直接复用 `popup.js` 的 `runPopupSequence`（见 `dropdown-panel-sequence-refactor.md`），或按 §5.1 同步直写省 patch #2 |
+| 锚点定位浮层 | `src/components/dropdown/dropdown-panel.vue` | fixed 定位 + `getBoundingClientRect()` 测量 + 主轴自动翻转 + `[pop-up]` 属性动画，照抄并扩展到 4 向；显隐时序直接复用 `popup.js` 的 `runPopupSequence`（见 `dropdown-panel-sequence-refactor.md` 与 §5.1） |
 | 弹层管理器 | `src/components/common/popup.js` 的 `usePopupManager`（per-app `$mussel.popupCoordinator`，见 `popup-manager-refactor.md`） | 互斥、模态栈、scroll/resize/ESC/外点统一派发；`blur` / `fullscreenchange` 需实例显式声明 `onCaptureWindowBlur` / `onCaptureFullscreenChange` 回调 |
 | 挂载目标 | `inject('$mussel').rootElement` | Teleport 目标，暗色变量沿 DOM 级联自动继承；show 时切 `document.fullscreenElement \|\| rootEl` |
 | 单例浮层懒加载 | `src/components/message/notifier.js` 的 `pluginNotifier` + `src/utils/vue.js` 的 `createDynamicComponent` | 单例面板创建模式：`{ container: app._container, appContext: app._context }`，`appContext` 继承使面板内 `inject('$mussel')` 可用 |
 | 指令注册 | `src/components/scrollbar/directive.js` | `app.directive('mu-scrollbar', { mounted, updated, beforeUnmount })` 模式，tooltip 同款注册 `v-mu-tooltip` |
-| 显隐时序 | `nextTick` + 强制回流（FLIP 配方，§5.1）；隐藏收尾用 `src/utils/style.js` 的 `getTransitionDuration()` | 入场 ≤1 帧、时序由规范保证；dropdown-panel 的 20ms 定时器链已由 `runPopupSequence` 替换（首开 ~60ms → ~8ms，见 `dropdown-panel-sequence-refactor.md`），tooltip 沿用响应式绑定即可直接复用 |
+| 显隐时序 | `nextTick` + 强制回流（FLIP 配方，§5.1）；隐藏收尾用 `src/utils/style.js` 的 `getTransitionDuration()` | 入场 ≤1 帧、时序由规范保证；dropdown-panel 的 20ms 定时器链已由 `runPopupSequence` 替换（首开 ~60ms → ~8ms，见 `dropdown-panel-sequence-refactor.md`），tooltip 直接复用（响应式绑定与占位保护均不变，见 §5.1） |
 | 尺寸变化事件 | `src/events/resize.js` 的 `sizechange`：模块级共享 `ResizeObserver` + `EventInterceptor`（`interceptor.js` 篡改 `Element.prototype.addEventListener`）做引用计数，首个监听自动 observe、末个移除自动 unobserve；随库加载生效（`src/index.js:54` re-export 链引入） | 面板内容变化自动重定位：`@sizechange="updatePosition"`，同 `combo-wrapper.vue:7` / `table.vue` / `dialog.vue` 用法；**不直接使用原生 `ResizeObserver`** |
 
 无第三方定位库（package.json 无 popper / floating-ui），延续自研路线。
@@ -102,19 +102,19 @@
 | 约束 | 子节点必须是单个元素 vnode；纯文本、多节点、空插槽、多根 fragment 子组件不支持（dev 环境 `console.warn`） |
 | 约束 | 子组件若把 `mouseenter` / `click` 等声明为组件 emit，合并的监听不落 DOM，tooltip 收不到（极罕见，与多根 fragment 同类边界） |
 
-### 2.3 架构：单例面板 + 控制器
+### 2.3 架构：per-app 单例面板 + 控制器
 
 ```
 v-mu-tooltip 指令 ──┐
-                    ├──→ controller（模块级单例）──懒建──→ panel.vue（唯一浮层实例）
-<mu-tooltip> 组件 ──┘        │                              │ Teleport → rootElement
-                             └── state: shallowReactive      │ usePopupManager
+                    ├──→ controller（per-app 单例，$mussel.tooltip）──懒建──→ panel.vue（每 app 至多一个）
+<mu-tooltip> 组件 ──┘        │                                                │ Teleport → rootElement
+                             └── state: shallowReactive                        │ usePopupManager
 ```
 
-- **controller**（`controller.js`）：模块级 `shallowReactive` 状态（`visible / anchor / content / placement / trigger / arrow / onShow / onHide`），首次 show 时 `createDynamicComponent({ container: app._container, appContext: app._context, component: Panel, props: { state } })` 懒建面板——同 `notifier.js` 的 `pluginNotifier` 模式；`appContext` 继承使面板内 `inject('$mussel')` 可解析。
+- **controller**（`controller.js` 的 `createTooltipController(app)`）：**per-app 实例**（同 `notifier.js` 的 `pluginNotifier` 形态：状态在 install 闭包内逐 app 创建，不落模块级——模块级单例会把面板绑死在首个 app 的 `appContext` 上，第二 app 的锚点触发时挂错 root、互斥走错 coordinator，与 per-app coordinator 重构方向相悖），持有 `shallowReactive` 状态（`visible / anchor / content / placement / trigger / arrow / onShow / onHide`），首次 show 时 `createDynamicComponent({ container: app._container, appContext: app._context, component: Panel, props: { state } })` 懒建面板；`appContext` 继承使面板内 `inject('$mussel')` 解析到**本 app** 的 coordinator / rootElement。
 - **panel.vue**（`MusselTooltipPanel`，内部组件不对外导出）：接收 `state` prop（同 notifier 接 `notifications` 的模式），内部 `watch(visible)` 驱动显隐时序；content 支持 String 与 vnode 数组（组件插槽内容）。
-- **指令注册**（`index.js` 的 `install(app)`）：`app.directive('mu-tooltip', { mounted, updated, beforeUnmount })`，同 `scrollbar/directive.js` 模式；`install` 由 `components/index.js` 的 `_install` 自动调用（同 message 模块），无需改注册逻辑。
-- 同屏仅一个 tooltip：单例面板天然保证；与 dropdown 的互斥由 `usePopupManager` 处理。
+- **接线与指令注册**（`index.js` 的 `install(app)`）：创建本 app 的 controller 写入 `app.config.globalProperties.$mussel.tooltip`（同 message 模块的 `$mussel.messageBox` 接线；`src/index.js` 的 provide 先于组件 install，组件形态经 `inject('$mussel').tooltip` 取用），并注册 `app.directive('mu-tooltip', { mounted, updated, beforeUnmount })` 闭包引用该 controller（注册形态同 `scrollbar/directive.js`）；`install` 由 `components/index.js` 的 `_install` 自动调用，无需改注册逻辑。
+- 同屏（同 app）仅一个 tooltip：per-app 单例面板天然保证；与 dropdown 的互斥由 `usePopupManager` 处理（跨 app 不互斥，与 per-app coordinator 的隔离语义一致）。
 - **锚点切换语义**：A 显示中触发 B → 保留显示、替换 content、重定位，**无退出 / 入场动画**（高频列表场景不闪）；仅当 B 触发失败（如 content 为空）才走完整 hide。
 - **vnode 实现约束**：`#tooltip` 插槽内容每次显示 / 更新都**重新调用 slot 函数**取新 vnode；controller 与 panel 均不缓存已渲染 vnode（vnode 二次渲染会异常）。
 
@@ -236,33 +236,31 @@ left / right 主方向时**轴互换**：`anchorCenter = at + ah / 2`，`arrowOf
 
 ## 5. 显隐时序与触发
 
-### 5.1 时序（nextTick + 强制回流，FLIP 配方）
+### 5.1 时序（直接复用 runPopupSequence）
 
-dropdown-panel 原 20ms 定时器链已重构为 `runPopupSequence`（`nextTick` + 强制回流，实测首开 ~8ms / 再开 ~2ms，详细论证见 `docs/plans/dropdown-panel-sequence-refactor.md`）。tooltip 与其的差异只有两点：基础态 `opacity: 0` + `pointer-events: none` 替代 `visibility: hidden` 占位（可省占位样式写入），以及下述同步直写：
+显隐时序**逐字复用** `src/components/common/popup.js` 的 `runPopupSequence({ visible, ready, popupStyle, panelEl, updatePosition })`——dropdown-panel 原 20ms 定时器链的重构产物（实测首开 ~8ms / 再开 ~2ms，论证见 `docs/plans/dropdown-panel-sequence-refactor.md`），其注释明示"dropdown-panel / context-menu / 后续 tooltip 共用"。曾评估"updatePosition 同步直写 `el.style` 省 patch #2"的变体，**复审否决**：省 1 个微任务级 patch 的收益，抵不过重推导测量保护与起点提交编舞的风险——与 dropdown 重构 §2.0 否决稿的三个连环缺陷同源，其 §5.4 亦已点名"`updatePosition()` 后直接 `void el.offsetWidth`"的写法存在缺陷 3。
 
 ```
-show():
+show():                                                          // panel.vue 内 watch(visible) 驱动
   visible = true
   container = document.fullscreenElement || rootEl
-  首次懒建面板（controller createDynamicComponent）后 await nextTick()   // 等 Vue patch，微任务级
+  await runPopupSequence({ visible, ready, popupStyle, panelEl, updatePosition })
+  // 编舞内部（见 popup.js）：占位 { transform:'none', visibility:'hidden' } 与 ready 同批 patch →
+  //   nextTick → transition:none + 移除 [pop-up] → updatePosition()（响应式写 left/top + position 属性）→
+  //   nextTick（patch #2：定位入 DOM、占位被整体替换、scaleY(.9) 复归生效）→
+  //   void el.offsetWidth（起点固化）→ 恢复 transition → 设 [pop-up]
 
-  const el = panelEl
-  el.style.transition = 'none'      // 关动画
-  el.removeAttribute('pop-up')
-  updatePosition()                  // getBoundingClientRect 本身强制同步布局，测量精确
-  void el.offsetWidth               // 强制回流：定位 + position 属性本帧提交（transition 已关，不会动画）
-  el.style.transition = null        // 恢复动画
-  el.setAttribute('pop-up', '')     // 入场过渡从干净起点开始
-
-hide():
+hide():                                                          // 收尾沿用 dropdown 现方案
+  visible = false、emit('hide')，面板未挂载时仅跳过 DOM 收尾（编舞守卫自然中止）
   移除 [pop-up] → 过渡退出
-  delay(getTransitionDuration(el)) 后清空 popupStyle（v-show 隐藏）   // 收尾沿用 dropdown 现方案
+  delay(getTransitionDuration(el)) 后清空 popupStyle（v-show 隐藏）
 ```
 
-- 首次显示从 ~60ms 降到 1 个 Vue patch + 2 次强制回流（亚毫秒级）；再次显示同理。
-- 原 `visibility: hidden` 隐藏占位**省去**：基础态 `opacity: 0` 已不可见，配合基础样式 `pointer-events: none`（未 `[pop-up]` 时，见 §3）消除定位窗口期"不可见但可点"。
+- 时序开销：2 个微任务级 patch + 2 次强制回流，亚毫秒级；首次 show 额外含懒建面板的一次性成本。
+- 占位 `{ transform: 'none', visibility: 'hidden' }` **原样保留**：`transform: 'none'` 是测量保护（hide 不清 `[position]` 属性，残留的 `scaleY(.9)` 会使 `getBoundingClientRect()` 主轴缩 10%、定位漂移——旧稿"可省占位样式写入"只对 `visibility` 一半成立）；`visibility: 'hidden'` 与基础态 `opacity: 0` 叠加无害，patch #2 整体替换占位时自然移除。基础样式 `pointer-events: none`（未 `[pop-up]` 时，见 §3）另行消除定位窗口期不可见但可点的问题。
+- `updatePosition` **响应式写** `popupStyle.value`（同 dropdown-panel），不直写 `el.style`：left/top 不在 `transition-property` 内，锚点切换 / 滚动跟随瞬时跳变无过渡；实际主方向经 `setAttribute('position', …)` 同步生效。
 - 面板监听 `sizechange` 事件（`@sizechange="updatePosition"`）：显示中内容变化（`#tooltip` 富内容热更新）导致尺寸改变时自动重定位，无需 controller 手动触发。用库内 `src/events/resize.js` 封装（共享 `ResizeObserver` + 引用计数，模板上直接 `@sizechange` 即生效），不直接使用原生 `ResizeObserver`。
-- 快速开关守卫：`await nextTick()` 后若 `visible` 已被置否（等待窗口内 hide）直接返回，对应原代码的 `visible.value && el.setAttribute(...)` 检查。
+- 快速开关守卫由编舞内建，共两处：每个 `await nextTick()` 之后检查 `visible`，且第二守卫退出前先清 `el.style.transition = null`（否则内联 `transition: none` 永久残留，下次动画全灭）。
 
 ### 5.2 触发方式（两形态一致，事件绑在锚点元素上）
 
@@ -282,6 +280,7 @@ hide():
 
 | 回调 | 行为 |
 |---|---|
+| `hide` | 面板隐藏方法本体（dropdown-panel options 首项）。coordinator 的 `claimPopup`（新弹层互斥：`activePopup?.hide?.()`）与 `removeModal`（模态关闭级联收弹层）依赖它；缺失则 dropdown 打开时可见 tooltip 不被关闭 |
 | `onCaptureWindowResize` | `updatePosition()`；锚点出视口（`isElementInViewport`）则 hide |
 | `onCaptureScroll` | **逐行照抄** `dropdown-panel.vue` 的 `onCaptureScroll`：锚点出视口（`isElementInViewport`）→ hide；否则滚动元素（`event.target`）包含锚点 → `updatePosition()` 实时跟随重定位。捕获阶段注册（coordinator 惰性挂载的 window 监听，见 `popup-manager-refactor.md`）天然覆盖页面滚动与任意嵌套滚动容器 |
 | `onCaptureEscKeyDown` | 非 hover 触发时 hide |
@@ -299,10 +298,10 @@ hide():
 | # | 步骤 | 文件 | 检查点（每步通过后再继续） |
 |---|---|---|---|
 | 1 | 面板（形态无关的核心） | `src/components/tooltip/panel.vue`（`MusselTooltipPanel`：Teleport + 定位 + 显隐时序 + manager）、`panel.scss` | demo 临时手调 `show()`：12 方向 / 主轴翻转 / 箭头统一公式（对齐 + 夹紧）/ max-width 换行 / 暗色变量（`getComputedStyle`）均正确；入场 ≤1 帧无闪烁、定位窗口期不可点；显示中改内容经 `sizechange` 事件自动重定位；stylelint 通过 |
-| 2 | 控制器 | `src/components/tooltip/controller.js`：`shallowReactive` 状态 + `createDynamicComponent` 懒建 + `showTooltip / hideTooltip` + `install(app)`（注册指令、捕获 app 上下文） | 首次 show 懒建面板且**仅建一次**，连续调用不重复创建；锚点切换直接重定位无闪烁；绕过 install 的场景走 `.mu-root` 兜底不崩 |
+| 2 | 控制器 | `src/components/tooltip/controller.js`：`createTooltipController(app)` 返回 per-app 闭包（同 `pluginNotifier` 形态），内含 `shallowReactive` 状态 + `createDynamicComponent` 懒建 + `show / hide` | 同一 app 首次 show 懒建面板且**仅建一次**，连续调用不重复创建；双 app 各自 install 时控制器 / 面板互不串扰；锚点切换直接重定位无闪烁；绕过 install 的场景走 `.mu-root` 兜底不崩 |
 | 3 | 指令 | `src/components/tooltip/directive.js`：value 解析（string / object）、mounted / updated / beforeUnmount | 字符串 / 对象 value 触发；动态 value 按字段 diff 更新且**不重播动画**；`disabled` / 空 content 即时隐藏；显示中卸载元素无残留监听 |
 | 4 | 组件 | `src/components/tooltip/tooltip.vue`：render fn + `cloneVNode` 事件链式合并 + props watch 同步 + 事件 / expose | 子元素自身 `click` / `mouseenter` 回调与 tooltip 共存；`#tooltip` 富内容正常渲染且动态更新；非单子节点 dev 警告；`show` / `hide` 事件与 expose 方法可用 |
-| 5 | 导出与注册 | `src/components/tooltip/index.js`（`export { default as MuTooltip }` + `export { install }`）；`src/components/index.js` 加 `import * as TooltipComponents from './tooltip'` + `_install(TooltipComponents)`（`install` 自动调用，无需改注册逻辑） | demo 中 `v-mu-tooltip` 指令与全局 `<mu-tooltip>` 均可用；`npm run build` 产物包含 tooltip 代码 |
+| 5 | 导出与注册 | `src/components/tooltip/index.js`：`install(app)` 创建 controller 写入 `$mussel.tooltip` 并注册指令（接线见 §2.3）；`export { default as MuTooltip }` + `export { install }`；`src/components/index.js` 加 `import * as TooltipComponents from './tooltip'` + `_install(TooltipComponents)`（`install` 自动调用，无需改注册逻辑） | demo 中 `v-mu-tooltip` 指令与全局 `<mu-tooltip>` 均可用；`npm run build` 产物包含 tooltip 代码 |
 | 6 | demo | 新增 `demo/src/tooltip/main.js`、`main-view.vue`（指令：字符串/对象/动态/disabled；组件：12 方向矩阵/翻转/focus、click/`#tooltip` 插槽富内容/长文本/theme-switch）；`demo/src/index.html` 加 `.app-tile` 卡片 | demo 页全场景可交互；缩小窗口验证视口边缘翻转与箭头跟随；dark 切换正常 |
 | 7 | 文档同步（AGENTS.md 强制） | `docs/quick-reference_components.md` 的 `## 7 - 反馈` 下加 `### MuTooltip`（组件用法）与指令用法段（登记位置参照 `v-mu-scrollbar` 现有写法）；`skills/mussel-ui/references/components/feedback.md` 同步；`skills/mussel-ui/SKILL.md` 组件速查表补行 | docs 与 skills/references 两处内容一致；SKILL.md 速查表含 tooltip 行 |
 
@@ -333,6 +332,7 @@ hide():
 - [ ] 交叉轴夹紧与 start / end 对齐时，箭头均指向锚点中心（`--mu-tooltip-arrow-offset` 统一公式生效）
 - [ ] `arrow` 属性关闭箭头；长文本 320px 换行
 - [ ] 单例互斥：指令与组件先后触发，同屏只有一个 tooltip
+- [ ] 与 dropdown 双向互斥：tooltip 可见时打开 dropdown，tooltip 即刻关闭（§6 `hide` 回调生效）；反向同理
 - [ ] 暗色模式背景 / 文字 / 阴影变量生效（`getComputedStyle` 校验）
 - [ ] 滚动容器内锚点滚动跟随重定位；锚点出视口隐藏
 - [ ] 全屏元素内正常（container 切 `fullscreenElement`）
