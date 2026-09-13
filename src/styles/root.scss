@@ -58,7 +58,8 @@ $SEMANTIC_COLORS: (
   --mu-bg-fill: var(--mu-gray-1);
   --mu-bg-stripe: var(--mu-gray-0);
 
-  --mu-shadow-hairline: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  --mu-border-hairline: rgba(0, 0, 0, 0.08);
+  --mu-shadow-hairline: 0 0 0 1px var(--mu-border-hairline);
 
   --mu-shadow-float:
     var(--mu-shadow-hairline),
@@ -111,7 +112,8 @@ $SEMANTIC_COLORS: (
   --mu-bg-fill: var(--mu-gray-16);
   --mu-bg-stripe: var(--mu-gray-18);
 
-  --mu-shadow-hairline: 0 0 0 1px rgba(255, 255, 255, 0.10);
+  --mu-border-hairline: rgba(255, 255, 255, 0.10);
+  --mu-shadow-hairline: 0 0 0 1px var(--mu-border-hairline);
 
   color-scheme: dark;
 }

@@ -57,10 +57,15 @@
     return value < min ? min : value > max ? max : value
   }
 
-  // GAP = --mu-inline-spacing，MARGIN = --mu-half-spacing，ARROW 为箭头中心距面板边缘的最小留白
-  const GAP = 6
+  // MARGIN = --mu-half-spacing，ARROW 为箭头中心距面板边缘的最小留白
   const MARGIN = 4
   const ARROW = 8
+  // 无箭头时面板与锚点的间距（--mu-half-spacing，同 dropdown-panel 观感）
+  const PANEL_GAP = 4
+  // 箭头（含边线层）尖端突出面板边缘的长度（10px 方块旋转 45°，半对角 ≈ 7.07px，取整）
+  const ARROW_PROTRUSION = 7
+  // 有箭头时尖端与锚点的间距
+  const ARROW_TIP_GAP = 2
 
   const OPPOSITE = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
 
@@ -93,21 +98,29 @@
     const [side = 'top', align] = String(state.placement).split('-')
     const vertical = side === 'top' || side === 'bottom'
 
+    // 有箭头时面板退到尖端间距 + 箭头突出量处，无箭头时面板与锚点间距为 PANEL_GAP
+    const gap = state.arrow ? ARROW_TIP_GAP + ARROW_PROTRUSION : PANEL_GAP
+
     const style = {}
     let position
     let arrowCenter
 
     if (vertical) {
+      // fits/space 参数按请求侧取向：top/left 取上/左空间，bottom/right 取下/右空间
+      const spaceStart = rect.top
+      const spaceEnd = th - rect.bottom
+      const sideIsStart = side === 'top'
+
       position = resolveMainAxis(
         side,
-        rect.top - GAP >= dh,
-        th - rect.bottom - GAP >= dh,
-        rect.top,
-        th - rect.bottom
+        (sideIsStart ? spaceStart : spaceEnd) - gap >= dh,
+        (sideIsStart ? spaceEnd : spaceStart) - gap >= dh,
+        sideIsStart ? spaceStart : spaceEnd,
+        sideIsStart ? spaceEnd : spaceStart
       )
 
-      if (position === 'top') style.bottom = `${th - rect.top + GAP}px`
-      else style.top = `${rect.bottom + GAP}px`
+      if (position === 'top') style.bottom = `${th - rect.top + gap}px`
+      else style.top = `${rect.bottom + gap}px`
 
       const left = resolveCrossAxis(align, rect.left, rect.right, dw, tw)
 
@@ -116,16 +129,20 @@
       // 箭头始终指向锚点中心
       arrowCenter = rect.left + rect.width / 2 - (left + dw / 2)
     } else {
+      const spaceStart = rect.left
+      const spaceEnd = tw - rect.right
+      const sideIsStart = side === 'left'
+
       position = resolveMainAxis(
         side,
-        rect.left - GAP >= dw,
-        tw - rect.right - GAP >= dw,
-        rect.left,
-        tw - rect.right
+        (sideIsStart ? spaceStart : spaceEnd) - gap >= dw,
+        (sideIsStart ? spaceEnd : spaceStart) - gap >= dw,
+        sideIsStart ? spaceStart : spaceEnd,
+        sideIsStart ? spaceEnd : spaceStart
       )
 
-      if (position === 'left') style.right = `${tw - rect.left + GAP}px`
-      else style.left = `${rect.right + GAP}px`
+      if (position === 'left') style.right = `${tw - rect.left + gap}px`
+      else style.left = `${rect.right + gap}px`
 
       const top = resolveCrossAxis(align, rect.top, rect.bottom, dh, th)
 
