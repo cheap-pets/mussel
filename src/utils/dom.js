@@ -18,9 +18,13 @@ export function resolveElement (el) {
 }
 
 export function isEditableElement (el) {
+  const tagName = el?.tagName
+
+  if (!tagName) return false
+
   return (
     (
-      ['INPUT', 'TEXTAREA'].includes(el.tagName.toUpperCase()) &&
+      ['INPUT', 'TEXTAREA'].includes(tagName.toUpperCase()) &&
       !el.hasAttribute('readonly') &&
       !el.hasAttribute('disabled')
     ) ||

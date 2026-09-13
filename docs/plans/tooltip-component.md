@@ -20,12 +20,12 @@
 
 | 设施 | 位置 | 对 tooltip 的作用 |
 |---|---|---|
-| 锚点定位浮层 | `src/components/dropdown/dropdown-panel.vue` | fixed 定位 + `getBoundingClientRect()` 测量 + 主轴自动翻转 + `[pop-up]` 属性动画，照抄并扩展到 4 向；**显隐时序不照抄**，改用 §5.1 改进方案 |
-| 弹层管理器 | `src/components/common/popup.js` 的 `usePopupManager` | 全局互斥、scroll/resize/blur/ESC/外点统一处理 |
+| 锚点定位浮层 | `src/components/dropdown/dropdown-panel.vue` | fixed 定位 + `getBoundingClientRect()` 测量 + 主轴自动翻转 + `[pop-up]` 属性动画，照抄并扩展到 4 向；显隐时序直接复用 `popup.js` 的 `runPopupSequence`（见 `dropdown-panel-sequence-refactor.md`），或按 §5.1 同步直写省 patch #2 |
+| 弹层管理器 | `src/components/common/popup.js` 的 `usePopupManager`（per-app `$mussel.popupCoordinator`，见 `popup-manager-refactor.md`） | 互斥、模态栈、scroll/resize/ESC/外点统一派发；`blur` / `fullscreenchange` 需实例显式声明 `onCaptureWindowBlur` / `onCaptureFullscreenChange` 回调 |
 | 挂载目标 | `inject('$mussel').rootElement` | Teleport 目标，暗色变量沿 DOM 级联自动继承；show 时切 `document.fullscreenElement \|\| rootEl` |
 | 单例浮层懒加载 | `src/components/message/notifier.js` 的 `pluginNotifier` + `src/utils/vue.js` 的 `createDynamicComponent` | 单例面板创建模式：`{ container: app._container, appContext: app._context }`，`appContext` 继承使面板内 `inject('$mussel')` 可用 |
 | 指令注册 | `src/components/scrollbar/directive.js` | `app.directive('mu-scrollbar', { mounted, updated, beforeUnmount })` 模式，tooltip 同款注册 `v-mu-tooltip` |
-| 显隐时序 | `nextTick` + 强制回流（FLIP 配方，§5.1）；隐藏收尾用 `src/utils/style.js` 的 `getTransitionDuration()` | 入场 ≤1 帧、时序由规范保证；dropdown-panel 的 20ms 定时器链不照抄，其回填为独立任务（`docs/plans/dropdown-panel-sequence-refactor.md`） |
+| 显隐时序 | `nextTick` + 强制回流（FLIP 配方，§5.1）；隐藏收尾用 `src/utils/style.js` 的 `getTransitionDuration()` | 入场 ≤1 帧、时序由规范保证；dropdown-panel 的 20ms 定时器链已由 `runPopupSequence` 替换（首开 ~60ms → ~8ms，见 `dropdown-panel-sequence-refactor.md`），tooltip 沿用响应式绑定即可直接复用 |
 | 尺寸变化事件 | `src/events/resize.js` 的 `sizechange`：模块级共享 `ResizeObserver` + `EventInterceptor`（`interceptor.js` 篡改 `Element.prototype.addEventListener`）做引用计数，首个监听自动 observe、末个移除自动 unobserve；随库加载生效（`src/index.js:54` re-export 链引入） | 面板内容变化自动重定位：`@sizechange="updatePosition"`，同 `combo-wrapper.vue:7` / `table.vue` / `dialog.vue` 用法；**不直接使用原生 `ResizeObserver`** |
 
 无第三方定位库（package.json 无 popper / floating-ui），延续自研路线。
@@ -238,7 +238,7 @@ left / right 主方向时**轴互换**：`anchorCenter = at + ah / 2`，`arrowOf
 
 ### 5.1 时序（nextTick + 强制回流，FLIP 配方）
 
-不照抄 dropdown-panel 的 20ms 定时器链——固定 40~60ms 入场开销、`setTimeout` 与渲染帧不对齐、时序靠定时器运气（详细论证与 dropdown 回填方案见 `docs/plans/dropdown-panel-sequence-refactor.md`）：
+dropdown-panel 原 20ms 定时器链已重构为 `runPopupSequence`（`nextTick` + 强制回流，实测首开 ~8ms / 再开 ~2ms，详细论证见 `docs/plans/dropdown-panel-sequence-refactor.md`）。tooltip 与其的差异只有两点：基础态 `opacity: 0` + `pointer-events: none` 替代 `visibility: hidden` 占位（可省占位样式写入），以及下述同步直写：
 
 ```
 show():
@@ -283,10 +283,10 @@ hide():
 | 回调 | 行为 |
 |---|---|
 | `onCaptureWindowResize` | `updatePosition()`；锚点出视口（`isElementInViewport`）则 hide |
-| `onCaptureScroll` | **逐行照抄** `dropdown-panel.vue:252` 的 `onCaptureScroll`：锚点出视口（`isElementInViewport`）→ hide；否则滚动元素（`event.target`）包含锚点 → `updatePosition()` 实时跟随重定位。捕获阶段注册（`popup.js:40`）天然覆盖页面滚动与任意嵌套滚动容器 |
+| `onCaptureScroll` | **逐行照抄** `dropdown-panel.vue` 的 `onCaptureScroll`：锚点出视口（`isElementInViewport`）→ hide；否则滚动元素（`event.target`）包含锚点 → `updatePosition()` 实时跟随重定位。捕获阶段注册（coordinator 惰性挂载的 window 监听，见 `popup-manager-refactor.md`）天然覆盖页面滚动与任意嵌套滚动容器 |
 | `onCaptureEscKeyDown` | 非 hover 触发时 hide |
 | `onCaptureMouseDown` | 仅 click 触发时：点击在锚点与面板外 → hide |
-| window `blur` / `fullscreenchange` | 自动 hide（manager 内建） |
+| `onCaptureWindowBlur` / `onCaptureFullscreenChange` | 显式注册为 hide（coordinator 改为可选回调派发，实例不声明则不响应，同 dropdown-panel 现状） |
 
 单例面板只注册一次 manager，指令与组件形态共用。
 
@@ -351,7 +351,7 @@ hide():
 | `cloneVNode` 事件合并覆盖子元素回调 | 中（表单类子组件常见自带 click/focus） | 合并时 wrap 原回调链式执行；验证清单专项覆盖 |
 | 组件形态子节点约束（单元素） | 低，dev `console.warn` 提示 | 文档明示约束；指令形态可兜底任意元素 |
 | 单例面板与 dropdown 互斥：tooltip 显示会关掉已开的 dropdown | 低概率（同一锚点同时挂两者的场景少） | 行为与"同屏一个浮层"的既有约定一致，接受 |
-| manager 的 keydown else-if 链：tooltip 可见期间 modal 的 ESC 被拦截 | 极低（hover 离开即隐） | 如实际出现，评估 tooltip 不消费 ESC 或单开监听 |
+| coordinator 的 `target()` 派发（`activePopup ?? 栈顶 modal`）：tooltip 可见期间 modal 的 ESC 被拦截 | 极低（hover 离开即隐） | 如实际出现，评估 tooltip 不消费 ESC 或单开监听 |
 | 交叉轴夹紧后箭头被 clamp 到面板边缘，极端窄屏不再精确指向锚点中心 | 视觉可接受 | clamp 保底不出面板 |
 | `createDynamicComponent` 独立 app：provide / inject 依赖 `appContext` 继承 | 已有 notifier / message-box 验证 | 同款传参；绕过 `install` 直接 import 组件的场景兜底 `document.querySelector('.mu-root') \|\| document.body` |
 | 原生 disabled 控件不派发鼠标事件，tooltip 无法触发 | 高频场景（"解释为什么禁用"） | v1 已知限制（§2.4：外层包裹非 disabled 元素）；根治靠 mu-button 改 `aria-disabled`（§10 独立评估） |

@@ -50,6 +50,7 @@
     ready,
     teleportTo,
     modalVisible,
+    isAbsolutePosition,
     onMaskClick
   } = useModal(props, emit)
 

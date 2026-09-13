@@ -9,8 +9,8 @@
       <div class="group">
         <mu-dropdown
           style="display: inline-block;"
+          dropdown-trigger="click"
           :dropdown-items="artists"
-          trigger-action="click"
           @dropdown:show="onShow"
           @dropdown:itemclick="onItemClick"
           @action="onAction">

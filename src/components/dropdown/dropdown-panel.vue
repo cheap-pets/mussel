@@ -28,7 +28,7 @@
   import './dropdown-panel.scss'
 
   import { ref, toRef, shallowRef, shallowReactive, computed, provide, inject } from 'vue'
-  import { usePopupManager } from '@/components/common/popup'
+  import { usePopupManager, runPopupSequence } from '@/components/common/popup'
   import { useListItems } from '../list/list-items'
 
   import { findUp, isElementInViewport } from '@/utils/dom'
@@ -54,11 +54,6 @@
       default: 'click',
       validator: v => ['hover', 'click'].includes(v)
     }
-    // position: {
-    //   type: String,
-    //   default: 'auto',
-    //   validator: v => ['auto', 'fixed', 'top', 'bottom'].includes(v)
-    // }
   })
 
   const rootEl = inject('$mussel').rootElement
@@ -89,7 +84,7 @@
   }
 
   function isPositionAssignable () {
-    return visible.value && popupStyle.value // && props.position === 'auto'
+    return visible.value && popupStyle.value
   }
 
   function updatePosition () {
@@ -104,18 +99,11 @@
 
     let dw = _dw
 
-    if ((ctx.width === 'anchor') /* || (!ctx.width && dw <= sw) */) {
+    if (ctx.width === 'anchor') {
       dw = aw
       style.width = `${dw}px`
     }
 
-    /*
-    if ((dw > aw) && ((tw - al >= dw) || (ar < dw))) {
-      style.left = `${al}px`
-    } else {
-      style.right = `${tw - ar}px`
-    }
-    */
     if (tw - al < dw && ar > tw - al) {
       style.right = `${tw - ar}px`
     } else {
@@ -135,7 +123,7 @@
     return true
   }
 
-  function show (options = {}) {
+  async function show (options = {}) {
     clearHideTimer()
 
     const {
@@ -146,9 +134,12 @@
       onHideCallback
     } = options
 
+    let anchorChanged = false
+
     if (ctx.anchor !== anchor) {
       ctx.onHide?.()
       ctx.anchor = anchor
+      anchorChanged = true
     }
 
     ctx.width = width
@@ -162,25 +153,16 @@
 
       emit('show')
 
-      Promise
-        .resolve((!ready.value) && (ready.value = true) && delay())
-        .then(() => {
-          const el = panelEl.value
-
-          el.removeAttribute('pop-up')
-          el.style.transition = 'none'
-
-          // 暂时全是 auto，没处理其他情况
-          // popupStyle.value = props.position === 'auto'
-          //   ? { transform: 'none', visibility: 'hidden' }
-          //   : {}
-          popupStyle.value = { transform: 'none', visibility: 'hidden' }
-
-          delay()
-            .then(() => updatePosition() && delay())
-            .then(() => { el.style.transition = null })
-            .then(() => visible.value && el.setAttribute('pop-up', ''))
-        })
+      await runPopupSequence({
+        visible,
+        ready,
+        popupStyle,
+        panelEl,
+        updatePosition
+      })
+    } else if (anchorChanged) {
+      // 面板已开时切换锚点（动态 dropdown-anchor）：直接重定位，left/top 无过渡
+      updatePosition()
     }
   }
 
@@ -192,20 +174,24 @@
       .keys(ctx)
       .forEach(key => delete ctx[key])
 
-    if (visible.value) {
-      visible.value = false
+    if (!visible.value) return
 
-      emit('hide')
+    visible.value = false
 
-      const el = panelEl.value
-      const duration = getTransitionDuration(el)
+    emit('hide')
 
-      el.removeAttribute('pop-up')
+    // 首次 show 的 emit('show') 同步窗口内面板未挂载，无 DOM 可收尾；
+    // 编舞（runPopupSequence）在 nextTick 后的守卫处自然中止
+    const el = panelEl.value
+    if (!el) return
 
-      delay(duration).then(() => {
-        if (!visible.value) popupStyle.value = null
-      })
-    }
+    const duration = getTransitionDuration(el)
+
+    el.removeAttribute('pop-up')
+
+    delay(duration).then(() => {
+      if (!visible.value) popupStyle.value = null
+    })
   }
 
   function delayHide () {
@@ -240,7 +226,7 @@
   }
 
   function onCaptureWindowResize () {
-    if (visible.value) updatePosition()
+    if (!isPositionAssignable()) return
 
     if (!isElementInViewport(ctx.anchor)) {
       hide()
@@ -272,7 +258,9 @@
     onCaptureWindowResize,
     onCaptureEscKeyDown,
     onCaptureMouseDown,
-    onCaptureScroll
+    onCaptureScroll,
+    onCaptureWindowBlur: hide,
+    onCaptureFullscreenChange: hide
   })
 
   provide('popup', {

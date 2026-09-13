@@ -6,6 +6,7 @@ import { setupColors } from './colors.js'
 import { install as installIcons } from './icons/index.js'
 import { install as installComponents } from './components/index.js'
 
+import { createPopupCoordinator } from './components/common/popup.js'
 import { resolveElement } from './utils/dom.js'
 
 import './styles/atomic.js'
@@ -35,6 +36,7 @@ function install (app, options = {}) {
   const rootElement = resolveElement(root) || document.body
   const context = { rootElement, options: componentOptions }
 
+  context.popupCoordinator = createPopupCoordinator()
   context.setupColors = setupColors.bind(context)
   app.provide('$mussel', context)
   app.config.globalProperties.$mussel = context

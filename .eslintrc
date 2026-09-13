@@ -57,7 +57,8 @@
       }
     ],
     "no-shadow": "error",
-    "no-shadow-restricted-names": "error"
+    "no-shadow-restricted-names": "error",
+    "no-void": ["error", { "allowAsStatement": true }]
   },
   "overrides": [
     {

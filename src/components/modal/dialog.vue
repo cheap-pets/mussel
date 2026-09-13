@@ -60,7 +60,7 @@
 <script setup>
   import './dialog.scss'
 
-  import { useSlots, ref, shallowRef, reactive, computed, watch, watchEffect } from 'vue'
+  import { useSlots, ref, shallowRef, reactive, computed, watch, watchEffect, onUnmounted } from 'vue'
   import { debounce } from 'throttle-debounce'
 
   import { modalProps, modalEvents, useModal } from './modal'
@@ -249,7 +249,7 @@
     }
   }
 
-  window.addEventListener('fullscreenchange', () => {
+  function onFullscreenChange () {
     if (
       maximized.value &&
       props.maximizeToFullscreen &&
@@ -257,7 +257,10 @@
     ) {
       maximized.value = false
     }
-  })
+  }
+
+  window.addEventListener('fullscreenchange', onFullscreenChange)
+  onUnmounted(() => window.removeEventListener('fullscreenchange', onFullscreenChange))
 
   watch(
     () => props.visible,

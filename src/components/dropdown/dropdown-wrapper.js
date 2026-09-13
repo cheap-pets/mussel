@@ -29,11 +29,6 @@ export const optionalProps = {
     default: 'click',
     validator: v => ['hover', 'click'].includes(v)
   }
-  // dropdownPosition: {
-  //   type: String,
-  //   default: 'auto',
-  //   validator: v => ['auto', 'fixed', 'top', 'bottom'].includes(v)
-  // }
 }
 
 export function useDropdown (props, emit, options = {}) {
@@ -70,7 +65,6 @@ export function useDropdown (props, emit, options = {}) {
     style: props.dropdownStyle,
     class: props.dropdownClass,
     trigger: props.dropdownTrigger,
-    // position: props.dropdownPosition,
     scrollbar: props.dropdownScrollbar,
     dropdownItems: dropdownItems.value
   }))

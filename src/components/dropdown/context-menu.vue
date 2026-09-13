@@ -1,7 +1,6 @@
 <template>
   <Teleport v-if="ready" :to="container">
     <div
-      v-if="ready"
       v-show="popupStyle"
       ref="menu"
       v-bind="$attrs"
@@ -21,8 +20,8 @@
 </template>
 
 <script setup>
-  import { ref, shallowRef, toRef, computed, provide, inject } from 'vue'
-  import { usePopupManager } from '@/components/common/popup'
+  import { ref, shallowRef, toRef, provide, inject } from 'vue'
+  import { usePopupManager, runPopupSequence } from '@/components/common/popup'
   import { useDropdownItems } from './dropdown-items'
 
   import { getTransitionDuration } from '@/utils/style'
@@ -41,8 +40,6 @@
   const visible = ref()
   const container = ref()
   const popupStyle = ref()
-
-  const popupVisible = computed(() => visible.value)
 
   const { items } = useDropdownItems(toRef(props, 'menus'))
 
@@ -75,7 +72,7 @@
     return true
   }
 
-  function show (event) {
+  async function show (event) {
     const { pageX, pageY } = event
 
     visible.value = true
@@ -84,29 +81,27 @@
     emit('show')
     event.preventDefault?.()
 
-    Promise
-      .resolve(!ready.value && (ready.value = true) && delay())
-      .then(() => {
-        const el = menu.value
-
-        el.removeAttribute('pop-up')
-        el.style.transition = 'none'
-
-        popupStyle.value = { transform: 'none', visibility: 'hidden' }
-
-        delay()
-          .then(() => updatePosition({ pageX, pageY }) && delay())
-          .then(() => { el.style.transition = null })
-          .then(() => visible.value && el.setAttribute('pop-up', ''))
-      })
+    await runPopupSequence({
+      visible,
+      ready,
+      popupStyle,
+      panelEl: menu,
+      updatePosition: () => updatePosition({ pageX, pageY })
+    })
   }
 
   function hide () {
+    if (!visible.value) return
+
     visible.value = false
 
     emit('hide')
 
+    // 首次 show 的 emit('show') 同步窗口内面板未挂载，无 DOM 可收尾；
+    // 编舞（runPopupSequence）在 nextTick 后的守卫处自然中止
     const menuEl = menu.value
+    if (!menuEl) return
+
     const duration = getTransitionDuration(menuEl)
 
     menuEl.removeAttribute('pop-up')
@@ -137,22 +132,24 @@
   }
 
   function onCaptureEscKeyDown (event) {
-    if (popupVisible.value) hide()
+    if (visible.value) hide()
   }
 
   function hideOnEvent (event) {
     if (
-      popupVisible.value &&
+      visible.value &&
       (!event || !menu.value.contains(event.target))
     ) hide()
   }
 
-  usePopupManager(popupVisible, {
+  usePopupManager(visible, {
     hide,
     onCaptureEscKeyDown,
     onCaptureScroll: hideOnEvent,
     onCaptureMouseDown: hideOnEvent,
-    onCaptureWindowResize: hideOnEvent
+    onCaptureWindowResize: hideOnEvent,
+    onCaptureWindowBlur: hide,
+    onCaptureFullscreenChange: hide
   })
 
   provide('popup', {
@@ -162,7 +159,7 @@
   })
 
   defineExpose({
-    visible: popupVisible,
+    visible,
     show,
     hide
   })
