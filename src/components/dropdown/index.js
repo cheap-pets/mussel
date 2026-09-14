@@ -1,5 +1,4 @@
-import { createTooltipController } from './tooltip-controller'
-import { createTooltipDirective } from './tooltip-directive'
+import { createTooltipController, createTooltipDirective } from './tooltip-core'
 
 function install (app) {
   const controller = createTooltipController(app)

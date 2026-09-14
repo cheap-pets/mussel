@@ -266,11 +266,11 @@ hide():                                                          // 收尾沿用
 
 | trigger | 显示 | 隐藏 |
 |---|---|---|
-| `hover` | 锚点 `mouseenter`，**100ms 显示延迟**（防扫过误触） | `mouseleave` → **300ms 延迟隐藏**（同 dropdown）；面板自身 `mouseenter` 取消定时器、`mouseleave` 延迟隐藏（富内容可停留） |
+| `hover` | 锚点 `mouseenter`，**300ms 显示延迟**（防扫过误触） | `mouseleave` → **300ms 延迟隐藏**（同 dropdown）；面板自身 `mouseenter` 取消定时器、`mouseleave` 延迟隐藏（富内容可停留） |
 | `focus` | 锚点 `focusin` | `focusout` → 延迟隐藏 |
 | `click` | 锚点 `click` 切换 | 外点 `mousedown`（manager 捕获）、ESC |
 
-延迟值硬编码（`SHOW_DELAY = 100`、`HIDE_DELAY = 300`），不设为 prop——与 dropdown 的 300ms 隐藏延迟同策略，需要时再开放。
+延迟值硬编码（`SHOW_DELAY = 300`、`HIDE_DELAY = 300`），不设为 prop——与 dropdown 的 300ms 隐藏延迟同策略，需要时再开放。
 
 ---
 
@@ -323,7 +323,7 @@ hide():                                                          // 收尾沿用
 - [ ] `show` / `hide` 事件与 expose 方法
 
 **共同**
-- [ ] hover 100ms 出现、移开 300ms 消失；鼠标移入面板不消失（富内容场景）
+- [ ] hover 300ms 出现、移开 300ms 消失；鼠标移入面板不消失（富内容场景）
 - [ ] 入场时序：show 后 ≤1 帧完成定位，无中间闪烁（nextTick + 强制回流，§5.1）
 - [ ] 定位窗口期面板不可点（`pointer-events` 规则）
 - [ ] 显示中内容变化自动重定位（面板 `sizechange` 事件，不直接用 `ResizeObserver`）

@@ -1,29 +1,28 @@
 <script>
-  import { inject, watch, cloneVNode } from 'vue'
-  import { isDev } from '@/env'
-  import { createTooltipAnchorHandlers } from './tooltip-controller'
+  // 无渲染组件：render fn 克隆唯一子节点并链式合并锚点事件
+  // 无模板形态，不用 <script setup>
 
-  // renderless 组件：render fn 克隆唯一子节点并链式合并锚点事件，无模板形态，不用 <script setup>
-  const ANCHOR_EVENTS = {
-    mouseenter: 'onMouseenter',
-    mouseleave: 'onMouseleave',
-    focusin: 'onFocusin',
-    focusout: 'onFocusout',
-    click: 'onClick'
-  }
+  import { inject, watch, cloneVNode, onBeforeUnmount, onUpdated } from 'vue'
+  import { isDev } from '@/env'
+  import { ANCHOR_EVENTS, SYNC_FIELDS, createTooltipAnchorHandlers } from './tooltip-core'
 
   function mergeHandler (existing, extra) {
-    if (!existing) return extra
-    if (Array.isArray(existing)) return [...existing, extra]
-    return [existing, extra]
+    return !existing
+      ? extra
+      : Array.isArray(existing)
+        ? [...existing, extra]
+        : [existing, extra]
   }
 
   function mergeAnchorEvents (child, handlers) {
     const merged = {}
+    const props = child.props || {}
 
-    for (const [event, prop] of Object.entries(ANCHOR_EVENTS)) {
-      merged[prop] = mergeHandler(child.props?.[prop], handlers[event])
-    }
+    ANCHOR_EVENTS.forEach(event => {
+      const prop = `on${event[0].toUpperCase()}${event.slice(1)}`
+
+      merged[prop] = mergeHandler(props[prop], handlers[event])
+    })
 
     return merged
   }
@@ -84,20 +83,37 @@
 
       // 显示中的热更新（同指令 updated 的字段 diff 语义）
       watch(
-        () => [props.content, props.placement, props.trigger, props.arrow, props.disabled],
-        () => {
-          const anchor = anchorVnode?.el
-
-          if (controller.state.anchor === anchor && controller.state.visible) {
-            controller.show(anchor, buildOptions())
-          }
-        }
+        () => SYNC_FIELDS.map(field => props[field]),
+        () => controller.sync(anchorVnode?.el, buildOptions())
       )
 
+      // 仅当显示中的就是本组件锚点时收起，避免误关别人的 tooltip
+      function releaseAnchor () {
+        if (controller.state.anchor === anchorVnode?.el) controller.hide()
+      }
+
+      onBeforeUnmount(() => {
+        // 清掉 300ms 显示延迟窗口内的 pending showTimer（DOM 移除不派发 mouseleave）
+        handlers.dispose()
+        releaseAnchor()
+      })
+
+      // 子节点被 v-if 摘除时 render 提前 return，anchorVnode 保留旧 vnode，
+      // 其 el 已脱离文档
+      onUpdated(() => {
+        if (anchorVnode?.el && !anchorVnode.el.isConnected) releaseAnchor()
+      })
+
       expose({
-        show: () => anchorVnode?.el && controller.show(anchorVnode.el, buildOptions()),
-        hide: controller.hide,
-        updatePosition: controller.updatePosition
+        show: () => {
+          if (anchorVnode?.el) controller.show(anchorVnode.el, buildOptions())
+        },
+        hide: () => {
+          if (controller.state.anchor === anchorVnode?.el) controller.hide()
+        },
+        updatePosition: () => {
+          if (controller.state.anchor === anchorVnode?.el) controller.updatePosition()
+        }
       })
 
       return () => {
@@ -111,11 +127,9 @@
           )
         }
 
-        if (!isValidChild(child)) return children
-
-        anchorVnode = cloneVNode(child, mergeAnchorEvents(child, handlers))
-
-        return anchorVnode
+        return isValidChild(child)
+          ? (anchorVnode = cloneVNode(child, mergeAnchorEvents(child, handlers)))
+          : children
       }
     }
   }

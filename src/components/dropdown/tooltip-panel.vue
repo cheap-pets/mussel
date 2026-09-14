@@ -9,7 +9,8 @@
       @mouseover.stop="controller.clearHideTimer"
       @mouseleave.stop="controller.delayHide"
       @sizechange="updatePosition">
-      <component :is="contentComponent" />
+      <component :is="contentComponent" v-if="contentComponent" />
+      <span v-else>{{ state.content }}</span>
     </div>
   </Teleport>
 </template>
@@ -17,36 +18,29 @@
 <script setup>
   import './tooltip-panel.scss'
 
-  import { ref, shallowRef, computed, watch, inject, h } from 'vue'
-  import { usePopupManager, runPopupSequence } from '@/components/common/popup'
-  import { isString, isFunction } from '@/utils/type'
+  import { ref, shallowRef, computed, watch } from 'vue'
+  import { usePopupManager, usePopupRunner } from '@/components/common/popup'
+  import { isFunction } from '@/utils/type'
 
   import { isElementInViewport } from '@/utils/dom'
-  import { getTransitionDuration } from '@/utils/style'
-  import { delay } from '@/utils/timer'
 
   defineOptions({ name: 'MusselTooltipPanel' })
 
   const props = defineProps({ controller: Object })
 
-  const rootEl = inject('$mussel').rootElement
   const controller = props.controller
   const state = controller.state
 
-  const ready = ref()
   const visible = ref()
-  const popupStyle = ref()
-
   const panelEl = shallowRef()
-  const container = shallowRef(rootEl)
 
-  // content 为 String 或 vnode 工厂（#tooltip 插槽）；每次渲染重新取 vnode，不缓存
+  const { ready, popupStyle, container, doEnter, doExit } = usePopupRunner(visible, panelEl, updatePosition)
+
+  // 仅 vnode 工厂（#tooltip 插槽）走动态组件；字符串走模板静态 span，内容变化只做文本 patch
   const contentComponent = computed(() => {
     const content = state.content
 
-    if (isString(content)) return { render: () => h('span', null, content) }
-    if (isFunction(content)) return { render: () => content() }
-    return null
+    return isFunction(content) ? { render: () => content() } : null
   })
 
   function isPositionAssignable () {
@@ -57,15 +51,11 @@
     return value < min ? min : value > max ? max : value
   }
 
-  // MARGIN = --mu-half-spacing，ARROW 为箭头中心距面板边缘的最小留白
-  const MARGIN = 4
-  const ARROW = 8
-  // 无箭头时面板与锚点的间距（--mu-half-spacing，同 dropdown-panel 观感）
-  const PANEL_GAP = 4
-  // 箭头（含边线层）尖端突出面板边缘的长度（10px 方块旋转 45°，半对角 ≈ 7.07px，取整）
-  const ARROW_PROTRUSION = 7
-  // 有箭头时尖端与锚点的间距
-  const ARROW_TIP_GAP = 2
+  const MARGIN = 4 // MARGIN = --mu-half-spacing
+  const ARROW = 8 // 箭头中心距面板边缘的最小留白
+  const PANEL_GAP = 4 // 无箭头时面板与锚点的间距（--mu-half-spacing，同 dropdown-panel）
+  const ARROW_PROTRUSION = 7 // 箭头（含边线层）尖端突出面板边缘的长度（10px 方块旋转 45°，半对角 ≈ 7.07px，取整）
+  const ARROW_TIP_GAP = 2 // 有箭头时尖端与锚点的间距
 
   const OPPOSITE = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
 
@@ -73,6 +63,7 @@
   function resolveMainAxis (side, fitsSide, fitsOpposite, spaceSide, spaceOpposite) {
     if (fitsSide) return side
     if (fitsOpposite) return OPPOSITE[side]
+
     return spaceSide >= spaceOpposite ? side : OPPOSITE[side]
   }
 
@@ -87,116 +78,114 @@
     return clamp(ideal, MARGIN, viewportSize - size - MARGIN)
   }
 
+  // 垂直、水平两向的主轴/交叉轴度量互为镜像，取同一份度量消去分支复制
+  function getAxisMetrics (vertical, anchorRect, panelRect, viewport) {
+    const { top, bottom, left, right } = anchorRect
+
+    return vertical
+      ? {
+        startSide: 'top',
+        mainPanelSize: panelRect.height,
+        mainViewportSize: viewport.height,
+        mainStartSpace: top, // 锚点起始侧（上/左）可用空间
+        mainEndSpace: viewport.height - bottom, // 锚点结束侧（下/右）可用空间
+        crossProp: 'left',
+        crossSize: panelRect.width,
+        crossViewportSize: viewport.width,
+        crossStart: left,
+        crossEnd: right
+      }
+      : {
+        startSide: 'left',
+        mainPanelSize: panelRect.width,
+        mainViewportSize: viewport.width,
+        mainStartSpace: left,
+        mainEndSpace: viewport.width - right,
+        crossProp: 'top',
+        crossSize: panelRect.height,
+        crossViewportSize: viewport.height,
+        crossStart: top,
+        crossEnd: bottom
+      }
+  }
+
   function updatePosition () {
     if (!isPositionAssignable()) return
 
     const el = panelEl.value
-    const rect = state.anchor.getBoundingClientRect()
-    const { width: dw, height: dh } = el.getBoundingClientRect()
-    const { innerWidth: tw, innerHeight: th } = window
+    const anchorRect = state.anchor.getBoundingClientRect()
+    const panelRect = el.getBoundingClientRect()
 
+    const { innerWidth, innerHeight } = window
     const [side = 'top', align] = String(state.placement).split('-')
+
     const vertical = side === 'top' || side === 'bottom'
+    const axis = getAxisMetrics(vertical, anchorRect, panelRect, { width: innerWidth, height: innerHeight })
+
+    // fits/space 参数按请求侧取向：top/left 取上/左空间，bottom/right 取下/右空间
+    const requestedAtStart = side === axis.startSide
+    const spaceSide = requestedAtStart ? axis.mainStartSpace : axis.mainEndSpace
+    const spaceOpposite = requestedAtStart ? axis.mainEndSpace : axis.mainStartSpace
 
     // 有箭头时面板退到尖端间距 + 箭头突出量处，无箭头时面板与锚点间距为 PANEL_GAP
-    const gap = state.arrow ? ARROW_TIP_GAP + ARROW_PROTRUSION : PANEL_GAP
+    const gap = state.arrow
+      ? ARROW_TIP_GAP + ARROW_PROTRUSION
+      : PANEL_GAP
 
-    const style = {}
-    let position
-    let arrowCenter
+    const position = resolveMainAxis(
+      side,
+      spaceSide - gap >= axis.mainPanelSize,
+      spaceOpposite - gap >= axis.mainPanelSize,
+      spaceSide,
+      spaceOpposite
+    )
 
-    if (vertical) {
-      // fits/space 参数按请求侧取向：top/left 取上/左空间，bottom/right 取下/右空间
-      const spaceStart = rect.top
-      const spaceEnd = th - rect.bottom
-      const sideIsStart = side === 'top'
+    // 贴起始侧（上/左）时由视口另一端定位，避免显式尺寸；贴结束侧时直接取锚点外侧坐标
+    const positionedAtStart = position === axis.startSide
+    const placedSpace = positionedAtStart ? axis.mainStartSpace : axis.mainEndSpace
+    const mainOffset = axis.mainViewportSize - placedSpace + gap
+    const mainProp = positionedAtStart ? OPPOSITE[axis.startSide] : axis.startSide
 
-      position = resolveMainAxis(
-        side,
-        (sideIsStart ? spaceStart : spaceEnd) - gap >= dh,
-        (sideIsStart ? spaceEnd : spaceStart) - gap >= dh,
-        sideIsStart ? spaceStart : spaceEnd,
-        sideIsStart ? spaceEnd : spaceStart
-      )
+    const crossPos = resolveCrossAxis(
+      align,
+      axis.crossStart,
+      axis.crossEnd,
+      axis.crossSize,
+      axis.crossViewportSize
+    )
 
-      if (position === 'top') style.bottom = `${th - rect.top + gap}px`
-      else style.top = `${rect.bottom + gap}px`
+    // 箭头始终指向锚点中心
+    const arrowCenter = (axis.crossStart + axis.crossEnd) / 2 - (crossPos + axis.crossSize / 2)
+    const limit = Math.max(axis.crossSize / 2 - ARROW, 0)
 
-      const left = resolveCrossAxis(align, rect.left, rect.right, dw, tw)
-
-      style.left = `${left}px`
-
-      // 箭头始终指向锚点中心
-      arrowCenter = rect.left + rect.width / 2 - (left + dw / 2)
-    } else {
-      const spaceStart = rect.left
-      const spaceEnd = tw - rect.right
-      const sideIsStart = side === 'left'
-
-      position = resolveMainAxis(
-        side,
-        (sideIsStart ? spaceStart : spaceEnd) - gap >= dw,
-        (sideIsStart ? spaceEnd : spaceStart) - gap >= dw,
-        sideIsStart ? spaceStart : spaceEnd,
-        sideIsStart ? spaceEnd : spaceStart
-      )
-
-      if (position === 'left') style.right = `${tw - rect.left + gap}px`
-      else style.left = `${rect.right + gap}px`
-
-      const top = resolveCrossAxis(align, rect.top, rect.bottom, dh, th)
-
-      style.top = `${top}px`
-
-      arrowCenter = rect.top + rect.height / 2 - (top + dh / 2)
+    const style = {
+      [mainProp]: `${mainOffset}px`,
+      [axis.crossProp]: `${crossPos}px`,
+      '--mu-tooltip-arrow-offset': `${clamp(arrowCenter, -limit, limit)}px`
     }
-
-    const limit = Math.max((vertical ? dw : dh) / 2 - ARROW, 0)
-
-    style['--mu-tooltip-arrow-offset'] = `${clamp(arrowCenter, -limit, limit)}px`
 
     el.setAttribute('position', position)
     popupStyle.value = style
-
-    return true
   }
 
   watch(() => state.visible, v => {
-    // 同步置位满足 runPopupSequence 的调用前提（编舞各守卫据此中止）
+    // 同步置位满足编舞的调用前提（各守卫据此中止）
     visible.value = v
 
     if (v) {
       state.onShow?.()
-      container.value = document.fullscreenElement || rootEl
-      runPopupSequence({ visible, ready, popupStyle, panelEl, updatePosition })
+      doEnter()
     } else {
       state.onHide?.()
-      hide()
+      doExit()
     }
   })
 
   // 显示中的热更新（锚点切换 / placement 调整）：直接重定位，不重播动画
   watch(
     () => [state.anchor, state.placement, state.arrow],
-    () => {
-      if (isPositionAssignable()) updatePosition()
-    }
+    () => isPositionAssignable() && updatePosition()
   )
-
-  function hide () {
-    // 首次 show 的同步窗口内面板未挂载，无 DOM 可收尾；
-    // 编舞（runPopupSequence）在 nextTick 后的守卫处自然中止
-    const el = panelEl.value
-    if (!el) return
-
-    const duration = getTransitionDuration(el)
-
-    el.removeAttribute('pop-up')
-
-    delay(duration).then(() => {
-      if (!visible.value) popupStyle.value = null
-    })
-  }
 
   function onCaptureEscKeyDown () {
     if (visible.value && state.trigger !== 'hover') controller.hide()

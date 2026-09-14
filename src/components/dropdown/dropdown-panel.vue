@@ -27,13 +27,11 @@
 <script setup>
   import './dropdown-panel.scss'
 
-  import { ref, toRef, shallowRef, shallowReactive, computed, provide, inject } from 'vue'
-  import { usePopupManager, runPopupSequence } from '@/components/common/popup'
+  import { ref, toRef, shallowRef, shallowReactive, computed, provide } from 'vue'
+  import { usePopupManager, usePopupRunner, HIDE_DELAY } from '@/components/common/popup'
   import { useListItems } from '../list/list-items'
 
   import { findUp, isElementInViewport } from '@/utils/dom'
-  import { getTransitionDuration } from '@/utils/style'
-  import { delay } from '@/utils/timer'
 
   defineOptions({ name: 'MusselDropdownPanel', inheritAttrs: false })
 
@@ -56,15 +54,11 @@
     }
   })
 
-  const rootEl = inject('$mussel').rootElement
-
-  const ready = ref()
   const visible = ref()
-  const popupStyle = ref()
-
   const panelEl = shallowRef()
-  const container = shallowRef(rootEl)
   const ctx = shallowReactive({})
+
+  const { ready, popupStyle, container, doEnter, doExit } = usePopupRunner(visible, panelEl, updatePosition)
 
   const sizeStyle = computed(() => ({
     width: ctx.width === 'anchor' ? undefined : ctx.width,
@@ -119,8 +113,6 @@
     }
 
     popupStyle.value = style
-
-    return true
   }
 
   async function show (options = {}) {
@@ -149,17 +141,10 @@
 
     if (!visible.value) {
       visible.value = true
-      container.value = document.fullscreenElement || rootEl
 
       emit('show')
 
-      await runPopupSequence({
-        visible,
-        ready,
-        popupStyle,
-        panelEl,
-        updatePosition
-      })
+      await doEnter()
     } else if (anchorChanged) {
       // 面板已开时切换锚点（动态 dropdown-anchor）：直接重定位，left/top 无过渡
       updatePosition()
@@ -180,24 +165,13 @@
 
     emit('hide')
 
-    // 首次 show 的 emit('show') 同步窗口内面板未挂载，无 DOM 可收尾；
-    // 编舞（runPopupSequence）在 nextTick 后的守卫处自然中止
-    const el = panelEl.value
-    if (!el) return
-
-    const duration = getTransitionDuration(el)
-
-    el.removeAttribute('pop-up')
-
-    delay(duration).then(() => {
-      if (!visible.value) popupStyle.value = null
-    })
+    doExit()
   }
 
   function delayHide () {
     if (ctx.trigger === 'hover') {
       clearTimeout(ctx.delayHideTimer)
-      ctx.delayHideTimer = setTimeout(hide, 300)
+      ctx.delayHideTimer = setTimeout(hide, HIDE_DELAY)
     }
   }
 

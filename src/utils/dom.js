@@ -47,6 +47,9 @@ export function blurActiveButton () {
 }
 
 export function isElementInViewport (element) {
+  // 脱离文档的元素 rect 全为 0，会被下面的判定误判为"在视口内"
+  if (!element?.isConnected) return false
+
   const { top, bottom, left, right } = element.getBoundingClientRect()
 
   return (

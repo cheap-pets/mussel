@@ -20,13 +20,11 @@
 </template>
 
 <script setup>
-  import { ref, shallowRef, toRef, provide, inject } from 'vue'
-  import { usePopupManager, runPopupSequence } from '@/components/common/popup'
+  import { ref, shallowRef, toRef, provide } from 'vue'
+  import { usePopupManager, usePopupRunner } from '@/components/common/popup'
   import { useDropdownItems } from './dropdown-items'
 
-  import { getTransitionDuration } from '@/utils/style'
   import { findUp } from '@/utils/dom'
-  import { delay } from '@/utils/timer'
 
   defineOptions({ name: 'MusselContextMenu', inheritAttrs: false })
 
@@ -34,12 +32,16 @@
   const props = defineProps({ menus: Array })
 
   const menu = shallowRef()
-  const rootEl = inject('$mussel').rootElement
-
-  const ready = ref()
   const visible = ref()
-  const container = ref()
-  const popupStyle = ref()
+
+  // 最近一次 show 的触发坐标，供 runner 的 updatePosition 注入使用
+  let point
+
+  const { ready, popupStyle, container, doEnter, doExit } = usePopupRunner(
+    visible,
+    menu,
+    () => updatePosition(point)
+  )
 
   const { items } = useDropdownItems(toRef(props, 'menus'))
 
@@ -68,26 +70,18 @@
     }
 
     popupStyle.value = style
-
-    return true
   }
 
   async function show (event) {
     const { pageX, pageY } = event
 
     visible.value = true
-    container.value = document.fullscreenElement || rootEl
+    point = { pageX, pageY }
 
     emit('show')
     event.preventDefault?.()
 
-    await runPopupSequence({
-      visible,
-      ready,
-      popupStyle,
-      panelEl: menu,
-      updatePosition: () => updatePosition({ pageX, pageY })
-    })
+    await doEnter()
   }
 
   function hide () {
@@ -97,18 +91,7 @@
 
     emit('hide')
 
-    // 首次 show 的 emit('show') 同步窗口内面板未挂载，无 DOM 可收尾；
-    // 编舞（runPopupSequence）在 nextTick 后的守卫处自然中止
-    const menuEl = menu.value
-    if (!menuEl) return
-
-    const duration = getTransitionDuration(menuEl)
-
-    menuEl.removeAttribute('pop-up')
-
-    delay(duration).then(() => {
-      if (!visible.value) popupStyle.value = null
-    })
+    doExit()
   }
 
   function onClick (event) {

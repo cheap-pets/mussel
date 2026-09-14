@@ -1,11 +1,29 @@
 import { shallowReactive } from 'vue'
+import { isString, isObject } from '@/utils/type'
 import { createDynamicComponent } from '@/utils/vue'
+import { HIDE_DELAY } from '@/components/common/popup'
 
 import TooltipPanel from './tooltip-panel.vue'
 
-// 防扫过误触的显示延迟 / 移出后的隐藏延迟（同 dropdown 的隐藏延迟策略）
-const SHOW_DELAY = 100
-const HIDE_DELAY = 300
+// 防扫过误触的显示延迟（隐藏延迟与 dropdown 共用 common/popup 的 HIDE_DELAY）
+const SHOW_DELAY = 300
+
+// 锚点事件清单：指令形态 addEventListener 与组件形态 vnode props（onMouseenter…）共用
+export const ANCHOR_EVENTS = ['mouseenter', 'mouseleave', 'focusin', 'focusout', 'click']
+
+// 热更新字段集（指令 updated diff 与组件形态 watch 依赖共用）：
+// 内联对象 value 每次渲染都是新引用，且无差别 show 会清掉 pending 的延迟隐藏
+export const SYNC_FIELDS = ['content', 'placement', 'trigger', 'arrow', 'disabled']
+
+function resolveOptions (value) {
+  if (isString(value)) return { content: value }
+  if (isObject(value)) return value
+  return {}
+}
+
+function optionsChanged (prev, next) {
+  return SYNC_FIELDS.some(field => prev?.[field] !== next?.[field])
+}
 
 /**
  * per-app tooltip 控制器（同 pluginNotifier 形态：install 闭包内创建，不落模块级），
@@ -58,8 +76,13 @@ export function createTooltipController (app) {
     // disabled / 空 content：隐藏不再触发；仅当显示中的就是该锚点时才 hide
     if (disabled || content == null || content === '') {
       if (state.anchor === anchor && state.visible) hide()
-      return false
+      return
     }
+
+    // 锚点切换（visible 不变，面板 watch 不触发）：补发旧锚点 onHide 与新锚点 onShow
+    const anchorChanged = state.visible && state.anchor !== anchor
+
+    if (anchorChanged) state.onHide?.()
 
     Object.assign(state, { anchor, content, placement, trigger, arrow, onShow, onHide })
 
@@ -67,8 +90,7 @@ export function createTooltipController (app) {
 
     // 已显示（锚点切换 / 热更新）时字段 watch 直接重定位，不重播动画
     if (!state.visible) state.visible = true
-
-    return true
+    else if (anchorChanged) state.onShow?.()
   }
 
   function hide () {
@@ -90,6 +112,11 @@ export function createTooltipController (app) {
     else show(anchor, options)
   }
 
+  // 显示中的热更新：仅当面板正显示在该锚点上时同步字段并重定位（不重播动画）
+  function sync (anchor, options) {
+    if (state.anchor === anchor && state.visible) show(anchor, options)
+  }
+
   function bindPanel (api) {
     panelApi = api
   }
@@ -98,7 +125,7 @@ export function createTooltipController (app) {
     panelApi?.updatePosition()
   }
 
-  const api = { state, show, hide, delayHide, toggle, clearHideTimer, bindPanel, updatePosition }
+  const api = { state, show, hide, delayHide, toggle, sync, clearHideTimer, bindPanel, updatePosition }
 
   return api
 }
@@ -151,5 +178,51 @@ export function createTooltipAnchorHandlers (controller, getAnchor, getOptions) 
       }
     },
     dispose: clearShowTimer
+  }
+}
+
+/**
+ * v-mu-tooltip 指令：value 为字符串（content）或 options 对象，
+ * 绑定共享锚点事件；updated 按字段 diff 热更新。
+ */
+export function createTooltipDirective (controller) {
+  function unbind (el) {
+    const handlers = el._muTooltipHandlers
+
+    if (handlers) {
+      ANCHOR_EVENTS.forEach(name => el.removeEventListener(name, handlers[name]))
+      handlers.dispose()
+      el._muTooltipHandlers = undefined
+    }
+  }
+
+  return {
+    mounted (el, { value }) {
+      const handlers = createTooltipAnchorHandlers(
+        controller,
+        () => el,
+        () => el._muTooltipOptions
+      )
+
+      el._muTooltipOptions = resolveOptions(value)
+      el._muTooltipHandlers = handlers
+
+      ANCHOR_EVENTS.forEach(name => el.addEventListener(name, handlers[name]))
+    },
+    updated (el, { value }) {
+      const prev = el._muTooltipOptions
+      const next = resolveOptions(value)
+
+      el._muTooltipOptions = next
+
+      // disabled / 空 content 即时隐藏，其余字段同步且不重播动画
+      if (optionsChanged(prev, next)) controller.sync(el, next)
+    },
+    beforeUnmount (el) {
+      unbind(el)
+      el._muTooltipOptions = undefined
+
+      if (controller.state.anchor === el) controller.hide()
+    }
   }
 }
