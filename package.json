@@ -10,6 +10,9 @@
   "scripts": {
     "build": "vite build --mode development && vite build --mode production",
     "build:demo": "vite build --config vite.demo.config.js --watch",
+    "docs:dev": "vitepress dev docs-site",
+    "docs:build": "vitepress build docs-site",
+    "docs:preview": "vitepress preview docs-site",
     "pub": "npm run build && npm publish"
   },
   "devDependencies": {
@@ -23,6 +26,7 @@
     "svgo": "^4.0.1",
     "throttle-debounce": "^5.0.2",
     "vite": "^8.0.3",
+    "vitepress": "^1.6.4",
     "vue": "^3.5.13"
   },
   "config": {

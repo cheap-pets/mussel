@@ -34,7 +34,7 @@ function interceptorRemove (type, listener, options) {
   }
 }
 
-if ('ontouchstart' in window) {
+if (typeof window !== 'undefined' && 'ontouchstart' in window) {
   Object.keys(EventTypes).forEach(type => {
     EventInterceptor.register(type, {
       add: interceptorAdd,

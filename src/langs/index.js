@@ -28,7 +28,7 @@ export function t (path, ...args) {
 }
 
 export function setupLocale (locale, data) {
-  if (!locale && window.navigator && isZh()) {
+  if (!locale && typeof window !== 'undefined' && window.navigator && isZh()) {
     locale = 'zh'
   } else {
     locale ||= 'en'

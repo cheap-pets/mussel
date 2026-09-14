@@ -16,3 +16,8 @@ dist/
 
 # Mac
 .DS_Store
+
+# VitePress
+node_modules/.vitepress/
+docs-site/.vitepress/cache/
+docs-site/.vitepress/dist/
