@@ -60,3 +60,4 @@ npm run pub            # 构建 + npm publish
 | 💄 | style |
 | 📝 | docs |
 | 🔧 | chore |
+| 🔥 | clean |

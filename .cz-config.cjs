@@ -5,7 +5,8 @@ module.exports = {
     { value: '🔨', name: 'refactor: 代码重构' },
     { value: '💄', name: 'style:    样式/UI' },
     { value: '📝', name: 'docs:     文档/示例' },
-    { value: '🔧', name: 'chore:    构建/配置' }
+    { value: '🔧', name: 'chore:    构建/配置' },
+    { value: '🔥', name: 'clean:    清理' }
   ],
 
   subjectLimit: 80,
