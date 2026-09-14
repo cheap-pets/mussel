@@ -19,10 +19,14 @@ Mussel — Vue 3 组件库。
 
 ```bash
 npm run build:demo     # 构建 demo (watch 模式)
+npm run docs:dev       # 启动 VitePress 组件文档站 (docs-site/，默认 5173 端口)
+npm run docs:build     # 构建文档站静态产物
 npm run pub            # 构建 + npm publish
 ```
 
 无测试框架，通过 demo 页面验证组件行为。
+
+组件演示文档位于 `docs-site/`（VitePress）：mussel 组件仅在客户端安装（`.vitepress/theme/index.mjs`），SSR 不兼容的演示需包裹 `<ClientOnly>`（如 `v-mu-*` 指令、作用域插槽演示）。
 
 
 ## 代码约定
