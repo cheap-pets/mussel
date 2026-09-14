@@ -202,7 +202,7 @@ const items = [
 | `clearable` | Boolean | `true` | 默认显示清除按钮（覆盖 MuInput 默认值） |
 | (其他) | — | — | 继承全部 `MuInput` 属性与事件 |
 
-> 内部维护 `localValue` 以保证输入即时显示；`update:modelValue` 仅在用户停止输入 `debounce-delay` 毫秒后才触发（且仅当值确实变化时）。其余事件（`input`、`focus`、`blur`、`enter` 等）即时触发。点击清除按钮会把值置为空字符串 `''`。
+> `update:modelValue` 在用户停止输入 `debounce-delay` 毫秒后才触发（且仅当值确实变化时）；其余事件（`input`、`focus`、`blur`、`enter` 等）即时触发。点击清除按钮会把值置为空字符串 `''`。
 
 ---
 
@@ -360,13 +360,8 @@ const filteredItems = computed(() =>
 | `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
 | (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
 
-> - `type="date"`：默认显示日期网格；点击标题按钮在「日期网格 ↔ 月份网格」间切换（月份网格内可切换十年区间、先选年份再选月），用于快速跨月/跨年跳转；选中日期即提交并关闭。
-> - `type="week"`：与 `date` 同走月份网格，选中后提交所在周；「今天」按钮在 week 视图显示为「本周」。
-> - `type="month"`：直接进入月份网格（含十年区间年份切换 + 12 月份格），选中月份即提交并关闭。
-> - `type="quarter"`：进入季度网格（含十年区间年份切换 + 4 季度格），选中季度即提交并关闭。
-> - `type="year"`：直接进入年份网格（每屏 10 年），选中年份即提交并关闭。
-> - 顶部上下翻页按钮**仅在日期/周网格视图**出现，用于翻月；月份/季度/年份视图切换十年区间由面板内部的左右箭头格子完成。
-> - 「今天/本周/本月/本季/本年」按钮跳回当前并提交，文案随当前视图变化。
+> - 各 `type` 打开对应粒度的选择网格，选中即提交并关闭；`type="date"` 可点击标题按钮切换到月份网格，用于快速跨月/跨年跳转。
+> - 工具栏含「今天/本周/本月/本季/本年」快捷按钮（文案随 `type` 变化），跳回当前并提交。
 
 ---
 
@@ -392,11 +387,9 @@ const filteredItems = computed(() =>
 | `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
 | (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
 
-> - 面板在选中结束日期后**不关闭**，可继续点击调整：再次点击任一日期会清空区间并以该日期重新开始。
-> - 选定开始日期后，悬停更晚的单元格会以浅色预览候选区间。
-> - 「今天」按钮跳回当月，并按上述点击规则选中今天。
+> - 面板在选中结束日期后**不关闭**，可继续点击调整区间。
+> - 工具栏含「今天」快捷按钮，跳回当月并选中今天。
 > - 输入框可直接输入 `开始日期 ~ 结束日期`（如 `2026-01-08 ~ 2026-01-20`），任一侧可留空。
-> - 两侧皆空时 `modelValue` 为 `null`；配合 `clearable` 显示清空按钮。
 
 ---
 
@@ -419,9 +412,8 @@ const filteredItems = computed(() =>
 | `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
 | (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
 
-> - 输入框本身不可编辑，时间仅通过下拉面板选择；在面板内滚动或点击数字选中后，点击底部「确定」按钮提交并关闭面板。
-> - `format` 同时控制显示与输出：设为 `'HH:mm'` 且 `second-step="0"` 即得到「时分」选择器。
-> - 列项默认按步进 5（0、5、10…55）生成；如需精确到每一分钟/秒，将对应 step 设为 `1`。
+> - 输入框本身不可编辑，时间仅通过下拉面板选择。
+> - `format` 同时控制显示与输出：设为 `'HH:mm'` 且 `second-step="0"` 即得到「时分」选择器；需精确到每一分钟/秒时把对应 step 设为 `1`。
 
 ```html
 <mu-time-input v-model="time" placeholder="时分秒" prefix="时间" />
@@ -449,9 +441,7 @@ const filteredItems = computed(() =>
 | `update:modelValue` | hex | 值变更（HEX 字符串） |
 | `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起（由底层 combo 组件透传） |
 
-> - 内置色板由 `colors` 对象派生：12 个基础色组（red/pink/grape/violet/indigo/blue/cyan/teal/green/lime/yellow/orange，各 10 级色阶）+ 1 组灰阶（由主色派生的 10 级中性灰），随主题色配置动态变化。
-> - 前置色块点击展开下拉面板；HEX 输入框默认大写显示，允许临时非法值，仅在回车、失焦、ESC（回滚）时规范化提交。
-> - 在 `MuFormField` 的 `input` 中用 `'color'` 即可数据驱动渲染。
+> - 前置色块点击展开下拉面板；HEX 输入框允许临时非法值，仅在回车、失焦、ESC（回滚）时规范化为大写 `#RRGGBB` 提交。
 
 ---
 

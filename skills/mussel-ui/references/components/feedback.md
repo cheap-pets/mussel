@@ -2,16 +2,16 @@
 
 ### MuTooltip / v-mu-tooltip 指令
 
-文字提示气泡，与 dropdown 等弹层互斥（同屏一个）。双形态共享同一单例浮层：
+文字提示气泡，两种形态：
 
-- **指令 `v-mu-tooltip`**：纯文本提示（`textContent` 渲染，无注入面），零 DOM 侵入，任意元素/组件可挂。value 为字符串或 `{ content, placement, trigger, arrow, disabled }`；动态 value 经字段 diff 热更新（不重播动画）。
-- **组件 `<mu-tooltip>`**：renderless（本体零 DOM 输出），克隆唯一子节点并链式合并锚点事件；`#tooltip` 插槽支持富内容（优先于 `content` prop）。
+- **指令 `v-mu-tooltip`**：纯文本提示，任意元素/组件可挂。value 为字符串或 `{ content, placement, trigger, arrow, disabled }`。
+- **组件 `<mu-tooltip>`**：本体不输出 DOM，包裹不影响布局；`#tooltip` 插槽支持富内容（优先于 `content` prop）。
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `content` | String | — | 提示文本；有 `#tooltip` 插槽时忽略（仅组件形态） |
-| `placement` | String | `'top'` | 12 方向：`top` / `bottom` / `left` / `right`，后缀 `-start` / `-end`（裸主方向居中）。主轴空间不足自动翻转（对齐后缀保留），交叉轴视口夹紧，箭头始终指向锚点中心 |
-| `trigger` | String | `'hover'` | `'hover'` / `'focus'` / `'click'`；click 触发时外点与 ESC 关闭 |
+| `placement` | String | `'top'` | 12 方向：`top` / `bottom` / `left` / `right`，可加 `-start` / `-end` 后缀（裸主方向居中） |
+| `trigger` | String | `'hover'` | `'hover'` / `'focus'` / `'click'` |
 | `arrow` | Boolean | `true` | 是否显示箭头 |
 | `disabled` | Boolean | `false` | 禁用（不触发显示，显示中则隐藏） |
 
@@ -38,10 +38,8 @@
 
 注意：
 
-- hover 触发有 100ms 显示延迟与 300ms 隐藏延迟（硬编码）；鼠标移入面板不消失（富内容可停留）。
-- 滚动时跟随锚点重定位，锚点出视口自动隐藏；长文本最大宽度 320px 自动换行。
 - 原生 `disabled` 属性的控件不派发鼠标事件，tooltip 无法触发；需挂在外层非 disabled 元素上。
-- 组件形态要求唯一元素（或单根组件）子节点；纯文本 / 多节点子节点不支持（dev 警告）。
+- 组件形态要求唯一元素（或单根组件）子节点；纯文本 / 多节点子节点不支持。
 - 建议移除元素自带的原生 `title` 属性，避免浏览器原生与 mu 双提示。
 
 ---
