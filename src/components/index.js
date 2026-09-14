@@ -10,6 +10,7 @@ import * as BarComponents from './bar'
 import * as TabsComponents from './tabs'
 import * as ModalComponents from './modal'
 import * as DropdownComponents from './dropdown'
+import * as TooltipComponents from './tooltip'
 import * as MessageComponents from './message'
 
 import MuTags from './tag/tags.vue'
@@ -42,6 +43,7 @@ function installComponents (app, options) {
   _install(FormComponents)
   _install(ModalComponents)
   _install(DropdownComponents)
+  _install(TooltipComponents)
   _install(MessageComponents)
 
   _install({

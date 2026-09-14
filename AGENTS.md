@@ -18,7 +18,7 @@ Mussel — Vue 3 组件库。
 ## 常用命令
 
 ```bash
-npm run build:demo     # 构建 demo (watch 模式)
+npm run demo:build     # 构建 demo (watch 模式)
 npm run docs:dev       # 启动 VitePress 组件文档站 (docs-site/，默认 5173 端口)
 npm run docs:build     # 构建文档站静态产物
 npm run pub            # 构建 + npm publish

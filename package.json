@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "vite build --mode development && vite build --mode production",
-    "build:demo": "vite build --config vite.demo.config.js --watch",
+    "demo:build": "vite build --config vite.demo.config.js --watch",
     "docs:dev": "vitepress dev docs-site",
     "docs:build": "vitepress build docs-site",
     "docs:preview": "vitepress preview docs-site",
