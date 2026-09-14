@@ -60,7 +60,7 @@
 <script setup>
   import './dialog.scss'
 
-  import { useSlots, ref, shallowRef, reactive, computed, watch, watchEffect, onUnmounted } from 'vue'
+  import { useSlots, ref, shallowRef, reactive, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
   import { debounce } from 'throttle-debounce'
 
   import { modalProps, modalEvents, useModal } from './modal'
@@ -259,7 +259,8 @@
     }
   }
 
-  window.addEventListener('fullscreenchange', onFullscreenChange)
+  // SSR 渲染阶段无 window，监听器延后到客户端挂载时再绑定
+  onMounted(() => window.addEventListener('fullscreenchange', onFullscreenChange))
   onUnmounted(() => window.removeEventListener('fullscreenchange', onFullscreenChange))
 
   watch(

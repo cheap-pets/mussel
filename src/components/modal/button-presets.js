@@ -7,12 +7,12 @@ function tb (btnId) {
 export const ButtonPresets = {
   '#YES': {
     name: 'YES',
-    primary: true,
+    color: 'primary',
     get caption () { return tb('YES') }
   },
   '#YES!': {
     name: 'YES',
-    danger: true,
+    color: 'danger',
     get caption () { return tb('YES') }
   },
   '#NO': {
@@ -23,17 +23,17 @@ export const ButtonPresets = {
   },
   '#OK': {
     name: 'OK',
-    primary: true,
+    color: 'primary',
     get caption () { return tb('OK') }
   },
   '#OK!': {
     name: 'OK',
-    danger: true,
+    color: 'danger',
     get caption () { return tb('OK') }
   },
   '#ACCEPT': {
     name: 'ACCEPT',
-    primary: true,
+    color: 'primary',
     get caption () { return tb('ACCEPT') }
   },
   '#CANCEL': {
