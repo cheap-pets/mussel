@@ -34,6 +34,7 @@ function pluginSvg () {
 }
 
 export default defineConfig({
+  base: '/mussel/',
   lang: 'zh-CN',
   title: 'Mussel',
   description: 'Mussel — UI Library for Vue@3',
@@ -41,8 +42,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: '指南', link: '/guide/install', activeMatch: '/guide/' },
-      { text: '组件', link: '/components/icon', activeMatch: '/components/' },
-      { text: '示例 Demo', link: 'http://localhost:3000' }
+      { text: '组件', link: '/components/icon', activeMatch: '/components/' }
     ],
 
     sidebar: {
