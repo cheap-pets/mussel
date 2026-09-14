@@ -76,7 +76,7 @@
 <mu-dropdown-panel ref="sharedPanel" :dropdown-items="menus" />
 
 <mu-dropdown v-for="node in nodes" :key="node.id" :dropdown-panel="sharedPanel">
-  <mu-icon icon="dots" />
+  <mu-icon icon="more" />
 </mu-dropdown>
 ```
 

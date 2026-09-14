@@ -10,10 +10,13 @@
 
 ## 基础用法
 
-<div class="mu-demo" style="align-items: flex-start;">
-  <mu-calendar v-model="date" style="width: 360px; padding: 8px;" />
-  <span class="text-subtle">选中：{{ date ? new Date(date).toLocaleDateString() : '（未选择）' }}</span>
-</div>
+<!-- 日历面板依赖客户端当前日期与 locale，SSR 与客户端渲染必然不一致，需 ClientOnly -->
+<ClientOnly>
+  <div class="mu-demo" style="align-items: flex-start;">
+    <mu-calendar v-model="date" style="width: 360px; padding: 8px;" />
+    <span class="text-subtle">选中：{{ date ? new Date(date).toLocaleDateString() : '（未选择）' }}</span>
+  </div>
+</ClientOnly>
 
 ```html
 <mu-calendar v-model="date" />

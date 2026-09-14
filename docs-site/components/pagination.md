@@ -11,13 +11,16 @@
 
 ## 基础用法
 
-<div class="mu-demo mu-demo-col">
-  <mu-pagination
-    v-model:page-index="pageIndex"
-    v-model:page-size="pageSize"
-    :total="1000" />
-  <span class="text-subtle">页码：{{ pageIndex }}（从 0 开始），每页 {{ pageSize }} 条</span>
-</div>
+<!-- 页码按钮数量依赖容器宽度测量（sizechange 后才计算），SSR 无法测量需 ClientOnly -->
+<ClientOnly>
+  <div class="mu-demo mu-demo-col">
+    <mu-pagination
+      v-model:page-index="pageIndex"
+      v-model:page-size="pageSize"
+      :total="1000" />
+    <span class="text-subtle">页码：{{ pageIndex }}（从 0 开始），每页 {{ pageSize }} 条</span>
+  </div>
+</ClientOnly>
 
 ```html
 <mu-pagination
@@ -32,14 +35,16 @@
 
 提供可选每页条数后渲染下拉切换：
 
-<div class="mu-demo mu-demo-col">
-  <mu-pagination
-    v-model:page-index="pageIndex"
-    v-model:page-size="pageSize"
-    :total="1000"
-    :page-size-options="[20, 50, 100]"
-    size="small" />
-</div>
+<ClientOnly>
+  <div class="mu-demo mu-demo-col">
+    <mu-pagination
+      v-model:page-index="pageIndex"
+      v-model:page-size="pageSize"
+      :total="1000"
+      :page-size-options="[20, 50, 100]"
+      size="small" />
+  </div>
+</ClientOnly>
 
 ```html
 <mu-pagination
@@ -53,15 +58,17 @@
 
 显示快速跳页输入框：
 
-<div class="mu-demo mu-demo-col">
-  <mu-pagination
-    v-model:page-index="pageIndex"
-    v-model:page-size="pageSize"
-    :total="1000"
-    :page-size-options="[20, 50, 100]"
-    size="small"
-    quick-jumper />
-</div>
+<ClientOnly>
+  <div class="mu-demo mu-demo-col">
+    <mu-pagination
+      v-model:page-index="pageIndex"
+      v-model:page-size="pageSize"
+      :total="1000"
+      :page-size-options="[20, 50, 100]"
+      size="small"
+      quick-jumper />
+  </div>
+</ClientOnly>
 
 ```html
 <mu-pagination

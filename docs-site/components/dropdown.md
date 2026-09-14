@@ -82,7 +82,7 @@ mu-dropdown 默认不显示箭头；传 `true` 显示默认下箭头（`dropdown
 <mu-dropdown-panel ref="sharedPanel" :dropdown-items="menus" />
 
 <mu-dropdown :dropdown-panel="sharedPanel">
-  <mu-icon icon="dots" />
+  <mu-icon icon="more" />
 </mu-dropdown>
 ```
 

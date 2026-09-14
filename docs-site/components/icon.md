@@ -92,13 +92,12 @@ installIcons({ refresh: RefreshIcon })
 默认渲染为 `span`；传 `'a'` 渲染为链接（常配合 `.mu-link` 使用），其余值回退 `span`。
 
 <div class="mu-demo">
-  <a href="javascript:;" class="mu-link">
-    <mu-icon icon="arrowUpRight" tag="a" /> 外部链接
-  </a>
+  <mu-icon icon="arrowUpRight" tag="a" href="javascript:;" class="mu-link" />
+  <span>外部链接</span>
 </div>
 
 ```html
-<a href="..." class="mu-link"><mu-icon icon="arrowUpRight" tag="a" /></a>
+<mu-icon icon="arrowUpRight" tag="a" href="..." class="mu-link" />
 ```
 
 ## API

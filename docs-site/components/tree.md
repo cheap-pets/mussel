@@ -130,7 +130,7 @@ function onCheckChange (node, checked) {
       style="width: 100%; height: 260px;"
       :data="treeData"
       :auto-expand-level="2"
-      :buttons="[{ icon: 'delete', title: '删除', danger: true, hover: true }]"
+      :buttons="[{ icon: 'delete', title: '删除', color: 'danger', hover: true }]"
       @node-click="node => activeNode = node"
       @node-button-click="(node, btn) => console.log(node.label, btn.title)">
       <template #default="{ node }">
@@ -150,7 +150,7 @@ function onCheckChange (node, checked) {
 
 ```javascript
 const buttons = [
-  { icon: 'delete', title: '删除', danger: true, hover: true },
+  { icon: 'delete', title: '删除', color: 'danger', hover: true },
   { icon: 'chevronRight' }
 ]
 ```

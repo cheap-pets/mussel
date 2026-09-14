@@ -27,8 +27,10 @@
   body-class="p-2x"
   :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
   @button-click="btn => { if (btn.name !== 'Find') visible = false }">
-  <p>这是一个基础对话框。按住标题栏可拖拽移动；点击遮罩或按 ESC 可关闭（dismissible）。</p>
-  <p class="text-subtle">底部按钮使用 <code>#</code> 预设（<code>#CANCEL</code> / <code>#OK</code>），自动套用主色、文本样式、关闭行为与多语言文案。</p>
+  <template #body>
+    <p>这是一个基础对话框。按住标题栏可拖拽移动；点击遮罩或按 ESC 可关闭（dismissible）。</p>
+    <p class="text-subtle">底部按钮使用 <code>#</code> 预设（<code>#CANCEL</code> / <code>#OK</code>），自动套用主色、文本样式、关闭行为与多语言文案。</p>
+  </template>
 </mu-dialog>
 
 ```html
@@ -40,7 +42,9 @@
   body-class="p-3x"
   :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
   @button-click="onButtonClick">
-  <!-- 内容 -->
+  <template #body>
+    <!-- 内容 -->
+  </template>
 </mu-dialog>
 ```
 
@@ -82,12 +86,12 @@
   width="440px"
   body-class="p-2x"
   :buttons="[' ', '#CANCEL', '#OK!']">
-  确认删除该记录？删除后不可恢复。
+  <template #body>确认删除该记录？删除后不可恢复。</template>
 </mu-dialog>
 
 ```html
 <mu-dialog v-model:visible="visible" title="删除确认" :buttons="[' ', '#CANCEL', '#OK!']">
-  确认删除该记录？删除后不可恢复。
+  <template #body>确认删除该记录？删除后不可恢复。</template>
 </mu-dialog>
 ```
 
@@ -118,7 +122,7 @@ function onButtonClick (button) {
   maximize-to-fullscreen
   body-class="p-2x"
   :buttons="['#CLOSE']">
-  点击标题栏右侧最大化按钮，可切换最大化 / 全屏。
+  <template #body>点击标题栏右侧最大化按钮，可切换最大化 / 全屏。</template>
 </mu-dialog>
 
 ```html
@@ -127,7 +131,7 @@ function onButtonClick (button) {
   title="可最大化"
   maximize-button
   maximize-to-fullscreen>
-  ...
+  <template #body>...</template>
 </mu-dialog>
 ```
 
@@ -148,9 +152,11 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
     body-class="p-3x"
     :buttons="['-', 'Find', ' ', '#CANCEL', '#OK']"
     @button-click="onButtonClick">
-    <mu-form label-width="80px">
-      <!-- 表单内容，使用 data -->
-    </mu-form>
+    <template #body>
+      <mu-form label-width="80px">
+        <!-- 表单内容，使用 data -->
+      </mu-form>
+    </template>
   </mu-dialog>
 </template>
 
@@ -224,7 +230,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
       width="320px"
       height="140px"
       body-class="p-2x">
-      此对话框相对父级面板定位。
+      <template #body>此对话框相对父级面板定位。</template>
     </mu-dialog>
   </div>
 </div>
@@ -239,7 +245,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
     title="面板内对话框"
     :container="panelEl"
     dismissible>
-    ...
+    <template #body>...</template>
   </mu-dialog>
 </div>
 ```

@@ -26,13 +26,13 @@ import uploadIcon from '~icons/outline/upload.svg'
 
 import './mussel.css'
 
-// mussel 依赖浏览器 API（document/navigator），仅在客户端安装；
-// SSR 阶段组件以原生标签输出，客户端挂载后接管渲染。
+// mussel 的 install 已做 SSR 适配（无 DOM 时跳过根元素设置，仅注册组件），
+// SSR 阶段同样安装，避免服务端以原生标签输出导致客户端 hydration mismatch。
 const icons = {
   bolt: boltIcon,
   album: albumIcon,
   bug: bugIcon,
-  dots: dotsIcon,
+  more: dotsIcon,
   dotsVert: dotsVertIcon,
   flag: flagIcon,
   refresh: refreshIcon,
@@ -54,8 +54,6 @@ const icons = {
 export default {
   extends: DefaultTheme,
   enhanceApp ({ app }) {
-    if (import.meta.env.SSR) return
-
     installMussel(app, { icons })
   },
   setup () {

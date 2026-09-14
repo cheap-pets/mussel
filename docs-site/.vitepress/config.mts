@@ -38,6 +38,11 @@ export default defineConfig({
   lang: 'zh-CN',
   title: 'Mussel',
   description: 'Mussel — UI Library for Vue@3',
+  sitemap: { hostname: 'https://cheap-pets.github.io/mussel/' },
+
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/mussel/favicon.svg' }]
+  ],
 
   themeConfig: {
     nav: [
@@ -155,6 +160,21 @@ export default defineConfig({
     ],
 
     outline: [2, 3],
+    outlineTitle: '本页导航',
+
+    darkModeSwitchLabel: '外观',
+    lightModeSwitchTitle: '切换到亮色模式',
+    darkModeSwitchTitle: '切换到暗色模式',
+
+    editLink: {
+      pattern: 'https://github.com/cheap-pets/mussel/edit/main/docs-site/:path',
+      text: '在 GitHub 上编辑此页'
+    },
+
+    footer: {
+      message: '基于 MIT 许可发布',
+      copyright: 'Copyright © 2026-present cheap-pets'
+    },
 
     search: {
       provider: 'local',
@@ -193,6 +213,8 @@ export default defineConfig({
     css: {
       preprocessorOptions: {
         scss: {
+          // sass 1.100：改用现代 API，消除 legacy-js-api 弃用警告
+          api: 'modern',
           additionalData: (source, filepath) => {
             return filepath.includes('root.scss')
               ? `@use "sass:map";\n${colorMaps}\n${source}`

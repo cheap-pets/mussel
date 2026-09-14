@@ -82,3 +82,15 @@
 .mu-demo .mu-input-group {
   width: 320px;
 }
+
+/* 暗色模式：VitePress 顶栏与 mussel 页面背景对齐。
+   --mu-* 定义在 body（mu-root mu-dark）上，覆盖也须挂在 body 作用域内解析 */
+.mu-dark {
+  --vp-nav-bg-color: var(--mu-bg-normal);
+}
+
+/* VitePress 暗色 gutter 为纯黑，在 mussel 深色页面上不可见，
+   顶栏分隔线改用 mussel 边框色 */
+.mu-dark .VPNavBar:not(.home.top) .divider-line {
+  background-color: var(--mu-border-color-soft);
+}

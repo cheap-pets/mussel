@@ -31,7 +31,7 @@
 <div class="mu-demo">
   <mu-icon-button icon="chevronUp" color="danger" />
   <mu-icon-button icon="chevronDown" disabled />
-  <mu-icon-button icon="dots" button-style="text" />
+  <mu-icon-button icon="more" button-style="text" />
   <mu-icon-button icon="plus" button-style="outline" />
   <mu-icon-button icon="chevronUp" size="small" />
   <mu-icon-button icon="chevronUp" size="large" />
@@ -39,7 +39,7 @@
 
 ```html
 <mu-icon-button icon="chevronUp" color="danger" />
-<mu-icon-button icon="dots" button-style="text" />
+<mu-icon-button icon="more" button-style="text" />
 <mu-icon-button icon="chevronUp" size="large" />
 ```
 
