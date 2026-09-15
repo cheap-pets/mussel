@@ -11,7 +11,10 @@
       <h3 class="my-2x">
         Dialog
       </h3>
-      <mu-button caption="Open Dialog" @click="openDialog" />
+      <div class="flex gap-1x">
+        <mu-button caption="Open Dialog" @click="openDialog" />
+        <mu-button caption="Open Resizable Dialog" @click="resizableVisible = true" />
+      </div>
       <h3 class="flex items-center gap-1x mt-2x">
         Drawer
         <mu-switch v-model="maskVisible" label="Mask Visible" />
@@ -27,6 +30,20 @@
 
     <!-- Dialog -->
     <my-dialog ref="myDialogRef" container="#div1" />
+
+    <!-- Resizable dialog：视口级遮罩，50% 宽 + class 最大化（非全屏） -->
+    <mu-dialog
+      v-model:visible="resizableVisible"
+      title="Resizable Dialog"
+      width="50%"
+      height="360px"
+      resizable
+      dismissible
+      maximize-button>
+      <template #body>
+        <p>拖动四边或四角可调整大小；拖动标题栏可移动。</p>
+      </template>
+    </mu-dialog>
 
     <!-- Drawer -->
     <mu-drawer
@@ -55,6 +72,7 @@
   const rounded = ref(true)
 
   const myDialogRef = ref()
+  const resizableVisible = ref(false)
 
   function openDialog () {
     myDialogRef.value?.show('A long time ago in a galaxy far, far away…')

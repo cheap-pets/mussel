@@ -9,6 +9,7 @@
     keep-position
     maximize-button
     maximize-to-fullscreen
+    resizable
     body-scrollbar
     body-class="mu-bg-strong p-3x"
     :lazy="false"

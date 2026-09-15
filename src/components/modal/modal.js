@@ -9,7 +9,6 @@ import { delay } from '@/utils/timer'
 export const modalProps = {
   container: null,
   maskClass: null,
-  maskAttrs: Object,
   visible: Boolean,
   disposeOnHide: Boolean,
   dismissible: {

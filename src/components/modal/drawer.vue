@@ -3,7 +3,6 @@
     <Transition name="mu-drawer-">
       <div
         v-show="modalVisible"
-        v-bind="maskAttrs"
         class="mu-drawer-mask mu-modal-mask"
         :class="[maskClass, isAbsolutePosition && 'absolute', !mask && 'mu-modal-mask--invisible']"
         :style="{ zIndex }"

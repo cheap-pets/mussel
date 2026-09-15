@@ -108,7 +108,7 @@
 | `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；设为指定元素时遮罩自动改为 `position: absolute` |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
-| `mask-class` / `mask-attrs` | — | — | 遮罩 class / 透传属性 |
+| `mask-class` | — | — | 遮罩 class |
 
 | 事件 | 说明 |
 |------|------|

@@ -25,6 +25,13 @@
   &.mu-dialog--dragging {
     opacity: .8;
   }
+
+  &.mu-dialog--resizing {
+    user-select: none;
+
+    // 子元素自带 cursor（如 sys-button 的 pointer）会盖住继承值，导致光标闪烁
+    * { cursor: inherit !important; }
+  }
 }
 
 .mu-dialog--maximized {
@@ -117,5 +124,37 @@
 
   &[danger]:hover {
     color: var(--mu-danger-color-4);
+  }
+}
+
+.mu-dialog__resize-handle {
+  $t: 6px;
+
+  // 各方向手柄的定位与尺寸：边手柄沿边伸展（两端避开角），角手柄为 2t×2t
+  $handles: (
+    n: (top: 0, left: $t, right: $t, height: $t, cursor: n-resize),
+    s: (bottom: 0, left: $t, right: $t, height: $t, cursor: s-resize),
+    e: (top: $t, right: 0, bottom: $t, width: $t, cursor: e-resize),
+    w: (top: $t, bottom: $t, left: 0, width: $t, cursor: w-resize),
+    nw: (top: 0, left: 0, width: $t * 2, height: $t * 2, cursor: nwse-resize),
+    ne: (top: 0, right: 0, width: $t * 2, height: $t * 2, cursor: nesw-resize),
+    sw: (bottom: 0, left: 0, width: $t * 2, height: $t * 2, cursor: nesw-resize),
+    se: (bottom: 0, right: 0, width: $t * 2, height: $t * 2, cursor: nwse-resize)
+  );
+
+  user-select: none;
+  position: absolute;
+
+  // 需高于 .mu-scrollbar__tracks（z-index: var(--mu-z-index-layer)），
+  // 否则 body 滚动条轨道会盖住右侧手柄，6px 中仅外侧 3px 可命中；
+  // fallback 兜底 container 在 .mu-root 之外时变量未定义导致整条声明失效
+  z-index: calc(var(--mu-z-index-layer, 10) + 1);
+
+  @each $dir, $props in $handles {
+    &--#{$dir} {
+      @each $prop, $value in $props {
+        #{$prop}: $value;
+      }
+    }
   }
 }

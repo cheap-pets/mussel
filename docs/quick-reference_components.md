@@ -433,13 +433,13 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | close-button           | Boolean             | `true`   | 是否显示右上角关闭按钮                                               |
 | maximize-button        | Boolean             | —        | 是否显示最大化按钮                                                   |
 | maximize-to-fullscreen | Boolean             | —        | 最大化时是否全屏显示                                                 |
+| resizable              | Boolean             | —        | 开启边缘拖拽调整大小（四边 + 四角共 8 个手柄）。最小/最大尺寸遵循 CSS 约束（`min-width`/`max-width` 等，支持 px 与 %） |
 | lazy                   | Boolean             | `true`   | 为 true 时，仅首次打开时才渲染对话框内容                             |
-| keep-position          | Boolean             | —        | 再次打开时是否保留上次关闭的位置                                     |
+| keep-position          | Boolean             | —        | 再次打开时保留上次位置与尺寸（含拖拽、调整大小后的值）               |
 | dispose-on-hide        | Boolean             | —        | 隐藏时销毁内容                                                       |
 | z-index                | String              | —        | 自定义层级                                                           |
 | container              | String \| HTMLElement | —      | 挂载容器。CSS 选择器或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设值后遮罩自动改为 `position: absolute`，使弹窗相对该容器而非视口定位 |
 | mask-class             | —                   | —        | 遮罩 class                                                           |
-| mask-attrs             | Object              | —        | 透传给遮罩的额外属性                                                 |
 
 | 事件           | 参数                                  | 说明                                   |
 | -------------- | ------------------------------------- | -------------------------------------- |
@@ -517,7 +517,8 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 </script>
 
 <style>
-  /* mu-dialog 无 min/max 属性，最小/最大尺寸需通过 class（透传到 .mu-dialog）覆盖 */
+  /* mu-dialog 无 min/max 属性，最小/最大尺寸需通过 class（透传到 .mu-dialog）覆盖；
+     resizable 拖拽同样受这些 computed min/max 约束（支持 px 与 %） */
   .my-dialog {
     width: 800px;
     min-width: 640px;
@@ -574,7 +575,6 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 | lazy      | Boolean           | `true`   | 首次打开时才渲染内容                                                 |
 | dispose-on-hide | Boolean      | —        | 隐藏时销毁内容                                                       |
 | mask-class| —                 | —        | 遮罩 class                                                           |
-| mask-attrs| Object            | —        | 透传给遮罩的额外属性                                                 |
 
 | 事件           | 说明         |
 | -------------- | ------------ |
@@ -1362,7 +1362,6 @@ const filteredItems = computed(() =>
 | dropdown-disabled  | Boolean | 下拉面板禁用状态                                 |
 | dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`；仅当使用 `#dropdown` 插槽时生效，items 模式下由面板内置滚动容器接管 |
 | dropdown-panel     | Object  | 自定义下拉面板组件（覆盖默认 MuDropdownPanel）   |
-| dropdown-attrs     | Object  | 透传给面板的额外属性                             |
 | dropdown-anchor    | —       | 下拉面板锚点目标，默认为组件根元素               |
 
 | 事件               | 参数                         | 说明                         |

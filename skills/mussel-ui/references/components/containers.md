@@ -100,15 +100,15 @@
 | `close-button` | Boolean | `true` | 显示右上角关闭按钮 |
 | `maximize-button` | Boolean | — | 显示最大化按钮 |
 | `maximize-to-fullscreen` | Boolean | — | 最大化时进入全屏模式 |
+| `resizable` | Boolean | — | 开启边缘拖拽调整大小（四边 + 四角共 8 个手柄）。最小/最大尺寸遵循 CSS 约束（`min-width`/`max-width` 等，支持 px 与 %） |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
-| `keep-position` | Boolean | — | 再次打开时保留上次位置（含拖拽后的位置） |
+| `keep-position` | Boolean | — | 再次打开时保留上次位置与尺寸（含拖拽、调整大小后的值） |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `z-index` | String | — | 自定义层级 |
 | `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使弹窗相对该容器而非视口定位。详见下方「嵌入容器」 |
 | `mask-class` | — | — | 遮罩 class |
-| `mask-attrs` | Object | — | 透传给遮罩的额外属性 |
 
-> 标题栏支持拖拽移动对话框。
+> 标题栏支持拖拽移动对话框；开启 `resizable` 后可拖拽四边 + 四角调整大小。
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
@@ -195,7 +195,8 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 </script>
 
 <style>
-  /* mu-dialog 无 min/max 属性，最小/最大尺寸需通过 class（透传到 .mu-dialog）覆盖 */
+  /* mu-dialog 无 min/max 属性，最小/最大尺寸需通过 class（透传到 .mu-dialog）覆盖；
+     resizable 拖拽同样受这些 computed min/max 约束（支持 px 与 %） */
   .my-dialog {
     width: 800px;
     min-width: 640px;
@@ -247,7 +248,6 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
 | `mask-class` | — | — | 遮罩 class |
-| `mask-attrs` | Object | — | 透传给遮罩的额外属性 |
 
 | 事件 | 说明 |
 |------|------|

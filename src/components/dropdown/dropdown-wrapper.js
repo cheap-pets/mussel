@@ -14,7 +14,6 @@ export const dropdownProps = {
   dropdownClass: null,
   dropdownStyle: null,
   dropdownAnchor: null,
-  dropdownAttrs: Object,
   dropdownWidth: String,
   dropdownHeight: String,
   dropdownDisabled: Boolean,

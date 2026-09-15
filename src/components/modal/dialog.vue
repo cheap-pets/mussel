@@ -4,7 +4,6 @@
       <div
         v-show="modalVisible"
         ref="maskEl"
-        v-bind="maskAttrs"
         class="mu-modal-mask flex flex-center"
         :class="[maskClass, isAbsolutePosition && 'absolute']"
         :style="{ zIndex }"
@@ -14,8 +13,8 @@
           ref="dialogEl"
           class="mu-dialog"
           v-bind="$attrs"
-          :class="{ 'mu-dialog--dragging': dragging }"
-          :style="{ ...size, ...position }"
+          :class="{ 'mu-dialog--dragging': dragging, 'mu-dialog--resizing': resizing }"
+          :style="{ ...size, ...position, cursor: resizing || undefined }"
           @mousedown="onDragStart">
           <div v-if="headerVisible" class="mu-dialog__header" :class="headerClass">
             <div class="mu-dialog__header-content">
@@ -51,6 +50,15 @@
               v-bind="el.attrs"
               @click="el.is === 'mu-button' && onButtonClick(el)" />
           </div>
+          <!-- 边在角之前：角部 6×6 重叠区靠 DOM 顺序让角手柄拿到命中 -->
+          <template v-if="resizable && !maximized">
+            <div
+              v-for="dir in resizeDirs"
+              :key="dir"
+              class="mu-dialog__resize-handle"
+              :class="`mu-dialog__resize-handle--${dir}`"
+              @mousedown.stop="onResizeStart($event, dir)" />
+          </template>
         </div>
       </div>
     </Transition>
@@ -60,15 +68,14 @@
 <script setup>
   import './dialog.scss'
 
-  import { useSlots, ref, shallowRef, reactive, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
-  import { debounce } from 'throttle-debounce'
+  import { useSlots, ref, shallowRef, computed, watch, watchEffect, nextTick, onMounted, onUnmounted } from 'vue'
 
   import { modalProps, modalEvents, useModal } from './modal'
+  import { useDialogMoveResize } from './dialog-move-resize'
   import { ButtonPresets } from './button-presets'
   import { autoOrBool } from '../common/props'
 
   import { autoIncrementKeyBuilder } from '@/utils/key-builder'
-  import { resolveSize } from '@/utils/size'
   import { isString } from '@/utils/type'
   import { pick } from '@/utils/object'
   import { warnDeprecated } from '@/utils/compatible'
@@ -95,6 +102,7 @@
     keepPosition: Boolean,
     maximizeButton: Boolean,
     maximizeToFullscreen: Boolean,
+    resizable: Boolean,
     closeButton: { type: Boolean, default: true }
   })
 
@@ -132,11 +140,6 @@
       : props.footer
   )
 
-  const size = computed(() => ({
-    width: resolveSize(props.width),
-    height: resolveSize(props.height)
-  }))
-
   const dlgIconAttrs = computed(() => isString(props.icon) ? { icon: props.icon } : props.icon)
   const dlgStateIcon = computed(() => maximized.value ? 'arrowDownLeft' : 'arrowUpRight')
 
@@ -164,61 +167,20 @@
   const maskEl = shallowRef()
   const dialogEl = shallowRef()
 
-  const dragging = ref()
-  const position = reactive({})
+  const stashedPosition = { top: undefined, left: undefined }
 
-  function correctPosition () {
-    if (!modalVisible.value) return
-
-    const { offsetTop: top, offsetLeft: left, offsetHeight: height, offsetWidth: width } = dialogEl.value
-    const { clientHeight: maxHeight, clientWidth: maxWidth } = maskEl.value
-
-    const maxTop = maxHeight - (height <= maxHeight ? height : maxHeight)
-    const maxLeft = maxWidth - (width <= maxWidth ? width : maxWidth)
-
-    if (top < 0) {
-      position.top = 0
-    } else if (top > maxTop) {
-      position.top = `${maxTop}px`
-    }
-
-    if (left < 0) {
-      position.left = 0
-    } else if (left > maxLeft) {
-      position.left = `${maxLeft}px`
-    }
-  }
-
-  const debounceCorrectPosition = debounce(300, correctPosition)
-
-  function onDragStart (event) {
-    if (
-      maximized.value ||
-      !['mu-dialog__header', 'mu-dialog__header-content'].find(cls => event.target.classList.contains(cls))
-    ) return
-
-    const { pageY, pageX } = event
-    const { offsetTop: startY, offsetLeft: startX } = dialogEl.value
-
-    dragging.value = true
-
-    function onMouseMove (e) {
-      position.top = `${parseInt(startY + e.pageY - pageY)}px`
-      position.left = `${parseInt(startX + e.pageX - pageX)}px`
-    }
-
-    function onMouseUp () {
-      dragging.value = null
-
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
-
-      correctPosition()
-    }
-
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
-  }
+  const {
+    dragging,
+    resizing,
+    position,
+    size,
+    resizeDirs,
+    reset,
+    onDragStart,
+    onResizeStart,
+    correctPosition,
+    debounceCorrectPosition
+  } = useDialogMoveResize({ props, dialogEl, maskEl, maximized, modalVisible })
 
   function onButtonClick (btn) {
     emit('buttonClick', {
@@ -231,20 +193,29 @@
     }
   }
 
-  function toggleWindowState () {
+  async function toggleWindowState () {
     maximized.value = !maximized.value
 
     if (maximized.value) {
       if (props.maximizeToFullscreen) {
         dialogEl.value.requestFullscreen()
       } else {
+        Object.assign(stashedPosition, { top: position.top, left: position.left })
+        position.top = position.left = undefined
         dialogEl.value.classList.add('mu-dialog--maximized')
       }
     } else {
       if (props.maximizeToFullscreen) {
         document.exitFullscreen()
       } else {
+        Object.assign(position, stashedPosition)
         dialogEl.value.classList.remove('mu-dialog--maximized')
+
+        // 仅当最大化前确有显式坐标才校正，否则会把 flex 居中的 dialog 钉成绝对坐标
+        if (stashedPosition.top !== undefined || stashedPosition.left !== undefined) {
+          await nextTick()
+          correctPosition()
+        }
       }
     }
   }
@@ -270,7 +241,8 @@
 
   watchEffect(() => {
     if (props.visible && !props.keepPosition) {
-      Object.assign(position, { top: undefined, left: undefined })
+      reset()
+      stashedPosition.top = stashedPosition.left = undefined
     }
   })
 

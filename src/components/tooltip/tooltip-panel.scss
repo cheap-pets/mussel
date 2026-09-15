@@ -1,4 +1,12 @@
 .mu-tooltip-panel {
+  // 方位 -> (箭头伸出边 = transform-origin, 中心线偏移边, 缩放轴, clip-path)
+  $arrow-positions: (
+    (top, bottom, left, Y, polygon(0 100%, 100% 0, 100% 100%)),
+    (bottom, top, left, Y, polygon(0 0, 0 100%, 100% 0)),
+    (left, right, top, X, polygon(0 0, 100% 0, 100% 100%)),
+    (right, left, top, X, polygon(0 0, 0 100%, 100% 100%))
+  );
+
   pointer-events: none;
 
   position: fixed !important;
@@ -24,7 +32,6 @@
   &::before,
   &::after {
     content: '';
-
     position: absolute;
     transform: rotate(45deg);
   }
@@ -41,71 +48,18 @@
     background: var(--mu-bg-overlay);
   }
 
-  &[position='top'] {
-    transform-origin: bottom;
-    transform: scaleY(.9);
+  @each $pos, $side, $center, $axis, $clip in $arrow-positions {
+    &[position='#{$pos}'] {
+      transform-origin: #{$side};
+      transform: scale#{$axis}(.9);
 
-    &::before {
-      bottom: -5px;
-      left: calc(50% - 5px + var(--mu-tooltip-arrow-offset, 0px));
-      clip-path: polygon(0 100%, 100% 0, 100% 100%);
-    }
-
-    &::after {
-      bottom: -4px;
-      left: calc(50% - 4px + var(--mu-tooltip-arrow-offset, 0px));
-      clip-path: polygon(0 100%, 100% 0, 100% 100%);
-    }
-  }
-
-  &[position='bottom'] {
-    transform-origin: top;
-    transform: scaleY(.9);
-
-    &::before {
-      top: -5px;
-      left: calc(50% - 5px + var(--mu-tooltip-arrow-offset, 0px));
-      clip-path: polygon(0 0, 0 100%, 100% 0);
-    }
-
-    &::after {
-      top: -4px;
-      left: calc(50% - 4px + var(--mu-tooltip-arrow-offset, 0px));
-      clip-path: polygon(0 0, 0 100%, 100% 0);
-    }
-  }
-
-  &[position='left'] {
-    transform-origin: right;
-    transform: scaleX(.9);
-
-    &::before {
-      top: calc(50% - 5px + var(--mu-tooltip-arrow-offset, 0px));
-      right: -5px;
-      clip-path: polygon(0 0, 100% 0, 100% 100%);
-    }
-
-    &::after {
-      top: calc(50% - 4px + var(--mu-tooltip-arrow-offset, 0px));
-      right: -4px;
-      clip-path: polygon(0 0, 100% 0, 100% 100%);
-    }
-  }
-
-  &[position='right'] {
-    transform-origin: left;
-    transform: scaleX(.9);
-
-    &::before {
-      top: calc(50% - 5px + var(--mu-tooltip-arrow-offset, 0px));
-      left: -5px;
-      clip-path: polygon(0 0, 0 100%, 100% 100%);
-    }
-
-    &::after {
-      top: calc(50% - 4px + var(--mu-tooltip-arrow-offset, 0px));
-      left: -4px;
-      clip-path: polygon(0 0, 0 100%, 100% 100%);
+      @each $pseudo, $size in (before: 5, after: 4) {
+        &::#{$pseudo} {
+          #{$side}: -#{$size}px;
+          #{$center}: calc(50% - #{$size}px + var(--mu-tooltip-arrow-offset, 0px));
+          clip-path: $clip;
+        }
+      }
     }
   }
 
