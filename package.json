@@ -19,7 +19,6 @@
     "@faker-js/faker": "^10.4.0",
     "@tabler/icons": "^3.29.0",
     "@vitejs/plugin-vue": "^6.0.5",
-    "change-case": "^5.4.4",
     "lightningcss": "^1.32.0",
     "sass-embedded": "^1.98.0",
     "serve-handler": "^6.1.7",

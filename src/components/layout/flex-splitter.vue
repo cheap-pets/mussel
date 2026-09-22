@@ -1,5 +1,5 @@
 <template>
-  <div ref="rootRef" :class="cls" @dblclick="onDblClick" @mousedown="onMouseDown">
+  <div ref="rootRef" :class="cls" @dblclick="onDblClick" @pointerdown="onPointerDown">
     <slot v-if="isStriped" name="stripe">
       <svg-stripe
         class="mu-flex-splitter__stripe"
@@ -11,7 +11,7 @@
 <script setup>
   import './flex-splitter.scss'
 
-  import { ref, computed, inject, provide, onMounted } from 'vue'
+  import { ref, computed, inject, provide, onMounted, onBeforeUnmount } from 'vue'
 
   import SvgStripe from '../svg/svg-stripe.vue'
 
@@ -290,7 +290,21 @@
     }
   }
 
-  function onMouseDown (event) {
+  let activeDrag = null
+
+  function stopDrag () {
+    if (!activeDrag) return
+
+    const { splitterEl, abort } = activeDrag
+
+    splitterEl.removeAttribute('active')
+    document.body.classList.remove('mu-resizing')
+
+    abort()
+    activeDrag = null
+  }
+
+  function onPointerDown (event) {
     const params = getResizeParams()
 
     if (!params) return
@@ -301,7 +315,8 @@
       nextSibling, nextStartSize, nextMargin, nextCollapseOffset
     } = params
 
-    const { pageX: startX, pageY: startY } = event
+    const { target: splitterEl, pageX: startX, pageY: startY } = event
+    const isRow = direction.value === 'row'
 
     function calcAndCollapse (offset) {
       const collapseTarget =
@@ -335,8 +350,8 @@
       return true
     }
 
-    function onMouseMove (e) {
-      let offset = direction.value === 'row'
+    function onPointerMove (e) {
+      let offset = isRow
         ? e.pageX - startX
         : e.pageY - startY
 
@@ -347,19 +362,19 @@
       }
     }
 
-    function onMouseUp () {
-      rootRef.value.removeAttribute('active')
-      document.body.classList.remove('mu-resizing')
+    const controller = new AbortController()
+    const options = { signal: controller.signal }
 
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
-    }
+    splitterEl.setPointerCapture(event.pointerId)
 
-    rootRef.value.setAttribute('active', true)
+    splitterEl.setAttribute('active', true)
     document.body.classList.add('mu-resizing')
 
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
+    activeDrag = { splitterEl, abort: () => controller.abort() }
+
+    window.addEventListener('pointermove', onPointerMove, options)
+    window.addEventListener('pointerup', stopDrag, options)
+    window.addEventListener('pointercancel', stopDrag, options)
   }
 
   onMounted(() => {
@@ -367,6 +382,11 @@
     const value = window.getComputedStyle(parent).flexDirection
 
     direction.value = value && (value.startsWith('column') ? 'column' : 'row')
+  })
+
+  onBeforeUnmount(() => {
+    stopDrag()
+    if (paramsCacheTimer) clearTimeout(paramsCacheTimer)
   })
 
   provide('direction', direction)

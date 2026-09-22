@@ -66,18 +66,20 @@ export function useDialogMoveResize ({ props, dialogEl, maskEl, maximized, modal
 
   const debounceCorrectPosition = debounce(300, correctPosition)
 
-  // 拖拽/resize 进行中挂到 window 的监听：正常 mouseup 时释放；
+  // 拖拽/resize 进行中挂到 window 的监听：正常 pointerup / pointercancel 时释放；
   // 组件在拖动中被卸载（如 dispose-on-hide + ESC 关闭）时兜底释放，
   // 否则监听器与整页 resize 光标将永久残留
   let releaseWindowListeners = null
 
-  function bindWindowListeners (onMouseMove, onMouseUp, onRelease) {
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
+  function bindWindowListeners (onPointerMove, onPointerUp, onRelease) {
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('pointerup', onPointerUp)
+    window.addEventListener('pointercancel', onPointerUp)
 
     const release = () => {
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', onPointerUp)
+      window.removeEventListener('pointercancel', onPointerUp)
       if (releaseWindowListeners === release) releaseWindowListeners = null
       onRelease?.()
     }
@@ -100,28 +102,32 @@ export function useDialogMoveResize ({ props, dialogEl, maskEl, maximized, modal
       !['mu-dialog__header', 'mu-dialog__header-content'].find(cls => event.target.classList.contains(cls))
     ) return
 
+    event.currentTarget.setPointerCapture(event.pointerId)
+
     const { pageY, pageX } = event
     const { offsetTop: startY, offsetLeft: startX } = dialogEl.value
 
     dragging.value = true
 
-    function onMouseMove (e) {
+    function onPointerMove (e) {
       position.top = `${parseInt(startY + e.pageY - pageY)}px`
       position.left = `${parseInt(startX + e.pageX - pageX)}px`
     }
 
-    function onMouseUp () {
+    function onPointerUp () {
       release()
       correctPosition()
     }
 
-    const release = bindWindowListeners(onMouseMove, onMouseUp, () => {
+    const release = bindWindowListeners(onPointerMove, onPointerUp, () => {
       dragging.value = null
     })
   }
 
   function onResizeStart (event, dir) {
     if (maximized.value || event.button !== 0) return
+
+    event.currentTarget.setPointerCapture(event.pointerId)
 
     const dlg = dialogEl.value
     const mask = maskEl.value
@@ -170,7 +176,7 @@ export function useDialogMoveResize ({ props, dialogEl, maskEl, maximized, modal
       document.documentElement.style.cursor = resizing.value
     }
 
-    function onMouseMove (e) {
+    function onPointerMove (e) {
       const dx = e.pageX - pageX
       const dy = e.pageY - pageY
 
@@ -198,14 +204,14 @@ export function useDialogMoveResize ({ props, dialogEl, maskEl, maximized, modal
       }
     }
 
-    function onMouseUp () {
+    function onPointerUp () {
       release()
 
       // 纯点击未物化时不校正，避免把 flex 居中的负偏移钉死成绝对坐标
       if (materialized) correctPosition()
     }
 
-    const release = bindWindowListeners(onMouseMove, onMouseUp, () => {
+    const release = bindWindowListeners(onPointerMove, onPointerUp, () => {
       resizing.value = null
       document.documentElement.style.cursor = prevCursor
     })

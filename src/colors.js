@@ -1,4 +1,4 @@
-import { kebabCase } from 'change-case'
+import { kebabCase } from './utils/case.js'
 import { generatePalette, generateAccentColor, generateNeutralPalette } from './utils/color.js'
 
 const BASE_COLORS = {

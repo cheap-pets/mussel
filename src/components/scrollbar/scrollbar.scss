@@ -35,9 +35,14 @@
 
 .mu-scrollbar__track-x,
 .mu-scrollbar__track-y {
+  touch-action: none;
+
   position: absolute;
+
   overflow: hidden;
+
   border-radius: var(--mu-scrollbar_border-radius);
+
   background: var(--mu-scrollbar_background);
 }
 

@@ -62,6 +62,7 @@
 }
 
 .mu-dialog__header {
+  touch-action: none;
   user-select: none;
   height: var(--mu-dialog-header-height);
   padding-right: calc(var(--mu-base-spacing) * 2);
@@ -142,6 +143,7 @@
     se: (bottom: 0, right: 0, width: $t * 2, height: $t * 2, cursor: nwse-resize)
   );
 
+  touch-action: none;
   user-select: none;
   position: absolute;
 

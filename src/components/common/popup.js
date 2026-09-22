@@ -14,7 +14,7 @@ export const HIDE_DELAY = 300
  *
  * 调用前提：调用方已在同一同步块内设置 visible = true（编舞各阶段据此做快速开关守卫）。
  */
-export async function runPopupSequence ({ visible, ready, popupStyle, panelEl, updatePosition }) {
+async function runPopupSequence ({ visible, ready, popupStyle, panelEl, updatePosition }) {
   if (!ready.value) ready.value = true
 
   popupStyle.value = { transform: 'none', visibility: 'hidden' }

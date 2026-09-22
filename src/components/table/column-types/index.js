@@ -13,7 +13,7 @@ import { ImageColumn } from './image'
 
 import './style.scss'
 
-export const ColumnTypes = {
+const ColumnTypes = {
   text: TextColumn,
   rec_no: RecordNumberColumn,
   check: CheckColumn,

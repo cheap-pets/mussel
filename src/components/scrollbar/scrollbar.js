@@ -3,8 +3,8 @@ import './scrollbar.scss'
 import { throttle } from 'throttle-debounce'
 
 import { h } from '@/utils/h'
-import { onTrackXMouseDown, onTrackYMouseDown } from './track-mouse-events'
 import { updateTracks, updateThumbX, updateThumbY } from './update-positions'
+import { onTrackXPointerDown, onTrackYPointerDown } from './track-pointer-events'
 
 const ctxMap = new WeakMap()
 const EVENT_PASSIVE_OPTION = { passive: true }
@@ -104,8 +104,8 @@ export function attach (el) {
       el.insertBefore(tracks, el.firstChild)
     }
 
-    trackX.addEventListener('mousedown', event => onTrackXMouseDown(event, el, ctx))
-    trackY.addEventListener('mousedown', event => onTrackYMouseDown(event, el, ctx))
+    trackX.addEventListener('pointerdown', event => onTrackXPointerDown(event, el, ctx))
+    trackY.addEventListener('pointerdown', event => onTrackYPointerDown(event, el, ctx))
 
     el.addEventListener('sizechange', refresh)
     el.addEventListener('mouseenter', refresh)
@@ -126,6 +126,9 @@ export function attach (el) {
     ctx.throttles.forEach(item => item.cancel())
 
     cancelAnimationFrame(ctx.rafId)
+
+    // 拖拽 thumb 途中被 detach：释放 window 监听，防止闭包持有的 el/ctx 泄漏
+    ctx.dragController?.abort()
 
     el.removeEventListener('sizechange', refresh)
     el.removeEventListener('mouseenter', refresh)
@@ -149,6 +152,7 @@ export function attach (el) {
     delete ctx.mutationObserver
     delete ctx.throttles
     delete ctx.positionWasSet
+    delete ctx.dragController
   }
 
   createElements()

@@ -12,7 +12,7 @@
 
 ## 基础用法（三区 + 可拖拽 + 可收拢）
 
-拖动分隔条调整面板；拖至面板 `min-width` 一半以下即收拢为 0 宽；**双击分隔条重置**到初始尺寸。
+拖动分隔条调整面板；拖至面板 `min-width` 一半以下（未设置 `min-width` 时阈值为 200px）即收拢为 0 宽；**双击分隔条重置**到初始尺寸。
 
 <div class="mu-demo mu-demo-col" style="align-items: stretch;">
   <div class="mu-demo-row">

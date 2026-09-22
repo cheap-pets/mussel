@@ -148,7 +148,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
-| `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'left'`/`'right'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**两侧分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'left'` → 左面板、`'right'` → 右面板，`true` → 两侧）。拖动至该侧 `min-width` 一半以下即收拢为 0 宽，双击重置恢复 |
+| `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'left'`/`'right'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**两侧分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'left'` → 左面板、`'right'` → 右面板，`true` → 两侧）。拖动至该侧 `min-width` 一半以下（未设置 `min-width` 时阈值为 200px）即收拢为 0 宽，双击重置恢复 |
 | `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`（详见上方「分隔条」） |
 | `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始宽度）\| `none`（无响应） |
 | `left-width` | String | `'33.3%'` | 左侧面板初始宽度 |
@@ -187,7 +187,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false` |
-| `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'top'`/`'bottom'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**上下分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'top'` → 顶部面板、`'bottom'` → 底部面板，`true` → 两侧）。拖动至该侧 `min-height` 一半以下即收拢为 0 高，双击重置恢复 |
+| `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'top'`/`'bottom'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**上下分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'top'` → 顶部面板、`'bottom'` → 底部面板，`true` → 两侧）。拖动至该侧 `min-height` 一半以下（未设置 `min-height` 时阈值为 200px）即收拢为 0 高，双击重置恢复 |
 | `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`（详见上方「分隔条」） |
 | `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始高度）\| `none`（无响应） |
 | `top-height` | String | `'33.3%'` | 顶部面板初始高度 |

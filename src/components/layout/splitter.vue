@@ -3,13 +3,13 @@
     class="mu-flex-splitter"
     :class="cls"
     :direction="direction"
-    @mousedown="onMouseDown" />
+    @pointerdown="onPointerDown" />
 </template>
 
 <script setup>
   import './splitter.scss'
 
-  import { computed } from 'vue'
+  import { computed, onBeforeUnmount } from 'vue'
 
   import { clamp } from '@/utils/math.js'
   import { resolvePixel } from '@/utils/size.js'
@@ -32,6 +32,8 @@
     },
     collapsible: Boolean
   })
+
+  const COLLAPSE_THRESHOLD = 200
 
   function prefixClass (className) {
     return `mu-flex-splitter--${className}`
@@ -70,54 +72,60 @@
       [tMin, tMax, cMin, cMax, cBas].map(v => resolvePixel(v, clientSize))
 
     return {
-      targetEl,
       sign,
-      tMin,
+      startSize: targetEl[offsetSizeProp],
+      collapseSize: Math.min(tMin / 2 || COLLAPSE_THRESHOLD, COLLAPSE_THRESHOLD),
       min: Math.max(tMin, totalSize - cMax),
       max: Math.min(tMax, totalSize - Math.max(cMin, cBas))
     }
   }
 
-  function onMouseDown (event) {
+  let activeDrag = null
+
+  function stopDrag () {
+    if (!activeDrag) return
+
+    const { splitterEl, abort } = activeDrag
+
+    splitterEl.removeAttribute('active')
+    document.body.classList.remove('mu-resizing')
+
+    abort()
+    activeDrag = null
+  }
+
+  function onPointerDown (event) {
     const { target: splitterEl, pageX: startX, pageY: startY } = event
-    const { targetEl, sign, tMin, min, max } = calculateSizeRange(splitterEl)
-    const { width: startW, height: startH } = targetEl.getBoundingClientRect()
+    const { sign, startSize, collapseSize, min, max } = calculateSizeRange(splitterEl)
 
-    function onMouseMoveX (e) {
-      let size = startW + (e.pageX - startX) * sign
+    const isRow = props.direction === 'row'
 
-      size = props.collapsible && size < tMin / 2
+    function onPointerMove (e) {
+      const delta = (isRow ? e.pageX - startX : e.pageY - startY) * sign
+
+      let size = startSize + delta
+
+      size = props.collapsible && size < collapseSize
         ? 0
         : clamp(size, min, max)
 
-      emit('resizing', size && `${size}px`)
+      emit('resizing', size ? `${size}px` : '')
     }
 
-    function onMouseMoveY (e) {
-      let size = startH + (e.pageY - startY) * sign
+    const controller = new AbortController()
+    const options = { signal: controller.signal }
 
-      size = props.collapsible && size < tMin / 2
-        ? 0
-        : clamp(size, min, max)
-
-      emit('resizing', size && `${size}px`)
-    }
-
-    const onMouseMove =
-      props.direction === 'row' ? onMouseMoveX : onMouseMoveY
-
-    function onMouseUp () {
-      splitterEl.removeAttribute('active')
-      document.body.classList.remove('mu-resizing')
-
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
-    }
-
+    splitterEl.setPointerCapture(event.pointerId)
     splitterEl.setAttribute('active', true)
+
     document.body.classList.add('mu-resizing')
 
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
+    activeDrag = { splitterEl, abort: () => controller.abort() }
+
+    window.addEventListener('pointermove', onPointerMove, options)
+    window.addEventListener('pointerup', stopDrag, options)
+    window.addEventListener('pointercancel', stopDrag, options)
   }
+
+  onBeforeUnmount(stopDrag)
 </script>

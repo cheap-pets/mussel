@@ -212,7 +212,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 > [!NOTE]
 >
-> `collapsible`：拖动至该侧 `min-width` 一半以下即收拢为 0 宽（`display:none`），双击分隔条重置恢复。
+> `collapsible`：拖动至该侧 `min-width` 一半以下（未设置 `min-width` 时阈值为 200px）即收拢为 0 宽（`display:none`），双击分隔条重置恢复。
 >
 > 双击分隔条可重置面板尺寸到初始值。
 

@@ -15,7 +15,7 @@
           v-bind="$attrs"
           :class="{ 'mu-dialog--dragging': dragging, 'mu-dialog--resizing': resizing }"
           :style="{ ...size, ...position, cursor: resizing || undefined }"
-          @mousedown="onDragStart">
+          @pointerdown="onDragStart">
           <div v-if="headerVisible" class="mu-dialog__header" :class="headerClass">
             <div class="mu-dialog__header-content">
               <mu-icon v-if="icon" class="mu-dialog__icon" v-bind="dlgIconAttrs" />
@@ -57,7 +57,7 @@
               :key="dir"
               class="mu-dialog__resize-handle"
               :class="`mu-dialog__resize-handle--${dir}`"
-              @mousedown.stop="onResizeStart($event, dir)" />
+              @pointerdown.stop="onResizeStart($event, dir)" />
           </template>
         </div>
       </div>
