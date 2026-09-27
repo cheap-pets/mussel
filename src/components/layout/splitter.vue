@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="mu-flex-splitter"
-    :class="cls"
-    :direction="direction"
-    @pointerdown="onPointerDown" />
+  <div class="mu-flex-splitter" :class="cls" @pointerdown="onPointerDown" />
 </template>
 
 <script setup>
@@ -17,13 +13,13 @@
   const emit = defineEmits(['resizing'])
 
   const props = defineProps({
-    target: {
-      type: String,
-      validator: v => ['prev', 'next'].includes(v)
-    },
     direction: {
       type: String,
       validator: v => ['row', 'column'].includes(v)
+    },
+    target: {
+      type: String,
+      validator: v => ['prev', 'next'].includes(v)
     },
     shape: {
       type: String,
