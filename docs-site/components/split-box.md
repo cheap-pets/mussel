@@ -133,7 +133,7 @@ Split 容器默认高度为自动（由内容撑开），**必须显式设置高
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
 | `collapsible` | Boolean \| String | — | 可收拢面板；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'left'` → 左面板、`'right'` → 右面板、`true` → 两侧） |
 | `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill` |
-| `dblclick` | String | `'reset'` | 双击分隔条行为：`reset`（重置到初始宽度）\| `none`（无响应） |
+| `splitter-dblclick-reset` | Boolean | `true` | 双击分隔条重置到初始宽度；`false` 时无响应 |
 | `left-width` | String | `'33.3%'` | 左侧面板初始宽度 |
 | `right-width` | String | `'33.3%'` | 右侧面板初始宽度 |
 | `left-class` / `left-style` | — | — | 左侧面板 class / style |

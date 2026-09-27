@@ -12,7 +12,7 @@
       target="prev"
       :shape="splitterShape"
       :collapsible="collapsible"
-      @dblclick="dblclick === 'reset' && reset('start')"
+      @dblclick="splitterDblclickReset && reset('start')"
       @resizing="resize('start', $event)" />
     <div
       :class="['mu-split-box__center', centerClass]"
@@ -25,7 +25,7 @@
       target="next"
       :shape="splitterShape"
       :collapsible="!!collapsible"
-      @dblclick="dblclick === 'reset' && reset('end')"
+      @dblclick="splitterDblclickReset && reset('end')"
       @resizing="resize('end', $event)" />
     <div
       v-if="$slots.bottom"
@@ -51,7 +51,6 @@
     centerStyle: null,
     topHeight: { type: String, default: '33.3%' },
     bottomHeight: { type: String, default: '33.3%' },
-    splitterShape: String,
     resizable: {
       type: [Boolean, String],
       validator: v => [false, true, 'top', 'bottom'].includes(v)
@@ -60,10 +59,10 @@
       type: [Boolean, String],
       validator: v => [false, true, 'top', 'bottom'].includes(v)
     },
-    dblclick: {
-      type: String,
-      default: 'reset',
-      validator: v => ['reset', 'none'].includes(v)
+    splitterShape: String,
+    splitterDblclickReset: {
+      type: Boolean,
+      default: true
     }
   })
 

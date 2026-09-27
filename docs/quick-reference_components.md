@@ -194,7 +194,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | resizable       | Boolean \| String  | —         | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`        |
 | collapsible     | Boolean \| String  | —         | 可收拢面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`        |
 | splitter-shape  | String             | `'hidden'`| 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`                 |
-| dblclick        | String             | `'reset'` | 双击分隔条行为：`reset`（重置到初始宽度）\| `none`                   |
+| splitter-dblclick-reset | Boolean            | `true`    | 双击分隔条重置到初始宽度；`false` 时无响应                           |
 | left-width      | String             | `'33.3%'` | 左侧面板初始宽度                                                     |
 | left-class      | String             | —         | 左侧面板 class                                                       |
 | left-style      | Object \| String   | —         | 左侧面板 style                                                       |
@@ -235,7 +235,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | resizable       | Boolean \| String  | —         | 可拖拽面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false`   |
 | collapsible     | Boolean \| String  | —         | 可收拢面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false`   |
 | splitter-shape  | String             | `'hidden'`| 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`            |
-| dblclick        | String             | `'reset'` | 双击分隔条行为：`reset`（重置到初始高度）\| `none`              |
+| splitter-dblclick-reset | Boolean            | `true`    | 双击分隔条重置到初始高度；`false` 时无响应                           |
 | top-height      | String             | `'33.3%'` | 顶部面板初始高度                                                |
 | top-class       | String             | —         | 顶部面板 class                                                  |
 | top-style       | Object \| String   | —         | 顶部面板 style                                                  |
