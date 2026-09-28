@@ -103,14 +103,22 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 ### 分隔条（Splitter，内部组件）
 
 **内部组件，不可直接使用**，`MuSplitHBox` / `MuSplitVBox` 面板之间的可拖拽分隔条。
-分隔条的形态通过 split-box 的 `splitter-shape` 属性控制，形状取值：
+分隔条样式通过 split-box 的 `splitter-size` / `splitter-shape` 属性控制：
+
+**`splitter-size`**（占位粗细）：
 
 | 取值 | 说明 |
 |------|------|
-| `hidden` | 默认。不占空间、无可见线，但仍可拖拽 |
-| `normal` | 常规宽度的分隔线（4px） |
-| `slim` | 细线（2px） |
-| `pill` | 不占空间，hover/拖拽时浮现的胶囊把手 |
+| `none` | 默认。不占空间、无可见指示，但仍可拖拽 |
+| `slim` | 细分隔线（2px） |
+| `normal` | 常规分隔线（4px） |
+
+**`splitter-shape`**（指示形态）：
+
+| 取值 | 说明 |
+|------|------|
+| `line` | 默认。线条，hover/拖拽时高亮变粗 |
+| `pill` | 胶囊把手，粗细随 `splitter-size`；`none` 时 hover/拖拽浮现，`slim`/`normal` 时常显 |
 
 > 分隔条仅在对应面板**可调整尺寸**（`resizable` 包含该侧）且插槽存在时才渲染。拖拽时尺寸受面板 CSS `min-width` / `max-width`（或 height）约束。
 
@@ -149,7 +157,8 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
 | `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'left'`/`'right'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**两侧分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'left'` → 左面板、`'right'` → 右面板，`true` → 两侧）。拖动至该侧 `min-width` 一半以下（未设置 `min-width` 时阈值为 200px）即收拢为 0 宽，双击重置恢复 |
-| `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`（详见上方「分隔条」） |
+| `splitter-size` | String | `'none'` | 分隔条粗细：`none` \| `slim` \| `normal`（详见上方「分隔条」） |
+| `splitter-shape` | String | `'line'` | 分隔条形态：`line` \| `pill`（详见上方「分隔条」） |
 | `splitter-dblclick-reset` | Boolean | `true` | 双击分隔条重置到初始宽度；`false` 时无响应 |
 | `left-width` | String | `'33.3%'` | 左侧面板初始宽度 |
 | `left-class` | String | — | 左侧面板 class |
@@ -174,6 +183,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
   right-width="300px"
   resizable
   collapsible
+  splitter-size="none"
   splitter-shape="pill"
 >
   <template #left>侧边栏</template>
@@ -188,7 +198,8 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false` |
 | `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'top'`/`'bottom'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**上下分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'top'` → 顶部面板、`'bottom'` → 底部面板，`true` → 两侧）。拖动至该侧 `min-height` 一半以下（未设置 `min-height` 时阈值为 200px）即收拢为 0 高，双击重置恢复 |
-| `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`（详见上方「分隔条」） |
+| `splitter-size` | String | `'none'` | 分隔条粗细：`none` \| `slim` \| `normal`（详见上方「分隔条」） |
+| `splitter-shape` | String | `'line'` | 分隔条形态：`line` \| `pill`（详见上方「分隔条」） |
 | `splitter-dblclick-reset` | Boolean | `true` | 双击分隔条重置到初始高度；`false` 时无响应 |
 | `top-height` | String | `'33.3%'` | 顶部面板初始高度 |
 | `top-class` | String | — | 顶部面板 class |

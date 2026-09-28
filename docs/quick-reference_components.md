@@ -193,7 +193,8 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | --------------- | ------------------ | --------- | -------------------------------------------------------------------- |
 | resizable       | Boolean \| String  | —         | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`        |
 | collapsible     | Boolean \| String  | —         | 可收拢面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`        |
-| splitter-shape  | String             | `'hidden'`| 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`                 |
+| splitter-size  | String             | `'none'`  | 分隔条粗细：`none` \| `slim` \| `normal`                           |
+| splitter-shape | String             | `'line'`  | 分隔条形态：`line` \| `pill`                                        |
 | splitter-dblclick-reset | Boolean            | `true`    | 双击分隔条重置到初始宽度；`false` 时无响应                           |
 | left-width      | String             | `'33.3%'` | 左侧面板初始宽度                                                     |
 | left-class      | String             | —         | 左侧面板 class                                                       |
@@ -234,7 +235,8 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | --------------- | ------------------ | --------- | --------------------------------------------------------------- |
 | resizable       | Boolean \| String  | —         | 可拖拽面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false`   |
 | collapsible     | Boolean \| String  | —         | 可收拢面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false`   |
-| splitter-shape  | String             | `'hidden'`| 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill`            |
+| splitter-size  | String             | `'none'`  | 分隔条粗细：`none` \| `slim` \| `normal`                        |
+| splitter-shape | String             | `'line'`  | 分隔条形态：`line` \| `pill`                                     |
 | splitter-dblclick-reset | Boolean            | `true`    | 双击分隔条重置到初始高度；`false` 时无响应                           |
 | top-height      | String             | `'33.3%'` | 顶部面板初始高度                                                |
 | top-class       | String             | —         | 顶部面板 class                                                  |
@@ -253,14 +255,22 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 > [!NOTE]
 >
-> 分隔条形状（`splitter-shape`）取值说明：
+> 分隔条样式（`splitter-size` / `splitter-shape`）取值说明：
+>
+> **`splitter-size`**（占位粗细）：
 >
 > | 取值    | 说明                                       |
 > | ------- | ------------------------------------------ |
-> | hidden  | 默认。不占空间、无可见线，但仍可拖拽       |
-> | normal  | 常规宽度的分隔线（4px）                    |
-> | slim    | 细线（2px）                                |
-> | pill    | 不占空间，hover/拖拽时浮现的胶囊把手       |
+> | none    | 默认。不占空间、无可见指示，但仍可拖拽     |
+> | slim    | 细分隔线（2px）                            |
+> | normal  | 常规分隔线（4px）                          |
+>
+> **`splitter-shape`**（指示形态）：
+>
+> | 取值    | 说明                                       |
+> | ------- | ------------------------------------------ |
+> | line    | 默认。线条，hover/拖拽时高亮变粗           |
+> | pill    | 胶囊把手，粗细随 `splitter-size`；`none` 时 hover/拖拽浮现，`slim`/`normal` 时常显 |
 
 
 

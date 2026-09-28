@@ -10,6 +10,7 @@
       v-if="$slots.top && [true, 'top'].includes(resizable)"
       direction="column"
       target="prev"
+      :size="splitterSize"
       :shape="splitterShape"
       :collapsible="collapsible"
       @dblclick="splitterDblclickReset && reset('start')"
@@ -23,6 +24,7 @@
       v-if="$slots.bottom && [true, 'bottom'].includes(resizable)"
       direction="column"
       target="next"
+      :size="splitterSize"
       :shape="splitterShape"
       :collapsible="!!collapsible"
       @dblclick="splitterDblclickReset && reset('end')"
@@ -59,6 +61,7 @@
       type: [Boolean, String],
       validator: v => [false, true, 'top', 'bottom'].includes(v)
     },
+    splitterSize: String,
     splitterShape: String,
     splitterDblclickReset: {
       type: Boolean,

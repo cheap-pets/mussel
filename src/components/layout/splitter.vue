@@ -21,10 +21,15 @@
       type: String,
       validator: v => ['prev', 'next'].includes(v)
     },
+    size: {
+      type: String,
+      default: 'none',
+      validator: v => ['none', 'slim', 'normal'].includes(v)
+    },
     shape: {
       type: String,
-      default: 'hidden',
-      validator: v => ['hidden', 'normal', 'slim', 'pill'].includes(v)
+      default: 'line',
+      validator: v => ['line', 'pill'].includes(v)
     },
     collapsible: Boolean
   })
@@ -38,7 +43,8 @@
   const cls = computed(() =>
     [
       prefixClass(props.direction === 'column' ? 'col' : 'row'),
-      props.shape !== 'normal' && prefixClass(props.shape)
+      props.size !== 'normal' && prefixClass(props.size),
+      props.shape === 'pill' && prefixClass(props.shape)
     ].filter(Boolean)
   )
 

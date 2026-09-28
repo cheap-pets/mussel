@@ -10,6 +10,7 @@
       v-if="$slots.left && [true, 'left'].includes(resizable)"
       target="prev"
       direction="row"
+      :size="splitterSize"
       :shape="splitterShape"
       :collapsible="!!collapsible"
       @resizing="resize('start', $event)"
@@ -23,6 +24,7 @@
       v-if="$slots.right && [true, 'right'].includes(resizable)"
       target="next"
       direction="row"
+      :size="splitterSize"
       :shape="splitterShape"
       :collapsible="collapsible"
       @resizing="resize('end', $event)"
@@ -59,6 +61,7 @@
       type: [Boolean, String],
       validator: v => [false, true, 'left', 'right'].includes(v)
     },
+    splitterSize: String,
     splitterShape: String,
     splitterDblclickReset: {
       type: Boolean,

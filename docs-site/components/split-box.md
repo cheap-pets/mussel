@@ -1,7 +1,8 @@
 <script setup>
   import { ref } from 'vue'
 
-  const shape = ref('pill')
+  const splitterSize = ref('none')
+  const splitterShape = ref('pill')
 </script>
 
 # 分割容器 MuSplitHBox / MuSplitVBox
@@ -16,15 +17,17 @@
 
 <div class="mu-demo mu-demo-col" style="align-items: stretch;">
   <div class="mu-demo-row">
-    <label class="text-subtle">分隔条形状：</label>
-    <mu-select v-model="shape" :options="['hidden', 'normal', 'slim', 'pill']" style="width: 120px;" />
+    <label class="text-subtle">分隔条样式：</label>
+    <mu-select v-model="splitterSize" :options="['none', 'slim', 'normal']" style="width: 110px;" />
+    <mu-select v-model="splitterShape" :options="['line', 'pill']" style="width: 100px;" />
   </div>
   <div class="mu-demo-panel" style="height: 420px;">
     <mu-split-h-box
       style="height: 100%;"
       resizable
       collapsible
-      :splitter-shape="shape"
+      :splitter-size="splitterSize"
+      :splitter-shape="splitterShape"
       left-width="30%"
       left-class="mu-bg-strong"
       right-width="25%"
@@ -113,14 +116,22 @@ Split 容器可以任意嵌套组合出复杂的工作台布局：
 Split 容器默认高度为自动（由内容撑开），**必须显式设置高度**才能形成可拖拽的面板区域：外层容器给定固定高度或 flex 拉伸，Split 容器自身设 `height: 100%`（或 `flex: 1`）。否则面板高度塌陷，分隔条不可见。
 :::
 
-## 分隔条形状 `splitter-shape`
+## 分隔条样式 `splitter-size` / `splitter-shape`
+
+**`splitter-size`**（占位粗细）：
 
 | 取值 | 说明 |
 |------|------|
-| `hidden` | 默认。不占空间、无可见线，但仍可拖拽 |
-| `normal` | 常规宽度的分隔线（4px） |
-| `slim` | 细线（2px） |
-| `pill` | 不占空间，hover/拖拽时浮现的胶囊把手 |
+| `none` | 默认。不占空间、无可见指示，但仍可拖拽 |
+| `slim` | 细分隔线（2px） |
+| `normal` | 常规分隔线（4px） |
+
+**`splitter-shape`**（指示形态）：
+
+| 取值 | 说明 |
+|------|------|
+| `line` | 默认。线条，hover/拖拽时高亮变粗 |
+| `pill` | 胶囊把手，粗细随 `splitter-size`；`none` 时 hover/拖拽浮现，`slim`/`normal` 时常显 |
 
 > 分隔条仅在对应面板**可调整尺寸**（`resizable` 包含该侧）且插槽存在时才渲染。拖拽时尺寸受面板 CSS `min-width` / `max-width`（或 height）约束——如 `left-style="min-width: 300px"` 可设置拖拽下限。
 
@@ -132,7 +143,8 @@ Split 容器默认高度为自动（由内容撑开），**必须显式设置高
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
 | `collapsible` | Boolean \| String | — | 可收拢面板；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'left'` → 左面板、`'right'` → 右面板、`true` → 两侧） |
-| `splitter-shape` | String | `'hidden'` | 分隔条形状：`hidden` \| `normal` \| `slim` \| `pill` |
+| `splitter-size` | String | `'none'` | 分隔条粗细：`none` \| `slim` \| `normal` |
+| `splitter-shape` | String | `'line'` | 分隔条形态：`line` \| `pill` |
 | `splitter-dblclick-reset` | Boolean | `true` | 双击分隔条重置到初始宽度；`false` 时无响应 |
 | `left-width` | String | `'33.3%'` | 左侧面板初始宽度 |
 | `right-width` | String | `'33.3%'` | 右侧面板初始宽度 |

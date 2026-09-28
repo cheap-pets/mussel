@@ -4,15 +4,15 @@
       <div class="mu-bar">
         <h2>Flex-layout & Splitter</h2>
         <mu-select
-          v-model="shape"
-          style="width: 150px;"
+          v-model="splitterSize"
+          style="width: 130px;"
+          prefix="Size:"
+          :options="['none', 'slim', 'normal']" />
+        <mu-select
+          v-model="splitterShape"
+          style="width: 120px;"
           prefix="Shape:"
-          :options="[
-            { value: 'hidden', label: 'hidden' },
-            { value: 'normal', label: 'normal' },
-            { value: 'slim', label: 'slim' },
-            { value: 'pill', label: 'pill' }
-          ]" />
+          :options="['line', 'pill']" />
         <theme-switch style="margin-left: 16px;" />
       </div>
       <mu-split-h-box
@@ -22,7 +22,8 @@
         left-class="mu-bg-strong"
         left-style="min-width: 300px"
         right-class="mu-bg-strong"
-        :splitter-shape="shape">
+        :splitter-size="splitterSize"
+        :splitter-shape="splitterShape">
         <template #left>
           <div class="block">
             1
@@ -36,7 +37,8 @@
             resizable
             class="block"
             top-class="border-b"
-            :splitter-shape="shape">
+            :splitter-size="splitterSize"
+            :splitter-shape="splitterShape">
             <template #top>
               <div class="block" style="height: 100%;">
                 2A
@@ -63,7 +65,8 @@
   import { ref } from 'vue'
   import ThemeSwitch from '../common/theme-switch.vue'
 
-  const shape = ref('pill')
+  const splitterSize = ref('none')
+  const splitterShape = ref('pill')
 
 </script>
 
