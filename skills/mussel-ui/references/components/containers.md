@@ -237,11 +237,12 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 |------|------|------|------|
 | `visible` | Boolean | — | 双向绑定可见状态 |
 | `position` | String | `bottom` | `top` \| `right` \| `bottom` \| `left` |
-| `width` | String\|Number | — | 宽度（left/right 时有效） |
-| `height` | String\|Number | — | 高度（top/bottom 时有效） |
+| `width` | String\|Number | — | 面板宽度。`left`/`right` 时决定宽度；`top`/`bottom` 时面板按该宽度居中（不铺满） |
+| `height` | String\|Number | — | 面板高度。`top`/`bottom` 时决定高度；`left`/`right` 时面板按该高度居中（不铺满） |
 | `dismissible` | Boolean\|String | — | 点击遮罩或 ESC 关闭。`true`=两者均可，`'esc'`=仅ESC，`'mask'`=仅遮罩。不设置则不自动关闭 |
 | `mask` | Boolean | `true` | 是否显示遮罩 |
 | `rounded` | Boolean | — | 是否圆角 |
+| `resizable` | Boolean | — | 是否可拖拽对侧边缘调整大小（`left`/`right` 拖宽度、`top`/`bottom` 拖高度）。受 computed `min-*` / `max-*` 约束（支持 `px` 与 `%`，默认 `200px` / `100%`）；父组件改 `width`/`height`/`position` 或重开抽屉会丢弃用户调整值 |
 | `teleport` | Boolean | `true` | 渲染到页面根容器 |
 | `z-index` | String | — | 自定义层级 |
 | `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使抽屉相对该容器而非视口定位。详见下方「嵌入容器」 |

@@ -60,6 +60,66 @@
   }
 }
 
+.mu-drawer__resize-handle {
+  $t: 6px;
+
+  touch-action: none;
+  user-select: none;
+  position: absolute;
+
+  // 须高于 .mu-scrollbar__tracks（其 z-index 为 --mu-z-index-layer = 10），
+  // 否则内容滚动条轨道盖住手柄；fallback 兜底 container 在 .mu-root 外时变量未定义导致整条声明失效
+  z-index: calc(var(--mu-z-index-layer, 10) + 1);
+
+  .mu-drawer--left & {
+    cursor: e-resize;
+
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: $t;
+  }
+
+  .mu-drawer--right & {
+    cursor: w-resize;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: $t;
+  }
+
+  .mu-drawer--top & {
+    cursor: s-resize;
+
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    height: $t;
+  }
+
+  .mu-drawer--bottom & {
+    cursor: n-resize;
+
+    top: 0;
+    right: 0;
+    left: 0;
+
+    height: $t;
+  }
+}
+
+.mu-drawer--resizing {
+  user-select: none;
+
+  // 内容自带 cursor（.mu-button: pointer 等）会盖住继承值，
+  // 指针落在抽屉内容上时单纯设 body cursor 挡不住闪烁
+  * { cursor: inherit !important; }
+}
+
 .mu-drawer--enter-from,
 .mu-drawer--leave-to {
   & > .mu-drawer {

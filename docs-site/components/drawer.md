@@ -5,6 +5,7 @@
   const drawerPosition = ref('right')
   const maskVisible = ref(true)
   const rounded = ref(true)
+  const resizableVisible = ref(false)
 
   function openDrawer (position) {
     drawerPosition.value = position
@@ -18,7 +19,7 @@
 
 ## 基础用法
 
-`position` 支持 `top` / `right` / `bottom` / `left`，默认 `bottom`；`width`（left/right 时有效）、`height`（top/bottom 时有效）控制面板尺寸。
+`position` 支持 `top` / `right` / `bottom` / `left`，默认 `bottom`；`width` / `height` 控制面板尺寸：`left`/`right` 时 `width`、`top`/`bottom` 时 `height` 决定受控维度，未设置的维度铺满屏幕边；给正交维度传值（如 `top` 抽屉传 `width`）时面板按该尺寸居中。
 
 <div class="mu-demo">
   <mu-button caption="Top" @click="openDrawer('top')" />
@@ -62,6 +63,39 @@
 </mu-drawer>
 ```
 
+## 调整大小 `resizable`
+
+`resizable` 开启后可拖拽面板对侧边缘调整大小（`left`/`right` 拖宽度、`top`/`bottom` 拖高度），锚定边不动。范围受 computed `min-*` / `max-*` 约束（默认 `200px` / `100%`，支持 `px` 与 `%`）：
+
+<div class="mu-demo">
+  <mu-button caption="Open Resizable Drawer" @click="resizableVisible = true" />
+</div>
+
+<mu-drawer
+  v-model:visible="resizableVisible"
+  position="right"
+  width="360px"
+  resizable
+  dismissible>
+  <div class="flex flex-col" style="height: 100%">
+    <div class="flex-none px-2x py-1x border-b border-soft text-normal">
+      拖动面板左缘调整宽度
+    </div>
+    <mu-scroll-box class="flex-1 p-2x">
+      <p>内容区域。</p>
+    </mu-scroll-box>
+  </div>
+</mu-drawer>
+
+```html
+<mu-drawer v-model:visible="visible" position="right" width="360px" resizable dismissible>
+  <div class="flex flex-col" style="height: 100%">
+    <div class="flex-none px-2x py-1x border-b border-soft text-normal">拖动面板左缘调整宽度</div>
+    <mu-scroll-box class="flex-1 p-2x">内容区域</mu-scroll-box>
+  </div>
+</mu-drawer>
+```
+
 ## 嵌入容器 `container`
 
 与 [MuDialog](/components/dialog) 相同：设置 `container` 后抽屉相对该容器定位、铺满该容器（容器需为定位元素），适合面板内滑出的场景：
@@ -99,10 +133,11 @@
 |------|------|------|------|
 | `visible` | Boolean | — | 双向绑定可见状态 |
 | `position` | String | `bottom` | `top` \| `right` \| `bottom` \| `left` |
-| `width` / `height` | String\|Number | — | 宽度（left/right 时有效）/ 高度（top/bottom 时有效） |
+| `width` / `height` | String\|Number | — | 面板宽 / 高。`left`/`right` 时 `width`、`top`/`bottom` 时 `height` 决定受控维度；另一维度铺满屏幕边，若也传值则面板按该尺寸居中 |
 | `dismissible` | Boolean\|String | — | 点击遮罩或 ESC 关闭。`true`=两者均可，`'esc'`=仅ESC，`'mask'`=仅遮罩；不设置则不自动关闭 |
 | `mask` | Boolean | `true` | 是否显示遮罩 |
 | `rounded` | Boolean | — | 是否圆角 |
+| `resizable` | Boolean | — | 是否可拖拽对侧边缘调整大小。受 computed `min-*` / `max-*` 约束（默认 `200px` / `100%`） |
 | `teleport` | Boolean | `true` | 渲染到页面根容器 |
 | `z-index` | String | — | 自定义层级 |
 | `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；设为指定元素时遮罩自动改为 `position: absolute` |

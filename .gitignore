@@ -17,6 +17,7 @@ dist/
 # Agents & mcp
 .zcode/
 .claude/
+.zcodeignore
 
 # VitePress
 node_modules/.vitepress/

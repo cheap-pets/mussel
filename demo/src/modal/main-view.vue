@@ -20,11 +20,31 @@
         <mu-switch v-model="maskVisible" label="Mask Visible" />
         <mu-switch v-model="rounded" label="Rounded Border" />
       </h3>
-      <div class="flex gap-1x mt-2x">
+      <div class="flex gap-1x mt-1x">
         <mu-button caption="Top" @click="openDrawer('top')" />
         <mu-button caption="Bottom" @click="openDrawer('bottom')" />
         <mu-button caption="Left" @click="openDrawer('left')" />
         <mu-button caption="Right" @click="openDrawer('right')" />
+        <mu-button caption="Left(Case)" @click="openDrawer('Left')" />
+      </div>
+      <div ref="drawerContainerEl" class="mt-2x border border-soft" style="position: relative; height: 300px">
+        <mu-button class="m-1x" caption="Open In Container" @click="containerDrawerVisible = true" />
+        <mu-drawer
+          v-model:visible="containerDrawerVisible"
+          position="right"
+          width="60%"
+          resizable
+          dismissible
+          :container="drawerContainerEl">
+          <div class="flex flex-col" style="height: 100%">
+            <div class="flex-none px-2x py-1x border-b border-soft text-normal">Container drawer</div>
+            <mu-scroll-box class="flex-1 p-2x">
+              <p v-for="i in 30" :key="i">
+                line {{ i }}
+              </p>
+            </mu-scroll-box>
+          </div>
+        </mu-drawer>
       </div>
     </div>
 
@@ -53,6 +73,7 @@
       :rounded="rounded"
       style="padding: 16px;"
       width="50%"
+      resizable
       dismissible>
       <label>I am a {{ drawerPosition }} drawer.</label>
       <p>Drawer content goes here.</p>
@@ -70,6 +91,9 @@
   const drawerPosition = ref('left')
   const maskVisible = ref(true)
   const rounded = ref(true)
+
+  const drawerContainerEl = ref()
+  const containerDrawerVisible = ref(false)
 
   const myDialogRef = ref()
   const resizableVisible = ref(false)
