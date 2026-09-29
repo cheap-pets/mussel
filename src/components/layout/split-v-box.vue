@@ -13,6 +13,9 @@
       :size="splitterSize"
       :shape="splitterShape"
       :collapsible="collapsible"
+      :collapse-handle="splitterCollapseHandle && [true, 'top'].includes(collapsible)"
+      :collapsed="collapsed.start"
+      @toggle="toggle('start')"
       @dblclick="splitterDblclickReset && reset('start')"
       @resizing="resize('start', $event)" />
     <div
@@ -27,6 +30,9 @@
       :size="splitterSize"
       :shape="splitterShape"
       :collapsible="!!collapsible"
+      :collapse-handle="splitterCollapseHandle && [true, 'bottom'].includes(collapsible)"
+      :collapsed="collapsed.end"
+      @toggle="toggle('end')"
       @dblclick="splitterDblclickReset && reset('end')"
       @resizing="resize('end', $event)" />
     <div
@@ -63,6 +69,7 @@
     },
     splitterSize: String,
     splitterShape: String,
+    splitterCollapseHandle: Boolean,
     splitterDblclickReset: {
       type: Boolean,
       default: true
@@ -72,9 +79,11 @@
   const {
     startSizeStyle: topHeightStyle,
     endSizeStyle: bottomHeightStyle,
+    collapsed,
     init,
     reset,
-    resize
+    resize,
+    toggle
   } = useSplitBox(props)
 
   onMounted(() => init(props.topHeight, props.bottomHeight))

@@ -195,6 +195,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | collapsible     | Boolean \| String  | —         | 可收拢面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`        |
 | splitter-size  | String             | `'none'`  | 分隔条粗细：`none` \| `slim` \| `normal`                           |
 | splitter-shape | String             | `'line'`  | 分隔条形态：`line` \| `pill`                                        |
+| splitter-collapse-handle | Boolean            | `false`   | 可收拢侧分隔条旁显示折叠把手，点击收拢/展开（仅 `line` 形态生效）   |
 | splitter-dblclick-reset | Boolean            | `true`    | 双击分隔条重置到初始宽度；`false` 时无响应                           |
 | left-width      | String             | `'33.3%'` | 左侧面板初始宽度                                                     |
 | left-class      | String             | —         | 左侧面板 class                                                       |
@@ -237,6 +238,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | collapsible     | Boolean \| String  | —         | 可收拢面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false`   |
 | splitter-size  | String             | `'none'`  | 分隔条粗细：`none` \| `slim` \| `normal`                        |
 | splitter-shape | String             | `'line'`  | 分隔条形态：`line` \| `pill`                                     |
+| splitter-collapse-handle | Boolean            | `false`   | 可收拢侧分隔条旁显示折叠把手，点击收拢/展开（仅 `line` 形态生效）|
 | splitter-dblclick-reset | Boolean            | `true`    | 双击分隔条重置到初始高度；`false` 时无响应                           |
 | top-height      | String             | `'33.3%'` | 顶部面板初始高度                                                |
 | top-class       | String             | —         | 顶部面板 class                                                  |
@@ -271,6 +273,10 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 > | ------- | ------------------------------------------ |
 > | line    | 默认。线条，hover/拖拽时高亮变粗           |
 > | pill    | 胶囊把手，粗细随 `splitter-size`；`none` 时 hover/拖拽浮现，`slim`/`normal` 时常显 |
+>
+> **`splitter-collapse-handle`**（折叠把手，仅 `line` 形态）：
+>
+> 可收拢侧分隔条旁的折叠把手（长 48px、厚 8px 的短条，hover 时增厚至 12px），中心箭头镂空指示收拢方向；收拢后把手移至分隔条对侧（容器内侧），箭头反向（展开方向）。颜色随分隔条（hover/拖拽同步变 primary）。点击收拢对应面板，再次点击展开恢复初始尺寸。
 
 
 

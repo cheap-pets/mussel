@@ -6,6 +6,15 @@
   --full-size: 4px;
   --slim-size: 2px;
   --pill-length: 48px;
+  --collapse-handle-size: 8px;
+  --collapse-handle-hover-size: 12px;
+  --collapse-arrow-length: 14px;
+
+  // 白色实心三角，经 mask-composite: exclude 从实色把手中镂空
+  --collapse-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M1 1.5 9 7 1 12.5Z' fill='white'/%3E%3C/svg%3E");
+  --collapse-arrow-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M9 1.5 1 7 9 12.5Z' fill='white'/%3E%3C/svg%3E");
+  --collapse-arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 10'%3E%3Cpath d='M1 1 7 9 13 1Z' fill='white'/%3E%3C/svg%3E");
+  --collapse-arrow-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 10'%3E%3Cpath d='M1 9 7 1 13 9Z' fill='white'/%3E%3C/svg%3E");
 
   pointer-events: auto;
   touch-action: none;
@@ -32,6 +41,21 @@
     transition: transform .3s, opacity 0.2s;
   }
 
+  &__collapse-handle {
+    --handle-radius: calc(var(--collapse-handle-size) / 2);
+
+    cursor: pointer;
+
+    position: absolute;
+
+    background: var(--mu-border-color-soft);
+
+    mask: linear-gradient(#000 0 0), var(--collapse-handle-arrow) center / var(--collapse-arrow-mask-size) no-repeat;
+    mask-composite: exclude;
+
+    transition: background-color .2s, width .2s, height .2s, border-radius .2s;
+  }
+
   &:hover {
     z-index: calc(var(--mu-z-index-above) + 1);
   }
@@ -51,6 +75,12 @@
   &:hover,
   &[active] {
     &::after {
+      background: var(--mu-primary-color);
+    }
+
+    > .mu-flex-splitter__collapse-handle {
+      --handle-radius: calc(var(--collapse-handle-hover-size) / 2);
+
       background: var(--mu-primary-color);
     }
   }
@@ -118,6 +148,53 @@
       transform: scaleY(1.2);
     }
   }
+
+  > .mu-flex-splitter__collapse-handle {
+    --collapse-arrow-mask-size: 100% var(--collapse-arrow-length);
+
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--collapse-handle-size);
+    height: var(--pill-length);
+  }
+
+  &.mu-flex-splitter--prev > .mu-flex-splitter__collapse-handle {
+    --collapse-handle-arrow: var(--collapse-arrow-left);
+
+    right: 100%;
+    border-radius: var(--handle-radius) 0 0 var(--handle-radius);
+  }
+
+  &.mu-flex-splitter--next > .mu-flex-splitter__collapse-handle {
+    --collapse-handle-arrow: var(--collapse-arrow-right);
+
+    left: 100%;
+    border-radius: 0 var(--handle-radius) var(--handle-radius) 0;
+  }
+
+  // 收拢后面板已隐藏，handle 移至分隔条对侧（容器内侧）
+  &.mu-flex-splitter--collapsed {
+    &.mu-flex-splitter--prev > .mu-flex-splitter__collapse-handle {
+      --collapse-handle-arrow: var(--collapse-arrow-right);
+
+      right: auto;
+      left: 100%;
+      border-radius: 0 var(--handle-radius) var(--handle-radius) 0;
+    }
+
+    &.mu-flex-splitter--next > .mu-flex-splitter__collapse-handle {
+      --collapse-handle-arrow: var(--collapse-arrow-left);
+
+      right: 100%;
+      left: auto;
+      border-radius: var(--handle-radius) 0 0 var(--handle-radius);
+    }
+  }
+
+  &:hover > .mu-flex-splitter__collapse-handle,
+  &[active] > .mu-flex-splitter__collapse-handle {
+    width: var(--collapse-handle-hover-size);
+  }
 }
 
 .mu-flex-splitter--col {
@@ -160,5 +237,52 @@
     &[active]::after {
       transform: scaleX(1.2);
     }
+  }
+
+  > .mu-flex-splitter__collapse-handle {
+    --collapse-arrow-mask-size: var(--collapse-arrow-length) 100%;
+
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--pill-length);
+    height: var(--collapse-handle-size);
+  }
+
+  &.mu-flex-splitter--prev > .mu-flex-splitter__collapse-handle {
+    --collapse-handle-arrow: var(--collapse-arrow-up);
+
+    bottom: 100%;
+    border-radius: var(--handle-radius) var(--handle-radius) 0 0;
+  }
+
+  &.mu-flex-splitter--next > .mu-flex-splitter__collapse-handle {
+    --collapse-handle-arrow: var(--collapse-arrow-down);
+
+    top: 100%;
+    border-radius: 0 0 var(--handle-radius) var(--handle-radius);
+  }
+
+  // 收拢后面板已隐藏，handle 移至分隔条对侧（容器内侧）
+  &.mu-flex-splitter--collapsed {
+    &.mu-flex-splitter--prev > .mu-flex-splitter__collapse-handle {
+      --collapse-handle-arrow: var(--collapse-arrow-down);
+
+      top: 100%;
+      bottom: auto;
+      border-radius: 0 0 var(--handle-radius) var(--handle-radius);
+    }
+
+    &.mu-flex-splitter--next > .mu-flex-splitter__collapse-handle {
+      --collapse-handle-arrow: var(--collapse-arrow-up);
+
+      top: auto;
+      bottom: 100%;
+      border-radius: var(--handle-radius) var(--handle-radius) 0 0;
+    }
+  }
+
+  &:hover > .mu-flex-splitter__collapse-handle,
+  &[active] > .mu-flex-splitter__collapse-handle {
+    height: var(--collapse-handle-hover-size);
   }
 }

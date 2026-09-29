@@ -13,12 +13,14 @@
           style="width: 120px;"
           prefix="Shape:"
           :options="['line', 'pill']" />
+        <mu-switch v-model="collapseHandle" label="Collapse handle" />
         <theme-switch style="margin-left: 16px;" />
       </div>
       <mu-split-h-box
         class="flex-1 p-1x border"
         resizable
         collapsible
+        :splitter-collapse-handle="collapseHandle"
         left-class="mu-bg-strong"
         left-style="min-width: 300px"
         right-class="mu-bg-strong"
@@ -35,8 +37,10 @@
         <template #center>
           <mu-split-v-box
             resizable
+            collapsible="top"
             class="block"
             top-class="border-b"
+            :splitter-collapse-handle="collapseHandle"
             :splitter-size="splitterSize"
             :splitter-shape="splitterShape">
             <template #top>
@@ -66,7 +70,8 @@
   import ThemeSwitch from '../common/theme-switch.vue'
 
   const splitterSize = ref('none')
-  const splitterShape = ref('pill')
+  const splitterShape = ref('line')
+  const collapseHandle = ref(true)
 
 </script>
 

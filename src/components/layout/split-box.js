@@ -33,11 +33,17 @@ export function useSplitBox (props) {
     updateCollapsed(target, size)
   }
 
+  function toggle (target) {
+    collapsed[target] ? reset(target) : resize(target, '')
+  }
+
   return {
     startSizeStyle,
     endSizeStyle,
+    collapsed,
     init,
     reset,
-    resize
+    resize,
+    toggle
   }
 }

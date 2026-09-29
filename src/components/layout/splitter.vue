@@ -1,5 +1,12 @@
 <template>
-  <div class="mu-flex-splitter" :class="cls" @pointerdown="onPointerDown" />
+  <div class="mu-flex-splitter" :class="cls" @pointerdown="onPointerDown">
+    <div
+      v-if="showCollapseHandle"
+      class="mu-flex-splitter__collapse-handle"
+      @pointerdown.stop
+      @dblclick.stop
+      @click="emit('toggle')" />
+  </div>
 </template>
 
 <script setup>
@@ -10,7 +17,7 @@
   import { clamp } from '@/utils/math.js'
   import { resolvePixel } from '@/utils/size.js'
 
-  const emit = defineEmits(['resizing'])
+  const emit = defineEmits(['resizing', 'toggle'])
 
   const props = defineProps({
     direction: {
@@ -31,7 +38,9 @@
       default: 'line',
       validator: v => ['line', 'pill'].includes(v)
     },
-    collapsible: Boolean
+    collapsible: Boolean,
+    collapseHandle: Boolean,
+    collapsed: Boolean
   })
 
   const COLLAPSE_THRESHOLD = 200
@@ -44,8 +53,14 @@
     [
       prefixClass(props.direction === 'column' ? 'col' : 'row'),
       props.size !== 'normal' && prefixClass(props.size),
-      props.shape === 'pill' && prefixClass(props.shape)
+      props.shape === 'pill' && prefixClass(props.shape),
+      props.target && prefixClass(props.target),
+      props.collapsed && prefixClass('collapsed')
     ].filter(Boolean)
+  )
+
+  const showCollapseHandle = computed(() =>
+    props.collapseHandle && props.collapsible && props.shape === 'line'
   )
 
   function calculateSizeRange (splitterEl) {
