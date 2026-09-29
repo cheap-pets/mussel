@@ -44,7 +44,7 @@
     position: {
       type: String,
       default: 'bottom',
-      validator: v => ['top', 'right', 'bottom', 'left'].includes(v.toLowerCase())
+      validator: v => ['top', 'right', 'bottom', 'left'].includes(v)
     }
   })
 

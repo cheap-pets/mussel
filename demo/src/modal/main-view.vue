@@ -25,7 +25,6 @@
         <mu-button caption="Bottom" @click="openDrawer('bottom')" />
         <mu-button caption="Left" @click="openDrawer('left')" />
         <mu-button caption="Right" @click="openDrawer('right')" />
-        <mu-button caption="Left(Case)" @click="openDrawer('Left')" />
       </div>
       <div ref="drawerContainerEl" class="mt-2x border border-soft" style="position: relative; height: 300px">
         <mu-button class="m-1x" caption="Open In Container" @click="containerDrawerVisible = true" />

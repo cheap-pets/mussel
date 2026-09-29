@@ -3,8 +3,18 @@
 }
 
 .mu-drawer {
+  // 方位 → 贴三边定位 + 贴边侧圆角清零；
+  // 清零与 .mu-drawer--rounded 同特异性，靠下方 @each 晚于其声明生效
+  $placements: (
+    top: (top: 0, right: 0, left: 0, border-top-left-radius: 0, border-top-right-radius: 0),
+    bottom: (bottom: 0, right: 0, left: 0, border-bottom-left-radius: 0, border-bottom-right-radius: 0),
+    left: (top: 0, bottom: 0, left: 0, border-top-left-radius: 0, border-bottom-left-radius: 0),
+    right: (top: 0, right: 0, bottom: 0, border-top-right-radius: 0, border-bottom-right-radius: 0)
+  );
+
   position: absolute;
 
+  // 同时是 resizable 拖拽的尺寸约束（drawer-resize.js 读取 computed 值）
   min-width: 200px;
   max-width: 100%;
   min-height: 200px;
@@ -17,51 +27,32 @@
   background: var(--mu-bg-overlay);
   box-shadow: var(--mu-shadow-layer);
 
+  // 刻意不含 width/height：resize 拖拽尺寸须即时跟随
   transition: transform .2s, opacity .2s;
 
   &.mu-drawer--rounded {
     border-radius: var(--mu-radius-modal);
   }
 
-  &.mu-drawer--top {
-    top: 0;
-    right: 0;
-    left: 0;
-
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-  }
-
-  &.mu-drawer--bottom {
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  &.mu-drawer--left {
-    top: 0;
-    bottom: 0;
-    left: 0;
-
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  &.mu-drawer--right {
-    top: 0;
-    right: 0;
-    bottom: 0;
-
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+  @each $dir, $props in $placements {
+    &.mu-drawer--#{$dir} {
+      @each $prop, $value in $props {
+        #{$prop}: $value;
+      }
+    }
   }
 }
 
 .mu-drawer__resize-handle {
   $t: 6px;
+
+  // position → 对侧边线手柄（position=left 时拖 drawer 右边线），沿边通长
+  $handles: (
+    left: (top: 0, right: 0, bottom: 0, width: $t, cursor: e-resize),
+    right: (top: 0, bottom: 0, left: 0, width: $t, cursor: w-resize),
+    top: (right: 0, bottom: 0, left: 0, height: $t, cursor: s-resize),
+    bottom: (top: 0, right: 0, left: 0, height: $t, cursor: n-resize)
+  );
 
   touch-action: none;
   user-select: none;
@@ -71,44 +62,12 @@
   // 否则内容滚动条轨道盖住手柄；fallback 兜底 container 在 .mu-root 外时变量未定义导致整条声明失效
   z-index: calc(var(--mu-z-index-layer, 10) + 1);
 
-  .mu-drawer--left & {
-    cursor: e-resize;
-
-    top: 0;
-    right: 0;
-    bottom: 0;
-
-    width: $t;
-  }
-
-  .mu-drawer--right & {
-    cursor: w-resize;
-
-    top: 0;
-    bottom: 0;
-    left: 0;
-
-    width: $t;
-  }
-
-  .mu-drawer--top & {
-    cursor: s-resize;
-
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-    height: $t;
-  }
-
-  .mu-drawer--bottom & {
-    cursor: n-resize;
-
-    top: 0;
-    right: 0;
-    left: 0;
-
-    height: $t;
+  @each $pos, $props in $handles {
+    .mu-drawer--#{$pos} & {
+      @each $prop, $value in $props {
+        #{$prop}: $value;
+      }
+    }
   }
 }
 

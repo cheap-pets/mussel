@@ -1,7 +1,8 @@
-import { ref, reactive, computed, watch, onScopeDispose } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { debounce } from 'throttle-debounce'
 
 import { resolveSize, resolvePixel } from '@/utils/size'
+import { createDragSession, bounded } from './resize-shared'
 
 // 边在角之前，角部重叠区靠 DOM 顺序让角手柄优先命中
 const resizeDirs = ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se']
@@ -15,11 +16,6 @@ const resizeCursorMap = {
   ne: 'nesw-resize',
   sw: 'nesw-resize',
   se: 'nwse-resize'
-}
-
-// 与 CSS 一致：min > max 时 min 胜出（utils/math 的 clamp 会静默换序）
-function bounded (value, min, max) {
-  return Math.max(min, Math.min(value, Math.max(min, max)))
 }
 
 // 对话框窗口的移动与调整大小：标题栏拖拽移动、边缘/角调整大小、越界校正。
@@ -66,35 +62,7 @@ export function useDialogMoveResize ({ props, dialogEl, maskEl, maximized, modal
 
   const debounceCorrectPosition = debounce(300, correctPosition)
 
-  // 拖拽/resize 进行中挂到 window 的监听：正常 pointerup / pointercancel 时释放；
-  // 组件在拖动中被卸载（如 dispose-on-hide + ESC 关闭）时兜底释放，
-  // 否则监听器与整页 resize 光标将永久残留
-  let releaseWindowListeners = null
-
-  function bindWindowListeners (onPointerMove, onPointerUp, onRelease) {
-    window.addEventListener('pointermove', onPointerMove)
-    window.addEventListener('pointerup', onPointerUp)
-    window.addEventListener('pointercancel', onPointerUp)
-
-    const release = () => {
-      window.removeEventListener('pointermove', onPointerMove)
-      window.removeEventListener('pointerup', onPointerUp)
-      window.removeEventListener('pointercancel', onPointerUp)
-      if (releaseWindowListeners === release) releaseWindowListeners = null
-      onRelease?.()
-    }
-
-    releaseWindowListeners = release
-    return release
-  }
-
-  onScopeDispose(() => releaseWindowListeners?.())
-
-  // dispose-on-hide 仅卸载 Teleport 子树，组件实例不卸载、onScopeDispose 不触发，
-  // 须在隐藏时主动释放，否则 window 监听与整页 resize 光标残留
-  watch(modalVisible, v => {
-    if (!v) releaseWindowListeners?.()
-  })
+  const { bindWindowListeners } = createDragSession(modalVisible)
 
   function onDragStart (event) {
     if (
@@ -129,8 +97,8 @@ export function useDialogMoveResize ({ props, dialogEl, maskEl, maximized, modal
 
     event.currentTarget.setPointerCapture(event.pointerId)
 
-    const dlg = dialogEl.value
     const mask = maskEl.value
+    const dlg = dialogEl.value
     const cs = getComputedStyle(dlg)
 
     const maskW = mask.clientWidth
