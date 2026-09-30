@@ -39,7 +39,7 @@
 
   defineOptions({ name: 'MusselTags' })
 
-  const emit = defineEmits(['tag-remove'])
+  const emit = defineEmits(['tagRemove'])
 
   const props = defineProps({
     removable: Boolean,
@@ -78,6 +78,6 @@
   )
 
   function onRemove (tag) {
-    emit('tag-remove', tag)
+    emit('tagRemove', tag)
   }
 </script>
