@@ -252,7 +252,7 @@ function loadChildren (node) {
 | `expand(...nodes)` | 展开指定节点（传节点对象） |
 | `collapse(...nodes)` | 收拢指定节点 |
 | `expandTo(target)` | 展开到目标节点的路径（target 为节点对象或 key） |
-| `expandAll({ level })` | 全部展开到指定层级（缺省用 `auto-expand-level` 或全展） |
+| `expandAll({ level })` | 展开到指定层级；缺省用 `auto-expand-level`，两者均未指定时仅展开第一层（需全部展开请显式传足够大的 `level`） |
 | `collapseAll()` | 全部收拢 |
 
 > 内部节点渲染组件 `MuTreeNode` 虽有导出，但强依赖 MuTree 上下文（脱离使用会报错），请勿单独使用；自定义节点一律通过 MuTree 的插槽实现。

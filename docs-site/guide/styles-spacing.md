@@ -35,7 +35,7 @@
 
 ### 内外边距
 
-间距基于 `--mu-base-spacing`（默认 8px）的倍数，padding/margin 均支持后缀 `-0` / `-half` / `-{1~4}x` / `-auto`（值为 `auto`）。
+间距基于 `--mu-base-spacing`（默认 8px）的倍数，padding/margin 均支持后缀 `-0` / `-half` / `-{1~4}x`；`-auto`（值为 `auto`）仅 margin 支持。
 
 | 类名 | 说明 |
 |------|------|

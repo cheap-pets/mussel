@@ -60,7 +60,7 @@ messageBox.confirm('确认删除？').then(btn => {
 
 ## 完整形式 `showMessage(options)`
 
-可指定 `type`（alert/confirm/error/warn）、`icon`、`title`、`message`、`buttons`：
+可指定 `type`（alert/success/confirm/error/warn）、`icon`、`title`、`message`、`buttons`：
 
 <div class="mu-demo">
   <mu-button caption="Show Message" @click="showMessage" />

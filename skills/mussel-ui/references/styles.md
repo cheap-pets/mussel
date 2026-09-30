@@ -1,6 +1,6 @@
 # MUSSEL 4 — 样式变量与原子类
 
-> 颜色、间距、原子类等使用规范见 `principles.md` 硬性禁止清单。
+> 颜色、间距、原子类等使用规范见 `principles.md` 快速自检清单。
 
 ---
 
@@ -165,7 +165,7 @@
 | `3x` | 24px | 区块间距 |
 | `4x` | 32px | 大区域分隔 |
 
-> 间距原子类支持的后缀：`-0` / `-half` / `-1x` ~ `-4x` / `-auto`（padding/margin 同理，`-auto` 即对应方向 `auto`），gap 支持 `gap-none` / `gap-half` / `gap-1x` ~ `gap-4x`。
+> 间距原子类支持的后缀：`-0` / `-half` / `-1x` ~ `-4x`（padding/margin 同理）；仅 margin 额外支持 `-auto`（即对应方向 `auto`），padding 不支持。gap 支持 `gap-none` / `gap-half` / `gap-1x` ~ `gap-4x`。
 
 ---
 
@@ -345,6 +345,7 @@ justify-items 可用值：normal, start, center, end, stretch；justify-self 可
 | 类名       | 说明                              |
 | ---------- | --------------------------------- |
 | .z-float   | z-index: var(--mu-z-index-float)  |
+| .z-above   | z-index: var(--mu-z-index-above)  |
 | .z-layer   | z-index: var(--mu-z-index-layer)  |
 | .z-modal   | z-index: var(--mu-z-index-modal)  |
 | .z-popup   | z-index: var(--mu-z-index-popup)  |
@@ -406,13 +407,13 @@ justify-items 可用值：normal, start, center, end, stretch；justify-self 可
 
 ### 2.2 间距
 
-间距基于 `--mu-base-spacing`（默认 8px）的倍数，padding/margin 均支持后缀 `-0` / `-half` / `-{1~4}x` / `-auto`（值为 `auto`）。
+间距基于 `--mu-base-spacing`（默认 8px）的倍数，padding/margin 均支持后缀 `-0` / `-half` / `-{1~4}x`；`-auto`（值为 `auto`）仅 margin 支持。
 
 **padding：**
 
 | 类名 | 说明 |
 | ---- | ---- |
-| .p-{s} | 上下左右 padding（s 取 0 / half / 1x ~ 4x / auto） |
+| .p-{s} | 上下左右 padding（s 取 0 / half / 1x ~ 4x） |
 | .px-{s} | 水平方向 padding |
 | .py-{s} | 垂直方向 padding |
 | .pt-{s} | padding-top |
@@ -602,7 +603,7 @@ white-space: pre-line;
 
 ### 2.5 其他工具类
 
-**`mu-` 前缀别名类：** 文本、背景、阴影、圆角四组原子类均有 `.mu-*` 前缀的等价别名（如 `.mu-text-strong` = `.text-strong`、`.mu-bg-normal` = `.bg-normal`、`.mu-shadow-popup` = `.shadow-popup`、`.mu-radius-control` = `.radius-control`），用于避免与项目内同名类冲突的场景。
+**`mu-` 前缀别名类：** 文本、背景、阴影、圆角四组原子类多数提供 `.mu-*` 前缀的等价别名（如 `.mu-text-strong` = `.text-strong`、`.mu-bg-normal` = `.bg-normal`、`.mu-shadow-popup` = `.shadow-popup`、`.mu-radius-control` = `.radius-control`），用于避免与项目内同名类冲突；方向类与无值类无别名（`.text-left` / `.text-center` / `.text-right`、`.bg-none`）。
 
 **指针与选择（pointer.scss）：**
 

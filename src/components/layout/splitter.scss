@@ -79,7 +79,7 @@
     }
 
     > .mu-flex-splitter__collapse-handle {
-      --handle-radius: calc(var(--collapse-handle-hover-size) / 2);
+      // --handle-radius: calc(var(--collapse-handle-hover-size) / 2);
 
       background: var(--mu-primary-color);
     }

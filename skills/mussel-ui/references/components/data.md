@@ -63,7 +63,7 @@
 | `expand(...nodes)` | 展开指定节点（传节点对象） |
 | `collapse(...nodes)` | 收拢指定节点 |
 | `expandTo(target)` | 展开到目标节点的路径（target 为节点对象或 key） |
-| `expandAll({ level })` | 全部展开到指定层级（缺省用 `auto-expand-level` 或全展） |
+| `expandAll({ level })` | 展开到指定层级；缺省用 `auto-expand-level`，两者均未指定时仅展开第一层（需全部展开请显式传足够大的 `level`） |
 | `collapseAll()` | 全部收拢 |
 
 ---
@@ -80,8 +80,11 @@
 | `expandable` | Boolean | — | 是否可下拉展开所有标签 |
 | `tooltip` | Boolean | `true` | 标签是否显示 tooltip |
 | `dropdown-anchor` | — | `'$parent'` | 下拉面板锚点目标 |
+| `dropdown-class` | String | — | 下拉面板附加 class |
+| `dropdown-style` | String \| Object | — | 下拉面板附加 style |
+| `dropdown-width` | String | `'anchor'` | 下拉面板宽度；`'anchor'` 表示与触发器同宽 |
 
-> 组件将外部传入的 `dropdown-*` 前缀 attrs（如 `dropdown-class`、`dropdown-trigger` 等）透传给内部 `MuDropdown`，可用于定制溢出标签的下拉面板。
+> 组件将 `dropdown-class` / `dropdown-style` / `dropdown-width` / `dropdown-anchor` 传给内部 `MuDropdown`，用于定制溢出标签的下拉面板；触发方式固定为 `click`，不可修改。
 
 | 事件 | 参数 | 说明 |
 |------|------|------|

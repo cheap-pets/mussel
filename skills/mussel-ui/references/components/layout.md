@@ -130,7 +130,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 
 ### MuSplitHBox / MuSplitVBox
 
-可拖拽分割的弹性布局。HBox 水平排列，VBox 垂直排列。面板间由内部 splitter（分隔条）实现拖拽，并可整体收拢（`collapsible`）。
+可拖拽分割的弹性布局。HBox 水平排列，VBox 垂直排列。面板间可拖拽调整尺寸，并可收拢（`collapsible`）。
 
 `left` / `right`（HBox）和 `top` / `bottom`（VBox）插槽均为可选——省略后不渲染对应面板，因此可灵活组成**两区**或**三区**可拖动布局：
 
@@ -160,7 +160,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
-| `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'left'`/`'right'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**两侧分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'left'` → 左面板、`'right'` → 右面板，`true` → 两侧）。拖动至该侧 `min-width` 一半以下（未设置 `min-width` 时阈值为 200px）即收拢为 0 宽，双击重置恢复 |
+| `collapsible` | Boolean \| String | — | 可收拢面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`。拖动至足够小自动收拢（阈值为该侧 `min-width` 一半与 200px 的较小值，未设置时 200px），双击分隔条恢复初始宽度 |
 | `splitter-size` | String | `'none'` | 分隔条粗细：`none` \| `slim` \| `normal`（详见上方「分隔条」） |
 | `splitter-shape` | String | `'line'` | 分隔条形态：`line` \| `pill`（详见上方「分隔条」） |
 | `splitter-collapse-handle` | Boolean | `false` | 可收拢侧分隔条旁显示折叠把手，点击收拢/展开（仅 `line` 形态生效，详见上方「分隔条」） |
@@ -202,7 +202,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false` |
-| `collapsible` | Boolean \| String | — | 可收拢面板。prop 类型为 `[Boolean, String]`，但字符串侧别值（`'top'`/`'bottom'`）传给内部 splitter 的 Boolean prop 时会被转为 `true`，**上下分隔条均可拖拽收拢**；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'top'` → 顶部面板、`'bottom'` → 底部面板，`true` → 两侧）。拖动至该侧 `min-height` 一半以下（未设置 `min-height` 时阈值为 200px）即收拢为 0 高，双击重置恢复 |
+| `collapsible` | Boolean \| String | — | 可收拢面板：`true`（上下）\| `'top'` \| `'bottom'` \| `false`。拖动至足够小自动收拢（阈值为该侧 `min-height` 一半与 200px 的较小值，未设置时 200px），双击分隔条恢复初始高度 |
 | `splitter-size` | String | `'none'` | 分隔条粗细：`none` \| `slim` \| `normal`（详见上方「分隔条」） |
 | `splitter-shape` | String | `'line'` | 分隔条形态：`line` \| `pill`（详见上方「分隔条」） |
 | `splitter-collapse-handle` | Boolean | `false` | 可收拢侧分隔条旁显示折叠把手，点击收拢/展开（仅 `line` 形态生效，详见上方「分隔条」） |
@@ -296,7 +296,7 @@ CSS Grid 布局容器与单元格。MuGridBox 固定渲染 `.grid`，通过 `row
 
 ### MuBar
 
-固定高 40px 的条形容器，与 `MuToolbar` 共享基础条形样式（flex + 垂直居中 + gap），无 props，仅默认插槽。`MuDateInput` 下拉面板的工具栏即基于它。
+固定高 40px 的条形容器，与 `MuToolbar` 共享基础条形样式（flex + 垂直居中 + gap），无 props，仅默认插槽。
 
 ```html
 <mu-bar class="px-2x bg-strong">

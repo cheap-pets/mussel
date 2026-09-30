@@ -62,7 +62,7 @@ function onRemove (tag) {
 ```
 
 > `tooltip` 属性默认开启——标签文字超长省略时悬停显示完整内容。
-> 组件将外部传入的 `dropdown-*` 前缀 attrs（如 `dropdown-class`、`dropdown-trigger` 等）透传给内部 `MuDropdown`，可用于定制溢出标签的下拉面板。
+> 组件将 `dropdown-class` / `dropdown-style` / `dropdown-width` / `dropdown-anchor` 传给内部 `MuDropdown`，用于定制溢出标签的下拉面板；触发方式固定为 `click`，不可修改。
 
 ## API
 
@@ -74,6 +74,9 @@ function onRemove (tag) {
 | `expandable` | Boolean | — | 是否可下拉展开所有标签 |
 | `tooltip` | Boolean | `true` | 标签是否显示 tooltip |
 | `dropdown-anchor` | — | `'$parent'` | 下拉面板锚点目标 |
+| `dropdown-class` | String | — | 下拉面板附加 class |
+| `dropdown-style` | String \| Object | — | 下拉面板附加 style |
+| `dropdown-width` | String | `'anchor'` | 下拉面板宽度；`'anchor'` 表示与触发器同宽 |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|

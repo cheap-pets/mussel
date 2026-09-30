@@ -22,10 +22,6 @@ $DIRECTIONS: (
   .p#{$k}-half {
     padding#{$v}: var(--mu-half-spacing);
   }
-
-  .p#{$k}-auto {
-    padding#{$v}: auto;
-  }
 }
 
 @each $k, $v in $DIRECTIONS {

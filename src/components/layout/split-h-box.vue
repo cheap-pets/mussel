@@ -12,8 +12,8 @@
       direction="row"
       :size="splitterSize"
       :shape="splitterShape"
-      :collapsible="!!collapsible"
-      :collapse-handle="splitterCollapseHandle && [true, 'left'].includes(collapsible)"
+      :collapsible="isLeftCollapsible"
+      :collapse-handle="isLeftCollapsible && splitterCollapseHandle"
       :collapsed="collapsed.start"
       @toggle="toggle('start')"
       @resizing="resize('start', $event)"
@@ -29,8 +29,8 @@
       direction="row"
       :size="splitterSize"
       :shape="splitterShape"
-      :collapsible="collapsible"
-      :collapse-handle="splitterCollapseHandle && [true, 'right'].includes(collapsible)"
+      :collapsible="isRightCollapsible"
+      :collapse-handle="isRightCollapsible && splitterCollapseHandle"
       :collapsed="collapsed.end"
       @toggle="toggle('end')"
       @resizing="resize('end', $event)"
@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-  import { onMounted } from 'vue'
+  import { computed, onMounted } from 'vue'
   import { useSplitBox } from './split-box.js'
 
   import Splitter from './splitter.vue'
@@ -85,6 +85,9 @@
     resize,
     toggle
   } = useSplitBox(props)
+
+  const isLeftCollapsible = computed(() => [true, 'left'].includes(props.collapsible))
+  const isRightCollapsible = computed(() => [true, 'right'].includes(props.collapsible))
 
   onMounted(() => init(props.leftWidth, props.rightWidth))
 </script>

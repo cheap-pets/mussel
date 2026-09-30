@@ -96,7 +96,7 @@
 
 | 类名 | 说明 |
 |------|------|
-| `.z-float` / `.z-layer` / `.z-modal` / `.z-popup` / `.z-ontop` | z-index: 对应 `--mu-z-index-*` 变量 |
+| `.z-float` / `.z-above` / `.z-layer` / `.z-modal` / `.z-popup` / `.z-ontop` | z-index: 对应 `--mu-z-index-*` 变量 |
 
 > `.z-*` 类实际值为 `calc(var(--mu-z-index-*) + var(--z-offset, 0))`，可通过局部设置 `--z-offset` 在同一层级内做细粒度叠加。
 

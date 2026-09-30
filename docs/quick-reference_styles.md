@@ -409,6 +409,7 @@
 | 类名     | 说明                             |
 | -------- | -------------------------------- |
 | .z-float | z-index: var(--mu-z-index-float) |
+| .z-above | z-index: var(--mu-z-index-above) |
 | .z-layer | z-index: var(--mu-z-index-layer) |
 | .z-modal | z-index: var(--mu-z-index-modal) |
 | .z-popup | z-index: var(--mu-z-index-popup) |

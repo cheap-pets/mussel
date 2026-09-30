@@ -20,7 +20,7 @@ Mussel 的视觉样式由两部分构成：
 
 ## mu- 前缀别名类
 
-文本、背景、阴影、圆角四组原子类均有 `.mu-*` 前缀的等价别名（如 `.mu-text-strong` = `.text-strong`），用于避免与项目内同名类冲突。
+文本、背景、阴影、圆角四组原子类多数提供 `.mu-*` 前缀的等价别名（如 `.mu-text-strong` = `.text-strong`），用于避免与项目内同名类冲突；方向类与无值类无别名（`.text-left` / `.text-center` / `.text-right`、`.bg-none`）。
 
 ## 暗色主题（`.mu-dark`）
 

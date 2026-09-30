@@ -4,8 +4,6 @@
 
 与 MuToolbar 的区别：MuBar 有**固定 40px 高度**，适合页头、页脚、面板标题栏等高度固定的区域；MuToolbar 无固定高度，适合操作区。
 
-`MuDateInput` 下拉面板的工具栏即基于它实现。
-
 ## 基础用法
 
 常配合 `.bg-strong`、`.flex-space`、`.flex-divider` 等原子类/辅助元素使用：

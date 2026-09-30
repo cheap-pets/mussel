@@ -29,15 +29,31 @@ Mussel — Vue 3 组件库。
 - `docs-site/` — 文档站：组件页 `components/*.md`、样式页 `guide/styles*.md`
 
 
-## 重要事项
+## 项目知识管理
+
+使用 `project-knowledge` skill，仅在以下时机调用：
+
+- 任务开始时，涉及项目特有实现前，先读取 `agent-docs/knowledge/INDEX.md`。
+- 任务结束前，若产生可复用的新知识，调用该 skill 完成沉淀。
+
+不要在其他时机主动调用此 skill。
+
+
+## 注意事项
 
 - 本项目不使用 `agent-task-report` mcp 进行上报。
-- 当用户说检查或修改 skill 时，指的是项目内 ./skills 下的内容。
 - 新增或修改功能时，不要使用 mussel-ui skill。
 - style lint 错误，先尝试用 stylelint --fix 修复。
 - 开发时，项目使用 rollup 的 watch 模式打包，并启用了 3000 端口监听的站点服务。
   使用 playwright 验证时，先尝试直接访问，不用每次执行打包。
 - 没有明确要求进行仓库提交时，不要提交。
+
+
+
+## 文档编写
+- 当用户说检查或修改 skill 时，指的是项目内 ./skills 下的内容。
+- skills、docs-site、docs 目录下的文档中，不写对外部使用来说无用的内部实现细节。
+- 完成代码实现后，未经用户确认，不更新文档
 
 
 
@@ -52,6 +68,7 @@ npm run pub            # 构建 + npm publish
 ```
 
 无测试框架，通过 demo 页面验证组件行为。demo 页面按 `demo/src/<name>/` 组织（`main-view.vue` + `main.js`），访问 `http://localhost:3000/<name>/`。
+
 
 
 ## 代码约定

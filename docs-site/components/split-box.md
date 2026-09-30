@@ -7,13 +7,13 @@
 
 # 分割容器 MuSplitHBox / MuSplitVBox
 
-可拖拽分割的弹性布局。HBox 水平排列（`left` / `center` / `right` 三区），VBox 垂直排列（`top` / `center` / `bottom` 三区）。面板间由内部分隔条（Splitter，内部组件）实现拖拽，并可整体收拢（`collapsible`）。
+可拖拽分割的弹性布局。HBox 水平排列（`left` / `center` / `right` 三区），VBox 垂直排列（`top` / `center` / `bottom` 三区）。面板间可拖拽调整尺寸，并可按侧收拢（`collapsible`）。
 
 左右（或上下）插槽均为可选——省略后不渲染对应面板，可灵活组成**两区**或**三区**布局。
 
 ## 基础用法（三区 + 可拖拽 + 可收拢）
 
-拖动分隔条调整面板；拖至面板 `min-width` 一半以下（未设置 `min-width` 时阈值为 200px）即收拢为 0 宽；**双击分隔条重置**到初始尺寸。
+拖动分隔条调整面板；拖至足够小自动收拢（阈值为该侧 `min-width` 一半与 200px 的较小值，未设置时 200px）；**双击分隔条重置**到初始尺寸。
 
 <div class="mu-demo mu-demo-col" style="align-items: stretch;">
   <div class="mu-demo-row">
@@ -146,7 +146,7 @@ Split 容器默认高度为自动（由内容撑开），**必须显式设置高
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `resizable` | Boolean \| String | — | 可拖拽面板：`true`（两侧）\| `'left'` \| `'right'` \| `false` |
-| `collapsible` | Boolean \| String | — | 可收拢面板；侧别值仅决定收拢后哪侧面板应用 `display:none`（`'left'` → 左面板、`'right'` → 右面板、`true` → 两侧） |
+| `collapsible` | Boolean \| String | — | 可收拢面板：`true`（两侧）\| `'left'` \| `'right'` \| `false`。拖动至足够小自动收拢，双击分隔条恢复初始宽度 |
 | `splitter-size` | String | `'none'` | 分隔条粗细：`none` \| `slim` \| `normal` |
 | `splitter-shape` | String | `'line'` | 分隔条形态：`line` \| `pill` |
 | `splitter-collapse-handle` | Boolean | `false` | 可收拢侧分隔条旁显示折叠把手，点击收拢/展开（仅 `line` 形态生效） |
@@ -164,6 +164,6 @@ Split 容器默认高度为自动（由内容撑开），**必须显式设置高
 
 ### MuSplitVBox
 
-属性与 `MuSplitHBox` 对应：`resizable` 取 `true` \| `'top'` \| `'bottom'`；`top-height` / `bottom-height` 默认 `'33.3%'`；插槽为 `top` / `center` / `bottom`。
+属性与 `MuSplitHBox` 对应：`resizable` / `collapsible` 取 `true` \| `'top'` \| `'bottom'`；`top-height` / `bottom-height` 默认 `'33.3%'`；插槽为 `top` / `center` / `bottom`。
 
 > 全局配置：`$mussel.options.splitter.*` 可定制分隔条行为（经 `install` 的 componentOptions 传入）。

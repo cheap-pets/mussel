@@ -900,7 +900,7 @@ buttons: [{ caption: '确定', primary: true }, { caption: '取消', action: 'cl
 // 升级后：支持字符串简写
 buttons: ['#OK', '#CANCEL']
 // 或混合使用
-buttons: ['#OK', '#CANCEL', { caption: '自定义', primary: true }]
+buttons: ['#OK', '#CANCEL', { caption: '自定义', color: 'primary' }]
 ```
 
 ---
@@ -1278,7 +1278,7 @@ messageBox.showMessage({
   type: 'confirm',
   message: '确定要保存吗？',
   buttons: [
-    { name: 'SAVE', caption: '保存', primary: true },
+    { name: 'SAVE', caption: '保存', color: 'primary' },
     { name: 'DISCARD', caption: '不保存', buttonStyle: 'text' }
   ],
   callback (trigger) {
@@ -1309,7 +1309,7 @@ Mussel 3 使用无前缀字符串 `'OK'`、`'CANCEL'` 等。Mussel 4 使用 `#` 
 - [ ] 新增处理 `'$X'`/`'$MASK'`/`'$ESC'` trigger（关闭按钮 / 遮罩点击 / ESC）
 - [ ] 自定义 buttons 数组中每个对象必须有 `name` 属性
 - [ ] 自定义按钮的 `'button-style'` 改为 `buttonStyle`（驼峰）
-- [ ] 自定义按钮的 `primary: ''` 改为 `primary: true`（布尔值）
+- [ ] 自定义按钮的 `primary: ''` 改为 `color: 'primary'`（布尔属性 `primary: true` 仍可用但已废弃）
 
 ---
 

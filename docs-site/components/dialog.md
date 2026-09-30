@@ -69,10 +69,10 @@
 | `'#OK!'` \| `'#YES!'` | 同名预设的危险色（红色）变体 |
 | `' '`（单个空格） | 弹性间距，把后续按钮推到右侧 |
 | `'-'`（连字符） | 分隔线 |
-| `{ name, caption, is, primary, danger, buttonStyle, action, icon, ... }` | 完整对象，可任意覆盖以上字段 |
+| `{ name, caption, is, key, color, buttonStyle, action, icon, ... }` | 完整对象，可任意覆盖以上字段：`is` 自定义渲染组件或标签名（如 `'mu-button'`、`'div'`）、`color` 颜色（如 `'danger'`）；分隔线 / 弹性间距直接用字符串 `'-'` / `' '`，写成 `is: '-'` 会渲染为未知标签 |
 
 ::: warning
-生成 dialog 按钮时**优先使用 `#` 预设**，避免手写 `{ caption: '确定', primary: true }` 这类重复对象——预设已统一主色/文本样式/关闭行为/多语言文案，且 `name` 固定、便于在 `@button-click` 中判断点击来源。自定义按钮建议显式设 `name`。
+生成 dialog 按钮时**优先使用 `#` 预设**，避免手写 `{ caption: '确定', color: 'primary' }` 这类重复对象——预设已统一主色/文本样式/关闭行为/多语言文案，且 `name` 固定、便于在 `@button-click` 中判断点击来源。自定义按钮建议显式设 `name`。
 :::
 
 <div class="mu-demo">

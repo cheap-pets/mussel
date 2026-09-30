@@ -46,7 +46,7 @@
 
 ### MessageBox
 
-命令式消息对话框，通过 `inject('$mussel')` 调用。各方法可传第二参数 `callback(btn)`（与 Promise resolve 值一致）；`showMessage(options)` 为完整形式，可指定 `type`（alert/confirm/error/warn）、`icon`、`title`、`message`、`buttons`。
+命令式消息对话框，通过 `inject('$mussel')` 调用。各方法可传第二参数 `callback(btn)`（与 Promise resolve 值一致）；`showMessage(options)` 为完整形式，可指定 `type`（alert/success/confirm/error/warn）、`icon`、`title`、`message`、`buttons`。
 
 ```javascript
 const { messageBox } = inject('$mussel')

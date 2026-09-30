@@ -39,7 +39,7 @@ install(app, {
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
 | locale | String | 自动检测 | 语言：`'zh'` \| `'en'`，未指定时按浏览器语言自动判断（中文环境为 `zh`，否则 `en`） |
 | localeResources | Object | — | 自定义语言包，写入指定 `locale` 下；Mussel 内置 `zh` / `en` |
-| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `gridCell.endOffset`、`splitter.*`、`tree.*` 等） |
+| *(其他)* | — | — | 其余字段作为 `componentOptions` 存入 `$mussel.options`，供组件读取（如 `splitter.*`、`tree.nodeIcons`、`calendar.weekStartsOn` 等） |
 
 > [!NOTE]
 >
@@ -151,13 +151,12 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 | 属性名称   | 类型   | 默认值 | 说明                                                                       |
 | ---------- | ------ | ------ | -------------------------------------------------------------------------- |
-| col-start  | Number | —      | 起始列                                                                     |
-| col-span   | Number | —      | 跨列数                                                                     |
-| col-end    | Number | —      | 结束列（实际值为 `colEnd + end-offset`）                                   |
-| row-start  | Number | —      | 起始行                                                                     |
-| row-span   | Number | —      | 跨行数                                                                     |
-| row-end    | Number | —      | 结束行（实际值为 `rowEnd + end-offset`）                                   |
-| end-offset | Number | `0`    | 列/行结束偏移量，取值 `0` \| `1`；默认可由全局 `$mussel.options.gridCell.endOffset` 配置 |
+| col-start  | Number | —      | 起始列（起始网格线）                                                       |
+| col-span   | Number | —      | 跨列数；与 `col-end` 同设时 span 优先                                      |
+| col-end    | Number | —      | 结束列（末轨道号，含端点，转为网格线时 +1）                               |
+| row-start  | Number | —      | 起始行（起始网格线）                                                       |
+| row-span   | Number | —      | 跨行数；与 `row-end` 同设时 span 优先                                      |
+| row-end    | Number | —      | 结束行（末轨道号，含端点，转为网格线时 +1）                               |
 
 ```html
 <mu-grid-box :columns="6" :rows="6">
@@ -214,9 +213,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 > [!NOTE]
 >
-> `collapsible`：拖动至该侧 `min-width` 一半以下（未设置 `min-width` 时阈值为 200px）即收拢为 0 宽（`display:none`），双击分隔条重置恢复。
->
-> 双击分隔条可重置面板尺寸到初始值。
+> `collapsible`：拖动至足够小自动收拢（阈值为该侧 `min-width` 一半与 200px 的较小值，未设置 `min-width` 时为 200px），双击分隔条恢复初始宽度。
 
 
 
@@ -482,7 +479,7 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 | `'#OK!'` \| `'#YES!'` | 同名预设的危险色（红色）变体 |
 | `' '`（单个空格） | 弹性间距，把后续按钮推到右侧 |
 | `'-'`（连字符） | 分隔线 |
-| `{ name, caption, primary, buttonStyle, action, icon, ... }` | 完整对象，可任意覆盖以上字段 |
+| `{ name, caption, is, key, color, buttonStyle, action, icon, ... }` | 完整对象，可任意覆盖以上字段；`is` 为自定义渲染组件或标签名（如 `'mu-button'`） |
 
 > `@button-click` 回调收到 `{ name, caption, action, ... }`。**自定义按钮建议显式设 `name`**，再用它判断点击来源——预设按钮的 `name` 固定（如 `'OK'`、`'CANCEL'`）；纯字符串按钮的 `name` 即字符串本身，只要文案稳定也可用，但一旦需要让 `name` 与 `caption` 解耦就必须用对象形式。
 
@@ -1364,7 +1361,7 @@ const filteredItems = computed(() =>
 
 ### MuDropdown
 
-下拉菜单 Mixin，为触发器元素附加下拉能力，属性均以 `dropdown-` 为前缀。
+下拉能力包裹组件，为触发器元素附加下拉面板，属性均以 `dropdown-` 为前缀。
 
 | 属性名称           | 类型    | 说明                                             |
 | ------------------ | ------- | ------------------------------------------------ |
@@ -1374,7 +1371,6 @@ const filteredItems = computed(() =>
 | dropdown-class     | String  | 下拉面板附加 class                               |
 | dropdown-style     | Object \| String | 下拉面板附加 style                      |
 | dropdown-trigger   | String  | 弹出触发方式，默认 `hover`：`click` \| `hover`   |
-| dropdown-position  | String  | 弹出位置：`auto` \| `fixed` \| `top` \| `bottom` |
 | dropdown-icon      | String  | 下拉按钮图标，默认为下箭头                       |
 | dropdown-disabled  | Boolean | 下拉面板禁用状态                                 |
 | dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`；仅当使用 `#dropdown` 插槽时生效，items 模式下由面板内置滚动容器接管 |
@@ -1568,6 +1564,9 @@ const ctxMenu = shallowRef()
 | expandable       | Boolean | —       | 是否可下拉展开显示所有标签项                 |
 | tooltip          | Boolean | `true`  | 是否显示标签标题 tooltip                     |
 | dropdown-anchor | —       | 父节点  | 下拉面板锚点目标，默认为当前组件根元素父节点 |
+| dropdown-class  | String  | —       | 下拉面板附加 class                           |
+| dropdown-style  | String \| Object | — | 下拉面板附加 style                     |
+| dropdown-width  | String  | `anchor` | 下拉面板宽度；`anchor` 表示与触发器同宽    |
 
 | 事件       | 参数 | 说明                   |
 | ---------- | ---- | ---------------------- |
@@ -1608,7 +1607,6 @@ const ctxMenu = shallowRef()
 | order-by             | String           | —             | 排序字段，格式 `field:asc` / `field:desc`         |
 | records-offset       | Number           | —             | 记录偏移量，用于计算行号                          |
 | fixed-left-columns   | Number           | —             | 固定左侧列数                                      |
-| virtual-scroll       | Boolean          | —             | 虚拟滚动（大数据量时使用）                        |
 | placeholder          | String           | —             | 空单元格占位文本                                  |
 
 | 事件                       | 参数                               | 说明                       |
