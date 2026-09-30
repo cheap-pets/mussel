@@ -11,27 +11,22 @@
       :group="isGroup || null"
       :expanded="(isGroup && !popupRow && groupExpanded) || null"
       :aria-expanded="isGroup && !popupRow ? String(!!groupExpanded) : null"
-      :aria-haspopup="popupRow ? 'menu' : null"
       :aria-current="active ? 'page' : null"
       :data-key="data.key"
+      :data-favorites="inFavoritesGroup || null"
       :title="(!railMode && data.title) || null"
       @click="onClick"
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave">
-      <component :is="itemRender" v-if="itemRender" />
-      <template v-else>
-        <mu-icon
-          v-if="data.icon"
-          class="mu-side-menu__item-icon"
-          :icon="data.icon" />
-        <span class="mu-side-menu__item-label">{{ data.label }}</span>
-      </template>
+      <mu-icon
+        v-if="data.icon"
+        class="mu-side-menu__item-icon"
+        :icon="data.icon" />
+      <span class="mu-side-menu__item-label">{{ data.label }}</span>
       <mu-icon
         v-if="expandIcon"
         class="mu-side-menu__item-expand-icon"
-        :icon="expandIcon"
-        :rotate="sameExpandIcon || null"
-        :expanded="(isGroup && groupExpanded) || null" />
+        :icon="expandIcon" />
     </button>
     <button
       v-if="showFavoriteBtn"
@@ -61,7 +56,7 @@
   import { computed, shallowRef, inject, watch } from 'vue'
   import { isDev } from '@/env'
   import { createTooltipAnchorHandlers } from '../tooltip/tooltip-core'
-  import { FAVORITES_KEY } from './side-menu'
+  import { FAVORITES_KEY, warnDeepLevel } from './side-menu'
 
   defineOptions({ name: 'MusselSideMenuNode' })
 
@@ -73,12 +68,11 @@
     nodeProps,
     keyProp,
     childProp,
-    disabled,
     collapsed,
     popup,
-    expandIcons,
     activeItem,
-    slots
+    activePath,
+    favoritesEnabled
   } = menu
 
   const data = computed(() => Object.fromEntries(
@@ -92,15 +86,16 @@
   // 折叠态图标条：仅一级项渲染（图标 + tooltip / 弹层），子树不渲染
   const railMode = computed(() => collapsed.value && !popup && !props.level)
 
-  // hover 浮出子菜单的组头：折叠 rail 上的一级组、展开态下的二级组
-  // （三级及更深不在体内展开，以浮层展示）；弹层内组仍为内联展开
+  // hover 浮出子菜单面板的组头：折叠 rail 上的一级组、展开态下的二级组（浮出为既定交互，
+  // 面板顶部带锚点组标题栏，见 side-menu-popup）；弹层内的组仍为内联展开
   const popupRow = computed(() =>
     isGroup.value &&
     !popup &&
     (collapsed.value ? !props.level : props.level === 1)
   )
 
-  const isDisabled = computed(() => disabled.value || !!data.value.disabled)
+  // 数据级 disabled；根级禁用由容器的 class + inert 整体控制
+  const isDisabled = computed(() => !!data.value.disabled)
 
   const keyPath = computed(() => [...(props.parentKeys || []), data.value.key])
 
@@ -110,50 +105,25 @@
     data.value.key === activeItem.value
   )
 
-  const hasActiveDescendant = computed(() => {
-    if (!isGroup.value || activeItem.value == null) return false
-
-    const key = activeItem.value
-
-    function walk (nodes) {
-      return (nodes || []).some(node =>
-        node[childProp.value]?.length
-          ? walk(node[childProp.value])
-          : node[keyProp.value] === key
-      )
-    }
-
-    return walk(data.value.childNodes)
-  })
-
   // 「我的收藏」为派生组，不显示激活态：激活项恰被收藏时组头保持普通样式
   const isRowActive = computed(() =>
-    (active.value || hasActiveDescendant.value) &&
-    !(menu.favoritesEnabled.value && data.value.key === FAVORITES_KEY)
+    (active.value || activePath.value.has(data.value.key)) &&
+    !(favoritesEnabled.value && data.value.key === FAVORITES_KEY)
   )
 
   const groupExpanded = computed(() =>
     isGroup.value && menu.isExpanded(data.value.key)
   )
 
+  // 图标固定：展开为 chevronDown，收起为 chevronRight；
+  // 浮出组无内联展开态，恒为 chevronRight 指示浮出方向
   const expandIcon = computed(() => {
-    if (!isGroup.value || railMode.value || expandIcons.value === false) return null
+    if (!isGroup.value || railMode.value) return null
 
-    // 浮出组无内联展开态，固定右向箭头指示浮出方向
-    if (popupRow.value) return expandIcons.value.collapsed
-
-    return groupExpanded.value
-      ? expandIcons.value.expanded
-      : expandIcons.value.collapsed
+    return (popupRow.value || !groupExpanded.value)
+      ? 'chevronRight'
+      : 'chevronDown'
   })
-
-  // expanded/collapsed 配置为同一图标时切换为旋转过渡
-  const sameExpandIcon = computed(() =>
-    expandIcons.value !== false &&
-    expandIcons.value.expanded === expandIcons.value.collapsed
-  )
-
-  const favoritesEnabled = menu.favoritesEnabled
 
   const favorited = computed(() =>
     favoritesEnabled.value && menu.favoritedSet.value.has(data.value.key)
@@ -166,19 +136,8 @@
     (!collapsed.value || popup)
   )
 
-  const itemScope = computed(() => ({
-    item: props.node,
-    level: props.level,
-    active: active.value,
-    expanded: !!groupExpanded.value,
-    favorited: favorited.value,
-    collapsed: collapsed.value
-  }))
-
-  const itemRender = computed(() => {
-    const slot = slots.item
-    return slot && (() => slot(itemScope.value))
-  })
+  // 行位于收藏组内（收藏副本标记，容器的滚动定位据此排除）
+  const inFavoritesGroup = computed(() => props.parentKeys?.[0] === FAVORITES_KEY)
 
   function onClick () {
     if (isDisabled.value) return
@@ -210,7 +169,7 @@
   function onMouseEnter () {
     if (isDisabled.value) return
 
-    if (popupRow.value) menu.openPopup(rowEl.value, props.node)
+    if (popupRow.value) menu.openPopup(rowEl.value, props.node, keyPath.value)
     else if (railMode.value) tipHandlers?.mouseenter()
   }
 
@@ -229,28 +188,13 @@
 
   const renderable = computed(() => data.value.key != null)
 
-  if (isDev && renderable.value && props.level > 2) {
-    warnLevel()
-  }
+  if (isDev && renderable.value && props.level > 2) warnDeepLevel()
 
   if (isDev && !renderable.value) {
     console.warn(
       '[MUSSEL:SideMenu]',
       `Node is missing the "${keyProp.value}" field and has been skipped:`,
       props.node
-    )
-  }
-</script>
-
-<script>
-  let levelWarned
-
-  function warnLevel () {
-    if (levelWarned) return
-    levelWarned = true
-    console.warn(
-      '[MUSSEL:SideMenu]',
-      'Menu data deeper than 3 levels is not recommended.'
     )
   }
 </script>

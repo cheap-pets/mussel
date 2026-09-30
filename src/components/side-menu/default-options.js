@@ -6,8 +6,3 @@ export const DEFAULT_DATA_PROPS = {
   disabled: 'disabled',
   childNodes: 'childNodes'
 }
-
-export const DEFAULT_EXPAND_ICONS = {
-  expanded: 'chevronDown',
-  collapsed: 'chevronRight'
-}

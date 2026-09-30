@@ -44,7 +44,7 @@
 }
 
 .mu-side-menu__item {
-  // 缩进 = indent × level（level 为完整菜单树中的层级，弹层内不重置）
+  // 缩进 = indent × level（弹层面板内 level 重置为 0 从头缩进，面板留白由 .mu-side-menu-popup padding 提供）
   --mu-side-menu_level: 0;
 
   cursor: pointer;
@@ -120,14 +120,6 @@
 .mu-side-menu__item-expand-icon {
   flex: none;
   margin-left: auto;
-
-  &[rotate] > svg {
-    transition: transform .15s ease;
-  }
-}
-
-.mu-side-menu__item[expanded] .mu-side-menu__item-expand-icon[rotate] > svg {
-  transform: rotate(90deg);
 }
 
 // 叶子行右缘星标：hover 显现不占布局位，已收藏常显
@@ -225,6 +217,17 @@
   }
 }
 
+// 根级禁用：视觉弱化 + pointer-events 拦截鼠标，inert（模板绑定）拦截键盘 Tab/Enter。
+// 置于行状态样式之后，同优先级下覆盖 active 等高亮
+.mu-side-menu--disabled {
+  pointer-events: none;
+
+  .mu-side-menu__item {
+    color: var(--mu-text-color-muted);
+    background: inherit;
+  }
+}
+
 // 折叠态弹层面板：Teleport 到 root 下，脱离 .mu-side-menu 变量级联，
 // 缩进 / 弹层变量在自身重复声明默认值，可按同名单独覆盖
 .mu-side-menu-popup {
@@ -239,6 +242,7 @@
 
   overflow: hidden;
   display: flex;
+  flex-direction: column;
 
   // 宽度按内容自适应，夹在 [min, max]；超长文本 ellipsis
   width: max-content;
@@ -272,8 +276,43 @@
 }
 
 .mu-side-menu-popup__body {
-  flex: 1 1 0;
+  // column 布局下基准取内容高，超出面板 max-height 时收缩（min-height: 0）交由内部滚动
+  flex: 0 1 auto;
   min-height: 0;
+}
+
+// 浮出面板标题栏：锚点组（上级分组）的图标 + 标题 + 分隔线。
+// 负 margin 抵消面板 padding 通栏到顶，圆角裁切交给面板 overflow；
+// 左右 padding 与列表首行（level 0）图标对齐（面板 padding 4 + 行 padding-left 16）
+.mu-side-menu-popup__header {
+  display: flex;
+  gap: var(--mu-base-spacing);
+  align-items: center;
+  flex: none;
+
+  min-height: var(--mu-side-menu_item-height);
+  margin: calc(var(--mu-half-spacing) * -1) calc(var(--mu-half-spacing) * -1) 0;
+  padding: 0 calc(var(--mu-base-spacing) * 2 + var(--mu-half-spacing));
+
+  border-bottom: 1px solid var(--mu-border-color-soft);
+
+  .mu-side-menu__item-icon {
+    flex: none;
+    justify-content: center;
+  }
+
+  &:not([disabled]) {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--mu-gray-translucent);
+    }
+  }
+
+  &[disabled] {
+    cursor: default;
+    color: var(--mu-text-color-muted);
+  }
 }
 
 // 浮出面板的上下左右留白统一由面板自身 padding(4px) 提供，列表不再叠加

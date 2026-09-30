@@ -125,7 +125,23 @@ export function createTooltipController (app) {
     panelApi?.updatePosition()
   }
 
-  const api = { state, show, hide, delayHide, toggle, sync, clearHideTimer, bindPanel, updatePosition }
+  // 当前 tooltip 锚点是否位于 el（或其子树）内，供宿主判断 tooltip 归属，免读 state 内部结构
+  function isAnchorIn (el) {
+    return !!state.anchor && !!el?.contains?.(state.anchor)
+  }
+
+  const api = {
+    state,
+    show,
+    hide,
+    delayHide,
+    toggle,
+    sync,
+    clearHideTimer,
+    bindPanel,
+    updatePosition,
+    isAnchorIn
+  }
 
   return api
 }

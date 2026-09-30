@@ -24,11 +24,12 @@
     </div>
 
     <div class="demo-panel">
-      <h3>2. Accordion + v-model:expanded-keys</h3>
+      <h3>2. Accordion + v-model:expanded-keys (default-expand-all ignored)</h3>
       <mu-side-menu
         v-model:active-item="active2"
         v-model:expanded-keys="expandedKeys"
         accordion
+        default-expand-all
         style="height: 420px"
         :data="menus"
         @group-expand="onEvent('groupExpand', $event)"
@@ -37,9 +38,10 @@
     </div>
 
     <div class="demo-panel">
-      <h3>3. Auto Expand Active + Scroll Into View</h3>
+      <h3>3. Auto Expand + Scroll + default-expand-all (async)</h3>
       <mu-side-menu
         v-model:active-item="active3"
+        default-expand-all
         style="height: 300px"
         :data="asyncMenus"
         @select="onEvent('select', $event)" />
@@ -73,14 +75,6 @@
             <mu-icon icon="moon" />
             <span v-if="!collapsed">user@demo</span>
           </div>
-        </template>
-        <template #item="{ item, level, active }">
-          <mu-icon :icon="item.icon" />
-          <span
-            class="mu-side-menu__item-label"
-            :style="{ color: active ? undefined : level === 0 ? 'var(--mu-text-color-strong)' : undefined }">
-            {{ item.label }}
-          </span>
         </template>
       </mu-side-menu>
       <p>
@@ -121,13 +115,14 @@
     </div>
 
     <div class="demo-panel">
-      <h3>7. Field Props Mapping + Expand Icons</h3>
+      <h3>7. Field Props Mapping + accordion + default-expand-all</h3>
       <mu-side-menu
         v-model:active-item="active7"
+        accordion
+        default-expand-all
+        style="height: 300px"
         :data="mappedMenus"
-        :props="{ key: 'code', label: 'name', childNodes: 'children' }"
-        :expand-icons="{ expanded: 'chevronDown', collapsed: 'chevronDown' }"
-        style="height: 300px" />
+        :props="{ key: 'code', label: 'name', childNodes: 'children' }" />
     </div>
 
     <div class="demo-panel">
@@ -255,6 +250,15 @@
       children: [
         { code: 'c2', icon: 'file', name: '映射叶子 1' },
         { code: 'c3', icon: 'file', name: '映射叶子 2' }
+      ]
+    },
+    {
+      code: 'c5',
+      icon: 'album',
+      name: '映射分组 2',
+      children: [
+        { code: 'c6', icon: 'file', name: '映射叶子 3' },
+        { code: 'c7', icon: 'file', name: '映射叶子 4' }
       ]
     },
     { code: 'c4', icon: 'flag', name: '映射独立项' }

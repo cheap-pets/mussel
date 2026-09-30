@@ -154,7 +154,6 @@ function onSelect (item, keyPath) {
 |---|---|---|
 | `header` | `{ collapsed }` | 头部区（logo/标题/搜索框）。折叠态由内容方按 `collapsed` 自行适配（WebFrame 的搜索框即放此处） |
 | `footer` | `{ collapsed }` | 底部区（用户入口等），`collapse-button` 把手固定渲染在 footer 之下 |
-| `item` | `{ item, level, active, expanded, favorited, collapsed }` | 自定义项内容（组头与叶子通用），缺省渲染 `图标 + label`。`level` 恒为该项在完整菜单树中的层级（一级 0，弹层内不重置），自绘缩进按 `indent × level`；`collapsed` 为整栏折叠态 |
 
 ### 4.5 expose（ref 方法）
 
@@ -170,7 +169,7 @@ function onSelect (item, keyPath) {
 
 - 组头：图标 + label + 右侧箭头（默认 collapsed→`chevronRight`、expanded→`chevronDown` 两图标切换；也可配同一图标 + 旋转过渡，对齐 MuTree 的单图标做法）；点击整行或箭头均可切换；`disabled` 组不响应。
 - 手风琴：`accordion` 开启时，展开一个组自动收拢**同级**已展开组（主流语义：仅同级互斥）。
-- 子级缩进：`--mu-side-menu_indent` × level（沿用 `tree-node` 的 `calc(var(...) * level)` 写法）；`level` 恒为树层级，弹层内同公式、不重置（§10）。
+- 子级缩进：`--mu-side-menu_indent` × level（沿用 `tree-node` 的 `calc(var(...) * level)` 写法）；主树 `level` 为树层级，弹层内重置为 0 从头缩进（§10）。
 - 组展开动画：`grid-template-rows 0fr → 1fr` 过渡（WebFrame 验证过的配方，无需 JS 测高）。
 - 高度溢出：中间滚动区 `v-mu-scrollbar` 指令（对齐 WebFrame）。
 
@@ -231,7 +230,7 @@ function onSelect (item, keyPath) {
 .mu-side-menu__item-icon / __item-label / __item-expand-icon
 .mu-side-menu__item-favorite-btn  # 叶子行右缘星标（hover 显现不占位，已收藏常显实心）
 .mu-side-menu-popup              # 折叠态弹层面板（独立块，Teleport 挂 root 下）；自身 padding 提供留白，不并入缩进
-.mu-side-menu-popup__item        # 弹层内行复用 __item 样式（缩进沿用树层级 level）
+.mu-side-menu-popup__item        # 弹层内行复用 __item 样式（level 重置为 0 从头缩进）
 ```
 
 - 颜色零硬编码：激活/hover 用 `--mu-primary-color` + `--mu-primary-translucent`（WebFrame 同款映射），文本用 `--mu-text-color-*` 系列，背景 `--mu-bg-normal`/`--mu-bg-fill`，弹层阴影 `--mu-shadow-popup`。暗色模式经 `.mu-root.mu-dark` 变量覆盖自动生效——**补齐 WebFrame 无暗色模式的缺口**。
@@ -302,7 +301,7 @@ demo 页覆盖点（`demo/src/side-menu/`，访问 `http://localhost:3000/side-m
 ## 10. 风险与边界
 
 - **折叠过渡期间弹层定位**：宽度动画进行中锚点矩形持续变化，hover 弹层需在 `collapse` 切换时先关闭已开弹层（WebFrame 同款处理），避免面板跟随错位。
-- **弹层内复用 `side-menu-node`**：递归组件在 Teleport 弹层上下文中 provide 链仍然有效（同 app context）。缩进不设第二套基准——`level` 恒为该项在完整菜单树中的层级，主体树与弹层同用 `calc(var(--mu-side-menu_indent) * level)`；弹层渲染被 hover 组的子树时按 `:level="groupLevel + 1"` 起递归（一级组弹出，故首行恒为 1），无需 `baseLevel` 注入或额外分支。弹层首行的 indent 缩进与面板留白是两件事，后者由 `.mu-side-menu-popup` 自身 padding 控制，不并入缩进计算。
+- **弹层内复用 `side-menu-node`**：递归组件在 Teleport 弹层上下文中 provide 链仍然有效（同 app context）。弹层是独立面板，缩进从 0 重建：被 hover 组的子树按 `:level="0"` 起递归，`level` 在弹层内重置（面板自身留白由 `.mu-side-menu-popup` padding 提供，不并入缩进计算）。
 - **受控模式下 `auto-expand-active`**：组件只发起 `update:expanded-keys`，业务未回填时不生效（`data` 到达后的自动展开同理）——文档需明示该行为，避免"时灵时不灵"的困惑。
 - **`props.key` 缺失的节点**：无法进展开集合与激活匹配，渲染时 dev 环境 `console.warn` 并跳过（比静默错乱好）。
 - **key 唯一性**：组件不假设 key 在全树唯一，`walkTo`/`expandTo` 在原树上取首个匹配（收藏组子项复用原 key、同 key 双入口高亮属预期用法，见 §5.5）——业务须保证同一 key 指向同一目标；`__favorites__` 为收藏组保留 key。
