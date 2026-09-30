@@ -1,0 +1,286 @@
+.mu-side-menu {
+  --mu-side-menu_width: 240px;
+  --mu-side-menu_collapsed-width: 48px;
+  --mu-side-menu_item-height: 40px;
+  --mu-side-menu_top-item-height: 48px;
+  --mu-side-menu_indent: 20px;
+
+  position: relative;
+
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  width: var(--mu-side-menu_width);
+
+  background: var(--mu-bg-normal);
+
+  transition: width .2s ease;
+
+  &--collapsed {
+    width: var(--mu-side-menu_collapsed-width);
+  }
+}
+
+.mu-side-menu__header,
+.mu-side-menu__footer {
+  overflow: hidden;
+  flex: none;
+}
+
+.mu-side-menu__body {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.mu-side-menu__list {
+  margin: 0;
+  padding: var(--mu-half-spacing) 0;
+  list-style: none;
+}
+
+.mu-side-menu__node {
+  position: relative;
+}
+
+.mu-side-menu__item {
+  // 缩进 = indent × level（level 为完整菜单树中的层级，弹层内不重置）
+  --mu-side-menu_level: 0;
+
+  cursor: pointer;
+
+  display: flex;
+  gap: var(--mu-base-spacing);
+  align-items: center;
+
+  width: 100%;
+  min-height: var(--mu-side-menu_item-height);
+  padding-right: calc(var(--mu-base-spacing) * 2);
+  padding-left: calc(
+    var(--mu-base-spacing) * 2 + var(--mu-side-menu_indent) * var(--mu-side-menu_level)
+  );
+  border: none;
+  border-radius: var(--mu-radius-control);
+
+  font-size: var(--mu-font-size-normal);
+  color: var(--mu-text-color-normal);
+  text-align: start;
+
+  background: none;
+
+  // 一级行高高于子级
+  &[top] {
+    min-height: var(--mu-side-menu_top-item-height);
+  }
+
+  // 图标区与图标同宽（16px，由 mu-icon 默认尺寸决定）且居中：
+  // 折叠图标条仅截去右侧内容，图标横向位置与展开态一致，宽度过渡期间不横移
+  & > .mu-side-menu__item-icon {
+    display: inline-flex;
+    flex: none;
+    justify-content: center;
+  }
+
+  &:hover {
+    background: var(--mu-gray-translucent);
+  }
+
+  &[active] {
+    color: var(--mu-primary-color);
+    background: var(--mu-primary-translucent);
+  }
+
+  // 组头后代激活的半强度态：仅文字高亮（hover 背景不受影响）
+  &[active][group] {
+    background: none;
+
+    &:hover {
+      background: var(--mu-gray-translucent);
+    }
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    cursor: default;
+    color: var(--mu-text-color-muted);
+    background: inherit;
+  }
+}
+
+.mu-side-menu__item-label {
+  user-select: none;
+
+  overflow: hidden;
+  flex: 1 1 0;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mu-side-menu__item-expand-icon {
+  flex: none;
+  margin-left: auto;
+
+  &[rotate] > svg {
+    transition: transform .15s ease;
+  }
+}
+
+.mu-side-menu__item[expanded] .mu-side-menu__item-expand-icon[rotate] > svg {
+  transform: rotate(90deg);
+}
+
+// 叶子行右缘星标：hover 显现不占布局位，已收藏常显
+.mu-side-menu__favorite-btn {
+  cursor: pointer;
+
+  position: absolute;
+  top: 50%;
+  // 热区 24px（图标 16 + padding 4×2）右缘外扩，svg 右缘（right + padding 4 = 16）
+  // 与展开箭头一致对齐在距行右缘 16px（基础 padding）处
+  right: calc(var(--mu-base-spacing) * 2 - var(--mu-half-spacing));
+  translate: 0 -50%;
+
+  display: none;
+
+  padding: var(--mu-half-spacing);
+  border: none;
+
+  // button 默认不继承字体，星标尺寸需与项图标一致（16px）
+  font: inherit;
+  color: var(--mu-text-color-subtle);
+
+  background: none;
+
+  .mu-side-menu__node:hover &,
+  &[favorited] {
+    display: inline-flex;
+  }
+
+  &:hover {
+    color: var(--mu-primary-color);
+  }
+
+  &[favorited] {
+    color: var(--mu-warning-color);
+  }
+}
+
+// 启用收藏时叶子行右侧预留星标位（热区右缘 20px + 宽 24px），
+// 避免 label 与星标重叠（折叠图标条上无星标，不占位）
+.mu-side-menu--favorites:not(.mu-side-menu--collapsed) .mu-side-menu__item:not([group]) {
+  padding-right: calc(var(--mu-base-spacing) * 4);
+}
+
+.mu-side-menu__group {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .15s ease;
+
+  &[expanded] {
+    grid-template-rows: 1fr;
+  }
+
+  & > ul {
+    overflow: hidden;
+
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+}
+
+.mu-side-menu__collapse-button {
+  cursor: pointer;
+
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+
+  min-height: var(--mu-side-menu_top-item-height);
+  border: none;
+
+  color: var(--mu-text-color-subtle);
+
+  background: none;
+
+  &:hover {
+    color: var(--mu-text-color-normal);
+    background: var(--mu-gray-translucent);
+  }
+}
+
+// 折叠图标条：仅图标可见、保留原 padding-left（图标区位置不变），
+// label 隐藏（item 插槽内容按 collapsed 自行适配）
+.mu-side-menu--collapsed {
+  .mu-side-menu__item {
+    padding-right: 0;
+  }
+
+  .mu-side-menu__item-label {
+    display: none;
+  }
+}
+
+// 折叠态弹层面板：Teleport 到 root 下，脱离 .mu-side-menu 变量级联，
+// 缩进 / 弹层变量在自身重复声明默认值，可按同名单独覆盖
+.mu-side-menu-popup {
+  --mu-side-menu_indent: 20px;
+  --mu-side-menu_item-height: 40px;
+  --mu-side-menu_popup-min-width: 200px;
+  --mu-side-menu_popup-max-width: 400px;
+  --mu-side-menu_popup-gap: 4px;
+
+  position: fixed !important;
+  z-index: var(--mu-z-index-popup);
+
+  overflow: hidden;
+  display: flex;
+
+  // 宽度按内容自适应，夹在 [min, max]；超长文本 ellipsis
+  width: max-content;
+  min-width: var(--mu-side-menu_popup-min-width);
+  max-width: var(--mu-side-menu_popup-max-width);
+
+  // 上下留白与 JS 定位的 MARGIN 对应
+  max-height: calc(100vh - 16px);
+  padding: var(--mu-half-spacing);
+  border-radius: var(--mu-radius-panel);
+
+  opacity: 0;
+  background: var(--mu-bg-overlay);
+  box-shadow: var(--mu-shadow-popup);
+
+  transition-duration: .1s;
+  transition-property: opacity, transform;
+
+  &[position='right'] {
+    transform: translateX(-4px);
+  }
+
+  &[position='left'] {
+    transform: translateX(4px);
+  }
+
+  &[pop-up] {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.mu-side-menu-popup__body {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+// 浮出面板的上下左右留白统一由面板自身 padding(4px) 提供，列表不再叠加
+.mu-side-menu-popup .mu-side-menu__list {
+  padding: 0;
+}
+
+.mu-side-menu-popup--favorites .mu-side-menu__item:not([group]) {
+  padding-right: calc(var(--mu-base-spacing) * 4);
+}

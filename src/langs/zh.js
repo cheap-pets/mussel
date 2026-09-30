@@ -94,6 +94,10 @@ export default {
     INVALID: '{0}无效'
   },
 
+  SideMenu: {
+    FAVORITES: '我的收藏'
+  },
+
   Pagination: {
     PREV_PAGE: '上一页',
     NEXT_PAGE: '下一页',

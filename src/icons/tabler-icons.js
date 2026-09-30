@@ -28,6 +28,12 @@ export { default as folderOpen } from '~icons/outline/folder-open.svg'
 export { default as sun } from '~icons/outline/sun.svg'
 export { default as moon } from '~icons/outline/moon.svg'
 
+export { default as star } from '~icons/outline/star.svg'
+export { default as starred } from '~icons/filled/star.svg'
+
+export { default as leftCollapse } from '~icons/outline/layout-sidebar-left-collapse.svg'
+export { default as leftExpand } from '~icons/outline/layout-sidebar-left-expand.svg'
+
 export { default as clock } from '~icons/outline/clock.svg'
 export { default as calendar } from '~icons/outline/calendar-month.svg'
 

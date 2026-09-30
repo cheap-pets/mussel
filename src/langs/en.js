@@ -93,6 +93,10 @@ export default {
     INVALID: '{0} is invalid'
   },
 
+  SideMenu: {
+    FAVORITES: 'My Favorites'
+  },
+
   Pagination: {
     PREV_PAGE: 'Previous',
     NEXT_PAGE: 'Next',
