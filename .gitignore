@@ -18,6 +18,7 @@ dist/
 .zcode/
 .claude/
 .zcodeignore
+.handoff/
 
 # VitePress
 node_modules/.vitepress/
