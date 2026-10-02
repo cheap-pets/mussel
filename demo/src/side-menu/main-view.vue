@@ -95,9 +95,8 @@
         :data="menus"
         @favorite-toggle="onEvent('favoriteToggle', $event)" />
       <p>favorites: {{ favorites }}</p>
-      <h4>Not bound (no v-model) - no stars</h4>
+      <h4>Not bound (uncontrolled, internal state)</h4>
       <mu-side-menu
-        :favorites="favorites"
         style="height: 200px"
         :data="menus" />
     </div>

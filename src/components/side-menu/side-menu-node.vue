@@ -1,16 +1,16 @@
 <template>
   <li v-if="renderable" class="mu-side-menu__node">
-    <button
+    <!-- 菜单交互为鼠标驱动：div 承载（无原生键盘焦点），键盘支持暂缓，决策见 git 历史 -->
+    <div
       ref="rowEl"
-      type="button"
       class="mu-side-menu__item"
       :style="{ '--mu-side-menu_level': level }"
       :top="(!props.level && !popup) || null"
-      :disabled="isDisabled || null"
+      :inert="isDisabled || null"
       :active="isRowActive || null"
       :group="isGroup || null"
       :expanded="(isGroup && !popupRow && groupExpanded) || null"
-      :aria-expanded="isGroup && !popupRow ? String(!!groupExpanded) : null"
+      :aria-expanded="isGroup && !popupRow ? String(groupExpanded) : null"
       :aria-current="active ? 'page' : null"
       :data-key="data.key"
       :data-favorites="inFavoritesGroup || null"
@@ -27,15 +27,14 @@
         v-if="expandIcon"
         class="mu-side-menu__item-expand-icon"
         :icon="expandIcon" />
-    </button>
-    <button
+    </div>
+    <div
       v-if="showFavoriteBtn"
-      type="button"
       class="mu-side-menu__favorite-btn"
       :favorited="favorited || null"
       @click.stop="onFavoriteClick">
       <mu-icon :icon="favorited ? 'starred' : 'star'" />
-    </button>
+    </div>
     <div
       v-if="isGroup && !popupRow"
       class="mu-side-menu__group"
@@ -53,7 +52,7 @@
 </template>
 
 <script setup>
-  import { computed, shallowRef, inject, watch } from 'vue'
+  import { computed, shallowRef, inject, watch, onBeforeUnmount } from 'vue'
   import { isDev } from '@/env'
   import { createTooltipAnchorHandlers } from '../tooltip/tooltip-core'
   import { FAVORITES_KEY, warnDeepLevel } from './side-menu'
@@ -67,7 +66,6 @@
   const {
     nodeProps,
     keyProp,
-    childProp,
     collapsed,
     popup,
     activeItem,
@@ -105,10 +103,10 @@
     data.value.key === activeItem.value
   )
 
-  // 「我的收藏」为派生组，不显示激活态：激活项恰被收藏时组头保持普通样式
+  // 激活行，或激活项祖先组头的半强度态；收藏组为派生组，由原树构造的
+  // activePath 永不含 FAVORITES_KEY，组头天然不进入激活态
   const isRowActive = computed(() =>
-    (active.value || activePath.value.has(data.value.key)) &&
-    !(favoritesEnabled.value && data.value.key === FAVORITES_KEY)
+    active.value || activePath.value.has(data.value.key)
   )
 
   const groupExpanded = computed(() =>
@@ -125,8 +123,10 @@
       : 'chevronDown'
   })
 
+  const renderable = computed(() => data.value.key != null)
+
   const favorited = computed(() =>
-    favoritesEnabled.value && menu.favoritedSet.value.has(data.value.key)
+    favoritesEnabled.value && menu.favoritesSet.value.has(data.value.key)
   )
 
   // 收藏星标：叶子行右缘；折叠图标条上不显示（弹层面板内同一组件行为一致）
@@ -144,57 +144,75 @@
 
     menu.onItemClick(props.node, keyPath.value)
 
-    if (isGroup.value) {
-      // 浮出组点击无操作（浮层 hover 驱动），内联组切换展开
-      if (!popupRow.value) menu.setExpanded(data.value.key, !groupExpanded.value)
-    } else {
+    if (!isGroup.value) {
       menu.onSelectItem(props.node, keyPath.value)
+    } else if (!popupRow.value) {
+      menu.setExpanded(data.value.key, !groupExpanded.value)
     }
   }
 
-  // 折叠图标条的 tooltip（一级叶子）与子菜单弹层（一级组）
+  // 折叠图标条的 tooltip（一级叶子）与子菜单弹层（一级组）。
+  // rail 态仅存在于主菜单一级行，tooltip 处理器与监听据此收窄，深层与弹层内行不建
   const tooltip = menu.tooltip
   const rowEl = shallowRef()
+  const railRow = !popup && !props.level
 
-  const tipHandlers = tooltip && createTooltipAnchorHandlers(
-    tooltip,
-    () => rowEl.value,
-    () => ({ content: data.value.title || data.value.label, placement: 'right' })
-  )
+  // 恒为 handlers 或 undefined（布尔短路会得到 false，?. 不短路会炸掉）
+  const tipHandlers = railRow && tooltip
+    ? createTooltipAnchorHandlers(
+      tooltip,
+      () => rowEl.value,
+      () => ({ content: data.value.title || data.value.label, placement: 'right' })
+    )
+    : undefined
 
   function releaseTip () {
-    if (tooltip?.state.anchor === rowEl.value) tooltip.hide()
+    if (tooltip?.state.anchor === rowEl.value) {
+      tooltip.hide()
+    }
   }
 
   function onMouseEnter () {
     if (isDisabled.value) return
 
-    if (popupRow.value) menu.openPopup(rowEl.value, props.node, keyPath.value)
-    else if (railMode.value) tipHandlers?.mouseenter()
+    if (popupRow.value) {
+      menu.openPopup(rowEl.value, props.node)
+    } else if (railMode.value) {
+      tipHandlers?.mouseenter()
+    }
   }
 
   function onMouseLeave () {
-    if (popupRow.value) menu.delayPopupHide()
-    else if (railMode.value) tipHandlers?.mouseleave()
+    if (popupRow.value) {
+      menu.delayPopupHide()
+    } else if (railMode.value) {
+      tipHandlers?.mouseleave()
+    }
   }
 
-  watch(railMode, value => {
-    if (!value) releaseTip()
+  // 卸载：行被移除不再派发 mouseleave，清 pending showTimer 并释放显示中的 tooltip
+  onBeforeUnmount(() => {
+    tipHandlers?.dispose()
+    releaseTip()
   })
+
+  if (railRow && tooltip) {
+    watch(railMode, value => !value && releaseTip())
+  }
 
   function onFavoriteClick () {
     menu.toggleFavorite(props.node)
   }
 
-  const renderable = computed(() => data.value.key != null)
-
-  if (isDev && renderable.value && props.level > 2) warnDeepLevel()
-
-  if (isDev && !renderable.value) {
-    console.warn(
-      '[MUSSEL:SideMenu]',
-      `Node is missing the "${keyProp.value}" field and has been skipped:`,
-      props.node
-    )
+  if (isDev) {
+    if (!renderable.value) {
+      console.warn(
+        '[MUSSEL:SideMenu]',
+        `Node is missing the "${keyProp.value}" field and has been skipped:`,
+        props.node
+      )
+    } else if (props.level > 2) {
+      warnDeepLevel()
+    }
   }
 </script>

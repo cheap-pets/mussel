@@ -1,9 +1,5 @@
 <template>
-  <nav
-    ref="rootEl"
-    :class="rootClass"
-    :style="widthStyle"
-    :inert="disabled || null">
+  <nav ref="rootEl" :class="rootClass" :style="rootStyle" :inert="disabled || null">
     <div class="mu-side-menu__header">
       <slot name="header" :collapsed="collapsed" />
     </div>
@@ -20,13 +16,12 @@
     <div v-if="$slots.footer" class="mu-side-menu__footer">
       <slot name="footer" :collapsed="collapsed" />
     </div>
-    <button
+    <div
       v-if="collapseButton"
-      type="button"
       class="mu-side-menu__collapse-button"
       @click="collapsed = !collapsed">
       <mu-icon :icon="collapsed ? 'leftExpand' : 'leftCollapse'" />
-    </button>
+    </div>
     <side-menu-popup ref="popupRef" />
   </nav>
 </template>
@@ -34,23 +29,15 @@
 <script setup>
   import './side-menu.scss'
 
-  import {
-    computed,
-    getCurrentInstance,
-    inject,
-    nextTick,
-    onMounted,
-    provide,
-    shallowRef,
-    toRef,
-    watch
-  } from 'vue'
+  import { shallowRef, toRef, computed, provide, inject, onMounted, watch, nextTick } from 'vue'
+
   import { resolveSize } from '@/utils/size'
   import { isDev } from '@/env'
   import { t } from '@/langs'
 
   import { DEFAULT_DATA_PROPS } from './default-options'
   import { FAVORITES_KEY, useSideMenuExpand } from './side-menu'
+
   import SideMenuNode from './side-menu-node.vue'
   import SideMenuPopup from './side-menu-popup.vue'
 
@@ -59,9 +46,9 @@
   const props = defineProps({
     data: Array,
     props: Object,
-    defaultExpandAll: Boolean,
     accordion: Boolean,
     width: { type: [String, Number], default: '240px' },
+    defaultExpandAll: Boolean,
     collapseButton: Boolean,
     disabled: Boolean
   })
@@ -77,7 +64,7 @@
   const activeItem = defineModel('activeItem', { type: [String, Number] })
   const expandedKeys = defineModel('expandedKeys', { type: Array })
   const collapsed = defineModel('collapsed', { type: Boolean })
-  const favorites = defineModel('favorites', { type: Array })
+  const favorites = defineModel('favorites', { type: Array, default: () => [] })
 
   const $mussel = inject('$mussel')
 
@@ -105,23 +92,17 @@
   const keyProp = computed(() => nodeProps.value.key)
   const childProp = computed(() => nodeProps.value.childNodes)
 
-  // 收藏启用条件：绑定 v-model:favorites 且值为数组（含空数组）。
-  // "是否绑定"经 vnode props 是否含 onUpdate:favorites 判定，
-  // 只传 :favorites 不绑 v-model 不启用——星标 UI 与收藏数据本为一体
-  const vnodeProps = getCurrentInstance().vnode.props
-  const favoritesBound = 'onUpdate:favorites' in (vnodeProps || {})
+  // 收藏默认可用：未绑 v-model:favorites 时为非受控内部状态（defineModel 默认 []），
+  // 绑定后与外部双向同步；显式传非数组值（如 null）时禁用
+  const favoritesEnabled = computed(() => Array.isArray(favorites.value))
 
-  const favoritesEnabled = computed(() =>
-    favoritesBound && Array.isArray(favorites.value)
-  )
-
-  const favoritedSet = computed(() => new Set(favorites.value || []))
+  const favoritesSet = computed(() => new Set(favorites.value))
 
   // 从原树全量提取 key ∈ favorites 的叶子（平铺一级、保留原 key）
   const favoriteItems = computed(() => {
     if (!favoritesEnabled.value) return []
 
-    const set = favoritedSet.value
+    const set = favoritesSet.value
     const kp = keyProp.value
     const cp = childProp.value
     const result = []
@@ -188,10 +169,10 @@
 
   function toggleFavorite (node) {
     const key = node[keyProp.value]
-    const favorited = !favoritedSet.value.has(key)
+    const favorited = !favoritesSet.value.has(key)
 
     favorites.value = favorited
-      ? [...favoritedSet.value, key]
+      ? [...favoritesSet.value, key]
       : favorites.value.filter(item => item !== key)
 
     emit('favoriteToggle', node, favorited)
@@ -213,38 +194,42 @@
 
   let firstScroll = true
 
-  // 激活项父链自动展开 + 滚入视区（激活 key 变化与 data 到达/刷新均触发）
+  // 激活项父链自动展开 + 滚入视区（激活 key 变化与 data 到达/刷新均触发）。
+  // 仅叶子可激活：目标是组（外部误设）或未命中时不展开、不滚动
   function syncActive () {
+    if (activeItem.value == null) return
+
+    const path = walkTo(activeItem.value)
+    const target = path.at(-1)
+
+    if (!target || target[childProp.value]?.length) return
+
     let expandedSomething = false
 
-    if (activeItem.value != null) {
-      const path = walkTo(activeItem.value)
+    const missing = path
+      .slice(0, -1)
+      .map(node => node[keyProp.value])
+      .filter(key => !isExpanded(key))
 
-      const missing = path
-        .slice(0, -1)
-        .map(node => node[keyProp.value])
-        .filter(key => !isExpanded(key))
-
-      if (missing.length) {
-        expand(...missing)
-        expandedSomething = true
-      }
-
-      nextTick(() => {
-        const run = () => scrollToKey(activeItem.value)
-
-        // 首挂载延迟 100ms 避开初始渲染抖动；父链刚展开时等组动画结束再滚，
-        // 否则 scrollIntoView 按动画中间态计算会错位
-        if (firstScroll) {
-          firstScroll = false
-          setTimeout(run, 100)
-        } else if (expandedSomething) {
-          setTimeout(run, 200)
-        } else {
-          run()
-        }
-      })
+    if (missing.length) {
+      expand(...missing)
+      expandedSomething = true
     }
+
+    nextTick(() => {
+      const run = () => scrollToKey(activeItem.value)
+
+      // 首挂载延迟 100ms 避开初始渲染抖动；父链刚展开时等组动画结束再滚，
+      // 否则 scrollIntoView 按动画中间态计算会错位
+      if (firstScroll) {
+        firstScroll = false
+        setTimeout(run, 100)
+      } else if (expandedSomething) {
+        setTimeout(run, 200)
+      } else {
+        run()
+      }
+    })
   }
 
   // 激活项在原树中的祖先组 key 集合：组头「后代激活」半强度态的下发数据，
@@ -288,7 +273,7 @@
     }
   ])
 
-  const widthStyle = computed(() => ({
+  const rootStyle = computed(() => ({
     '--mu-side-menu_width': resolveSize(String(props.width))
   }))
 
@@ -307,7 +292,7 @@
     setExpanded,
 
     favoritesEnabled,
-    favoritedSet,
+    favoritesSet,
     toggleFavorite,
 
     onSelectItem,
@@ -315,7 +300,7 @@
 
     tooltip: $mussel.tooltip,
 
-    openPopup: (anchor, node, keyPath) => popupRef.value?.show(anchor, node, keyPath),
+    openPopup: (anchor, node) => popupRef.value?.show(anchor, node),
     delayPopupHide: () => popupRef.value?.delayHide()
   })
 

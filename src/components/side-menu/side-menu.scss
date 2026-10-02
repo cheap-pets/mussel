@@ -59,19 +59,10 @@
   padding-left: calc(
     var(--mu-base-spacing) * 2 + var(--mu-side-menu_indent) * var(--mu-side-menu_level)
   );
-  border: none;
   border-radius: var(--mu-radius-control);
 
   font-size: var(--mu-font-size-normal);
   color: var(--mu-text-color-normal);
-  text-align: start;
-
-  background: none;
-
-  // 一级行高高于子级
-  &[top] {
-    min-height: var(--mu-side-menu_top-item-height);
-  }
 
   // 图标区与图标同宽（16px，由 mu-icon 默认尺寸决定）且居中：
   // 折叠图标条仅截去右侧内容，图标横向位置与展开态一致，宽度过渡期间不横移
@@ -79,6 +70,11 @@
     display: inline-flex;
     flex: none;
     justify-content: center;
+  }
+
+  // 一级行高高于子级
+  &[top] {
+    min-height: var(--mu-side-menu_top-item-height);
   }
 
   &:hover {
@@ -99,8 +95,9 @@
     }
   }
 
-  &[disabled] {
-    pointer-events: none;
+  // 数据级禁用行：inert 拦截点击与 hover（模板绑定），此处只做视觉弱化，
+  // 置于行状态样式之后，同优先级下覆盖 active 等高亮
+  &[inert] {
     cursor: default;
     color: var(--mu-text-color-muted);
     background: inherit;
@@ -119,7 +116,6 @@
 
 .mu-side-menu__item-expand-icon {
   flex: none;
-  margin-left: auto;
 }
 
 // 叶子行右缘星标：hover 显现不占布局位，已收藏常显
@@ -136,15 +132,12 @@
   display: none;
 
   padding: var(--mu-half-spacing);
-  border: none;
 
-  // button 默认不继承字体，星标尺寸需与项图标一致（16px）
-  font: inherit;
   color: var(--mu-text-color-subtle);
 
-  background: none;
-
-  .mu-side-menu__node:hover &,
+  // hover 命中需限定直接子级：组头 li 包含整个展开子树，
+  // 无 > 时 hover 组内任意位置会使整组星标全亮
+  .mu-side-menu__node:hover > &,
   &[favorited] {
     display: inline-flex;
   }
@@ -158,9 +151,10 @@
   }
 }
 
-// 启用收藏时叶子行右侧预留星标位（热区右缘 20px + 宽 24px），
-// 避免 label 与星标重叠（折叠图标条上无星标，不占位）
-.mu-side-menu--favorites:not(.mu-side-menu--collapsed) .mu-side-menu__item:not([group]) {
+// 启用收藏时叶子行右侧预留星标位（热区右缘 20px + 宽 24px），避免 label 与星标重叠
+// （折叠图标条上无星标，不占位；弹层面板 Teleport 脱离主菜单类，需并列选择器）
+.mu-side-menu--favorites:not(.mu-side-menu--collapsed) .mu-side-menu__item:not([group]),
+.mu-side-menu-popup--favorites .mu-side-menu__item:not([group]) {
   padding-right: calc(var(--mu-base-spacing) * 4);
 }
 
@@ -193,11 +187,8 @@
   justify-content: center;
 
   min-height: var(--mu-side-menu_top-item-height);
-  border: none;
 
   color: var(--mu-text-color-subtle);
-
-  background: none;
 
   &:hover {
     color: var(--mu-text-color-normal);
@@ -235,7 +226,6 @@
   --mu-side-menu_item-height: 40px;
   --mu-side-menu_popup-min-width: 200px;
   --mu-side-menu_popup-max-width: 400px;
-  --mu-side-menu_popup-gap: 4px;
 
   position: fixed !important;
   z-index: var(--mu-z-index-popup);
@@ -243,6 +233,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  gap: var(--mu-half-spacing);
 
   // 宽度按内容自适应，夹在 [min, max]；超长文本 ellipsis
   width: max-content;
@@ -276,50 +267,19 @@
 }
 
 .mu-side-menu-popup__body {
-  // column 布局下基准取内容高，超出面板 max-height 时收缩（min-height: 0）交由内部滚动
   flex: 0 1 auto;
   min-height: 0;
 }
 
-// 浮出面板标题栏：锚点组（上级分组）的图标 + 标题 + 分隔线。
-// 负 margin 抵消面板 padding 通栏到顶，圆角裁切交给面板 overflow；
-// 左右 padding 与列表首行（level 0）图标对齐（面板 padding 4 + 行 padding-left 16）
 .mu-side-menu-popup__header {
-  display: flex;
-  gap: var(--mu-base-spacing);
-  align-items: center;
-  flex: none;
+  padding: 0 calc(var(--mu-base-spacing) * 2);
 
-  min-height: var(--mu-side-menu_item-height);
-  margin: calc(var(--mu-half-spacing) * -1) calc(var(--mu-half-spacing) * -1) 0;
-  padding: 0 calc(var(--mu-base-spacing) * 2 + var(--mu-half-spacing));
-
-  border-bottom: 1px solid var(--mu-border-color-soft);
-
-  .mu-side-menu__item-icon {
-    flex: none;
-    justify-content: center;
-  }
-
-  &:not([disabled]) {
-    cursor: pointer;
-
-    &:hover {
-      background: var(--mu-gray-translucent);
-    }
-  }
-
-  &[disabled] {
-    cursor: default;
-    color: var(--mu-text-color-muted);
-  }
+  font-size: var(--mu-font-size-large);
+  font-weight: 600;
+  line-height: var(--mu-side-menu_item-height);
+  color: var(--mu-text-color-subtle);
 }
 
-// 浮出面板的上下左右留白统一由面板自身 padding(4px) 提供，列表不再叠加
 .mu-side-menu-popup .mu-side-menu__list {
   padding: 0;
-}
-
-.mu-side-menu-popup--favorites .mu-side-menu__item:not([group]) {
-  padding-right: calc(var(--mu-base-spacing) * 4);
 }
