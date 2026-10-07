@@ -120,19 +120,34 @@
     return $t('Pagination.CURRENT', props.pageIndex + 1)
   })
 
-  // 整行内容宽：直接子元素 rect 跨度（含 gap 与 margin）
+  // 整行内容宽：直接子元素 rect 跨度（含 gap 与 margin）。
+  // label 带 overflow:hidden，行溢出时被压缩出省略号、rect 跨度随之缩小，
+  // 须补回被裁剪宽度；首尾子元素 margin 计入 flex 行外尺寸（负自由空间
+  // 按含 margin 计算），漏算则临界宽度下 label 仍会被压出省略号
   function contentWidth () {
+    const children = rootEl.value.children
+
     let min = Infinity
     let max = -Infinity
+    let clipped = 0
 
-    for (const el of rootEl.value.children) {
+    for (const el of children) {
       const rect = el.getBoundingClientRect()
 
       if (rect.left < min) min = rect.left
       if (rect.right > max) max = rect.right
+
+      if (el.tagName === 'LABEL') {
+        const range = document.createRange()
+        range.selectNodeContents(el)
+        clipped += Math.max(0, range.getBoundingClientRect().width - rect.width)
+      }
     }
 
-    return max - min
+    const first = getComputedStyle(children[0])
+    const last = getComputedStyle(children[children.length - 1])
+
+    return max - min + clipped + parseFloat(first.marginLeft) + parseFloat(last.marginRight)
   }
 
   function innerWidth () {
