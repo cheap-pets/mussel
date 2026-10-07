@@ -44,7 +44,6 @@
 }
 
 .mu-side-menu__item {
-  // 缩进 = indent × level（弹层面板内 level 重置为 0 从头缩进，面板留白由 .mu-side-menu-popup padding 提供）
   --mu-side-menu_level: 0;
 
   cursor: pointer;
@@ -56,16 +55,12 @@
   width: 100%;
   min-height: var(--mu-side-menu_item-height);
   padding-right: calc(var(--mu-base-spacing) * 2);
-  padding-left: calc(
-    var(--mu-base-spacing) * 2 + var(--mu-side-menu_indent) * var(--mu-side-menu_level)
-  );
+  padding-left: calc(var(--mu-base-spacing) * 2 + var(--mu-side-menu_indent) * var(--mu-side-menu_level));
   border-radius: var(--mu-radius-control);
 
   font-size: var(--mu-font-size-normal);
   color: var(--mu-text-color-normal);
 
-  // 图标区与图标同宽（16px，由 mu-icon 默认尺寸决定）且居中：
-  // 折叠图标条仅截去右侧内容，图标横向位置与展开态一致，宽度过渡期间不横移
   & > .mu-side-menu__item-icon {
     display: inline-flex;
     flex: none;
@@ -135,17 +130,12 @@
 
   color: var(--mu-text-color-subtle);
 
-  // hover 命中需限定直接子级：组头 li 包含整个展开子树，
-  // 无 > 时 hover 组内任意位置会使整组星标全亮
   .mu-side-menu__node:hover > &,
   &[favorited] {
     display: inline-flex;
   }
 
-  &:hover {
-    color: var(--mu-primary-color);
-  }
-
+  &:hover,
   &[favorited] {
     color: var(--mu-warning-color);
   }
