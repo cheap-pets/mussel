@@ -104,3 +104,12 @@ innerWidth()   = rootEl.clientWidth − paddingLeft − paddingRight
   - 英文 locale（"Go to __ page"/"__ / page"）扫描零溢出、单调。
   - console 无错误/警告。
 - 环境备注：Playwright MCP 窗口处于后台时页面 `visibilityState: hidden`，rAF/ResizeObserver 停发，`sizechange` 不再派发；验证时以手动 `el.dispatchEvent(new CustomEvent('sizechange'))` 等价模拟（recalc 读真实 DOM 尺寸，链路等价）。见 `knowledge/pitfalls/`。
+
+### 后续修订（2026-10-07，label 截断样式引入后的测量修正）
+
+- 背景：本方案实施后，`> label` 新增 `overflow: hidden; text-overflow: ellipsis; white-space: nowrap`（0 档窄容器下文案优雅降级），`recalc` 更名 `calculateButtons`。
+- 新偏差：`overflow: hidden` 使 label 的 flex 自动最小宽度从 min-content 归零，行溢出时 label 吸收全部压缩量 → rect 跨度随截断缩小 → 收敛循环在 11 档即判定"放得下"，jumper label 被压出省略号（复现：520px/600px/680px 等各档下边界处"跳至/页"截断）。
+- 修复（`contentWidth()` 两处）：
+  1. 补回 label 被裁剪宽度：用 `Range.selectNodeContents` 测文本自然宽（亚像素精确；不用 `scrollWidth − clientWidth`——ellipsis 字形计入 scrollWidth 会高估，且整型取整）。
+  2. 计入首尾子元素 margin：flex 行外尺寸含首尾 margin（负自由空间按含 margin 计算），rect 跨度不含 → 临界宽度下 span ≤ inner 但自由空间实为负，label 仍被压出省略号（复现：613px，自然 span 612.67 ≤ 613 判过，"页"右 margin 4px 使实际自由空间 −3.67）。
+- 验证（table demo，20 页 + sizeOptions + quickJumper，280–1000px 升/降序扫描）：档位恒 {0,7,9,11}、单调、按钮模式全宽度段 label 零截断；边界精确（9 档外尺寸 616.7 → 617px 起 9 档、616px 仍 7 档）；0 档 ≤380px 文本省略号为既定降级；console 无错误。
