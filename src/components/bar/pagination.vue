@@ -1,5 +1,5 @@
 <template>
-  <div class="mu-toolbar mu-pagination" @sizechange="calcMaxPageButtonsCount">
+  <div ref="rootEl" class="mu-toolbar mu-pagination" @sizechange="onSizeChange">
     <mu-icon-button
       icon="chevronLeft"
       button-style="text"
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, provide, inject, watch } from 'vue'
+  import { ref, computed, provide, inject, watch, onMounted, onUnmounted, nextTick } from 'vue'
   import { throttle } from 'throttle-debounce'
   import { t as $t } from '@/langs'
 
@@ -62,8 +62,11 @@
     'update:page-size'
   ])
 
+  const rootEl = ref(null)
   const injectedToolSize = inject('toolSize', {})
-  provide('toolSize', computed(() => props.size || injectedToolSize.value))
+  const effectiveSize = computed(() => props.size || injectedToolSize.value)
+
+  provide('toolSize', effectiveSize)
 
   const maxPageButtonsCount = ref(0)
 
@@ -117,18 +120,53 @@
     return $t('Pagination.CURRENT', props.pageIndex + 1)
   })
 
-  const calcMaxPageButtonsCount = throttle(
-    50,
-    event => {
-      const clientWidth = event.target.clientWidth
-      const btnWidth = props.size === 'small' ? 28 : 32
-      const w = clientWidth - 16 - (sizeOptions.value ? 105 : (props.pageSize ? 55 : 0)) - (props.quickJumper ? 115 : 0)
-      const t = w / (btnWidth + 5) - 4
+  // 整行内容宽：直接子元素 rect 跨度（含 gap 与 margin）
+  function contentWidth () {
+    let min = Infinity
+    let max = -Infinity
 
-      maxPageButtonsCount.value = t >= 11 ? 11 : (t >= 9 ? 9 : (t >= 7 ? 7 : 0))
-    },
-    { noLeading: true }
-  )
+    for (const el of rootEl.value.children) {
+      const rect = el.getBoundingClientRect()
+
+      if (rect.left < min) min = rect.left
+      if (rect.right > max) max = rect.right
+    }
+
+    return max - min
+  }
+
+  function innerWidth () {
+    const el = rootEl.value
+    const style = getComputedStyle(el)
+
+    return el.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+  }
+
+  // 收敛代数：新的 calculateButtons 使进行中的旧循环作废
+  let generation = 0
+  let destroyed = false
+
+  // 从 11 向下收敛到首个放得下的奇数档；都放不下则 0（降级文本模式）。
+  // t 限奇数：pages 算法 n=(t-3)/2 对偶数 t 产生半整数页码
+  async function calculateButtons () {
+    if (destroyed || !rootEl.value) return
+
+    const gen = ++generation
+
+    if (innerWidth() <= 0) {
+      maxPageButtonsCount.value = 0
+      return
+    }
+
+    for (const t of [11, 9, 7]) {
+      maxPageButtonsCount.value = t
+      await nextTick()
+
+      if (destroyed || gen !== generation || contentWidth() <= innerWidth()) return
+    }
+
+    maxPageButtonsCount.value = 0
+  }
 
   function goto (pageIndex) {
     emit('update:page-index', pageIndex)
@@ -145,7 +183,20 @@
     emit('update:page-size', item.action)
   }
 
-  watch(() => props.size, calcMaxPageButtonsCount)
+  const onSizeChange = throttle(50, calculateButtons, { noLeading: true })
+
+  watch(
+    [effectiveSize, sizeOptions, () => props.quickJumper, count, () => props.pageIndex, () => props.pageSize],
+    () => calculateButtons()
+  )
+
+  onMounted(() => {
+    document.fonts?.ready.then(calculateButtons)
+  })
+
+  onUnmounted(() => {
+    destroyed = true
+  })
 </script>
 
 <style>
@@ -155,7 +206,10 @@
     font-size: var(--mu-font-size-small);
 
     & > label {
+      overflow: hidden;
       margin: 0 var(--mu-half-spacing);
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     & > .mu-button {
