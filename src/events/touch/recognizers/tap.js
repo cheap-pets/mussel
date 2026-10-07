@@ -14,7 +14,7 @@ export const tap = {
     ) {
       return false
     } else if (state === 'end') {
-      dispatchCustomEvent(ctx.el, 'tap', { canBubble: true, detail: { gestureState: touch } })
+      dispatchCustomEvent(ctx.el, 'tap', { detail: { gestureState: touch } })
       return true
     }
   },

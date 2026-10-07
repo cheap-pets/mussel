@@ -1,7 +1,7 @@
 export function dispatchCustomEvent (el, type, options) {
   return el.dispatchEvent(
     new CustomEvent(type, {
-      canBubble: false,
+      bubbles: false,
       cancelable: true,
       ...options
     })

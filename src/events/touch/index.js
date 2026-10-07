@@ -21,17 +21,19 @@ function interceptorAdd (type, listener, options) {
 }
 
 function interceptorRemove (type, listener, options) {
-  if (!this[GESTURE_CONTEXT_PROP]) return
+  const ctx = this[GESTURE_CONTEXT_PROP]
 
-  const listeners = this[GESTURE_CONTEXT_PROP][type]
+  if (!ctx) return
+
+  const listeners = ctx.listeners[type]
   const idx = listeners?.indexOf(listener)
 
-  if (idx >= 0) {
-    listeners.splice(idx, 0)
+  if (!(idx >= 0)) return
 
-    if (!listeners.length) delete listeners[type]
-    if (Object.keys(listeners).length < 1) unbind(this, options)
-  }
+  listeners.splice(idx, 1)
+
+  if (!listeners.length) delete ctx.listeners[type]
+  if (!Object.keys(ctx.listeners).length) unbind(this, options)
 }
 
 if (typeof window !== 'undefined' && 'ontouchstart' in window) {
