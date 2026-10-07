@@ -41,6 +41,10 @@
 
 .mu-side-menu__node {
   position: relative;
+
+  & + .mu-side-menu__node {
+    margin-top: var(--mu-half-spacing);
+  }
 }
 
 .mu-side-menu__item {
@@ -48,6 +52,9 @@
 
   cursor: pointer;
 
+  position: relative;
+
+  overflow: hidden;
   display: flex;
   gap: var(--mu-base-spacing);
   align-items: center;
@@ -72,30 +79,27 @@
     min-height: var(--mu-side-menu_top-item-height);
   }
 
-  &:hover {
-    background: var(--mu-gray-translucent);
-  }
-
   &[active] {
     color: var(--mu-primary-color);
     background: var(--mu-primary-translucent);
   }
 
-  // 组头后代激活的半强度态：仅文字高亮（hover 背景不受影响）
-  &[active][group] {
+  &[group] {
     background: none;
-
-    &:hover {
-      background: var(--mu-gray-translucent);
-    }
   }
 
-  // 数据级禁用行：inert 拦截点击与 hover（模板绑定），此处只做视觉弱化，
-  // 置于行状态样式之后，同优先级下覆盖 active 等高亮
+  &:hover {
+    background: var(--mu-gray-translucent);
+  }
+
   &[inert] {
     cursor: default;
     color: var(--mu-text-color-muted);
     background: inherit;
+
+    & > .mu-side-menu__star {
+      display: none;
+    }
   }
 }
 
@@ -113,49 +117,32 @@
   flex: none;
 }
 
-// 叶子行右缘星标：hover 显现不占布局位，已收藏常显
-.mu-side-menu__favorite-btn {
+.mu-side-menu__star {
   cursor: pointer;
-
-  position: absolute;
-  top: 50%;
-  // 热区 24px（图标 16 + padding 4×2）右缘外扩，svg 右缘（right + padding 4 = 16）
-  // 与展开箭头一致对齐在距行右缘 16px（基础 padding）处
-  right: calc(var(--mu-base-spacing) * 2 - var(--mu-half-spacing));
-  translate: 0 -50%;
-
   display: none;
-
-  padding: var(--mu-half-spacing);
-
   color: var(--mu-text-color-subtle);
 
-  .mu-side-menu__node:hover > &,
-  &[favorited] {
+  .mu-side-menu__item:hover > &,
+  &[starred] {
     display: inline-flex;
   }
 
   &:hover,
-  &[favorited] {
+  &[starred] {
     color: var(--mu-warning-color);
   }
 }
 
-// 启用收藏时叶子行右侧预留星标位（热区右缘 20px + 宽 24px），避免 label 与星标重叠
-// （折叠图标条上无星标，不占位；弹层面板 Teleport 脱离主菜单类，需并列选择器）
-.mu-side-menu--favorites:not(.mu-side-menu--collapsed) .mu-side-menu__item:not([group]),
-.mu-side-menu-popup--favorites .mu-side-menu__item:not([group]) {
-  padding-right: calc(var(--mu-base-spacing) * 4);
-}
-
+// 组子菜单收展动画：单 fr 轨道（auto+fr 混合轨道过渡会使首轨道隆起，见知识库
+// grid-auto-track-fr-transition-bump）。内层 ul：min-height 0 + overflow hidden 使
+// 0fr 可收到 0；组头行间距须放裁剪区内首子节点 margin（group 自身 margin 会计入
+// 0fr 轨道尺寸，收起时泄漏）
 .mu-side-menu__group {
+  overflow: hidden;
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows .15s ease;
 
-  &[expanded] {
-    grid-template-rows: 1fr;
-  }
 
   & > ul {
     overflow: hidden;
@@ -165,6 +152,11 @@
     padding: 0;
 
     list-style: none;
+  }
+
+  &[expanded] {
+    grid-template-rows: 1fr;
+    padding-top: var(--mu-half-spacing);
   }
 }
 
@@ -186,14 +178,9 @@
   }
 }
 
-// 折叠图标条：仅图标可见、保留原 padding-left（图标区位置不变），
-// label 隐藏（item 插槽内容按 collapsed 自行适配）
 .mu-side-menu--collapsed {
-  .mu-side-menu__item {
-    padding-right: 0;
-  }
-
-  .mu-side-menu__item-label {
+  & .mu-side-menu__item-label,
+  & .mu-side-menu__star {
     display: none;
   }
 }
@@ -225,12 +212,9 @@
   flex-direction: column;
   gap: var(--mu-half-spacing);
 
-  // 宽度按内容自适应，夹在 [min, max]；超长文本 ellipsis
   width: max-content;
   min-width: var(--mu-side-menu_popup-min-width);
   max-width: var(--mu-side-menu_popup-max-width);
-
-  // 上下留白与 JS 定位的 MARGIN 对应
   max-height: calc(100vh - 16px);
   padding: var(--mu-half-spacing);
   border-radius: var(--mu-radius-panel);

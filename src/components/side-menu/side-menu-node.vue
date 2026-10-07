@@ -1,6 +1,7 @@
 <template>
-  <li v-if="renderable" class="mu-side-menu__node">
-    <!-- 菜单交互为鼠标驱动：div 承载（无原生键盘焦点），键盘支持暂缓，决策见 git 历史 -->
+  <li
+    v-if="!keyless"
+    class="mu-side-menu__node">
     <div
       ref="rowEl"
       class="mu-side-menu__item"
@@ -10,8 +11,6 @@
       :active="isRowActive || null"
       :group="isGroup || null"
       :expanded="(isGroup && !popupRow && groupExpanded) || null"
-      :aria-expanded="isGroup && !popupRow ? String(groupExpanded) : null"
-      :aria-current="active ? 'page' : null"
       :data-key="data.key"
       :data-favorites="inFavoritesGroup || null"
       :title="(!railMode && data.title) || null"
@@ -27,18 +26,15 @@
         v-if="expandIcon"
         class="mu-side-menu__item-expand-icon"
         :icon="expandIcon" />
+      <div
+        v-if="showFavoriteBtn"
+        class="mu-side-menu__star"
+        :starred="starred || null"
+        @click.stop="onFavoriteClick">
+        <mu-icon :icon="starred ? 'starred' : 'star'" />
+      </div>
     </div>
-    <div
-      v-if="showFavoriteBtn"
-      class="mu-side-menu__favorite-btn"
-      :favorited="favorited || null"
-      @click.stop="onFavoriteClick">
-      <mu-icon :icon="favorited ? 'starred' : 'star'" />
-    </div>
-    <div
-      v-if="isGroup && !popupRow"
-      class="mu-side-menu__group"
-      :expanded="groupExpanded || null">
+    <div v-if="isGroup && !popupRow" class="mu-side-menu__group" :expanded="groupExpanded || null">
       <ul :inert="!groupExpanded || null">
         <side-menu-node
           v-for="(child, index) in data.childNodes"
@@ -123,16 +119,18 @@
       : 'chevronDown'
   })
 
-  const renderable = computed(() => data.value.key != null)
+  const keyless = computed(() => data.value.key == null)
 
-  const favorited = computed(() =>
+  const starred = computed(() =>
     favoritesEnabled.value && menu.favoritesSet.value.has(data.value.key)
   )
 
-  // 收藏星标：叶子行右缘；折叠图标条上不显示（弹层面板内同一组件行为一致）
+  // 收藏星标：叶子行右缘；折叠图标条上不显示（弹层面板内同一组件行为一致）。
+  // 收藏组头不可收藏：无收藏项时组退化为伪叶子行，同样排除
   const showFavoriteBtn = computed(() =>
     favoritesEnabled.value &&
     !isGroup.value &&
+    data.value.key !== FAVORITES_KEY &&
     (!collapsed.value || popup)
   )
 
@@ -190,12 +188,6 @@
     }
   }
 
-  // 卸载：行被移除不再派发 mouseleave，清 pending showTimer 并释放显示中的 tooltip
-  onBeforeUnmount(() => {
-    tipHandlers?.dispose()
-    releaseTip()
-  })
-
   if (railRow && tooltip) {
     watch(railMode, value => !value && releaseTip())
   }
@@ -204,8 +196,14 @@
     menu.toggleFavorite(props.node)
   }
 
+  // 卸载：行被移除不再派发 mouseleave，清 pending showTimer 并释放显示中的 tooltip
+  onBeforeUnmount(() => {
+    tipHandlers?.dispose()
+    releaseTip()
+  })
+
   if (isDev) {
-    if (!renderable.value) {
+    if (keyless.value) {
       console.warn(
         '[MUSSEL:SideMenu]',
         `Node is missing the "${keyProp.value}" field and has been skipped:`,

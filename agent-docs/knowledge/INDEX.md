@@ -27,6 +27,15 @@
 - [桌面环境下触摸手势的运行时验证](./pitfalls/touch-gesture-runtime-verification.md)
   桌面 Chrome 无 `'ontouchstart'` 导致手势拦截器不注册；伪造门槛（addInitScript）+ 合成触摸事件 + `page.clock` 驱动长按计时，可在桌面完整验证 tap / press 与 bind/unbind 清账。
 
+- [inert 子树内元素不参与 hit-test](./pitfalls/inert-subtree-no-hover-no-click.md)
+  inert 元素整棵子树不匹配 `:hover`、鼠标事件不派发；hover 显现/可点的附属元素（如收藏星标）移入 inert 行内即失效，置于 inert 容器外不受影响。
+
+- [grid 0fr 收缩轨道计入 item margin](./pitfalls/grid-0fr-track-margin-leak.md)
+  `grid-template-rows: 0fr` 收起动画中 item 的 margin 泄漏进轨道尺寸（收起残留空隙）；间距须放进 overflow hidden 裁剪区内的首子元素上。
+
+- [grid 过渡中 auto 轨道被 fr 插值隆起](./pitfalls/grid-auto-track-fr-transition-bump.md)
+  `auto 0fr ↔ auto 1fr` 过渡中 content-based 轨道每帧按 fr 中间态重解析、钟形膨胀（行内内容抖动）；首轨道须用确定长度或单 fr 轨道独立成动画容器。
+
 ## Constraints
 
 - [国际化：locale 无响应式，运行时不可切换](./constraints/langs-locale-not-reactive.md)

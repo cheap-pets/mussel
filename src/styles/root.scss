@@ -50,6 +50,7 @@ $SEMANTIC_COLORS: (
   --mu-border-color-soft: var(--mu-gray-4);
 
   --mu-bg-normal: #fff;
+  --mu-bg-muted: rgb(from var(--mu-gray-19) r g b / 0.04);
   --mu-bg-strong: rgb(from var(--mu-gray-19) r g b / 0.08);
   --mu-bg-disabled: rgb(from var(--mu-gray-19) r g b / 0.12);
 
@@ -105,6 +106,7 @@ $SEMANTIC_COLORS: (
   --mu-border-color-soft: var(--mu-gray-12);
 
   --mu-bg-normal: var(--mu-gray-19);
+  --mu-bg-muted: rgb(from var(--mu-gray-0) r g b / 0.04);
   --mu-bg-strong: rgb(from var(--mu-gray-0) r g b / 0.08);
   --mu-bg-disabled: rgb(from var(--mu-gray-0) r g b / 0.12);
 

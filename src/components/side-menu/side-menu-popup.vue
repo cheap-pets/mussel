@@ -10,7 +10,6 @@
       <div class="mu-side-menu-popup__header text-ellipsis">
         {{ groupLabel }}
       </div>
-      <div class="flex-divider" />
       <mu-scroll-box class="mu-side-menu-popup__body">
         <ul class="mu-side-menu__list">
           <side-menu-node
