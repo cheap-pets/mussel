@@ -82,6 +82,7 @@ export function attach (el) {
 
     ctx.mutationObserver = new window.MutationObserver(onChange)
     ctx.mutationObserver.observe(el, {
+      characterData: true,
       attributes: true,
       childList: true,
       subtree: true

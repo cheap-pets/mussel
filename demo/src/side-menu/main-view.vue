@@ -11,7 +11,7 @@
         v-model:active-item="active1"
         aria-label="主导航菜单"
         style="height: 420px"
-        :data="menus"
+        :items="menus"
         @select="onEvent('select', $event)"
         @item-click="onEvent('itemClick', $event)" />
       <p>active: {{ active1 ?? 'none' }}</p>
@@ -24,26 +24,22 @@
     </div>
 
     <div class="demo-panel">
-      <h3>2. Accordion + v-model:expanded-keys (default-expand-all ignored)</h3>
+      <h3>2. Accordion + auto-expand-level (initial fill ignores accordion)</h3>
       <mu-side-menu
         v-model:active-item="active2"
-        v-model:expanded-keys="expandedKeys"
         accordion
-        default-expand-all
+        :auto-expand-level="1"
         style="height: 420px"
-        :data="menus"
-        @group-expand="onEvent('groupExpand', $event)"
-        @group-collapse="onEvent('groupCollapse', $event)" />
-      <p>expanded: {{ expandedKeys }}</p>
+        :items="menus" />
     </div>
 
     <div class="demo-panel">
-      <h3>3. Auto Expand + Scroll + default-expand-all (async)</h3>
+      <h3>3. Auto Expand + Scroll + auto-expand-level (async)</h3>
       <mu-side-menu
         v-model:active-item="active3"
-        default-expand-all
+        :auto-expand-level="1"
         style="height: 300px"
-        :data="asyncMenus"
+        :items="asyncMenus"
         @select="onEvent('select', $event)" />
       <p>active: {{ active3 ?? 'none' }}</p>
       <mu-button @click="active3 = 'g8-i2'">
@@ -63,7 +59,7 @@
         collapse-button
         width="220px"
         style="height: 420px"
-        :data="menus">
+        :items="menus">
         <template #header="{ collapsed }">
           <div class="demo-menu-header">
             <mu-icon icon="star" />
@@ -92,13 +88,13 @@
         v-model:favorites="favorites"
         accordion
         style="height: 420px"
-        :data="menus"
+        :items="menus"
         @favorite-toggle="onEvent('favoriteToggle', $event)" />
       <p>favorites: {{ favorites }}</p>
       <h4>Not bound (uncontrolled, internal state)</h4>
       <mu-side-menu
         style="height: 200px"
-        :data="menus" />
+        :items="menus" />
     </div>
 
     <div class="demo-panel">
@@ -107,36 +103,37 @@
         v-model:active-item="active6"
         :disabled="rootDisabled"
         style="height: 260px"
-        :data="menus" />
+        :items="menus" />
       <mu-button @click="rootDisabled = !rootDisabled">
         Toggle Root Disabled ({{ rootDisabled }})
       </mu-button>
     </div>
 
     <div class="demo-panel">
-      <h3>7. Field Props Mapping + accordion + default-expand-all</h3>
+      <h3>7. Popup Mutex With Dropdown</h3>
       <mu-side-menu
         v-model:active-item="active7"
-        accordion
-        default-expand-all
-        style="height: 300px"
-        :data="mappedMenus"
-        :props="{ key: 'code', label: 'name', childNodes: 'children' }" />
-    </div>
-
-    <div class="demo-panel">
-      <h3>8. Popup Mutex With Dropdown</h3>
-      <mu-side-menu
-        v-model:active-item="active8"
-        v-model:collapsed="collapsed8"
+        v-model:collapsed="collapsed7"
         collapse-button
         style="height: 260px"
-        :data="menus" />
+        :items="menus" />
       <mu-dropdown :dropdown-items="ddItems">
         <mu-button>
           Dropdown
         </mu-button>
       </mu-dropdown>
+    </div>
+
+    <div class="demo-panel">
+      <h3>8. Rail (top level icon-only, fixed; collapse-button hidden)</h3>
+      <mu-side-menu
+        v-model:active-item="active8"
+        v-model:collapsed="collapsed8"
+        collapse-button
+        rail
+        style="height: 260px"
+        :items="menus" />
+      <p>collapsed: {{ collapsed8 }} (ignored under rail)</p>
     </div>
 
     <div class="demo-panel" style="width: 100%">
@@ -167,20 +164,38 @@
       id: 'group',
       icon: 'folder',
       label: '项目管理',
-      childNodes: [
+      items: [
         { id: 'project-list', icon: 'file', label: '项目列表' },
         { id: 'project-plan', icon: 'file', label: '计划管理（禁用）', disabled: true },
         {
           id: 'project-report',
           icon: 'folder',
           label: '报表',
-          childNodes: [
+          items: [
             { id: 'report-weekly', icon: 'file', label: '周报' },
             { id: 'report-monthly', icon: 'file', label: '月报' },
             { id: 'report-quarter', icon: 'file', label: '季度工程质量检验汇总报告' },
             { id: 'report-acceptance', icon: 'file', label: '验收报表' },
             { id: 'report-settlement', icon: 'file', label: '结算报表' },
-            { id: 'report-annual', icon: 'file', label: '年度建设工程项目质量检验数据统计汇总分析与报表导出中心' }
+            { id: 'report-annual', icon: 'file', label: '年度建设工程项目质量检验数据统计汇总分析与报表导出中心' },
+            {
+              id: 'report-custom',
+              icon: 'folder',
+              label: '自定义报表',
+              items: [
+                { id: 'report-custom-daily', icon: 'file', label: '日报' },
+                { id: 'report-custom-realtime', icon: 'file', label: '实时报表' }
+              ]
+            },
+            {
+              id: 'report-finance',
+              icon: 'folder',
+              label: '财务报表',
+              items: [
+                { id: 'report-finance-budget', icon: 'file', label: '预算报表' },
+                { id: 'report-finance-audit', icon: 'file', label: '审计报表' }
+              ]
+            }
           ]
         }
       ]
@@ -189,7 +204,7 @@
       id: 'quality',
       icon: 'bolt',
       label: '质量管理',
-      childNodes: [
+      items: [
         { id: 'quality-inspect', icon: 'file', label: '质量检验' },
         { id: 'quality-issue', icon: 'file', label: '问题跟踪' },
         { id: 'quality-history', icon: 'file', label: '建设工程项目质量检验历史记录查询' },
@@ -201,7 +216,6 @@
 
   const active1 = ref()
   const active2 = ref('quality-inspect')
-  const expandedKeys = ref(['group'])
 
   const active3 = ref('g2-i1')
 
@@ -210,7 +224,7 @@
       id: `g${gi}`,
       icon: 'folder',
       label: `分组 ${gi}`,
-      childNodes: Array.from({ length: 3 }, (_, ii) => ({
+      items: Array.from({ length: 3 }, (_, ii) => ({
         id: `g${gi}-i${ii}`,
         icon: 'file',
         label: `项目 ${gi}-${ii}`
@@ -239,32 +253,11 @@
   const active6 = ref('home')
   const rootDisabled = ref(false)
 
-  const active7 = ref('c2')
-
-  const mappedMenus = [
-    {
-      code: 'c1',
-      icon: 'album',
-      name: '映射分组',
-      children: [
-        { code: 'c2', icon: 'file', name: '映射叶子 1' },
-        { code: 'c3', icon: 'file', name: '映射叶子 2' }
-      ]
-    },
-    {
-      code: 'c5',
-      icon: 'album',
-      name: '映射分组 2',
-      children: [
-        { code: 'c6', icon: 'file', name: '映射叶子 3' },
-        { code: 'c7', icon: 'file', name: '映射叶子 4' }
-      ]
-    },
-    { code: 'c4', icon: 'flag', name: '映射独立项' }
-  ]
+  const active7 = ref()
+  const collapsed7 = ref(true)
 
   const active8 = ref()
-  const collapsed8 = ref(true)
+  const collapsed8 = ref(false)
 
   const ddItems = ref([
     { caption: 'Action 1', action: 'a1' },

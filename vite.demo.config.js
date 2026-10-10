@@ -101,6 +101,12 @@ function copyHtmlFiles () {
       if (existsSync(rootIndexHtml)) {
         copyFileSync(rootIndexHtml, resolve(__dirname, 'demo/dist/index.html'))
       }
+
+      const faviconPath = resolve(__dirname, 'demo/src/common/favicon.svg')
+
+      if (existsSync(faviconPath)) {
+        copyFileSync(faviconPath, resolve(__dirname, 'demo/dist/favicon.svg'))
+      }
     }
   }
 }

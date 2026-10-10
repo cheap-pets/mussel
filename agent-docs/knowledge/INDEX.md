@@ -36,6 +36,18 @@
 - [grid 过渡中 auto 轨道被 fr 插值隆起](./pitfalls/grid-auto-track-fr-transition-bump.md)
   `auto 0fr ↔ auto 1fr` 过渡中 content-based 轨道每帧按 fr 中间态重解析、钟形膨胀（行内内容抖动）；首轨道须用确定长度或单 fr 轨道独立成动画容器。
 
+- [watch immediate 回调的 TDZ 陷阱](./pitfalls/watch-immediate-callback-tdz.md)
+  `immediate: true` 回调在 watch() 返回前同步执行，回调内引用 unwatch 句柄或后置声明变量会 ReferenceError；标志前置 + nextTick 停表。
+
+- [级联延时收起：hide 不可向上清祖先计时器](./pitfalls/cascade-delay-hide-clears-ancestor-timer.md)
+  整链同延时臂定后先触发的 hide 若向上清，会取消祖先未触发的计时器、链滞留成孤儿；hide 只清自身，向上清仅限 mouseenter 保活与 delayHide 重臂。
+
+- [响应式 style patch 异步：递归重定位读到旧 rect](./pitfalls/reactive-style-patch-vs-recursive-rect-read.md)
+  同步递归链中子层读父面板内锚点 rect 时，父面板样式尚未 patch 落地；递归前须清旧键后同步 Object.assign(el.style, style)。
+
+- [被滚动裁剪容器滚出的行 rect 仍在视口内](./pitfalls/clipped-row-rect-still-in-viewport.md)
+  `isElementInViewport` 只查窗口边界，被 `mu-scroll-box` 裁剪滚出的行误报可见；锚点可见性须再与裁剪容器可见矩形求交。
+
 ## Constraints
 
 - [国际化：locale 无响应式，运行时不可切换](./constraints/langs-locale-not-reactive.md)

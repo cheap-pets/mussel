@@ -1,7 +1,5 @@
 <template>
-  <li
-    v-if="!keyless"
-    class="mu-side-menu__node">
+  <div v-if="!keyless" class="mu-side-menu__node">
     <div
       ref="rowEl"
       class="mu-side-menu__item"
@@ -10,58 +8,51 @@
       :inert="isDisabled || null"
       :active="isRowActive || null"
       :group="isGroup || null"
-      :expanded="(isGroup && !popupRow && groupExpanded) || null"
-      :data-key="data.key"
-      :data-favorites="inFavoritesGroup || null"
-      :title="(!railMode && data.title) || null"
+      :expanded="(!popupRow && groupExpanded) || null"
+      :data-key="inFavoritesGroup ? null : node.id"
+      :title="rowTitle"
       @click="onClick"
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave">
-      <mu-icon
-        v-if="data.icon"
-        class="mu-side-menu__item-icon"
-        :icon="data.icon" />
-      <span class="mu-side-menu__item-label">{{ data.label }}</span>
-      <mu-icon
-        v-if="expandIcon"
-        class="mu-side-menu__item-expand-icon"
-        :icon="expandIcon" />
+      <mu-icon class="mu-side-menu__item-icon" :icon="node.icon" />
+      <span ref="labelEl" class="mu-side-menu__item-label">{{ node.label }}</span>
+      <mu-icon v-if="expandIcon" class="mu-side-menu__item-expand-icon" :icon="expandIcon" />
       <div
-        v-if="showFavoriteBtn"
-        class="mu-side-menu__star"
+        v-else-if="showFavoriteBtn"
+        class="mu-side-menu__item-star"
         :starred="starred || null"
         @click.stop="onFavoriteClick">
         <mu-icon :icon="starred ? 'starred' : 'star'" />
       </div>
     </div>
     <div v-if="isGroup && !popupRow" class="mu-side-menu__group" :expanded="groupExpanded || null">
-      <ul :inert="!groupExpanded || null">
+      <div class="mu-side-menu__sublist" :inert="!groupExpanded || null">
         <side-menu-node
-          v-for="(child, index) in data.childNodes"
-          :key="child[keyProp] ?? index"
+          v-for="(child, index) in node.items"
+          :key="child.id ?? index"
           :node="child"
           :level="level + 1"
-          :parent-keys="keyPath" />
-      </ul>
+          :in-favorites="inFavoritesGroup" />
+      </div>
     </div>
-  </li>
+  </div>
 </template>
 
 <script setup>
-  import { computed, shallowRef, inject, watch, onBeforeUnmount } from 'vue'
+  import { computed, shallowRef, inject, provide } from 'vue'
+
+  import { FAVORITES_KEY, warnDeepLevel, createExpandToggle } from './side-menu'
   import { isDev } from '@/env'
-  import { createTooltipAnchorHandlers } from '../tooltip/tooltip-core'
-  import { FAVORITES_KEY, warnDeepLevel } from './side-menu'
 
   defineOptions({ name: 'MusselSideMenuNode' })
 
-  const props = defineProps(['node', 'level', 'parentKeys'])
-
+  const props = defineProps(['node', 'level', 'inFavorites'])
   const menu = inject('sideMenu')
 
+  // 行所在列表的展开 toggle：accordion 互斥由渲染该级列表的组件处理
+  const toggleExpand = inject('sideMenuExpandToggle')
+
   const {
-    nodeProps,
-    keyProp,
     collapsed,
     popup,
     activeItem,
@@ -69,48 +60,40 @@
     favoritesEnabled
   } = menu
 
-  const data = computed(() => Object.fromEntries(
-    Object
-      .entries(nodeProps.value)
-      .map(([key, prop]) => [key, props.node[prop]])
-  ))
+  const labelEl = shallowRef()
+  const overflowed = shallowRef(false)
 
-  const isGroup = computed(() => !!data.value.childNodes?.length)
-
-  // 折叠态图标条：仅一级项渲染（图标 + tooltip / 弹层），子树不渲染
+  const node = computed(() => props.node)
   const railMode = computed(() => collapsed.value && !popup && !props.level)
+  const isDisabled = computed(() => !!node.value.disabled)
+  const isGroup = computed(() => !!node.value.items?.length)
 
-  // hover 浮出子菜单面板的组头：折叠 rail 上的一级组、展开态下的二级组（浮出为既定交互，
-  // 面板顶部带锚点组标题栏，见 side-menu-popup）；弹层内的组仍为内联展开
-  const popupRow = computed(() =>
-    isGroup.value &&
-    !popup &&
-    (collapsed.value ? !props.level : props.level === 1)
+  const rowTitle = computed(() => (
+    (railMode.value ? !isGroup.value : overflowed.value) && node.value.label) ||
+    null
   )
 
-  // 数据级 disabled；根级禁用由容器的 class + inert 整体控制
-  const isDisabled = computed(() => !!data.value.disabled)
-
-  const keyPath = computed(() => [...(props.parentKeys || []), data.value.key])
+  const popupRow = computed(() => {
+    if (!isGroup.value) return false
+    // 弹层内组行：hover 继续浮出下一层；主树：折叠态一级组 / 展开态二级组（R2 定稿）
+    if (popup) return true
+    return collapsed.value ? !props.level : props.level === 1
+  })
 
   const active = computed(() =>
     !isGroup.value &&
-    data.value.key != null &&
-    data.value.key === activeItem.value
+    node.value.id != null &&
+    node.value.id === activeItem.value
   )
 
-  // 激活行，或激活项祖先组头的半强度态；收藏组为派生组，由原树构造的
-  // activePath 永不含 FAVORITES_KEY，组头天然不进入激活态
   const isRowActive = computed(() =>
-    active.value || activePath.value.has(data.value.key)
+    active.value || activePath.value.has(node.value.id)
   )
 
   const groupExpanded = computed(() =>
-    isGroup.value && menu.isExpanded(data.value.key)
+    isGroup.value && menu.isExpanded(node.value)
   )
 
-  // 图标固定：展开为 chevronDown，收起为 chevronRight；
-  // 浮出组无内联展开态，恒为 chevronRight 指示浮出方向
   const expandIcon = computed(() => {
     if (!isGroup.value || railMode.value) return null
 
@@ -119,94 +102,70 @@
       : 'chevronDown'
   })
 
-  const keyless = computed(() => data.value.key == null)
+  const keyless = computed(() => node.value.id == null)
+  const starred = computed(() => favoritesEnabled.value && menu.favoritesSet.value.has(node.value.id))
 
-  const starred = computed(() =>
-    favoritesEnabled.value && menu.favoritesSet.value.has(data.value.key)
-  )
-
-  // 收藏星标：叶子行右缘；折叠图标条上不显示（弹层面板内同一组件行为一致）。
-  // 收藏组头不可收藏：无收藏项时组退化为伪叶子行，同样排除
   const showFavoriteBtn = computed(() =>
     favoritesEnabled.value &&
     !isGroup.value &&
-    data.value.key !== FAVORITES_KEY &&
+    node.value.id !== FAVORITES_KEY &&
     (!collapsed.value || popup)
   )
 
-  // 行位于收藏组内（收藏副本标记，容器的滚动定位据此排除）
-  const inFavoritesGroup = computed(() => props.parentKeys?.[0] === FAVORITES_KEY)
+  const inFavoritesGroup = computed(() =>
+    props.inFavorites || node.value.id === FAVORITES_KEY
+  )
+
+  function checkOverflow () {
+    const el = labelEl.value
+    overflowed.value = el.scrollWidth > el.clientWidth
+  }
 
   function onClick () {
     if (isDisabled.value) return
 
-    menu.onItemClick(props.node, keyPath.value)
+    menu.onItemClick(props.node)
 
     if (!isGroup.value) {
-      menu.onSelectItem(props.node, keyPath.value)
+      menu.onSelectItem(props.node)
     } else if (!popupRow.value) {
-      menu.setExpanded(data.value.key, !groupExpanded.value)
+      toggleExpand(node.value)
     }
   }
 
-  // 折叠图标条的 tooltip（一级叶子）与子菜单弹层（一级组）。
-  // rail 态仅存在于主菜单一级行，tooltip 处理器与监听据此收窄，深层与弹层内行不建
-  const tooltip = menu.tooltip
+  // 本组子列表：为其子行提供同级互斥的展开 toggle
+  provide('sideMenuExpandToggle', createExpandToggle(menu, () => node.value.items))
+
+  // 组行 hover 浮出下一层弹层；tooltip 已由原生 title 属性替代。
+  // 主树锚点为折叠态一级组 / 展开态二级组（R2 定稿），弹层内组行逐层级联
   const rowEl = shallowRef()
-  const railRow = !popup && !props.level
-
-  // 恒为 handlers 或 undefined（布尔短路会得到 false，?. 不短路会炸掉）
-  const tipHandlers = railRow && tooltip
-    ? createTooltipAnchorHandlers(
-      tooltip,
-      () => rowEl.value,
-      () => ({ content: data.value.title || data.value.label, placement: 'right' })
-    )
-    : undefined
-
-  function releaseTip () {
-    if (tooltip?.state.anchor === rowEl.value) {
-      tooltip.hide()
-    }
-  }
 
   function onMouseEnter () {
     if (isDisabled.value) return
 
+    // 同步检测并更新响应式 overflowed，浏览器 title 计时从指针进入起算，同步赋值不误显示时机
+    if (!railMode.value) checkOverflow()
+
     if (popupRow.value) {
       menu.openPopup(rowEl.value, props.node)
-    } else if (railMode.value) {
-      tipHandlers?.mouseenter()
     }
   }
 
   function onMouseLeave () {
     if (popupRow.value) {
       menu.delayPopupHide()
-    } else if (railMode.value) {
-      tipHandlers?.mouseleave()
     }
-  }
-
-  if (railRow && tooltip) {
-    watch(railMode, value => !value && releaseTip())
   }
 
   function onFavoriteClick () {
     menu.toggleFavorite(props.node)
   }
 
-  // 卸载：行被移除不再派发 mouseleave，清 pending showTimer 并释放显示中的 tooltip
-  onBeforeUnmount(() => {
-    tipHandlers?.dispose()
-    releaseTip()
-  })
-
   if (isDev) {
     if (keyless.value) {
       console.warn(
         '[MUSSEL:SideMenu]',
-        `Node is missing the "${keyProp.value}" field and has been skipped:`,
+        'Node is missing the "id" field and has been skipped:',
         props.node
       )
     } else if (props.level > 2) {

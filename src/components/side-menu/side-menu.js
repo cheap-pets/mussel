@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { ref } from 'vue'
 
 // 启用 favorites 时内置「我的收藏」一级组的保留 key
 export const FAVORITES_KEY = '__favorites__'
@@ -17,177 +17,78 @@ export function warnDeepLevel () {
 }
 
 /**
- * 侧边菜单展开状态：keys 集合，受控 / 非受控二选一。
- * expandedKeys 为数组时以 props 为准（只读 + 发起 update:expanded-keys），
- * 否则用内部 Set（defaultExpandAll 时初始收集全部组 key）；accordion 展开时收拢同级已展开组。
- * walkTo / expandTo 只在 sourceData（原菜单树）上查找，收藏组为派生视图不参与。
+ * 侧边菜单展开状态：WeakSet 持有已展开节点数据的引用。
+ * 以节点对象为键，无需回树查父；items 刷新换对象后旧展开态随引用自然失效，
+ * 无需清理。WeakSet 本身无响应式，tick 变更驱动依赖 isExpanded 的视图更新。
  */
-export function useSideMenuExpand ({
-  data,
-  sourceData,
-  keyProp,
-  childProp,
-  expandedKeys,
-  defaultExpandAll,
-  accordion,
-  onChange
-}) {
-  const innerKeys = ref(new Set())
+export function useSideMenuExpand () {
+  const expandedNodes = new WeakSet()
+  const tick = ref(0)
 
-  const isControlled = computed(() => Array.isArray(expandedKeys.value))
-
-  const keys = computed(() =>
-    isControlled.value ? new Set(expandedKeys.value) : innerKeys.value
-  )
-
-  function commit (next) {
-    if (isControlled.value) expandedKeys.value = [...next]
-    else innerKeys.value = next
+  function isExpanded (node) {
+    void tick.value
+    return expandedNodes.has(node)
   }
 
-  function isGroup (node) {
-    return !!node?.[childProp.value]?.length
+  function setExpanded (node, value) {
+    if (!node || expandedNodes.has(node) === value) return
+
+    if (value) expandedNodes.add(node)
+    else expandedNodes.delete(node)
+
+    tick.value++
   }
 
-  // 根到 key 所在节点的路径（含目标，沿分组深入），未命中为空数组
-  function findPath (key, nodes = data.value) {
-    for (const node of nodes || []) {
-      if (node[keyProp.value] === key) return [node]
+  return { isExpanded, setExpanded }
+}
 
-      if (isGroup(node)) {
-        const sub = findPath(key, node[childProp.value])
-        if (sub.length) return [node, ...sub]
+// 原树根到 key 所在节点的路径（含目标，沿分组深入），未命中为空数组
+export function walkTo (key, nodes) {
+  for (const node of nodes || []) {
+    if (node.id === key) return [node]
+
+    if (node.items?.length) {
+      const sub = walkTo(key, node.items)
+      if (sub.length) return [node, ...sub]
+    }
+  }
+
+  return []
+}
+
+export function walk (items, level = 0, callback) {
+  if (!items?.length) return
+
+  for (const item of items) {
+    if (callback(item, level) === false) {
+      return false
+    }
+
+    walk(item.items, level + 1, callback)
+  }
+}
+
+// 展开 node，accordion 下先收起同级其他展开组；list 为 node 的同级集合
+export function expandExclusive (menu, list, node) {
+  if (menu.accordion.value) {
+    list.forEach(sibling => {
+      if (sibling !== node && sibling.items?.length) {
+        menu.setExpanded(sibling, false)
       }
-    }
-
-    return []
-  }
-
-  // 结构树（含收藏内置组）中按 key 取节点
-  function findNode (key) {
-    return findPath(key).at(-1) || null
-  }
-
-  function getSiblings (key) {
-    const path = findPath(key)
-
-    return !path.length
-      ? []
-      : path.length > 1
-        ? path[path.length - 2][childProp.value]
-        : data.value
-  }
-
-  function isExpanded (key) {
-    return keys.value.has(key)
-  }
-
-  // defaultExpandAll：非受控下一次性收集全部组 key（初始填充不追溯 accordion 收拢）；
-  // 初始 data 为空时等首次非空数据到达补一次，生命周期内仅此一次；受控模式忽略
-  let expandedAllOnce = false
-
-  function applyDefaultExpandAll () {
-    if (
-      expandedAllOnce ||
-      isControlled.value ||
-      !defaultExpandAll?.value ||
-      !sourceData.value?.length
-    ) return
-
-    expandedAllOnce = true
-
-    const groupKeys = new Set()
-
-    function walk (nodes) {
-      (nodes || []).forEach(node => {
-        if (isGroup(node)) {
-          groupKeys.add(node[keyProp.value])
-          walk(node[childProp.value])
-        }
-      })
-    }
-
-    walk(data.value)
-    innerKeys.value = groupKeys
-  }
-
-  watch(data, applyDefaultExpandAll)
-  applyDefaultExpandAll()
-
-  // 批量更新：一轮 Set 操作累积后单次 commit。
-  // 受控模式下 props 滞后于 emit，逐 key 提交时每次都从旧 props 重建集合，会互相覆盖
-  function update (entries) {
-    const next = new Set(keys.value)
-    let changed = false
-
-    for (const [key, value] of entries) {
-      if (!isGroup(findNode(key)) || next.has(key) === value) continue
-
-      if (value && accordion.value) {
-        getSiblings(key).forEach(sibling => {
-          const siblingKey = sibling[keyProp.value]
-
-          if (siblingKey !== key && isGroup(sibling) && next.delete(siblingKey)) {
-            onChange?.(siblingKey, false)
-          }
-        })
-      }
-
-      if (value) next.add(key)
-      else next.delete(key)
-
-      changed = true
-      onChange?.(key, value)
-    }
-
-    if (changed) commit(next)
-  }
-
-  function setExpanded (key, value) {
-    update([[key, value]])
-  }
-
-  function expand (...nodeKeys) {
-    update(nodeKeys.map(key => [key, true]))
-  }
-
-  function collapse (...nodeKeys) {
-    update(nodeKeys.map(key => [key, false]))
-  }
-
-  // 原树根到目标的节点路径（含目标），未命中为空数组
-  function walkTo (key) {
-    return findPath(key, sourceData.value)
-  }
-
-  // 展开到指定项的父链（含目标自身，目标为组时一并展开）
-  function expandTo (key) {
-    expand(...walkTo(key).map(node => node[keyProp.value]))
-  }
-
-  // data 刷新时清理已不存在（或不再是组）的展开 key；
-  // 数据未就绪/为空时跳过，避免异步刷新等场景误清全部展开态
-  // （守卫用 sourceData：data 为含内置收藏组的 rootData，收藏启用时即便 props.data 为空仍非空）
-  function prune () {
-    if (!sourceData.value?.length) return
-
-    const current = keys.value
-    const next = new Set()
-
-    current.forEach(key => {
-      if (isGroup(findNode(key))) next.add(key)
     })
-
-    if (next.size !== current.size) commit(next)
   }
 
-  return {
-    isExpanded,
-    setExpanded,
-    expand,
-    collapse,
-    expandTo,
-    walkTo,
-    prune
+  menu.setExpanded(node, true)
+}
+
+/**
+ * 列表级的组展开 toggle：accordion 下展开时互斥同级。
+ * 由渲染该级列表的组件持有（同级集合 = getList()，组件天然在手），
+ * 行组件经 provide/inject 取所在列表的 toggle 使用。
+ */
+export function createExpandToggle (menu, getList) {
+  return function toggle (node) {
+    if (menu.isExpanded(node)) menu.setExpanded(node, false)
+    else expandExclusive(menu, getList(), node)
   }
 }
