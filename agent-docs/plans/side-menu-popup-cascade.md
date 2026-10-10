@@ -2,7 +2,7 @@
 
 | 项目 | 内容 |
 |---|---|
-| 状态 | **已实施并验证**（2026-10-10，§7 15 条断言全部通过；实施中两处修订：§4.4 规则 3 hide 只清自身计时器、§4.6 updatePosition 同步写 DOM 后再递归子层）。同日第二批改造见 §8，已通过 playwright 回归（新行为 + 级联主路径 + 互斥/ESC/外点/换锚复用） |
+| 状态 | **已实施并验证**（2026-10-10，§7 15 条断言全部通过；实施中两处修订：§4.4 规则 3 hide 只清自身计时器、§4.6 updatePosition 同步写 DOM 后再递归子层）。同日第二批改造见 §8，已通过 playwright 回归（新行为 + 级联主路径 + 互斥/ESC/外点/换锚复用）；§8.6 hover 路由重构同日实施并回归 |
 | 范围 | `src/components/side-menu/side-menu-popup.vue`（主体）、`side-menu-node.vue`（浮出判定）、`side-menu.vue`（弹层链）；demo 数据补充 |
 | 不在范围 | 主树（非弹层）内联展开行为、`side-menu.js`、`side-menu.scss`（无必改项）、键盘可达性（维持现状缺口，见 §6.3） |
 | 前置文档 | `agent-docs/plans/side-menu.md`（原设计）、`agent-docs/plans/side-menu-revision.md`（R2 浮出行为定稿） |
@@ -63,9 +63,9 @@
 
 **备选（未采纳）**：menu 上下文维护 layer 数组 + `v-for` 渲染 N 个弹层实例。跨层引用（定时器、级联关闭、链内命中判断）仍需按索引互联，公共状态更多；递归方案让每层的下钻逻辑自包含，改动最小。
 
-### 4.2 provide 路由 openPopup
+### 4.2 provide 路由 showPopup
 
-现状 `side-menu.vue:227-228` 把 `openPopup`/`delayPopupHide` 指向根弹层实例。级联后由各层弹层覆盖路由，使「面板内行的 hover 弹出」天然指向本层的子弹层：
+现状 `side-menu.vue:227-228` 把 `showPopup`/`delayHidePopup` 指向根弹层实例。级联后由各层弹层覆盖路由，使「面板内行的 hover 弹出」天然指向本层的子弹层：
 
 ```js
 // side-menu-popup.vue
@@ -75,8 +75,8 @@ const subPopupRef = shallowRef()
 provide('sideMenu', {
   ...menu,
   popup: true,
-  openPopup: (anchor, node) => subPopupRef.value?.show(anchor, node),
-  delayPopupHide: () => subPopupRef.value?.delayHide()
+  showPopup: (anchor, node) => subPopupRef.value?.show(anchor, node),
+  delayHidePopup: () => subPopupRef.value?.delayHide()
 })
 ```
 
@@ -112,7 +112,7 @@ const popupRow = computed(() => {
 1. **清除向上走全链**：进入任一面板，本层与全部祖先的待关计时器都取消（鼠标仍在链上，整链必须保活；**不含后代**——从深层回到上层面板时，更深层按自身计时收起，见 §7 断言 14）。子→父通道：父弹层 `provide('sideMenuPopup', { clearHideTimer, delayHide, position })`（`position` 为本层定位结果 ref，供子层取默认侧，见 §4.7；函数声明提升，setup 内 provide 安全），子弹层 `inject('sideMenuPopup', null)`。
 2. **臂定（arm）分两种**：
    - **面板 mouseleave → 臂自己 + 全部祖先**。解决「从最深层直接移出到空白处」时祖先链计时器已被早前进入清除、链滞留不关的孤儿问题：整链同时臂定、300ms 后整体收起。中途回到上层面板则由规则 1 清除。
-   - **锚点行 mouseleave（经 `delayPopupHide` 路由）→ 只臂子弹层自己**。鼠标可能仍在父面板内移动（换行），臂定祖先会在停留叶子行时误收整链。
+   - **锚点行 mouseleave（经 `delayHidePopup` 路由）→ 只臂子弹层自己**。鼠标可能仍在父面板内移动（换行），臂定祖先会在停留叶子行时误收整链。
 
 ```js
 function clearHideTimer () {
@@ -265,10 +265,20 @@ demo 页 `http://localhost:3000/side-menu/` + playwright DOM 断言（rollup wat
 
 ### 8.5 弹层实例统一挂 side-menu（架构，取代 §4.1 递归自引用）
 
-§4.1 的递归方案（每层模板内 `<side-menu-popup ref="subPopupRef" />`）改为 side-menu 集中持有：`v-for="i in popupLayerCount"` 按层序惰性生成实例（生成后常驻复用），链路经 `provide('sideMenuPopupChain', { open, getLayer })`：
+§4.1 的递归方案（每层模板内 `<side-menu-popup ref="subPopupRef" />`）改为 side-menu 集中持有：`v-for="i in popupLayerCount"` 按层序惰性生成实例（生成后常驻复用），链路经 `provide('popupMenuChain', { open, getLayer })`：
 
 - **上行通道**：原 `provide('sideMenuPopup')`（clearHideTimer/delayHide/position）删除——子层实例不再位于父层组件子树内，provide/inject 不可达；改为父层 `defineExpose` 面（新增 `clearHideTimer`、`position`，经 expose 代理 ref 自动解包），子层 setup 期经 `chain.getLayer(layer - 1)` 直取（实例先生成父层后生成子层，时序保证）。
 - **下行访问**：`subPopupRef.value` → `subPopup() = chain.getLayer(layer + 1)`（未生成为空，可选链语义不变）。
-- **弹层路由**：`openPopup` → `chain.open(layer + 1, anchor, node)`：新层首次触发先扩容 v-for、`await nextTick()` 待挂载后 `show`；层 0 走 side-menu 的 `menuContext.openPopup`（同一路由，无扩容）。
+- **弹层路由**：`showPopup` → `chain.open(layer + 1, anchor, node)`：新层首次触发先扩容 v-for、`await nextTick()` 待挂载后 `show`；层 0 走 side-menu 的 `menuContext.showPopup`（同一路由，无扩容）。
 - **链头判定**：`!parentPopup` → `!props.layer`。
 - 原 §4.1「备选未采纳」的理由（按索引互联、公共状态多）在统一挂载后不再成立：实例按层序生成、常驻复用，实例表 + 访问器比递归 ref 更直接，且消除 SFC 隐式自引用与嵌套 Teleport；provide 上行通道因兄弟挂载天然不可达，改走 expose 面属架构必然。
+
+### 8.6 hover 浮出路由：provide → 事件上报（取代 §4.2，2026-10-10）
+
+`sideMenu` 上下文不再 provide `showPopup`/`delayHidePopup`，弹层内覆盖路由（§4.2 / §8.5 的「弹层路由」项）随之删除，改为事件上行：
+
+- `side-menu-node` 对 popupRow 行 `emit('itemEnter', node, event)` / `emit('itemLeave', event)`（携原生 mouseenter/mouseleave 事件）。node 必须随事件携带：内联子树行（展开态二级组）经转发上报至 side-menu 时，顶层模板循环变量是组头而非上报行，纯 event 载荷 + 循环变量取 node 在该场景弹错内容（实测）。主树内联子树的上报由父节点转发函数（`onChildItemEnter(node, event)`）逐级传至 side-menu。
+- `side-menu` 模板监听：`@item-enter` → `showLayer(0, event.currentTarget, node)`；`@item-leave` → `popupLayers[0]?.delayHide()`。
+- `side-menu-popup` 模板监听：`@item-enter` → `chain.showLayer(layer + 1, event.currentTarget, node)`；`@item-leave` → `subPopup()?.delayHide()`（只臂下一层语义不变，见 §4.4 规则 2）。锚点读 `event.currentTarget` 须在原生事件派发中同步完成——emit 链全同步，成立。
+- 弹层对 `sideMenu` 的 re-provide 收窄为 `{ ...menu, popup: true }`——仅保留 popup 态标记（node 的 popupRow / railMode / showFavoriteBtn 判定依赖），不再携带任何方法。
+- 回归：展开态二级组 hover（转发生效）、rail L0→L1→L2 级联、链上 600ms 停留存活、移出 500ms 整链收起、ESC 关闭。

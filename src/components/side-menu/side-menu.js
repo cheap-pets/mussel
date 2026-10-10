@@ -67,28 +67,3 @@ export function walk (items, level = 0, callback) {
     walk(item.items, level + 1, callback)
   }
 }
-
-// 展开 node，accordion 下先收起同级其他展开组；list 为 node 的同级集合
-export function expandExclusive (menu, list, node) {
-  if (menu.accordion.value) {
-    list.forEach(sibling => {
-      if (sibling !== node && sibling.items?.length) {
-        menu.setExpanded(sibling, false)
-      }
-    })
-  }
-
-  menu.setExpanded(node, true)
-}
-
-/**
- * 列表级的组展开 toggle：accordion 下展开时互斥同级。
- * 由渲染该级列表的组件持有（同级集合 = getList()，组件天然在手），
- * 行组件经 provide/inject 取所在列表的 toggle 使用。
- */
-export function createExpandToggle (menu, getList) {
-  return function toggle (node) {
-    if (menu.isExpanded(node)) menu.setExpanded(node, false)
-    else expandExclusive(menu, getList(), node)
-  }
-}

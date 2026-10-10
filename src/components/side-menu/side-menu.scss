@@ -43,6 +43,12 @@
   & + .mu-side-menu__node {
     margin-top: var(--mu-half-spacing);
   }
+
+  // 一级行高高于子级（top 修饰类由 side-menu 落在本节点上；行选择器须限定
+  // 直接子级，避免命中内联子树中的下级行）
+  &--top > .mu-side-menu__item {
+    min-height: var(--mu-side-menu_top-item-height);
+  }
 }
 
 .mu-side-menu__item {
@@ -70,11 +76,6 @@
     display: inline-flex;
     flex: none;
     justify-content: center;
-  }
-
-  // 一级行高高于子级
-  &[top] {
-    min-height: var(--mu-side-menu_top-item-height);
   }
 
   &[active] {

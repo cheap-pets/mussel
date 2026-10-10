@@ -17,7 +17,9 @@
             :key="child.id ?? index"
             :node="child"
             :level="0"
-            :in-favorites="groupKey === FAVORITES_KEY" />
+            :in-favorites="groupKey === FAVORITES_KEY"
+            @item-enter="onNodeItemEnter"
+            @item-leave="onNodeItemLeave" />
         </div>
       </mu-scroll-box>
     </div>
@@ -25,7 +27,7 @@
 </template>
 
 <script setup>
-  import { computed, inject, nextTick, provide, ref, shallowRef } from 'vue'
+  import { computed, inject, nextTick, onUnmounted, provide, ref, shallowRef } from 'vue'
   import { HIDE_DELAY, usePopupManager, usePopupRunner } from '@/components/common/popup'
   import { isElementInViewport } from '@/utils/dom'
 
@@ -41,20 +43,19 @@
     layer: { type: Number, default: 0 }
   })
 
+  const MARGIN = 8 // 面板与视口上下边的最小留白，与 max-height: calc(100vh - 16px) 对应
+  const GAP = 8 // 面板与锚点的水平间距
+
   const menu = inject('sideMenu')
-  const chain = inject('sideMenuPopupChain')
+  const chain = inject('popupChain')
 
   // 父层实例：链头为空（向协调器注册），子弹层不注册、生命周期由本层驱动。
   // 实例先生成父层后生成子层，子层 setup 期父层引用已就位
   const parentPopup = props.layer ? chain.getLayer(props.layer - 1) : null
 
-  // 面板内行的 hover 弹层路由到下一层，逐层递归，side-menu-node 零改动
-  provide('sideMenu', {
-    ...menu,
-    popup: true,
-    openPopup: (anchorEl, node) => chain.open(props.layer + 1, anchorEl, node),
-    delayPopupHide: () => subPopup()?.delayHide()
-  })
+  // 面板内行与主树行共用同一 menu 上下文，仅补 popup 态标记；
+  // 组行 hover 的下钻浮出经 itemEnter/itemLeave 事件直报本层处理
+  provide('sideMenu', { ...menu, popup: true })
 
   const visible = ref()
   const position = ref('right')
@@ -62,6 +63,8 @@
   const panelEl = shallowRef()
   const anchor = shallowRef()
   const group = shallowRef()
+
+  let hideTimer
 
   const { ready, popupStyle, container, doEnter, doExit } =
     usePopupRunner(visible, panelEl, updatePosition)
@@ -74,12 +77,20 @@
   const showHeader = computed(() => !props.layer && menu.collapsed.value)
   const groupLabel = computed(() => group.value?.label)
 
-  const MARGIN = 8 // 面板与视口上下边的最小留白，与 max-height: calc(100vh - 16px) 对应
-  const GAP = 8 // 面板与锚点的水平间距
-
   // 子层实例：未生成（本层面板内组行未被 hover 过）时为空
   function subPopup () {
     return chain.getLayer(props.layer + 1)
+  }
+
+  // 面板内组行 hover：沿链浮出下一层（node 随事件携带，锚点行取
+  // event.currentTarget）；离开组行：只臂下一层（鼠标可能仍在父面板内
+  // 换行，臂祖先会误收整链）
+  function onNodeItemEnter (node, event) {
+    chain.showLayer(props.layer + 1, event.currentTarget, node)
+  }
+
+  function onNodeItemLeave () {
+    subPopup()?.delayHide()
   }
 
   // 锚点可见性：在视口内，且未被最近滚动裁剪容器（菜单 body / 父面板 body）滚出
@@ -161,8 +172,6 @@
     subPopup()?.updatePosition()
   }
 
-  let hideTimer
-
   // 进入面板：清本层与全部祖先的待关计时器（整链保活）；
   // 不含后代——从深层回到上层面板时，更深层按自身计时收起
   function clearHideTimer () {
@@ -172,13 +181,17 @@
   }
 
   // 臂定待关计时器：面板 mouseleave 传 withAncestors 整链同收（防深层直出
-  // 空白时祖先计时器已被清、链滞留的孤儿问题）；锚点行 mouseleave 经
-  // delayPopupHide 路由只臂本层（鼠标可能仍在父面板内换行，臂祖先会误收整链）
+  // 空白时祖先计时器已被清、链滞留的孤儿问题）；锚点行 mouseleave 事件上报
+  // 只臂本层（鼠标可能仍在父面板内换行，臂祖先会误收整链）
   function delayHide (withAncestors) {
     clearHideTimer()
     hideTimer = setTimeout(hide, HIDE_DELAY)
     if (withAncestors) parentPopup?.delayHide(true)
   }
+
+  // 卸载只清自身计时器，不走 clearHideTimer：向上清是链上 hover 保活语义，
+  // 不属于生命周期清理；臂定中卸载可免已卸载实例滞留至计时触发
+  onUnmounted(() => clearTimeout(hideTimer))
 
   async function show (anchorEl, groupNode) {
     // 锚点不可见（不在视口或被滚动区裁剪）时不弹出
@@ -258,13 +271,13 @@
   }
 
   defineExpose({
+    position,
     show,
     hide,
     delayHide,
     clearHideTimer,
     updatePosition,
     isInsideChain,
-    handleAnchorMove,
-    position
+    handleAnchorMove
   })
 </script>

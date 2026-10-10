@@ -24,20 +24,20 @@
     </div>
 
     <div class="demo-panel">
-      <h3>2. Accordion + auto-expand-level (initial fill ignores accordion)</h3>
+      <h3>2. Accordion + auto-expand-top (initial fill ignores accordion)</h3>
       <mu-side-menu
         v-model:active-item="active2"
         accordion
-        :auto-expand-level="1"
+        auto-expand-top
         style="height: 420px"
         :items="menus" />
     </div>
 
     <div class="demo-panel">
-      <h3>3. Auto Expand + Scroll + auto-expand-level (async)</h3>
+      <h3>3. Auto Expand + Scroll + auto-expand-top (async)</h3>
       <mu-side-menu
         v-model:active-item="active3"
-        :auto-expand-level="1"
+        auto-expand-top
         style="height: 300px"
         :items="asyncMenus"
         @select="onEvent('select', $event)" />

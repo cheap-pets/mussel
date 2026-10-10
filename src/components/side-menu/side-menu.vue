@@ -12,14 +12,14 @@
     </div>
     <mu-scroll-box class="mu-side-menu__body">
       <side-menu-node
-        v-if="favoritesEnabled"
-        :node="favoritesGroup"
-        :level="0" />
-      <side-menu-node
-        v-for="(node, index) in items"
+        v-for="(node, index) in topItems"
         :key="node.id ?? index"
         :node="node"
-        :level="0" />
+        :level="0"
+        :expanded="isExpanded(node)"
+        class="mu-side-menu__node--top"
+        @item-enter="onNodeItemEnter"
+        @item-leave="onNodeItemLeave" />
     </mu-scroll-box>
     <div v-if="!isCollapsed && $slots.footer" class="mu-side-menu__footer">
       <slot name="footer" :collapsed="isCollapsed" />
@@ -28,25 +28,19 @@
     <side-menu-popup
       v-for="i in popupLayerCount"
       :key="i"
-      :layer="i - 1"
-      :ref="el => setPopupLayer(i - 1, el)" />
+      :ref="el => setLayer(i - 1, el)"
+      :layer="i - 1" />
   </nav>
 </template>
 
 <script setup>
   import './side-menu.scss'
 
-  import { ref, shallowRef, shallowReactive, toRef, computed, provide, onMounted, watch, watchEffect, nextTick } from 'vue'
+  import { shallowRef, computed, provide, onMounted, watch, nextTick } from 'vue'
 
   import { t } from '@/langs'
-  import {
-    FAVORITES_KEY,
-    useSideMenuExpand,
-    walk,
-    walkTo,
-    expandExclusive,
-    createExpandToggle
-  } from './side-menu'
+  import { usePopupChain } from './popup-chain'
+  import { FAVORITES_KEY, useSideMenuExpand, walk, walkTo } from './side-menu'
 
   import SideMenuNode from './side-menu-node.vue'
   import SideMenuPopup from './side-menu-popup.vue'
@@ -54,12 +48,12 @@
   defineOptions({ name: 'MusselSideMenu' })
 
   const props = defineProps({
-    items: { type: Array, default: () => [] },
     rail: Boolean,
     disabled: Boolean,
     accordion: Boolean,
+    autoExpandTop: Boolean,
     collapseButton: Boolean,
-    autoExpandLevel: Number,
+    items: { type: Array, default: () => [] },
     width: { type: [String, Number], default: '240px' }
   })
 
@@ -69,39 +63,27 @@
   const collapsed = defineModel('collapsed', { type: Boolean })
   const favorites = defineModel('favorites', { type: Array, default: () => [] })
 
-  // 弹层链实例表（按层序）：非响应式数组，仅命令式访问（show/hide/链式级联）
-  const popupLayerCount = ref(1)
-  const popupLayers = []
-
-  function setPopupLayer (index, instance) {
-    popupLayers[index] = instance
-  }
-
-  // 生成或复用层实例并弹出：新层首次触发时先扩容 v-for，待实例挂载后 show
-  async function openPopupLayer (index, anchorEl, node) {
-    if (popupLayerCount.value <= index) {
-      popupLayerCount.value = index + 1
-      await nextTick()
-    }
-
-    popupLayers[index]?.show(anchorEl, node)
-  }
-
-  provide('sideMenuPopupChain', {
-    open: openPopupLayer,
-    getLayer: index => popupLayers[index]
-  })
+  const {
+    popupLayers,
+    popupLayerCount,
+    setLayer,
+    showLayer
+  } = usePopupChain()
 
   const rootEl = shallowRef()
 
   const { isExpanded, setExpanded } = useSideMenuExpand()
 
   const isCollapsed = computed(() => props.rail || !!collapsed.value)
-  const favoritesEnabled = computed(() => Array.isArray(favorites.value))
-  const favoritesSet = computed(() => new Set(favorites.value))
+
+  const favoritesSet = computed(() =>
+    Array.isArray(favorites.value)
+      ? new Set(favorites.value)
+      : null
+  )
 
   const favoriteItems = computed(() => {
-    if (!favoritesEnabled.value) return []
+    if (!favoritesSet.value) return []
 
     const set = favoritesSet.value
     const result = []
@@ -113,15 +95,16 @@
     return result
   })
 
-  const favoritesGroup = shallowReactive({
-    id: FAVORITES_KEY,
-    icon: 'star',
-    label: t('SideMenu.FAVORITES'),
-    items: []
-  })
-
   // 顶层列表（含收藏内置组）：accordion 互斥的同级集合
-  const topList = computed(() => [favoritesGroup, ...props.items])
+  const topItems = computed(() => [
+    {
+      id: FAVORITES_KEY,
+      icon: 'star',
+      label: t('SideMenu.FAVORITES'),
+      items: favoriteItems.value
+    },
+    ...props.items
+  ])
 
   // 激活项在原树中的祖先组 key 集合：组头「后代激活」半强度态的下发数据，
   // 替代各节点各自递归子树的判定；激活目标为组 key 时无后代激活语义（激活目标是叶子）
@@ -135,18 +118,6 @@
       : new Set(path.slice(0, -1).map(node => node.id))
   })
 
-  function doAutoExpand () {
-    const level = props.autoExpandLevel
-
-    if (!level || !props.items.length) return
-
-    walk(props.items, 1, (node, depth) => {
-      if (depth <= level && node.items?.length) setExpanded(node, true)
-    })
-
-    setExpanded(favoritesGroup, true)
-  }
-
   function onSelectItem (node) {
     popupLayers[0]?.hide()
     activeItem.value = node.id
@@ -156,15 +127,46 @@
     emit('itemClick', node)
   }
 
+  // 主树 popupRow 行（折叠态一级组 / 展开态二级组）hover：浮出 / 待关链头
+  // 弹层。node 随事件携带（内联子树行经转发上报，循环变量取不到该行 node）；
+  // 锚点行取 event.currentTarget（上报链同步，读值时仍在原生事件派发中）
+  function onNodeItemEnter (node, event) {
+    showLayer(0, event.currentTarget, node)
+  }
+
+  function onNodeItemLeave () {
+    popupLayers[0]?.delayHide()
+  }
+
   function toggleFavorite (node) {
+    const set = favoritesSet.value
+    if (!set) return
+
     const key = node.id
-    const favorited = !favoritesSet.value.has(key)
+    const favorited = !set.has(key)
 
     favorites.value = favorited
-      ? [...favoritesSet.value, key]
+      ? [...set, key]
       : favorites.value.filter(item => item !== key)
 
     emit('favoriteToggle', node, favorited)
+  }
+
+  // 一级组展开 toggle：accordion 下展开时互斥同级（含收藏内置组）。
+  // 仅展开态主树的一级组行走此路径，二级及以下为弹层行无内联展开
+  function toggleExpand (node) {
+    if (isExpanded(node)) {
+      setExpanded(node, false)
+      return
+    }
+
+    if (props.accordion) {
+      topItems.value.forEach(sibling => {
+        if (sibling !== node && sibling.items?.length) setExpanded(sibling, false)
+      })
+    }
+
+    setExpanded(node, true)
   }
 
   function scrollToKey (key) {
@@ -188,29 +190,20 @@
 
     if (!target || target.items?.length) return
 
-    let expandedSomething = false
+    // 仅一级祖先有内联展开态：二级及以下为弹层行，展开无面板呈现
+    const top = path.length > 1 && !isExpanded(path[0]) ? path[0] : null
 
-    path.slice(0, -1).forEach((node, index) => {
-      if (isExpanded(node)) return
-
-      // 展开前互斥同级已展开组（首层的同级含收藏内置组）
-      expandExclusive(
-        menuContext,
-        index ? path[index - 1].items : topList.value,
-        node
-      )
-      expandedSomething = true
-    })
+    if (top) toggleExpand(top)
 
     nextTick(() => {
       const run = () => scrollToKey(activeItem.value)
 
-      // 首挂载延迟 100ms 避开初始渲染抖动；父链刚展开时等组动画结束再滚，
+      // 首挂载延迟 100ms 避开初始渲染抖动；组刚展开时等动画结束再滚，
       // 否则 scrollIntoView 按动画中间态计算会错位
       if (firstScroll) {
         firstScroll = false
         setTimeout(run, 100)
-      } else if (expandedSomething) {
+      } else if (top) {
         setTimeout(run, 200)
       } else {
         run()
@@ -219,13 +212,11 @@
   }
 
   function resetItemsStatus () {
-    doAutoExpand()
+    if (!props.autoExpandTop || !props.items.length) return
+
+    topItems.value.forEach(node => node.items?.length && setExpanded(node, true))
     nextTick(syncActive)
   }
-
-  watchEffect(() => {
-    favoritesGroup.items = favoriteItems.value
-  })
 
   watch(() => props.items, resetItemsStatus)
   watch(activeItem, syncActive)
@@ -234,29 +225,19 @@
   onMounted(resetItemsStatus)
 
   const menuContext = {
-    collapsed: isCollapsed,
     popup: false,
-    accordion: toRef(props, 'accordion'),
+    collapsed: isCollapsed,
 
     activeItem,
     activePath,
 
-    isExpanded,
-    setExpanded,
-
-    favoritesEnabled,
     favoritesSet,
     toggleFavorite,
+    toggleExpand,
 
     onSelectItem,
-    onItemClick,
-
-    openPopup: (anchor, node) => openPopupLayer(0, anchor, node),
-    delayPopupHide: () => popupLayers[0]?.delayHide()
+    onItemClick
   }
 
   provide('sideMenu', menuContext)
-
-  // 顶层列表的组展开 toggle（含收藏内置组的同级互斥）
-  provide('sideMenuExpandToggle', createExpandToggle(menuContext, () => topList.value))
 </script>

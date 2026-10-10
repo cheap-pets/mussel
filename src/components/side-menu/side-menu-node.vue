@@ -1,14 +1,12 @@
 <template>
   <div v-if="!keyless" class="mu-side-menu__node">
     <div
-      ref="rowEl"
       class="mu-side-menu__item"
       :style="{ '--mu-side-menu_level': level }"
-      :top="(!props.level && !popup) || null"
       :inert="isDisabled || null"
       :active="isRowActive || null"
       :group="isGroup || null"
-      :expanded="(!popupRow && groupExpanded) || null"
+      :expanded="(!popupRow && expanded) || null"
       :data-key="inFavoritesGroup ? null : node.id"
       :title="rowTitle"
       @click="onClick"
@@ -25,40 +23,34 @@
         <mu-icon :icon="starred ? 'starred' : 'star'" />
       </div>
     </div>
-    <div v-if="isGroup && !popupRow" class="mu-side-menu__group" :expanded="groupExpanded || null">
-      <div class="mu-side-menu__sublist" :inert="!groupExpanded || null">
+    <div v-if="isGroup && !popupRow" class="mu-side-menu__group" :expanded="expanded || null">
+      <div class="mu-side-menu__sublist" :inert="!expanded || null">
         <side-menu-node
           v-for="(child, index) in node.items"
           :key="child.id ?? index"
           :node="child"
           :level="level + 1"
-          :in-favorites="inFavoritesGroup" />
+          :in-favorites="inFavoritesGroup"
+          @item-enter="onChildItemEnter"
+          @item-leave="onChildItemLeave" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-  import { computed, shallowRef, inject, provide } from 'vue'
+  import { computed, shallowRef, inject } from 'vue'
 
-  import { FAVORITES_KEY, warnDeepLevel, createExpandToggle } from './side-menu'
+  import { FAVORITES_KEY, warnDeepLevel } from './side-menu'
   import { isDev } from '@/env'
 
   defineOptions({ name: 'MusselSideMenuNode' })
 
-  const props = defineProps(['node', 'level', 'inFavorites'])
+  const props = defineProps(['node', 'level', 'inFavorites', 'expanded'])
+  const emit = defineEmits(['itemEnter', 'itemLeave'])
   const menu = inject('sideMenu')
 
-  // 行所在列表的展开 toggle：accordion 互斥由渲染该级列表的组件处理
-  const toggleExpand = inject('sideMenuExpandToggle')
-
-  const {
-    collapsed,
-    popup,
-    activeItem,
-    activePath,
-    favoritesEnabled
-  } = menu
+  const { collapsed, popup, activeItem, activePath } = menu
 
   const labelEl = shallowRef()
   const overflowed = shallowRef(false)
@@ -90,23 +82,19 @@
     active.value || activePath.value.has(node.value.id)
   )
 
-  const groupExpanded = computed(() =>
-    isGroup.value && menu.isExpanded(node.value)
-  )
-
   const expandIcon = computed(() => {
     if (!isGroup.value || railMode.value) return null
 
-    return (popupRow.value || !groupExpanded.value)
+    return (popupRow.value || !props.expanded)
       ? 'chevronRight'
       : 'chevronDown'
   })
 
   const keyless = computed(() => node.value.id == null)
-  const starred = computed(() => favoritesEnabled.value && menu.favoritesSet.value.has(node.value.id))
+  const starred = computed(() => !!menu.favoritesSet.value?.has(node.value.id))
 
   const showFavoriteBtn = computed(() =>
-    favoritesEnabled.value &&
+    !!menu.favoritesSet.value &&
     !isGroup.value &&
     node.value.id !== FAVORITES_KEY &&
     (!collapsed.value || popup)
@@ -129,32 +117,40 @@
     if (!isGroup.value) {
       menu.onSelectItem(props.node)
     } else if (!popupRow.value) {
-      toggleExpand(node.value)
+      menu.toggleExpand(props.node)
     }
   }
 
-  // 本组子列表：为其子行提供同级互斥的展开 toggle
-  provide('sideMenuExpandToggle', createExpandToggle(menu, () => node.value.items))
+  // popupRow 行 hover 上报 itemEnter(itemLeave)：node 随事件携带（内联子树
+  // 行经转发上报，外层循环变量取不到该行 node），锚点行由父级取自
+  // event.currentTarget；由 side-menu / 所在弹层处理下级浮出与待关。tooltip
+  // 已由原生 title 属性替代。主树锚点为折叠态一级组 / 展开态二级组（R2 定稿），
+  // 弹层内组行逐层级联
 
-  // 组行 hover 浮出下一层弹层；tooltip 已由原生 title 属性替代。
-  // 主树锚点为折叠态一级组 / 展开态二级组（R2 定稿），弹层内组行逐层级联
-  const rowEl = shallowRef()
-
-  function onMouseEnter () {
+  function onMouseEnter (event) {
     if (isDisabled.value) return
 
     // 同步检测并更新响应式 overflowed，浏览器 title 计时从指针进入起算，同步赋值不误显示时机
     if (!railMode.value) checkOverflow()
 
     if (popupRow.value) {
-      menu.openPopup(rowEl.value, props.node)
+      emit('itemEnter', props.node, event)
     }
   }
 
-  function onMouseLeave () {
+  function onMouseLeave (event) {
     if (popupRow.value) {
-      menu.delayPopupHide()
+      emit('itemLeave', event)
     }
+  }
+
+  // 主树内联子树（展开态二级组行）的上报逐级转发至 side-menu
+  function onChildItemEnter (childNode, event) {
+    emit('itemEnter', childNode, event)
+  }
+
+  function onChildItemLeave (event) {
+    emit('itemLeave', event)
   }
 
   function onFavoriteClick () {
