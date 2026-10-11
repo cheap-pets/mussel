@@ -13,10 +13,8 @@
     <mu-scroll-box class="mu-side-menu__body">
       <template v-for="(node, index) in topItems" :key="node.id ?? index">
         <menu-item
-          top
           :node="node"
           :rail="isCollapsed"
-          :group="node"
           :expanded="isExpanded(node)"
           @item-enter="onItemEnter(node, 0, $event)"
           @item-leave="onItemLeave(node)"
@@ -286,7 +284,6 @@
 
   provide('menu', {
     direction: 'vertical',
-    collapsed: isCollapsed,
     activeItem,
     activePath,
     favoritesSet

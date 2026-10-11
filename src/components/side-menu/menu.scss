@@ -33,11 +33,12 @@
   padding-left: calc(var(--mu-base-spacing) * 2);
 
   &[active] {
-    background-color: unset;
+    background: unset;
   }
-  
-  &:hover {
-    background-color: var(--mu-primary-translucent);
+
+  &:hover,
+  &[popup-open] {
+    background: var(--mu-primary-translucent);
   }
 }
 
@@ -55,13 +56,12 @@
 
   color: var(--mu-text-color-subtle);
 
-  &:hover,
-  &[popup-open] {
-    background: var(--mu-gray-translucent);
-  }
-
   &[active] {
     color: var(--mu-primary-color);
+  }
+
+  &:hover,
+  &[popup-open] {
     background: var(--mu-primary-translucent);
   }
 }

@@ -12,7 +12,7 @@
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave">
     <mu-icon class="mu-menu-item__icon" :icon="node.icon" />
-    <template v-if="!top || !collapsed">
+    <template v-if="!rail">
       <span ref="labelEl" class="mu-menu-item__label">{{ node.label }}</span>
       <mu-icon v-if="expandIcon" class="mu-menu-item__expand-icon" :icon="expandIcon" />
       <mu-icon
@@ -36,7 +36,6 @@
   defineOptions({ name: 'MusselMenuItem' })
 
   const props = defineProps({
-    top: Boolean,
     node: Object,
     rail: Boolean,
     popup: Boolean,
@@ -47,8 +46,6 @@
   const emit = defineEmits(['itemEnter', 'itemLeave', 'rowClick', 'favoriteToggle'])
   const menu = inject('menu')
 
-  // 上下文契约（宿主按场景提供）：activeItem / activePath / direction 必需；
-  // collapsed / favoritesSet（menu.vue 无）与 barExpandIcon（side-menu 无）可选
   const { activeItem, activePath } = menu
 
   const labelEl = shallowRef()
@@ -56,10 +53,9 @@
 
   const isGroup = computed(() => props.node.isGroup || !!props.node.items?.length)
   const isDisabled = computed(() => !!props.node.disabled)
-  const collapsed = computed(() => menu.collapsed?.value ?? false)
 
   const rowTitle = computed(() => (
-    (collapsed.value ? !isGroup.value : labelOverflowed.value) && props.node.label) ||
+    (props.rail ? !isGroup.value : labelOverflowed.value) && props.node.label) ||
     null
   )
 
@@ -68,8 +64,8 @@
   const isPopupRow = computed(() => {
     if (!isGroup.value) return false
     if (props.popup) return true
-    if (menu.direction === 'horizontal') return !props.level
-    return collapsed.value ? !props.level : props.level === 1
+
+    return props.rail || props.level === 1 || menu.direction === 'horizontal'
   })
 
   const active = computed(() =>
