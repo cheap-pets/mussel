@@ -11,39 +11,59 @@
       <slot v-if="!isCollapsed" name="header" />
     </div>
     <mu-scroll-box class="mu-side-menu__body">
-      <side-menu-node
-        v-for="(node, index) in topItems"
-        :key="node.id ?? index"
-        :node="node"
-        :level="0"
-        :expanded="isExpanded(node)"
-        class="mu-side-menu__node--top"
-        @item-enter="onNodeItemEnter"
-        @item-leave="onNodeItemLeave" />
+      <template v-for="(node, index) in topItems" :key="node.id ?? index">
+        <menu-item
+          top
+          :node="node"
+          :rail="isCollapsed"
+          :group="node"
+          :expanded="isExpanded(node)"
+          @item-enter="onItemEnter(node, 0, $event)"
+          @item-leave="onItemLeave(node)"
+          @row-click="onRowClick(node, 0)"
+          @favorite-toggle="toggleFavorite(node)" />
+        <div
+          v-if="(node.isFavoriteGroup || node.id != null) && node.items?.length && !isCollapsed"
+          class="mu-menu-group"
+          :expanded="isExpanded(node) || null">
+          <div class="overflow-hidden" :inert="!isExpanded(node) || null">
+            <menu-item
+              v-for="(child, childIndex) in node.items"
+              :key="child.id ?? childIndex"
+              :node="child"
+              :level="1"
+              :group="node"
+              @item-enter="onItemEnter(child, 1, $event)"
+              @item-leave="onItemLeave(child)"
+              @row-click="onRowClick(child, 1)"
+              @favorite-toggle="toggleFavorite(child)" />
+          </div>
+        </div>
+      </template>
     </mu-scroll-box>
     <div v-if="!isCollapsed && $slots.footer" class="mu-side-menu__footer">
       <slot name="footer" :collapsed="isCollapsed" />
     </div>
-    <!-- 弹层链：全部层级实例统一挂在本组件下，不逐层嵌套自引用；按层序惰性生成，生成后常驻复用 -->
-    <side-menu-popup
+    <popup-menu
       v-for="i in popupLayerCount"
       :key="i"
-      :ref="el => setLayer(i - 1, el)"
-      :layer="i - 1" />
+      :layer="i - 1"
+      @row-click="onPopupRowClick"
+      @favorite-toggle="toggleFavorite" />
   </nav>
 </template>
 
 <script setup>
   import './side-menu.scss'
 
-  import { shallowRef, computed, provide, onMounted, watch, nextTick } from 'vue'
+  import { shallowRef, computed, provide, onMounted, watch, watchEffect, nextTick, ref, reactive } from 'vue'
 
   import { t } from '@/langs'
   import { usePopupChain } from './popup-chain'
-  import { FAVORITES_KEY, useSideMenuExpand, walk, walkTo } from './side-menu'
+  import { walk, walkTo } from './tree.js'
 
-  import SideMenuNode from './side-menu-node.vue'
-  import SideMenuPopup from './side-menu-popup.vue'
+  import MenuItem from './menu-item.vue'
+  import PopupMenu from './popup-menu.vue'
 
   defineOptions({ name: 'MusselSideMenu' })
 
@@ -66,13 +86,27 @@
   const {
     popupLayers,
     popupLayerCount,
-    setLayer,
     showLayer
   } = usePopupChain()
 
   const rootEl = shallowRef()
 
-  const { isExpanded, setExpanded } = useSideMenuExpand()
+  const expandedNodes = new WeakSet()
+  const expandTick = ref(0)
+
+  function isExpanded (node) {
+    void expandTick.value
+    return expandedNodes.has(node)
+  }
+
+  function setExpanded (node, value) {
+    if (!node || expandedNodes.has(node) === value) return
+
+    if (value) expandedNodes.add(node)
+    else expandedNodes.delete(node)
+
+    expandTick.value++
+  }
 
   const isCollapsed = computed(() => props.rail || !!collapsed.value)
 
@@ -95,19 +129,23 @@
     return result
   })
 
-  // 顶层列表（含收藏内置组）：accordion 互斥的同级集合
-  const topItems = computed(() => [
-    {
-      id: FAVORITES_KEY,
-      icon: 'star',
-      label: t('SideMenu.FAVORITES'),
-      items: favoriteItems.value
-    },
-    ...props.items
-  ])
+  // 收藏内置组：常驻内部节点，无 id（不参与激活 / 滚动定位）。reactive 使
+  // items 直驱更新，引用稳定使展开态不随收藏变化丢失；isFavoriteGroup
+  // 标记下发收藏组识别（宿主组行为分派、行 data-key 置空与无 id 渲染豁免）
+  const favoritesGroup = reactive({
+    isGroup: true,
+    isFavoriteGroup: true,
+    icon: 'star',
+    label: t('SideMenu.FAVORITES'),
+    items: []
+  })
 
-  // 激活项在原树中的祖先组 key 集合：组头「后代激活」半强度态的下发数据，
-  // 替代各节点各自递归子树的判定；激活目标为组 key 时无后代激活语义（激活目标是叶子）
+  const topItems = computed(() => favoritesSet.value
+    ? [favoritesGroup, ...props.items]
+    : props.items
+  )
+
+  // 祖先组 key 集合（组头「后代激活」态的下发数据）；激活目标为组 key 时为空集
   const activePath = computed(() => {
     if (activeItem.value == null) return new Set()
 
@@ -123,19 +161,38 @@
     activeItem.value = node.id
   }
 
-  function onItemClick (node) {
+  // 组行为浮出锚点（折叠态一级组 / 展开态二级组）时浮出链头弹层；锚点行取
+  // event.currentTarget（上报链同步，仍在原生事件派发中）
+  function onItemEnter (node, level, event) {
+    if (!node.items?.length) return
+
+    if (isCollapsed.value ? level === 0 : level === 1) {
+      showLayer(0, event.currentTarget, node)
+    }
+  }
+
+  function onItemLeave (node) {
+    if (node.items?.length) popupLayers[0]?.delayHide()
+  }
+
+  // 叶子选中并收链头；组行仅展开态一级组内联展开（收藏组头恒组，空组亦不
+  // 当叶子），rail 组行与展开态二级组行点击无动作（hover 驱动浮出）
+  function onRowClick (node, level) {
     emit('itemClick', node)
+
+    if (node.isFavoriteGroup || node.items?.length) {
+      if (!isCollapsed.value && !level) toggleExpand(node)
+    } else {
+      onSelectItem(node)
+    }
   }
 
-  // 主树 popupRow 行（折叠态一级组 / 展开态二级组）hover：浮出 / 待关链头
-  // 弹层。node 随事件携带（内联子树行经转发上报，循环变量取不到该行 node）；
-  // 锚点行取 event.currentTarget（上报链同步，读值时仍在原生事件派发中）
-  function onNodeItemEnter (node, event) {
-    showLayer(0, event.currentTarget, node)
-  }
+  // 弹层内行点击分派（popup-menu 转发）：叶子选中并收整链，组行 hover
+  // 驱动下钻、点击无动作
+  function onPopupRowClick (node) {
+    emit('itemClick', node)
 
-  function onNodeItemLeave () {
-    popupLayers[0]?.delayHide()
+    if (!node.items?.length) onSelectItem(node)
   }
 
   function toggleFavorite (node) {
@@ -152,8 +209,7 @@
     emit('favoriteToggle', node, favorited)
   }
 
-  // 一级组展开 toggle：accordion 下展开时互斥同级（含收藏内置组）。
-  // 仅展开态主树的一级组行走此路径，二级及以下为弹层行无内联展开
+  // accordion 下展开时互斥同级（含收藏内置组）
   function toggleExpand (node) {
     if (isExpanded(node)) {
       setExpanded(node, false)
@@ -218,26 +274,21 @@
     nextTick(syncActive)
   }
 
+  watchEffect(() => {
+    favoritesGroup.items = favoriteItems.value
+  })
+
   watch(() => props.items, resetItemsStatus)
   watch(activeItem, syncActive)
   watch(isCollapsed, () => popupLayers[0]?.hide())
 
   onMounted(resetItemsStatus)
 
-  const menuContext = {
-    popup: false,
+  provide('menu', {
+    direction: 'vertical',
     collapsed: isCollapsed,
-
     activeItem,
     activePath,
-
-    favoritesSet,
-    toggleFavorite,
-    toggleExpand,
-
-    onSelectItem,
-    onItemClick
-  }
-
-  provide('sideMenu', menuContext)
+    favoritesSet
+  })
 </script>

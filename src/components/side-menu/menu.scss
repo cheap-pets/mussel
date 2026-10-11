@@ -1,0 +1,79 @@
+// 横向菜单（menu.vue）。行复用 menu-item.scss 的 .mu-menu-item，行变量默认值
+// 随行自身声明，栏行横向布局覆盖见下方后代选择器
+.mu-menu {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  background: var(--mu-bg-normal);
+}
+
+.mu-menu__bar {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  gap: var(--mu-half-spacing);
+  align-items: stretch;
+
+  min-width: 0;
+}
+
+// 栏行横向布局：对冲纵列的整行宽与相邻行 margin-top（menu-item.scss）。
+// 栏内行紧凑排版：图标槽收窄 16px、行内 gap 8、左右 padding 16（后代选择器
+// 特异性高于 .mu-menu-item 本体，跨文件生效不依赖书写顺序）
+.mu-menu__bar > .mu-menu-item {
+  --mu-menu-item_icon-size: 16px;
+
+  flex: none;
+  gap: var(--mu-base-spacing);
+  align-self: stretch;
+
+  width: auto;
+  height: auto;
+  padding-right: calc(var(--mu-base-spacing) * 2);
+  padding-left: calc(var(--mu-base-spacing) * 2);
+
+  &[active] {
+    background-color: unset;
+  }
+  
+  &:hover {
+    background-color: var(--mu-primary-translucent);
+  }
+}
+
+// 溢出折叠触发器：定宽方形（宽度 = 行高变量，溢出直算不读其 DOM）
+.mu-menu__more {
+  cursor: pointer;
+
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+
+  width: var(--mu-menu-item_height, 40px);
+  border-radius: var(--mu-radius-control);
+
+  color: var(--mu-text-color-subtle);
+
+  &:hover,
+  &[popup-open] {
+    background: var(--mu-gray-translucent);
+  }
+
+  &[active] {
+    color: var(--mu-primary-color);
+    background: var(--mu-primary-translucent);
+  }
+}
+
+// 根级禁用：pointer-events 拦截鼠标，inert（模板绑定）拦截键盘。弱化选择器
+// 特意提到 (0,3,0) 压过行 [active] 态的 (0,2,0)，不依赖跨文件书写顺序
+.mu-menu--disabled {
+  pointer-events: none;
+
+  & .mu-menu__bar .mu-menu-item,
+  & .mu-menu__bar .mu-menu__more {
+    color: var(--mu-text-color-muted);
+    background: inherit;
+  }
+}

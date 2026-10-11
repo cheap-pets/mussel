@@ -19,6 +19,7 @@ export { default as arrowUpRight } from '~icons/outline/arrow-up-right.svg'
 
 export { default as list } from '~icons/outline/list.svg'
 export { default as grid } from '~icons/outline/layout-grid.svg'
+export { default as dots } from '~icons/outline/dots.svg'
 
 export { default as search } from '~icons/outline/search.svg'
 export { default as file } from '~icons/outline/file.svg'

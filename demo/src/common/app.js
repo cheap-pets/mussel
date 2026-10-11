@@ -4,7 +4,6 @@ import { install, installIcons } from 'mussel'
 import boltIcon from '~icons/outline/bolt.svg'
 import albumIcon from '~icons/outline/album.svg'
 import bugIcon from '~icons/outline/bug.svg'
-import dotsIcon from '~icons/outline/dots.svg'
 import dotsVertIcon from '~icons/outline/dots-vertical.svg'
 import flagIcon from '~icons/outline/flag.svg'
 
@@ -14,7 +13,6 @@ installIcons({
   bolt: boltIcon,
   album: albumIcon,
   bug: bugIcon,
-  dots: dotsIcon,
   dotsVert: dotsVertIcon,
   flag: flagIcon
 })

@@ -97,6 +97,10 @@ export default {
     FAVORITES: 'My Favorites'
   },
 
+  Menu: {
+    MORE: 'More'
+  },
+
   Pagination: {
     PREV_PAGE: 'Previous',
     NEXT_PAGE: 'Next',

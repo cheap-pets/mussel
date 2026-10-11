@@ -3,59 +3,53 @@
     <div
       v-show="popupStyle"
       ref="panelEl"
-      class="mu-side-menu-popup"
+      class="mu-popup-menu"
       :style="popupStyle"
       @mouseenter="clearHideTimer"
       @mouseleave="delayHide(true)">
-      <div v-if="showHeader" class="mu-side-menu-popup__header text-ellipsis">
+      <div v-if="showHeader" class="mu-popup-menu__header text-ellipsis">
         {{ groupLabel }}
       </div>
-      <mu-scroll-box class="mu-side-menu-popup__body">
-        <div class="mu-side-menu__list">
-          <side-menu-node
-            v-for="(child, index) in childNodes"
-            :key="child.id ?? index"
-            :node="child"
-            :level="0"
-            :in-favorites="groupKey === FAVORITES_KEY"
-            @item-enter="onNodeItemEnter"
-            @item-leave="onNodeItemLeave" />
-        </div>
+      <mu-scroll-box class="mu-popup-menu__body">
+        <menu-item
+          v-for="(child, index) in childNodes"
+          :key="child.id ?? index"
+          :node="child"
+          :group="group"
+          popup
+          @item-enter="onItemEnter(child, $event)"
+          @item-leave="onItemLeave(child)"
+          @row-click="emit('rowClick', child)"
+          @favorite-toggle="emit('favoriteToggle', child)" />
       </mu-scroll-box>
     </div>
   </Teleport>
 </template>
 
 <script setup>
-  import { computed, inject, nextTick, onUnmounted, provide, ref, shallowRef } from 'vue'
+  import './popup-menu.scss'
+
+  import { computed, inject, nextTick, onUnmounted, ref, shallowRef } from 'vue'
+
   import { HIDE_DELAY, usePopupManager, usePopupRunner } from '@/components/common/popup'
   import { isElementInViewport } from '@/utils/dom'
 
-  import { FAVORITES_KEY } from './side-menu'
+  import MenuItem from './menu-item.vue'
 
-  import SideMenuNode from './side-menu-node.vue'
+  defineOptions({ name: 'MusselPopupMenu' })
 
-  defineOptions({ name: 'MusselSideMenuPopup' })
-
-  // 层序：0 为链头（主树行触发），子层随父层面板内组行 hover 由 side-menu 逐层生成。
-  // 全部层实例统一挂在 side-menu 下（chain 持有实例表），弹层自身不再递归自引用
   const props = defineProps({
     layer: { type: Number, default: 0 }
   })
 
+  // 行点击 / 收藏切换转发宿主分派（链头弹层的启闭与选中均为宿主逻辑）
+  const emit = defineEmits(['rowClick', 'favoriteToggle'])
+
   const MARGIN = 8 // 面板与视口上下边的最小留白，与 max-height: calc(100vh - 16px) 对应
   const GAP = 8 // 面板与锚点的水平间距
 
-  const menu = inject('sideMenu')
+  const menu = inject('menu')
   const chain = inject('popupChain')
-
-  // 父层实例：链头为空（向协调器注册），子弹层不注册、生命周期由本层驱动。
-  // 实例先生成父层后生成子层，子层 setup 期父层引用已就位
-  const parentPopup = props.layer ? chain.getLayer(props.layer - 1) : null
-
-  // 面板内行与主树行共用同一 menu 上下文，仅补 popup 态标记；
-  // 组行 hover 的下钻浮出经 itemEnter/itemLeave 事件直报本层处理
-  provide('sideMenu', { ...menu, popup: true })
 
   const visible = ref()
   const position = ref('right')
@@ -64,17 +58,17 @@
   const anchor = shallowRef()
   const group = shallowRef()
 
-  let hideTimer
+  // 父层实例：链头为空（向协调器注册），子弹层不注册、生命周期由本层驱动。
+  const parentPopup = props.layer ? chain.getLayer(props.layer - 1) : null
 
   const { ready, popupStyle, container, doEnter, doExit } =
     usePopupRunner(visible, panelEl, updatePosition)
 
   const childNodes = computed(() => group.value?.items || [])
-  const groupKey = computed(() => group.value?.id)
 
-  // 标题栏：锚点组（上级分组）标题。仅收拢态主树一级组的弹层显示——rail 锚点行
-  // 只有图标，标题提供分组上下文；其余层锚点行标签本身可见，不重复
-  const showHeader = computed(() => !props.layer && menu.collapsed.value)
+  // 仅收拢态主树一级组的弹层显示标题：rail 锚点行只有图标，标题补分组上下文；
+  // 其余层锚点行标签本身可见，不重复
+  const showHeader = computed(() => !props.layer && !!menu.collapsed?.value)
   const groupLabel = computed(() => group.value?.label)
 
   // 子层实例：未生成（本层面板内组行未被 hover 过）时为空
@@ -82,15 +76,16 @@
     return chain.getLayer(props.layer + 1)
   }
 
-  // 面板内组行 hover：沿链浮出下一层（node 随事件携带，锚点行取
-  // event.currentTarget）；离开组行：只臂下一层（鼠标可能仍在父面板内
-  // 换行，臂祖先会误收整链）
-  function onNodeItemEnter (node, event) {
-    chain.showLayer(props.layer + 1, event.currentTarget, node)
+  // 组行 hover 沿链浮出下一层；离开只臂下一层待关（鼠标可能仍在父面板内换行，
+  // 臂祖先会误收整链）
+  function onItemEnter (child, event) {
+    if (!child.items?.length) return
+
+    chain.showLayer(props.layer + 1, event.currentTarget, child)
   }
 
-  function onNodeItemLeave () {
-    subPopup()?.delayHide()
+  function onItemLeave (child) {
+    if (child.items?.length) subPopup()?.delayHide()
   }
 
   // 锚点可见性：在视口内，且未被最近滚动裁剪容器（菜单 body / 父面板 body）滚出
@@ -113,10 +108,53 @@
     return visible.value && popupStyle.value && anchor.value
   }
 
-  // 定位纯函数：仅做几何计算，DOM 读写由 updatePosition 承担。
-  // base 为本层默认侧：链头 'right'，子层继承父层弹出方向；仅默认侧放不下且
-  // 另一侧放得下才翻转，两侧都不足保持默认侧延伸（不做取大侧兜底，防方向锯齿）
+  // 本层默认弹出侧：链头按宿主 direction 推导（横向 'down'、纵向 'right'）；
+  // 子层继承父层方向，父层纵向（down/up）时回水平 'right'（经典级联向右下钻）
+  function resolveBase () {
+    const inherited = parentPopup?.position
+
+    if (inherited === 'down' || inherited === 'up') return 'right'
+
+    return inherited ?? (menu.direction === 'horizontal' ? 'down' : 'right')
+  }
+
+  // 定位纯函数（DOM 读写归 updatePosition）：base 决定主轴方向（right/left
+  // 水平、down/up 垂直）；仅默认侧放不下且另一侧放得下才翻转，两侧不足保持默认侧
   function calculatePosition (anchorRect, panelSize, base) {
+    return (base === 'down' || base === 'up')
+      ? calculateVerticalPosition(anchorRect, panelSize, base)
+      : calculateHorizontalPosition(anchorRect, panelSize, base)
+  }
+
+  // 垂直主轴（横向菜单链头）：主轴上下翻转；交叉轴默认左对齐，右溢出改右对齐
+  // （右缘锚定锚点右缘，max-content 宽度变化时面板不漂移），两侧按 MARGIN 夹紧
+  function calculateVerticalPosition (anchorRect, panelSize, base) {
+    const { innerWidth: vw, innerHeight: vh } = window
+    const { width: pw, height: ph } = panelSize
+
+    const fits = {
+      down: vh - anchorRect.bottom - GAP >= ph,
+      up: anchorRect.top - GAP >= ph
+    }
+    const other = base === 'down' ? 'up' : 'down'
+    const pos = fits[base] || !fits[other] ? base : other
+
+    const style = pos === 'down'
+      ? { top: `${anchorRect.bottom + GAP}px` }
+      // 上缘锚定锚点上缘，宽度变化不漂移
+      : { bottom: `${vh - anchorRect.top + GAP}px` }
+
+    if (anchorRect.left + pw <= vw - MARGIN) {
+      style.left = `${Math.max(MARGIN, anchorRect.left)}px`
+    } else {
+      style.right = `${Math.max(MARGIN, vw - anchorRect.right)}px`
+    }
+
+    return { position: pos, style }
+  }
+
+  // 水平主轴（side-menu 链及向右下钻的子层）
+  function calculateHorizontalPosition (anchorRect, panelSize, base) {
     const { innerWidth: vw, innerHeight: vh } = window
     const { width: pw, height: ph } = panelSize
 
@@ -157,7 +195,7 @@
     const { position: pos, style } = calculatePosition(
       anchorRect,
       el.getBoundingClientRect(),
-      parentPopup?.position ?? 'right'
+      resolveBase()
     )
 
     // 先写回本层方向再递归子层，子层取到的继承方向时序正确
@@ -165,12 +203,14 @@
     el.setAttribute('position', pos)
     // 样式须同步写入 DOM 再递归：popupStyle 经响应式 patch 是异步的，
     // 子层重定位读父面板内锚点 rect 时会拿到父面板旧位置
-    el.style.left = el.style.right = el.style.top = ''
+    el.style.left = el.style.right = el.style.top = el.style.bottom = ''
     Object.assign(el.style, style)
     popupStyle.value = style
 
     subPopup()?.updatePosition()
   }
+
+  let hideTimer
 
   // 进入面板：清本层与全部祖先的待关计时器（整链保活）；
   // 不含后代——从深层回到上层面板时，更深层按自身计时收起
@@ -180,9 +220,8 @@
     parentPopup?.clearHideTimer()
   }
 
-  // 臂定待关计时器：面板 mouseleave 传 withAncestors 整链同收（防深层直出
-  // 空白时祖先计时器已被清、链滞留的孤儿问题）；锚点行 mouseleave 事件上报
-  // 只臂本层（鼠标可能仍在父面板内换行，臂祖先会误收整链）
+  // 臂定待关计时器：withAncestors 时整链同收（防深层直出空白致祖先计时器已清、
+  // 链滞留孤儿）；锚点行离开只臂本层（臂祖先会误收整链）
   function delayHide (withAncestors) {
     clearHideTimer()
     hideTimer = setTimeout(hide, HIDE_DELAY)
@@ -224,15 +263,18 @@
 
   function hide () {
     subPopup()?.hide()
+
     // 只清自身计时器，不可向上清：链收起时各层计时器先后触发，
     // 先触发的层若清掉祖先尚未触发的计时器，链会滞留成孤儿
     clearTimeout(hideTimer)
     hideTimer = undefined
-    anchor.value?.removeAttribute('popup-open')
-    if (!visible.value) return
 
-    visible.value = false
-    doExit()
+    anchor.value?.removeAttribute('popup-open')
+
+    if (visible.value) {
+      visible.value = false
+      doExit()
+    }
   }
 
   // 链内命中判断：本层锚点 / 面板或任一后代弹层内（子弹层锚点在父面板内，已覆盖）
@@ -270,8 +312,12 @@
     })
   }
 
-  defineExpose({
-    position,
+  // 内部 API 对象：层间互访 / 链协调 / 宿主共用，setup 期自注册进链表；
+  // 不经 defineExpose 暴露（链表存普通对象，组件实例无消费者）。
+  // ref 成员须经 getter 保解包：裸 ref 恒真，宿主判链头已开、子层继承方向会失效
+  chain.setLayer(props.layer, {
+    get visible () { return visible.value },
+    get position () { return position.value },
     show,
     hide,
     delayHide,

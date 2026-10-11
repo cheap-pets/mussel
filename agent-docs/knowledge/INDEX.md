@@ -48,6 +48,18 @@
 - [被滚动裁剪容器滚出的行 rect 仍在视口内](./pitfalls/clipped-row-rect-still-in-viewport.md)
   `isElementInViewport` 只查窗口边界，被 `mu-scroll-box` 裁剪滚出的行误报可见；锚点可见性须再与裁剪容器可见矩形求交。
 
+- [集中样式拆分到各组件后，同特异性覆盖规则跨文件失效](./pitfalls/css-split-equal-specificity-order.md)
+  靠同文件书写顺序生效的同特异性覆盖对（如根禁用类覆盖行 `[active]`），拆分后随 import 顺序漂移失效；覆盖规则须随被覆盖选择器搬进同一文件置尾。
+
+- [demo watch 运行中新增页面目录需重启构建](./pitfalls/demo-watch-new-entry-restart.md)
+  rollup input 在 config 加载时枚举 demo/src，watch 不跟踪新目录；新增 demo 页后 :3000 404，须重启 demo:build。
+
+- [Playwright 验证延时收起弹层：整场景须单调用内完成](./pitfalls/playwright-delay-hide-popup-testing.md)
+  工具调用间隔超 HIDE_DELAY 链自关、同坐标重进无 mouseenter、滚动致弹层脱离鼠标、旧链面板遮挡锚点行；hover→停留→断言须单脚本完成，重开前先移出移入。
+
+- [fixed 弹层可见性断言不可用 offsetParent](./pitfalls/fixed-popup-offset-parent-visibility.md)
+  fixed 元素 offsetParent 恒 null，可见弹层被误判隐藏；用 playwright `:visible` 或 `getClientRects().length` 断言。
+
 ## Constraints
 
 - [国际化：locale 无响应式，运行时不可切换](./constraints/langs-locale-not-reactive.md)

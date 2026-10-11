@@ -98,6 +98,10 @@ export default {
     FAVORITES: '我的收藏'
   },
 
+  Menu: {
+    MORE: '更多'
+  },
+
   Pagination: {
     PREV_PAGE: '上一页',
     NEXT_PAGE: '下一页',
