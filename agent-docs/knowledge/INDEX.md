@@ -7,6 +7,9 @@
 - [sizechange 事件：监听元素尺寸变化](./patterns/sizechange-event.md)
   共享 ResizeObserver + prototype patch 实现的 `@sizechange`，禁止直接 new ResizeObserver；注意首挂即触发一次、不冒泡、卸载不解绑。
 
+- [Playwright 验证 watch 驱动路径：经组件实例替换 props](./patterns/playwright-props-swap-verification.md)
+  demo 数据为 const 无替换入口时，`el.__vueParentComponent.props.x = …` 替换 props 触发子组件 watch；实测无警告，注意替换后勿触发父重渲。
+
 ## Pitfalls
 
 - [Teleport 弹层与宿主组件的 CSS 变量级联断裂](./pitfalls/teleport-popup-css-vars.md)
@@ -59,6 +62,9 @@
 
 - [fixed 弹层可见性断言不可用 offsetParent](./pitfalls/fixed-popup-offset-parent-visibility.md)
   fixed 元素 offsetParent 恒 null，可见弹层被误判隐藏；用 playwright `:visible` 或 `getClientRects().length` 断言。
+
+- [容器 display:none 期间测量污染溢出折叠宽度缓存](./pitfalls/overflow-measure-hidden-container-cache.md)
+  隐藏期间测量把 0 宽写入 `widthCache`，恢复后全部行展开被裁剪；0 宽须视同未测量（加守卫），漂移检测删除后不再自愈。
 
 ## Constraints
 

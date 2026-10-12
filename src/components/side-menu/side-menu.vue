@@ -16,6 +16,7 @@
           top
           :item="item"
           :rail="isCollapsed"
+          :class="!index && 'mu-menu-item--first'"
           :expanded="isExpanded(item)"
           @item-enter="onItemEnter(item, 0, $event)"
           @item-leave="onItemLeave(item)" />
@@ -71,7 +72,7 @@
 
   const collapsed = defineModel('collapsed', { type: Boolean })
   const favorites = defineModel('favorites', { type: Array, default: () => [] })
-  const activeItem = defineModel('activeItem', { type: [String, Number, Object] })
+  const activeItem = defineModel('activeItem', { type: Object })
 
   const {
     popupLayers,
@@ -121,7 +122,6 @@
 
   const favoritesGroup = reactive({
     isGroup: true,
-    isFavoriteGroup: true,
     icon: 'star',
     label: t('SideMenu.FAVORITES'),
     items: []
@@ -159,12 +159,11 @@
   function onItemClick (item, { top }) {
     emit('itemClick', item)
 
-    if (item.isFavoriteGroup || item.items?.length) {
+    if (item === favoritesGroup || item.items?.length) {
       if (top && !isCollapsed.value) toggleExpand(item)
     } else {
       popupLayers[0]?.hide()
-      // 有 id 回填 id（可序列化、跨数据刷新存活），无 id 回填对象引用
-      activeItem.value = item.id ?? item
+      activeItem.value = item
     }
   }
 
@@ -198,17 +197,21 @@
     setExpanded(item, true)
   }
 
-  // 「最后一个 active 行」= 激活链最深可见行：nav 内联只有 level 0/1，
-  // level ≥2 激活项命中的是其最深可见祖先（更深的行在 nav 外的弹层里）。
-  // DOM 顺序约定：收藏组渲染在 topItems 最前，其副本行恒非 last，命中为原始位置
   function scrollToActive () {
-    const el = [...rootEl.value?.querySelectorAll('.mu-menu-item[active]') ?? []]
-      .at(-1)
+    const el = [...rootEl.value?.querySelectorAll('.mu-menu-item[active]') ?? []].at(-1)
+    const rect = el?.getBoundingClientRect()
+    const clipper = el?.closest('.mu-scroll-box')
 
-    if (!el?.getBoundingClientRect().height) return
+    if (!rect?.height || !clipper) return
 
-    if (el.scrollIntoViewIfNeeded) el.scrollIntoViewIfNeeded()
-    else el.scrollIntoView({ block: 'nearest' })
+    const clip = clipper.getBoundingClientRect()
+
+    let delta = 0
+
+    if (rect.top < clip.top) delta = rect.top - clip.top
+    else if (rect.bottom > clip.bottom) delta = rect.bottom - clip.bottom
+
+    if (delta) clipper.scrollTop += delta
   }
 
   let firstScroll = true

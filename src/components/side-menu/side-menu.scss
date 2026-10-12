@@ -17,10 +17,6 @@
   &--collapsed {
     width: var(--mu-side-menu_collapsed-width);
   }
-
-  & .mu-menu-item {
-    margin-top: var(--mu-half-spacing);
-  }
 }
 
 .mu-side-menu__header,
@@ -32,17 +28,13 @@
 .mu-side-menu__body {
   position: relative;
   flex: 1 1 0;
-
-  &:first-child > .mu-menu-item:first-of-type {
-    margin-top: 0;
-  }
 }
 
 .mu-side-menu--disabled {
   pointer-events: none;
 
   & .mu-menu-item {
-    color: var(--mu-text-color-muted);
-    background: inherit;
+    color: var(--mu-text-color-muted) !important;
+    background: none !important;
   }
 }

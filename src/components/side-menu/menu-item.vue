@@ -31,7 +31,9 @@
 <script setup>
   import './menu-item.scss'
 
-  import { computed, shallowRef, inject, toRaw } from 'vue'
+  import { computed, shallowRef, inject } from 'vue'
+
+  import { sameItem } from './tree.js'
 
   defineOptions({ name: 'MusselMenuItem' })
 
@@ -58,10 +60,8 @@
     const active = menu.activeItem.value
     const node = props.item
 
-    return (!isGroup.value && (
-      toRaw(node) === toRaw(active) ||
-      (node.id != null && node.id === active)
-    )) || menu.activePath.value.has(node)
+    return (!isGroup.value && sameItem(node, active)) ||
+      menu.activePath.value.has(node)
   })
 
   const itemTitle = computed(() =>

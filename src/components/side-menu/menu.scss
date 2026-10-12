@@ -29,55 +29,37 @@
 
   width: auto;
   height: auto;
+  margin-top: 0;
   padding-right: calc(var(--mu-base-spacing) * 2);
   padding-left: calc(var(--mu-base-spacing) * 2);
-
-  &[active] {
-    background: unset;
-  }
-
-  &:hover,
-  &[popup-open] {
-    background: var(--mu-primary-translucent);
-  }
 
   &[popup-open] > .mu-menu-item__expand-icon > svg {
     transform: rotate(-180deg);
   }
 }
 
-// 溢出折叠触发器：定宽方形（宽度 = 行高变量，溢出直算不读其 DOM）
-.mu-menu__more {
-  cursor: pointer;
-
-  display: flex;
-  flex: none;
-  align-items: center;
+// 溢出折叠触发器：mu-menu-item 双类复用行交互态（模板带 group 属性压掉
+// 激活底色），仅覆盖弱化色与方形定宽（宽度 = 行高变量，随行声明联动，
+// 溢出直算不读其 DOM）。选择器与上方栏行覆盖同级特异性，须置于其后；
+// [active] 色自带 (0,3,0)，不与行 [active] 比跨文件顺序
+.mu-menu__bar > .mu-menu__more {
   justify-content: center;
-
-  width: var(--mu-menu-item_height, 40px);
-  border-radius: var(--mu-radius-control);
-
+  width: var(--mu-menu-item_height);
   color: var(--mu-text-color-subtle);
 
   &[active] {
     color: var(--mu-primary-color);
   }
-
-  &:hover,
-  &[popup-open] {
-    background: var(--mu-primary-translucent);
-  }
 }
 
 // 根级禁用：pointer-events 拦截鼠标，inert（模板绑定）拦截键盘。弱化选择器
-// 特意提到 (0,3,0) 压过行 [active] 态的 (0,2,0)，不依赖跨文件书写顺序
+// (0,3,0) 压过行 [active] 态 (0,2,0)；与触发器 [active] (0,3,0) 同级，靠本
+// 文件内置于其后取胜
 .mu-menu--disabled {
   pointer-events: none;
 
-  & .mu-menu__bar .mu-menu-item,
-  & .mu-menu__bar .mu-menu__more {
+  & .mu-menu__bar .mu-menu-item {
     color: var(--mu-text-color-muted);
-    background: inherit;
+    background: none;
   }
 }

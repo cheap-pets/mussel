@@ -44,19 +44,11 @@
     transform: none;
     opacity: 1;
   }
-
-  & .mu-menu-item + .mu-menu-item {
-    margin-top: var(--mu-half-spacing);
-  }
 }
 
 .mu-popup-menu__body {
   flex: 0 1 auto;
   min-height: 0;
-
-  & .mu-menu-item:first-of-type {
-    margin-top: 0;
-  }
 }
 
 .mu-popup-menu__header {

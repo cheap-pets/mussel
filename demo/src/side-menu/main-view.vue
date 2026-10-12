@@ -13,12 +13,12 @@
         style="height: 420px"
         :items="menus"
         @item-click="onEvent('itemClick', $event)" />
-      <p>active: {{ active1 ?? 'none' }}</p>
-      <mu-button @click="active1 = 'group'">
-        Set Active To Group Key (ignored)
+      <p>active: {{ active1?.label ?? active1?.id ?? 'none' }}</p>
+      <mu-button @click="active1 = menus[1]">
+        Set Active To Group (ignored)
       </mu-button>
-      <mu-button @click="active1 = 'not-exist'">
-        Set Active To Missing Key (ignored)
+      <mu-button @click="active1 = { id: 'not-exist' }">
+        Set Active To Missing Id (ignored)
       </mu-button>
     </div>
 
@@ -39,8 +39,8 @@
         auto-expand-top
         style="height: 300px"
         :items="asyncMenus" />
-      <p>active: {{ active3 ?? 'none' }}</p>
-      <mu-button @click="active3 = 'g8-i2'">
+      <p>active: {{ active3?.label ?? active3?.id ?? 'none' }}</p>
+      <mu-button @click="active3 = { id: 'g8-i2' }">
         Active Deep Item
       </mu-button>
       <mu-button @click="loadAsync">
@@ -139,15 +139,15 @@
         :items="idlessMenus"
         @item-click="onEvent('itemClick', $event)"
         @favorite-toggle="onEvent('favoriteToggle', $event)" />
-      <p>active: {{ active9?.label ?? active9 ?? 'none' }}</p>
+      <p>active: {{ active9?.label ?? active9?.id ?? 'none' }}</p>
       <mu-button @click="active9 = idlessMenus[0]">
         Active Id-less Top Leaf (object)
       </mu-button>
       <mu-button @click="active9 = deepLeaf">
         Active Id-less Deep Leaf (object, level 3)
       </mu-button>
-      <mu-button @click="active9 = 'with-id-child'">
-        Active By Id (regression)
+      <mu-button @click="active9 = { id: 'with-id-child' }">
+        Active By Id-carrying Object (regression)
       </mu-button>
     </div>
 
@@ -230,9 +230,9 @@
   ]
 
   const active1 = ref()
-  const active2 = ref('quality-inspect')
+  const active2 = ref({ id: 'quality-inspect' })
 
-  const active3 = ref('g2-i1')
+  const active3 = ref({ id: 'g2-i1' })
 
   function buildAsyncMenus () {
     return Array.from({ length: 10 }, (_, gi) => ({
@@ -259,13 +259,13 @@
   loadAsync()
 
   const collapsed = ref(false)
-  const active4 = ref('report-weekly')
+  const active4 = ref({ id: 'report-weekly' })
   const favorites4 = ref(['report-weekly'])
 
-  const active5 = ref('project-list')
+  const active5 = ref({ id: 'project-list' })
   const favorites = ref(['project-list', 'settings'])
 
-  const active6 = ref('home')
+  const active6 = ref({ id: 'home' })
   const rootDisabled = ref(false)
 
   const active7 = ref()

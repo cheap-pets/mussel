@@ -15,6 +15,7 @@
           v-for="(child, index) in childItems"
           :key="child.id ?? index"
           :item="child"
+          :class="!index && 'mu-menu-item--first'"
           @item-enter="onItemEnter(child, $event)"
           @item-leave="onItemLeave(child)" />
       </mu-scroll-box>

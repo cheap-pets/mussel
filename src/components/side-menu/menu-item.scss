@@ -1,6 +1,7 @@
 .mu-menu-item {
   --mu-menu-item_indent: 16px;
   --mu-menu-item_height: 40px;
+  --mu-menu-item_gap: var(--mu-half-spacing);
   --mu-menu-item_icon-size: var(--mu-menu-item_height);
   --mu-menu-item_level: 0;
 
@@ -14,11 +15,16 @@
 
   width: 100%;
   min-height: var(--mu-menu-item_height);
+  margin-top: var(--mu-menu-item_gap);
   padding-left: calc(var(--mu-menu-item_indent) * var(--mu-menu-item_level));
   border-radius: var(--mu-radius-control);
 
   font-size: var(--mu-font-size-normal);
   color: var(--mu-text-color-normal);
+
+  &.mu-menu-item--first {
+    margin-top: 0;
+  }
 
   & > .mu-menu-item__icon,
   & > .mu-menu-item__star,
@@ -37,7 +43,7 @@
 
   &[active] {
     color: var(--mu-primary-color);
-    // background: var(--mu-primary-translucent);
+    background: var(--mu-primary-translucent);
   }
 
   &[group] {
@@ -46,13 +52,13 @@
 
   &:hover,
   &[popup-open] {
-    background: var(--mu-primary-translucent);
+    background: var(--mu-gray-translucent);
   }
 
   &[inert] {
     cursor: default;
     color: var(--mu-text-color-muted);
-    background: inherit;
+    background: none;
 
     & > .mu-menu-item__star {
       display: none;

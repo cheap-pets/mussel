@@ -7,7 +7,6 @@
       <menu-item
         v-for="(item, index) in visibleItems"
         :key="item.id ?? index"
-        :ref="el => onRowRef(el, item)"
         :item="item"
         top
         @item-enter="onItemEnter(item, $event)"
@@ -15,13 +14,14 @@
       <div
         v-if="hasOverflow"
         ref="moreEl"
-        class="mu-menu__more"
+        class="mu-menu-item mu-menu__more"
+        group
         :active="overflowActive || null"
         :title="t('Menu.MORE')"
         @mouseenter="onMoreEnter"
         @mouseleave="onMoreLeave"
         @click="onMoreClick">
-        <mu-icon icon="dots" />
+        <mu-icon class="mu-menu-item__icon" icon="dots" />
       </div>
     </div>
     <popup-menu
@@ -55,7 +55,7 @@
 
   const emit = defineEmits(['itemClick'])
 
-  const activeItem = defineModel('activeItem', { type: [String, Number, Object] })
+  const activeItem = defineModel('activeItem', { type: Object })
 
   const {
     popupLayers,
@@ -85,13 +85,13 @@
 
   // 激活项落在被折叠子树内 → 触发器高亮（不做激活项豁免，纯顺序折叠）
   const overflowActive = computed(() => {
-    const key = activeItem.value
+    const active = activeItem.value
 
-    if (key == null || !hasOverflow.value) return false
+    if (active == null || !hasOverflow.value) return false
 
     return props.items
       .slice(visibleCount.value)
-      .some(item => walkTo(key, [item]).length > 0)
+      .some(item => walkTo(active, [item]).length > 0)
   })
 
   // 折叠项合成组：走与栏内组行相同的 showLayer 弹层路径，面板内组行逐层级联
@@ -102,17 +102,10 @@
   }))
 
   // ---------- 一级溢出折叠 ----------
-  // 栏行 flex:none 无截断，宽度为内容内在宽：全量渲染测量一次缓存，容器尺寸
-  // 变化按缓存直算；可见行宽度漂移（主题/字号变化类）升级为全量重测
-  // 行绑定：渲染期函数 ref 闭包配对（重排后重放仍正确），卸载回调 instance 为
-  // null，WeakMap 条目随 GC 自回收免清理；宽度缓存按对象键控，折叠行 el 已
-  // 卸载仍可回查
-  const rowMap = new WeakMap()
+  // 栏行 flex:none 无截断，宽度为内容内在宽：全量帧测量一次入缓存，容器尺寸
+  // 变化按缓存直算；宽度漂移不做检测，由 items 变更与 fonts.ready 的全量重测
+  // 兜底。宽度缓存按对象键控，折叠行 el 已卸载仍可回查
   const widthCache = new WeakMap()
-
-  function onRowRef (instance, item) {
-    if (instance?.$el) rowMap.set(instance.$el, item)
-  }
 
   // 收敛代数：新的测量流程使进行中的旧流程作废（pagination 同款守卫）
   let generation = 0
@@ -135,26 +128,6 @@
     const height = row && getComputedStyle(row).getPropertyValue('--mu-menu-item_height')
 
     return parseFloat(height) || 40
-  }
-
-  // 复测当前渲染行宽度入缓存（rowMap 反查行所属项；非行元素跳过）。
-  // 返回是否与缓存漂移
-  function measureRendered () {
-    let drifted = false
-
-    for (const el of barEl.value.children) {
-      const item = rowMap.get(el)
-      if (!item) continue
-
-      const width = el.getBoundingClientRect().width
-      const cached = widthCache.get(item)
-
-      if (cached != null && Math.abs(cached - width) > 0.5) drifted = true
-
-      widthCache.set(item, width)
-    }
-
-    return drifted
   }
 
   // 直算可容纳的一级项数：n 项占宽 Σw + gap·(n-1)，n < N 时另计触发器与
@@ -186,13 +159,8 @@
     return count
   }
 
-  function applyCount (count) {
-    if (count >= 0) visibleCount.value = count
-    else fullMeasure()
-  }
-
-  // 全量帧：渲染全部一级项，nextTick 后测量再应用收敛结果。首挂由 sizechange
-  // 的 RO 初始回调承担（此时全量行已渲染，recompute 即全量测量）
+  // 全量帧：渲染全部一级项，nextTick 后按下标测宽入缓存再应用收敛结果。
+  // 首挂由 sizechange 的 RO 初始回调承担（recompute 缓存缺失转全量帧）
   async function fullMeasure () {
     if (destroyed || !barEl.value) return
 
@@ -203,21 +171,34 @@
 
     if (destroyed || gen !== generation || !barEl.value) return
 
-    measureRendered()
-    applyCount(computeCount())
+    // 全量帧内 more 触发器不在 DOM，children 与 items 等长同序，按下标配对；
+    // 0 宽 = 无布局盒（祖先 display:none）时的假值，视同未测量不写入，保住
+    // computeCount 的 -1 兜底
+    props.items.forEach((item, i) => {
+      const el = barEl.value.children[i]
+
+      if (!el) return
+
+      const width = el.getBoundingClientRect().width
+
+      if (width > 0) widthCache.set(item, width)
+    })
+
+    const count = computeCount()
+
+    if (count >= 0) visibleCount.value = count
   }
 
+  // 直算优先：缓存齐备按公式收敛折叠数；缺失（首挂或换 items 引用后未测）转全量帧
   function recompute () {
     if (destroyed || !barEl.value) return
 
     generation++
 
-    if (measureRendered()) {
-      fullMeasure()
-      return
-    }
+    const count = computeCount()
 
-    applyCount(computeCount())
+    if (count >= 0) visibleCount.value = count
+    else fullMeasure()
   }
 
   const onSizeChange = throttle(50, recompute, { noLeading: true })
@@ -258,8 +239,7 @@
       if (top && props.expandTrigger === 'click') showLayer(0, item, anchorEl)
     } else {
       popupLayers[0]?.hide()
-      // 有 id 回填 id（可序列化、跨数据刷新存活），无 id 回填对象引用
-      activeItem.value = item.id ?? item
+      activeItem.value = item
     }
   }
 

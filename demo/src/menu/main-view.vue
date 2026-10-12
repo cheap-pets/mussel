@@ -12,7 +12,7 @@
         aria-label="主导航菜单"
         :items="menus"
         @item-click="onEvent('itemClick', $event)" />
-      <p>active: {{ active1 ?? 'none' }}</p>
+      <p>active: {{ active1?.label ?? active1?.id ?? 'none' }}</p>
     </div>
 
     <div class="demo-panel" style="width: 100%">
@@ -27,7 +27,7 @@
       <div class="overflow-box" :style="{ width: barWidth + 'px' }">
         <mu-menu v-model:active-item="active2" :items="longMenus" />
       </div>
-      <p>active: {{ active2?.label ?? active2 ?? 'none' }}</p>
+      <p>active: {{ active2?.label ?? active2?.id ?? 'none' }}</p>
       <mu-button @click="active2 = longMenus[4]">
         Active Id-less Item (object)
       </mu-button>
@@ -161,13 +161,13 @@
     { id: 'help', icon: 'star', label: '帮助与支持' }
   ]
 
-  const active1 = ref('project-list')
+  const active1 = ref({ id: 'project-list' })
 
   const barWidth = ref(900)
-  const active2 = ref('help')
+  const active2 = ref({ id: 'help' })
 
   const active3 = ref()
-  const active4 = ref('home')
+  const active4 = ref({ id: 'home' })
   const rootDisabled = ref(false)
 
   const active5 = ref()
