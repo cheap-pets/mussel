@@ -38,18 +38,6 @@
   }
 }
 
-.mu-side-menu--collapsed {
-  & .mu-menu-item__label,
-  & .mu-menu-item__star {
-    display: none;
-  }
-
-  // rail 行仅剩图标，内容居中保持与栏宽对称
-  & .mu-menu-item {
-    justify-content: center;
-  }
-}
-
 .mu-side-menu--disabled {
   pointer-events: none;
 

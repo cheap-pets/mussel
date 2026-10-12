@@ -11,31 +11,27 @@
       <slot v-if="!isCollapsed" name="header" />
     </div>
     <mu-scroll-box class="mu-side-menu__body">
-      <template v-for="(node, index) in topItems" :key="node.id ?? index">
+      <template v-for="(item, index) in topItems" :key="item.id ?? index">
         <menu-item
           top
-          :node="node"
+          :item="item"
           :rail="isCollapsed"
-          :expanded="isExpanded(node)"
-          @item-enter="onItemEnter(node, 0, $event)"
-          @item-leave="onItemLeave(node)"
-          @row-click="onRowClick(node, 0)"
-          @favorite-toggle="toggleFavorite(node)" />
+          :expanded="isExpanded(item)"
+          @item-enter="onItemEnter(item, 0, itemEl)"
+          @item-leave="onItemLeave(item)" />
         <div
-          v-if="(node.isFavoriteGroup || node.id != null) && node.items?.length && !isCollapsed"
+          v-if="(item.isFavoriteGroup || item.id != null) && item.items?.length && !isCollapsed"
           class="mu-menu-group"
-          :expanded="isExpanded(node) || null">
-          <div class="overflow-hidden" :inert="!isExpanded(node) || null">
+          :expanded="isExpanded(item) || null">
+          <div class="overflow-hidden" :inert="!isExpanded(item) || null">
             <menu-item
-              v-for="(child, childIndex) in node.items"
+              v-for="(child, childIndex) in item.items"
               :key="child.id ?? childIndex"
-              :node="child"
+              :item="child"
               :level="1"
-              :group="node"
-              @item-enter="onItemEnter(child, 1, $event)"
-              @item-leave="onItemLeave(child)"
-              @row-click="onRowClick(child, 1)"
-              @favorite-toggle="toggleFavorite(child)" />
+              :group="item"
+              @item-enter="onItemEnter(child, 1, itemEl)"
+              @item-leave="onItemLeave(child)" />
           </div>
         </div>
       </template>
@@ -46,9 +42,7 @@
     <popup-menu
       v-for="i in popupLayerCount"
       :key="i"
-      :layer="i - 1"
-      @row-click="onPopupRowClick"
-      @favorite-toggle="toggleFavorite" />
+      :layer="i - 1" />
   </nav>
 </template>
 
@@ -88,19 +82,19 @@
 
   const rootEl = shallowRef()
 
-  const expandedNodes = new WeakSet()
+  const expandedItems = new WeakSet()
   const expandTick = ref(0)
 
-  function isExpanded (node) {
+  function isExpanded (item) {
     void expandTick.value
-    return expandedNodes.has(node)
+    return expandedItems.has(item)
   }
 
-  function setExpanded (node, value) {
-    if (!node || expandedNodes.has(node) === value) return
+  function setExpanded (item, value) {
+    if (!item || expandedItems.has(item) === value) return
 
-    if (value) expandedNodes.add(node)
-    else expandedNodes.delete(node)
+    if (value) expandedItems.add(item)
+    else expandedItems.delete(item)
 
     expandTick.value++
   }
@@ -119,16 +113,13 @@
     const set = favoritesSet.value
     const result = []
 
-    walk(props.items, node => {
-      if (!node.items?.length && set.has(node.id)) result.push(node)
+    walk(props.items, item => {
+      if (!item.items?.length && set.has(item.id)) result.push(item)
     })
 
     return result
   })
 
-  // 收藏内置组：常驻内部节点，无 id（不参与激活 / 滚动定位）。reactive 使
-  // items 直驱更新，引用稳定使展开态不随收藏变化丢失；isFavoriteGroup
-  // 标记下发收藏组识别（宿主组行为分派、行 data-key 置空与无 id 渲染豁免）
   const favoritesGroup = reactive({
     isGroup: true,
     isFavoriteGroup: true,
@@ -150,77 +141,61 @@
 
     return path.at(-1)?.items?.length
       ? new Set()
-      : new Set(path.slice(0, -1).map(node => node.id))
+      : new Set(path.slice(0, -1).map(item => item.id))
   })
 
-  function onSelectItem (node) {
-    popupLayers[0]?.hide()
-    activeItem.value = node.id
-  }
-
-  // 组行为浮出锚点（折叠态一级组 / 展开态二级组）时浮出链头弹层；锚点行取
-  // event.currentTarget（上报链同步，仍在原生事件派发中）。折叠态锚点行仅
-  // 图标，弹层带组 label 标题补上下文
-  function onItemEnter (node, level, event) {
-    if (!node.items?.length) return
-
-    if (isCollapsed.value ? level === 0 : level === 1) {
-      showLayer(0, event.currentTarget, node, isCollapsed.value)
+  function onItemEnter (item, level, itemEl) {
+    if (
+      item.items?.length &&
+      (isCollapsed.value ? level === 0 : level === 1)
+    ) {
+      showLayer(0, item, itemEl, { showHeader: isCollapsed.value })
     }
   }
 
-  function onItemLeave (node) {
-    if (node.items?.length) popupLayers[0]?.delayHide()
+  function onItemLeave (item) {
+    if (item.items?.length) popupLayers[0]?.delayHide()
   }
 
-  // 叶子选中并收链头；组行仅展开态一级组内联展开（收藏组头恒组，空组亦不
-  // 当叶子），rail 组行与展开态二级组行点击无动作（hover 驱动浮出）
-  function onRowClick (node, level) {
-    emit('itemClick', node)
+  function onItemClick (item, { top }) {
+    emit('itemClick', item)
 
-    if (node.isFavoriteGroup || node.items?.length) {
-      if (!isCollapsed.value && !level) toggleExpand(node)
+    if (item.isFavoriteGroup || item.items?.length) {
+      if (top && !isCollapsed.value) toggleExpand(item)
     } else {
-      onSelectItem(node)
+      popupLayers[0]?.hide()
+      activeItem.value = item.id
     }
   }
 
-  // 弹层内行点击分派（popup-menu 转发）：叶子选中并收整链，组行 hover
-  // 驱动下钻、点击无动作
-  function onPopupRowClick (node) {
-    emit('itemClick', node)
-
-    if (!node.items?.length) onSelectItem(node)
-  }
-
-  function toggleFavorite (node) {
+  function toggleFavorited (item) {
     const set = favoritesSet.value
     if (!set) return
 
-    const key = node.id
+    const key = item.id
     const favorited = !set.has(key)
 
     favorites.value = favorited
       ? [...set, key]
-      : favorites.value.filter(item => item !== key)
+      : favorites.value.filter(id => id !== key)
 
-    emit('favoriteToggle', node, favorited)
+    emit('favoriteToggle', item, favorited)
   }
 
   // accordion 下展开时互斥同级（含收藏内置组）
-  function toggleExpand (node) {
-    if (isExpanded(node)) {
-      setExpanded(node, false)
+  function toggleExpand (item) {
+    if (isExpanded(item)) {
+      setExpanded(item, false)
       return
     }
 
     if (props.accordion) {
       topItems.value.forEach(sibling => {
-        if (sibling !== node && sibling.items?.length) setExpanded(sibling, false)
+        if (sibling !== item && sibling.items?.length) setExpanded(sibling, false)
       })
     }
 
-    setExpanded(node, true)
+    setExpanded(item, true)
   }
 
   function scrollToKey (key) {
@@ -268,24 +243,26 @@
   function resetItemsStatus () {
     if (!props.autoExpandTop || !props.items.length) return
 
-    topItems.value.forEach(node => node.items?.length && setExpanded(node, true))
+    topItems.value.forEach(item => item.items?.length && setExpanded(item, true))
     nextTick(syncActive)
   }
-
-  watchEffect(() => {
-    favoritesGroup.items = favoriteItems.value
-  })
-
-  watch(() => props.items, resetItemsStatus)
-  watch(activeItem, syncActive)
-  watch(isCollapsed, () => popupLayers[0]?.hide())
-
-  onMounted(resetItemsStatus)
 
   provide('menu', {
     direction: 'vertical',
     activeItem,
     activePath,
-    favoritesSet
+    favoritesSet,
+    toggleFavorited,
+    onItemClick
   })
+
+  watchEffect(() => {
+    favoritesGroup.items = favoriteItems.value
+  })
+
+  watch(activeItem, syncActive)
+  watch(isCollapsed, () => popupLayers[0]?.hide())
+  watch(() => props.items, resetItemsStatus)
+
+  onMounted(resetItemsStatus)
 </script>

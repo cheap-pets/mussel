@@ -5,13 +5,12 @@
     @sizechange="onSizeChange">
     <div ref="barEl" class="mu-menu__bar">
       <menu-item
-        v-for="(node, index) in barItems"
-        :key="node.id ?? index"
-        :node="node"
+        v-for="(item, index) in visibleItems"
+        :key="item.id ?? index"
+        :item="item"
         top
-        @item-enter="onItemEnter(node, $event)"
-        @item-leave="onItemLeave(node)"
-        @row-click="onRowClick(node, $event)" />
+        @item-enter="onItemEnter(item, $event)"
+        @item-leave="onItemLeave(item)" />
       <div
         v-if="hasOverflow"
         ref="moreEl"
@@ -27,8 +26,7 @@
     <popup-menu
       v-for="i in popupLayerCount"
       :key="i"
-      :layer="i - 1"
-      @row-click="onPopupRowClick" />
+      :layer="i - 1" />
   </nav>
 </template>
 
@@ -69,7 +67,7 @@
 
   const visibleCount = ref(props.items.length)
 
-  const barItems = computed(() => props.items.slice(0, visibleCount.value))
+  const visibleItems = computed(() => props.items.slice(0, visibleCount.value))
 
   const hasOverflow = computed(() => visibleCount.value < props.items.length)
 
@@ -81,7 +79,7 @@
 
     return path.at(-1)?.items?.length
       ? new Set()
-      : new Set(path.slice(0, -1).map(node => node.id))
+      : new Set(path.slice(0, -1).map(item => item.id))
   })
 
   // 激活项落在被折叠子树内 → 触发器高亮（不做激活项豁免，纯顺序折叠）
@@ -92,11 +90,11 @@
 
     return props.items
       .slice(visibleCount.value)
-      .some(node => walkTo(key, [node]).length > 0)
+      .some(item => walkTo(key, [item]).length > 0)
   })
 
   // 折叠项合成组：走与栏内组行相同的 showLayer 弹层路径，面板内组行逐层级联
-  const overflowNode = computed(() => ({
+  const moreGroup = computed(() => ({
     id: '__overflow__',
     label: t('Menu.MORE'),
     items: props.items.slice(visibleCount.value)
@@ -160,8 +158,8 @@
 
     const gap = barGap()
     const trigger = triggerWidth() + gap
-    const widths = props.items.map(node =>
-      node.id == null ? 0 : widthCache.get(String(node.id))
+    const widths = props.items.map(item =>
+      item.id == null ? 0 : widthCache.get(String(item.id))
     )
 
     if (widths.some(w => w == null)) return -1
@@ -218,9 +216,57 @@
 
   const onSizeChange = throttle(50, recompute, { noLeading: true })
 
+  function onItemEnter (item, itemEl) {
+    if (!item.items?.length) return
+
+    if (props.expandTrigger === 'hover' || popupLayers[0]?.visible) {
+      showLayer(0, item, itemEl)
+    }
+  }
+
+  function onItemLeave (item) {
+    if (item.items?.length) popupLayers[0]?.delayHide()
+  }
+
+  function onMoreEnter () {
+    if (props.expandTrigger === 'hover' || popupLayers[0]?.visible) {
+      showLayer(0, moreGroup.value, moreEl.value)
+    }
+  }
+
+  function onMoreLeave () {
+    popupLayers[0]?.delayHide()
+  }
+
+  // click 触发模式下溢出触发器与主栏组行共用：点击浮出（hover 模式点击不触发）
+  function onMoreClick () {
+    if (props.expandTrigger === 'click') {
+      showLayer(0, moreGroup.value, moreEl.value)
+    }
+  }
+
+  function onItemClick (item, { anchorEl, top }) {
+    emit('itemClick', item)
+
+    if (item.items?.length) {
+      if (top && props.expandTrigger === 'click') showLayer(0, item, anchorEl)
+    } else {
+      popupLayers[0]?.hide()
+      activeItem.value = item.id
+    }
+  }
+
   watch(() => props.items, () => {
     widthCache.clear()
     fullMeasure()
+  })
+
+  provide('menu', {
+    direction: 'horizontal',
+    activeItem,
+    activePath,
+    barExpandIcon: computed(() => props.expandIcon),
+    onItemClick
   })
 
   onMounted(() => {
@@ -230,66 +276,5 @@
 
   onUnmounted(() => {
     destroyed = true
-  })
-
-  // ---------- 弹层链 ----------
-  // 组行才浮出：click 触发模式下链头未开时 hover 不浮出（首次须点击打开），
-  // 已开后 hover 恢复直接切换；hover 模式恒浮出
-  function onItemEnter (node, event) {
-    if (!node.items?.length) return
-    if (props.expandTrigger === 'click' && !popupLayers[0]?.visible) return
-
-    showLayer(0, event.currentTarget, node)
-  }
-
-  function onItemLeave (node) {
-    if (node.items?.length) popupLayers[0]?.delayHide()
-  }
-
-  function onMoreEnter () {
-    if (props.expandTrigger === 'click' && !popupLayers[0]?.visible) return
-
-    showLayer(0, moreEl.value, overflowNode.value)
-  }
-
-  function onMoreLeave () {
-    popupLayers[0]?.delayHide()
-  }
-
-  // click 触发模式下溢出触发器与主栏组行共用：点击浮出（hover 模式点击不触发）
-  function onMoreClick () {
-    if (props.expandTrigger !== 'click') return
-
-    showLayer(0, moreEl.value, overflowNode.value)
-  }
-
-  // 叶子选中并收链头；组行 click 触发模式点击浮出，hover 模式点击无动作（hover 已浮出）
-  function onRowClick (node, event) {
-    emit('itemClick', node)
-
-    if (node.items?.length) {
-      if (props.expandTrigger === 'click') showLayer(0, event.currentTarget, node)
-    } else {
-      popupLayers[0]?.hide()
-      activeItem.value = node.id
-    }
-  }
-
-  // 弹层内行点击分派（popup-menu 转发）：叶子选中并收整链，组行 hover
-  // 驱动下钻、点击无动作
-  function onPopupRowClick (node) {
-    emit('itemClick', node)
-
-    if (!node.items?.length) {
-      popupLayers[0]?.hide()
-      activeItem.value = node.id
-    }
-  }
-
-  provide('menu', {
-    direction: 'horizontal',
-    activeItem,
-    activePath,
-    barExpandIcon: computed(() => props.expandIcon)
   })
 </script>

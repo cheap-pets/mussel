@@ -7,19 +7,17 @@
       :style="popupStyle"
       @mouseenter="clearHideTimer"
       @mouseleave="delayHide(true)">
-      <div v-if="showHeader" class="mu-popup-menu__header text-ellipsis">
+      <div v-if="headerVisible" class="mu-popup-menu__header text-ellipsis">
         {{ groupLabel }}
       </div>
       <mu-scroll-box class="mu-popup-menu__body">
         <menu-item
-          v-for="(child, index) in childNodes"
+          v-for="(child, index) in childItems"
           :key="child.id ?? index"
-          :node="child"
+          :item="child"
           :group="group"
           @item-enter="onItemEnter(child, $event)"
-          @item-leave="onItemLeave(child)"
-          @row-click="emit('rowClick', child)"
-          @favorite-toggle="emit('favoriteToggle', child)" />
+          @item-leave="onItemLeave(child)" />
       </mu-scroll-box>
     </div>
   </Teleport>
@@ -41,9 +39,6 @@
     layer: { type: Number, default: 0 }
   })
 
-  // 行点击 / 收藏切换转发宿主分派（链头弹层的启闭与选中均为宿主逻辑）
-  const emit = defineEmits(['rowClick', 'favoriteToggle'])
-
   const MARGIN = 8 // 面板与视口上下边的最小留白，与 max-height: calc(100vh - 16px) 对应
   const GAP = 8 // 面板与锚点的水平间距
 
@@ -52,7 +47,7 @@
 
   const visible = ref()
   const position = ref('right')
-  const showHeader = ref(false)
+  const headerVisible = ref(false)
 
   const panelEl = shallowRef()
   const anchor = shallowRef()
@@ -64,7 +59,7 @@
   const { ready, popupStyle, container, doEnter, doExit } =
     usePopupRunner(visible, panelEl, updatePosition)
 
-  const childNodes = computed(() => group.value?.items || [])
+  const childItems = computed(() => group.value?.items || [])
   const groupLabel = computed(() => group.value?.label)
 
   // 子层实例：未生成（本层面板内组行未被 hover 过）时为空
@@ -74,10 +69,10 @@
 
   // 组行 hover 沿链浮出下一层；离开只臂下一层待关（鼠标可能仍在父面板内换行，
   // 臂祖先会误收整链）
-  function onItemEnter (child, event) {
+  function onItemEnter (child, itemEl) {
     if (!child.items?.length) return
 
-    chain.showLayer(props.layer + 1, event.currentTarget, child)
+    chain.showLayer(props.layer + 1, child, itemEl)
   }
 
   function onItemLeave (child) {
@@ -227,7 +222,7 @@
   // 不属于生命周期清理；臂定中卸载可免已卸载实例滞留至计时触发
   onUnmounted(() => clearTimeout(hideTimer))
 
-  async function show (anchorEl, groupNode, header) {
+  async function show (anchorEl, groupItem, options = {}) {
     if (!isAnchorVisible(anchorEl)) return
 
     clearHideTimer()
@@ -240,10 +235,10 @@
       anchor.value?.removeAttribute('popup-open')
     }
 
+    group.value = groupItem
     anchor.value = anchorEl
-    group.value = groupNode
-    showHeader.value = !!header
-    // 已浮出下级弹层的锚点行保持 hover 态（scss [popup-open]）
+    headerVisible.value = !!options.showHeader
+
     anchorEl.setAttribute('popup-open', '')
 
     if (!visible.value) {
@@ -251,8 +246,7 @@
       await doEnter()
     } else if (anchorChanged) {
       // 锚点切换：保留显示，换内容重定位，不重播动画
-      await nextTick()
-      if (visible.value) updatePosition()
+      await nextTick().then(() => visible.value && updatePosition())
     }
   }
 

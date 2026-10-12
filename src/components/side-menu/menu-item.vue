@@ -1,8 +1,8 @@
 <template>
   <div
-    v-if="!keyless"
+    v-if="!isInvalid"
     class="mu-menu-item"
-    :data-key="group?.isFavoriteGroup ? null : node.id"
+    :data-key="group?.isFavoriteGroup ? null : item.id"
     :style="{ '--mu-menu-item_level': level }"
     :title="rowTitle"
     :group="isGroup || null"
@@ -11,9 +11,9 @@
     @click="onClick"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave">
-    <mu-icon class="mu-menu-item__icon" :icon="node.icon" />
+    <mu-icon class="mu-menu-item__icon" :icon="item.icon" />
     <template v-if="!rail">
-      <span ref="labelEl" class="mu-menu-item__label">{{ node.label }}</span>
+      <span ref="labelEl" class="mu-menu-item__label">{{ item.label }}</span>
       <mu-icon
         v-if="expandIcon"
         class="mu-menu-item__expand-icon"
@@ -22,8 +22,8 @@
       <mu-icon
         v-else-if="showFavoriteBtn"
         class="mu-menu-item__star"
-        :icon="starred ? 'starred' : 'star'"
-        :starred="starred || null"
+        :icon="isStarred ? 'starred' : 'star'"
+        :starred="isStarred || null"
         @click.stop="onFavoriteClick" />
       <span v-else-if="!isHorizontalTop" class="mu-menu-item__icon" />
     </template>
@@ -41,13 +41,13 @@
 
   const props = defineProps({
     top: Boolean,
-    node: Object,
+    item: Object,
     rail: Boolean,
     group: Object,
     level: { type: Number, default: 0 },
     expanded: Boolean
   })
-  const emit = defineEmits(['itemEnter', 'itemLeave', 'rowClick', 'favoriteToggle'])
+  const emit = defineEmits(['itemEnter', 'itemLeave'])
   const menu = inject('menu')
 
   const { activeItem, activePath } = menu
@@ -56,16 +56,16 @@
   const labelOverflowed = shallowRef(false)
 
   const isHorizontalTop = computed(() => menu.direction === 'horizontal' && props.top)
-  const isGroup = computed(() => props.node.isGroup || !!props.node.items?.length)
-  const isDisabled = computed(() => !!props.node.disabled)
+  const isGroup = computed(() => props.item.isGroup || !!props.item.items?.length)
+  const isDisabled = computed(() => !!props.item.disabled)
 
   const isActive = computed(() =>
-    (!isGroup.value && props.node.id === activeItem.value) ||
-    activePath.value.has(props.node.id)
+    (!isGroup.value && props.item.id === activeItem.value) ||
+    activePath.value.has(props.item.id)
   )
 
   const rowTitle = computed(() =>
-    ((props.rail ? !isGroup.value : labelOverflowed.value) && props.node.label) ||
+    ((props.rail ? !isGroup.value : labelOverflowed.value) && props.item.label) ||
     null
   )
 
@@ -77,8 +77,8 @@
     )
   })
 
-  const keyless = computed(() => props.node.id == null && !props.group?.isFavoriteGroup)
-  const starred = computed(() => !!menu.favoritesSet?.value?.has(props.node.id))
+  const isInvalid = computed(() => props.item.id == null && !props.item.isFavoriteGroup)
+  const isStarred = computed(() => !!menu.favoritesSet?.value?.has(props.item.id))
 
   const showFavoriteBtn = computed(() =>
     !!menu.favoritesSet?.value &&
@@ -92,7 +92,7 @@
 
   function onClick (event) {
     if (!isDisabled.value) {
-      emit('rowClick', event)
+      menu.onItemClick(props.item, { anchorEl: event.currentTarget, top: props.top })
     }
   }
 
@@ -100,7 +100,7 @@
     if (isDisabled.value) return
     if (!props.rail) checkLabelOverflow()
 
-    emit('itemEnter', event)
+    emit('itemEnter', event.currentTarget)
   }
 
   function onMouseLeave () {
@@ -108,14 +108,14 @@
   }
 
   function onFavoriteClick () {
-    emit('favoriteToggle')
+    menu.toggleFavorited?.(props.item)
   }
 
-  if (isDev && keyless.value) {
+  if (isDev && isInvalid.value) {
     console.warn(
       '[MUSSEL:SideMenu]',
-      'Node is missing the "id" field and has been skipped:',
-      props.node
+      'Item is missing the "id" field and has been skipped:',
+      props.item
     )
   }
 </script>
