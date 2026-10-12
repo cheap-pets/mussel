@@ -1,6 +1,5 @@
 <template>
   <nav
-    ref="rootEl"
     :class="['mu-menu', disabled && 'mu-menu--disabled']"
     :inert="disabled || null"
     @sizechange="onSizeChange">
@@ -9,7 +8,7 @@
         v-for="(node, index) in barItems"
         :key="node.id ?? index"
         :node="node"
-        :level="0"
+        top
         @item-enter="onItemEnter(node, $event)"
         @item-leave="onItemLeave(node)"
         @row-click="onRowClick(node, $event)" />
@@ -65,7 +64,6 @@
     showLayer
   } = usePopupChain()
 
-  const rootEl = shallowRef()
   const barEl = shallowRef()
   const moreEl = shallowRef()
 

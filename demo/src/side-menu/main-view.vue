@@ -12,7 +12,6 @@
         aria-label="主导航菜单"
         style="height: 420px"
         :items="menus"
-        @select="onEvent('select', $event)"
         @item-click="onEvent('itemClick', $event)" />
       <p>active: {{ active1 ?? 'none' }}</p>
       <mu-button @click="active1 = 'group'">
@@ -39,8 +38,7 @@
         v-model:active-item="active3"
         auto-expand-top
         style="height: 300px"
-        :items="asyncMenus"
-        @select="onEvent('select', $event)" />
+        :items="asyncMenus" />
       <p>active: {{ active3 ?? 'none' }}</p>
       <mu-button @click="active3 = 'g8-i2'">
         Active Deep Item
@@ -51,13 +49,11 @@
     </div>
 
     <div class="demo-panel">
-      <h3>4. Collapsed + Slots + collapse-button</h3>
+      <h3>4. Collapsed + Slots</h3>
       <mu-side-menu
         v-model:active-item="active4"
         v-model:collapsed="collapsed"
         v-model:favorites="favorites4"
-        collapse-button
-        width="220px"
         style="height: 420px"
         :items="menus">
         <template #header="{ collapsed }">
@@ -114,7 +110,6 @@
       <mu-side-menu
         v-model:active-item="active7"
         v-model:collapsed="collapsed7"
-        collapse-button
         style="height: 260px"
         :items="menus" />
       <mu-dropdown :dropdown-items="ddItems">
@@ -125,11 +120,10 @@
     </div>
 
     <div class="demo-panel">
-      <h3>8. Rail (top level icon-only, fixed; collapse-button hidden)</h3>
+      <h3>8. Rail (top level icon-only, fixed)</h3>
       <mu-side-menu
         v-model:active-item="active8"
         v-model:collapsed="collapsed8"
-        collapse-button
         rail
         style="height: 260px"
         :items="menus" />

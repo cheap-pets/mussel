@@ -14,14 +14,9 @@ export function walkTo (key, nodes) {
   return []
 }
 
-export function walk (items, level = 0, callback) {
-  if (!items?.length) return
-
-  for (const item of items) {
-    if (callback(item, level) === false) {
-      return false
-    }
-
-    walk(item.items, level + 1, callback)
+export function walk (items, callback) {
+  for (const item of items || []) {
+    callback(item)
+    walk(item.items, callback)
   }
 }

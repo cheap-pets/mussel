@@ -16,7 +16,6 @@
           :key="child.id ?? index"
           :node="child"
           :group="group"
-          popup
           @item-enter="onItemEnter(child, $event)"
           @item-leave="onItemLeave(child)"
           @row-click="emit('rowClick', child)"
@@ -53,6 +52,7 @@
 
   const visible = ref()
   const position = ref('right')
+  const showHeader = ref(false)
 
   const panelEl = shallowRef()
   const anchor = shallowRef()
@@ -65,10 +65,6 @@
     usePopupRunner(visible, panelEl, updatePosition)
 
   const childNodes = computed(() => group.value?.items || [])
-
-  // 仅收拢态主树一级组的弹层显示标题：rail 锚点行只有图标，标题补分组上下文；
-  // 其余层锚点行标签本身可见，不重复
-  const showHeader = computed(() => !props.layer && !!menu.collapsed?.value)
   const groupLabel = computed(() => group.value?.label)
 
   // 子层实例：未生成（本层面板内组行未被 hover 过）时为空
@@ -158,7 +154,6 @@
     const { innerWidth: vw, innerHeight: vh } = window
     const { width: pw, height: ph } = panelSize
 
-    // 主轴（水平）
     const rightSpace = vw - anchorRect.right - GAP
     const leftSpace = anchorRect.left - GAP
 
@@ -167,7 +162,7 @@
 
     const pos = fits[base] || !fits[other] ? base : other
 
-    // 交叉轴（垂直）：默认与锚点顶对齐；下方溢出且锚点在上半屏时底对齐翻转，最终双向夹紧
+    // 默认与锚点顶对齐；下方溢出且锚点在上半屏时底对齐翻转，最终双向夹紧
     let top = anchorRect.top
 
     if (top + ph > vh - MARGIN && anchorRect.top > vh / 2) {
@@ -232,8 +227,7 @@
   // 不属于生命周期清理；臂定中卸载可免已卸载实例滞留至计时触发
   onUnmounted(() => clearTimeout(hideTimer))
 
-  async function show (anchorEl, groupNode) {
-    // 锚点不可见（不在视口或被滚动区裁剪）时不弹出
+  async function show (anchorEl, groupNode, header) {
     if (!isAnchorVisible(anchorEl)) return
 
     clearHideTimer()
@@ -248,6 +242,7 @@
 
     anchor.value = anchorEl
     group.value = groupNode
+    showHeader.value = !!header
     // 已浮出下级弹层的锚点行保持 hover 态（scss [popup-open]）
     anchorEl.setAttribute('popup-open', '')
 

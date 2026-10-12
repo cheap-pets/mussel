@@ -40,6 +40,10 @@
   &[popup-open] {
     background: var(--mu-primary-translucent);
   }
+
+  &[popup-open] > .mu-menu-item__expand-icon > svg {
+    transform: rotate(-180deg);
+  }
 }
 
 // 溢出折叠触发器：定宽方形（宽度 = 行高变量，溢出直算不读其 DOM）

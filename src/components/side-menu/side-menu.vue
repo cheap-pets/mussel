@@ -13,6 +13,7 @@
     <mu-scroll-box class="mu-side-menu__body">
       <template v-for="(node, index) in topItems" :key="node.id ?? index">
         <menu-item
+          top
           :node="node"
           :rail="isCollapsed"
           :expanded="isExpanded(node)"
@@ -70,12 +71,10 @@
     disabled: Boolean,
     accordion: Boolean,
     autoExpandTop: Boolean,
-    collapseButton: Boolean,
-    items: { type: Array, default: () => [] },
-    width: { type: [String, Number], default: '240px' }
+    items: { type: Array, default: () => [] }
   })
 
-  const emit = defineEmits(['select', 'itemClick', 'favoriteToggle'])
+  const emit = defineEmits(['itemClick', 'favoriteToggle'])
 
   const activeItem = defineModel('activeItem', { type: [String, Number] })
   const collapsed = defineModel('collapsed', { type: Boolean })
@@ -120,7 +119,7 @@
     const set = favoritesSet.value
     const result = []
 
-    walk(props.items, 0, node => {
+    walk(props.items, node => {
       if (!node.items?.length && set.has(node.id)) result.push(node)
     })
 
@@ -160,12 +159,13 @@
   }
 
   // 组行为浮出锚点（折叠态一级组 / 展开态二级组）时浮出链头弹层；锚点行取
-  // event.currentTarget（上报链同步，仍在原生事件派发中）
+  // event.currentTarget（上报链同步，仍在原生事件派发中）。折叠态锚点行仅
+  // 图标，弹层带组 label 标题补上下文
   function onItemEnter (node, level, event) {
     if (!node.items?.length) return
 
     if (isCollapsed.value ? level === 0 : level === 1) {
-      showLayer(0, event.currentTarget, node)
+      showLayer(0, event.currentTarget, node, isCollapsed.value)
     }
   }
 

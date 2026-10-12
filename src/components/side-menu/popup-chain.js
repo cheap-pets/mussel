@@ -16,13 +16,13 @@ export function usePopupChain () {
   }
 
   // 生成或复用层实例并弹出：新层首次触发时先扩容 v-for，待实例挂载后 show
-  async function showLayer (index, anchor, node) {
+  async function showLayer (index, anchor, node, header) {
     if (popupLayerCount.value <= index) {
       popupLayerCount.value = index + 1
       await nextTick()
     }
 
-    popupLayers[index]?.show(anchor, node)
+    popupLayers[index]?.show(anchor, node, header)
   }
 
   provide('popupChain', {
@@ -34,8 +34,6 @@ export function usePopupChain () {
   return {
     popupLayers,
     popupLayerCount,
-    getLayer,
-    setLayer,
     showLayer
   }
 }

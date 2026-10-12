@@ -38,24 +38,6 @@
   }
 }
 
-.mu-side-menu__collapse-button {
-  cursor: pointer;
-
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-
-  min-height: var(--mu-menu-item_height, 40px);
-
-  color: var(--mu-text-color-subtle);
-
-  &:hover {
-    color: var(--mu-text-color-normal);
-    background: var(--mu-gray-translucent);
-  }
-}
-
 .mu-side-menu--collapsed {
   & .mu-menu-item__label,
   & .mu-menu-item__star {
