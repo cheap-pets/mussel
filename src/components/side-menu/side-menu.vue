@@ -17,10 +17,10 @@
           :item="item"
           :rail="isCollapsed"
           :expanded="isExpanded(item)"
-          @item-enter="onItemEnter(item, 0, itemEl)"
+          @item-enter="onItemEnter(item, 0, $event)"
           @item-leave="onItemLeave(item)" />
         <div
-          v-if="(item.isFavoriteGroup || item.id != null) && item.items?.length && !isCollapsed"
+          v-if="item.items?.length && !isCollapsed"
           class="mu-menu-group"
           :expanded="isExpanded(item) || null">
           <div class="overflow-hidden" :inert="!isExpanded(item) || null">
@@ -29,8 +29,7 @@
               :key="child.id ?? childIndex"
               :item="child"
               :level="1"
-              :group="item"
-              @item-enter="onItemEnter(child, 1, itemEl)"
+              @item-enter="onItemEnter(child, 1, $event)"
               @item-leave="onItemLeave(child)" />
           </div>
         </div>
@@ -70,9 +69,9 @@
 
   const emit = defineEmits(['itemClick', 'favoriteToggle'])
 
-  const activeItem = defineModel('activeItem', { type: [String, Number] })
   const collapsed = defineModel('collapsed', { type: Boolean })
   const favorites = defineModel('favorites', { type: Array, default: () => [] })
+  const activeItem = defineModel('activeItem', { type: [String, Number, Object] })
 
   const {
     popupLayers,
@@ -133,15 +132,15 @@
     : props.items
   )
 
-  // 祖先组 key 集合（组头「后代激活」态的下发数据）；激活目标为组 key 时为空集
+  // 祖先组对象集合（组头「后代激活」态的下发数据）；激活目标为组时为空集
   const activePath = computed(() => {
-    if (activeItem.value == null) return new Set()
+    if (activeItem.value == null) return new WeakSet()
 
     const path = walkTo(activeItem.value, props.items)
 
     return path.at(-1)?.items?.length
-      ? new Set()
-      : new Set(path.slice(0, -1).map(item => item.id))
+      ? new WeakSet()
+      : new WeakSet(path.slice(0, -1))
   })
 
   function onItemEnter (item, level, itemEl) {
@@ -164,7 +163,8 @@
       if (top && !isCollapsed.value) toggleExpand(item)
     } else {
       popupLayers[0]?.hide()
-      activeItem.value = item.id
+      // 有 id 回填 id（可序列化、跨数据刷新存活），无 id 回填对象引用
+      activeItem.value = item.id ?? item
     }
   }
 
@@ -198,10 +198,12 @@
     setExpanded(item, true)
   }
 
-  function scrollToKey (key) {
-    if (key == null) return
-
-    const el = rootEl.value?.querySelector(`[data-key="${CSS.escape(String(key))}"]`)
+  // 「最后一个 active 行」= 激活链最深可见行：nav 内联只有 level 0/1，
+  // level ≥2 激活项命中的是其最深可见祖先（更深的行在 nav 外的弹层里）。
+  // DOM 顺序约定：收藏组渲染在 topItems 最前，其副本行恒非 last，命中为原始位置
+  function scrollToActive () {
+    const el = [...rootEl.value?.querySelectorAll('.mu-menu-item[active]') ?? []]
+      .at(-1)
 
     if (!el?.getBoundingClientRect().height) return
 
@@ -225,7 +227,7 @@
     if (top) toggleExpand(top)
 
     nextTick(() => {
-      const run = () => scrollToKey(activeItem.value)
+      const run = () => scrollToActive()
 
       // 首挂载延迟 100ms 避开初始渲染抖动；组刚展开时等动画结束再滚，
       // 否则 scrollIntoView 按动画中间态计算会错位

@@ -60,7 +60,7 @@
 }
 
 .mu-popup-menu__header {
-  padding: calc(var(--mu-base-spacing) * 2);
+  padding: var(--mu-base-spacing) calc(var(--mu-base-spacing) * 2);
   font-size: var(--mu-font-size-large);
   font-weight: 600;
   color: var(--mu-text-color-subtle);

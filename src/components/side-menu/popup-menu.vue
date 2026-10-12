@@ -15,7 +15,6 @@
           v-for="(child, index) in childItems"
           :key="child.id ?? index"
           :item="child"
-          :group="group"
           @item-enter="onItemEnter(child, $event)"
           @item-leave="onItemLeave(child)" />
       </mu-scroll-box>
@@ -40,7 +39,7 @@
   })
 
   const MARGIN = 8 // 面板与视口上下边的最小留白，与 max-height: calc(100vh - 16px) 对应
-  const GAP = 8 // 面板与锚点的水平间距
+  const GAP = 4 // 弹层与锚点所属容器（side-menu、menu、上级弹层面板）的间距
 
   const menu = inject('menu')
   const chain = inject('popupChain')
@@ -111,29 +110,31 @@
 
   // 定位纯函数（DOM 读写归 updatePosition）：base 决定主轴方向（right/left
   // 水平、down/up 垂直）；仅默认侧放不下且另一侧放得下才翻转，两侧不足保持默认侧
-  function calculatePosition (anchorRect, panelSize, base) {
+  function calculatePosition (anchorRect, panelSize, base, hostRect) {
     return (base === 'down' || base === 'up')
-      ? calculateVerticalPosition(anchorRect, panelSize, base)
-      : calculateHorizontalPosition(anchorRect, panelSize, base)
+      ? calculateVerticalPosition(anchorRect, panelSize, base, hostRect)
+      : calculateHorizontalPosition(anchorRect, panelSize, base, hostRect)
   }
 
   // 垂直主轴（横向菜单链头）：主轴上下翻转；交叉轴默认左对齐，右溢出改右对齐
   // （右缘锚定锚点右缘，max-content 宽度变化时面板不漂移），两侧按 MARGIN 夹紧
-  function calculateVerticalPosition (anchorRect, panelSize, base) {
+  function calculateVerticalPosition (anchorRect, panelSize, base, hostRect) {
     const { innerWidth: vw, innerHeight: vh } = window
     const { width: pw, height: ph } = panelSize
 
+    const mainRect = hostRect ?? anchorRect
+
     const fits = {
-      down: vh - anchorRect.bottom - GAP >= ph,
-      up: anchorRect.top - GAP >= ph
+      down: vh - mainRect.bottom - GAP >= ph,
+      up: mainRect.top - GAP >= ph
     }
     const other = base === 'down' ? 'up' : 'down'
     const pos = fits[base] || !fits[other] ? base : other
 
     const style = pos === 'down'
-      ? { top: `${anchorRect.bottom + GAP}px` }
-      // 上缘锚定锚点上缘，宽度变化不漂移
-      : { bottom: `${vh - anchorRect.top + GAP}px` }
+      ? { top: `${mainRect.bottom + GAP}px` }
+      // 上缘锚定基准上缘，宽度变化不漂移
+      : { bottom: `${vh - mainRect.top + GAP}px` }
 
     if (anchorRect.left + pw <= vw - MARGIN) {
       style.left = `${Math.max(MARGIN, anchorRect.left)}px`
@@ -144,13 +145,16 @@
     return { position: pos, style }
   }
 
-  // 水平主轴（side-menu 链及向右下钻的子层）
-  function calculateHorizontalPosition (anchorRect, panelSize, base) {
+  // 水平主轴（side-menu 链及向右下钻的子层）。主轴间距以锚点所属容器为基准：
+  // 弹层面板行嵌在面板 padding 内，以行为基准会使间距被 padding 抵消
+  function calculateHorizontalPosition (anchorRect, panelSize, base, hostRect) {
     const { innerWidth: vw, innerHeight: vh } = window
     const { width: pw, height: ph } = panelSize
 
-    const rightSpace = vw - anchorRect.right - GAP
-    const leftSpace = anchorRect.left - GAP
+    const mainRect = hostRect ?? anchorRect
+
+    const rightSpace = vw - mainRect.right - GAP
+    const leftSpace = mainRect.left - GAP
 
     const fits = { right: rightSpace >= pw, left: leftSpace >= pw }
     const other = base === 'right' ? 'left' : 'right'
@@ -166,10 +170,10 @@
 
     top = Math.max(MARGIN, Math.min(top, vh - MARGIN - ph))
 
-    // 左侧悬挂须用 right 定位：右缘锚定锚点左缘，max-content 宽度变化时面板不漂移
+    // 左侧悬挂须用 right 定位：右缘锚定基准左缘，max-content 宽度变化时面板不漂移
     const style = pos === 'right'
-      ? { left: `${anchorRect.right + GAP}px` }
-      : { right: `${vw - anchorRect.left + GAP}px` }
+      ? { left: `${mainRect.right + GAP}px` }
+      : { right: `${vw - mainRect.left + GAP}px` }
 
     style.top = `${top}px`
 
@@ -181,18 +185,22 @@
 
     const el = panelEl.value
     const anchorRect = anchor.value.getBoundingClientRect()
+    // 间距基准取锚点所属容器（宿主菜单 / 上级弹层面板）rect
+    const hostRect = anchor.value.closest('.mu-popup-menu, .mu-side-menu, .mu-menu')
+      ?.getBoundingClientRect()
 
     const { position: pos, style } = calculatePosition(
       anchorRect,
       el.getBoundingClientRect(),
-      resolveBase()
+      resolveBase(),
+      hostRect
     )
 
     // 先写回本层方向再递归子层，子层取到的继承方向时序正确
     position.value = pos
     el.setAttribute('position', pos)
     // 样式须同步写入 DOM 再递归：popupStyle 经响应式 patch 是异步的，
-    // 子层重定位读父面板内锚点 rect 时会拿到父面板旧位置
+    // 子层重定位读父面板及其内锚点 rect 时会拿到父面板旧位置
     el.style.left = el.style.right = el.style.top = el.style.bottom = ''
     Object.assign(el.style, style)
     popupStyle.value = style

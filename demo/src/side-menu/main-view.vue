@@ -130,6 +130,27 @@
       <p>collapsed: {{ collapsed8 }} (ignored under rail)</p>
     </div>
 
+    <div class="demo-panel">
+      <h3>9. Id-less Items + Object Activation</h3>
+      <mu-side-menu
+        v-model:active-item="active9"
+        v-model:favorites="favorites9"
+        style="height: 420px"
+        :items="idlessMenus"
+        @item-click="onEvent('itemClick', $event)"
+        @favorite-toggle="onEvent('favoriteToggle', $event)" />
+      <p>active: {{ active9?.label ?? active9 ?? 'none' }}</p>
+      <mu-button @click="active9 = idlessMenus[0]">
+        Active Id-less Top Leaf (object)
+      </mu-button>
+      <mu-button @click="active9 = deepLeaf">
+        Active Id-less Deep Leaf (object, level 3)
+      </mu-button>
+      <mu-button @click="active9 = 'with-id-child'">
+        Active By Id (regression)
+      </mu-button>
+    </div>
+
     <div class="demo-panel" style="width: 100%">
       <h3>Events</h3>
       <pre style="max-height: 160px; overflow: auto; margin: 0">{{ eventLog.join('\n') }}</pre>
@@ -252,6 +273,29 @@
 
   const active8 = ref()
   const collapsed8 = ref(false)
+
+  const deepLeaf = { icon: 'file', label: '无 id 三级叶子' }
+
+  const idlessMenus = [
+    { icon: 'grid', label: '无 id 叶子（顶层）' },
+    {
+      icon: 'folder',
+      label: '无 id 组',
+      items: [
+        { icon: 'file', label: '无 id 子叶子' },
+        { id: 'with-id-child', icon: 'file', label: '有 id 子叶子' },
+        {
+          icon: 'folder',
+          label: '无 id 二级组',
+          items: [deepLeaf]
+        }
+      ]
+    },
+    { id: 'with-id-leaf', icon: 'list', label: '有 id 叶子' }
+  ]
+
+  const active9 = ref()
+  const favorites9 = ref(['with-id-leaf'])
 
   const ddItems = ref([
     { caption: 'Action 1', action: 'a1' },

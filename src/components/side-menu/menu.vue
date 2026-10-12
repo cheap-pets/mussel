@@ -7,6 +7,7 @@
       <menu-item
         v-for="(item, index) in visibleItems"
         :key="item.id ?? index"
+        :ref="el => onRowRef(el, item)"
         :item="item"
         top
         @item-enter="onItemEnter(item, $event)"
@@ -54,7 +55,7 @@
 
   const emit = defineEmits(['itemClick'])
 
-  const activeItem = defineModel('activeItem', { type: [String, Number] })
+  const activeItem = defineModel('activeItem', { type: [String, Number, Object] })
 
   const {
     popupLayers,
@@ -71,15 +72,15 @@
 
   const hasOverflow = computed(() => visibleCount.value < props.items.length)
 
-  // 祖先组 key 集合（行「后代激活」高亮的下发数据）；激活目标为组 key 时为空集
+  // 祖先组对象集合（行「后代激活」高亮的下发数据）；激活目标为组时为空集
   const activePath = computed(() => {
-    if (activeItem.value == null) return new Set()
+    if (activeItem.value == null) return new WeakSet()
 
     const path = walkTo(activeItem.value, props.items)
 
     return path.at(-1)?.items?.length
-      ? new Set()
-      : new Set(path.slice(0, -1).map(item => item.id))
+      ? new WeakSet()
+      : new WeakSet(path.slice(0, -1))
   })
 
   // 激活项落在被折叠子树内 → 触发器高亮（不做激活项豁免，纯顺序折叠）
@@ -103,7 +104,15 @@
   // ---------- 一级溢出折叠 ----------
   // 栏行 flex:none 无截断，宽度为内容内在宽：全量渲染测量一次缓存，容器尺寸
   // 变化按缓存直算；可见行宽度漂移（主题/字号变化类）升级为全量重测
-  const widthCache = new Map()
+  // 行绑定：渲染期函数 ref 闭包配对（重排后重放仍正确），卸载回调 instance 为
+  // null，WeakMap 条目随 GC 自回收免清理；宽度缓存按对象键控，折叠行 el 已
+  // 卸载仍可回查
+  const rowMap = new WeakMap()
+  const widthCache = new WeakMap()
+
+  function onRowRef (instance, item) {
+    if (instance?.$el) rowMap.set(instance.$el, item)
+  }
 
   // 收敛代数：新的测量流程使进行中的旧流程作废（pagination 同款守卫）
   let generation = 0
@@ -128,22 +137,21 @@
     return parseFloat(height) || 40
   }
 
-  // 复测当前渲染行宽度入缓存（按行 data-key 关联；触发器无 data-key 跳过）。
+  // 复测当前渲染行宽度入缓存（rowMap 反查行所属项；非行元素跳过）。
   // 返回是否与缓存漂移
   function measureRendered () {
     let drifted = false
 
     for (const el of barEl.value.children) {
-      const key = el.dataset.key
-
-      if (key == null) continue
+      const item = rowMap.get(el)
+      if (!item) continue
 
       const width = el.getBoundingClientRect().width
-      const cached = widthCache.get(key)
+      const cached = widthCache.get(item)
 
       if (cached != null && Math.abs(cached - width) > 0.5) drifted = true
 
-      widthCache.set(key, width)
+      widthCache.set(item, width)
     }
 
     return drifted
@@ -158,9 +166,7 @@
 
     const gap = barGap()
     const trigger = triggerWidth() + gap
-    const widths = props.items.map(item =>
-      item.id == null ? 0 : widthCache.get(String(item.id))
-    )
+    const widths = props.items.map(item => widthCache.get(item))
 
     if (widths.some(w => w == null)) return -1
 
@@ -252,14 +258,12 @@
       if (top && props.expandTrigger === 'click') showLayer(0, item, anchorEl)
     } else {
       popupLayers[0]?.hide()
-      activeItem.value = item.id
+      // 有 id 回填 id（可序列化、跨数据刷新存活），无 id 回填对象引用
+      activeItem.value = item.id ?? item
     }
   }
 
-  watch(() => props.items, () => {
-    widthCache.clear()
-    fullMeasure()
-  })
+  watch(() => props.items, fullMeasure)
 
   provide('menu', {
     direction: 'horizontal',

@@ -27,7 +27,10 @@
       <div class="overflow-box" :style="{ width: barWidth + 'px' }">
         <mu-menu v-model:active-item="active2" :items="longMenus" />
       </div>
-      <p>active: {{ active2 ?? 'none' }}</p>
+      <p>active: {{ active2?.label ?? active2 ?? 'none' }}</p>
+      <mu-button @click="active2 = longMenus[4]">
+        Active Id-less Item (object)
+      </mu-button>
     </div>
 
     <div class="demo-panel" style="width: 100%">
@@ -152,7 +155,9 @@
   const longMenus = [
     ...menus.slice(0, 3),
     { id: 'docs', icon: 'file', label: '文档中心' },
+    { icon: 'star', label: '无 id 项' },
     { id: 'market', icon: 'grid', label: '应用市场' },
+    { icon: 'bolt', label: '另一个无 id 项' },
     { id: 'help', icon: 'star', label: '帮助与支持' }
   ]
 
