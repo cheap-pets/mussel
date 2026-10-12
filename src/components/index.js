@@ -6,7 +6,7 @@ import * as ButtonComponents from './button'
 import * as CalendarComponents from './calendar'
 import * as ListComponents from './list'
 import * as TreeComponents from './tree'
-import * as SideMenuComponents from './side-menu'
+import * as MenuComponents from './menu'
 import * as BarComponents from './bar'
 import * as TabsComponents from './tabs'
 import * as ModalComponents from './modal'
@@ -38,7 +38,7 @@ function installComponents (app, options) {
   _install(ButtonComponents)
   _install(ListComponents)
   _install(TreeComponents)
-  _install(SideMenuComponents)
+  _install(MenuComponents)
   _install(TabsComponents)
   _install(BarComponents)
   _install(CalendarComponents)
