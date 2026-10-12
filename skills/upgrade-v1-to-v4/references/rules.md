@@ -23,7 +23,7 @@
 5. [图标](#5-图标)
 6. [组件迁移](#6-组件迁移)
    - 6.1 按钮系 — 6.2 输入与编辑器系 — 6.3 选择系 — 6.4 表单系 — 6.5 弹层系（Dialog/Drawer）
-   - 6.6 页签系 — 6.7 下拉系 — 6.8 表格 — 6.9 树 — 6.10 列表/条栏/分页/日历等 — 6.11 命令式弹窗与通知
+   - 6.6 页签系 — 6.7 下拉系 — 6.8 表格 — 6.9 树 — 6.10 列表/条栏/分页/日历等 — 6.11 导航菜单 — 6.12 命令式弹窗与通知
 7. [无对应与移除项汇总](#7-无对应与移除项汇总)
 8. [新增能力](#8-新增能力)
 
@@ -119,7 +119,7 @@ installIcons({ edit: EditIcon })          // 或 install 的 options.icons
 // Mussel 4 导出：install、installIcons、EventInterceptor、colors、icons、version/isDev（env）
 ```
 
-顶层导入的 `showMessage`/`alert`/`confirm`/`error`/`warn`/`notify` 改为 `inject('$mussel').messageBox.*`（见 6.11）。
+顶层导入的 `showMessage`/`alert`/`confirm`/`error`/`warn`/`notify` 改为 `inject('$mussel').messageBox.*`（见 6.12）。
 
 ### 2.5 指令
 
@@ -261,7 +261,7 @@ late v1 项目若使用了 `class="mu-box"` + `layout=`/`position=`/`width=`/`he
 
 ### 5.2 内置图标名映射
 
-v4 内置名：`X`、`check`、`x`、`ok`、`info`、`alert`、`question`、`chevronUp/Down/Left/Right`、`arrowDownLeft`、`arrowUpRight`、`list`、`grid`、`search`、`file`、`folder`、`folderOpen`、`sun`、`moon`、`clock`、`calendar`、`loading`（自带 spin 动画），以及带旋转动画的组合图标 `windowClose`（dialog 关闭按钮自动使用）、`treeNodeExpand`（tree 展开箭头自动使用）、`dropdownExpand`（dropdown 展开箭头自动使用）。**注意大小写敏感**。
+v4 内置名：`X`、`check`、`x`、`ok`、`info`、`alert`、`question`、`chevronUp/Down/Left/Right`、`arrowDownLeft`、`arrowUpRight`、`list`、`grid`、`dots`、`search`、`file`、`folder`、`folderOpen`、`sun`、`moon`、`star`、`starred`（filled）、`leftCollapse` / `leftExpand`（侧栏收起/展开）、`clock`、`calendar`、`loading`（自带 spin 动画），以及带旋转动画的组合图标 `windowClose`（dialog 关闭按钮自动使用）、`treeNodeExpand`（tree 展开箭头自动使用）、`dropdownExpand`（dropdown 展开箭头自动使用）。**注意大小写敏感**。
 
 | Mussel 1 | Mussel 4 | 说明 |
 |----------|----------|------|
@@ -276,7 +276,8 @@ v4 内置名：`X`、`check`、`x`、`ok`、`info`、`alert`、`question`、`che
 | `info` | `info` | |
 | `file` / `folder` / `folderOpen` / `search` | 同名 | v1 `calendar` 为 calendar-event 图形，v4 为 calendar-month |
 | `menu` | 无（近似 `list`） | 需要原形则 installIcons 注册 tabler `menu-2` |
-| `refresh` / `tree`（sitemap） / `ellipsis`（dots） / `dotsVert` / `bulb` / `triangleAlert` / `expand`（square-plus） / `collapse`（square-minus） / `pin` / `pinned` / `pinned-off` | **无内置** | 需要用 `installIcons` 自行注册对应 tabler SVG |
+| `ellipsis`（三点） | `dots` | |
+| `refresh` / `tree`（sitemap） / `dotsVert` / `bulb` / `triangleAlert` / `expand`（square-plus） / `collapse`（square-minus） / `pin` / `pinned` / `pinned-off` | **无内置** | 需要用 `installIcons` 自行注册对应 tabler SVG |
 | `tree-collapsed` / `tree-expanded` / `tree-leaf` / `tree-folder` / `tree-folder-open` | `treeNodeExpand` / `file` / `folder` / `folderOpen` | v1 随 tree 组件注册的内置图标；展开箭头 v4 自动用 `treeNodeExpand`，节点图标 v4 默认 `file`/`folder`/`folderOpen` |
 
 ### 5.3 mu-icon 组件属性
@@ -349,7 +350,7 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `<mu-option>` | 移除手写 | v4 仍有该组件但推荐 `options`/`dropdown-items` 驱动 |
 | `<mu-date-editor>` | `<mu-date-input>` | `select-mode="date|month|year"` → `type="date|week|month|quarter|year"`；`range-start`/`range-end`（日期边界）→ **无对应**（人工）；`format` 保留；`language` → 全局 `locale`；`marked`/`marked-dates` → 无；`popup-width/height` → `dropdown-width`/`dropdown-height`（透传）；`range-start`/`range-end` 对应的 `min`/`max` 在 v4 已声明未实现，边界限制需人工 |
 | `<mu-time-editor>` | `<mu-time-input>` | v1 为 AM/PM 12 小时制，v4 为 24 小时列式滚动，**值格式需人工核对** |
-| `<mu-date-range-editor>` | **无对应** | 两个 `<mu-date-input>` 自行组合起止值 |
+| `<mu-date-range-editor>` | `<mu-date-range-input>` | 单面板两次点击定区间；model 为 `{ startDate, endDate }`；`format` 保留；v1 `range-start`/`range-end` 边界 → v4 `min`/`max` 已声明**未实现**，边界限制需人工 |
 | `<mu-color-editor>` | `<mu-color-input>` | |
 | `<mu-button-editor>`（省略号按钮型编辑器） | **无对应** | `<mu-dropdown-button>` + `#dropdown-items` 或自定义弹层组合 |
 | `<mu-popup-editor>`（自定义弹层编辑器基座） | **无对应** | `<mu-dropdown-panel>` / `<mu-drawer>` 组合，人工设计 |
@@ -480,14 +481,34 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 | `<mu-list-item value icon label selected active disabled trigger-icon>` | `<mu-list-item icon label tag>` | `value`/`selected`/`active`/`trigger-icon`/`icon-indent` 移除；选中/激活态用 `class` 自行控制；用 flex 容器包裹（v4 未注册 `mu-list`） |
 | `<mu-list-divider>` | 同名 | |
 | `<mu-bar>` | 同名 | |
-| `<mu-paging-bar :page-count :page-index eof reload display-list>` | `<mu-pagination v-model:page-index :page-size :total>` | **模型重写**：v1 按页数（pageCount）驱动，v4 按总数（total/pageSize）派生页数；`eof`/`reload`/`display-list` 无对应；`page-size-options` v1 已有（displayList 模式），`quick-jumper` 为 v4 新增 |
+| `<mu-sort-icon direction="up\|down">` | 同名同 API | 无破坏性变更 |
+| `<mu-paging-bar :page-index :eof :reload display-list>`（0.1.x ~ 中期） | `<mu-pagination v-model:page-index :page-size :total>` | **模型重写**：v1 早期按当前页 + `eof`（无总数）驱动，`reload` 刷新按钮与 `display-list` 页码形态无对应；v4 按总数派生页数 |
+| `<mu-pagination>`（后期 1.x） | 同名 `mu-pagination` | **模型仍需重写**：v1 双模型 `limit`/`offset`（`:limit.sync`/`:offset.sync`）或 `pageCount`/`pageIndex`/`dataCount`；v4 仅 `page-index`/`page-size`/`total`。`dataCount` → `total`；`limit` → `page-size`（`update:limit` → `update:page-size`）；`offset` → 换算 `page-index`（offset / limit）；`pageCount` → 换算 `total = pageCount × pageSize`；`eof`/`disabled`/`button-style` 无对应，`small` → `size="small"`；`quick-jumper`/`page-size-options` 同名保留 |
 | `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（mussel-ui skill `references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
-| `<mu-context-menu>` | `<mu-context-menu>` | 菜单项配置按 v4 dropdown-items 风格核对 |
+| `<mu-context-menu :menu-lists :client-x :client-y>` | `<mu-context-menu :menus>` + `show(event)` | **API 重构**：v1 项 `{ btnName, iconClass, handler, children, disabled }` → v4 dropdown-items 结构 `{ label, icon, action, disabled }`；`handler` 回调改 `@action`/`@itemclick` 事件；定位改 `show(contextmenuEvent)`（按 pageX/pageY），`client-x`/`client-y` props 移除；v1 `children` 嵌套子菜单无对应（v4 面板为平铺列表） |
 | `<mu-scroll-box>` | `<mu-scroll-box>` | v1 基于 mussel-scrollbar 外挂实现，v4 内置，用法不变 |
 | `<mu-expander v-model title>` | **无对应** | v1 为 Vue2 `model` 选项（prop `expanded`）；折叠面板自行实现（原子类 + 状态切换；无动画需求可用原生 `<details>`） |
-| `<mu-sidebar-menu>` / `<mu-menu-group>` / `<mu-menu-item>` | **无对应** | 自行实现（原子类布局 + `mu-dropdown` / `mu-context-menu` 组合） |
 
-### 6.11 命令式弹窗与通知
+### 6.11 导航菜单（sidebar-menu → side-menu / menu）
+
+v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item>`，激活靠 `selectMode` 或逐项 `v-model`）→ v4 **数据驱动重写**为 `<mu-side-menu :items>`（侧边）或 `<mu-menu :items>`（横向顶栏）。完整 API 见 mussel-ui skill `references/components/navigation.md`。
+
+数据转换：`mu-menu-group` / `mu-menu-item` 的 `title` → `label`，`icon`/`disabled` 不变；每项建议补 `id`（收藏、跨数据刷新的激活匹配依赖 id）；子级递归写入 `items`（有 `items` 即为组）。
+
+| Mussel 1 | Mussel 4 | 备注 |
+|----------|----------|------|
+| `<mu-sidebar-menu :accordion>` | `accordion` 同名 | |
+| `:collapsed.sync` | `v-model:collapsed` | .sync → v-model 参数 |
+| `selectMode="auto"`（菜单内部管理激活态） | `@item-click` 赋值，或直接 `v-model:active-item` | v4 激活统一收敛为 `active-item`（传项对象） |
+| `selectMode="manual"` + 逐项 `<mu-menu-item v-model="active">` | `v-model:active-item` 单点受控 | 分散在各行的 active 收敛到一处；点击叶子自动写激活 |
+| 组/项 `@click` / `@change` | `@item-click`（payload 为 item 对象） | 组与叶子均触发；v4 无逐项 `change` |
+| `collapsible` / `collapse-button-position` / `floatable` / `disabled-float` / `dark-mode` / `border` | 无对应 | v4 无内置收起按钮与浮动/暗色侧栏；收起按钮放 `#header`/`#footer` 插槽自行实现（作用域参数 `collapsed`） |
+| `mu-menu-group` 的 `#header` 自定义组头 / `selectable`（组可选） | 无对应 | 数据驱动仅 `label`/`icon`；可选组用普通叶子项模拟 |
+| 激活项需手动展开父组（v1 mounted 钩子） | 内置 | `active-item` 变更自动展开一级组并滚动定位 |
+| （无） | `v-model:favorites` 收藏、`rail` 图标列、`auto-expand-top` | 新能力，可顺手启用 |
+| 顶部横向导航（menu-group 非 sidebar 上下文） | `<mu-menu>` | `expand-trigger`（click/hover）、一级溢出自动折叠「更多」 |
+
+### 6.12 命令式弹窗与通知
 
 ```js
 // Mussel 1：顶层具名导出
@@ -520,11 +541,9 @@ messageBox.notify({ type: 'warn', message: '保存失败', duration: 3000 })
 | Mussel 1 | 处理建议 |
 |----------|----------|
 | `mu-expander` | 自行实现折叠面板 |
-| `mu-date-range-editor` | 两个 `mu-date-input` 组合 |
 | `mu-split-button` | `mu-dropdown-button split-button` |
 | `mu-button-editor` / `mu-popup-editor`（自定义编辑器基座） | `mu-dropdown-button`/`mu-dropdown-panel`/`mu-drawer` 组合，人工设计 |
 | `mu-modal` / `mu-base-modal` / `mu-base-dialog` / `mu-dialog-wrapper` | 统一改用 `mu-dialog` |
-| `mu-sidebar-menu` / `mu-menu-group` / `mu-menu-item` | 自行实现 |
 | `mu-table-edit-column` / `-search-column` / `-combo-column` | v4 无编辑/搜索/下拉列，人工设计 |
 | `mu-tree-nodes`（内部组件） | `data` 数据驱动 |
 | `mu-option` 手写选项 | `options` / `dropdown-items` 驱动（mu-option v4 仍注册，select 家族内手写仍可用） |
@@ -544,13 +563,17 @@ v1 无对应、迁移时可顺手用上的 v4 能力：
 | 能力 | 说明 |
 |------|------|
 | `mu-select` / `mu-multi-select` | 下拉单选/多选（替代 combo-box 部分用法） |
+| `mu-date-range-input` | 日期区间选择（单面板两次点击定区间） |
 | `mu-segmented` | 分段选择器（可替代 toggle 双按钮模式） |
 | `mu-check-group` / `mu-radio-group` 的 `:options` | 数据驱动选项组 |
+| `mu-side-menu` / `mu-menu` | 数据驱动侧边/横向导航菜单（收藏、`rail` 图标列、弹层下钻；v1 sidebar-menu 的重写目标） |
+| `mu-tooltip` / `v-mu-tooltip` | 文字提示气泡（v1 无对应） |
 | 数据驱动 `<mu-form :model :items>` | 简单表单免手写 form-field |
 | `mu-table` 列类型 | `enum`/`tag`/`currency`/`date` 等替代手写 cellText |
 | `mu-toolbar` / `mu-bar` / `mu-scroll-area` | 工具栏/条形容器/单轴滚动区 |
 | `mu-split-h-box` / `mu-split-v-box`（`collapsible`） | 可收拢分隔布局 |
 | `mu-status-box` / `mu-tags` / `mu-badge` / `mu-icon-button` 增强 | 占位图/标签组/徽章 |
+| dialog / drawer 边缘拖拽调整大小（drawer `resizable`）、split-box 折叠把手 | 4.1 新增交互能力 |
 | 原子类体系 | `flex`/`p-*`/`text-*`/`border-*`/`gap-*` 等（早期 v1 项目首次可用） |
 | `dark: 'auto'` 暗色模式 / `locale` 多语言 | `install` options |
 | `mu-dropdown` 的 `dropdown-items` 三区结构（header/items/footer 插槽） | 面板结构化 |
@@ -566,9 +589,10 @@ v1 无对应、迁移时可顺手用上的 v4 能力：
 - [ ] 编辑器事件已改名（`@enter`/`@esc`），`@input` 处理器已适配原生 Event
 - [ ] 需要 `clearable` 的输入已显式声明
 - [ ] 抽屉显式声明了 `position`（v1 默认 right → v4 默认 bottom）
-- [ ] 图标名已按第 5 节映射（重点：`x`→`X`、`ok`→`check`、`dropdown`→`chevronDown`）
+- [ ] 图标名已按第 5 节映射（重点：`x`→`X`、`ok`→`check`、`dropdown`→`chevronDown`、`ellipsis`→`dots`）
 - [ ] late-v1 的 `mu-text-*` / `mu-background-*` / `mu-bordered` / `mu-divider` 类与 `margin=`/`padding=`/`border` 属性选择器已替换
 - [ ] `<mu-space>`/`<mu-flex-item>`/`<mu-splitter>` 已替换为 v4 等价物；转 div 的 ref 已去 `.$el`
 - [ ] messageBox 调用已走 `inject('$mussel')`，callback 兼容 `'$X'`/`'$MASK'`/`'$ESC'`
 - [ ] `mu-pagination` 已按 total/pageSize 重写
+- [ ] v1 侧边导航已重写为 `mu-side-menu :items`（`title`→`label`、补 `id`，逐项 active 收敛到 `v-model:active-item`）
 - [ ] CSS 选择器已适配 BEM 双下划线类名（`.mu-dialog__body` 等）与属性绑定层级变化

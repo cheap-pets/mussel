@@ -88,7 +88,7 @@
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
-| `tag-remove` | `tag` | 点击删除按钮 |
+| `tagRemove` | `tag` | 点击删除按钮 |
 
 ---
 
@@ -244,6 +244,7 @@ const columns = [
 | `update:page-index` | `pageIndex` | 页码变更 |
 | `update:page-size` | `pageSize` | 每页条数变更 |
 
+> 页码按钮数按容器宽度自适应收敛（11/9/7 档），全部放不下时降级为「第 X 页，Y / 页」文本模式；容器 resize、`size` 与上述 props 变化自动重算，无需干预。
 
 ```html
 <mu-table :records="records" :columns="columns" />

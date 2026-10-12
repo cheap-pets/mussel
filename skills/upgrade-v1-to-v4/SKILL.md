@@ -15,8 +15,8 @@ description: >
 > **不能**用 mussel-ui skill 的 v3→v4 迁移规则直接套用。本 Skill 独立覆盖 v1→v4 全部已知差异。
 
 > **版本检查**：
-> 本文档基于 Mussel 1 仓库 `1.0.58`（含 0.1.x 早期版本差异说明）与 Mussel `4.1.0`（`4.0` 分支源码），最后核对日期 **2026-09-04**。
-> 开始前确认项目 mussel 源版本（`@mctech/mussel` 0.1.x ~ 1.0.x）与目标版本（`mussel` 4.x）。
+> 本文档基于 Mussel 1 仓库 `1.9`（含 0.1.x 早期版本差异说明）与 Mussel `4.1.5` 源码，最后核对日期 **2026-10-12**。
+> 开始前确认项目 mussel 源版本（`@mctech/mussel` 0.1.x ~ 1.x）与目标版本（`mussel` 4.x）。
 > 若组件库源码与本文描述冲突，**以源码为准**，并按实际情况订正对应文件。
 
 ## 早期 v1 的重要约束
@@ -71,6 +71,7 @@ rules.md 的「目标写法」覆盖高频迁移场景。需要更完整的 v4 �
 | 布局 | `<mu-flex-box>`/`<mu-h-box>`/`<mu-v-box>`/`<mu-flex-item>`/`<mu-space>`/`<mu-splitter>` 组件 + 属性选择器 | `<mu-h-box>`/`<mu-v-box>`（保留但 props 变更）+ 原子类 + `<mu-split-h-box>`/`<mu-split-v-box>` |
 | 表单输入 | `mu-editor` 家族（date/time/color/combo/search/…-editor） | `mu-input` 家族（`mu-date-input` 等）+ 新增 `mu-select`/`mu-multi-select` |
 | 数据表格 | `<mu-table>` + `<mu-table-*-column>` 子组件列 | `<mu-table :columns="[...]">` 数据驱动列配置（**重写**） |
+| 导航菜单 | `<mu-sidebar-menu>` + 手写 `mu-menu-group`/`mu-menu-item` 嵌套，`selectMode` 管激活 | `<mu-side-menu>` / `<mu-menu>` 数据驱动 `items`，`v-model:active-item` 单点受控（**重写**） |
 | 命令式弹窗 | 顶层导出 `alert`/`confirm`/`showMessage`/`notify` | `inject('$mussel').messageBox.*` |
 
 ## 组件去向速查表
@@ -84,6 +85,7 @@ rules.md 的「目标写法」覆盖高频迁移场景。需要更完整的 v4 �
 | `mu-space` | `mu-flex-space` / `class="flex-space"` |
 | `mu-splitter` | `mu-split-h-box` / `mu-split-v-box` |
 | `mu-icon` | `mu-icon`（props/图标名变更） |
+| `mu-sort-icon` | 同名（API 不变） |
 | `mu-button` / `mu-icon-button` / `mu-button-group` | 同名（`buttonType`→`color`，`buttonShape="round"`→`pill`） |
 | `mu-split-button` | `mu-dropdown-button` 的 `split-button` |
 | `mu-dropdown-button` | 同名（默认图标名变更） |
@@ -93,7 +95,7 @@ rules.md 的「目标写法」覆盖高频迁移场景。需要更完整的 v4 �
 | `mu-combo-box` | `mu-combo-box`（多选拆 `mu-multi-select`） |
 | `mu-option` | `dropdown-items` 属性 / `#dropdown-items` 插槽（v4 仍注册 mu-option，select 家族内可用） |
 | `mu-date-editor` / `mu-time-editor` / `mu-color-editor` | `mu-date-input` / `mu-time-input` / `mu-color-input` |
-| `mu-date-range-editor` | **无对应**（两个 `mu-date-input` 组合） |
+| `mu-date-range-editor` | `mu-date-range-input`（model 为 `{ startDate, endDate }`） |
 | `mu-button-editor` / `mu-popup-editor` | **无对应**（`mu-dropdown-button`/`mu-dropdown-panel` 组合） |
 | `mu-check` / `mu-radio` | 同名（v-model 语法不变） |
 | `mu-checkbox` / `mu-checkbox-group` | `mu-check` / `mu-check-group` |
@@ -102,7 +104,8 @@ rules.md 的「目标写法」覆盖高频迁移场景。需要更完整的 v4 �
 | `mu-list-item` / `mu-list-divider` | 同名（`value` 移除） |
 | `mu-tree` | `mu-tree`（基本不变；`mu-tree-nodes` 不再注册） |
 | `mu-bar` | `mu-bar` |
-| `mu-paging-bar` | `mu-pagination`（**模型重写**：total/pageSize） |
+| `mu-paging-bar`（0.1.x ~ 中期） | `mu-pagination`（**模型重写**，见 rules 6.10） |
+| `mu-pagination`（后期 1.x：limit/offset 或 pageCount 双模型） | `mu-pagination`（**模型重写**：total/pageSize） |
 | `mu-tabs` | `mu-tabs`（`v-model`→`v-model:active-tab`；`tabItems`→`tab-buttons`） |
 | `mu-tabs-header` | `mu-tab-bar` |
 | `mu-tab-panel` | `mu-tab-panel`（`label`→`caption`） |
@@ -111,8 +114,8 @@ rules.md 的「目标写法」覆盖高频迁移场景。需要更完整的 v4 �
 | `mu-dialog` | `mu-dialog`（`v-model:visible`；`mask-action`→`dismissible`，**默认行为翻转**） |
 | `mu-modal` / `mu-base-modal` / `mu-base-dialog` / `mu-dialog-wrapper` | **移除**（内部组件，统一用 `mu-dialog`） |
 | `mu-drawer` | `mu-drawer`（**`position` 默认 right→bottom**） |
-| `mu-sidebar-menu` / `mu-menu-group` / `mu-menu-item` | **无对应**（自行实现） |
-| `mu-context-menu` | `mu-context-menu` |
+| `mu-sidebar-menu` / `mu-menu-group` / `mu-menu-item` | `mu-side-menu`（**数据驱动重写**：手写嵌套 → `items`）；横向顶栏场景 `mu-menu` |
+| `mu-context-menu` | `mu-context-menu`（API 重构：`menuLists/btnName/handler` → `menus/label/action`） |
 | `mu-table` + `mu-table-*-column` | `mu-table` + `columns` 配置（**重写**） |
 | `mu-calendar` | `mu-calendar` |
 | `mu-scroll-box` | `mu-scroll-box` |

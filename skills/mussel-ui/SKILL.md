@@ -11,7 +11,7 @@ description: >
 > 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token、M3→4 迁移），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
 
 > **版本检查**：
-本文档及 `references/` 基于 MUSSEL `4.1.*`（当前 `4.1.5`），最后核对日期 **2026-09-30**。
+本文档及 `references/` 基于 MUSSEL `4.1.*`（当前 `4.1.5`），最后核对日期 **2026-10-12**。
 开始前确认项目中依赖的 `mussel` 版本，若不符合，需进行提示确认。
 若组件库源码与本文档描述出现冲突，**以源码为准**，并按实际情况订正对应 `references/` 文件。
 
@@ -140,6 +140,8 @@ description: >
 
 | 组件 | 用途 |
 |------|------|
+| `<mu-side-menu>` | 侧边导航菜单；`items` 数据驱动，一级组内联展开、深层弹层下钻，内置收藏组，支持 `rail` 图标列与 `collapsed` 收起 |
+| `<mu-menu>` | 横向导航菜单（顶部栏）；一级溢出自动折叠进「更多」，组行弹层下钻 |
 | `<mu-dropdown>` | 为任意元素附加下拉菜单（包裹触发器） |
 | `<mu-dropdown-panel>` | 独立下拉面板，自行管理触发器 |
 | `<mu-dropdown-button>` | 按钮型下拉触发器；`split-button` 分割为主按钮+下拉箭头，`dropdown-items` 配置菜单项 |

@@ -1,5 +1,88 @@
 # 导航与菜单组件 API
 
+### MuSideMenu
+
+侧边导航菜单，数据驱动（`items` 树形数组）。一级组内联展开/收起，二级及以下 hover 弹层级联下钻；`rail` 或 `collapsed` 收起态下全部层级改为弹层（面板带组标题栏）。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `items` | Array | `[]` | 菜单项树，结构见「menu items 数据结构」 |
+| `rail` | Boolean | — | 图标列模式（恒收起，`collapsed` 失效） |
+| `collapsed` | Boolean | — | 双向绑定收起态 |
+| `active-item` | Object | — | 双向绑定激活项（传项对象：有 id 按 id 匹配、可跨数据刷新存活，无 id 按对象引用匹配；组对象与未命中项被忽略） |
+| `favorites` | Array | — | 双向绑定收藏项 id 列表。**收藏功能默认开启**（未绑定时非受控内部维护）；无 id 项不出星标 |
+| `accordion` | Boolean | — | 展开组时互斥收起同级组（含收藏内置组） |
+| `auto-expand-top` | Boolean | — | 挂载及 `items` 变更时展开全部一级组 |
+| `disabled` | Boolean | — | 整树禁用 |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `item-click` | `item` | 任意项点击（组与叶子均触发）；叶子点击同时设置激活并收起弹层，一级组点击切换展开 |
+| `favorite-toggle` | `item, favorited` | 星标切换 |
+
+| 插槽 | 说明 |
+|------|------|
+| `header` | 头部区域，作用域参数 `collapsed` |
+| `footer` | 底部区域，作用域参数 `collapsed`；仅非收起态渲染 |
+
+> `active-item` 变更时自动展开所属一级组并滚动定位到激活行。收藏内置组（「我的收藏」，star 图标）固定出现在顶部，组内为收藏的叶子项。
+
+```html
+<mu-side-menu
+  v-model:active-item="active"
+  v-model:collapsed="collapsed"
+  v-model:favorites="favorites"
+  accordion
+  style="height: 420px"
+  :items="[
+    { id: 'home', icon: 'grid', label: '首页' },
+    { id: 'group', icon: 'folder', label: '项目管理', items: [
+      { id: 'list', icon: 'file', label: '项目列表' }
+    ] }
+  ]"
+  @item-click="onItemClick" />
+```
+
+> 组件自身不定高（宽度由 `--mu-side-menu_width` / `--mu-side-menu_collapsed-width` 控制为 240px / 40px）；高度由外层决定（flex 拉伸或显式 `height`），菜单体占余高内部滚动。
+
+---
+
+### MuMenu
+
+横向导航菜单（顶部栏场景）。一级项放不下时自动折叠进末尾「更多」触发器（`dots` 图标）；组行按 `expand-trigger` 弹出下级面板，深层级联向右下钻；激活项落在被折叠子树内时「更多」触发器高亮。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `items` | Array | `[]` | 同 MuSideMenu |
+| `active-item` | Object | — | 双向绑定激活项（匹配规则同 MuSideMenu） |
+| `expand-trigger` | String | `click` | 组行展开触发：`click` \| `hover` |
+| `expand-icon` | Boolean | `true` | 一级行是否显示展开箭头 |
+| `disabled` | Boolean | — | 整树禁用 |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `item-click` | `item` | 任意项点击（组与叶子均触发）；叶子点击同时设置激活并收起弹层 |
+
+---
+
+### menu items 数据结构
+
+MuSideMenu / MuMenu 共用：
+
+```javascript
+{
+  id: 'list',          // 可选；收藏、跨数据刷新的激活匹配依赖 id
+  icon: 'file',        // 可选，图标名
+  label: '项目列表',    // 文字
+  disabled: false,     // 可选
+  items: [ /* 子项，递归 */ ]  // 有 items 即为组
+}
+```
+
+> 组件级 CSS 变量：侧栏宽度 `.mu-side-menu` 上 `--mu-side-menu_width` / `--mu-side-menu_collapsed-width`；行尺寸 `.mu-menu-item` 上 `--mu-menu-item_height` / `--mu-menu-item_indent` / `--mu-menu-item_gap`；弹层宽度上下限 `.mu-popup-menu` 上 `--mu-side-menu_popup-min-width` / `--mu-side-menu_popup-max-width`。均可按容器覆盖。
+
+---
+
 ### MuDropdownPanel
 
 独立下拉面板，作为容器使用，自行管理触发器。

@@ -95,7 +95,7 @@
 - 事件签名：`@enterkey`、`@esckey`、`@buttonclick`、`@inputclick`、`@maskclick`、`@change=`（v1 model 事件）
 - 选择家族：`<mu-checkbox`、`<mu-checkbox-group`、`<mu-toggle`
 - 弹层家族：`mask-action`、`<mu-modal`、`<mu-base-modal`、`<mu-base-dialog`、`<mu-dialog-wrapper`、`<mu-prompt-panel`、`primary-button`、`primaryButton`、`keep-alive`、`keepAlive`、`model-control`、`modelControl`、`draggable`
-- 其他：`<mu-expander`、`<mu-split-button`、`<mu-sidebar-menu`、`<mu-menu-group`、`<mu-menu-item`、`<mu-paging-bar`、`<mu-tabs-header`、`<mu-table-column`、`<mu-table-edit-column`、`<mu-table-check-column`、`<mu-table-combo-column`、`<mu-table-search-column`、`<mu-table-button-column`、`<mu-tree-nodes`、`tab-items=`、`form-style=`、`formStyle`、`select-mode`、`selectMode`、`trigger-action`、`triggerAction`、`icon-align`、`iconAlign`
+- 其他：`<mu-expander`、`<mu-split-button`、`<mu-sidebar-menu`、`<mu-menu-group`、`<mu-menu-item`、`<mu-paging-bar`、`<mu-pagination`、`menu-lists`、`<mu-tabs-header`、`<mu-table-column`、`<mu-table-edit-column`、`<mu-table-check-column`、`<mu-table-combo-column`、`<mu-table-search-column`、`<mu-table-button-column`、`<mu-tree-nodes`、`tab-items=`、`form-style=`、`formStyle`、`select-mode`、`selectMode`、`trigger-action`、`triggerAction`、`icon-align`、`iconAlign`
 - message 导入：`from '@mctech/mussel'` 中的 `showMessage` / `alert(` / `confirm(` / `error(` / `warn(` / `notify(`
 
 4. 检查全局插件配置与主题定制方式（`setTheme` 调用、编译期变量覆盖、CSS 类覆盖）。
