@@ -1,5 +1,7 @@
 # 容器与面板组件 API
 
+## 页签
+
 ### MuTabs
 
 多页签容器。
@@ -105,7 +107,7 @@
 | `keep-position` | Boolean | — | 再次打开时保留上次位置与尺寸（含拖拽、调整大小后的值） |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `z-index` | String | — | 自定义层级 |
-| `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使弹窗相对该容器而非视口定位。详见下方「嵌入容器」 |
+| `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到根元素（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使弹窗相对该容器而非视口定位。详见下方「嵌入容器」 |
 | `mask-class` | — | — | 遮罩 class |
 
 > 标题栏支持拖拽移动对话框；开启 `resizable` 后可拖拽四边 + 四角调整大小。拖拽结束或尺寸变化后位置自动校正，保证对话框不超出遮罩（溢出时贴边）。
@@ -243,9 +245,9 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 | `mask` | Boolean | `true` | 是否显示遮罩 |
 | `rounded` | Boolean | — | 是否圆角 |
 | `resizable` | Boolean | — | 是否可拖拽对侧边缘调整大小（`left`/`right` 拖宽度、`top`/`bottom` 拖高度）。受 computed `min-*` / `max-*` 约束（支持 `px` 与 `%`，默认 `200px` / `100%`）；父组件改 `width`/`height`/`position` 或重开抽屉会丢弃用户调整值 |
-| `teleport` | Boolean | `true` | 渲染到页面根容器 |
+| `teleport` | Boolean | `true` | 渲染到根元素（`$mussel.rootElement`） |
 | `z-index` | String | — | 自定义层级 |
-| `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到全局根容器（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使抽屉相对该容器而非视口定位。详见下方「嵌入容器」 |
+| `container` | String\|HTMLElement | — | 挂载容器。CSS 选择器字符串或 DOM 元素；不设则挂到根元素（`$mussel.rootElement`）。设为指定元素时遮罩自动改为 `position: absolute`，使抽屉相对该容器而非视口定位。详见下方「嵌入容器」 |
 | `dispose-on-hide` | Boolean | — | 隐藏时销毁内容 |
 | `lazy` | Boolean | `true` | 首次打开时才渲染内容 |
 | `mask-class` | — | — | 遮罩 class |
@@ -266,13 +268,13 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 
 #### 嵌入容器（`container`）
 
-MuDialog 和 MuDrawer 默认通过 `<Teleport>` 挂载到全局根容器（`$mussel.rootElement`，通常是 `<body>`），遮罩为 `position: fixed`，铺满整个视口。
+MuDialog 和 MuDrawer 默认通过 `<Teleport>` 挂载到根元素（`$mussel.rootElement`，通常是 `<body>`），遮罩为 `position: fixed`，铺满整个视口。
 
 设置 `container` 后，弹窗会被 Teleport 到该元素内，并自动切换遮罩为 `position: absolute`，于是遮罩与弹窗都**相对该容器定位、铺满该容器**，而不是整个视口。适用于「在某面板内弹出」的场景（如 IDE 右侧面板内的设置抽屉、卡片内的确认对话框）。
 
 | 取值 | 行为 |
 |------|------|
-| 不设（默认） | Teleport 到 `$mussel.rootElement`，遮罩 `position: fixed` 铺满视口 |
+| 不设（默认） | Teleport 到根元素（`$mussel.rootElement`），遮罩 `position: fixed` 铺满视口 |
 | CSS 选择器字符串 | 首个匹配元素（`document.querySelector`）作为容器 |
 | HTMLElement | 该元素作为容器 |
 

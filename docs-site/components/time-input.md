@@ -66,7 +66,7 @@
 | `minute-step` | Number | `5` | 分钟列步进：`0` \| `1` \| `5` \| `10` \| `15` \| `30`；`0` 时分钟固定为 `00` |
 | `second-step` | Number | `5` | 秒列步进，取值同 `minute-step` |
 | `dropdown-class` | String | — | 下拉面板附加 class |
-| (其他) | — | — | 透传 `MuInput` 属性及 `MuDropdown` 的 `dropdown-` 前缀属性 |
+| (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`invalid`/`pill`/`tabindex`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|

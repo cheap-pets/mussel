@@ -1,17 +1,19 @@
 ---
 name: mussel-ui
+author: Scrollbar.W
+date: 2026-10-13
 description: >
   编写、修改、Review 使用 MUSSEL 4 组件库的 Vue 界面代码时使用。
-  用户明确要求将 Mussel 3 代码升级到 Mussel 4 时也需使用，
+  用户明确要求将旧版 Mussel（Mussel 3，或 Mussel 1 / @mctech/mussel）升级到 Mussel 4 时也需使用，
   如："升级到 Mussel 4"、"迁移到新版 Mussel"。
 ---
 
 # MUSSEL 4 开发 Skill
 
-> 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token、M3→4 迁移），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
+> 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token、M3→4 与 M1→4 迁移），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
 
 > **版本检查**：
-本文档及 `references/` 基于 MUSSEL `4.1.*`（当前 `4.1.5`），最后核对日期 **2026-10-12**。
+本文档及 `references/` 基于 MUSSEL `4.1.*`（当前 `4.1.5`），最后核对日期 **2026-10-13**。
 开始前确认项目中依赖的 `mussel` 版本，若不符合，需进行提示确认。
 若组件库源码与本文档描述出现冲突，**以源码为准**，并按实际情况订正对应 `references/` 文件。
 
@@ -20,24 +22,39 @@ description: >
 ### 步骤 1：识别任务类型
 
 **默认路径：新建 / 修改 / Review UI**（绝大多数任务走这条）
-→ 直接进入步骤 2，只查阅 `references/components/*` 与 `references/styles.md`，**不要**加载 `references/upgrade/` 下任何文件。
+→ 直接进入步骤 2，只查阅 `references/components/*` 与 `references/styles.md`，**不要**加载 `references/upgrade-v3/` 与 `references/upgrade-v1/` 下的文件。
 
-**升级路径（opt-in）**：仅当**全部**满足时进入——
+**升级路径（opt-in）**：先按源版本选路线，再核对进入条件（需**全部**满足）——
+
+**路线 A：Mussel 3（`mussel` 3.x，Vue 3）→ 4**
 1. 用户明确表达"升级 / 迁移 / 把 V3 改成 V4"；
 2. 任务目标是改写既有页面/组件，而非新增功能；
-3. 目标源文件当前按 Mussel 3 编写（`package.json` 中 mussel < 4，或文件本身使用 `mu-editor`/`mu-box`/`theme:` 等 V3 模式）。
+3. 目标源文件当前按 Mussel 3 编写（`package.json` 中 mussel < 4，或文件本身使用 `mu-editor`、`mu-box`、`theme:`、`mu-tree-view` 四类 V3 模式）。
 
-> 判不准时一律走默认路径。默认路径中如复用了 V3 代码片段，直接用 V4 写法实现即可，**不要**触发升级流程；如怀疑用户本意是批量迁移老代码，先询问"是否进入升级流程"再决定。
+**路线 B：Mussel 1（`@mctech/mussel`，Vue 2）→ 4**
+1. 用户明确表达"升级 / 迁移 / 从 Mussel 1（@mctech/mussel）改到 Mussel 4"；
+2. 任务目标是改写既有页面/组件/工程，而非新增功能；
+3. 源代码基于 Vue 2 + `@mctech/mussel`（`package.json` 可见，或代码出现 `mu-editor`/`mu-flex-box`/`new Vue(` 等痕迹）。
 
-进入升级模式后：流程与规则分两个文件，按阶段加载，不走后续步骤。
-- 分析/计划/执行**流程**：读 `references/upgrade/process.md`（分析阶段需完整读）。
-- 执行阶段：按处理类别跳转 `references/upgrade/rules.md` 对应「迁移规则 N」按需查，不必整文件重读：
-  1 全局配置 → 2 CSS 变量与 CSS 类 → 3 布局系统 → 4 图标 → 5 组件迁移 → 6 新增组件。
+> 不确定是否属升级任务时，先询问用户，不要凭代码痕迹自动启动升级流程。默认路径中如复用了 V3/V1 代码片段，直接用 V4 写法实现即可，**不要**触发升级流程。
+
+进入升级模式后：流程与规则分文件、按阶段加载，不走后续步骤。
+- **路线 A（V3→V4）**：
+  - 分析/计划/执行**流程**：读 `references/upgrade-v3/process.md`（分析阶段需完整读）。
+  - 执行阶段按处理类别跳转 `references/upgrade-v3/rules.md` 对应「迁移规则 N」按需查，不必整文件重读：
+    1 全局配置 → 2 CSS 变量与 CSS 类 → 3 布局系统 → 4 图标 → 5 组件迁移 → 6 新增组件。
+- **路线 B（V1→V4）**：Vue 2 → Vue 3 + 组件库双重换代，差异远大于 V3→V4，**不得**套用路线 A 的规则：
+  - 先读 `references/upgrade-v1/overview.md`（v1 版本档次判定、变化总览、组件去向速查表）。
+  - 分析/计划/执行**流程**：读 `references/upgrade-v1/process.md`（分析阶段需完整读）。
+  - 规则按需查 `references/upgrade-v1/rules.md`：
+    1 框架迁移（Vue 2→3）→ 2 全局配置 → 3 CSS 变量与类 → 4 布局系统 → 5 图标 → 6 组件迁移 → 7 无对应与移除项 → 8 新增能力。
+  - 写 v4 目标代码时的完整组件 API 与样式 Token 查阅 `references/components/*` 与 `references/styles.md`。
 
 ### 步骤 2：按需查阅 API 与样式
 
-写代码过程中按需查阅以下参考文件（不要凭记忆猜测属性名或样式值），
-组件 API 与样式 Token 往往一起需要（如改按钮颜色既要查 props 也要查 CSS 变量），无需区分先后。
+生成任何代码前先读 `references/principles.md`「核心规范」5 条（第 2–5 条为硬性禁止）。
+
+按需查阅以下参考文件，不要凭记忆猜测属性名或样式值。组件 API 与样式 Token 常一起需要，无需区分先后。
 
 **组件 API**：按 8 大类 1:1 路由。若不确定用哪个组件，先看下方「组件速查表」选型。
 
@@ -64,20 +81,9 @@ description: >
 
 ## 安装与初始化
 
-应用启动时通过 `install(app, options)` 挂载 Mussel（组件注册、图标、主题色、多语言、注入 `$mussel` 上下文）。
+应用启动时通过 `install(app, options)` 挂载 Mussel，一次完成组件注册、滚动条指令、图标、主题色、多语言，并注入 `$mussel` 上下文（含运行时换肤 `setupColors`）。
 
-**配置项（options）速查：**
-
-| 属性 | 说明 |
-| ---- | ---- |
-| root | 根元素（选择器或 DOM），注入主题 class 与 CSS 变量，默认 `document.body` |
-| dark | `true` 强制暗色 \| `'auto'` 跟随系统 \| 否则亮色 |
-| colors | 自定义主题色，自动派生调色板与 `--mu-*` 变量。合法 key：语义色 `primary` / `secondary` / `success` / `warning` / `danger` + 基本色名 `red` / `pink` / `grape` / `violet` / `indigo` / `blue` / `cyan` / `teal` / `green` / `lime` / `yellow` / `orange`；`neutral` / `gray` 不派生自身调色板，仅作灰阶基准（优先级 neutral → gray → primary） |
-| icons | 初始图标集，等价于 `installIcons(icons)` |
-| locale | `'zh'` \| `'en'`，未指定时按浏览器语言判断 |
-| localeResources | 自定义语言包，内置 `zh` / `en` |
-
-完整 API（`install` 签名、`options` 全字段、内部执行顺序、全局 `$mussel` 上下文、`installIcons`）查阅 `references/install.md`。
+`options` 全字段、`$mussel` 上下文与 `installIcons` 查阅 `references/install.md`。
 
 ---
 

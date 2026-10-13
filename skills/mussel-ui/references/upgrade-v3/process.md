@@ -41,7 +41,7 @@
 3. 验证路径有效性：
    - 目录存在且可读
    - 包含 Vue 组件文件（`.vue`）
-   - 包含 Mussel 3 依赖的迹象（`package.json` 中 mussel 版本 < 4、或 `.vue`/`.js`/`.css` 文件中存在 `mu-editor`/`mu-box`/`mu-tree-view` 等 Mussel 3 模式）
+   - 包含 Mussel 3 依赖的迹象（`package.json` 中 mussel 版本 < 4、或 `.vue`/`.js`/`.css` 文件中存在 `mu-editor`、`mu-box`、`theme:`、`mu-tree-view` 四类 Mussel 3 模式）
 4. 若路径无效或不包含 Mussel 3 代码，向用户报告原因并重新确认。
 5. 确认后，后续所有阶段均基于此目录操作。
 
@@ -67,7 +67,7 @@
    **布局系统**：
    - 已移除组件：`<mu-box>`、`<mu-h-box>`、`<mu-v-box>`
    - 废弃 CSS 类：`mu-box`、`mu-h-box`、`mu-v-box`、`mu-space`→`flex-space`、`mu-divider`→`flex-divider`、`mu-flex-item`、`mu-bg-transparent`、`mu-bg-white`、`mu-bg-black`、`mu-bg-x-color`
-   - 废弃属性选择器：`layout="flex"`、`flex="..."`、`margin="..."`、`padding="..."`、`padding-x/y`、`margin-x/y`、`margin-top/bottom/left/right`、`padding-top/bottom/left/right`、`border`/`border-right` 等、`position="..."`、`width="..."`、`height="..."`、`overflow="..."`、`align-items="..."`、`align-self="..."`、`justify-content="..."`、`content-center`、`flex-wrap`、`inline`、`reverse`、`collapsible`、`gap="..."`
+   - 废弃属性选择器：`layout=`、`flex=`、`margin=`、`padding=`、`padding-x/y`、`margin-x/y`、`margin-top/bottom/left/right`、`padding-top/bottom/left/right`、`border`、`border-right/left/top/bottom/x/y`、`position=`、`width=`、`height=`、`overflow=`、`align-items=`、`align-self=`、`justify-content=`、`content-center`、`flex-wrap`、`inline`、`reverse`、`collapsible`、`gap=`
    - ref 连带变更：`<mu-box ref="...">` / `<mu-h-box ref="...">` / `<mu-v-box ref="...">`（模板）+ 对应 `{refName}.value.$el`（脚本），见 rules.md 3.5
 
    **图标**：

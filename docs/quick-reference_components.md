@@ -953,7 +953,7 @@ const items = [
 | option-key | String | 下拉选项的 key 属性，默认为 `value`                          |
 | value-mode | String | `normal`（默认）\| `composite`（modelValue 为 `{ label, value }`） |
 | dropdown-scrollbar | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`；仅当使用 `#dropdown` 插槽时生效，items 模式下由面板内置滚动容器接管 |
-| (其他)     | —      | 包含全部 MuInput 属性、MuDropdown 中 `dropdown-` 为前缀的属性 |
+| (其他)     | —      | 透传 MuInput 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`invalid`/`pill`/`tabindex`/`disabled`/`readonly` 等）及 MuDropdown 中 `dropdown-` 为前缀的属性 |
 
 | 插槽名称        | 说明                                         |
 | --------------- | -------------------------------------------- |

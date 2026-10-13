@@ -63,7 +63,7 @@
 | 类名 | 说明 |
 |------|------|
 | `.flex-none` | flex: none |
-| `.flex-0` | flex: 0 |
+| `.flex-0` | flex: 0 0 0 |
 | `.flex-1` | flex: 1 1 0 |
 | `.flex-2` ~ `.flex-8` | flex: 2 2 0 ~ flex: 8 8 0 |
 | `.flex-auto` | flex: auto |

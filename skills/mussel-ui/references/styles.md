@@ -104,13 +104,13 @@
 | `--mu-bg-stripe` | 表格斑马纹交替行 |
 | `--mu-bg-disabled` | 禁用状态控件背景 |
 | `--mu-bg-mask` | 遮罩层背景（全屏覆盖） |
-| `--mu-bg-overlay` | 弹出层、浮出面板背景 |
+| `--mu-bg-overlay` | 弹出层背景 |
 
 ---
 
 ### 1.7 边框颜色
 
-边框色由灰阶映射而来，整体柔和、避免喧宾夺主。三档由深到浅：
+边框色由灰阶映射而来，低对比度，不与内容争夺注意力。三档由深到浅：
 
 | 变量 | 原子类 | 用途 |
 |------|--------|------|
@@ -125,7 +125,7 @@
 | 变量 | 默认值 | 用途 |
 |------|--------|------|
 | `--mu-radius-control` | `4px` | 输入框、按钮、标签等常规组件 |
-| `--mu-radius-panel` | `8px` | 浮出面板、抽屉等面板级容器 |
+| `--mu-radius-panel` | `8px` | 弹出层、抽屉等面板级容器 |
 | `--mu-radius-modal` | `12px` | 模态对话框 |
 
 > ⚠️ 老版本 `--mu-common-border-radius` / `--mu-window-border-radius` 已废弃，4.0 统一为 `--mu-radius-*`。
@@ -184,7 +184,7 @@
 
 ### 1.12 Z-index（层级由低到高）
 
-按"要盖住的目标"选层级：盖兄弟元素用 `above`，盖容器内全部内容用 `layer`，全局浮层才用 `popup`。
+按"要盖住的目标"选层级：盖兄弟元素用 `above`，盖容器内全部内容用 `layer`，全局弹出层才用 `popup`。
 
 | 变量 | 默认值 | 含义 | 适用场景 |
 |------|--------|------|---------|
@@ -274,7 +274,7 @@
 | 类名          | 说明           |
 | ------------- | -------------- |
 | .flex-none    | flex: none     |
-| .flex-0       | flex: 0        |
+| .flex-0       | flex: 0 0 0    |
 | .flex-1       | flex: 1 1 0    |
 | .flex-2 ~ .flex-8 | flex: 2 2 0 ~ flex: 8 8 0 |
 | .flex-auto    | flex: auto     |
@@ -520,11 +520,11 @@ justify-items 可用值：normal, start, center, end, stretch；justify-self 可
 
 | 类名                    | 变量名                     | 说明                           |
 | ----------------------- | -------------------------- | ------------------------------ |
-| .text-strong            | --mu-text-color-strong     | 清晰，常用于用户输入或文章正文 |
+| .text-strong            | --mu-text-color-strong     | 高对比，常用于用户输入或文章正文 |
 | .text-normal            | --mu-text-color-normal     | 常规，常用于各类名称显示       |
 | .text-subtle            | --mu-text-color-subtle     | 次要，用于次级文字信息显示     |
 | .text-soft              | --mu-text-color-soft       | 柔和，常用于副标题或提示文字   |
-| .text-muted             | --mu-text-color-muted      | 淡雅，常用于禁用组件文字       |
+| .text-muted             | --mu-text-color-muted      | 低对比，常用于禁用组件文字       |
 
 **功能色文本颜色：**
 

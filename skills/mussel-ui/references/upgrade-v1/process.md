@@ -35,7 +35,7 @@
 - 检测到的 v1 痕迹仅出现在 `node_modules/`、`docs/` 或测试夹具中，业务源码已是 v4。
 
 > 升级流程是 opt-in。若不确定是否应进入，先询问用户。
-> Mussel 3（`mussel` 3.x，Vue 3）→ 4 的升级**不走本流程**，改用 mussel-ui skill 的 `references/upgrade/`。
+> Mussel 3（`mussel` 3.x，Vue 3）→ 4 的升级**不走本流程**，改用本 skill 的 `references/upgrade-v3/`。
 
 ---
 
@@ -46,7 +46,7 @@
 3. 验证路径有效性：
    - 目录存在且可读，包含 `.vue` / `.js` 源文件；
    - `package.json` 依赖 `@mctech/mussel`（或代码中存在 `mu-editor` / `mu-flex-box` / `new Vue(` 等痕迹）。
-4. **判定 v1 版本档次**（影响样式迁移策略，见 SKILL.md「早期 v1 的重要约束」）：
+4. **判定 v1 版本档次**（影响样式迁移策略，见同级 `overview.md`「早期 v1 的重要约束」）：
    - 读 `package.json` 中 `@mctech/mussel` 的版本号；
    - grep 业务源码中 late-v1 类痕迹：`mu-text-color-`、`mu-background-`、`class="mu-box`、`mu-bordered`、`mu-divider`；
    - grep compat 原子类痕迹：`class="flex`、`p-1x`、`text-ellipsis`、`items-center`（late v1 后期才有）；
@@ -123,7 +123,7 @@
 
 **项目**：{项目名称}
 **日期**：{今天}
-**生成工具**：upgrade-v1-to-v4 Skill
+**生成工具**：mussel-ui Skill（V1→V4 升级路径）
 **源版本档次**：{早期 v1（无原子样式）/ 中期 / 后期}
 
 ## 范围概览

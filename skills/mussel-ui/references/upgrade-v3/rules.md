@@ -6,7 +6,7 @@
 
 **升级流程**（分析 → 计划 → 执行）见同级目录 `process.md`。
 
-> ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**，否则会出现「分析漏检」或「grep 命中但无规则」的不一致。
+> ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**，否则会出现「分析漏检」或「grep 命中但无规则」的不一致。v4 侧事实（组件 API、样式 Token）以 `references/components/*` 与 `references/styles.md` 为单源，本文件只保留迁移所需的一行速查，不展开 v4 用法。
 
 > 章节顺序 = 执行顺序：**全局配置是升级第一步**（应用入口 `install` 改写后才能启动验证后续迁移），因此从第 1 节「全局配置」开始；CSS 变量迁移与布局迁移相互独立，但 CSS 变量改完后即可验证主题色，故 CSS（第 2 节）先于布局（第 3 节）。
 
@@ -143,12 +143,13 @@ V3 `theme` 中手动指定的变量，在 V4 中改为 `colors` 只需指定基�
 export { install, components, icons, registerIcons, scrollbar }
 
 // Mussel 4
-export { install, installIcons, EventInterceptor, colors }  // 导出 install、installIcons、EventInterceptor、colors
+export { install, installIcons, EventInterceptor, colors, icons }
+// 另有 env 导出（version、isDev）
 ```
 
 > `colors` 为包含全部派生色（基础色、语义色及其调色板/灰阶）的运行时对象，可在运行时读取色板或用于自定义渲染（如色板选择器）。
 >
-> M3 运行时换肤函数 `setTheme(option)` 在 M4 中不再导出，改为挂载到 `$mussel` 上下文：`$mussel.setupColors(customColors, rootElement?)`，已绑定当前应用根元素。详见 `references/install.md`「运行时换肤」。
+> M3 运行时换肤函数 `setTheme(option)` 在 M4 中不再导出，改为挂载到 `$mussel` 上下文：`$mussel.setupColors(customColors, rootElement?)`。详见 `references/install.md`「运行时换肤」。
 
 ---
 
@@ -305,7 +306,7 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 |--------|------|
 | `<mu-box>` 组件 | 已删除，不再可用 |
 | `class="mu-box"` CSS 类 | 无对应样式定义，仅是一个无意义的 class 名 |
-| `.mu-box` 上的属性选择器样式 | 所有 `margin=`、`padding=`、`border`、`width=`、`height=`、`position=`、`layout=`、`flex=`、`align-items=`、`justify-content=`、`gap=`、`overflow=`、`content-center`、`flex-wrap`、`inline`、`reverse` 等属性选择器均已失效 |
+| `.mu-box` 上的属性选择器样式 | 所有 `layout=`、`flex=`、`margin=`、`padding=`、`padding-x/y`、`margin-x/y`、`margin-top/bottom/left/right`、`padding-top/bottom/left/right`、`border`、`border-right/left/top/bottom/x/y`、`position=`、`width=`、`height=`、`overflow=`、`align-items=`、`align-self=`、`justify-content=`、`content-center`、`flex-wrap`、`inline`、`reverse`、`collapsible`、`gap=` 属性选择器均已失效 |
 | `class="mu-h-box"` / `class="mu-v-box"` 作为纯 CSS 类 | 不再具有 `display: flex` / `display: flex; flex-direction: column` 的效果 |
 | `class="mu-space"` | 改为 `class="flex-space"` |
 | `class="mu-divider"` | 改为 `class="flex-divider"` |
@@ -643,14 +644,14 @@ root.value.addEventListener(…)
 | `render-to-body` | _(已移除，自动处理)_ | |
 | `moveable` | _(已移除)_ | 拖拽始终可用，无需配置 |
 | `dialog-style` | _(已移除)_ | 用标准 `style` 属性传入（通过 `$attrs` fallthrough 到 `.mu-dialog`） |
-| `container` | `container`（保留） | 语义增强：仍用于指定挂载容器（CSS 选择器或 DOM 元素），不设则挂到全局根容器（`$mussel.rootElement`）。Mussel 4 中设值后遮罩会自动改为 `position: absolute`，使弹窗相对该容器而非视口定位 |
+| `container` | `container`（保留） | 语义增强：仍用于指定挂载容器（CSS 选择器或 DOM 元素），不设则挂到根元素（`$mussel.rootElement`）。Mussel 4 中设值后遮罩会自动改为 `position: absolute`，使弹窗相对该容器而非视口定位 |
 | _(无)_ | `header` prop | `'auto'`\|Boolean，控制头部显隐 |
 | _(无)_ | `footer` prop | `'auto'`\|Boolean，控制底部显隐 |
 | _(无)_ | `body-class` prop | 为 `.mu-dialog__body` 添加 class，用于内部布局（如 `flex flex-col`） |
 | _(无)_ | `body-style` prop | 为 `.mu-dialog__body` 添加内联样式（如 `{ padding: '16px 24px' }`） |
 | _(无)_ | `body-scrollbar` prop | 启用 body 内置滚动条 |
 
-> `dismissible` 支持：`false`（默认值，禁止关闭）、`true`（遮罩+ESC均可关闭）、`'esc'`（仅ESC）、`'mask'`（仅遮罩）。
+> `dismissible` 取值 `true` / `'esc'` / `'mask'`，不设置则不自动关闭（完整语义见 `references/components/containers.md`）。
 
 #### 事件变更
 
@@ -820,12 +821,14 @@ const dialogEl = dialogRef.value.dialogEl // dialog 层（.mu-dialog）
 - 在 mask 层监听事件（如遮罩点击）→ 用 `ref.value.maskEl`
 - 在 dialog 层操作（focus、paste 等）→ 用 `ref.value.dialogEl`
 
-#### Body 内容迁移
+#### Body 内容迁移（含默认 slot 内边距补偿）
 
-**迁移原则**：若原默认插槽内只有一个根元素（通常是为获取 padding/layout 而添加的包裹 div），升级时优先使用 `body-class`/`body-style`/`body-scrollbar` 属性替代该包裹元素，减少不必要的 DOM 层级。
+Mussel 3 的 `.mu-dialog_center > *` 给所有子元素（含 header/body/footer）自动加 `padding: 16px 24px`，默认 slot 内容天然有内边距。Mussel 4 的 `.mu-dialog__body` 无 padding（`--mu-dialog-padding` 仅作用于 header/footer），默认 slot 内容会紧贴边缘。**检测**：M3 下内容与边缘有间距的 dialog，升级后贴边。
+
+若原默认插槽内有为 padding/layout 添加的包裹 div，优先用 `body-class` / `body-style` / `body-scrollbar` 属性替代，消除多余 DOM 层级：
 
 ```html
-<!-- 升级前：默认 slot 内有包裹 div 用于布局和间距 -->
+<!-- 升级前：包裹 div 承担布局与间距 -->
 <mu-dialog :visible.sync="visible">
   <div class="mu-box mu-v-box" padding="2x" overflow="auto">
     <mu-form>...</mu-form>
@@ -835,61 +838,25 @@ const dialogEl = dialogRef.value.dialogEl // dialog 层（.mu-dialog）
   </div>
 </mu-dialog>
 
-<!-- 升级后（推荐）：包裹 div 的功能全部由 body-* 属性承担，消除多余层级 -->
+<!-- 升级后：body-* 属性承担，无多余层级 -->
 <mu-dialog v-model:visible="visible" body-class="flex flex-col p-2x" body-scrollbar>
   <mu-form>...</mu-form>
   <div class="mt-2x">
     <mu-button>提交</mu-button>
   </div>
 </mu-dialog>
-
-<!-- 升级后（兼容）：保留包裹 div -->
-<mu-dialog v-model:visible="visible">
-  <div class="flex flex-col p-2x overflow-auto">
-    <mu-form>...</mu-form>
-    <div class="mt-2x">
-      <mu-button>提交</mu-button>
-    </div>
-  </div>
-</mu-dialog>
 ```
 
-#### 默认 slot 内边距丢失
-
-Mussel 3 中，`.mu-dialog_center > *` 会给所有子元素（包括 header、body、footer）自动添加 `padding: 16px 24px`。因此默认 slot 中的内容天然具有内边距，无需手动设置。
-
-Mussel 4 中，`.mu-dialog__body` 仅有 `flex: 1`，**没有 padding**。`--mu-dialog-padding` 变量（默认值 `12px`）仅作用于 header 和 footer。默认 slot 内容会紧贴边缘，导致视觉上的内容挤压。
-
-**检测方法**：检查所有 `<mu-dialog>` 的默认 slot 内容，如果 Mussel 3 下视觉效果正常（内容与边缘有间距），升级后内容会贴边。
-
-**解决方案**（优先使用 `body-class` / `body-style`，无需额外包裹 div）：
+仅需补偿内边距、无包裹 div 可替代时：
 
 ```html
-<!-- 方案 A（推荐）：body-style 属性，直接作用于 .mu-dialog__body -->
-<mu-dialog v-model:visible="visible" body-style="padding: 16px 24px">
-  内容
-</mu-dialog>
-
-<!-- 方案 B：body-class 属性 + 原子类 -->
-<mu-dialog v-model:visible="visible" body-class="p-2x">
-  内容
-</mu-dialog>
-
-<!-- 方案 C：body-class 同时解决内边距和内部 flex 布局 -->
-<mu-dialog v-model:visible="visible" body-class="flex flex-col p-2x">
-  <mu-toolbar>...</mu-toolbar>
-  <div class="flex-1 overflow-auto">内容</div>
-</mu-dialog>
-
-<!-- 方案 D（兼容）：slot 根元素加内联样式 -->
-<mu-dialog v-model:visible="visible">
-  <div style="padding: 16px 24px;">
-    内容
-  </div>
-</mu-dialog>
+<!-- body-style 直接作用于 .mu-dialog__body -->
+<mu-dialog v-model:visible="visible" body-style="padding: 16px 24px">内容</mu-dialog>
+<!-- 或 body-class="p-2x" -->
 ```
 
-> **注意**：如果默认 slot 中的内容本身已有占满宽度的子元素（如表格、表单行），通常只需顶部和底部 padding，可改为 `body-style="padding: 16px 0"` 或 `body-class="py-2x"`，让内容自然撑满宽度。
+> - 内容本身占满宽度（表格、表单行等）时通常只需上下 padding：`body-style="padding: 16px 0"` 或 `body-class="py-2x"`。
+> - 兼容写法：保留包裹 div（改原子类，如 `class="flex flex-col p-2x overflow-auto"`）或在 slot 根元素加内联 `style="padding: 16px 24px"`，均多一层 DOM 或内联样式，非首选。
 
 #### 按钮格式变更
 
@@ -1046,6 +1013,8 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', color: 'primary' }]
 | `:tab-items` | `:tab-buttons` | 属性重命名 |
 
 #### MuTabButton
+
+V4 不再全局注册（`MuTabBar` 内部组件）。直接使用 `<mu-tab-button>` 标签的代码需改用 `tab-buttons` 数据或 `MuTabBar`。
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|

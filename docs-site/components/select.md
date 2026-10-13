@@ -155,4 +155,4 @@ const role = ref({ value: 'admin', label: '管理员' })   // composite：modelV
 | `option-key` | String | 选项的 key 属性，默认 `value` |
 | `value-mode` | String | `normal`（默认）\| `composite`（modelValue 为 `{label, value}`）|
 | `dropdown-scrollbar` | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`；仅当使用 `#dropdown` 插槽时生效，items 模式下由面板内置滚动容器接管 |
-| (其他) | — | 继承全部 `MuInput` 属性及 `MuDropdown` 的 `dropdown-` 前缀属性（如 `dropdown-width`、`dropdown-disabled`） |
+| (其他) | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`invalid`/`pill`/`tabindex`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性（如 `dropdown-width`、`dropdown-disabled`） |

@@ -107,7 +107,7 @@
 
 ---
 
-## MuTable
+### MuTable
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
@@ -135,7 +135,7 @@
 | `update:header-checked` | `column, value` | 表头全选框切换（载荷为列对象与目标勾选值） |
 | `update:cell-value` | `{ record, column, value }` | 单元格值变更（check 列）|
 
-### Column 配置
+#### Column 配置
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
@@ -166,7 +166,7 @@
 | `disabled` | Function | 禁用函数（`check` 类型）|
 | `headerCheckbox` | Boolean | 显示表头全选框（`check` 类型）；需同时传表格级 `header-checked` prop 才实际显示 |
 
-### 列类型（type）
+#### 列类型（type）
 
 | 类型 | 说明 | 默认对齐 | 默认宽度 |
 |------|------|---------|---------|
@@ -183,7 +183,7 @@
 | `tag` | 标签，配合 `tags` 函数 | left | — |
 | `img` / `image` | 图片缩略图 | left | — |
 
-### 完整示例
+#### 完整示例
 
 ```vue
 <template>

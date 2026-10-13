@@ -69,7 +69,7 @@
 | `week-starts-on` | Number | `0` | 每周起始日（0=周日 ~ 6=周六）；默认读全局 `calendar.weekStartsOn` 配置 |
 | `min` / `max` | Date\|String | — | 最小 / 最大可选值 |
 | `dropdown-class` | String | — | 下拉面板附加 class |
-| (其他) | — | — | 透传 `MuInput` 属性及 `MuDropdown` 的 `dropdown-` 前缀属性 |
+| (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`invalid`/`pill`/`tabindex`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|

@@ -586,11 +586,11 @@
 
 | 类名                  | 变量名                   | 说明                           |
 | --------------------- | ------------------------ | ------------------------------ |
-| .text-strong       | --mu-text-color-strong   | 清晰，常用于用户输入或文章正文 |
+| .text-strong       | --mu-text-color-strong   | 高对比，常用于用户输入或文章正文 |
 | .text-normal       | --mu-text-color-normal   | 常规，常用于各类名称显示       |
 | .text-subtle       | --mu-text-color-subtle   | 次要，用于次级文字信息显示     |
 | .text-soft         | --mu-text-color-soft     | 柔和，常用于副标题或提示文字   |
-| .text-muted        | --mu-text-color-muted    | 淡雅，常用于禁用组件文字       |
+| .text-muted        | --mu-text-color-muted    | 低对比，常用于禁用组件文字       |
 
 **功能色文本颜色：**
 

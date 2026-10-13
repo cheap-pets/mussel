@@ -8,7 +8,7 @@
 
 > ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**。
 >
-> Mussel 4 目标写法的完整组件 API 优先查阅 mussel-ui skill 的 `references/components/*` 与 `references/styles.md`；本文「目标写法」列为权威速查。
+> Mussel 4 目标写法的完整组件 API 与样式 Token 以 `references/components/*` 与 `references/styles.md` 为单源；本文件「目标写法」列只保留迁移所需的一行速查，不展开 v4 用法。
 
 > 章节顺序 = 执行顺序。**框架迁移（第 1 节）是硬前提**：`@mctech/mussel` 不能运行在 Vue 3 上，必须先完成 Vue 3 化与安装入口改写（第 2 节），项目才能启动验证；之后按 3 → 4 → 5 → 6 处理，7 收尾。
 
@@ -97,7 +97,7 @@ install(app, {
 | 导出 | `import { setTheme, variables } from '@mctech/mussel'` | `setTheme`/`variables` **不再导出**；换肤走 `$mussel.setupColors` |
 | 语言 | `variables.lang = 'zh'` | `install` 的 `locale` / `localeResources` |
 
-v1 `variables.js` 中非颜色配置（字号、控件高度、圆角、阴影等）在 v4 中一律改为覆盖 CSS 变量（`--mu-font-size`、`--mu-radius-*`、`--mu-shadow-*` 等，完整清单见 mussel-ui skill 的 `references/styles.md`）。
+v1 `variables.js` 中非颜色配置（字号、控件高度、圆角、阴影等）在 v4 中一律改为覆盖 CSS 变量（`--mu-font-size`、`--mu-radius-*`、`--mu-shadow-*` 等，完整清单见 `references/styles.md`）。
 
 ### 2.3 图标注册
 
@@ -293,7 +293,7 @@ v4 内置名：`X`、`check`、`x`、`ok`、`info`、`alert`、`question`、`che
 
 ## 6. 组件迁移
 
-> 各组件「目标写法」的完整 Props/Events/Slots 以 mussel-ui skill 的 `references/components/*` 为准。
+> 各组件「目标写法」的完整 Props/Events/Slots 以 `references/components/*` 为准。
 
 ### 6.1 按钮系
 
@@ -375,7 +375,7 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `label-width` / `label-align` | 同名 | v4 `label-align` 仅 `left|right|top`，`center` 不再支持 |
 | `<mu-form-field label label-width label-align>` | 同名 | 新增 `prop`/`input`/`required`/`error`/`suffix`/`width`；v1 的 `size` 属性移除（用 `width` 或原子类） |
 | `<mu-form-row>` | 同名 | |
-| （无） | `:model` + `:items` 数据驱动表单 | 新能力，简单表单可顺手改写（见 mussel-ui skill `references/components/form.md`） |
+| （无） | `:model` + `:items` 数据驱动表单 | 新能力，简单表单可一并改写（见 `references/components/form.md`） |
 
 ### 6.5 弹层系（Dialog / Drawer）
 
@@ -455,7 +455,7 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 | `<mu-table-column field label width align>` | `columns: [{ field, caption, width, align, type }]` | `label` → `caption`；`type` 默认 `text` |
 | `cell-text`（值或 fn） | `text` / `value`（fn） | |
 | `cell-title` / `cell-class` / `cell-style` | `title` / `class` / `style`（fn） | |
-| `cell-html` | 无对应 | 用列 items/自定义渲染（见 mussel-ui skill `references/components/data.md`） |
+| `cell-html` | 无对应 | 用列 items/自定义渲染（见 `references/components/data.md`） |
 | `<mu-table-check-column>` | `{ type: 'check', field, headerCheckbox }` | |
 | `<mu-table-button-column>` | `{ type: 'link', links: [{ caption, danger, disabled }] }` | 无 `action` 字段；点击统一 `@cell-item-click`（payload `{ record, column, link }`），v1 `@buttonclick` 改绑此事件 |
 | `<mu-table-combo-column>` / `<mu-table-edit-column>` / `<mu-table-search-column>` | **无对应** | v4 无表格编辑/搜索列，需人工设计（弹窗编辑、行内自定义渲染） |
@@ -484,14 +484,14 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 | `<mu-sort-icon direction="up\|down">` | 同名同 API | 无破坏性变更 |
 | `<mu-paging-bar :page-index :eof :reload display-list>`（0.1.x ~ 中期） | `<mu-pagination v-model:page-index :page-size :total>` | **模型重写**：v1 早期按当前页 + `eof`（无总数）驱动，`reload` 刷新按钮与 `display-list` 页码形态无对应；v4 按总数派生页数 |
 | `<mu-pagination>`（后期 1.x） | 同名 `mu-pagination` | **模型仍需重写**：v1 双模型 `limit`/`offset`（`:limit.sync`/`:offset.sync`）或 `pageCount`/`pageIndex`/`dataCount`；v4 仅 `page-index`/`page-size`/`total`。`dataCount` → `total`；`limit` → `page-size`（`update:limit` → `update:page-size`）；`offset` → 换算 `page-index`（offset / limit）；`pageCount` → 换算 `total = pageCount × pageSize`；`eof`/`disabled`/`button-style` 无对应，`small` → `size="small"`；`quick-jumper`/`page-size-options` 同名保留 |
-| `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（mussel-ui skill `references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
+| `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（`references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
 | `<mu-context-menu :menu-lists :client-x :client-y>` | `<mu-context-menu :menus>` + `show(event)` | **API 重构**：v1 项 `{ btnName, iconClass, handler, children, disabled }` → v4 dropdown-items 结构 `{ label, icon, action, disabled }`；`handler` 回调改 `@action`/`@itemclick` 事件；定位改 `show(contextmenuEvent)`（按 pageX/pageY），`client-x`/`client-y` props 移除；v1 `children` 嵌套子菜单无对应（v4 面板为平铺列表） |
 | `<mu-scroll-box>` | `<mu-scroll-box>` | v1 基于 mussel-scrollbar 外挂实现，v4 内置，用法不变 |
 | `<mu-expander v-model title>` | **无对应** | v1 为 Vue2 `model` 选项（prop `expanded`）；折叠面板自行实现（原子类 + 状态切换；无动画需求可用原生 `<details>`） |
 
 ### 6.11 导航菜单（sidebar-menu → side-menu / menu）
 
-v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item>`，激活靠 `selectMode` 或逐项 `v-model`）→ v4 **数据驱动重写**为 `<mu-side-menu :items>`（侧边）或 `<mu-menu :items>`（横向顶栏）。完整 API 见 mussel-ui skill `references/components/navigation.md`。
+v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item>`，激活靠 `selectMode` 或逐项 `v-model`）→ v4 **数据驱动重写**为 `<mu-side-menu :items>`（侧边）或 `<mu-menu :items>`（横向顶栏）。完整 API 见 `references/components/navigation.md`。
 
 数据转换：`mu-menu-group` / `mu-menu-item` 的 `title` → `label`，`icon`/`disabled` 不变；每项建议补 `id`（收藏、跨数据刷新的激活匹配依赖 id）；子级递归写入 `items`（有 `items` 即为组）。
 
@@ -505,7 +505,7 @@ v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item
 | `collapsible` / `collapse-button-position` / `floatable` / `disabled-float` / `dark-mode` / `border` | 无对应 | v4 无内置收起按钮与浮动/暗色侧栏；收起按钮放 `#header`/`#footer` 插槽自行实现（作用域参数 `collapsed`） |
 | `mu-menu-group` 的 `#header` 自定义组头 / `selectable`（组可选） | 无对应 | 数据驱动仅 `label`/`icon`；可选组用普通叶子项模拟 |
 | 激活项需手动展开父组（v1 mounted 钩子） | 内置 | `active-item` 变更自动展开一级组并滚动定位 |
-| （无） | `v-model:favorites` 收藏、`rail` 图标列、`auto-expand-top` | 新能力，可顺手启用 |
+| （无） | `v-model:favorites` 收藏、`rail` 图标列、`auto-expand-top` | 新能力，可同时启用 |
 | 顶部横向导航（menu-group 非 sidebar 上下文） | `<mu-menu>` | `expand-trigger`（click/hover）、一级溢出自动折叠「更多」 |
 
 ### 6.12 命令式弹窗与通知
@@ -558,7 +558,7 @@ messageBox.notify({ type: 'warn', message: '保存失败', duration: 3000 })
 
 ## 8. 新增能力
 
-v1 无对应、迁移时可顺手用上的 v4 能力：
+v1 无对应、迁移时可一并使用的 v4 能力：
 
 | 能力 | 说明 |
 |------|------|

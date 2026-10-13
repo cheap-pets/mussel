@@ -26,7 +26,7 @@ install(app, {
 
 | 属性 | 类型 | 默认值 | 说明 |
 | ---- | ---- | ------ | ---- |
-| root | String \| Element | `document.body` | 应用根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
+| root | String \| Element | `document.body` | 根元素（字符串选择器或 DOM 元素），用于注入主题 class 和 CSS 变量 |
 | dark | Boolean \| `'auto'` | — | 暗色模式开关。`true` 强制暗色，`'auto'` 跟随系统 `prefers-color-scheme`，不设置或 `false` 为亮色 |
 | colors | Object | 内置默认色 | 自定义主题色，自动派生对应调色板与 `--mu-*` CSS 变量。合法 key：语义色 `primary` / `secondary` / `success` / `warning` / `danger` + 基本色名 `red` / `pink` / `grape` / `violet` / `indigo` / `blue` / `cyan` / `teal` / `green` / `lime` / `yellow` / `orange`；`neutral` / `gray` 不派生自身调色板，仅作灰阶基准（优先级 neutral → gray → primary） |
 | icons | Object | — | 初始注册的图标集合，`{ 名称: svg数据或class字符串 }`，等价于调用 `installIcons(icons)` |
@@ -46,12 +46,12 @@ install(app, {
 const { rootElement, options, messageBox, setupColors } = inject('$mussel')
 
 messageBox.alert('操作完成')
-setupColors({ primary: '#be4bdb' })  // 运行时换肤，默认写入当前应用根元素
+setupColors({ primary: '#be4bdb' })  // 运行时换肤，默认写入当前根元素
 ```
 
 | 属性 | 说明 |
 | ---- | ---- |
-| rootElement | Element，`root` 解析后的根 DOM 元素 |
+| rootElement | Element，`root` 解析后的根元素 |
 | options | Object，传入的 `componentOptions`（剔除 `root`/`dark`/`colors`/`icons`/`locale`/`localeResources` 之后的部分） |
 | messageBox | 命令式对话框与通知 API（`alert` / `confirm` / `error` / `warn` / `notify`） |
 | setupColors | 主题色设置函数（已绑定到当前上下文），见下文「运行时换肤」 |
@@ -94,12 +94,12 @@ import { colors, icons } from 'mussel'
 ```javascript
 // 组件内
 const { setupColors } = inject('$mussel')
-setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
+setupColors({ primary: '#be4bdb' })  // 默认写入当前根元素
 ```
 
 | 参数 | 类型 | 默认值 | 说明 |
 | ---- | ---- | ------ | ---- |
-| customColors | Object | `{}` | 自定义主题色，key 同 `options.colors`：语义色 `primary` / `secondary` / `success` / `warning` / `danger` + 基本色名 `red` / `pink` / `grape` / `violet` / `indigo` / `blue` / `cyan` / `teal` / `green` / `lime` / `yellow` / `orange`；`neutral` / `gray` 仅作灰阶基准（优先级 neutral → gray → primary），自动派生调色板与灰阶，并写入 `--mu-*` CSS 变量 |
+| customColors | Object | `{}` | 自定义主题色，合法 key 同 `options.colors`（语义色 + 基本色名全表见上方「主题色」节），自动派生调色板与灰阶并写入 `--mu-*` CSS 变量 |
 | rootElement | Element | `$mussel.rootElement` | 写入 CSS 变量的根元素；未传时回退到当前上下文的 `rootElement`，再回退到 `document.body` |
 
 > [!NOTE]

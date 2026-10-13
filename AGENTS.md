@@ -16,7 +16,7 @@ Mussel — Vue 3 组件库。
 ├── demo/                 # 组件验证页面（rollup watch + serve :3000）
 ├── docs-site/            # VitePress 组件文档站（含 guide/ 与各组件 .md）
 ├── docs/                 # 面向用户的速查手册（quick-reference_*.md）
-├── skills/               # 项目内 skill（mussel-ui、ui-spec、upgrade-v1-to-v4）
+├── skills/               # 项目内 skill（mussel-ui、ui-spec）
 ├── agent-docs/           # agent 用的规划/知识文档
 ├── dist/                 # 构建产物
 └── vite.config.js / vite.demo.config.js / package.json

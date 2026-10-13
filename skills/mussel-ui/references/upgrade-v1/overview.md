@@ -1,23 +1,15 @@
----
-name: upgrade-v1-to-v4
-description: >
-  用户明确要求将 Mussel 1（@mctech/mussel，Vue 2）代码升级到 Mussel 4（Vue 3）时使用，
-  如："把 @mctech/mussel 升级到 mussel 4"、"迁移 Vue 2 老页面到新版 Mussel"。
-  同时覆盖 Vue 2 → Vue 3 框架迁移中与组件库相关的破坏点。
-  仅编写/修改/Review MUSSEL 4 界面代码（非升级迁移）时，请使用 mussel-ui skill；
-  仅做 Mussel 3 → 4 升级时，用 mussel-ui skill 的 references/upgrade/。
----
-
-# Mussel 1 → Mussel 4 升级 Skill
+# Mussel 1 → Mussel 4 升级总览
 
 > Mussel 1（`@mctech/mussel`，Vue 2.7）→ Mussel 4（`mussel`，Vue 3）是**框架 + 组件库的双重换代**，
 > 跨度远大于 V3→V4：v1 的 API 与 V3 差异很大（编辑器体系、布局体系、样式体系均不同），
-> **不能**用 mussel-ui skill 的 v3→v4 迁移规则直接套用。本 Skill 独立覆盖 v1→v4 全部已知差异。
+> **不能**用 `references/upgrade-v3/`（V3→V4）的迁移规则直接套用。本目录独立覆盖 v1→v4 全部已知差异。
 
-> **版本检查**：
-> 本文档基于 Mussel 1 仓库 `1.9`（含 0.1.x 早期版本差异说明）与 Mussel `4.1.5` 源码，最后核对日期 **2026-10-12**。
-> 开始前确认项目 mussel 源版本（`@mctech/mussel` 0.1.x ~ 1.x）与目标版本（`mussel` 4.x）。
-> 若组件库源码与本文描述冲突，**以源码为准**，并按实际情况订正对应文件。
+> **版本检查**：v1 侧基于 Mussel 1 仓库 `1.9`（含 0.1.x 早期版本差异说明）；v4 侧版本基准与核对日期以本 skill `SKILL.md` 的版本声明为准。开始前确认项目 mussel 源版本（`@mctech/mussel` 0.1.x ~ 1.x）与目标版本（`mussel` 4.x）。若组件库源码与本文描述冲突，**以源码为准**，并按实际情况订正对应文件。
+
+**本目录文件分工**：
+- **流程**（退出检查 → 确认源目录与版本档次 → 分析 → 计划 → 执行）：`process.md`（分析阶段需完整读）。
+- **规则**（权威迁移规则，按章节按需查）：`rules.md` —— 1 框架迁移（Vue 2→3）→ 2 全局配置 → 3 CSS 变量与类 → 4 布局系统 → 5 图标 → 6 组件迁移 → 7 无对应与移除项 → 8 新增能力。
+- 写 v4 目标代码时的完整组件 Props/Events/Slots 与样式 Token，查阅本 skill 的 `references/components/*` 与 `references/styles.md`。
 
 ## 早期 v1 的重要约束
 
@@ -31,32 +23,6 @@ description: >
 
 **判定方法**：看 `package.json` 中 `@mctech/mussel` 版本；再 grep 源码中有无 `mu-text-color-`、`mu-background-`、`mu-box`、`margin~=` 等 late-v1 痕迹。
 **影响**：早期 v1 项目升级后，布局/间距/文字样式**直接改写为 v4 原子类**（无"保留旧类"的中间态）；late v1 项目按 rules.md 第 3 节映射表替换旧类。
-
-## 工作流程
-
-### 步骤 1：识别升级路径（opt-in）
-
-进入升级路径需**全部**满足：
-1. 用户明确表达"升级 / 迁移 / 从 Mussel 1（@mctech/mussel）改到 Mussel 4"；
-2. 任务目标是改写既有页面/组件/工程，而非新增功能；
-3. 源代码基于 Vue 2 + `@mctech/mussel`（`package.json` 可见，或代码出现 `mu-editor`/`mu-flex-box`/`new Vue(` 等）。
-
-判不准时先询问用户，不要凭代码痕迹自动启动。确认进入后：
-
-- **流程**（退出检查 → 确认源目录与版本档次 → 分析 → 计划 → 执行）：读 `references/process.md`（分析阶段需完整读）。
-- **规则**（权威迁移规则，按章节按需查）：`references/rules.md`——
-  1 框架迁移（Vue 2→3）→ 2 全局配置 → 3 CSS 变量与类 → 4 布局系统 → 5 图标 → 6 组件迁移 → 7 无对应与移除项 → 8 新增能力。
-
-### 步骤 2：写 v4 代码时查阅目标 API
-
-rules.md 的「目标写法」覆盖高频迁移场景。需要更完整的 v4 组件 Props/Events/Slots 与样式 Token 时，
-查阅 **mussel-ui skill** 的 `references/components/*` 与 `references/styles.md`（该 skill 已安装时优先使用；未安装时以组件源码为准）。
-
-### 步骤 3：生成后自检
-
-每个文件迁移完成后，用 rules.md 对应章节的检查清单逐条核对；全部完成后按 process.md 生成总结文档。
-
----
 
 ## v1 → v4 变化总览
 

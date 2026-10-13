@@ -2,7 +2,7 @@
 
 ---
 
-## MuForm
+### MuForm
 
 表单容器，支持声明式子组件和 `items` 数组驱动的数据模式。
 
@@ -52,7 +52,7 @@
 
 ---
 
-## MuFormRow
+### MuFormRow
 
 表单行容器，水平排列多个 `MuFormField`。支持 `items` 数组。
 
@@ -62,7 +62,7 @@
 
 ---
 
-## MuFormField
+### MuFormField
 
 表单字段，可自动渲染输入组件或通过 slot 自定义。
 
@@ -157,7 +157,7 @@ const items = [
 
 ---
 
-## MuInput
+### MuInput
 
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
@@ -191,7 +191,7 @@ const items = [
 
 ---
 
-## MuSearchInput
+### MuSearchInput
 
 带防抖与默认搜索图标的输入框，常作为列表/表格或下拉选项的过滤搜索框。
 
@@ -206,7 +206,7 @@ const items = [
 
 ---
 
-## MuInputGroup
+### MuInputGroup
 
 输入框成组容器（`div.mu-input-group`），无 props、仅默认插槽，用于把多个相邻输入控件包装为视觉整体。
 
@@ -219,7 +219,7 @@ const items = [
 
 ---
 
-## MuSelect
+### MuSelect
 
 单选下拉框，**不需要用户输入时优先使用**。
 
@@ -229,7 +229,7 @@ const items = [
 | `option-key` | String | 选项的 key 属性，默认 `value` |
 | `value-mode` | String | `normal`（默认）\| `composite`（modelValue 为 `{label, value}`）|
 | `dropdown-scrollbar` | Boolean | 是否渲染下拉面板自定义滚动条，默认 `false`；仅当使用 `#dropdown` 插槽时生效，items 模式下由面板内置滚动容器接管 |
-| (其他) | — | 继承全部 `MuInput` 属性及 `MuDropdown` 的 `dropdown-` 前缀属性 |
+| (其他) | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`invalid`/`pill`/`tabindex`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
 
 | 插槽 | 说明 |
 |------|------|
@@ -285,7 +285,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuOption
+### MuOption
 
 下拉选项，**必须置于 `MuSelect` / `MuMultiSelect` / `MuComboBox` 的 `#dropdown-items` 或 `#dropdown` 插槽内**（自定义项内容优先 `#dropdown-items`，享受内置滚动容器；`#dropdown` 仅用于完全接管面板）。作为自定义下拉内容时的选项单元，点击即向父级 select 提交选中并（单选时）关闭面板。
 
@@ -306,7 +306,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuComboBox
+### MuComboBox
 
 组合输入框，支持输入与单选。
 
@@ -321,7 +321,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuMultiSelect
+### MuMultiSelect
 
 下拉多选框。
 
@@ -337,7 +337,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuDateInput
+### MuDateInput
 
 日期选择框。下拉面板含工具栏（标题、今天/本周/本月/本季/本年按钮、上下翻页）与对应选择网格。
 
@@ -365,7 +365,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuDateRangeInput
+### MuDateRangeInput
 
 日期区间选择框。单个下拉日期面板，两次点击确定区间：无开始日期时点击记为开始日期；仅有开始日期时，点击早于开始日期的单元格替换开始日期，点击相同或更晚的单元格记为结束日期；已有完整区间时再次点击将清空区间，并以点击日期重新开始。
 
@@ -379,13 +379,13 @@ const filteredItems = computed(() =>
 | `min` | Date\|String | — | 最小可选值 |
 | `max` | Date\|String | — | 最大可选值 |
 | `dropdown-class` | String | — | 下拉面板附加 class |
-| (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
+| (其他) | — | — | 透传规则同 `MuDateInput` |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
 | `update:modelValue` | value | 值变更 |
 | `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
-| (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
+| (其他) | — | 透传事件同 `MuDateInput` |
 
 > - 面板在选中结束日期后**不关闭**，可继续点击调整区间。
 > - 工具栏含「今天」快捷按钮，跳回当月并选中今天。
@@ -393,7 +393,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuTimeInput
+### MuTimeInput
 
 时间选择框。点击展开下拉面板，内部为「时 / 分 / 秒」三列滚动选择器（始终 24 小时制），底部「确定」按钮提交并关闭。`modelValue` 为 `"HH:mm[:ss]"` 形态的时间字符串。
 
@@ -404,13 +404,13 @@ const filteredItems = computed(() =>
 | `minute-step` | Number | `5` | 分钟列步进：`0` \| `1` \| `5` \| `10` \| `15` \| `30`；`0` 时分钟固定为 `00` |
 | `second-step` | Number | `5` | 秒列步进，取值同 `minute-step`；`0` 时秒固定为 `00` |
 | `dropdown-class` | String | — | 下拉面板附加 class |
-| (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
+| (其他) | — | — | 透传规则同 `MuDateInput` |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
 | `update:modelValue` | value | 值变更 |
 | `dropdown:show` / `dropdown:hide` | — | 下拉面板展开 / 收起 |
-| (其他) | — | 透传 `MuInput` 事件（`focus`/`blur`/`input`/`enter`/`esc`/`click` 等） |
+| (其他) | — | 透传事件同 `MuDateInput` |
 
 > - 输入框本身不可编辑，时间仅通过下拉面板选择。
 > - `format` 同时控制显示与输出：设为 `'HH:mm'` 且 `second-step="0"` 即得到「时分」选择器；需精确到每一分钟/秒时把对应 step 设为 `1`。
@@ -425,7 +425,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuColorInput
+### MuColorInput
 
 颜色选择框。前置显示当前色块，右侧为可输入的 HEX 文本框；展开下拉面板显示 Mussel 内置色板（12 个基础色组 + 1 组灰阶，每组 10 级色阶，共 130 色），点击色格即选中。`modelValue` 为 HEX 字符串（如 `'#1C7ED6'`）。
 
@@ -445,7 +445,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuCheck
+### MuCheck
 
 复选按钮。
 
@@ -460,7 +460,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuCheckGroup
+### MuCheckGroup
 
 复选按钮组，管理多个 `MuCheck` 的选中状态。
 
@@ -485,7 +485,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuRadio
+### MuRadio
 
 单选按钮。
 
@@ -500,7 +500,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuRadioGroup
+### MuRadioGroup
 
 单选按钮组，管理多个 `MuRadio` 的选中状态。
 
@@ -525,7 +525,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuSegmented
+### MuSegmented
 
 分段控件，在多个互斥选项间切换，带滑块动画。
 
@@ -556,7 +556,7 @@ const filteredItems = computed(() =>
 
 ---
 
-## MuSwitch
+### MuSwitch
 
 开关。
 
