@@ -10,6 +10,9 @@
 - [Playwright 验证 watch 驱动路径：经组件实例替换 props](./patterns/playwright-props-swap-verification.md)
   demo 数据为 const 无替换入口时，`el.__vueParentComponent.props.x = …` 替换 props 触发子组件 watch；实测无警告，注意替换后勿触发父重渲。
 
+- [包裹层 display: contents 兼容既有扁平布局](./patterns/wrapper-display-contents-legacy-layout.md)
+  新增包裹层但默认模式依赖扁平子元素布局时，wrapper 默认 display: contents、仅新模式生成盒子；注意 `& > *` 规则不再命中下沉的孙元素，overflow/max-width 须下放。
+
 ## Pitfalls
 
 - [Teleport 弹层与宿主组件的 CSS 变量级联断裂](./pitfalls/teleport-popup-css-vars.md)

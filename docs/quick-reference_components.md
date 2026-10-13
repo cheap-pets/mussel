@@ -1864,6 +1864,7 @@ messageBox.notify({
 | icon     | String            | 状态图标 |
 | title    | String            | 状态标题 |
 | message  | String            | 补充说明 |
+| icon-position | String       | 图标位置：`top`（默认，图标在内容上方整体居中）\| `left`（图标在左，内容左对齐）\| `right`（图标在右，内容左对齐） |
 | width    | String \| Number  | 宽度     |
 | height   | String \| Number  | 高度     |
 

@@ -37,9 +37,18 @@
     </div>
     <div class="group">
       <mu-status-box
-        class="mu-bg-strong" width="500" height="300"
-        border="divider" border-radius="2x"
+        class="mu-bg-strong border border-dashed radius-panel" width="500" height="300"
         icon="bolt"
+        title="CAUTION !"
+        message="Something Wrong Here !">
+        <mu-button primary round>
+          Do Something ...
+        </mu-button>
+      </mu-status-box>
+      <mu-status-box
+        class="mu-bg-strong border border-dashed radius-panel" width="500" height="300"
+        icon="bolt"
+        icon-position="left"
         title="CAUTION !"
         message="Something Wrong Here !">
         <mu-button primary round>
@@ -49,12 +58,11 @@
     </div>
     <div class="group">
       <mu-status-box
-        class="mu-bg-strong" width="500" height="400"
-        border="divider" border-radius="2x"
+        class="mu-bg-strong border border-dashed radius-panel" width="500" height="400"
         title="NOT FOUND !"
-        message="Something Wrong Here ! Something Wrong Here ! Something Wrong Here ! Something Wrong Here ! Something Wrong Here !">
+        message="Something Wrong Here ! Something Wrong Here ! Something Wrong Here ! Something Wrong Here !">
         <template #icon>
-          <div style="width: 64px; height: 64px; background: var(--mu-warning-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px;">
+          <div class="big-icon">
             !
           </div>
         </template>
@@ -137,3 +145,17 @@
     })
   }
 </script>
+
+<style>
+  .big-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 64px; height: 64px; border-radius: 50%;
+
+    font-size: 32px; color: white;
+
+    background: var(--mu-warning-color);
+  }
+</style>

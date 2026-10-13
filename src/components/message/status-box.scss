@@ -21,13 +21,43 @@
     color: var(--mu-text-color-muted);
   }
 
+  & .mu-status-box__body {
+    display: contents;
+  }
+
   & .mu-status-box__title {
+    overflow: hidden;
+    max-width: 100%;
     font-size: calc(1em * 1.25);
     font-weight: 600;
   }
 
   .mu-status-box__message {
+    overflow: hidden;
+    max-width: 100%;
     line-height: 20px;
     text-align: center;
+  }
+
+  &[icon-position='left'],
+  &[icon-position='right'] {
+    gap: calc(var(--mu-base-spacing) * 2);
+
+    & .mu-status-box__body {
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--mu-base-spacing) * 2);
+      align-items: flex-start;
+
+      text-align: left;
+    }
+  }
+
+  &[icon-position='left'] {
+    flex-direction: row;
+  }
+
+  &[icon-position='right'] {
+    flex-direction: row-reverse;
   }
 }

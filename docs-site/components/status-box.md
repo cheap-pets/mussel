@@ -48,6 +48,30 @@
 </mu-status-box>
 ```
 
+## 图标位置 `icon-position`
+
+默认 `top`：图标在内容上方，整体居中。`left` / `right` 改为横向排列，内容左对齐：
+
+<div class="mu-demo">
+  <mu-status-box
+    width="300" height="180"
+    icon="info" title="暂无数据" message="请调整筛选条件后重试" />
+  <mu-status-box
+    width="300" height="180"
+    icon-position="left"
+    icon="info" title="暂无数据" message="请调整筛选条件后重试" />
+  <mu-status-box
+    width="300" height="180"
+    icon-position="right"
+    icon="info" title="暂无数据" message="请调整筛选条件后重试" />
+</div>
+
+```html
+<mu-status-box icon="info" title="暂无数据" message="请调整筛选条件后重试" />
+<mu-status-box icon-position="left" icon="info" title="暂无数据" message="请调整筛选条件后重试" />
+<mu-status-box icon-position="right" icon="info" title="暂无数据" message="请调整筛选条件后重试" />
+```
+
 ## 操作区布局
 
 default 插槽内容渲染在说明文字下方，可配合 flex 原子类自由排布：
@@ -69,6 +93,7 @@ default 插槽内容渲染在说明文字下方，可配合 flex 原子类自由
 | `icon` | String | 状态图标（已注册图标名） |
 | `title` | String | 状态标题 |
 | `message` | String | 补充说明 |
+| `icon-position` | String | 图标位置：`top`（默认，图标在内容上方整体居中）\| `left`（图标在左，内容左对齐）\| `right`（图标在右，内容左对齐） |
 
 | 插槽 | 说明 |
 |------|------|
