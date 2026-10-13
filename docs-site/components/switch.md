@@ -86,6 +86,7 @@
 | `active-label` / `inactive-label` | String | — | 打开 / 关闭状态文字 |
 | `active-value` | — | `true` | 打开状态值 |
 | `inactive-value` | — | `false` | 关闭状态值 |
+| `disabled` | Boolean | — | 禁用（禁用后点击不切换，呈半透明禁用样式） |
 
 | Attribute（非 prop） | 说明 |
 |---------------------|------|

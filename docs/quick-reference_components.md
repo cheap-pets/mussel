@@ -1318,6 +1318,7 @@ const filteredItems = computed(() =>
 | inactive-label  | String | —       | 关闭状态的标签文字       |
 | active-value    | —      | `true`  | 打开状态值               |
 | inactive-value  | —      | `false` | 关闭状态值               |
+| disabled        | Boolean | —      | 是否禁用（禁用后点击不切换） |
 
 
 
