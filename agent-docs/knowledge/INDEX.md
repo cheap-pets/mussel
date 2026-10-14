@@ -25,7 +25,7 @@
   Vue 3 卸载时不调 removeEventListener（unmount 只 hostRemove），"卸载自动解绑"假设不成立，依赖记账的观察机制不会归零。
 
 - [Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流](./pitfalls/playwright-hidden-page-resize-observer.md)
-  浏览器窗口后台时页面 hidden，渲染阶段 API 停发、setTimeout/setInterval 被节流；验证 sizechange 用手动 dispatch 等价模拟，验证 interval 周期逻辑改用 `page.clock` 假时钟驱动（不改源码常量），验证页须选加载库的组件页（demo `/` 首页不加载库）。
+  浏览器窗口后台时页面 hidden，渲染阶段 API 停发、setTimeout/setInterval 节流、CSS transition 不启动（样式变更不触发过渡、computed 停旧值）；验证 sizechange 用手动 dispatch 等价模拟，验证 interval 周期逻辑改用 `page.clock` 假时钟驱动（不改源码常量），验证页须选加载库的组件页（demo `/` 首页不加载库）。
 
 - [flex 压缩截断破坏 rect 内容宽测量](./pitfalls/flex-ellipsis-breaks-rect-measurement.md)
   `overflow: hidden` 使 flex item 最小宽度归零、行溢出时被压出省略号，rect 跨度随之缩小；实测内容宽须用 Range 补回文本自然宽并计入首尾子元素 margin。
@@ -38,6 +38,12 @@
 
 - [grid 0fr 收缩轨道计入 item margin](./pitfalls/grid-0fr-track-margin-leak.md)
   `grid-template-rows: 0fr` 收起动画中 item 的 margin 泄漏进轨道尺寸（收起残留空隙）；间距须放进 overflow hidden 裁剪区内的首子元素上。
+
+- [grid 单条显式轨道忽略多余 item](./pitfalls/grid-single-explicit-track-ignores-extra-items.md)
+  单条 `minmax(0,·fr)` 只约束首个 grid item，插槽多根元素时其余落隐式 `auto` 轨道不收缩；须加收敛层保证单 item。
+
+- [Boolean prop 未传被转换为 false](./pitfalls/boolean-prop-absent-casts-false.md)
+  Boolean prop 未传且无 default 时值为 `false` 非 `undefined`，`??` 兜底链失效；须显式 `default: undefined`。defineModel 具名必须传名字，漏名绑到 modelValue 静默失效。
 
 - [grid 过渡中 auto 轨道被 fr 插值隆起](./pitfalls/grid-auto-track-fr-transition-bump.md)
   `auto 0fr ↔ auto 1fr` 过渡中 content-based 轨道每帧按 fr 中间态重解析、钟形膨胀（行内内容抖动）；首轨道须用确定长度或单 fr 轨道独立成动画容器。

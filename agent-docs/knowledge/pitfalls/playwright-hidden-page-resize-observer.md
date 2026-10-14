@@ -1,4 +1,4 @@
-# Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流
+# Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流，transition 不启动
 
 ## 结论
 
@@ -6,6 +6,7 @@ Playwright MCP 的浏览器窗口处于后台/最小化时，页面 `document.vi
 
 - 渲染帧暂停：`requestAnimationFrame` 不回调，`ResizeObserver`（含库内共享 RO → `sizechange` 事件）完全不派发——连新 `observe` 的初始回调也不发。
 - `setTimeout` / `setInterval` 被节流：延迟对齐到秒级，页面后台超过约 5 分钟后进一步对齐到分钟级。依赖 interval 的周期逻辑（如 sizechange 的挂载状态清扫）在 wait 期间可能一次都不执行。
+- **CSS transition / animation 不启动**：后台期间发生的样式声明值变更（class/attribute 切换）不会触发过渡——过渡启动依赖渲染帧，页面回前台后声明值已不再变化，无新起点，过渡**永远停在旧值**。现象极具迷惑性：`el.matches()` 命中、样式表规则存在、attr 已切换，但 `getComputedStyle` 读到的还是旧值（collapse 组件实测：`[expanded]` 已加、`.mu-collapse__body` 仍 `visibility: hidden` / `grid-template-rows: 0px`）。鉴别法：注入 `transition: none !important` 再读——立即变为声明终值即为此情形，组件与层叠均无问题。
 
 验证依赖 `sizechange`/RO 的行为时，用 `el.dispatchEvent(new CustomEvent('sizechange'))` 手动等价模拟：消费方（如 pagination 的 recalc）读的是真实 DOM 尺寸（clientWidth/getBoundingClientRect，同步可测），事件只承担"通知变化"职责，手动派发与 RO 派发链路等价。
 
