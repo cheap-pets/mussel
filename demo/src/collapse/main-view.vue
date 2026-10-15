@@ -118,9 +118,9 @@
     </div>
 
     <div class="group case-slots-display">
-      <h3>13 · #head 写法一：展示型（不绑 click，点击交给容器）</h3>
+      <h3>13 · #header 写法一：展示型（不绑 click，点击交给容器）</h3>
       <mu-collapse title="被替换的 title">
-        <template #head="{ expanded, disabled }">
+        <template #header="{ expanded, disabled }">
           <mu-icon :icon="expanded ? 'chevronDown' : 'chevronRight'" />
           <span class="probe">{{ expanded ? 'on' : 'off' }}</span>
           <span>自定义 Header</span>
@@ -131,9 +131,9 @@
     </div>
 
     <div class="group case-slots-button">
-      <h3>14 · #head 写法二：按钮自行控制（@click.stop + toggle）</h3>
+      <h3>14 · #header 写法二：按钮自行控制（@click.stop + toggle）</h3>
       <mu-collapse expand-trigger="custom">
-        <template #head="{ expanded, toggle }">
+        <template #header="{ expanded, toggle }">
           <span>自定义按钮控制</span>
           <mu-button class="header-toggle-btn" @click.stop="toggle">
             {{ expanded ? '收起' : '展开' }}
@@ -146,10 +146,10 @@
     <div class="group case-slots-pa">
       <h3>15 · header-prepend / header-append</h3>
       <mu-collapse title="带前后缀的面板">
-        <template #head-prepend="{ expanded }">
+        <template #header-prepend="{ expanded }">
           <span class="prepend-probe">{{ expanded ? 'p-on' : 'p-off' }}</span>
         </template>
-        <template #head-append>
+        <template #header-append>
           <span class="append-mark">append</span>
         </template>
         内容。
@@ -162,9 +162,9 @@
     </div>
 
     <div class="group case-header-multiline">
-      <h3>17 · #head 多行内容（高度自适应）</h3>
+      <h3>17 · #header 多行内容（高度自适应）</h3>
       <mu-collapse>
-        <template #head>
+        <template #header>
           <div>
             <div>第一行标题</div>
             <div class="header-subline">第二行副标题，header 高度随内容增长</div>
@@ -183,9 +183,9 @@
     </div>
 
     <div class="group case-header-disabled">
-      <h3>19 · disabled 面板自定义 #head（作用域 expanded 与渲染态同源）</h3>
+      <h3>19 · disabled 面板自定义 #header（作用域 expanded 与渲染态同源）</h3>
       <mu-collapse disabled>
-        <template #head="{ expanded, disabled }">
+        <template #header="{ expanded, disabled }">
           <span class="probe-d">expanded={{ expanded }}</span>
           <span>disabled={{ disabled }}</span>
         </template>

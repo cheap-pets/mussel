@@ -4,12 +4,12 @@
     class="mu-collapse"
     :expanded="isExpanded || null"
     :disabled="isDisabled || null">
-    <div class="mu-collapse__head" :class="isHeadTrigger && 'mu-collapse__head--trigger'" @click="onHeadClick">
-      <slot name="head" :expanded="isExpanded" :disabled="isDisabled" :toggle="toggle">
-        <slot name="head-prepend" :expanded="isExpanded" :disabled="isDisabled" :toggle="toggle" />
+    <div class="mu-collapse__header" :class="isHeaderTrigger && 'mu-collapse__header--trigger'" @click="onHeaderClick">
+      <slot name="header" :expanded="isExpanded" :disabled="isDisabled" :toggle="toggle">
+        <slot name="header-prepend" :expanded="isExpanded" :disabled="isDisabled" :toggle="toggle" />
         <label v-if="title" class="mu-collapse__title">{{ title }}</label>
         <div v-else class="flex-space" />
-        <slot name="head-append" :expanded="isExpanded" :disabled="isDisabled" :toggle="toggle" />
+        <slot name="header-append" :expanded="isExpanded" :disabled="isDisabled" :toggle="toggle" />
         <mu-icon
           v-if="arrow"
           class="mu-collapse__arrow"
@@ -40,20 +40,20 @@
     arrow: { type: Boolean, default: true },
     expandTrigger: {
       type: String,
-      validator: v => ['head', 'custom'].includes(v),
-      default: 'head'
+      validator: v => ['header', 'custom'].includes(v),
+      default: 'header'
     }
   })
 
   const expandedModel = defineModel('expanded', { type: Boolean, default: undefined })
-  const emit = defineEmits(['headClick'])
+  const emit = defineEmits(['headerClick'])
 
   const group = inject('collapseGroup', null)
 
   const fallbackId = useId()
   const itemId = computed(() => props.id ?? fallbackId)
 
-  const isHeadTrigger = computed(() => props.expandTrigger === 'head')
+  const isHeaderTrigger = computed(() => props.expandTrigger === 'header')
   const isDisabled = computed(() => group?.disabled.value || props.disabled)
 
   const isExpanded = computed(() => {
@@ -77,10 +77,10 @@
     else expandedModel.value = !isExpanded.value
   }
 
-  function onHeadClick () {
-    emit('headClick')
+  function onHeaderClick () {
+    emit('headerClick')
 
-    if (isHeadTrigger.value) toggle()
+    if (isHeaderTrigger.value) toggle()
   }
 
   onMounted(() => {

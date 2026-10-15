@@ -12,14 +12,14 @@
   background: var(--mu-bg-normal);
 
   &[disabled] {
-    .mu-collapse__head {
+    .mu-collapse__header {
       pointer-events: none;
       color: var(--mu-text-color-muted);
     }
   }
 }
 
-.mu-collapse__head {
+.mu-collapse__header {
   user-select: none;
 
   display: flex;
@@ -29,7 +29,7 @@
   min-height: 40px;
   padding: var(--mu-base-spacing) 0;
 
-  &.mu-collapse__head--trigger {
+  &.mu-collapse__header--trigger {
     cursor: pointer;
   }
 }
