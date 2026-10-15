@@ -189,6 +189,8 @@ const items = [
 
 > 当输入组件置于 `MuFormField` 内部时，表单校验错误状态会自动同步到输入组件的 `invalid` 样式，无需手动设置。输入值变更时也会自动触发该字段的校验。
 
+**`prefix` / `suffix` 解析器语法**（String 值）：格式 `:(icon|text|tool|link)=值`——`:icon=search` 渲染图标；`:tool=search` 渲染可点击的图标按钮（触发 `@prefix-click` / `@suffix-click`）；`:text=单位` 渲染文本 span；`:link=详情` 渲染链接 a。**纯字符串（无 `:` 前缀）按文本节点渲染**，如 `suffix="search"` 会屏显字面 `search`，不是图标。
+
 ---
 
 ### MuSearchInput
@@ -330,8 +332,11 @@ const filteredItems = computed(() =>
 | `max-tags` | Number | `2` | 最大显示已选标签数，超出合并省略 |
 | `tag-shrink` | Boolean | `true` | 已选标签是否可缩小 |
 | `tag-tooltip` | Boolean | `true` | 已选标签是否显示 tooltip |
+| `nowrap` | attribute（非 prop） | — | 已选标签单行排列不换行，输入框高度固定为控件高度（`--height`）、标签居中；不写则标签换行、输入框随行数增高 |
 | `disabled` / `readonly` | Boolean | — | 禁用 / 只读 |
 | (其他) | — | — | 继承全部 `MuSelect` 属性 |
+
+> `nowrap` 直接写在标签上（`<mu-multi-select nowrap>`），经根元素属性选择器生效。单行放不下时：`tag-shrink` 为 `true`（默认）压缩标签宽度适配；`:tag-shrink="false"` 则超出部分被裁切不可见——固定行高场景建议保持默认或配合 `max-tags` 折叠。
 
 插槽同 MuSelect（`dropdown-header` / `dropdown-items` / `dropdown` / `dropdown-footer`）。
 

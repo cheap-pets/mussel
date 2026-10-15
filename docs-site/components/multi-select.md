@@ -61,6 +61,27 @@ const selected = ref(['beethoven', 'mozart'])                       // normal
 const selected = ref([{ value: 'beethoven', label: '贝多芬' }])      // composite
 ```
 
+## 单行模式 `nowrap`
+
+默认已选标签换行排布，输入框高度随标签行数增高。加上 `nowrap` 后标签单行排列，高度固定为控件高度、标签居中。
+
+<div class="mu-demo">
+  <mu-multi-select
+    v-model="selected"
+    :options="artists"
+    :max-tags="4"
+    value-mode="composite"
+    style="width: 420px;"
+    nowrap
+    placeholder="nowrap" />
+</div>
+
+```html
+<mu-multi-select v-model="selected" :options="artists" nowrap />
+```
+
+> `nowrap` 是 attribute 而非 prop，直接写在标签上。单行放不下时：`tag-shrink` 为 `true`（默认）压缩标签宽度适配；`:tag-shrink="false"` 则超出部分被裁切不可见，固定行高场景建议保持默认或配合 `max-tags` 折叠。
+
 ## 插槽
 
 同 `MuSelect`（`dropdown-header` / `dropdown-items` / `dropdown` / `dropdown-footer`）。

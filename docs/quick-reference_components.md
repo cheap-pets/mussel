@@ -1060,9 +1060,12 @@ const filteredItems = computed(() =>
 | max-tags    | Number  | `2`    | 最大显示已选项标签数量，超出部分将合并省略显示               |
 | tag-shrink  | Boolean | `true` | 已选标签是否可缩小                                          |
 | tag-tooltip | Boolean | `true` | 已选标签是否显示 tooltip                                     |
+| nowrap      | attribute（非 prop） | — | 已选标签单行排列不换行，输入框高度固定为控件高度、标签居中；不写则标签换行、输入框随行数增高 |
 | disabled    | Boolean | —      | 是否禁用                                                     |
 | readonly    | Boolean | —      | 是否只读                                                     |
 | (其他)      | —       | —      | 包含全部 MuSelect 属性                                       |
+
+`nowrap` 直接写在标签上（`<mu-multi-select nowrap>`）。单行放不下时：`tag-shrink` 为 `true`（默认）压缩标签宽度适配；`:tag-shrink="false"` 则超出部分被裁切不可见——固定行高场景建议保持默认或配合 `max-tags` 折叠。
 
 插槽同 MuSelect（`dropdown-header` / `dropdown-items` / `dropdown` / `dropdown-footer`）。
 
