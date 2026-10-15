@@ -6,7 +6,7 @@
 
 **升级流程**（分析 → 计划 → 执行）见同级目录 `process.md`。
 
-> ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**。
+> 本文件为 API 变更的**单一事实源**；`process.md` 分析阶段不维护独立的逐项线索清单，而是按本文件各章节的「Mussel 1」列标识符逐节生成 grep 线索（机制见 `process.md`「阶段一」）。
 >
 > Mussel 4 目标写法的完整组件 API 与样式 Token 以 `references/components/*` 与 `references/styles.md` 为单源；本文件「目标写法」列只保留迁移所需的一行速查，不展开 v4 用法。
 
@@ -38,6 +38,7 @@
 | Vue 2 | Vue 3 |
 |-------|-------|
 | `new Vue({ render: h => h(App) }).$mount('#app')` | `createApp(App).mount('#app')` |
+| `new Vue({ el: container })`（**替换式**挂载，组件根成为挂载点） | `createApp().mount(container)`（保留挂载点为父级） | 引入中间层：container 无尺寸时子树 `height: 100%` 塌陷、垂直居中**静默失效**（width 不受影响，只塌垂直）。凡"百分比高度挂载根"场景（全局遮罩、独立小部件挂载点）须检查中间层高度链：补容器 `width/height: 100%`，或 mount 到目标元素自身消除中间层 |
 | `Vue.use(...)` / `Vue.component(...)` / `Vue.directive(...)` | `app.use(...)` / `app.component(...)` / `app.directive(...)` |
 | `Vue.prototype.$xxx = ...` | `app.config.globalProperties.$xxx = ...`（或 `provide`/`inject`） |
 | `Vue.mixin` / `Vue.filter` / `Vue.extend` | 组合式函数 / 移除 filter（改方法或 computed）/ `defineComponent` |
@@ -56,6 +57,9 @@
 | `v-enter` / `v-leave` transition 类 | `v-enter-from` / `v-leave-to` | |
 | 渲染函数 `h`（自动注入） | `import { h } from 'vue'` | |
 | `beforeDestroy` / `destroyed` | `beforeUnmount` / `unmounted` | |
+| `v-model.trim="x"` | `v-model="x"`（trim 失效） | Vue 3 把 `.trim` 编译为 `modelModifiers` prop，**v4 组件均不消费** → trim **静默不生效**（只丢副作用，无报错）。需保留 trim 语义时在提交/更新时手动 trim，或改用本地 computed 包装。全站 grep `v-model.trim` 清点存量 |
+| 模块级 `Vue.component(...)` 自注册 | 入口工厂全局注册 / 组件内局部注册 | Vue 3 全局包下模块求值即 `TypeError`，**构建器抓不到**；公共基础组件改入口注册，页面私有改局部注册 |
+| 静态互相 import 的递归组件（循环引用） | 被引用方 `defineAsyncComponent(() => import('./x.vue').then(m => m.default))` 断环 | rollup IIFE 产物下动态 import 解析为 `{default: Component}` 命名空间，Vue 3 不自动解包，缺 `.then(m => m.default)` 报 "Component is missing template or render function"，构建 0 报错，且仅递归展开时触发，冒烟易漏 |
 | IE11 支持 | 不支持 | v4 使用 `rgb(from ...)` 相对色等现代特性，需现代浏览器 |
 
 **与 mussel 相关的高发点**：v1 所有表单/弹层组件的 `v-model` 走自定义 `model` 选项（prop 为 `value`/`visible`/`activeTab`/`checked` 等，事件为 `change`）。模板里 `v-model="x"` 的**改写规则**见 6.x 各组件；显式写 `:value="x" @change="y"` 的，按 6.x 对照改为 `v-model` 或 `:model-value` + `@update:model-value`。
@@ -148,6 +152,20 @@ installIcons({ edit: EditIcon })          // 或 install 的 options.icons
 | `--mu-base-spacing` | 同名 | 不变 |
 | `--mu-dark-background` | 移除 | 暗色由 `.mu-root.mu-dark` + `--mu-bg-*` 自动处理 |
 | `--mu-block-border-radius`（4px） | `--mu-radius-control` | 圆角族改为 `--mu-radius-control/panel/modal` |
+| `--mu-common-border-radius` | `--mu-radius-control` | 等价 |
+| `--mu-window-border-radius` | `--mu-radius-panel` | 等价 |
+| `--mu-translucent-primary` / `-danger` | `--mu-primary-translucent` / `--mu-danger-translucent` | **词序反转** |
+| `--mu-border-color` | `--mu-border-color-normal` | v4 仅 normal/soft/strong 三档 |
+| `--mu-border-color-muted` | `--mu-border-color-soft` | v4 无 muted 档 |
+| `--mu-bg-header` | `--mu-bg-fill` | |
+| `--mu-base-spacing-inline` | `--mu-half-spacing` | |
+| `--mu-common-font-size` | `--mu-font-size-small` | |
+| `--mu-common-line-height` | 字面量 `20px` | 无 token |
+| `--mu-common-tool-padding-inline` | 字面量 `10px` 或 `--mu-base-spacing` | 无 token |
+| `--mu-text-color-clear` | `--mu-text-color-muted` / `-subtle` | 需视觉判定 |
+| `--mu-text-title` / `-weak` / `-body` | 无直接对应 | 组合 `text-*` + 字号 |
+
+**核对方法论（全集差集法）**：① 从 v1 副本 CSS 抽全部 `--mu-*:` 定义集；② 从目标 v4 CSS 抽同名集；③ 差集 = v1-only；④ 与业务 grep 求交得实际命中。**禁止按预列清单判定**——预列清单曾漏 20 个变量、29 文件 47 处静默失效。零改动白名单（v1/v4 同名同义，勿动）：`--mu-shadow-layer`、`--mu-text-color-normal`/`-muted`、`--mu-primary-color-4`、`--mu-base-spacing`。
 
 ### 3.2 late-v1 工具类 → v4
 
@@ -175,6 +193,8 @@ v1 `base-styles` 提供的 `mu-*` 工具类（1.0.x）在 v4 中大部分移除�
 | `[margin~="none"]` | `style="margin: 0"` | |
 | `.mu-divider`（块级水平分隔线，`::before` border-top） | flex 容器内：`.flex-divider`；块级：`<div class="border-t">` 或 style | |
 | `.mu-space`（类，`flex: 1 1 0`） | `.flex-space` | 与组件 `<mu-space>` 同步处理（见第 4 节） |
+
+**`.mu-modal-mask` 在 v4 仍存在**（`position: fixed` / `inset: 0` / `background: var(--mu-bg-mask)`），但显隐由 v1 的 `[visible]` 属性改为 `--invisible` class——属"类名保留但行为变更"，最易被误判为死类而误删样式。
 
 ### 3.3 late-v1 compat 原子类（可保留）
 
@@ -213,7 +233,7 @@ v4 的 `<mu-h-box>` / `<mu-v-box>` **仍存在**，props 变更为：`inline`、
 
 `.mu-absolute-fit` → `class="absolute inset-0"`；`.mu-absolute-top` / `.mu-absolute-bottom` → `style` 定位 + `class="z-float"` 近似（z 层级人工确认）。
 
-旧表格仿制属性 `cell-padding` / `cell-spacing` / `content-spacing`（自动加半格间距）→ 移除，用 `gap-*x` / `p-*x` / `m-*x` 显式表达。
+旧表格仿制属性 `cell-padding` / `cell-spacing` / `content-spacing`（自动加半格间距）→ 移除，用 `gap-*x` / `p-*x` / `m-*x` 显式表达。另有**无连字符的 `cellpadding`**（v1 CSS `div[cellpadding]` 加 8px padding，并联动 `> .mu-absolute-fit` 的 inset），是独立属性、极易漏检 → `p-2x` / `p-1x`；inset 联动语义 v4 消失，注意视觉回归。
 
 ### 4.2 ref 访问 DOM 的连带变更
 
@@ -320,8 +340,8 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 
 | Mussel 1 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `icon="search"` + `icon-align="left"` | `prefix=":icon=search"` | 前置图标/按钮 |
-| `icon="search"` + `icon-align="right"`（默认） | `suffix=":icon=search"` | 后置图标/按钮 |
+| `icon="search"` + `icon-align="left"` | `prefix=":icon=search"` | 前置图标/按钮。`prefix`/`suffix` 是解析器：走 `:(icon\|text\|tool\|link)=值` 语法，**纯字符串（无 `:` 前缀）按文本节点渲染**（`suffix="search"` 会屏显字面 'search'）。图标写 `:icon=search`；可点按钮写 `:tool=search`（触发 `@suffix-click`） |
+| `icon="search"` + `icon-align="right"`（默认） | `suffix=":icon=search"` | 同上 |
 | `icon-clickable`（默认 false，mu-editor） | 无需配置 | v4 prefix/suffix 点击始终触发 `@prefix-click`/`@suffix-click` |
 | `clearable`（**默认 true**） | `clearable`（**默认 false**；`mu-search-input` 例外默认 true） | 需要清除按钮必须显式声明，否则升级后按钮消失（search-box → search-input 场景不受影响） |
 | `:editable="false"` | `readonly` | |
@@ -346,7 +366,7 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `<mu-input>`（裸 `<input>` 封装：props `type`/`disabled`/`autofocus`） | `<mu-input>` | 同名不同物；`autofocus` 移除（v4 未暴露 `focus()`，用 `ref.$el.querySelector('input')?.focus()` 或挂载后聚焦）；事件按上表 |
 | `<mu-editor>` | `<mu-input>` | 主路径；label 场景改 `<mu-form-field label="...">` 包裹 |
 | `<mu-search-box>` | `<mu-search-input>` | 防抖内置（`debounce-delay`）；**下拉候选模式（`options`/`value-mode`/`popup-style`）无对应**——候选场景改 `mu-select`（不可输入）或 `mu-combo-box editable`（可输入过滤）；`emit-null-on-input` 无对应 |
-| `<mu-combo-box>` | `<mu-combo-box>` | `:multiple="true"` → 拆分 `<mu-multi-select>`；`fields`（自定义字段名 `{value,label}`）→ 无，用 computed 映射为 `{value,label}[]`（v4 `option-key` prop 已声明但实现未生效，勿依赖）；`popup-max-height`/`popup-style` 无对应；`<mu-option>` 子组件 → `:options` 数据或 `#dropdown-items` 插槽 |
+| `<mu-combo-box>` | `<mu-combo-box>` | `:multiple="true"` → 拆分 `<mu-multi-select>`（**须加 `nowrap` attribute**，见下）；`fields`（自定义字段名 `{value,label}`）→ 无，用 computed 映射为 `{value,label}[]`（v4 `option-key` prop 已声明但实现未生效，勿依赖）；`popup-max-height`/`popup-style` 无对应；`<mu-option>` 子组件 → `:options` 数据或 `#dropdown-items` 插槽 |
 | `<mu-option>` | 移除手写 | v4 仍有该组件但推荐 `options`/`dropdown-items` 驱动 |
 | `<mu-date-editor>` | `<mu-date-input>` | `select-mode="date|month|year"` → `type="date|week|month|quarter|year"`；`range-start`/`range-end`（日期边界）→ **无对应**（人工）；`format` 保留；`language` → 全局 `locale`；`marked`/`marked-dates` → 无；`popup-width/height` → `dropdown-width`/`dropdown-height`（透传）；`range-start`/`range-end` 对应的 `min`/`max` 在 v4 已声明未实现，边界限制需人工 |
 | `<mu-time-editor>` | `<mu-time-input>` | v1 为 AM/PM 12 小时制，v4 为 24 小时列式滚动，**值格式需人工核对** |
@@ -354,6 +374,16 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `<mu-color-editor>` | `<mu-color-input>` | |
 | `<mu-button-editor>`（省略号按钮型编辑器） | **无对应** | `<mu-dropdown-button>` + `#dropdown-items` 或自定义弹层组合 |
 | `<mu-popup-editor>`（自定义弹层编辑器基座） | **无对应** | `<mu-dropdown-panel>` / `<mu-drawer>` 组合，人工设计 |
+
+**受控对象值迁移**：v1 `mu-combo-box` 受控传 `{value, label}` 对象的用法迁到 v4 `mu-select` / `mu-combo-box` 时**必须显式 `value-mode="composite"`**；漏写则回显 `[object Object]`，构建与 console 均无告警。`option-key` prop 已声明但实现未生效，勿依赖（见上表 combo-box 行）。
+
+**多选迁移须加 `nowrap`**：`:multiple="true"` 的 `mu-combo-box` 改 `mu-multi-select` 时，标签上**必须显式写 `nowrap`**（attribute，非 prop）：
+
+```html
+<mu-multi-select v-model="selected" :options="options" nowrap />
+```
+
+v1 多选场景按单行高度设计，且迁移多发生在 `mu-form-row` / 表格单元格等固定行高的容器内；v4 `mu-multi-select` 默认 `flex-wrap: wrap`，已选标签多时换行、控件高度随行数增高（实测 420px 宽下 6 个长标签由 32px 涨到 94px），会撑破原有行高。加 `nowrap` 后 `flex-wrap: nowrap`、高度固定为 `--height`、标签居中，与 v1 的单行表现一致；单行放不下时由 `tag-shrink`（默认 `true`）压缩标签适配。
 
 ### 6.3 选择系
 
@@ -363,7 +393,7 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `<mu-checkbox v-model="checked">` | `<mu-check v-model="...">` | v1 model prop 为 `checked`，`v-model` 语法不变；`check-type` 移除；`indeterminate` → v4 无内置 prop，人工处理；`option`/`label` 二义取值 → 显式 `:value` + `label` |
 | `<mu-checkbox-group v-model="arr">` + 子 checkbox | `<mu-check-group v-model="arr" :options="[{label, value}]">` | 数据驱动；`item-width` 移除 |
 | `<mu-radio v-model="v" option="a" label="A">` | `<mu-radio v-model="v">` + `mu-radio-group :options` | `name`/`radio-style` 移除 |
-| `<mu-radio-group v-model="v">` | `<mu-radio-group v-model="v" :options="[{label, value}]">` | |
+| `<mu-radio-group v-model="v">` | `<mu-radio-group v-model="v" :options="[{label, value}]">` | v1 `vertical` 无对应（v4 无该 prop）→ 本地类复刻 `flex-direction: column; align-items: flex-start` |
 | `<mu-toggle v-model="b">` | `<mu-switch v-model="b">` | `label`/`active-label`/`inactive-label` 仍可用（渲染为开关内部文案）；`button-style` 双按钮模式移除，改 `<mu-segmented>` |
 
 ### 6.4 表单系
@@ -373,9 +403,14 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `<mu-form layout="flow|column|row">` | 移除 | v4 form 为 flex-wrap 自动换行容器（自带 padding）；行布局用 `<mu-form-row>` 或原子类 |
 | `form-style="normal|table"` / `cellpadding` | 移除 | v4 统一样式 |
 | `label-width` / `label-align` | 同名 | v4 `label-align` 仅 `left|right|top`，`center` 不再支持 |
-| `<mu-form-field label label-width label-align>` | 同名 | 新增 `prop`/`input`/`required`/`error`/`suffix`/`width`；v1 的 `size` 属性移除（用 `width` 或原子类） |
+| `<mu-form-field label label-width label-align>` | 同名 | 新增 `prop`/`input`/`required`/`error`/`suffix`/`width`；v1 的 `size` 是**宽度语义**（v4 `width`，`1` → `100%`），**不是 flex 因子**；`size` 也非布局组件独有——`mu-form-field`/`kaka-grid`/`mu-editor` 等继承 FlexItem 的 `size`，须按所属组件分流迁移，不能统一改 `flex-N` |
 | `<mu-form-row>` | 同名 | |
 | （无） | `:model` + `:items` 数据驱动表单 | 新能力，简单表单可一并改写（见 `references/components/form.md`） |
+
+**mu-form-field 细则**：
+- 默认插槽一旦有内容（含空字符串插值）即**不再渲染兜底输入组件** → 只读文本展示直接放插槽。
+- v4 `:error`（String 显文案 / Boolean 仅样式，DOM 呈现 `mu-form-field--invalid` 类）替代 v1 `:invalid`。
+- v4 表单族 CSS 自包含，`mu-form-field` 可脱离 `mu-form` 独立使用；裸 `div.mu-input-group` 类名照迁。
 
 ### 6.5 弹层系（Dialog / Drawer）
 
@@ -397,11 +432,14 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `danger` | 移除 | 按钮级危险样式用 `'#OK!'` 预设或按钮 `color="danger"` |
 | `buttons="['-', {caption, buttonType}, ...]"` | `['#OK', '#CANCEL', { name, caption, ... }]` | 分隔符字符含义互换：v1 `'-'`（占位）/`'|'`（分隔线）→ v4 `' '`（占位）/`'-'`（分隔线）；`buttonType` → `color`；自定义按钮通常需 `name`（caption 缺省值 + 事件 payload 标识），显式 `caption` 时可不带 |
 | `title` / `width` / `height` | 同名 | v4 `width`/`height` 支持 Number（px） |
-| `@buttonclick` | `@button-click` | payload 为按钮对象（含 `name`/`action`）；v1 无 `name` 依赖 `_rawData` 的逻辑改用 `name` |
+| `@buttonclick` | `@button-click` | payload 为按钮对象（含 `name`/`action`）；v1 无 `name` 依赖 `_rawData` 的逻辑改用 `name`。**v4 对弹窗内所有按钮都触发该事件（含取消/关闭）**，handler 必须按 `name` 守卫，否则点"取消"会执行"保存"分支；收整个对象取 `button.name`，勿解构 `({ name }) => …`（遮蔽同组件同名 ref） |
 | 关闭/遮罩/ESC 触发标识 `'$close'` / `'$mask'` | `'$X'` / `'$MASK'` / `'$ESC'` | 大写化，ESC 为新增 |
-| 默认插槽 | `#body`（推荐） | v4 `.mu-dialog__body` 无 padding：用 `body-class="p-2x"` / `body-style` / `body-scrollbar` 补偿 |
+| 默认插槽 | `#body` | **`#body` 存在时默认插槽内容被静默丢弃**（含写在默认插槽里的嵌套弹窗）；仅用默认插槽时不丢内容，但 dev 下发 `[MUSSEL:Dialog] default slot is deprecated` 告警（once 去重；dev 构建日志 `grep 'default slot is deprecated'` 应为 0） |
+| body 内边距 | `body-class="p-2x"` | v4 `.mu-dialog__body` 无 padding（v1 有 16px）；也可 `body-style` / `body-scrollbar` |
+| body 内放无固有高度组件 | `body-class="p-2x flex"`（单内容）/ `"p-2x flex flex-col"`（多块纵排）+ 组件 `flex-1` | `.mu-dialog__body` 非 flex 容器（`flex: 1 1 auto`、无 `display:flex`），`flex-1`/`h-100` 撑高失效；构建零报错，仅浏览器可见 |
 | `#header` / `#footer` 插槽 | 同名（附加内容语义） | 位置/行为核对 |
 | CSS 类 `.mu-dialog-header` / `.mu-dialog-body` / `.mu-dialog-footer` | `.mu-dialog__header` / `.mu-dialog__body` / `.mu-dialog__footer` | 连字符改双下划线；`$attrs` 绑定层从遮罩层移到 `.mu-dialog` 层，自定义 class/样式选择器需核对 |
+| `dialog-class="a b"` | `class="a b"` | v4 无 `dialogClass` prop，原写法落字面 HTML 属性、样式失效；页面级弹窗样式根选择器随之改写：`.dialog-x > .mu-dialog` → `.mu-dialog.dialog-x` |
 | `dialogRef.value.$el` | `dialogRef.value.maskEl` / `dialogRef.value.dialogEl` | v4 defineExpose 暴露，不再用 `$el` |
 
 **mu-drawer**
@@ -416,6 +454,8 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 
 **mu-modal / mu-base-modal / mu-base-dialog / mu-dialog-wrapper / mu-prompt-panel**：v1 全局注册的公开组件（mu-prompt-panel 为 icon+标题+文案的内容面板），v4 不再提供；基于它们封装的自定义弹窗改用 `<mu-dialog>` 的 props/插槽重组，人工处理。
 
+> 排查技巧：`visible=true` 而 DOM 无弹窗内容时，先查该组件是否同时存在 `#body` 与默认插槽（默认插槽被静默丢弃，见上表）。
+
 ### 6.6 页签系
 
 | Mussel 1 | Mussel 4 | 备注 |
@@ -424,7 +464,7 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `@change` | `@update:active-tab` | payload 为 name 字符串（不变） |
 | （无） | `@tab-click` | v4 新增，payload 为 name |
 | `:tab-items="[...]"` | `:tab-buttons="[...]"` | 用 `<mu-tab-panel>` 声明式时无需此属性（两侧都自动收集） |
-| tab item 对象 `{ name, label, icon, title, disabled }` | `{ name, caption, icon, disabled }` | `label` → `caption`；`title`（悬浮提示）v4 页签无对应，勿并入 caption |
+| tab item 对象 `{ name, label, icon, title, disabled }` | `{ name, caption, icon, disabled }` | 页签文案字段 `label` → `caption`（与 `mu-tab-panel` 同理）：**漏改会静默回显 `name` 字面量，构建 0 告警**；`title`（悬浮提示）v4 页签无对应，勿并入 caption |
 | `tab-style="simple|card"` | `tab-style` | v4 值：`simple` / `lined-simple` / `card` / `button` / `small-button`；v1 `simple` 按视觉确认是否改 `lined-simple` |
 | `tab-position="top|bottom|left|right"` | 同名 | |
 | `model-control` | 移除 | 拦截切换改受控模式：`:active-tab` + `@update:active-tab` 回调中决定是否赋值 |
@@ -480,18 +520,22 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 |----------|----------|------|
 | `<mu-list-item value icon label selected active disabled trigger-icon>` | `<mu-list-item icon label tag>` | `value`/`selected`/`active`/`trigger-icon`/`icon-indent` 移除；选中/激活态用 `class` 自行控制；用 flex 容器包裹（v4 未注册 `mu-list`） |
 | `<mu-list-divider>` | 同名 | |
-| `<mu-bar>` | 同名 | |
+| `<mu-bar>` | 同名 | **v4 新增固定高 40px + `position: relative`**（v1 高度随内容）。内容动态或超 40px 的 bar 改 `div.flex items-start gap-1x m-1x p-1x`，单行保留 `mu-bar` |
 | `<mu-sort-icon direction="up\|down">` | 同名同 API | 无破坏性变更 |
 | `<mu-paging-bar :page-index :eof :reload display-list>`（0.1.x ~ 中期） | `<mu-pagination v-model:page-index :page-size :total>` | **模型重写**：v1 早期按当前页 + `eof`（无总数）驱动，`reload` 刷新按钮与 `display-list` 页码形态无对应；v4 按总数派生页数 |
 | `<mu-pagination>`（后期 1.x） | 同名 `mu-pagination` | **模型仍需重写**：v1 双模型 `limit`/`offset`（`:limit.sync`/`:offset.sync`）或 `pageCount`/`pageIndex`/`dataCount`；v4 仅 `page-index`/`page-size`/`total`。`dataCount` → `total`；`limit` → `page-size`（`update:limit` → `update:page-size`）；`offset` → 换算 `page-index`（offset / limit）；`pageCount` → 换算 `total = pageCount × pageSize`；`eof`/`disabled`/`button-style` 无对应，`small` → `size="small"`；`quick-jumper`/`page-size-options` 同名保留 |
 | `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（`references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
 | `<mu-context-menu :menu-lists :client-x :client-y>` | `<mu-context-menu :menus>` + `show(event)` | **API 重构**：v1 项 `{ btnName, iconClass, handler, children, disabled }` → v4 dropdown-items 结构 `{ label, icon, action, disabled }`；`handler` 回调改 `@action`/`@itemclick` 事件；定位改 `show(contextmenuEvent)`（按 pageX/pageY），`client-x`/`client-y` props 移除；v1 `children` 嵌套子菜单无对应（v4 面板为平铺列表） |
 | `<mu-scroll-box>` | `<mu-scroll-box>` | v1 基于 mussel-scrollbar 外挂实现，v4 内置，用法不变 |
-| `<mu-expander v-model title>` | **无对应** | v1 为 Vue2 `model` 选项（prop `expanded`）；折叠面板自行实现（原子类 + 状态切换；无动画需求可用原生 `<details>`） |
+| `<mu-expander v-model title>` | `<mu-collapse>` / 自研 | v1 为 Vue2 `model` 选项（prop `expanded`）。首选 v4 `mu-collapse` / `mu-collapse-group`；自研路径：沿用 v1 契约（`expanded` prop + `change` 事件 + `#header` 插槽）与 `.mu-expander*` 原类名（零样式迁移，承接既有样式钩子），折叠动画用 `grid-template-rows: 0fr/1fr` |
+
+**布尔属性陷阱**：`active` / `expanded` / `selected` / `invalid` 等非原生布尔属性，Vue 3 下绑 `false` 会渲染成 `attr="false"`，而 v4 CSS 大量使用 `[active]` 等属性选择器（button/list-item/segmented/switch/input/collapse 等）→ **属性存在即命中样式**（典型表现：列表全行选中底色）。修复统一写法 `:active="cond || null"`（`null` 才真正移除属性）。适用范围不限于 `mu-list-item`：凡直接消费 v4 属性选择器的自研组件同样中招。
 
 ### 6.11 导航菜单（sidebar-menu → side-menu / menu）
 
 v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item>`，激活靠 `selectMode` 或逐项 `v-model`）→ v4 **数据驱动重写**为 `<mu-side-menu :items>`（侧边）或 `<mu-menu :items>`（横向顶栏）。完整 API 见 `references/components/navigation.md`。
+
+> ⚠️ **组件可用性**：若目标项目依赖的 mussel 未包含 `mu-side-menu` / `mu-menu`，构建照常通过，**运行时才报 `Failed to resolve component`**（无任何构建告警）。执行前先确认项目依赖的 mussel 已包含这两个组件；缺失时与用户确认策略：按目标 API 落地并升级依赖，或回退为自研等价组件。
 
 数据转换：`mu-menu-group` / `mu-menu-item` 的 `title` → `label`，`icon`/`disabled` 不变；每项建议补 `id`（收藏、跨数据刷新的激活匹配依赖 id）；子级递归写入 `items`（有 `items` 即为组）。
 
@@ -507,6 +551,8 @@ v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item
 | 激活项需手动展开父组（v1 mounted 钩子） | 内置 | `active-item` 变更自动展开一级组并滚动定位 |
 | （无） | `v-model:favorites` 收藏、`rail` 图标列、`auto-expand-top` | 新能力，可同时启用 |
 | 顶部横向导航（menu-group 非 sidebar 上下文） | `<mu-menu>` | `expand-trigger`（click/hover）、一级溢出自动折叠「更多」 |
+
+`MuMenuItem` 是内部组件：v4 仅导出 `MuSideMenu` / `MuMenu`，`mu-menu-item` 内部 `inject('menu')` 直读父级菜单上下文，**脱离 `MuMenu`/`MuSideMenu` 独立渲染即崩**。展示型菜单树（只展示、不走导航语义）须按 v1 基础样式自研类重建。
 
 ### 6.12 命令式弹窗与通知
 
@@ -532,7 +578,9 @@ messageBox.notify({ type: 'warn', message: '保存失败', duration: 3000 })
 | `showMessage({ title, message, danger, buttons, callback })` | `showMessage({ type, title, message, buttons, callback })` | `danger: true` → `type: 'error'` / `'warn'`（自动 danger 样式） |
 | 预设按钮 `'OK'` / `'CANCEL'` / `'YES'` / `'NO'` | `'#OK'` / `'#CANCEL'` / `'#YES'` / `'#NO'`（新增 `'#CLOSE'`；`'#OK!'` 等 `!` 后缀为危险样式） | |
 | 自定义按钮 `{ id, caption, buttonType: 'primary'|'danger', buttonStyle, action }` | `{ name, caption, color: 'primary'|'danger', buttonStyle, action }` | **`name` 必填**（否则 trigger 为 undefined）；`id` → `name`；`buttonType` → `color` |
-| `notify(type, message, timeout, onClick)` | `notify({ type: 'alert'|'error'|'warn'|'success', message, duration, ... })` | `timeout` → `duration`（默认 3000）；`type` 值域变化（v1 的 info 等 → 近似映射）；点击回调（onClick）无对应 |
+| `notify(type, message, timeout, onClick)` | `notify({ type: 'alert'|'error'|'warn'|'success', message, duration, ... })` | `timeout` → `duration`（默认 3000）；v1 `danger` → `error`、`warning` → `warn`；**非法值静默回退 alert 档，无告警**；点击回调（onClick）无对应 |
+
+> v1 顶层 `error()` / `warn()` / `alert()` 是**阻塞式对话框**语义，须映射 `messageBox.error/warn/alert(...)`，不可映射成 `notify({ type })`（toast 语义不同）。
 
 ---
 
@@ -540,7 +588,7 @@ messageBox.notify({ type: 'warn', message: '保存失败', duration: 3000 })
 
 | Mussel 1 | 处理建议 |
 |----------|----------|
-| `mu-expander` | 自行实现折叠面板 |
+| `mu-expander` | 首选 `mu-collapse` / `mu-collapse-group`；自研时沿用 v1 契约与 `.mu-expander*` 类名（见 6.10） |
 | `mu-split-button` | `mu-dropdown-button split-button` |
 | `mu-button-editor` / `mu-popup-editor`（自定义编辑器基座） | `mu-dropdown-button`/`mu-dropdown-panel`/`mu-drawer` 组合，人工设计 |
 | `mu-modal` / `mu-base-modal` / `mu-base-dialog` / `mu-dialog-wrapper` | 统一改用 `mu-dialog` |
@@ -562,7 +610,8 @@ v1 无对应、迁移时可一并使用的 v4 能力：
 
 | 能力 | 说明 |
 |------|------|
-| `mu-select` / `mu-multi-select` | 下拉单选/多选（替代 combo-box 部分用法） |
+| `mu-collapse` / `mu-collapse-group` | 折叠面板/组（v1 `mu-expander` 的首选去向，见 6.10） |
+| `mu-select` / `mu-multi-select` | 下拉单选/多选（替代 combo-box 部分用法）；`mu-multi-select` 由 combo-box `:multiple="true"` 迁移时须加 `nowrap`（见 6.2） |
 | `mu-date-range-input` | 日期区间选择（单面板两次点击定区间） |
 | `mu-segmented` | 分段选择器（可替代 toggle 双按钮模式） |
 | `mu-check-group` / `mu-radio-group` 的 `:options` | 数据驱动选项组 |
@@ -593,6 +642,9 @@ v1 无对应、迁移时可一并使用的 v4 能力：
 - [ ] late-v1 的 `mu-text-*` / `mu-background-*` / `mu-bordered` / `mu-divider` 类与 `margin=`/`padding=`/`border` 属性选择器已替换
 - [ ] `<mu-space>`/`<mu-flex-item>`/`<mu-splitter>` 已替换为 v4 等价物；转 div 的 ref 已去 `.$el`
 - [ ] messageBox 调用已走 `inject('$mussel')`，callback 兼容 `'$X'`/`'$MASK'`/`'$ESC'`
+- [ ] dev 构建 console 无 `[MUSSEL:Dialog] default slot is deprecated` 告警（`grep 'default slot is deprecated'` 为 0）
+- [ ] 全站 grep `v-model.trim` 清点存量（v4 组件不消费 `modelModifiers`，trim 静默失效）
+- [ ] 非原生布尔属性（`active`/`selected`/`invalid`/`expanded` 等）绑定为 `cond || null`（绑 `false` 渲染 `attr="false"` 仍命中 v4 属性选择器）
 - [ ] `mu-pagination` 已按 total/pageSize 重写
 - [ ] v1 侧边导航已重写为 `mu-side-menu :items`（`title`→`label`、补 `id`，逐项 active 收敛到 `v-model:active-item`）
 - [ ] CSS 选择器已适配 BEM 双下划线类名（`.mu-dialog__body` 等）与属性绑定层级变化

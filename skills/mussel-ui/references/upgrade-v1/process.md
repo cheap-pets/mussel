@@ -60,43 +60,20 @@
 
 1. 读本文件全部流程内容。
 2. 验证 `package.json`、构建配置（vue-cli / vite / webpack）、入口文件位置。
-3. 用 Grep 搜索以下**模式线索**并分类计数。
+3. 用 Grep 做两类检索并分类计数。
 
-> ⚠️ **同步约束（SYNC-RULES）**：以下清单仅为分析阶段的 **grep 线索**，权威定义在 `rules.md` 对应章节。改动任一处（新增/移除/重命名废弃项）**必须同步另一处**，否则会出现「grep 命中但无迁移规则」或「有规则但分析漏检」的不一致。
+> **线索生成机制**：本文件**不复刻** `rules.md` 的废弃项枚举——单一事实源在 `rules.md`，双份清单会漂移导致漏检。除下述结构性关键词外，按 `rules.md` 章节顺序（1 框架 → 2 全局配置 → 3 CSS 变量与类 → 4 布局 → 5 图标 → 6 组件 → 7 无对应项）**逐节抽取该节表格「Mussel 1」列的标识符**（组件标签 / 属性 / 事件 / 类名 / 变量名 / 图标名）作为 grep 模式执行。
 
-**框架层（Vue 2 痕迹）**：
-- `new Vue(`、`Vue.use(`、`Vue.component(`、`Vue.directive(`、`Vue.prototype`、`Vue.filter`、`Vue.extend(`
-- `.sync=`（模板修饰符）、`slot-scope`、`$listeners`、`$children`、`$on(`、`$off(`、`$once(`
-- `model: {`（组件自定义 v-model）、`filters:`、管道过滤器 `{{ x | fn }}`
+**结构性关键词**（入口级锚点，先跑，确认 v1 痕迹与升级范围）：
+- `@mctech/mussel`（import 来源全部命中）、`new Vue(`、`Vue.use(`
+- `<mu-editor`、`<mu-flex-box`（v1 组件体系锚点，兼作版本档次判定的输入）
+- `setTheme` / `registerIcons` / `PopupGroupMixin` / `v-mussel-sticky`（v1 独有导出与指令）
 - `vue-router` 3.x / `vuex`（项目侧另行升级，只在计划中标注）
 
-**全局配置（安装入口）**：
-- `@mctech/mussel`（import 来源全部命中）
-- `setTheme`、`registerIcons`、`variables`（从 mussel 导入）、`scrollbar`（导入）、`PopupGroupMixin`
-- 自动注册依赖：入口文件仅 `import 'mussel'` 即完成注册（v1 导入副作用）
-
-**CSS 变量与 CSS 类**：
-- 运行时变量：`--mu-primary-plus-color`、`--mu-primary-minus-color`、`--mu-primary-tiny-color`、`--mu-primary-shadow-color`、`--mu-success-plus-color` 等 plus/minus/tiny/shadow 后缀、`--mu-dark-background`、`--mu-block-border-radius`
-- late-v1 类：`mu-text-color-`、`mu-text-title`、`mu-text-subtitle`、`mu-text-weak`、`mu-text-body`、`mu-text-ellipsis`、`mu-background-`、`mu-bordered`、`mu-divider`
-- 属性选择器用法（SCSS/CSS 中或模板属性上）：`margin~=`、`padding~=`、`border~=`、`class="mu-box`
-- 指令：`v-mussel-scrollbar`、`v-mu-scrollbar`、`v-mussel-sticky`
-
-**布局系统**：
-- 组件：`<mu-flex-box`、`<mu-flex-item`、`<mu-h-box`、`<mu-v-box`、`<mu-space`、`<mu-splitter`
-- 子项属性：`size="1"` ~ `size="8"`、`size="auto"`、`flex-auto`、`flex-none`、`flex-size=`
-- 辅助类：`mu-absolute-fit`、`mu-absolute-top`、`mu-absolute-bottom`、`cell-padding`、`cell-spacing`、`content-spacing`
-
-**图标**：
-- `icon="dropdown"`、`icon="key-up|key-down|key-left|key-right"`、`icon="x"`、`icon="ok"`、`icon="circleX"`、`icon="circleCheck"`、`icon="circleAlert"`、`icon="triangleAlert"`、`icon="menu"`、`icon="refresh"`、`icon="tree"`、`icon="ellipsis"`、`icon="expand"`、`icon="collapse"`、`icon="pin"`、`icon="tree-collapsed"`、`icon="tree-expanded"`
-- `icon-class=` / `:icon-class`（icon.vue 属性）
-
-**组件迁移**：
-- 输入家族：`<mu-editor`、`<mu-search-box`、`<mu-option`、`<mu-date-editor`、`<mu-time-editor`、`<mu-date-range-editor`、`<mu-color-editor`、`<mu-button-editor`、`<mu-popup-editor`、`fields=`、`popup-style=`、`popup-max-height`
-- 事件签名：`@enterkey`、`@esckey`、`@buttonclick`、`@inputclick`、`@maskclick`、`@change=`（v1 model 事件）
-- 选择家族：`<mu-checkbox`、`<mu-checkbox-group`、`<mu-toggle`
-- 弹层家族：`mask-action`、`<mu-modal`、`<mu-base-modal`、`<mu-base-dialog`、`<mu-dialog-wrapper`、`<mu-prompt-panel`、`primary-button`、`primaryButton`、`keep-alive`、`keepAlive`、`model-control`、`modelControl`、`draggable`
-- 其他：`<mu-expander`、`<mu-split-button`、`<mu-sidebar-menu`、`<mu-menu-group`、`<mu-menu-item`、`<mu-paging-bar`、`<mu-pagination`、`menu-lists`、`<mu-tabs-header`、`<mu-table-column`、`<mu-table-edit-column`、`<mu-table-check-column`、`<mu-table-combo-column`、`<mu-table-search-column`、`<mu-table-button-column`、`<mu-tree-nodes`、`tab-items=`、`form-style=`、`formStyle`、`select-mode`、`selectMode`、`trigger-action`、`triggerAction`、`icon-align`、`iconAlign`
-- message 导入：`from '@mctech/mussel'` 中的 `showMessage` / `alert(` / `confirm(` / `error(` / `warn(` / `notify(`
+**规则线索**（按 `rules.md` 章节逐节生成后执行；三类特殊模式）：
+- 框架层按 `rules.md` 1.1/1.2 表生成（含 `.sync=`、`slot-scope`、`$listeners`、`model: {`、`v-model.trim`、模块级 `Vue.component(` 等废弃写法）
+- CSS 变量按 `rules.md` 3.1 的**全集差集法**执行（从 v1 副本 CSS 抽全部 `--mu-*:` 定义与目标 v4 求差集，勿凭预列清单判定）；类与属性选择器按 3.2/4.4
+- 图标按 `rules.md` 5.2 表 v1 列的图标名逐一 grep（`icon="…"` 与 `:icon="…"` 两种绑定）
 
 4. 检查全局插件配置与主题定制方式（`setTheme` 调用、编译期变量覆盖、CSS 类覆盖）。
 5. 检查所有 CSS/SCSS/Less 文件对 mussel 类名与变量的引用。
