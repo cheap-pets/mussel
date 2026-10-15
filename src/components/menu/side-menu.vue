@@ -71,7 +71,7 @@
   const emit = defineEmits(['itemClick', 'favoriteToggle'])
 
   const collapsed = defineModel('collapsed', { type: Boolean })
-  const favorites = defineModel('favorites', { type: Array, default: () => [] })
+  const favorites = defineModel('favorites', { type: Array })
   const activeItem = defineModel('activeItem', { type: Object })
 
   const {
