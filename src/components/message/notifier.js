@@ -23,9 +23,8 @@ export function pluginNotifier (app) {
     if (isString(options)) options = { message: options }
     else if (!options.message) return
 
-    exist = exist || !!createDynamicComponent({
-      container: app._container,
-      appContext: app._context,
+    exist = exist || createDynamicComponent({
+      app,
       component: Notifier,
       props: { notifications }
     })

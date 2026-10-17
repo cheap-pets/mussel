@@ -1,61 +1,28 @@
-import { createApp /* , createVNode, render */ } from 'vue'
+import { createVNode, render } from 'vue'
 import { kebabCase } from './case'
 
-export function createDynamicComponent (options) {
-  const container = options.container || document.body
+// 与 app.mount 内部同路径：根 vnode 直接携带宿主 appContext，
+// 组件 / 指令 / 注入 / globalProperties 全部继承宿主，且不为每次挂载创建 app。
+export function createDynamicComponent ({ app, component, props }) {
+  const container = app._container || document.body
+  const el = document.createElement('div')
+  const vnode = createVNode(component, props)
 
-  let app = createApp(options.component, options.props)
-  let el = options.el || document.createElement('div')
+  vnode.appContext = app._context
 
-  if (options.appContext) {
-    Object.assign(app._context, options.appContext)
-  }
+  container.appendChild(el)
+  render(vnode, el)
 
-  if (!options.el) {
-    container.appendChild(el)
-  }
-
-  app.mount(el)
+  let disposed = false
 
   return () => {
-    app?.unmount()
+    if (disposed) return
 
-    if (!options.el) {
-      container.removeChild(el)
-    }
-
-    el = undefined
-    app = undefined
-  }
-}
-
-/*
-export function renderComponent (options) {
-  const container = options.container || document.body
-
-  let el = options.el
-  let vn = createVNode(options.component, options.props)
-
-  if (!el) {
-    el = document.createElement('div')
-    container.appendChild(el)
-  }
-
-  vn.appContext = { ...options.appContext }
-  render(vn, el)
-
-  return () => {
+    disposed = true
     render(null, el)
-
-    if (!options.el) {
-      container.removeChild(el)
-    }
-
-    el = null
-    vn = undefined
+    el.remove()
   }
 }
-*/
 
 export function resolveAttrs (values, useKebabCase = true) {
   const attrs = {}

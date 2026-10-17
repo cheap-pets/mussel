@@ -31,8 +31,7 @@ export function pluginMessageBox (app) {
       const { icon, title, message, buttons } = options
 
       dispose = createDynamicComponent({
-        appContext: app._context,
-        container: app._container,
+        app,
         component: MessageBox,
         props: { type, icon, title, message, buttons, callback }
       })

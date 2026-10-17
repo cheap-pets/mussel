@@ -48,8 +48,7 @@ export function createTooltipController (app) {
 
   function ensurePanel () {
     exist = exist || createDynamicComponent({
-      container: app._container,
-      appContext: app._context,
+      app,
       component: TooltipPanel,
       props: { controller: api }
     })
