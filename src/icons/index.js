@@ -4,6 +4,7 @@ import { isObject, isString, isSVGString } from '@/utils/type'
 import { generateHash } from '@/utils/crypto'
 import { sanitizeHTML } from '@/utils/dom'
 import { isDev } from '@/env'
+import { warn } from '@/utils/warn'
 
 const icons = {}
 const hashMap = {}
@@ -15,7 +16,10 @@ function install (data = {}, dataType) {
     if (icon && (icon.svg || icon.cls)) {
       return true
     } else {
-      console.warn(`[MUSSEL:ICON] The option of icon "${key}" is invalid.`)
+      warn({
+        component: 'Icon',
+        message: `The option of icon "${key}" is invalid.`
+      })
     }
   }
 
@@ -27,10 +31,10 @@ function install (data = {}, dataType) {
 
     if (old) {
       if (old.hash === hash) {
-        console.warn(
-          '[MUSSEL:ICON]',
-          `Same icon named "${key}" has been installed repeatedly.`
-        )
+        warn({
+          component: 'Icon',
+          message: `Icon "${key}" has been installed repeatedly with the same content.`
+        })
         return
       } else {
         const oldKeys = hashMap[old.hash]
@@ -51,10 +55,10 @@ function install (data = {}, dataType) {
     } else {
       keys.add(key)
 
-      console.warn(
-        '[MUSSEL:ICON]',
-        `Icon "${key}" may have the same content with icon "${key0}".`
-      )
+      warn({
+        component: 'Icon',
+        message: `Icon "${key}" may have the same content as icon "${key0}".`
+      })
     }
   }
 

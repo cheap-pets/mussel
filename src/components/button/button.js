@@ -1,7 +1,7 @@
 import './button.scss'
 
 import { inject, computed } from 'vue'
-import { warnDeprecated } from '../../utils/compatible.js'
+import { warn } from '../../utils/warn'
 
 export const buttonProps = {
   disabled: Boolean,
@@ -46,10 +46,9 @@ export function useButton (props) {
         ['primary', 'secondary', 'danger'].find(key => source[key])
 
       if (color) {
-        warnDeprecated({
+        warn({
           component,
-          deprecated: 'props primary|secondary|danger',
-          alternative: 'color="primary|secondary|danger"'
+          message: 'props primary/secondary/danger are deprecated and will be removed in future versions. Use color="primary/secondary/danger" instead.'
         })
       }
 

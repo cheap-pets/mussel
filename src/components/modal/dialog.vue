@@ -78,7 +78,7 @@
   import { autoIncrementKeyBuilder } from '@/utils/key-builder'
   import { isString } from '@/utils/type'
   import { pick } from '@/utils/object'
-  import { warnDeprecated } from '@/utils/compatible'
+  import { warnDeprecated } from '@/utils/warn'
 
   defineOptions({ name: 'MusselDialog', inheritAttrs: false })
 

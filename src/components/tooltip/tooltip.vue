@@ -3,7 +3,7 @@
   // 无模板形态，不用 <script setup>
 
   import { inject, watch, cloneVNode, onBeforeUnmount, onUpdated } from 'vue'
-  import { isDev } from '@/env'
+  import { warn } from '@/utils/warn'
   import { ANCHOR_EVENTS, SYNC_FIELDS, createTooltipAnchorHandlers } from './tooltip-core'
 
   function mergeHandler (existing, extra) {
@@ -120,11 +120,11 @@
         const children = slots.default?.() || []
         const child = children.length === 1 ? children[0] : null
 
-        if (isDev && !isValidChild(child)) {
-          console.warn(
-            '[MUSSEL:Tooltip]',
-            '<mu-tooltip> requires a single element (or single-root component) child node.'
-          )
+        if (!isValidChild(child)) {
+          warn({
+            component: 'Tooltip',
+            message: '<mu-tooltip> requires a single element (or single-root component) child node.'
+          })
         }
 
         return isValidChild(child)

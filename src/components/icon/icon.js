@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { icons } from '@/icons'
-
-const warned = {}
+import { warn } from '@/utils/warn'
 
 function parseIconValue (value = '') {
   const match = value.match(/^([^:]+):?(.*)$/)
@@ -32,9 +31,11 @@ export function useIcon (props) {
     if (value) {
       const icon = parseIconValue(value)
 
-      if (!icon && !warned[value]) {
-        warned[value] = true
-        console.warn('[MUSSEL:Icon]', `Unregistered icon name or invalid icon property "${value}" is detected.`)
+      if (!icon) {
+        warn({
+          component: 'Icon',
+          message: `Invalid icon "${value}": unregistered icon name or invalid icon property.`
+        })
       }
 
       return Object.assign(result, icon)

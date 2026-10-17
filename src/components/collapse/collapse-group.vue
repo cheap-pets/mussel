@@ -9,7 +9,7 @@
 
   import { computed, getCurrentInstance, onMounted, provide, shallowRef } from 'vue'
 
-  import { isDev } from '@/env'
+  import { warn } from '@/utils/warn'
 
   defineOptions({ name: 'MusselCollapseGroup' })
 
@@ -56,12 +56,10 @@
       if (items.value.length) expanded.value = [items.value[0].id]
     } else if (props.defaultExpand === 'all') {
       if (props.accordion) {
-        if (isDev) {
-          console.warn(
-            '[MUSSEL:CollapseGroup]',
-            'accordion mode allows one expanded panel only, defaultExpand="all" falls back to "first".'
-          )
-        }
+        warn({
+          component: 'CollapseGroup',
+          message: 'Accordion mode allows only one expanded panel; defaultExpand="all" falls back to "first".'
+        })
         if (items.value.length) expanded.value = [items.value[0].id]
       } else {
         expanded.value = items.value.map(it => it.id)
