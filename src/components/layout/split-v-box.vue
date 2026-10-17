@@ -2,51 +2,47 @@
   <div class="mu-split-box flex flex-col">
     <div
       v-if="$slots.top"
-      :class="['mu-split-box__start', topClass]"
+      :class="['mu-split-box__start', preview.start && 'mu-split-box__start--preview', topClass]"
       :style="[topStyle, topHeightStyle]">
-      <slot name="top" />
+      <slot name="top" :collapsed="collapsed.start" />
     </div>
     <splitter
-      v-if="$slots.top && [true, 'top'].includes(resizable)"
+      v-if="$slots.top && hasStartSplitter"
+      v-bind="startSplitterProps"
       direction="column"
       target="prev"
-      :size="splitterSize"
-      :shape="splitterShape"
-      :collapsible="isTopCollapsible"
-      :collapse-handle="isTopCollapsible && splitterCollapseHandle"
       :collapsed="collapsed.start"
       @toggle="toggle('start')"
-      @dblclick="splitterDblclickReset && reset('start')"
-      @resizing="resize('start', $event)" />
+      @preview="preview.start = $event"
+      @resizing="resize('start', $event)"
+      @dblclick="onSplitterDblclick('start')" />
     <div
       :class="['mu-split-box__center', centerClass]"
       :style="[centerStyle]">
       <slot name="center" />
     </div>
     <splitter
-      v-if="$slots.bottom && [true, 'bottom'].includes(resizable)"
+      v-if="$slots.bottom && hasEndSplitter"
+      v-bind="endSplitterProps"
       direction="column"
       target="next"
-      :size="splitterSize"
-      :shape="splitterShape"
-      :collapsible="isBottomCollapsible"
-      :collapse-handle="isBottomCollapsible && splitterCollapseHandle"
       :collapsed="collapsed.end"
       @toggle="toggle('end')"
-      @dblclick="splitterDblclickReset && reset('end')"
-      @resizing="resize('end', $event)" />
+      @preview="preview.end = $event"
+      @resizing="resize('end', $event)"
+      @dblclick="onSplitterDblclick('end')" />
     <div
       v-if="$slots.bottom"
-      :class="['mu-split-box__end', bottomClass]"
+      :class="['mu-split-box__end', preview.end && 'mu-split-box__end--preview', bottomClass]"
       :style="[bottomStyle, bottomHeightStyle]">
-      <slot name="bottom" />
+      <slot name="bottom" :collapsed="collapsed.end" />
     </div>
   </div>
 </template>
 
 <script setup>
-  import { computed, onMounted } from 'vue'
-  import { useSplitBox } from './split-box.js'
+  import { onMounted } from 'vue'
+  import { useSplitBox, vSplitterProps } from './split-box.js'
 
   import Splitter from './splitter.vue'
 
@@ -59,35 +55,23 @@
     centerStyle: null,
     topHeight: { type: String, default: '33.3%' },
     bottomHeight: { type: String, default: '33.3%' },
-    resizable: {
-      type: [Boolean, String],
-      validator: v => [false, true, 'top', 'bottom'].includes(v)
-    },
-    collapsible: {
-      type: [Boolean, String],
-      validator: v => [false, true, 'top', 'bottom'].includes(v)
-    },
-    splitterSize: String,
-    splitterShape: String,
-    splitterCollapseHandle: Boolean,
-    splitterDblclickReset: {
-      type: Boolean,
-      default: true
-    }
+    ...vSplitterProps
   })
 
   const {
     startSizeStyle: topHeightStyle,
     endSizeStyle: bottomHeightStyle,
     collapsed,
+    preview,
+    startSplitterProps,
+    endSplitterProps,
+    hasStartSplitter,
+    hasEndSplitter,
     init,
-    reset,
     resize,
-    toggle
-  } = useSplitBox(props)
-
-  const isTopCollapsible = computed(() => [true, 'top'].includes(props.collapsible))
-  const isBottomCollapsible = computed(() => [true, 'bottom'].includes(props.collapsible))
+    toggle,
+    onSplitterDblclick
+  } = useSplitBox('SplitVBox', props)
 
   onMounted(() => init(props.topHeight, props.bottomHeight))
 </script>

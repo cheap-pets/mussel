@@ -2,51 +2,47 @@
   <div class="mu-split-box flex flex-row">
     <div
       v-if="$slots.left"
-      :class="['mu-split-box__start', leftClass]"
+      :class="['mu-split-box__start', preview.start && 'mu-split-box__start--preview', leftClass]"
       :style="[leftStyle, leftWidthStyle]">
-      <slot name="left" />
+      <slot name="left" :collapsed="collapsed.start" />
     </div>
     <splitter
-      v-if="$slots.left && [true, 'left'].includes(resizable)"
+      v-if="$slots.left && hasStartSplitter"
+      v-bind="startSplitterProps"
       target="prev"
       direction="row"
-      :size="splitterSize"
-      :shape="splitterShape"
-      :collapsible="isLeftCollapsible"
-      :collapse-handle="isLeftCollapsible && splitterCollapseHandle"
       :collapsed="collapsed.start"
       @toggle="toggle('start')"
+      @preview="preview.start = $event"
       @resizing="resize('start', $event)"
-      @dblclick="splitterDblclickReset && reset('start')" />
+      @dblclick="onSplitterDblclick('start')" />
     <div
       :class="['mu-split-box__center', centerClass]"
       :style="[centerStyle]">
       <slot name="center" />
     </div>
     <splitter
-      v-if="$slots.right && [true, 'right'].includes(resizable)"
+      v-if="$slots.right && hasEndSplitter"
+      v-bind="endSplitterProps"
       target="next"
       direction="row"
-      :size="splitterSize"
-      :shape="splitterShape"
-      :collapsible="isRightCollapsible"
-      :collapse-handle="isRightCollapsible && splitterCollapseHandle"
       :collapsed="collapsed.end"
       @toggle="toggle('end')"
+      @preview="preview.end = $event"
       @resizing="resize('end', $event)"
-      @dblclick="splitterDblclickReset && reset('end')" />
+      @dblclick="onSplitterDblclick('end')" />
     <div
       v-if="$slots.right"
-      :class="['mu-split-box__end', rightClass]"
+      :class="['mu-split-box__end', preview.end && 'mu-split-box__end--preview', rightClass]"
       :style="[rightStyle, rightWidthStyle]">
-      <slot name="right" />
+      <slot name="right" :collapsed="collapsed.end" />
     </div>
   </div>
 </template>
 
 <script setup>
-  import { computed, onMounted } from 'vue'
-  import { useSplitBox } from './split-box.js'
+  import { onMounted } from 'vue'
+  import { useSplitBox, hSplitterProps } from './split-box.js'
 
   import Splitter from './splitter.vue'
 
@@ -59,35 +55,23 @@
     centerStyle: null,
     leftWidth: { type: String, default: '33.3%' },
     rightWidth: { type: String, default: '33.3%' },
-    resizable: {
-      type: [Boolean, String],
-      validator: v => [false, true, 'left', 'right'].includes(v)
-    },
-    collapsible: {
-      type: [Boolean, String],
-      validator: v => [false, true, 'left', 'right'].includes(v)
-    },
-    splitterSize: String,
-    splitterShape: String,
-    splitterCollapseHandle: Boolean,
-    splitterDblclickReset: {
-      type: Boolean,
-      default: true
-    }
+    ...hSplitterProps
   })
 
   const {
     startSizeStyle: leftWidthStyle,
     endSizeStyle: rightWidthStyle,
     collapsed,
+    preview,
+    startSplitterProps,
+    endSplitterProps,
+    hasStartSplitter,
+    hasEndSplitter,
     init,
-    reset,
     resize,
-    toggle
-  } = useSplitBox(props)
-
-  const isLeftCollapsible = computed(() => [true, 'left'].includes(props.collapsible))
-  const isRightCollapsible = computed(() => [true, 'right'].includes(props.collapsible))
+    toggle,
+    onSplitterDblclick
+  } = useSplitBox('SplitHBox', props)
 
   onMounted(() => init(props.leftWidth, props.rightWidth))
 </script>

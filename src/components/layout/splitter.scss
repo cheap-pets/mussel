@@ -36,7 +36,7 @@
   }
 
   &::after {
-    border-radius: calc(var(--full-size) / 2);
+    border-radius: 1px;
     background: var(--mu-border-color-soft);
     transition: transform .3s, opacity 0.2s;
   }
@@ -68,8 +68,22 @@
     flex-basis: var(--slim-size);
   }
 
-  &--none {
+  &--zero {
     flex-basis: 0;
+  }
+
+  // 两轴共用：仅折叠（grab）或完全无交互（inert）
+  // &.mu-flex-splitter--collapse-only {
+  //   cursor: grab;
+
+  //   &[active] {
+  //     cursor: grabbing;
+  //   }
+  // }
+
+  &.mu-flex-splitter--inert {
+    pointer-events: none;
+    cursor: default;
   }
 
   &:hover,
@@ -87,15 +101,26 @@
 
   &.mu-flex-splitter--pill {
     &::after {
+      // 药丸端头全圆：半径为厚度（--full-size）一半，两轴通用
+      border-radius: calc(var(--full-size) / 2);
       opacity: .5;
       background-color: #FFF;
       box-shadow: 0 0 2px 1px rgba(0, 0, 0, .5);
     }
 
-    &.mu-flex-splitter--none {
+    &:hover,
+    &[active] {
       &::after {
-        opacity: 0;
+        opacity: 1;
       }
+    }
+  }
+
+  // visibility: hover —— 静息隐藏、hover/active 显现。
+  // 与 pill 的静息/hover 规则同特异性，靠源码顺序取胜，本块须保持在 pill 规则之后
+  &.mu-flex-splitter--reveal {
+    &::after {
+      opacity: 0;
     }
 
     &:hover,
@@ -123,12 +148,6 @@
     }
   }
 
-  &.mu-flex-splitter--none {
-    &::after {
-      width: 0;
-    }
-  }
-
   &:hover,
   &[active] {
     &::after {
@@ -140,6 +159,8 @@
     &::after {
       top: auto;
       bottom: auto;
+      // 药丸厚度不随 size（slim 例外须覆盖）
+      width: var(--full-size);
       height: var(--pill-length);
       max-height: 80%;
     }
@@ -213,12 +234,6 @@
     }
   }
 
-  &.mu-flex-splitter--none {
-    &::after {
-      height: 0;
-    }
-  }
-
   &:hover,
   &[active] {
     &::after {
@@ -230,8 +245,11 @@
     &::after {
       right: auto;
       left: auto;
+
       width: var(--pill-length);
       max-width: 80%;
+      // 药丸厚度不随 size（slim 例外须覆盖）
+      height: var(--full-size);
     }
 
     &[active]::after {
