@@ -10,6 +10,9 @@
 - [Playwright 验证 watch 驱动路径：经组件实例替换 props](./patterns/playwright-props-swap-verification.md)
   demo 数据为 const 无替换入口时，`el.__vueParentComponent.props.x = …` 替换 props 触发子组件 watch；实测无警告，注意替换后勿触发父重渲。
 
+- [headless Edge 做 DOM/控制台断言（无 playwright 时）](./patterns/headless-edge-dom-verification.md)
+  `--dump-dom --enable-logging=stderr --virtual-time-budget` + UMD 产物（dist/mussel.js dev 构建 + vue.global.js）挂载多 app，grep DOM class 与 CONSOLE 行断言；模块级全局对象跨 app 共享，隔离断言用独立页面。
+
 - [包裹层 display: contents 兼容既有扁平布局](./patterns/wrapper-display-contents-legacy-layout.md)
   新增包裹层但默认模式依赖扁平子元素布局时，wrapper 默认 display: contents、仅新模式生成盒子；注意 `& > *` 规则不再命中下沉的孙元素，overflow/max-width 须下放。
 
@@ -65,6 +68,9 @@
 
 - [demo watch 运行中新增页面目录需重启构建](./pitfalls/demo-watch-new-entry-restart.md)
   rollup input 在 config 加载时枚举 demo/src，watch 不跟踪新目录；新增 demo 页后 :3000 404，须重启 demo:build。
+
+- [demo watch 重建会清空 demo/dist](./pitfalls/demo-watch-wipes-dist.md)
+  vite build --watch 每次重建清空 outDir，手工放入的临时验证资产被静默删除（404 / Vue is not defined）；临时资产随用随放，中间不改 src。
 
 - [Playwright 验证延时收起弹层：整场景须单调用内完成](./pitfalls/playwright-delay-hide-popup-testing.md)
   工具调用间隔超 HIDE_DELAY 链自关、同坐标重进无 mouseenter、滚动致弹层脱离鼠标、旧链面板遮挡锚点行；hover→停留→断言须单脚本完成，重开前先移出移入。
