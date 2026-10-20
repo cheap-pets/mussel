@@ -56,7 +56,6 @@ const demoSrcDir = resolve(__dirname, 'demo/src')
  * 组装构建入口：
  * - home 固定入口（首页）
  * - catalog 登记的页面（目录与 URL 一致，支持多级路径）
- * - 迁移期旧页兜底：一层目录（批次 0-7），批次 8 移除
  */
 function buildInputs () {
   const inputs = { home: resolve(demoSrcDir, 'home/main.js') }
@@ -84,35 +83,24 @@ function buildInputs () {
     }
   }
 
-  // 一层旧页目录兜底（排除 common/ 与 home/）
+  // 未登记警告：demo/src 下的两级页面目录必须登记到 catalog
   const topLevelDirs = readdirSync(demoSrcDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory() && dirent.name !== 'common' && dirent.name !== 'home')
     .map(dirent => dirent.name)
 
   topLevelDirs.forEach(name => {
-    const mainJs = resolve(demoSrcDir, name, 'main.js')
+    const dir = resolve(demoSrcDir, name)
 
-    if (existsSync(mainJs) && !inputs[name]) {
-      inputs[name] = mainJs
-    }
+    readdirSync(dir, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .forEach(({ name: sub }) => {
+        const path = `${name}/${sub}`
+
+        if (existsSync(resolve(dir, sub, 'main.js')) && !registered.has(path)) {
+          console.warn(`[demo] 页面目录 demo/src/${path}/main.js 未登记到 catalog.js`)
+        }
+      })
   })
-
-  // 未登记警告：demo/src 下的两级页面目录必须登记到 catalog
-  topLevelDirs
-    .filter(name => name !== 'home')
-    .forEach(name => {
-      const dir = resolve(demoSrcDir, name)
-
-      readdirSync(dir, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .forEach(({ name: sub }) => {
-          const path = `${name}/${sub}`
-
-          if (existsSync(resolve(dir, sub, 'main.js')) && !registered.has(path)) {
-            console.warn(`[demo] 页面目录 demo/src/${path}/main.js 未登记到 catalog.js`)
-          }
-        })
-    })
 
   return inputs
 }

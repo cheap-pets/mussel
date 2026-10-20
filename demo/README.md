@@ -4,13 +4,10 @@ Mussel 4 组件库的演示页面，使用 Vue 3 + Vite 构建，同时承担开
 
 ## 目录结构
 
-> 目录正在按 `agent-docs/plans/demo-restructure/plan.md` 分批重构为「分类/页面」两级结构。
-> 迁移期间新旧目录并存，旧页仍可访问，全部批次完成后旧目录移除。
-
 ```
 demo/
 ├── src/
-│   ├── catalog.js             # 页面清单（单一事实源：首页导航、构建入口、面包屑）
+│   ├── catalog.js             # 页面清单（单一事实源：首页导航、构建入口、面包屑、上下页）
 │   ├── common/                # 共享基础设施
 │   │   ├── app.js             # 应用引导（安装 mussel）
 │   │   ├── demo-page.vue      # 统一页面骨架（页头/面包屑/主题切换/上下页）
@@ -19,12 +16,13 @@ demo/
 │   │   ├── style.css          # 全站版式样式
 │   │   ├── template.html      # HTML 模板（占位符由构建填充）
 │   │   └── favicon.svg
-│   ├── home/                  # 首页（Vue 入口，替代手写 index.html）
-│   ├── buttons/               # 分类目录（buttons/button/ 等两级页面）
-│   ├── button/                # 迁移期旧页目录（待删除）
-│   └── ...
+│   ├── home/                  # 首页（Vue 入口，卡片导航由 catalog 渲染）
+│   ├── basics/                # 分类目录，共 9 个分类（basics/buttons/form/data/navigation/feedback/overlay/layout/advanced）
+│   └── <分类>/<页面>/          # 两级页面目录，各含 main-view.vue + main.js
 └── dist/                      # 构建输出（demo/dist/<分类>/<页面>/）
 ```
+
+40 个页面 + 首页，页面清单见 `src/catalog.js`，首页 `http://localhost:3000` 可导航到全部页面。
 
 ## 构建
 
@@ -41,9 +39,9 @@ npm run demo:build
 `npm run demo:build` 会自动启动静态服务：
 
 - 首页: http://localhost:3000
-- 组件示例: http://localhost:3000/buttons/button/ 等（URL 与 `demo/src` 目录一致）
+- 组件示例: http://localhost:3000/form/input/ 等（URL 与 `demo/src` 目录一致，内部链接统一带尾斜杠）
 
-## 添加新组件示例
+## 添加新页面
 
 1. 在对应分类目录下创建页面目录: `demo/src/<分类>/<页面>/`，含 `main-view.vue` + `main.js`
 2. 在 `demo/src/catalog.js` 中登记页面（path/title/desc）
@@ -73,11 +71,18 @@ import MainView from './main-view.vue'
 createVueApp(MainView)
 ```
 
+约定：
+
+- 页面内容只放 `demo-section`，组件页不超过 8 个 section；综合案例页使用 `<demo-page fluid>` 全宽布局
+- 交互示例必须给出操作提示（note 写清触发方式与预期结果），弹层示例固定触发按钮
+- 页面不自行添加 `.mu-root` 与主题切换（由 demo-page 统一提供）
+- 未登记到 catalog 的页面目录会在构建时告警
+
 ## Vite 配置
 
 配置文件: `vite.demo.config.js`
 
-- 构建入口来自 `catalog.js` 登记页 + `home/` + 迁移期一层旧页兜底
+- 构建入口来自 `catalog.js` 登记页 + `home/`
 - 使用 `common/template.html` 生成各页面 HTML（自动注入标题与相对根路径）
 - `home/` 生成 `dist/index.html`
 - 通过 `mussel` 别名直接引用源码

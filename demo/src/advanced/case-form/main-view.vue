@@ -1,305 +1,289 @@
 <template>
-  <div class="flex flex-col" style="height: 100vh">
-    <!-- 顶部导航栏 -->
-    <header
-      class="flex-none flex items-center px-2x"
-      style=" z-index: 10; height: 48px; background: var(--mu-bg-header);">
-      <span style="font-size: 18px; font-weight: 600; color: var(--mu-primary-color);">Mussel Admin</span>
-      <div class="ml-2x" style="font-size: 12px; opacity: 0.5;">
-        管理控制台
-      </div>
-      <div class="ml-auto flex items-center gap-1x">
-        <mu-icon-button icon="icon icon-bell" @click="showNotifications" />
-        <div class="border-l" style="height: 20px; margin: 0 4px;" />
-        <span style="font-size: 13px;">Admin</span>
-        <theme-switch />
-      </div>
-    </header>
-
-    <div class="flex flex-1 overflow-hidden">
-      <!-- 左侧菜单栏 -->
-      <aside
-        class="flex-none flex flex-col overflow-auto"
-        style="width: 200px; background: var(--mu-bg-strong);">
-        <div class="py-1x">
-          <div
-            v-for="item in menuItems"
-            :key="item.name"
-            class="flex items-center px-3x"
-            :style="{
-              height: '36px',
-              fontSize: '13px',
-              color: activeMenu === item.name ? 'var(--mu-primary-color)' : 'var(--mu-text-color-normal)',
-              background: activeMenu === item.name ? 'var(--mu-primary-color-light)' : 'transparent',
-              borderRight: activeMenu === item.name ? '2px solid var(--mu-primary-color)' : '2px solid transparent',
-              cursor: 'pointer'
-            }"
-            @click="activeMenu = item.name">
-            <span>{{ item.caption }}</span>
-          </div>
-        </div>
-      </aside>
-
-      <!-- 主内容区 -->
-      <main class="flex-1 overflow-auto p-2x" style="background: var(--mu-bg-main);">
-        <!-- 面包屑 + 标题 -->
-        <div class="flex items-center mb-2x">
-          <span style="font-size: 13px; opacity: 0.5;">首页</span>
-          <span style="margin: 0 6px; opacity: 0.3;">/</span>
-          <span style="font-size: 13px; font-weight: 500;">{{ currentMenuCaption }}</span>
-          <div class="ml-auto flex items-center gap-1x">
-            <mu-input
-              v-model="searchText"
-              placeholder="搜索..."
-              clear-button
-              style="width: 200px;" />
-          </div>
-        </div>
-
-        <!-- 统计卡片 -->
-        <div class="flex gap-2x mb-2x" style="flex-wrap: wrap;">
-          <div
-            v-for="stat in stats"
-            :key="stat.label"
-            class="flex-1 flex flex-col border border-soft p-2x"
-            style="min-width: 160px; border-radius: var(--mu-window-border-radius);">
-            <span style="font-size: 12px; opacity: 0.5;">{{ stat.label }}</span>
-            <div class="flex items-center mt-1x">
-              <span style="font-size: 24px; font-weight: 600;">{{ stat.value }}</span>
-              <span
-                class="ml-1x"
-                :style="{ fontSize: '12px', color: stat.trend > 0 ? 'var(--mu-success-color)' : 'var(--mu-danger-color)' }">
-                {{ stat.trend > 0 ? '+' : '' }}{{ stat.trend }}%
-              </span>
+  <demo-page path="advanced/case-form" fluid>
+    <div class="admin-demo flex flex-col" style="height: calc(100vh - 48px);">
+      <div class="flex flex-1 overflow-hidden">
+        <!-- 左侧菜单栏 -->
+        <aside
+          class="flex-none flex flex-col overflow-auto"
+          style="width: 200px; background: var(--mu-bg-strong);">
+          <div class="py-1x">
+            <div
+              v-for="item in menuItems"
+              :key="item.name"
+              class="admin-menu-item flex items-center px-3x"
+              :class="{ 'is-active': activeMenu === item.name }"
+              @click="activeMenu = item.name">
+              <span>{{ item.caption }}</span>
             </div>
           </div>
-        </div>
+        </aside>
 
-        <!-- 标签页区域 -->
-        <mu-tabs v-model:active-tab="activeTab" tab-style="border-card">
-          <!-- 订单列表 -->
-          <mu-tab-panel name="orders" caption="订单管理">
-            <div class="p-2x">
-              <!-- 工具栏 -->
-              <div class="flex items-center justify-between mb-2x">
-                <mu-select
-                  v-model="orderStatusFilter"
-                  :options="orderStatusOptions"
-                  placeholder="全部状态"
-                  style="width: 130px;" />
-                <mu-button caption="刷新" @click="refreshOrders" />
-                <mu-button primary caption="新建订单" @click="showNewOrder" />
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-auto p-2x" style="background: var(--mu-bg-main);">
+          <!-- 面包屑 + 标题 -->
+          <div class="flex items-center mb-2x">
+            <span style="font-size: 13px; opacity: 0.5;">首页</span>
+            <span style="margin: 0 6px; opacity: 0.3;">/</span>
+            <span style="font-size: 13px; font-weight: 500;">{{ currentMenuCaption }}</span>
+            <div class="ml-auto flex items-center gap-1x">
+              <mu-input
+                v-model="searchText"
+                placeholder="搜索..."
+                clear-button
+                style="width: 200px;" />
+            </div>
+          </div>
+
+          <!-- 统计卡片 -->
+          <div class="flex gap-2x mb-2x" style="flex-wrap: wrap;">
+            <div
+              v-for="stat in stats"
+              :key="stat.label"
+              class="flex-1 flex flex-col border border-soft p-2x"
+              style="min-width: 160px; border-radius: var(--mu-window-border-radius);">
+              <span style="font-size: 12px; opacity: 0.5;">{{ stat.label }}</span>
+              <div class="flex items-center mt-1x">
+                <span style="font-size: 24px; font-weight: 600;">{{ stat.value }}</span>
+                <span
+                  class="ml-1x"
+                  :style="{ fontSize: '12px', color: stat.trend > 0 ? 'var(--mu-success-color)' : 'var(--mu-danger-color)' }">
+                  {{ stat.trend > 0 ? '+' : '' }}{{ stat.trend }}%
+                </span>
               </div>
-
-              <!-- 表格 -->
-              <mu-table
-                v-model:order-by="orderBy"
-                :columns="orderColumns"
-                :records="filteredOrders"
-                key-field="id"
-                striped
-                hover-mode="row"
-                gridlines="column"
-                placeholder="-"
-                @cell-item-click="onCellItemClick"
-                @update:cell-value="onCellValueChange" />
             </div>
-          </mu-tab-panel>
+          </div>
 
-          <!-- 用户管理 -->
-          <mu-tab-panel name="users" caption="用户管理">
-            <div class="p-2x">
-              <div class="flex items-center justify-between mb-2x">
-                <div class="flex items-center gap-1x">
-                  <mu-input v-model="userSearch" placeholder="搜索用户..." clear-button style="width: 200px;" />
+          <!-- 标签页区域 -->
+          <mu-tabs v-model:active-tab="activeTab" tab-style="card">
+            <!-- 订单列表 -->
+            <mu-tab-panel name="orders" caption="订单管理">
+              <div class="p-2x">
+                <!-- 工具栏 -->
+                <div class="flex items-center justify-between mb-2x">
                   <mu-select
-                    v-model="roleFilter"
-                    :options="roleOptions"
-                    placeholder="全部角色"
+                    v-model="orderStatusFilter"
+                    :options="orderStatusOptions"
+                    placeholder="全部状态"
                     style="width: 130px;" />
+                  <mu-button caption="刷新" @click="refreshOrders" />
+                  <mu-button color="primary" caption="新建订单" @click="showNewOrder" />
                 </div>
-                <mu-button primary caption="新增用户" @click="showAddUser" />
-              </div>
 
-              <mu-table
-                v-model:order-by="userOrderBy"
-                :columns="userColumns"
-                :records="filteredUsers"
-                key-field="id"
-                striped
-                hover-mode="row"
-                gridlines="column"
-                placeholder="-"
-                @cell-item-click="onUserCellClick"
-                @update:cell-value="onUserCellValueChange" />
-            </div>
-          </mu-tab-panel>
-
-          <!-- 系统设置 -->
-          <mu-tab-panel name="settings" caption="系统设置">
-            <div class="flex flex-col gap-2x p-2x" style="max-width: 600px;">
-              <!-- 基本设置 -->
-              <div class="border border-soft p-2x" style="border-radius: var(--mu-window-border-radius);">
-                <h3 class="mb-1x">
-                  基本设置
-                </h3>
-                <mu-form label-width="100px" label-align="right">
-                  <mu-form-row>
-                    <mu-form-field label="系统名称：">
-                      <mu-input v-model="settings.siteName" placeholder="请输入系统名称" />
-                    </mu-form-field>
-                  </mu-form-row>
-                  <mu-form-row>
-                    <mu-form-field label="系统描述：">
-                      <mu-input v-model="settings.siteDesc" type="textarea" placeholder="请输入系统描述" />
-                    </mu-form-field>
-                  </mu-form-row>
-                  <mu-form-row>
-                    <mu-form-field label="管理员邮箱：">
-                      <mu-input v-model="settings.adminEmail" type="email" placeholder="请输入邮箱" />
-                    </mu-form-field>
-                  </mu-form-row>
-                  <mu-form-row>
-                    <mu-form-field label="语言：">
-                      <mu-select
-                        v-model="settings.language"
-                        :options="languageOptions" />
-                    </mu-form-field>
-                  </mu-form-row>
-                </mu-form>
+                <!-- 表格 -->
+                <mu-table
+                  v-model:order-by="orderBy"
+                  :columns="orderColumns"
+                  :records="filteredOrders"
+                  key-field="id"
+                  striped
+                  hover-mode="row"
+                  gridlines="column"
+                  placeholder="-"
+                  @cell-item-click="onCellItemClick"
+                  @update:cell-value="onCellValueChange" />
               </div>
+            </mu-tab-panel>
 
-              <!-- 通知设置 -->
-              <div class="border border-soft p-2x" style="border-radius: var(--mu-window-border-radius);">
-                <h3 class="mb-1x">
-                  通知设置
-                </h3>
-                <mu-form label-width="100px" label-align="right">
-                  <mu-form-row>
-                    <mu-form-field label="邮件通知：">
-                      <mu-switch v-model="settings.emailNotify" active-label="开启" inactive-label="关闭" />
-                    </mu-form-field>
-                  </mu-form-row>
-                  <mu-form-row>
-                    <mu-form-field label="浏览器通知：">
-                      <mu-switch v-model="settings.browserNotify" active-label="开启" inactive-label="关闭" />
-                    </mu-form-field>
-                  </mu-form-row>
-                  <mu-form-row>
-                    <mu-form-field label="通知频率：">
-                      <mu-radio v-model="settings.notifyFreq" value="realtime">
-                        实时
-                      </mu-radio>
-                      <mu-radio v-model="settings.notifyFreq" value="hourly">
-                        每小时
-                      </mu-radio>
-                      <mu-radio v-model="settings.notifyFreq" value="daily">
-                        每天
-                      </mu-radio>
-                    </mu-form-field>
-                  </mu-form-row>
-                </mu-form>
-              </div>
+            <!-- 用户管理 -->
+            <mu-tab-panel name="users" caption="用户管理">
+              <div class="p-2x">
+                <div class="flex items-center justify-between mb-2x">
+                  <div class="flex items-center gap-1x">
+                    <mu-input v-model="userSearch" placeholder="搜索用户..." clear-button style="width: 200px;" />
+                    <mu-select
+                      v-model="roleFilter"
+                      :options="roleOptions"
+                      placeholder="全部角色"
+                      style="width: 130px;" />
+                  </div>
+                  <mu-button color="primary" caption="新增用户" @click="showAddUser" />
+                </div>
 
-              <div class="flex justify-end gap-1x">
-                <mu-button caption="重置" @click="resetSettings" />
-                <mu-button primary caption="保存设置" @click="saveSettings" />
+                <mu-table
+                  v-model:order-by="userOrderBy"
+                  :columns="userColumns"
+                  :records="filteredUsers"
+                  key-field="id"
+                  striped
+                  hover-mode="row"
+                  gridlines="column"
+                  placeholder="-"
+                  @cell-item-click="onUserCellClick"
+                  @update:cell-value="onUserCellValueChange" />
               </div>
-            </div>
-          </mu-tab-panel>
-        </mu-tabs>
-      </main>
+            </mu-tab-panel>
+
+            <!-- 系统设置 -->
+            <mu-tab-panel name="settings" caption="系统设置">
+              <div class="flex flex-col gap-2x p-2x" style="max-width: 600px;">
+                <!-- 基本设置 -->
+                <div class="border border-soft p-2x" style="border-radius: var(--mu-window-border-radius);">
+                  <h3 class="mb-1x">
+                    基本设置
+                  </h3>
+                  <mu-form label-width="100px" label-align="right">
+                    <mu-form-row>
+                      <mu-form-field label="系统名称：">
+                        <mu-input v-model="settings.siteName" placeholder="请输入系统名称" />
+                      </mu-form-field>
+                    </mu-form-row>
+                    <mu-form-row>
+                      <mu-form-field label="系统描述：">
+                        <mu-input v-model="settings.siteDesc" type="textarea" placeholder="请输入系统描述" />
+                      </mu-form-field>
+                    </mu-form-row>
+                    <mu-form-row>
+                      <mu-form-field label="管理员邮箱：">
+                        <mu-input v-model="settings.adminEmail" type="email" placeholder="请输入邮箱" />
+                      </mu-form-field>
+                    </mu-form-row>
+                    <mu-form-row>
+                      <mu-form-field label="语言：">
+                        <mu-select
+                          v-model="settings.language"
+                          :options="languageOptions" />
+                      </mu-form-field>
+                    </mu-form-row>
+                  </mu-form>
+                </div>
+
+                <!-- 通知设置 -->
+                <div class="border border-soft p-2x" style="border-radius: var(--mu-window-border-radius);">
+                  <h3 class="mb-1x">
+                    通知设置
+                  </h3>
+                  <mu-form label-width="100px" label-align="right">
+                    <mu-form-row>
+                      <mu-form-field label="邮件通知：">
+                        <mu-switch v-model="settings.emailNotify" active-label="开启" inactive-label="关闭" />
+                      </mu-form-field>
+                    </mu-form-row>
+                    <mu-form-row>
+                      <mu-form-field label="浏览器通知：">
+                        <mu-switch v-model="settings.browserNotify" active-label="开启" inactive-label="关闭" />
+                      </mu-form-field>
+                    </mu-form-row>
+                    <mu-form-row>
+                      <mu-form-field label="通知频率：">
+                        <mu-radio v-model="settings.notifyFreq" value="realtime">
+                          实时
+                        </mu-radio>
+                        <mu-radio v-model="settings.notifyFreq" value="hourly">
+                          每小时
+                        </mu-radio>
+                        <mu-radio v-model="settings.notifyFreq" value="daily">
+                          每天
+                        </mu-radio>
+                      </mu-form-field>
+                    </mu-form-row>
+                  </mu-form>
+                </div>
+
+                <div class="flex justify-end gap-1x">
+                  <mu-button caption="重置" @click="resetSettings" />
+                  <mu-button color="primary" caption="保存设置" @click="saveSettings" />
+                </div>
+              </div>
+            </mu-tab-panel>
+          </mu-tabs>
+        </main>
+      </div>
+
+      <!-- 底部状态栏 -->
+      <footer
+        class="flex-none flex items-center px-2x"
+        style="height: 28px; border-top: 1px solid var(--mu-border-color-soft); font-size: 12px; background: var(--mu-bg-header);">
+        <span style="opacity: 0.5;">Mussel Admin v1.0.0</span>
+        <div class="ml-auto flex items-center gap-2x">
+          <span style="opacity: 0.5;">在线用户：3</span>
+          <span style="color: var(--mu-success-color);">●</span>
+          <span style="opacity: 0.5;">系统正常</span>
+        </div>
+      </footer>
     </div>
 
-    <!-- 底部状态栏 -->
-    <footer
-      class="flex-none flex items-center px-2x"
-      style="height: 28px; border-top: 1px solid var(--mu-border-color-soft); font-size: 12px; background: var(--mu-bg-header);">
-      <span style="opacity: 0.5;">Mussel Admin v1.0.0</span>
-      <div class="ml-auto flex items-center gap-2x">
-        <span style="opacity: 0.5;">在线用户：3</span>
-        <span style="color: var(--mu-success-color);">●</span>
-        <span style="opacity: 0.5;">系统正常</span>
-      </div>
-    </footer>
-  </div>
+    <!-- 新建订单对话框 -->
+    <mu-dialog
+      v-model:visible="orderDialogVisible"
+      title="新建订单"
+      width="480"
+      dismissible>
+      <template #body>
+        <mu-form label-width="80px" label-align="right" class="py-1x">
+          <mu-form-row>
+            <mu-form-field label="客户：" class="flex-auto">
+              <mu-select v-model="orderForm.customer" :options="customerOptions" placeholder="请选择客户" />
+            </mu-form-field>
+          </mu-form-row>
+          <mu-form-row>
+            <mu-form-field label="商品：" class="flex-auto">
+              <mu-input v-model="orderForm.product" placeholder="请输入商品名称" />
+            </mu-form-field>
+          </mu-form-row>
+          <mu-form-row>
+            <mu-form-field label="数量：" class="flex-auto">
+              <mu-input v-model="orderForm.quantity" type="number" placeholder="请输入数量" />
+            </mu-form-field>
+          </mu-form-row>
+          <mu-form-row>
+            <mu-form-field label="金额：" class="flex-auto">
+              <mu-input v-model="orderForm.amount" type="number" prefix="¥" placeholder="请输入金额" />
+            </mu-form-field>
+          </mu-form-row>
+        </mu-form>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-1x">
+          <mu-button caption="取消" @click="orderDialogVisible = false" />
+          <mu-button color="primary" caption="确认创建" @click="handleCreateOrder" />
+        </div>
+      </template>
+    </mu-dialog>
 
-  <!-- 新建订单对话框 -->
-  <mu-dialog
-    v-model:visible="orderDialogVisible"
-    title="新建订单"
-    width="480"
-    dismissible>
-    <mu-form label-width="80px" label-align="right" class="py-1x">
-      <mu-form-row>
-        <mu-form-field label="客户：" class="flex-auto">
-          <mu-select v-model="orderForm.customer" :options="customerOptions" placeholder="请选择客户" />
-        </mu-form-field>
-      </mu-form-row>
-      <mu-form-row>
-        <mu-form-field label="商品：" class="flex-auto">
-          <mu-input v-model="orderForm.product" placeholder="请输入商品名称" />
-        </mu-form-field>
-      </mu-form-row>
-      <mu-form-row>
-        <mu-form-field label="数量：" class="flex-auto">
-          <mu-input v-model="orderForm.quantity" type="number" placeholder="请输入数量" />
-        </mu-form-field>
-      </mu-form-row>
-      <mu-form-row>
-        <mu-form-field label="金额：" class="flex-auto">
-          <mu-input v-model="orderForm.amount" type="number" prefix="¥" placeholder="请输入金额" />
-        </mu-form-field>
-      </mu-form-row>
-    </mu-form>
-    <template #footer>
-      <div class="flex justify-end gap-1x">
-        <mu-button caption="取消" @click="orderDialogVisible = false" />
-        <mu-button primary caption="确认创建" @click="handleCreateOrder" />
-      </div>
-    </template>
-  </mu-dialog>
-
-  <!-- 新增 / 编辑用户对话框 -->
-  <mu-dialog
-    v-model:visible="userDialogVisible"
-    :title="isEditingUser ? '编辑用户' : '新增用户'"
-    width="480"
-    dismissible>
-    <mu-form label-width="80px" label-align="right" class="py-1x">
-      <mu-form-row>
-        <mu-form-field label="姓名：" class="flex-auto">
-          <mu-input v-model="userForm.name" placeholder="请输入姓名" />
-        </mu-form-field>
-      </mu-form-row>
-      <mu-form-row>
-        <mu-form-field label="邮箱：" class="flex-auto">
-          <mu-input v-model="userForm.email" type="email" placeholder="请输入邮箱" />
-        </mu-form-field>
-      </mu-form-row>
-      <mu-form-row>
-        <mu-form-field label="角色：" class="flex-auto">
-          <mu-select v-model="userForm.role" :options="roleOptions" placeholder="请选择角色" />
-        </mu-form-field>
-      </mu-form-row>
-      <mu-form-row>
-        <mu-form-field label="状态：" class="flex-auto">
-          <mu-switch v-model="userForm.active" active-label="启用" inactive-label="停用" />
-        </mu-form-field>
-      </mu-form-row>
-    </mu-form>
-    <template #footer>
-      <div class="flex justify-end gap-1x">
-        <mu-button caption="取消" @click="userDialogVisible = false" />
-        <mu-button primary caption="确认" @click="handleSaveUser" />
-      </div>
-    </template>
-  </mu-dialog>
+    <!-- 新增 / 编辑用户对话框 -->
+    <mu-dialog
+      v-model:visible="userDialogVisible"
+      :title="isEditingUser ? '编辑用户' : '新增用户'"
+      width="480"
+      dismissible>
+      <template #body>
+        <mu-form label-width="80px" label-align="right" class="py-1x">
+          <mu-form-row>
+            <mu-form-field label="姓名：" class="flex-auto">
+              <mu-input v-model="userForm.name" placeholder="请输入姓名" />
+            </mu-form-field>
+          </mu-form-row>
+          <mu-form-row>
+            <mu-form-field label="邮箱：" class="flex-auto">
+              <mu-input v-model="userForm.email" type="email" placeholder="请输入邮箱" />
+            </mu-form-field>
+          </mu-form-row>
+          <mu-form-row>
+            <mu-form-field label="角色：" class="flex-auto">
+              <mu-select v-model="userForm.role" :options="roleOptions" placeholder="请选择角色" />
+            </mu-form-field>
+          </mu-form-row>
+          <mu-form-row>
+            <mu-form-field label="状态：" class="flex-auto">
+              <mu-switch v-model="userForm.active" active-label="启用" inactive-label="停用" />
+            </mu-form-field>
+          </mu-form-row>
+        </mu-form>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-1x">
+          <mu-button caption="取消" @click="userDialogVisible = false" />
+          <mu-button color="primary" caption="确认" @click="handleSaveUser" />
+        </div>
+      </template>
+    </mu-dialog>
+  </demo-page>
 </template>
 
 <script setup>
   import { ref, reactive, computed, inject } from 'vue'
-  import ThemeSwitch from '../common/theme-switch.vue'
+
+  import DemoPage from '../../common/demo-page.vue'
 
   const { messageBox } = inject('$mussel')
 
@@ -667,9 +651,24 @@
       }
     })
   }
-
-  // ==================== 通知 ====================
-  function showNotifications () {
-    messageBox.alert('暂无新通知')
-  }
 </script>
+
+<style>
+  .admin-demo {
+    color: var(--mu-text-color-normal);
+  }
+
+  .admin-menu-item {
+    height: 36px;
+    border-right: 2px solid transparent;
+    color: var(--mu-text-color-normal);
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  .admin-menu-item.is-active {
+    border-right: 2px solid var(--mu-primary-color);
+    background: var(--mu-primary-faint, var(--mu-primary-color-light));
+    color: var(--mu-primary-color);
+  }
+</style>

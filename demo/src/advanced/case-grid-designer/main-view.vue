@@ -1,73 +1,75 @@
 <template>
-  <div class="grid-designer flex flex-col fixed" style="inset: 0;">
-    <!-- 工具栏 -->
-    <mu-bar class="designer-toolbar">
-      <h2>Grid Designer</h2>
-      <span class="field">
-        <label>列</label>
-        <mu-input
-          :model-value="columns"
-          type="number"
-          size="small"
-          class="num-input"
-          @update:model-value="onDimensionChange('columns', $event)" />
-      </span>
-      <span class="field">
-        <label>行</label>
-        <mu-input
-          :model-value="rows"
-          type="number"
-          size="small"
-          class="num-input"
-          @update:model-value="onDimensionChange('rows', $event)" />
-      </span>
-      <mu-button color="primary" caption="添加单元格" @click="addCell" />
-      <mu-button caption="重置" @click="reset" />
-      <mu-button color="secondary" caption="获取布局" @click="exportLayout" />
-      <span class="toolbar-tail">
-        <theme-switch />
-      </span>
-    </mu-bar>
+  <demo-page path="advanced/case-grid-designer" fluid>
+    <div class="designer-demo flex flex-col" style="height: calc(100vh - 48px);">
+      <!-- 工具栏 -->
+      <mu-bar class="designer-demo__toolbar">
+        <span class="field">
+          <label>列</label>
+          <mu-input
+            :model-value="columns"
+            type="number"
+            size="small"
+            class="num-input"
+            @update:model-value="onDimensionChange('columns', $event)" />
+        </span>
+        <span class="field">
+          <label>行</label>
+          <mu-input
+            :model-value="rows"
+            type="number"
+            size="small"
+            class="num-input"
+            @update:model-value="onDimensionChange('rows', $event)" />
+        </span>
+        <mu-button color="primary" caption="添加单元格" @click="addCell" />
+        <mu-button caption="重置" @click="reset" />
+        <mu-button color="secondary" caption="获取布局" @click="exportLayout" />
+        <span class="designer-demo__tip">
+          拖动单元格移动位置，拖动边缘手柄调整大小，点击 × 删除
+        </span>
+      </mu-bar>
 
-    <!-- 画布区 -->
-    <div class="designer-canvas-wrap flex-1">
-      <div
-        ref="gridEl"
-        class="designer-grid"
-        :style="gridStyle">
-        <!-- 网格引导线（独立层，避免与背景简写冲突） -->
-        <div class="grid-lines" aria-hidden="true" />
-        <mu-grid-cell
-          v-for="cell in cells"
-          :key="cell.id"
-          :col-start="cell.colStart"
-          :col-end="cell.colEnd"
-          :row-start="cell.rowStart"
-          :row-end="cell.rowEnd"
-          class="designer-cell"
-          :class="{ 'is-dragging': draggingId === cell.id, 'is-resizing': resizingId === cell.id }">
-          <div
-            class="cell-body"
-            @mousedown.stop.prevent="onMoveStart($event, cell)">
-            <span class="cell-label">{{ cell.id }}</span>
-            <a class="cell-remove" title="删除" @mousedown.stop @click="removeCell(cell.id)">×</a>
-          </div>
-          <!-- 8 个调整大小手柄 -->
-          <span
-            v-for="h in HANDLES"
-            :key="h"
-            class="resize-handle"
-            :class="'handle-' + h"
-            @mousedown.stop.prevent="onResizeStart($event, cell, h)" />
-        </mu-grid-cell>
+      <!-- 画布区 -->
+      <div class="designer-demo__canvas-wrap flex-1">
+        <div
+          ref="gridEl"
+          class="designer-grid"
+          :style="gridStyle">
+          <!-- 网格引导线（独立层，避免与背景简写冲突） -->
+          <div class="grid-lines" aria-hidden="true" />
+          <mu-grid-cell
+            v-for="cell in cells"
+            :key="cell.id"
+            :col-start="cell.colStart"
+            :col-end="cell.colEnd"
+            :row-start="cell.rowStart"
+            :row-end="cell.rowEnd"
+            class="designer-cell"
+            :class="{ 'is-dragging': draggingId === cell.id, 'is-resizing': resizingId === cell.id }">
+            <div
+              class="cell-body"
+              @mousedown.stop.prevent="onMoveStart($event, cell)">
+              <span class="cell-label">{{ cell.id }}</span>
+              <a class="cell-remove" title="删除" @mousedown.stop @click="removeCell(cell.id)">×</a>
+            </div>
+            <!-- 8 个调整大小手柄 -->
+            <span
+              v-for="h in HANDLES"
+              :key="h"
+              class="resize-handle"
+              :class="'handle-' + h"
+              @mousedown.stop.prevent="onResizeStart($event, cell, h)" />
+          </mu-grid-cell>
+        </div>
       </div>
     </div>
-  </div>
+  </demo-page>
 </template>
 
 <script setup>
   import { ref, computed, onUnmounted } from 'vue'
-  import ThemeSwitch from '../common/theme-switch.vue'
+
+  import DemoPage from '../../common/demo-page.vue'
 
   // ── 维度 ──────────────────────────────────────────────
   const columns = ref(12)
@@ -240,7 +242,6 @@
     window.addEventListener('mouseup', onResizeEnd)
   }
 
-  // eslint-disable-next-line complexity
   function onResizeMove (e) {
     const ctx = resizeCtx
     if (!ctx) return
@@ -290,33 +291,23 @@
 </script>
 
 <style scoped>
-  .grid-designer {
+  .designer-demo {
     color: var(--mu-text-color-normal);
-    background: var(--mu-background-color);
+    background: var(--mu-bg-main);
   }
 
   /* 工具栏 */
-  .designer-toolbar {
+  .designer-demo__toolbar {
     gap: 12px;
     align-items: center;
     padding: 8px 16px;
     border-bottom: 1px solid var(--mu-border-color-normal);
   }
 
-  .designer-toolbar h2 {
-    margin: 0;
-    padding: 0;
-    border: none;
-
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  .designer-toolbar .field {
+  .designer-demo__toolbar .field {
     display: inline-flex;
     gap: 6px;
     align-items: center;
-
     font-size: 0.85rem;
     color: var(--mu-text-color-light);
   }
@@ -325,38 +316,35 @@
     width: 70px;
   }
 
-  .toolbar-tail {
+  .designer-demo__tip {
     margin-left: auto;
+    color: var(--mu-text-color-muted);
+    font-size: 12px;
   }
 
   /* 画布 */
-  .designer-canvas-wrap {
+  .designer-demo__canvas-wrap {
     overflow: auto;
     padding: 16px;
   }
 
   .designer-grid {
     position: relative;
-
     overflow: hidden;
     display: grid;
-
     width: 100%;
     height: 100%;
     min-height: 420px;
     border: 1px solid var(--mu-border-color-normal);
-
     background-color: var(--mu-bg-strong);
   }
 
   /* 网格引导线层：绝对定位覆盖整个画布，置于单元格之下 */
   .grid-lines {
     pointer-events: none;
-
     position: absolute;
     z-index: 0;
     inset: 0;
-
     background-image:
       linear-gradient(to right, var(--mu-border-color-normal) 1px, transparent 1px),
       linear-gradient(to bottom, var(--mu-border-color-normal) 1px, transparent 1px);
@@ -375,19 +363,15 @@
   .cell-body {
     cursor: move;
     user-select: none;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     width: 100%;
     height: 100%;
     min-height: 24px;
     border-radius: 4px;
-
-    color: #fff;
-
-    background: var(--mu-primary-color, #5b7fff);
+    color: var(--mu-text-color-inverse, #fff);
+    background: var(--mu-primary-color);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   }
 
@@ -396,7 +380,7 @@
   }
 
   .designer-cell.is-resizing .cell-body {
-    box-shadow: 0 0 0 2px rgba(91, 127, 255, 0.5);
+    box-shadow: 0 0 0 2px var(--mu-primary-color);
   }
 
   .cell-label {
@@ -407,15 +391,12 @@
 
   .cell-remove {
     cursor: pointer;
-
     position: absolute;
     top: 0;
     right: 2px;
-
     width: 16px;
     height: 16px;
     border-radius: 50%;
-
     font-size: 14px;
     line-height: 14px;
     color: rgba(255, 255, 255, 0.85);

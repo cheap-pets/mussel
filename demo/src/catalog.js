@@ -242,6 +242,33 @@ export const catalog = [
         desc: 'MuScrollBox / v-mu-scrollbar'
       }
     ]
+  },
+  {
+    category: 'advanced',
+    title: '进阶',
+    desc: '专题与综合案例',
+    pages: [
+      {
+        path: 'advanced/gesture',
+        title: 'Gesture 手势',
+        desc: 'EventInterceptor：tap / press / pan'
+      },
+      {
+        path: 'advanced/colors',
+        title: '颜色系统',
+        desc: '--mu-* 变量与 colors 导出'
+      },
+      {
+        path: 'advanced/case-form',
+        title: '案例：综合表单',
+        desc: '表单 / 表格 / 弹窗联动场景'
+      },
+      {
+        path: 'advanced/case-grid-designer',
+        title: '案例：网格设计器',
+        desc: 'grid-box 综合应用'
+      }
+    ]
   }
 ]
 
