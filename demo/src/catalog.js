@@ -70,6 +70,38 @@ export const catalog = [
         path: 'form/color-input',
         title: 'ColorInput 颜色输入',
         desc: '色板与 HEX 输入'
+      },
+      {
+        path: 'form/date-input',
+        title: 'DateInput 日期输入',
+        desc: 'date / week / month / quarter / year'
+      },
+      {
+        path: 'form/date-range-input',
+        title: 'DateRangeInput 日期范围',
+        desc: '范围面板、字符串值与清空'
+      },
+      {
+        path: 'form/time-input',
+        title: 'TimeInput 时间输入',
+        desc: '时 / 分 / 秒与步进'
+      },
+      {
+        path: 'form/form',
+        title: 'Form 表单',
+        desc: 'MuForm / MuFormRow / MuFormField'
+      }
+    ]
+  },
+  {
+    category: 'data',
+    title: '数据展示',
+    desc: '表格、树、列表与日历',
+    pages: [
+      {
+        path: 'data/calendar',
+        title: 'Calendar 日历',
+        desc: 'mu-calendar 独立日历面板'
       }
     ]
   }
