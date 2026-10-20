@@ -210,6 +210,38 @@ export const catalog = [
         desc: 'MuDrawer 方向、容器与调整尺寸'
       }
     ]
+  },
+  {
+    category: 'layout',
+    title: '布局',
+    desc: '布局盒、网格与滚动',
+    pages: [
+      {
+        path: 'layout/box',
+        title: 'Box 布局盒',
+        desc: 'MuHBox / MuVBox 与 flex 辅助组件'
+      },
+      {
+        path: 'layout/split-box',
+        title: 'SplitBox 分割',
+        desc: 'MuSplitHBox / MuSplitVBox 分隔条'
+      },
+      {
+        path: 'layout/grid-box',
+        title: 'GridBox 网格',
+        desc: 'MuGridBox / MuGridCell'
+      },
+      {
+        path: 'layout/bar',
+        title: 'Bar 工具栏',
+        desc: 'MuBar / MuToolbar / MuScrollArea'
+      },
+      {
+        path: 'layout/scrollbar',
+        title: 'Scrollbar 滚动',
+        desc: 'MuScrollBox / v-mu-scrollbar'
+      }
+    ]
   }
 ]
 
