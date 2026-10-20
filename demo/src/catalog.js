@@ -102,6 +102,48 @@ export const catalog = [
         path: 'data/calendar',
         title: 'Calendar 日历',
         desc: 'mu-calendar 独立日历面板'
+      },
+      {
+        path: 'data/table',
+        title: 'Table 表格（基础）',
+        desc: '列定义、样式与事件'
+      },
+      {
+        path: 'data/table-advanced',
+        title: 'Table 表格（进阶）',
+        desc: '复选、固定列、自定义渲染与分页联动'
+      },
+      {
+        path: 'data/tree',
+        title: 'Tree 树（基础）',
+        desc: '数据结构、图标与自定义节点'
+      },
+      {
+        path: 'data/tree-advanced',
+        title: 'Tree 树（进阶）',
+        desc: '按钮、复选、菜单与懒加载'
+      },
+      {
+        path: 'data/list',
+        title: 'List 列表',
+        desc: 'MuListItem / MuListDivider'
+      },
+      {
+        path: 'data/collapse',
+        title: 'Collapse 折叠面板',
+        desc: 'MuCollapse / MuCollapseGroup'
+      }
+    ]
+  },
+  {
+    category: 'navigation',
+    title: '导航',
+    desc: '标签页、菜单与分页',
+    pages: [
+      {
+        path: 'navigation/pagination',
+        title: 'Pagination 分页',
+        desc: '页码、每页条数与快速跳转'
       }
     ]
   }
