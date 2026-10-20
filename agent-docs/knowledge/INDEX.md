@@ -81,6 +81,18 @@
 - [容器 display:none 期间测量污染溢出折叠宽度缓存](./pitfalls/overflow-measure-hidden-container-cache.md)
   隐藏期间测量把 0 宽写入 `widthCache`，恢复后全部行展开被裁剪；0 宽须视同未测量（加守卫），漂移检测删除后不再自愈。
 
+- [Playwright 断言 modal 可见性须用 mask 的 display](./pitfalls/playwright-modal-visibility-assert.md)
+  `.mu-dialog`/`.mu-drawer` 自身 computed display 不受祖先 v-show 影响、恒为块级；关闭断言须取 `closest('.mu-modal-mask')` 的 display。
+
+- [Playwright 模拟 splitter 拖拽：真实 mouse + scrollIntoView + 方向语义](./pitfalls/playwright-splitter-drag-verify.md)
+  合成 PointerEvent 使 setPointerCapture 抛错、监听器不挂载；须真实 mouse 且先 scrollIntoView；collapse-only 分隔条 target=prev 向左拖为折叠。
+
+- mu-split-box 侧栏面板初始尺寸
+  `__start/__end` 为 flex-grow:0 且 basis auto，无内容宽度时初始仅约 37px；侧栏内容须给 min-width 或固定宽度，否则无拖拽余地。
+
+- mu-dialog / mu-drawer 的 dismissible 无默认值
+  modalProps.dismissible 无 default，不传时 ESC 与遮罩点击均不关闭，只能按钮或程序化 hide；需 ESC/遮罩关闭须显式传 dismissible。
+
 ## Constraints
 
 - [国际化：locale 无响应式，运行时不可切换](./constraints/langs-locale-not-reactive.md)
