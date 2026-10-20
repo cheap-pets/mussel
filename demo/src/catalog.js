@@ -183,6 +183,33 @@ export const catalog = [
         desc: 'MuTooltip / v-mu-tooltip'
       }
     ]
+  },
+  {
+    category: 'overlay',
+    title: '弹层',
+    desc: '下拉菜单、右键菜单、对话框与抽屉',
+    pages: [
+      {
+        path: 'overlay/dropdown',
+        title: 'Dropdown 下拉',
+        desc: 'MuDropdown / MuDropdownButton 与各类菜单项'
+      },
+      {
+        path: 'overlay/context-menu',
+        title: 'ContextMenu 右键菜单',
+        desc: 'MuContextMenu 右键触发'
+      },
+      {
+        path: 'overlay/dialog',
+        title: 'Dialog 对话框',
+        desc: 'MuDialog 按钮、插槽与调整尺寸'
+      },
+      {
+        path: 'overlay/drawer',
+        title: 'Drawer 抽屉',
+        desc: 'MuDrawer 方向、容器与调整尺寸'
+      }
+    ]
   }
 ]
 
