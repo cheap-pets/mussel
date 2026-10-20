@@ -40,6 +40,38 @@ export const catalog = [
         desc: 'MuButtonGroup / MuIconButton'
       }
     ]
+  },
+  {
+    category: 'form',
+    title: '表单',
+    desc: '输入、选择与表单容器',
+    pages: [
+      {
+        path: 'form/input',
+        title: 'Input 输入框',
+        desc: 'MuInput / MuInputGroup / MuSearchInput'
+      },
+      {
+        path: 'form/selection',
+        title: '选择控件',
+        desc: 'Check / Radio / Switch / Segmented'
+      },
+      {
+        path: 'form/select',
+        title: 'Select 选择器',
+        desc: 'MuSelect / MuMultiSelect / MuOption'
+      },
+      {
+        path: 'form/combo-box',
+        title: 'ComboBox 组合框',
+        desc: '可编辑与远程搜索'
+      },
+      {
+        path: 'form/color-input',
+        title: 'ColorInput 颜色输入',
+        desc: '色板与 HEX 输入'
+      }
+    ]
   }
 ]
 
