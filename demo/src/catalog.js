@@ -8,6 +8,23 @@
  */
 export const catalog = [
   {
+    category: 'basics',
+    title: '基础元素',
+    desc: '图标、徽标等基础元素',
+    pages: [
+      {
+        path: 'basics/icon',
+        title: 'Icon 图标',
+        desc: 'mu-icon / mu-sort-icon / installIcons'
+      },
+      {
+        path: 'basics/badge',
+        title: 'Badge/Tags 徽标与标签',
+        desc: 'MuBadge / MuTags'
+      }
+    ]
+  },
+  {
     category: 'buttons',
     title: '按钮',
     desc: '按钮、按钮组与图标按钮',
@@ -16,6 +33,11 @@ export const catalog = [
         path: 'buttons/button',
         title: 'Button 按钮',
         desc: '类型、风格、色彩、状态与尺寸'
+      },
+      {
+        path: 'buttons/group',
+        title: 'ButtonGroup 按钮组',
+        desc: 'MuButtonGroup / MuIconButton'
       }
     ]
   }
