@@ -4,11 +4,12 @@ import serveHandler from 'serve-handler'
 import pluginVue from '@vitejs/plugin-vue'
 
 import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
+import { dirname, relative, resolve } from 'node:path'
 import { readdirSync, readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs'
 
 import { optimize } from 'svgo'
 import { colors } from './src/colors.js'
+import { catalog, findCatalogPage } from './demo/src/catalog.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const isWatch = process.argv.includes('--watch')
@@ -51,22 +52,72 @@ function pluginSvg () {
 // 获取所有示例目录
 const demoSrcDir = resolve(__dirname, 'demo/src')
 
-const demoModules = existsSync(demoSrcDir)
-  ? readdirSync(demoSrcDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name)
-  : []
+/**
+ * 组装构建入口：
+ * - home 固定入口（首页）
+ * - catalog 登记的页面（目录与 URL 一致，支持多级路径）
+ * - 迁移期旧页兜底：一层目录（批次 0-7），批次 8 移除
+ */
+function buildInputs () {
+  const inputs = { home: resolve(demoSrcDir, 'home/main.js') }
+  const registered = new Set()
 
-// 为每个示例生成入口点
-const input = {}
+  for (const category of catalog) {
+    for (const page of category.pages) {
+      if (!page.path.startsWith(`${category.category}/`)) {
+        throw new Error(`[demo] catalog 页面路径 "${page.path}" 必须以分类 "${category.category}/" 开头`)
+      }
 
-demoModules.forEach(el => {
-  const mainJs = resolve(__dirname, `demo/src/${el}/main.js`)
+      if (registered.has(page.path)) {
+        throw new Error(`[demo] catalog 页面路径重复: "${page.path}"`)
+      }
 
-  if (existsSync(mainJs)) {
-    input[el] = mainJs
+      registered.add(page.path)
+
+      const mainJs = resolve(demoSrcDir, page.path, 'main.js')
+
+      if (!existsSync(mainJs)) {
+        throw new Error(`[demo] catalog 页面 "${page.path}" 缺少 main.js`)
+      }
+
+      inputs[page.path] = mainJs
+    }
   }
-})
+
+  // 一层旧页目录兜底（排除 common/ 与 home/）
+  const topLevelDirs = readdirSync(demoSrcDir, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory() && dirent.name !== 'common' && dirent.name !== 'home')
+    .map(dirent => dirent.name)
+
+  topLevelDirs.forEach(name => {
+    const mainJs = resolve(demoSrcDir, name, 'main.js')
+
+    if (existsSync(mainJs) && !inputs[name]) {
+      inputs[name] = mainJs
+    }
+  })
+
+  // 未登记警告：demo/src 下的两级页面目录必须登记到 catalog
+  topLevelDirs
+    .filter(name => name !== 'home')
+    .forEach(name => {
+      const dir = resolve(demoSrcDir, name)
+
+      readdirSync(dir, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+        .forEach(({ name: sub }) => {
+          const path = `${name}/${sub}`
+
+          if (existsSync(resolve(dir, sub, 'main.js')) && !registered.has(path)) {
+            console.warn(`[demo] 页面目录 demo/src/${path}/main.js 未登记到 catalog.js`)
+          }
+        })
+    })
+
+  return inputs
+}
+
+const input = buildInputs()
 
 // 插件:复制 HTML 文件到 dist 目录并修复路径
 function copyHtmlFiles () {
@@ -77,30 +128,50 @@ function copyHtmlFiles () {
 
       if (!existsSync(templatePath)) return
 
-      const appCssFile = Object
-        .entries(bundle)
-        .find(([, asset]) => asset.fileName.includes('app.css'))
-        ?.[0]
+      const appCss = Object
+        .keys(bundle)
+        .find(fileName => fileName.startsWith('assets/') && fileName.endsWith('.css'))
+
+      if (!appCss) {
+        throw new Error('[demo] 未找到共享样式 assets/*.css，页面模板缺少全局样式')
+      }
 
       const template = readFileSync(templatePath, 'utf-8')
 
-      demoModules.forEach(el => {
-        if (!input[el]) return
+      Object.keys(input).forEach(key => {
+        const isHome = key === 'home'
+        const catalogPage = isHome ? null : findCatalogPage(key)?.page
 
-        mkdirSync(resolve(__dirname, `demo/dist/${el}`), { recursive: true })
+        const title = isHome
+          ? 'Mussel 组件库'
+          : catalogPage
+            ? catalogPage.title
+            : key.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join(' ')
 
-        const htmlFile = resolve(__dirname, `demo/dist/${el}/index.html`)
-        const title = el.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join(' ')
-        const html = template.replace('{{title}}', title).replace('%app-css%', appCssFile || '')
+        const root = isHome ? '' : '../'.repeat(key.split('/').length)
+        const pageJs = isHome ? './home/main.js' : './main.js'
+        const pageCssHref = isHome ? './home/style.css' : './style.css'
+        const pageCssKey = isHome ? 'home/style.css' : `${key}/style.css`
+
+        // 无样式页面不输出 link，避免 404
+        const pageCssLink = bundle[pageCssKey]
+          ? `<link rel="stylesheet" type="text/css" href="${pageCssHref}" />\n`
+          : ''
+
+        const outDir = isHome ? 'demo/dist' : `demo/dist/${key}`
+        const htmlFile = resolve(__dirname, outDir, 'index.html')
+
+        mkdirSync(resolve(__dirname, outDir), { recursive: true })
+
+        const html = template
+          .replaceAll('{{title}}', title)
+          .replaceAll('{{root}}', root)
+          .replaceAll('{{appCss}}', appCss)
+          .replaceAll('{{pageCssLink}}', pageCssLink)
+          .replaceAll('{{pageJs}}', pageJs)
 
         writeFileSync(htmlFile, html)
       })
-
-      const rootIndexHtml = resolve(__dirname, 'demo/src/index.html')
-
-      if (existsSync(rootIndexHtml)) {
-        copyFileSync(rootIndexHtml, resolve(__dirname, 'demo/dist/index.html'))
-      }
 
       const faviconPath = resolve(__dirname, 'demo/src/common/favicon.svg')
 
@@ -186,8 +257,17 @@ export default {
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || ''
 
-          return (name.endsWith('.css') && !name.includes('app'))
-            ? `${name.replace('.css', '')}/style.css`
+          if (!name.endsWith('.css')) return 'assets/[name].[ext]'
+
+          // assetInfo.name 只含 basename，须按入口源码路径反推页面目录
+          const original = assetInfo.originalFileName || ''
+          const rel = original
+            ? relative(demoSrcDir, resolve(__dirname, original)).replace(/\\/g, '/')
+            : ''
+          const isPageCss = rel.endsWith('/main.js') && !rel.startsWith('..')
+
+          return isPageCss
+            ? `${rel.slice(0, -'/main.js'.length)}/style.css`
             : 'assets/[name].[ext]'
         }
       },
