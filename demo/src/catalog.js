@@ -141,9 +141,46 @@ export const catalog = [
     desc: '标签页、菜单与分页',
     pages: [
       {
+        path: 'navigation/tabs',
+        title: 'Tabs 标签页',
+        desc: 'MuTabs / MuTabPanel'
+      },
+      {
+        path: 'navigation/menu',
+        title: 'Menu 菜单',
+        desc: '多级菜单与溢出折叠'
+      },
+      {
+        path: 'navigation/side-menu',
+        title: 'SideMenu 侧边菜单',
+        desc: '折叠、收藏与 rail 模式'
+      },
+      {
         path: 'navigation/pagination',
         title: 'Pagination 分页',
         desc: '页码、每页条数与快速跳转'
+      }
+    ]
+  },
+  {
+    category: 'feedback',
+    title: '反馈',
+    desc: '消息、状态块与提示',
+    pages: [
+      {
+        path: 'feedback/message',
+        title: 'Message 消息',
+        desc: '$mussel.messageBox：对话框与通知'
+      },
+      {
+        path: 'feedback/status-box',
+        title: 'StatusBox 状态块',
+        desc: '图标、插槽与尺寸'
+      },
+      {
+        path: 'feedback/tooltip',
+        title: 'Tooltip 提示',
+        desc: 'MuTooltip / v-mu-tooltip'
       }
     ]
   }
