@@ -109,6 +109,7 @@
   const yOverflowed = ref(false)
 
   const hoverStyle = reactive({
+    '--hover-row-left': 0,
     '--hover-row-top': 0,
     '--hover-row-width': 0,
     '--hover-row-height': 0,
@@ -220,6 +221,17 @@
     hideHoverIndicator()
   })
 
+  // 指示条以 wrap 定位，但 tr 的 offsetParent 是 table（offsetTop 不含 table 自身偏移），
+  // 而 th/td 带 position:relative，offsetParent 跳过 table 直指 wrap（已含偏移）。
+  // 统一换算成 wrap 坐标，兼容 table 被外部加 margin 的场景及两种 offsetParent 行为。
+  function offsetToWrap (el) {
+    const table = tableEl.value
+
+    return el.offsetParent === table
+      ? { left: el.offsetLeft + table.offsetLeft, top: el.offsetTop + table.offsetTop }
+      : { left: el.offsetLeft, top: el.offsetTop }
+  }
+
   function setRowHoverIndicator (row) {
     if (hoveringRow?.deref() === row) return
     else hoveringRow = new WeakRef(row)
@@ -242,28 +254,34 @@
       next = next.nextElementSibling
     }
 
-    hoverStyle['--hover-row-top'] = `${first.offsetTop }px`
-    hoverStyle['--hover-row-height'] = `${last.offsetTop - first.offsetTop + last.offsetHeight}px`
+    const firstPos = offsetToWrap(first)
+    const lastPos = offsetToWrap(last)
+
+    hoverStyle['--hover-row-left'] = `${firstPos.left}px`
+    hoverStyle['--hover-row-top'] = `${firstPos.top}px`
+    hoverStyle['--hover-row-height'] = `${lastPos.top - firstPos.top + last.offsetHeight}px`
   }
 
   function setColHoverIndicator (cell, column) {
     if (props.hoverMode !== 'cell' && hoveringCol?.deref() === column) return
 
-    const left = cell.offsetLeft
+    const pos = offsetToWrap(cell)
+    const cellLeft = cell.offsetLeft
     const fixedWidth = fixedColumnsWidth.value
     const scrollLeft = tableEl.value.parentNode.scrollLeft
 
-    const offset = column._fixed || left >= fixedWidth + scrollLeft
+    const offset = column._fixed || cellLeft >= fixedWidth + scrollLeft
       ? 0
       : scrollLeft
 
-    hoverStyle['--hover-col-left'] = `${left + offset}px`
+    hoverStyle['--hover-col-left'] = `${pos.left + offset}px`
     hoverStyle['--hover-col-width'] = `${cell.offsetWidth - offset}px`
 
     if (props.hoverMode === 'cell') {
-      hoverStyle['--hover-col-top'] = `${cell.offsetTop}px`
+      hoverStyle['--hover-col-top'] = `${pos.top}px`
       hoverStyle['--hover-col-height'] = `${cell.offsetHeight}px`
     } else {
+      hoverStyle['--hover-col-top'] = `${tableEl.value.offsetTop}px`
       hoveringCol = new WeakRef(column)
     }
   }

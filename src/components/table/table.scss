@@ -177,7 +177,7 @@
 .mu-table__hover-indicator--cross {
   &::before {
     top: var(--hover-row-top);
-    left: 0;
+    left: var(--hover-row-left);
     width: var(--hover-row-width);
     height: var(--hover-row-height);
   }
