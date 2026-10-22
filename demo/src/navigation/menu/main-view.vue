@@ -34,7 +34,8 @@
 
     <demo-section
       title="展开交互"
-      note="expand-trigger 为 click / hover 控制子级展开方式；expand-icon 控制展开箭头显隐">
+      note="expand-trigger 为 click / hover 控制子级展开方式；expand-icon 控制展开箭头显隐"
+      vertical>
       <div class="demo-row">
         <mu-button
           :active="triggerMode === 'hover' || null"
@@ -56,7 +57,8 @@
 
     <demo-section
       title="禁用"
-      note="disabled 禁用整棵菜单（含展开与选中）">
+      note="disabled 禁用整棵菜单（含展开与选中）"
+      vertical>
       <div class="demo-row">
         <mu-button @click="rootDisabled = !rootDisabled">
           切换整树禁用（{{ rootDisabled }}）

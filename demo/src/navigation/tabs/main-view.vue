@@ -3,7 +3,8 @@
     <demo-section
       title="基础用法"
       note="mu-tab-panel 组成页签，v-model:active-tab 绑定当前页签名（name）；点击页签切换内容"
-      :code="basicCode">
+      :code="basicCode"
+      vertical>
       <mu-tabs
         v-model:active-tab="activeTab"
         class="demo-tabs">
@@ -22,7 +23,8 @@
 
     <demo-section
       title="风格与位置"
-      note="tab-style 为 simple / lined-simple / button / small-button / card；tab-position 为 top / bottom / left / right">
+      note="tab-style 为 simple / lined-simple / button / small-button / card；tab-position 为 top / bottom / left / right"
+      vertical>
       <div class="demo-row">
         <span class="demo-log">tab-style：</span>
         <mu-select
@@ -56,7 +58,8 @@
 
     <demo-section
       title="排序、禁用与动态页签"
-      note="tab-order 调整页签顺序；disabled 禁用点击；3 秒后动态插入 Tab Delta 页签（观察页签栏自动更新）">
+      note="tab-order 调整页签顺序；disabled 禁用点击；3 秒后动态插入 Tab Delta 页签（观察页签栏自动更新）"
+      vertical>
       <mu-tabs
         v-model:active-tab="activeTab3"
         class="demo-tabs">
@@ -105,7 +108,8 @@
 
     <demo-section
       title="大量页签"
-      note="16 个页签超出宽度时页签栏横向滚动">
+      note="16 个页签超出宽度时页签栏横向滚动"
+      vertical>
       <mu-tabs
         v-model:active-tab="activeTab5"
         class="demo-tabs">
@@ -188,6 +192,9 @@
 <style>
   .demo-tabs {
     height: 180px;
+
+    /* 16 页签内容超宽时 stretch 不收缩，限制在 section 容器内，页签栏横向滚动 */
+    max-width: 100%;
   }
 
   .demo-tabs--short {

@@ -30,7 +30,8 @@
 
     <demo-section
       title="异步数据"
-      note="数据异步加载后 auto-expand-top 自动展开到激活项；点「激活深层项」观察展开与滚动定位">
+      note="数据异步加载后 auto-expand-top 自动展开到激活项；点「激活深层项」观察展开与滚动定位"
+      vertical>
       <div class="demo-row">
         <mu-button caption="激活深层项（g8-i2）" @click="active3 = { id: 'g8-i2' }" />
         <mu-button caption="重新加载数据" @click="loadAsync" />
@@ -45,7 +46,8 @@
 
     <demo-section
       title="折叠与自定义头尾"
-      note="v-model:collapsed 控制折叠；#header / #footer 作用域插槽随折叠切换显示">
+      note="v-model:collapsed 控制折叠；#header / #footer 作用域插槽随折叠切换显示"
+      vertical>
       <div class="demo-row">
         <mu-button @click="collapsed = !collapsed">
           collapsed = {{ collapsed }}
@@ -74,7 +76,8 @@
 
     <demo-section
       title="收藏"
-      note="v-model:favorites 绑定收藏 id 数组，悬停叶子项点星标切换，触发 favorite-toggle 事件">
+      note="v-model:favorites 绑定收藏 id 数组，悬停叶子项点星标切换，触发 favorite-toggle 事件"
+      vertical>
       <div class="demo-row">
         <span class="demo-log">favorites：{{ favorites }}</span>
       </div>
@@ -88,7 +91,8 @@
 
     <demo-section
       title="窄栏（rail）模式"
-      note="rail 固定为图标窄栏（collapsed 被忽略），悬停弹出子级面板">
+      note="rail 固定为图标窄栏（collapsed 被忽略），悬停弹出子级面板"
+      vertical>
       <mu-side-menu
         v-model:active-item="active6"
         v-model:collapsed="collapsed6"
@@ -100,7 +104,8 @@
 
     <demo-section
       title="禁用与弹层互斥"
-      note="disabled 整树禁用；与 Dropdown 同时只允许一个弹层展开">
+      note="disabled 整树禁用；与 Dropdown 同时只允许一个弹层展开"
+      vertical>
       <div class="demo-row">
         <mu-button @click="rootDisabled = !rootDisabled">
           切换整树禁用（{{ rootDisabled }}）
