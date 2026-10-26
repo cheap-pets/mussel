@@ -114,6 +114,16 @@ export const catalog = [
         desc: '复选、固定列、自定义渲染与分页联动'
       },
       {
+        path: 'data/canvas-table',
+        title: 'CanvasTable 画布表格',
+        desc: 'MuCanvasTable：canvas 渲染、虚拟滚动与单元格编辑（验证页）'
+      },
+      {
+        path: 'data/canvas-table-editable',
+        title: 'CanvasTable 可编辑示例',
+        desc: 'MuCanvasTable 单元格编辑示例：输入/下拉/日期/开关与只读列'
+      },
+      {
         path: 'data/tree',
         title: 'Tree 树（基础）',
         desc: '数据结构、图标与自定义节点'

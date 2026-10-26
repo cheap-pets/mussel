@@ -1,0 +1,158 @@
+// 局部尺寸变量镜像 table.scss tokens（02-design.md A7）：用户可同款方式覆盖，
+// canvas 侧经 theme.js 探针读取同名变量（覆盖后经 refreshTheme/sizechange 通道重算布局）
+.mu-canvas-table {
+  --row-height: 36px;
+  --cell-padding: 8px;
+  --cell-line-height: 18px;
+
+  --head-row-height: 36px;
+
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--mu-border-color-normal);
+  border-radius: 1px;
+
+  color: var(--mu-text-color-normal);
+}
+
+.mu-canvas-table__scroll {
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+}
+
+// 滚动几何（A2）：__sticky 钉住视口（尺寸由 relayout 同步 = 容器 clientWidth/Height），
+// __spacer 为其后的流内兄弟，撑出剩余滚动范围；两元素相加 = 内容总高
+.mu-canvas-table__sticky {
+  position: sticky;
+  top: 0;
+  left: 0;
+}
+
+.mu-canvas-table__canvas {
+  display: block;
+}
+
+.mu-canvas-table__spacer {
+  width: 0;
+  height: 0;
+}
+
+// DOM 职责层：编辑浮层 / 空态 / 投影条（A2 DOM 骨架）。整体不拦截指针
+// （画布交互监听在 __sticky 上），仅编辑器自身恢复可交互
+.mu-canvas-table__overlay {
+  pointer-events: none;
+
+  position: absolute;
+  z-index: var(--mu-z-index-above);
+  inset: 0;
+
+  // clip（非 hidden）：hidden 生成可滚动盒，编辑器 focus() 程序化滚动会把
+  // 浮层滚出视口（G3 实证 overlay.scrollLeft 被滚至 83、浮层漂移）；clip 不可滚动，
+  // 程序化滚动失效即治本（Vue 3 evergreen 基线，overflow: clip 全线支持）
+  overflow: clip;
+}
+
+// 投影条：变量无法进 canvas，box-shadow 方案保变量纯度（A7；统一 --mu-shadow-float，
+// 不复刻 table.scss:155 的硬编码 rgba 双阴影）
+.mu-canvas-table__header-shadow,
+.mu-canvas-table__bottom-shadow {
+  pointer-events: none;
+
+  position: absolute;
+  left: 0;
+
+  overflow: visible;
+
+  width: 100%;
+  height: 0;
+}
+
+.mu-canvas-table__header-shadow {
+  top: 0;
+}
+
+.mu-canvas-table__bottom-shadow {
+  bottom: 0;
+}
+
+.mu-canvas-table--y-scrolled .mu-canvas-table__header-shadow {
+  box-shadow: var(--mu-shadow-float);
+}
+
+.mu-canvas-table--y-overflowed .mu-canvas-table__bottom-shadow {
+  box-shadow: var(--mu-shadow-float);
+}
+
+.mu-canvas-table--y-scrolled-end .mu-canvas-table__bottom-shadow {
+  box-shadow: none;
+}
+
+.mu-canvas-table__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  color: var(--mu-text-color-subtle);
+}
+
+// 编辑浮层（A6）：absolute 定位由 editor.js computeEditorStyle 产出（相对 __overlay
+// 原点 = canvas 视口原点，格矩形四周内缩 EDITOR_GAP 4px——A5.4 R1 统一矩形）；
+// 控件自身尺寸随单元格填充——.mu-input 固定 200x32 不覆盖
+// 会溢出单元格并拦截相邻格点击。背景遮蔽 canvas 单元格内容（switch 等小控件不铺满
+// 浮层，无背景会与 canvas 绘制的文本/图形叠影）
+.mu-canvas-table__editor {
+  pointer-events: auto;
+
+  position: absolute;
+  z-index: var(--mu-z-index-above);
+
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+
+  background: var(--mu-bg-normal);
+
+  // 文本左缘一致性（A5.4 R1，实施约束 5）：浮层 left = 格左 + EDITOR_GAP(4)，
+  // 输入文本左缘 = left + 边框 1 + padding-left（padding − 5）= 格左 + padding，
+  // 与单元格文本左缘精确一致；--cell-padding 被覆盖时经 calc 同步成立
+  // （5 = EDITOR_GAP + 边框 1）。.mu-input 选择器通配 combo 根
+  // （combo-wrapper 根类名同为 mu-input）
+  > .mu-input {
+    width: 100%;
+    height: 100%;
+    padding: 0 0 0 calc(var(--cell-padding, 8px) - 5px);
+  }
+
+  // textarea 编辑器（人工 2 意见 2）：复用 form INPUT_TYPES.memo 约定
+  // （原生 <textarea class="mu-input"> + v-model）；浮层内联 style 控制宽高
+  // （覆盖 memo 固定 height:80px）；四边 padding 同口径——文本左缘/首行顶 =
+  // 格左/格顶 + padding，与 drawText 多行首行顶对齐（A5.4 R1）
+  > textarea.mu-input {
+    resize: none;
+
+    overflow: auto;
+    display: block;
+
+    width: 100%;
+    height: 100%;
+    padding: calc(var(--cell-padding, 8px) - 5px);
+
+    font-family: inherit;
+    line-height: var(--cell-line-height, 18px);
+  }
+}
+
+// borderless 形态（A5.4 editor.border:false）：仅覆盖边框/底色两项白名单，
+// 不触 box-shadow（focus 光环保留，提供编辑态反馈）与 clear/下拉交互；
+// 不覆盖 padding——透明边框宽仍 1px，基础规则的 padding-left 补偿对两态同效，
+// 同特异性后定义的 padding: 0 会清掉补偿使 borderless 左缘退到格左 + 5（A5.4 R1）
+.mu-canvas-table__editor--borderless > .mu-input {
+  border-color: transparent;
+  background: none;
+}

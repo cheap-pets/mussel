@@ -18,9 +18,29 @@ dist/
 .zcode/
 .claude/
 .zcodeignore
-.handoff/
 
 # VitePress
 node_modules/.vitepress/
 docs-site/.vitepress/cache/
 docs-site/.vitepress/dist/
+备份/canvas-table/canvas-table.scss
+备份/canvas-table/canvas-table.vue
+备份/canvas-table/cell-painters.js
+备份/canvas-table/editor.js
+备份/canvas-table/index.js
+备份/canvas-table/interactions.js
+备份/canvas-table/layout.js
+备份/canvas-table/painter.js
+备份/canvas-table/theme.js
+备份/demo/canvas-table/main-view.vue
+备份/demo/canvas-table/main.js
+备份/demo/canvas-table/self-checks/cell-painters.js
+备份/demo/canvas-table/self-checks/editor.js
+备份/demo/canvas-table/self-checks/index.js
+备份/demo/canvas-table/self-checks/interactions.js
+备份/demo/canvas-table/self-checks/layout.js
+备份/demo/canvas-table/self-checks/painter.js
+备份/demo/canvas-table/self-checks/theme.js
+备份/demo/canvas-table-editable/main-view.vue
+备份/demo/canvas-table-editable/main.js
+.pipeline/

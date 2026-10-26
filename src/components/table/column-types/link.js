@@ -9,13 +9,16 @@ export const LinkColumn = {
     function valueToLinks (record, value) {
       if (value != null) {
         return Array.isArray(value)
-          ? value.map(el => ({ caption: el }))
+          // 对象元素原样保留（{ caption, color, danger, disabled }——对象用于设置
+          // 链接颜色等；现状被包成 { caption: 对象 } 渲染为 [object Object]），
+          // 字符串/数字元素仍包 { caption: el }
+          ? value.map(el => (el != null && typeof el === 'object' ? el : { caption: el }))
           : [{ caption: value }]
       }
     }
 
     const { linkOption = {} } = column
-    const { max, danger: _danger, disabled: _disabled } = linkOption
+    const { max, danger: _danger, disabled: _disabled, color: _color } = linkOption
 
     const getLinks = ensureFn(column.links || valueToLinks)
     const getLinkClass = ensureFn(linkOption.class)
@@ -47,12 +50,13 @@ export const LinkColumn = {
           item.text = link = '...'
           item.title = showTitle && links.slice(idx).map(el => el.caption).join('\n\n')
         } else {
-          const { caption, disabled = _disabled, danger = _danger } = link
+          const { caption, disabled = _disabled, danger = _danger, color = _color } = link
 
           item.text = caption
           item.title = showTitle && caption
 
           if (disabled) item.attrs.disabled = ''
+          if (color) itemClass.push(`mu-link--${color}`)
           if (danger) itemClass.push('mu-link--danger')
         }
 

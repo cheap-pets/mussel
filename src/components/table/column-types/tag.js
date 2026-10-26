@@ -9,7 +9,10 @@ export const TagColumn = {
     function valueToTags (record, value) {
       if (value != null) {
         return Array.isArray(value)
-          ? value.map(el => ({ caption: el }))
+          // 对象元素原样保留（{ caption, color, pill, flat }——对象用于设置标签
+          // 颜色等；现状被包成 { caption: 对象 } 渲染为 [object Object]），
+          // 字符串/数字元素仍包 { caption: el }
+          ? value.map(el => (el != null && typeof el === 'object' ? el : { caption: el }))
           : [{ caption: value }]
       }
     }

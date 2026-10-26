@@ -18,6 +18,34 @@
   }
 }
 
+// 色类体系对齐 tag.scss 先例（17 色板 = 4 语义 + 12 彩色 + danger 既有规则）：
+// 语义色有 0–9 数字谱系（hover 取 -4 变浅，同 .mu-link:hover 的 --mu-primary-color-4）；
+// danger 不入 @each——上方既有规则已完整覆盖（color + hover -4），@each 重复生成
+// 会同特异性后定义胜出，把既有 hover 变浅行为覆盖为同色
+@each $v in ("primary", "secondary", "success", "warning") {
+  .mu-link--#{$v} {
+    color: var(--mu-#{$v}-color);
+
+    &:hover {
+      color: var(--mu-#{$v}-color-4);
+    }
+  }
+}
+
+// 12 彩色无数字变体（仅色值 + translucent），hover 同色（下划线由 .mu-link:hover 提供）
+@each $v in (
+  "red", "pink", "grape", "violet", "indigo", "blue",
+  "cyan", "teal", "green", "lime", "yellow", "orange"
+) {
+  .mu-link--#{$v} {
+    color: var(--mu-#{$v});
+
+    &:hover {
+      color: var(--mu-#{$v});
+    }
+  }
+}
+
 .mu-link[disabled] {
   pointer-events: none;
   color: var(--mu-text-color-muted);
