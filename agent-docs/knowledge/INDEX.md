@@ -10,6 +10,9 @@
 - [Playwright 验证 watch 驱动路径：经组件实例替换 props](./patterns/playwright-props-swap-verification.md)
   demo 数据为 const 无替换入口时，`el.__vueParentComponent.props.x = …` 替换 props 触发子组件 watch；实测无警告，注意替换后勿触发父重渲。
 
+- [canvas-table 前台性能验证：原型劫持计数 + props 直替 + lastRelayout](./patterns/canvas-table-performance-profiling.md)
+  劫持 measureText/setTransform 计数 + props 直替注入 + `getLayoutInfo().lastRelayout` 归因 relayout 阶段；含 getCellRect 视口坐标/真实键盘/暗像素采样三陷阱。
+
 - [headless Edge 做 DOM/控制台断言（无 playwright 时）](./patterns/headless-edge-dom-verification.md)
   `--dump-dom --enable-logging=stderr --virtual-time-budget` + UMD 产物（dist/mussel.js dev 构建 + vue.global.js）挂载多 app，grep DOM class 与 CONSOLE 行断言；模块级全局对象跨 app 共享，隔离断言用独立页面。
 
