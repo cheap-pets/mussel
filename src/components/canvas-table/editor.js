@@ -121,12 +121,25 @@ export function isCellEditable ({ editable = false, column } = {}) {
 }
 
 /**
+ * text/link 列编辑器形态判定（评审 6 P6 行级求值）：函数形态 lineClamp 的
+ * legacy 列按 record 求值（与 drawText/computeRowHeights 同源，行高与编辑器
+ * 形态必然一致），否则取列配置 _maxLines/maxLines；开值为数组或 maxLines > 1
+ * → 'textarea'，否则 'input'。
+ */
+function resolveTextLikeEditorType (column, rawValue, record) {
+  const resolveMaxLines = typeof column?._resolveMaxLines === 'function'
+    ? column._resolveMaxLines(record)
+    : (column?._maxLines ?? column?.maxLines ?? 1)
+
+  return Array.isArray(rawValue) || resolveMaxLines > 1 ? 'textarea' : 'input'
+}
+
+/**
  * 编辑器类型解析（A5.5）：column.editor.type 显式指定优先（非法值回退）；
  * text/link 列缺省按开值形态与 maxLines 判定——开值为数组或
- * column._resolveMaxLines(record) > 1（行级求值，评审 6 P6：函数形态 lineClamp
- * 的 legacy 列按 record 求值，与 drawText/computeRowHeights 同源，行高与编辑器
- * 形态必然一致）→ 'textarea'，否则 'input'；其余列按类型映射（enum → select、
- * date/datetime → date、bool → switch），未知列类型回退 input。
+ * column._resolveMaxLines(record) > 1（行级求值，评审 6 P6）→ 'textarea'，
+ * 否则 'input'；其余列按类型映射（enum → select、date/datetime → date、
+ * bool → switch），未知列类型回退 input。
  *
  * @param {Object} column 列定义（组件壳传已准备内部列，含 _resolveMaxLines）
  * @param {Object} [options]
@@ -143,13 +156,7 @@ export function resolveEditorType (column, { rawValue, record } = {}) {
   const typeName = column?.type == null ? 'text' : column.type
 
   if (typeName === 'text' || typeName === 'link') {
-    const resolveMaxLines = typeof column?._resolveMaxLines === 'function'
-      ? column._resolveMaxLines(record)
-      : (column?._maxLines ?? column?.maxLines ?? 1)
-
-    if (Array.isArray(rawValue) || resolveMaxLines > 1) return 'textarea'
-
-    return 'input'
+    return resolveTextLikeEditorType(column, rawValue, record)
   }
 
   return COLUMN_TYPE_EDITORS[typeName] || 'input'
@@ -197,6 +204,45 @@ export function normalizeEditorOpenValue ({ column, editorType, value } = {}) {
   return value
 }
 
+/** Number() 有限 → 数值，否则保留原值（交 validate 拦截或原类型保持） */
+function toFiniteNumber (value) {
+  const numeric = Number(value)
+
+  return Number.isFinite(numeric) ? numeric : value
+}
+
+/**
+ * number/currency input（①）与 textarea 数字原值（⑤）共用的数值收敛：
+ * null/'' → null（先于 Number()，防 Number(null)===0 / Number('')===0），
+ * 其余经 toFiniteNumber（number 原值经 Number() 恒等——含 NaN/Infinity/-0，
+ * 与「typeof number 直接返回」等价，类型保持）。
+ */
+function normalizeNumericCommit (value) {
+  if (value == null || value === '') return null
+
+  return toFiniteNumber(value)
+}
+
+/** 派生 options select 数值原值（②）的数值收敛：仅 null → null（'' 按 Number() 转换） */
+function normalizeNumericEnumCommit (value) {
+  if (value == null) return null
+
+  return toFiniteNumber(value)
+}
+
+/**
+ * textarea 提交规整（④⑤）：数组原值 → value.split('\n')（数组值编辑 = 换行
+ * 分割成数组，元素一律字符串、空行保留为 ''——所见即所得）；数字原值类型保持
+ * （normalizeNumericCommit）；字符串原值 → 字符串原样（含换行）。
+ */
+function normalizeTextareaCommitValue (rawValue, value) {
+  if (Array.isArray(rawValue)) return value.split('\n')
+
+  if (typeof rawValue === 'number') return normalizeNumericCommit(value)
+
+  return value
+}
+
 /**
  * 编辑提交值规整（A5.5 commit 链，validate 之前执行）：
  * ① input + number/currency 列：null/'' → null（先于 Number()，防
@@ -220,35 +266,14 @@ export function normalizeEditorOpenValue ({ column, editorType, value } = {}) {
  */
 export function normalizeCommitValue ({ column, editorType, rawValue, value } = {}) {
   if (editorType === 'input' && (column?.type === 'number' || column?.type === 'currency')) {
-    if (value == null || value === '') return null
-    if (typeof value === 'number') return value
-
-    const numeric = Number(value)
-
-    return Number.isFinite(numeric) ? numeric : value
+    return normalizeNumericCommit(value)
   }
 
   if (editorType === 'select' && usesDerivedOptions(column, editorType) && typeof rawValue === 'number') {
-    if (value == null) return null
-
-    const numeric = Number(value)
-
-    return Number.isFinite(numeric) ? numeric : value
+    return normalizeNumericEnumCommit(value)
   }
 
-  if (editorType === 'textarea') {
-    if (Array.isArray(rawValue)) return value.split('\n')
-
-    if (typeof rawValue === 'number') {
-      if (value == null || value === '') return null
-
-      const numeric = Number(value)
-
-      return Number.isFinite(numeric) ? numeric : value
-    }
-
-    return value
-  }
+  if (editorType === 'textarea') return normalizeTextareaCommitValue(rawValue, value)
 
   return value
 }
@@ -304,17 +329,6 @@ export function resolveEditorProps (column) {
 }
 
 /**
- * 编辑器组件解析（A6：MuInput | MuSelect | MuDateInput | MuSwitch）。
- *
- * @param {Object} column 列定义
- * @returns {Object} 组件对象（经模板 <component :is> 挂载，本地组件对象
- *   不依赖全局注册）
- */
-export function resolveEditorComponent (column) {
-  return EDITOR_COMPONENTS[resolveEditorType(column)]
-}
-
-/**
  * 编辑浮层定位计算（A5.4 R1 统一等距内缩矩形，相对 __overlay 原点 = canvas 视口
  * 原点）：全编辑器类型共用同一矩形 = 单元格矩形四周内缩 EDITOR_GAP——
  * left/top = 格原点 + EDITOR_GAP、width/height = 格宽高 − 2×EDITOR_GAP
@@ -326,7 +340,7 @@ export function resolveEditorComponent (column) {
  *   边界，borderless 类不适用于多行文本）；其余按 border !== false（缺省 true）
  *   ——仅切换容器 --borderless 类（边框/底色可见性），矩形不受影响；
  * - theme 参数保留以稳调用方签名（组件壳传快照），定位不再消费（R1 起
- *   controlHeight/cellPadding/cellLineHeight 均不参与）。
+ *   cellPadding/cellLineHeight 均不参与）。
  *
  * @param {Object} params
  * @param {Number} params.colIndex 列号
@@ -337,8 +351,8 @@ export function resolveEditorComponent (column) {
  * @param {Number} [params.scrollTop=0]
  * @param {Number} [params.scrollLeft=0]
  * @param {Number} [params.fixedCount=0] 固定列数
- * @param {Number} [params.rowHeight=0] 行高 px（无 rowGeometry 时的等高回退）
- * @param {Object} [params.rowGeometry] 行几何实例（topAt/heightAt，变高行；缺省按 rowHeight 等高）
+ * @param {Object} params.rowGeometry 行几何实例（topAt/heightAt，必传——C4 删
+ *   rowHeight 等高内联回退，uniform 模式传 createUniformRowGeometry 产物）
  * @param {Object} [params.theme] 主题快照（保留签名兼容，定位不再消费——R1）
  * @param {String} [params.editorType='input'] 编辑器类型（仅 bordered 判定消费）
  * @param {Boolean} [params.border=true] 编辑器边框配置（switch/textarea 忽略）
@@ -353,8 +367,8 @@ export function computeEditorStyle ({
   scrollTop = 0,
   scrollLeft = 0,
   fixedCount = 0,
-  rowHeight = 0,
   rowGeometry,
+  theme,
   editorType = 'input',
   border = true
 } = {}) {
@@ -362,18 +376,11 @@ export function computeEditorStyle ({
     ? false
     : (editorType === 'textarea' ? true : border !== false)
 
-  const topAt = rowGeometry
-    ? row => rowGeometry.topAt(row)
-    : row => row * rowHeight
-  const heightAt = rowGeometry
-    ? row => rowGeometry.heightAt(row)
-    : () => rowHeight
-
   return {
     left: colLefts[colIndex] - (colIndex < fixedCount ? 0 : scrollLeft) + EDITOR_GAP,
-    top: headHeight + topAt(rowIndex) - scrollTop + EDITOR_GAP,
+    top: headHeight + rowGeometry.topAt(rowIndex) - scrollTop + EDITOR_GAP,
     width: colWidths[colIndex] - EDITOR_GAP * 2,
-    height: Math.max(heightAt(rowIndex) - EDITOR_GAP * 2, 0),
+    height: Math.max(rowGeometry.heightAt(rowIndex) - EDITOR_GAP * 2, 0),
     bordered
   }
 }

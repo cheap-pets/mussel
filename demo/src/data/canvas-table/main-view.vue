@@ -252,6 +252,8 @@
             <span>{{ debugStats.available ? debugStats.repaintCount : '—' }}</span>
             <span>lastPaint</span>
             <span class="ct-kv__code">{{ lastPaintText }}</span>
+            <span>lastRelayout</span>
+            <span class="ct-kv__code">{{ lastRelayoutText }}</span>
           </div>
         </div>
 
@@ -987,7 +989,7 @@
   }
 
   // ---------- 调试面板：重绘统计 / 主题快照（轮询实例，未接入时显示占位） ----------
-  const debugStats = ref({ available: false, repaintCount: 0, lastPaint: null })
+  const debugStats = ref({ available: false, repaintCount: 0, lastPaint: null, lastRelayout: null })
   const themeSnapshotText = ref('（组件实例未就绪：S1 接入后显示主题快照）')
 
   let lastPaintKey = ''
@@ -995,6 +997,9 @@
 
   const lastPaintText = computed(() =>
     debugStats.value.lastPaint ? JSON.stringify(debugStats.value.lastPaint) : '—')
+
+  const lastRelayoutText = computed(() =>
+    debugStats.value.lastRelayout ? JSON.stringify(debugStats.value.lastRelayout) : '—')
 
   function readInstance () {
     const instance = window.__canvasTable
@@ -1030,6 +1035,7 @@
 
     debugStats.value.available = layout != null
     debugStats.value.lastPaint = lastPaint
+    debugStats.value.lastRelayout = layout?.lastRelayout ?? null
 
     const text = snapshot ? JSON.stringify(snapshot, null, 2) : ''
     if (text && text !== themeSnapshotText.value) themeSnapshotText.value = text

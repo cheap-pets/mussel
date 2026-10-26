@@ -6,11 +6,12 @@
  * （row-geometry）与绘制（cell-painters）用同一 wrapLines + 同一缓存，
  * 折行结果单一事实源。
  *
- * 省略字符二分（00-task.md 实施约束 4，评审 6 P4）：
- * - maxLines 溢出末行收缩字符 = '...'（三个半角点，数据条目字面口径）；
- * - 单行超宽视觉省略 '…'（U+2026，CSS ellipsis 同款）不在本模块
- *   （drawText 现状 ELLIPSIS，cell-painters 消费 wrapLines 前自行处理）。
+ * 省略字符统一 '...'（00-task.md 实施约束 4）：maxLines 溢出末行收缩
+ * （shrinkToFit）与单行超宽截断（ellipsize）同字面，均在本模块——
+ * cell-painters（表体）与 painter（表头）共用 ellipsize，测量经注入的
+ * measure 回调走上游缓存。
  */
+import { ELLIPSIS, FONT_SIZE_FALLBACK, FONT_FAMILY_FALLBACK } from './constants'
 
 /** 折行结果缓存上限（超限整体清空，同 theme.js createMeasureCache 策略） */
 export const WRAP_CACHE_LIMIT = 2000
@@ -20,7 +21,14 @@ const CACHE_SEPARATOR = '\u0000'
 /** maxLines/maxItems 配置值钳制上限（人工 2 意见 2：最大 10） */
 export const MAX_LINES_LIMIT = 10
 
-const DOTS = '...'
+/**
+ * 单元格正文字体串（theme 快照 → canvas font）：cell-painters（绘制）与
+ * row-geometry（行高估高/精算）共用（C2 cellFontOf 收拢，接受 theme 快照
+ * 入参；表头字体带 500 字重，见 painter.headerFontOf，不在此合并）。
+ */
+export function cellFontOf (theme) {
+  return `${theme?.fontSize || FONT_SIZE_FALLBACK}px ${theme?.fontFamily || FONT_FAMILY_FALLBACK}`
+}
 
 // CJK 字符判定：CJK 部首/符号/统一表意文字、日文假名、韩文谚文、全角形态
 const CJK_PATTERN =
@@ -108,16 +116,116 @@ export function estimateLineCount ({ text, fontSize, maxWidth }) {
 }
 
 /**
- * 逐字符收缩：使 content + DOTS 适配 maxWidth（末行自尾部退格并复测）。
+ * 逐字符收缩：使 content + ELLIPSIS 适配 maxWidth（末行自尾部退格并复测）。
  * measure 走上游测量缓存（createMeasureCache），同一文本重复收缩零成本。
  */
 function shrinkToFit (content, font, maxWidth, measure) {
   let last = content
 
-  while (last && measure(last + DOTS, font) > maxWidth) last = last.slice(0, -1)
+  while (last && measure(last + ELLIPSIS, font) > maxWidth) last = last.slice(0, -1)
 
-  // 极端窄列：DOTS 本身超宽时丢弃点号（退化为空内容，由绘制层兜底）
-  return measure(last + DOTS, font) > maxWidth ? '' : last + DOTS
+  // 极端窄列：ELLIPSIS 本身超宽时丢弃点号（退化为空内容，由绘制层兜底）
+  return measure(last + ELLIPSIS, font) > maxWidth ? '' : last + ELLIPSIS
+}
+
+/**
+ * 单行省略截断（A7 单行省略；溢出字符 '...' 按实施约束 4 统一）：
+ * 前缀宽度随字符数单调 ⇒ 二分收缩定位最大可容纳前缀（O(log n) 次测量，
+ * 测量经注入的 measure 走上游缓存），替代逐字符线性回退。
+ * 一个字符都放不下（含 maxWidth ≤ 0）时返回空串（drawText 空串跳过语义）。
+ *
+ * @param {Object} params
+ * @param {String} params.text
+ * @param {String} params.font canvas font 串（如 '14px sans-serif'）
+ * @param {Number} params.maxWidth 最大宽度 px
+ * @param {Function} params.measure 测量回调 (text, font) => px 宽
+ * @returns {{ text: String, width: Number }} text = 截断结果（整串放得下为原文），
+ *   width = 截断结果测量宽度（调用方免二次测量）
+ */
+export function ellipsize ({ text, font, maxWidth, measure }) {
+  const source = String(text ?? '')
+
+  if (!(maxWidth > 0)) return { text: '', width: 0 }
+
+  const full = measure(source, font)
+
+  if (full <= maxWidth) return { text: source, width: full }
+
+  let lo = 0
+  let hi = source.length
+
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1
+
+    if (measure(source.slice(0, mid) + ELLIPSIS, font) <= maxWidth) lo = mid
+    else hi = mid - 1
+  }
+
+  if (lo <= 0) return { text: '', width: 0 }
+
+  const clipped = source.slice(0, lo) + ELLIPSIS
+
+  return { text: clipped, width: measure(clipped, font) }
+}
+
+/**
+ * 超长词（单词自身超宽）逐字断：当前行首部切出放得下的前缀压行，余量续断。
+ * 至少保底 1 字符防死循环（单字符仍超宽时接受溢出）；返回未压行的余量
+ * （作为下一 token 的并入起点，'' = 整词耗尽）。
+ */
+function splitOverflowLine (lines, current, font, maxWidth, measure) {
+  while (measure(current, font) > maxWidth) {
+    let chunk = ''
+
+    while (current.length > 1 && measure(chunk + current[0], font) <= maxWidth) {
+      chunk += current[0]
+      current = current.slice(1)
+    }
+
+    if (!chunk) {
+      chunk = current[0]
+      current = current.slice(1)
+    }
+
+    lines.push(chunk)
+  }
+
+  return current
+}
+
+/** 贪心折行主循环：token 逐个并入当前行，放不下则换行（超长词逐字断）。 */
+function wrapTokens (tokens, font, maxWidth, measure) {
+  const lines = []
+  let current = ''
+
+  for (const token of tokens) {
+    // 词首空白并入 current 时 candidate 与 token 相同，直接走放不下分支
+    if (current && measure(current + token, font) <= maxWidth) {
+      current += token
+      continue
+    }
+
+    if (current) lines.push(current)
+
+    current = splitOverflowLine(lines, token, font, maxWidth, measure)
+  }
+
+  if (current || !lines.length) lines.push(current)
+
+  return lines
+}
+
+/** maxLines 钳制：截断为 maxLines 行，末行收缩加 '...'（实施约束 4）；未超限原样返回。 */
+function clampToMaxLines (lines, font, maxWidth, measure, maxLines) {
+  if (maxLines == null || lines.length <= maxLines) {
+    return { lines, lineCount: lines.length, clamped: false }
+  }
+
+  const kept = lines.slice(0, maxLines)
+
+  kept[maxLines - 1] = shrinkToFit(kept[maxLines - 1] ?? '', font, maxWidth, measure)
+
+  return { lines: kept, lineCount: maxLines, clamped: true }
 }
 
 /** 折行核心（无缓存路径） */
@@ -133,55 +241,9 @@ function computeWrap ({ text, font, maxWidth, measure, maxLines }) {
     return { lines: [source], lineCount: 1, clamped: false }
   }
 
-  const tokens = tokenize(source)
-  const lines = []
-  let current = ''
+  const lines = wrapTokens(tokenize(source), font, maxWidth, measure)
 
-  for (const token of tokens) {
-    // 词首空白并入 current 时 candidate 与 token 相同，直接走放不下分支
-    if (current && measure(current + token, font) <= maxWidth) {
-      current += token
-      continue
-    }
-
-    if (!current) {
-      current = token
-    } else {
-      lines.push(current)
-      current = token
-    }
-
-    // 超长词（单词自身超宽）逐字断
-    while (measure(current, font) > maxWidth) {
-      let chunk = ''
-
-      while (current.length > 1 && measure(chunk + current[0], font) <= maxWidth) {
-        chunk += current[0]
-        current = current.slice(1)
-      }
-
-      // 至少保底 1 字符防死循环（单字符仍超宽时接受溢出）
-      if (!chunk) {
-        chunk = current[0]
-        current = current.slice(1)
-      }
-
-      lines.push(chunk)
-    }
-  }
-
-  if (current || !lines.length) lines.push(current)
-
-  // maxLines 钳制：截断为 maxLines 行，末行收缩加 '...'（实施约束 4）
-  if (maxLines != null && lines.length > maxLines) {
-    const kept = lines.slice(0, maxLines)
-
-    kept[maxLines - 1] = shrinkToFit(kept[maxLines - 1] ?? '', font, maxWidth, measure)
-
-    return { lines: kept, lineCount: maxLines, clamped: true }
-  }
-
-  return { lines, lineCount: lines.length, clamped: false }
+  return clampToMaxLines(lines, font, maxWidth, measure, maxLines)
 }
 
 /**

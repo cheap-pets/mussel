@@ -23,14 +23,23 @@
  */
 import { ensureFn } from '../table/utils'
 import { resolveColumnType } from '../table/column-types'
-import { wrapLines, MAX_LINES_LIMIT } from './text-wrap'
+import { wrapLines, ellipsize, cellFontOf, MAX_LINES_LIMIT } from './text-wrap'
+import { isExpandedKey } from './tree'
+import {
+  TREE_INDENT,
+  CELL_PADDING_FALLBACK,
+  CHECK_SIZE,
+  CHECK_RADIUS,
+  CHECK_FONT_SIZE,
+  ELLIPSIS,
+  FONT_SIZE_FALLBACK,
+  FONT_FAMILY_FALLBACK
+} from './constants'
 
 // 视觉常量（镜像现有 DOM 规格，非新增设计值）：
-// check 方框 —— src/components/table/column-types/style.scss .mu-table__cell-check
-//   （16px、圆角 4px、✓ 12px/600）
-const CHECK_SIZE = 16
-const CHECK_RADIUS = 4
-const CHECK_FONT_SIZE = 12
+// check 方框（CHECK_*，与表头 painter.drawHeaderCheck 同规格互指——状态机不同
+// 不强合，规格变更两处同步）—— src/components/table/column-types/style.scss
+//   .mu-table__cell-check
 // tag pill / button —— src/styles/tag.scss .mu-tag（height 20px / padding 0 8px /
 //   font-size 12px / 圆角 var(--mu-radius-control) = 4px）；button 为 tag 同构轻量按钮（A3.3）
 const TAG_HEIGHT = 20
@@ -41,23 +50,16 @@ const TAG_RADIUS = 4
 const PROGRESS_TRACK_HEIGHT = 8
 const PROGRESS_RADIUS = 4
 const PROGRESS_FONT_SIZE = 12
-// 树缩进（A2.4，镜像 tree.scss --mu-tree_node-indent: 16px；该变量定义于 .mu-tree
-// 作用域，组件探针读不到，canvas 侧取常量；与 row-geometry.TREE_INDENT 同值）
-const TREE_INDENT = 16
 
 // img 缓存上限（超限整体清空，同 theme.js 测量缓存策略）
 const IMAGE_CACHE_LIMIT = 200
 
 // 生产路径 theme 快照必含以下字段（readSnapshot）；缺省值仅为容错
-const FALLBACK_FONT_SIZE = 14
-const FALLBACK_FONT_FAMILY = 'sans-serif'
-const FALLBACK_PADDING = 8
 const FALLBACK_LINE_HEIGHT = 18
 
-// 溢出/省略字符统一 '...'（三个半角点，00-task.md 实施约束 4，用户确认——
-// maxLines 末行收缩、单行超宽省略、数组/link 超限 dots 同一字面）
-const ELLIPSIS = '...'
-const DOTS = '...'
+// button 组条目缺省占位（buttons[i] 为 null/undefined 时的只读替身，
+// 仅访问 caption/disabled/color，共享单例替代循环内逐次 {} 分配）
+const EMPTY_BUTTON = {}
 
 // canvas 专属类型（A3.3）：不入 table 列类型注册表，prepareColumn 在
 // resolveColumnType 之前分发，drawCell 按 canvasKind 走 drawProgress/drawButton；
@@ -68,7 +70,8 @@ const CANVAS_ONLY_TYPES = { progress: true, button: true }
 
 const imageCache = new Map()
 
-/** 读取某 src 的缓存条目（painter / 自检用），未请求过返回 null */
+/** 读取某 src 的缓存条目（self-check only：img 缓存行为的自检观测窗口，
+    生产路径经 requestImage 内部消费，无其他调用方） */
 export function getImageEntry (src) {
   return (src && imageCache.get(src)) || null
 }
@@ -108,6 +111,32 @@ function clampLimit (value, fallback) {
   const n = Math.round(Number(value))
 
   return Number.isFinite(n) ? Math.min(Math.max(n, 1), MAX_LINES_LIMIT) : fallback
+}
+
+/**
+ * _render 构建：canvas 专属类型（progress/button，03-review-5 问题 6）不经
+ * resolveColumnType 产物（回退 TextColumn 会绘制文本），直接产出 canvasKind
+ * render；普通类型走 table.vue:178 同款——compile 优先，其次类型对象/函数
+ * 自身作为 render。
+ */
+function createColumnRender (column, type, canvasOnlyKind) {
+  if (canvasOnlyKind === 'progress') {
+    const getProgressOption = ensureFn(column.progressOption)
+
+    return ({ record, value }) => ({
+      canvasKind: 'progress',
+      value,
+      progressOption: getProgressOption(record) ?? {}
+    })
+  }
+
+  if (canvasOnlyKind === 'button') {
+    const getButtons = ensureFn(column.buttons)
+
+    return ({ record }) => ({ canvasKind: 'button', buttons: getButtons(record) ?? [] })
+  }
+
+  return type.compile ? type.compile(column) : (type.render || type)
 }
 
 /**
@@ -155,22 +184,7 @@ export function prepareColumn (column, { placeholder } = {}) {
   // resolveColumnType（回退 TextColumn 会绘制文本），产出 canvasKind 产物
   const canvasOnlyKind = CANVAS_ONLY_TYPES[column.type] ? column.type : null
 
-  if (canvasOnlyKind === 'progress') {
-    const getProgressOption = ensureFn(column.progressOption)
-
-    col._render = ({ record, value }) => ({
-      canvasKind: 'progress',
-      value,
-      progressOption: getProgressOption(record) ?? {}
-    })
-  } else if (canvasOnlyKind === 'button') {
-    const getButtons = ensureFn(column.buttons)
-
-    col._render = ({ record }) => ({ canvasKind: 'button', buttons: getButtons(record) ?? [] })
-  } else {
-    // table.vue:178 同款：compile 优先，其次类型对象/函数自身作为 render
-    col._render = type.compile ? type.compile(column) : (type.render || type)
-  }
+  col._render = createColumnRender(column, type, canvasOnlyKind)
 
   col.placeholder ??= placeholder
 
@@ -220,9 +234,12 @@ function maxLinesOf (col, record) {
  * - flatInfo       { levels, hasChildren } 树平铺信息（树关 = null），可选
  * - expandedKeys   展开 key 集合（Set），可选
  * - recordKey      当前行 key（箭头展开态判定），可选
- * - measure / wrapCache   文本测量注入（theme.js 工厂产物，多行折行），可选
+ * - measure / wrapCache   文本测量注入（theme.js 工厂产物，多行折行），可选；
+ *                        单行省略经 ellipsize 走 measure 缓存，未注入时回退 ctx 直测
  * - onItemRect     条目命中矩形收集回调 ({ kind, index, rect })（painter itemHits），
  *                  link/tag/button 条目回报（dots '...' 条目同样回报），可选
+ * - placeholder    表格级占位文本兜底（content.text ?? 列级 placeholder ?? 此值），
+ *                  painter state.placeholder 注入，可选
  * @returns {Object} resolveCellContent 的解析结果（painter 调试用）
  */
 export function drawCell (ctx, {
@@ -239,13 +256,14 @@ export function drawCell (ctx, {
   recordKey,
   measure,
   wrapCache,
-  onItemRect
+  onItemRect,
+  placeholder
 }) {
   const content = resolveCellContent(col, { record, recordNumber, emit })
 
-  if (!rect || rect.width <= 0 || rect.height <= 0) return content
+  if (isSkippableRect(rect)) return content
 
-  const padding = theme?.cellPadding || FALLBACK_PADDING
+  const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
 
   ctx.font = cellFontOf(theme)
   ctx.textBaseline = 'middle'
@@ -267,24 +285,59 @@ export function drawCell (ctx, {
     : rect
 
   // canvas 专属分发（A3.3）：progress / button 真实绘制，非 items 产物
-  if (content.canvasKind === 'progress') {
-    drawProgress(ctx, contentRect, content, { padding, theme, record })
-    return content
-  }
-
-  if (content.canvasKind === 'button') {
-    drawButton(ctx, contentRect, content.buttons, { padding, theme, record, onItemRect })
+  if (drawCanvasKindContent(ctx, contentRect, content, padding, theme, record, measure, onItemRect)) {
     return content
   }
 
   if (Array.isArray(content.items) && content.items.length) {
-    // 单 item + line-clamp class 形态改道 drawText 多行（A3.5 DOM 风格兼容，
-    // 评审 6 P6：maxLines 取 _resolveMaxLines(record)，与 render 内 --line-clamp
-    // 同函数求值恒等）
+    drawContentItems(
+      ctx, contentRect, content, col, record,
+      padding, theme, measure, wrapCache, onItemRect, onImageLoad
+    )
+
+    return content
+  }
+
+  drawDisplayText(ctx, contentRect, content, col, record, placeholder, padding, theme, measure, wrapCache)
+
+  return content
+}
+
+/** 矩形缺失 / 零尺寸（含 NaN 尺寸：`<= 0` 判定为 false 时照常进入绘制，
+    与原实现逐分支一致）时跳过内容绘制 */
+function isSkippableRect (rect) {
+  return !rect || rect.width <= 0 || rect.height <= 0
+}
+
+/** canvas 专属分发（A3.3）：progress / button 真实绘制；命中返回 true */
+function drawCanvasKindContent (ctx, rect, content, padding, theme, record, measure, onItemRect) {
+  if (content.canvasKind === 'progress') {
+    drawProgress(ctx, rect, content, { padding, theme, record, measure })
+    return true
+  }
+
+  if (content.canvasKind === 'button') {
+    drawButton(ctx, rect, content.buttons, { padding, theme, record, onItemRect, measure })
+    return true
+  }
+
+  return false
+}
+
+/**
+ * items 数组落地：单 item + line-clamp class 形态改道 drawText 多行（A3.5
+ * DOM 风格兼容，评审 6 P6：maxLines 取 _resolveMaxLines(record)，与 render 内
+ * --line-clamp 同函数求值恒等）；link 列 = 条目列竖排（A3.5）；其余横排。
+ */
+function drawContentItems (
+  ctx, rect, content, col, record,
+  padding, theme, measure, wrapCache, onItemRect, onImageLoad
+) {
+  if (content.items.length === 1) {
     const only = content.items[0]
 
-    if (content.items.length === 1 && itemClassOf(only).includes('line-clamp') && only.text != null) {
-      drawTextValue(ctx, contentRect, only.text, col._align, {
+    if (itemClassOf(only).includes('line-clamp') && only.text != null) {
+      drawTextValue(ctx, rect, only.text, col._align, {
         padding,
         theme,
         measure,
@@ -293,32 +346,33 @@ export function drawCell (ctx, {
         maxItems: col._maxItems
       })
 
-      return content
+      return
     }
-
-    // link 列 = 条目列（A3.5）：数组竖排每条一行（单条超宽省略）+ maxItems 钳制
-    if (col.type === 'link') {
-      drawLinkItems(ctx, contentRect, content.items, { padding, theme, maxItems: col._maxItems, onItemRect })
-
-      return content
-    }
-
-    drawItems(ctx, contentRect, content.items, {
-      align: col._align,
-      padding,
-      theme,
-      onImageLoad,
-      onItemRect
-    })
-
-    return content
   }
 
-  // 空内容落占位文本（table-row.vue 的 cell.text ?? col.placeholder）
-  const display = content.text ?? col.placeholder
+  // link 列 = 条目列（A3.5）：数组竖排每条一行（单条超宽省略）+ maxItems 钳制
+  if (col.type === 'link') {
+    drawLinkItems(ctx, rect, content.items, { padding, theme, maxItems: col._maxItems, onItemRect, measure })
+
+    return
+  }
+
+  drawItems(ctx, rect, content.items, {
+    align: col._align,
+    padding,
+    theme,
+    onImageLoad,
+    onItemRect,
+    measure
+  })
+}
+
+/** 空内容落占位文本（table-row.vue 的 cell.text ?? col.placeholder ?? 表格级 placeholder） */
+function drawDisplayText (ctx, rect, content, col, record, placeholder, padding, theme, measure, wrapCache) {
+  const display = content.text ?? col.placeholder ?? placeholder
 
   if (display != null) {
-    drawTextValue(ctx, contentRect, display, col._align, {
+    drawTextValue(ctx, rect, display, col._align, {
       padding,
       theme,
       measure,
@@ -327,14 +381,19 @@ export function drawCell (ctx, {
       maxItems: col._maxItems
     })
   }
-
-  return content
 }
 
-function cellFontOf (theme) {
-  const fontSize = theme?.fontSize || FALLBACK_FONT_SIZE
+/**
+ * 测量回调解析：注入 measure 优先（生产路径 = theme.js 测量缓存实例，与行高
+ * 估高/精算同一缓存）；未注入（自检/手织调用容错）回退当前 ctx 直测，无缓存
+ */
+function measureOf (ctx, measure) {
+  if (typeof measure === 'function') return measure
 
-  return `${fontSize}px ${theme?.fontFamily || FALLBACK_FONT_FAMILY}`
+  return (text, font) => {
+    ctx.font = font
+    return ctx.measureText(text).width
+  }
 }
 
 /** 文本水平锚点（ctx.textAlign 与 align 同值时的 x 坐标） */
@@ -344,17 +403,6 @@ function textAnchorX (rect, align, padding) {
     : align === 'center'
       ? rect.x + rect.width / 2
       : rect.x + padding
-}
-
-/** 超宽截断加省略号（A7：单行省略；溢出字符 '...' 按实施约束 4 统一）；一个字符都放不下时返回空串 */
-function ellipsize (ctx, text, maxWidth) {
-  if (ctx.measureText(text).width <= maxWidth) return text
-
-  let end = text.length
-
-  while (end > 0 && ctx.measureText(text.slice(0, end) + ELLIPSIS).width > maxWidth) end--
-
-  return end > 0 ? text.slice(0, end) + ELLIPSIS : ''
 }
 
 /**
@@ -395,8 +443,13 @@ function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wr
     return
   }
 
-  // 单行省略（现状路径）：垂直居中
-  const single = ellipsize(ctx, text, contentWidth)
+  // 单行省略（现状路径）：垂直居中；截断经注入 measure 走缓存（P0-1）
+  const { text: single } = ellipsize({
+    text,
+    font: cellFontOf(theme),
+    maxWidth: contentWidth,
+    measure: measureOf(ctx, measure)
+  })
 
   if (!single) return
 
@@ -406,15 +459,17 @@ function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wr
 }
 
 /** 数组值多行（文本呈现列）：每元素一行、顶部对齐、超限第 maxItems 行 '...' */
-function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems }) {
+function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, measure }) {
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0 || !values.length) return
 
   const lineHeight = theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
   const shown = values.length > maxItems
-    ? values.slice(0, maxItems - 1).concat(DOTS)
+    ? values.slice(0, maxItems - 1).concat(ELLIPSIS)
     : values
+  const font = cellFontOf(theme)
+  const measureFn = measureOf(ctx, measure)
 
   ctx.fillStyle = theme?.textColor
   ctx.textAlign = align
@@ -422,7 +477,7 @@ function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems })
   let y = rect.y + padding + lineHeight / 2
 
   for (const element of shown) {
-    const line = ellipsize(ctx, String(element ?? ''), contentWidth)
+    const { text: line } = ellipsize({ text: String(element ?? ''), font, maxWidth: contentWidth, measure: measureFn })
 
     if (line) ctx.fillText(line, textAnchorX(rect, align, padding), y)
 
@@ -432,13 +487,29 @@ function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems })
 
 // —— 树形列（A2.4/A3.4） ——
 
-/** 箭头展开态判定（Set 优先，数组容错） */
-function isExpandedKey (expandedKeys, key) {
-  if (expandedKeys == null || key == null) return false
+/**
+ * 树箭头三角绘制（C2 收拢：槽内 2..10、展开 ▾ / 收起 ▸ ±3.5 / ±5 的坐标
+ * 单一事实源）：分区 1 常态（drawTreeAffordance，textColor）与分区 5 hover
+ * 主色（painter.paintTreeArrowAccent）共用，形状变更只改此处。
+ */
+export function drawTreeArrow (ctx, x, centerY, expanded, color) {
+  ctx.beginPath()
 
-  if (typeof expandedKeys.has === 'function') return expandedKeys.has(key)
+  if (expanded) {
+    // 展开 ▾（下指三角）
+    ctx.moveTo(x + 2, centerY - 3.5)
+    ctx.lineTo(x + 10, centerY - 3.5)
+    ctx.lineTo(x + 6, centerY + 3.5)
+  } else {
+    // 收起 ▸（右指三角）
+    ctx.moveTo(x + 3, centerY - 5)
+    ctx.lineTo(x + 3, centerY + 5)
+    ctx.lineTo(x + 10, centerY)
+  }
 
-  return typeof expandedKeys.includes === 'function' ? expandedKeys.includes(key) : false
+  ctx.closePath()
+  ctx.fillStyle = color
+  ctx.fill()
 }
 
 /**
@@ -453,26 +524,13 @@ function drawTreeAffordance (ctx, rect, { col, row, flatInfo, expandedKeys, reco
   const hasChildren = !!flatInfo.hasChildren?.[row]
 
   if (hasChildren) {
-    const x = rect.x + padding + level * TREE_INDENT
-    const centerY = rect.y + rect.height / 2
-
-    ctx.beginPath()
-
-    if (isExpandedKey(expandedKeys, recordKey)) {
-      // 展开 ▾（下指三角）
-      ctx.moveTo(x + 2, centerY - 3.5)
-      ctx.lineTo(x + 10, centerY - 3.5)
-      ctx.lineTo(x + 6, centerY + 3.5)
-    } else {
-      // 收起 ▸（右指三角）
-      ctx.moveTo(x + 3, centerY - 5)
-      ctx.lineTo(x + 3, centerY + 5)
-      ctx.lineTo(x + 10, centerY)
-    }
-
-    ctx.closePath()
-    ctx.fillStyle = theme?.textColor
-    ctx.fill()
+    drawTreeArrow(
+      ctx,
+      rect.x + padding + level * TREE_INDENT,
+      rect.y + rect.height / 2,
+      isExpandedKey(expandedKeys, recordKey),
+      theme?.textColor
+    )
   }
 
   return level * TREE_INDENT + TREE_INDENT
@@ -536,38 +594,18 @@ function linkTextColorOf (item, theme) {
  * 再逐条目绘制；超出右缘的条目丢弃。link/tag 条目矩形经 onItemRect 回报
  * （kind/index/rect，painter itemHits 命中来源，A3.3）。
  */
-function drawItems (ctx, rect, items, { align, padding, theme, onImageLoad, onItemRect }) {
+function drawItems (ctx, rect, items, { align, padding, theme, onImageLoad, onItemRect, measure }) {
   const gap = padding
   const contentWidth = rect.width - padding * 2
   const centerY = rect.y + rect.height / 2
 
-  const hooks = { contentWidth, contentHeight: rect.height, padding, theme, onImageLoad }
+  const hooks = { contentWidth, contentHeight: rect.height, padding, theme, onImageLoad, measure }
   const widths = items.map(item => measureItem(ctx, item, hooks))
 
-  const positions = []
-  let offset = 0
-  let visible = false
-
-  for (let i = 0; i < items.length; i++) {
-    if (widths[i] == null) {
-      positions.push(null)
-      continue
-    }
-
-    if (visible) offset += gap
-    positions.push(offset)
-    offset += widths[i]
-    visible = true
-  }
+  const { positions, offset, visible } = layoutItemPositions(items, widths, gap)
 
   // 内容超宽时回退左对齐（溢出部分被右缘丢弃，不向两侧外溢）
-  let start = rect.x + padding
-
-  if (visible && offset < contentWidth) {
-    if (align === 'center') start = rect.x + (rect.width - offset) / 2
-    else if (align === 'right') start = rect.x + rect.width - padding - offset
-  }
-
+  const start = itemsStartX(rect, align, padding, offset, visible, contentWidth)
   const rightBound = rect.x + rect.width - padding
 
   for (let i = 0; i < items.length; i++) {
@@ -584,20 +622,59 @@ function drawItems (ctx, rect, items, { align, padding, theme, onImageLoad, onIt
       contentHeight: rect.height,
       padding,
       theme,
-      onImageLoad
+      onImageLoad,
+      measure
     })
 
-    if (onItemRect) {
-      const kind = resolveItemKind(items[i])
-
-      if (kind === 'tag' || kind === 'link') {
-        onItemRect({ kind, index: i, rect: { x, y: rect.y, width, height: rect.height } })
-      }
-    }
+    if (onItemRect) reportHitRect(onItemRect, items[i], i, x, rect.y, width, rect.height)
   }
 }
 
-function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, onImageLoad }) {
+/** 逐条目横向起点（可见条目间以 gap 分隔；测量失败条目 null 跳过不占位），
+    一并产出累计宽度 offset 与是否含可见条目 visible（起点分布判定用） */
+function layoutItemPositions (items, widths, gap) {
+  const positions = []
+  let offset = 0
+  let visible = false
+
+  for (let i = 0; i < items.length; i++) {
+    if (widths[i] == null) {
+      positions.push(null)
+      continue
+    }
+
+    if (visible) offset += gap
+
+    positions.push(offset)
+    offset += widths[i]
+    visible = true
+  }
+
+  return { positions, offset, visible }
+}
+
+/** items 整体起点：内容未超宽时按列 align 分布，超宽回退左对齐 */
+function itemsStartX (rect, align, padding, offset, visible, contentWidth) {
+  let start = rect.x + padding
+
+  if (visible && offset < contentWidth) {
+    if (align === 'center') start = rect.x + (rect.width - offset) / 2
+    else if (align === 'right') start = rect.x + rect.width - padding - offset
+  }
+
+  return start
+}
+
+/** tag/link 条目命中矩形回报（painter itemHits 命中来源，A3.3；其余类别不回报） */
+function reportHitRect (onItemRect, item, index, x, y, width, height) {
+  const kind = resolveItemKind(item)
+
+  if (kind === 'tag' || kind === 'link') {
+    onItemRect({ kind, index, rect: { x, y, width, height } })
+  }
+}
+
+function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, onImageLoad, measure }) {
   const kind = resolveItemKind(item)
 
   if (kind === 'check') return CHECK_SIZE
@@ -614,15 +691,13 @@ function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, 
   if (kind == null) return null
 
   const text = String(item.text ?? '')
-
-  ctx.font = kind === 'tag' ? tagFontOf(theme) : cellFontOf(theme)
-
-  const width = ctx.measureText(text).width + (kind === 'tag' ? TAG_PADDING_X * 2 : 0)
+  const width = measureOf(ctx, measure)(text, kind === 'tag' ? tagFontOf(theme) : cellFontOf(theme)) +
+    (kind === 'tag' ? TAG_PADDING_X * 2 : 0)
 
   return Math.min(width, contentWidth)
 }
 
-function drawItem (ctx, item, x, centerY, { maxWidth, contentHeight, padding, theme, onImageLoad }) {
+function drawItem (ctx, item, x, centerY, { maxWidth, contentHeight, padding, theme, onImageLoad, measure }) {
   const kind = resolveItemKind(item)
 
   if (kind === 'check') return drawCheck(ctx, item, x, centerY, theme)
@@ -631,7 +706,7 @@ function drawItem (ctx, item, x, centerY, { maxWidth, contentHeight, padding, th
     return drawCellImage(ctx, item, x, centerY, { maxWidth, contentHeight, padding, theme, onImageLoad })
   }
 
-  if (kind === 'tag') return drawTag(ctx, item, x, centerY, { maxWidth, theme })
+  if (kind === 'tag') return drawTag(ctx, item, x, centerY, { maxWidth, theme, measure })
 
   if (kind == null) return
 
@@ -640,27 +715,42 @@ function drawItem (ctx, item, x, centerY, { maxWidth, contentHeight, padding, th
   drawItemText(ctx, item, x, centerY, {
     maxWidth,
     theme,
+    measure,
     color: kind === 'link' ? linkTextColorOf(item, theme) : theme?.textColor
   })
 }
 
-function drawItemText (ctx, item, x, centerY, { maxWidth, theme, color }) {
-  ctx.font = cellFontOf(theme)
-
-  const text = ellipsize(ctx, String(item.text ?? ''), Math.max(0, maxWidth))
+function drawItemText (ctx, item, x, centerY, { maxWidth, theme, measure, color }) {
+  const { text } = ellipsize({
+    text: String(item.text ?? ''),
+    font: cellFontOf(theme),
+    maxWidth: Math.max(0, maxWidth),
+    measure: measureOf(ctx, measure)
+  })
 
   if (!text) return
 
+  ctx.font = cellFontOf(theme)
   ctx.fillStyle = color
   ctx.textAlign = 'left'
   ctx.textBaseline = 'middle'
   ctx.fillText(text, x, centerY)
 }
 
+/** attrs 存在性判定（disabled / data-checked 与交互命中同口径：非 null 且非 false） */
+function isTruthyAttr (value) {
+  return value != null && value !== false
+}
+
+/** 字体族回退（theme 快照缺 fontFamily 时用兜底族；check/tag/progress 同源） */
+function fontFamilyOf (theme) {
+  return theme?.fontFamily || FONT_FAMILY_FALLBACK
+}
+
 function drawCheck (ctx, item, x, centerY, theme) {
   const attrs = item.attrs ?? {}
-  const checked = attrs['data-checked'] != null && attrs['data-checked'] !== false
-  const disabled = attrs.disabled != null && attrs.disabled !== false
+  const checked = isTruthyAttr(attrs['data-checked'])
+  const disabled = isTruthyAttr(attrs.disabled)
 
   const y = centerY - CHECK_SIZE / 2
 
@@ -685,7 +775,7 @@ function drawCheck (ctx, item, x, centerY, theme) {
   ctx.stroke()
 
   if (checked) {
-    ctx.font = `${CHECK_FONT_SIZE}px ${theme?.fontFamily || FALLBACK_FONT_FAMILY}`
+    ctx.font = `${CHECK_FONT_SIZE}px ${fontFamilyOf(theme)}`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillStyle = disabled ? theme?.gray : theme?.textColor
@@ -696,26 +786,31 @@ function drawCheck (ctx, item, x, centerY, theme) {
 }
 
 function tagFontOf (theme) {
-  return `${TAG_FONT_SIZE}px ${theme?.fontFamily || FALLBACK_FONT_FAMILY}`
+  return `${TAG_FONT_SIZE}px ${fontFamilyOf(theme)}`
 }
 
 /**
  * tag pill 落地：解析 mu-tag--{color} class → 底 colors[name].translucent +
  * 边框/文字 colors[name].color（17 色板，A3.3；无 class/未知名/gray 回退现状灰底）。
+ * 单次 ellipsize 同时产出截断文本与宽度（省略后免二次测量）。
  */
-function drawTag (ctx, item, x, centerY, { maxWidth, theme }) {
-  ctx.font = tagFontOf(theme)
+function drawTag (ctx, item, x, centerY, { maxWidth, theme, measure }) {
+  const font = tagFontOf(theme)
+  const { text, width: textWidth } = ellipsize({
+    text: String(item.text ?? ''),
+    font,
+    maxWidth: Math.max(0, maxWidth - TAG_PADDING_X * 2),
+    measure: measureOf(ctx, measure)
+  })
+  const width = textWidth + TAG_PADDING_X * 2
 
-  const text = ellipsize(ctx, String(item.text ?? ''), Math.max(0, maxWidth - TAG_PADDING_X * 2))
-
-  const width = ctx.measureText(text).width + TAG_PADDING_X * 2
-
-  if (width <= TAG_PADDING_X * 2) return width
+  if (!text) return width
 
   const name = colorClassOf(item, 'tag')
   const colored = name ? theme?.colors?.[name] : null
   const y = centerY - TAG_HEIGHT / 2
 
+  ctx.font = font
   ctx.beginPath()
   ctx.roundRect(x + 0.5, y + 0.5, width - 1, TAG_HEIGHT - 1, TAG_RADIUS)
   ctx.fillStyle = colored?.translucent ?? theme?.hoverBg
@@ -734,20 +829,24 @@ function drawTag (ctx, item, x, centerY, { maxWidth, theme }) {
 
 // —— link 列竖排（条目列，A3.5） ——
 
-/** 单条 link 文本绘制：单行省略，返回绘制宽度（命中矩形用） */
-function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color) {
-  ctx.font = cellFontOf(theme)
-
-  const display = ellipsize(ctx, text, Math.max(0, maxWidth))
+/** 单条 link 文本绘制：单行省略，返回绘制宽度（命中矩形用，省略后免二次测量） */
+function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure) {
+  const { text: display, width } = ellipsize({
+    text,
+    font: cellFontOf(theme),
+    maxWidth: Math.max(0, maxWidth),
+    measure: measureOf(ctx, measure)
+  })
 
   if (!display) return 0
 
+  ctx.font = cellFontOf(theme)
   ctx.fillStyle = color
   ctx.textAlign = 'left'
   ctx.textBaseline = 'middle'
   ctx.fillText(display, x, y)
 
-  return Math.min(ctx.measureText(display).width, maxWidth)
+  return Math.min(width, maxWidth)
 }
 
 /**
@@ -756,7 +855,7 @@ function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color) {
  * mu-link--{color} class 解析（link.js 产出，评审 6 P1）；条目矩形（含 dots）
  * 经 onItemRect 回报（kind 'link'，disabled 过滤在交互侧与取色同口径）。
  */
-function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect }) {
+function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect, measure }) {
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0 || !items.length) return
@@ -778,7 +877,7 @@ function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect
 
   for (let i = 0; i < shown.length; i++) {
     const item = shown[i]
-    const width = drawLinkEntry(ctx, String(item.text ?? ''), x, y, contentWidth, theme, linkTextColorOf(item, theme))
+    const width = drawLinkEntry(ctx, String(item.text ?? ''), x, y, contentWidth, theme, linkTextColorOf(item, theme), measure)
 
     if (width > 0) report(i, width)
 
@@ -786,7 +885,7 @@ function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect
   }
 
   if (overflow) {
-    const width = drawLinkEntry(ctx, DOTS, x, y, contentWidth, theme, theme?.primaryColor)
+    const width = drawLinkEntry(ctx, ELLIPSIS, x, y, contentWidth, theme, theme?.primaryColor, measure)
 
     if (width > 0) report(maxItems - 1, width)
   }
@@ -802,7 +901,7 @@ function colorNameOf (value, record) {
 }
 
 /** progress 条：轨道 bgStrong 8px 圆角 4 + 填充 colors[color].color + 百分比文本（单行高） */
-function drawProgress (ctx, rect, content, { padding, theme, record }) {
+function drawProgress (ctx, rect, content, { padding, theme, record, measure }) {
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0) return
@@ -819,18 +918,18 @@ function drawProgress (ctx, rect, content, { padding, theme, record }) {
 
   if (showText) {
     const label = Math.round(value) + '%'
+    const labelFont = `${PROGRESS_FONT_SIZE}px ${fontFamilyOf(theme)}`
+    const labelWidth = measureOf(ctx, measure)(label, labelFont) + 6
 
-    ctx.font = `${PROGRESS_FONT_SIZE}px ${theme?.fontFamily || FALLBACK_FONT_FAMILY}`
-
-    const labelWidth = ctx.measureText(label).width + 6
+    ctx.font = labelFont
+    ctx.fillStyle = theme?.textColor
+    ctx.textAlign = 'right'
+    ctx.textBaseline = 'middle'
 
     // 极窄列文本放不下时退化为仅轨道
     if (contentWidth - labelWidth > 0) {
       trackWidth = contentWidth - labelWidth
 
-      ctx.fillStyle = theme?.textColor
-      ctx.textAlign = 'right'
-      ctx.textBaseline = 'middle'
       ctx.fillText(label, rect.x + rect.width - padding, centerY)
     }
   }
@@ -858,7 +957,7 @@ function drawProgress (ctx, rect, content, { padding, theme, record }) {
  * bgDisabled、文字 textColorMuted；超宽丢弃；条目矩形回报 itemHits
  * （kind 'button'，可点击命中），progress 不回报。
  */
-function drawButton (ctx, rect, buttons, { padding, theme, record, onItemRect }) {
+function drawButton (ctx, rect, buttons, { padding, theme, record, onItemRect, measure }) {
   if (!Array.isArray(buttons) || !buttons.length) return
 
   const contentWidth = rect.width - padding * 2
@@ -867,47 +966,81 @@ function drawButton (ctx, rect, buttons, { padding, theme, record, onItemRect })
 
   const centerY = rect.y + rect.height / 2
   const rightBound = rect.x + rect.width - padding
+  const font = tagFontOf(theme)
+  const measureFn = measureOf(ctx, measure)
 
   let x = rect.x + padding
 
   for (let i = 0; i < buttons.length; i++) {
-    const button = buttons[i] ?? {}
-
     if (x >= rightBound) break
 
-    ctx.font = tagFontOf(theme)
+    const width = drawButtonPill(
+      ctx, buttons[i] ?? EMPTY_BUTTON, x, centerY, rightBound, record, theme, font, measureFn
+    )
 
-    const text = ellipsize(ctx, String(button.caption ?? ''), Math.max(0, rightBound - x - TAG_PADDING_X * 2))
-
-    if (!text) break
-
-    const disabled = button.disabled != null && button.disabled !== false
-    const colorName = colorNameOf(button.color, record)
-    const colored = theme?.colors?.[colorName]
-    const width = Math.min(ctx.measureText(text).width + TAG_PADDING_X * 2, rightBound - x)
-    const y = centerY - TAG_HEIGHT / 2
-
-    ctx.beginPath()
-    ctx.roundRect(x + 0.5, y + 0.5, width - 1, TAG_HEIGHT - 1, TAG_RADIUS)
-    ctx.fillStyle = disabled
-      ? (theme?.bgDisabled || theme?.hoverBg)
-      : (colored?.translucent ?? theme?.hoverBg)
-    ctx.fill()
-    ctx.strokeStyle = disabled ? theme?.borderColor : (colored?.color ?? theme?.borderColor)
-    ctx.lineWidth = 1
-    ctx.stroke()
-
-    ctx.fillStyle = disabled
-      ? (theme?.textColorMuted || theme?.gray)
-      : (colored?.color ?? theme?.textColor)
-    ctx.textAlign = 'left'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(text, x + TAG_PADDING_X, centerY)
+    // ellipsize 空文本（caption 空或剩余宽度放不下）→ -1 哨兵，停止绘制后续
+    // 按钮（等效原 `if (!text) break`；NaN 宽度经 `< 0` 判定不中断，分支一致）
+    if (width < 0) break
 
     onItemRect?.({ kind: 'button', index: i, rect: { x, y: rect.y, width, height: rect.height } })
 
     x += width + padding
   }
+}
+
+/** button 三色（底/边框/文字）解析：disabled 置灰回退链，正常走 colors[name] 色板 */
+function buttonFillOf (theme, colored, disabled) {
+  return disabled
+    ? (theme?.bgDisabled || theme?.hoverBg)
+    : (colored?.translucent ?? theme?.hoverBg)
+}
+
+function buttonBorderOf (theme, colored, disabled) {
+  return disabled ? theme?.borderColor : (colored?.color ?? theme?.borderColor)
+}
+
+function buttonTextOf (theme, colored, disabled) {
+  return disabled
+    ? (theme?.textColorMuted || theme?.gray)
+    : (colored?.color ?? theme?.textColor)
+}
+
+/**
+ * 单个 button pill 绘制：返回占用宽度（供命中矩形与游标推进）；
+ * ellipsize 结果为空文本（caption 空或 maxWidth 耗尽）返回 -1 哨兵、不绘制。
+ * 正常宽度恒 ≥ min(TAG_PADDING_X × 2, rightBound - x) > 0，与哨兵不重叠。
+ */
+function drawButtonPill (ctx, button, x, centerY, rightBound, record, theme, font, measureFn) {
+  const { text, width: textWidth } = ellipsize({
+    text: String(button.caption ?? ''),
+    font,
+    maxWidth: Math.max(0, rightBound - x - TAG_PADDING_X * 2),
+    measure: measureFn
+  })
+
+  if (!text) return -1
+
+  const disabled = isTruthyAttr(button.disabled)
+  const colorName = colorNameOf(button.color, record)
+  const colored = theme?.colors?.[colorName]
+  const width = Math.min(textWidth + TAG_PADDING_X * 2, rightBound - x)
+  const y = centerY - TAG_HEIGHT / 2
+
+  ctx.font = font
+  ctx.beginPath()
+  ctx.roundRect(x + 0.5, y + 0.5, width - 1, TAG_HEIGHT - 1, TAG_RADIUS)
+  ctx.fillStyle = buttonFillOf(theme, colored, disabled)
+  ctx.fill()
+  ctx.strokeStyle = buttonBorderOf(theme, colored, disabled)
+  ctx.lineWidth = 1
+  ctx.stroke()
+
+  ctx.fillStyle = buttonTextOf(theme, colored, disabled)
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(text, x + TAG_PADDING_X, centerY)
+
+  return width
 }
 
 /** 图片等比布局尺寸：不放大，clamp 到 maxH × maxW 内 */

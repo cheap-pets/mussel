@@ -5,18 +5,17 @@
  * solveWidths 宽度求解（min/max clamp、widthOverrides 优先级、剩余宽迭代分配）、
  * TYPE_DEFAULT_WIDTHS 宽/最小宽双值弹性分支（评审 6 P2/P5：resolveTypeMinWidth、
  * 字符串 minWidth 不回归、bool 60 不被抬高、无 type 回退 text、type.width 定宽不变）、
- * rowGeometry 可选参数与 resolveRowGeometry 缺省 uniform 回退（03-review-5 问题 3）、
+ * rowGeometry 必传契约（C4：uniform 等高回退已删，夹具统一经
+ * createUniformRowGeometry 构造）、
  * 混合列宽前缀和、可视窗口起止索引（viewH = clientHeight − headHeight、
  * viewW = clientWidth − fixedWidth 口径）、命中检测（rowAt/colAt）、
  * 调宽手柄检测（含固定列排除）、relayout 对外暴露的计算纯函数。
  */
 import {
   OVERSCAN,
-  COL_FALLBACK,
   RESIZE_HANDLE,
   TYPE_DEFAULT_WIDTHS,
   resolveTypeMinWidth,
-  resolveRowGeometry,
   solveWidths,
   computePrefixSums,
   computeViewRows,
@@ -51,13 +50,12 @@ function assertArray (actual, expected, label) {
 
 export const checks = [
   {
-    name: '契约常量：OVERSCAN=2 / COL_FALLBACK=80 / RESIZE_HANDLE=4',
+    name: '契约常量：OVERSCAN=2 / RESIZE_HANDLE=4',
     fn: () => {
       assertEqual(OVERSCAN, 2, 'OVERSCAN')
-      assertEqual(COL_FALLBACK, 80, 'COL_FALLBACK')
       assertEqual(RESIZE_HANDLE, 4, 'RESIZE_HANDLE')
 
-      return 'OVERSCAN=2, COL_FALLBACK=80, RESIZE_HANDLE=4'
+      return 'OVERSCAN=2, RESIZE_HANDLE=4'
     }
   },
   {
@@ -284,7 +282,8 @@ export const checks = [
     name: 'computeViewRows：窗口起止索引（OVERSCAN、跨行、越界 clamp、空数据）',
     fn: () => {
       const rowHeight = 36
-      const base = { rowHeight, rowCount: 100000 }
+      // C4 起 rowGeometry 必传：等高窗口断言统一经 uniform 几何夹具
+      const base = { rowGeometry: createUniformRowGeometry({ rowHeight, rowCount: 100000 }) }
 
       assertArray(Object.values(computeViewRows({ ...base, scrollTop: 0, viewH: 360 })), [0, 12, 12], 'scrollTop=0')
       assertArray(Object.values(computeViewRows({ ...base, scrollTop: 3600, viewH: 360 })), [100, 112, 12], '整行对齐滚动')
@@ -296,8 +295,11 @@ export const checks = [
       assert(straddle.count <= Math.ceil(360 / rowHeight) + OVERSCAN + 1, 'count 超 lastPaint 断言口径上界')
 
       // 行数少于视口 / 无数据 / 滚动越界
-      assertArray(Object.values(computeViewRows({ rowHeight, rowCount: 3, scrollTop: 0, viewH: 360 })), [0, 3, 3], '少量行')
-      assertArray(Object.values(computeViewRows({ rowHeight, rowCount: 0, scrollTop: 0, viewH: 360 })), [0, 0, 0], '空数据')
+      const few = { rowGeometry: createUniformRowGeometry({ rowHeight, rowCount: 3 }) }
+      const empty = { rowGeometry: createUniformRowGeometry({ rowHeight, rowCount: 0 }) }
+
+      assertArray(Object.values(computeViewRows({ ...few, scrollTop: 0, viewH: 360 })), [0, 3, 3], '少量行')
+      assertArray(Object.values(computeViewRows({ ...empty, scrollTop: 0, viewH: 360 })), [0, 0, 0], '空数据')
 
       const beyond = computeViewRows({ ...base, scrollTop: 4000000, viewH: 360 })
 
@@ -330,7 +332,7 @@ export const checks = [
   {
     name: 'rowAt/colAt：坐标→行列换算（表头区、越界、固定列区滚动位移）',
     fn: () => {
-      const rows = { headHeight: 36, rowHeight: 36, rowCount: 100 }
+      const rows = { headHeight: 36, rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 100 }) }
 
       assertEqual(rowAt(20, { ...rows, scrollTop: 0 }), -1, '表头区命中行')
       assertEqual(rowAt(36, { ...rows, scrollTop: 0 }), 0, '首行上缘')
@@ -407,35 +409,35 @@ export const checks = [
     }
   },
   {
-    name: 'rowGeometry 参数化：computeViewRows/rowAt 等高恒等 + 变高窗口 + resolveRowGeometry 缺省回退',
+    name: 'rowGeometry 参数化：uniform 窗口与等高算式恒等 + 变高窗口来自几何（C4 后几何必传）',
     fn: () => {
       const rowHeight = 36
       const rowCount = 100000
       const uniform = createUniformRowGeometry({ rowHeight, rowCount })
 
-      // 等高：传 uniform 几何与不传结果恒等（visibleRange 与 computeViewRows 算式同源）
-      for (const [scrollTop, viewH] of [[0, 360], [18, 360], [3600, 360], [1800018, 360]]) {
-        const plain = computeViewRows({ scrollTop, viewH, rowHeight, rowCount })
-        const viaGeometry = computeViewRows({ scrollTop, viewH, rowHeight, rowCount, rowGeometry: uniform })
+      // uniform 几何窗口 = 经典等高算式（start=floor、end=ceil+OVERSCAN、clamp rowCount）
+      const equalHeightRange = (scrollTop, viewH) => {
+        const start = Math.min(Math.max(Math.floor(scrollTop / rowHeight), 0), rowCount)
+        const end = Math.min(Math.max(Math.ceil((scrollTop + viewH) / rowHeight) + OVERSCAN, start), rowCount)
 
-        assertArray(Object.values(viaGeometry), Object.values(plain), `等高恒等 scrollTop=${scrollTop}`)
+        return { start, end, count: end - start }
+      }
+
+      for (const [scrollTop, viewH] of [[0, 360], [18, 360], [3600, 360], [1800018, 360]]) {
+        const viaGeometry = computeViewRows({ scrollTop, viewH, rowGeometry: uniform })
+
+        assertArray(Object.values(viaGeometry), Object.values(equalHeightRange(scrollTop, viewH)), `等高恒等 scrollTop=${scrollTop}`)
       }
 
       // 变高：行高 [40, 20, 60, ...]，与几何自身 visibleRange/offsetToRow 一致
       const heights = [40, 20, 60, 30, 50, 10, 45, 25]
       const variable = createVariableRowGeometry({ initialHeights: heights })
-      const viewRows = computeViewRows({ scrollTop: 60, viewH: 100, rowHeight, rowCount: heights.length, rowGeometry: variable })
+      const viewRows = computeViewRows({ scrollTop: 60, viewH: 100, rowGeometry: variable })
 
       assertArray(Object.values(viewRows), Object.values(variable.visibleRange(60, 100, OVERSCAN)), '变高窗口来自几何')
       assertEqual(rowAt(36 + 61, { headHeight: 36, scrollTop: 0, rowGeometry: variable }), variable.offsetToRow(61), 'rowAt 变高定位')
 
-      // resolveRowGeometry：未传 rowGeometry 回退 uniform（G2 中间态路径，03-review-5 问题 3）
-      const fallback = resolveRowGeometry({ rowHeight, rowCount })
-
-      assertEqual(fallback.mode, 'uniform', '缺省回退 uniform')
-      assertEqual(fallback.totalHeight, rowCount * rowHeight, '回退几何 totalHeight')
-
-      return '等高恒等 / 变高窗口与 offsetToRow / 未传回退 uniform'
+      return 'uniform 与等高算式恒等 / 变高窗口与 offsetToRow'
     }
   },
   {
@@ -478,7 +480,8 @@ export const checks = [
         rowHeight: 36,
         headHeight: 36,
         scrollTop: 0,
-        scrollLeft: 0
+        scrollLeft: 0,
+        rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 100000 })
       })
 
       // 口径（decisions「[I1 前]④」）：viewH = clientHeight − headHeight；viewW = clientWidth − fixedWidth
@@ -511,7 +514,8 @@ export const checks = [
         containerWidth: 800,
         containerHeight: 436,
         rowHeight: 36,
-        headHeight: 36
+        headHeight: 36,
+        rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 3 })
       })
 
       assertEqual(few.contentHeight, 36 + 3 * 36, '少量行 contentHeight')
@@ -525,7 +529,8 @@ export const checks = [
         containerWidth: 800,
         containerHeight: 436,
         rowHeight: 36,
-        headHeight: 36
+        headHeight: 36,
+        rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 0 })
       })
 
       assertEqual(empty.spacerHeight, 0, '空 records spacerHeight')
@@ -539,7 +544,8 @@ export const checks = [
         containerHeight: 436,
         fixedLeftColumns: 2,
         rowHeight: 36,
-        headHeight: 36
+        headHeight: 36,
+        rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 10 })
       })
 
       assertArray(noCols.colWidths, [], '空列 colWidths')

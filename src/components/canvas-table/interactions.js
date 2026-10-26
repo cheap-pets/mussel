@@ -11,16 +11,10 @@
  * 坐标（getBoundingClientRect 差值换算，不用 offsetX）。
  */
 import { colAt, findResizeColumn, rowAt } from './layout'
+import { TREE_INDENT, CELL_PADDING_FALLBACK } from './constants'
 
 /** 拖拽调宽的下限缺省（02-design.md A5：col.minWidth ?? 40） */
 export const RESIZE_MIN_WIDTH = 40
-
-/** 树形列缩进/箭头槽常量（镜像 tree.scss --mu-tree_node-indent: 16px，与
-    row-geometry.TREE_INDENT / cell-painters 内部常量同值；组件探针不可达取常量） */
-const TREE_INDENT = 16
-
-/** 单元格内容区 padding 缺省（--cell-padding 镜像值，hitTest cellX 口径用） */
-const CELL_PADDING_FALLBACK = 8
 
 /**
  * 命中检测（02-design.md A5 / 评审 6 P3）：指针坐标 → 表头/行列/调宽手柄。
@@ -35,14 +29,12 @@ const CELL_PADDING_FALLBACK = 8
  * @param {Number} [params.scrollLeft=0]
  * @param {Number[]} params.colLefts 列前缀和（layout.js computePrefixSums）
  * @param {Number[]} params.colWidths 列宽数组
- * @param {Number} params.rowHeight
- * @param {Number} params.rowCount
  * @param {Array} params.columns 列定义（读取列级 resizable）
  * @param {Number} [params.fixedLeftColumns=0]
  * @param {Boolean} [params.resizable=false] 表格级调宽开关
  * @param {Number} [params.cellPadding=8] 内容区 padding（cellX 口径扣减，缺省 8）
- * @param {Object} [params.rowGeometry] 行几何实例（变高模式行定位，A2.2 统一接口；
- *   缺省按 rowHeight/rowCount 等高算式）
+ * @param {Object} params.rowGeometry 行几何实例（必传——C4 删 rowHeight 等高回退，
+ *   rowAt 行定位一律经几何 offsetToRow）
  * @returns {{ isHeader: Boolean, colIndex: Number, rowIndex: Number, resizeCol: Number,
  *   x: Number, y: Number, cellX: Number|null }}
  *   colIndex/rowIndex 越界（表头区/数据区外）为 -1；resizeCol 无手柄为 -1；
@@ -58,8 +50,6 @@ export function hitTest ({
   scrollLeft = 0,
   colLefts,
   colWidths,
-  rowHeight,
-  rowCount,
   columns,
   fixedLeftColumns = 0,
   resizable = false,
@@ -68,7 +58,7 @@ export function hitTest ({
 }) {
   const isHeader = y < headHeight
   const colIndex = colAt(x, { scrollLeft, colLefts, colWidths, fixedLeftColumns })
-  const rowIndex = rowAt(y, { headHeight, scrollTop, rowHeight, rowCount, rowGeometry })
+  const rowIndex = rowAt(y, { headHeight, scrollTop, rowGeometry })
   const resizeCol = isHeader
     ? findResizeColumn({ x, scrollLeft, colLefts, colWidths, columns, fixedLeftColumns, resizable })
     : -1
@@ -103,6 +93,20 @@ function isTreeArrowSlot ({ hit, columns, flatInfo }) {
   return hit.cellX != null && hit.cellX < level * TREE_INDENT + TREE_INDENT
 }
 
+/** 表头可排序列命中（排序 pointer 判定，02-design.md A5） */
+function isSortableHeader (hit, columns) {
+  return hit.isHeader && hit.colIndex >= 0 && Boolean(columns?.[hit.colIndex]?.sortable)
+}
+
+/** 表体可编辑格命中：editable 开 + 该列存在 + isCellEditableFn 判定可编辑（A5.3） */
+function isEditableCell (hit, columns, context) {
+  if (hit.isHeader || hit.colIndex < 0 || !context.editable) return false
+
+  const column = columns?.[hit.colIndex]
+
+  return Boolean(column && context.isCellEditableFn?.(column))
+}
+
 /**
  * 指针光标（02-design.md A5 pointermove 行 + A5.3 / 评审 6 P3）：手柄上
  * col-resize；表头可排序列内 pointer；树箭头槽 pointer（context.flatInfo 提供
@@ -117,15 +121,9 @@ function isTreeArrowSlot ({ hit, columns, flatInfo }) {
  */
 export function resolveCursor (hit, columns, context = {}) {
   if (hit.resizeCol >= 0) return 'col-resize'
-  if (hit.isHeader && hit.colIndex >= 0 && columns?.[hit.colIndex]?.sortable) return 'pointer'
-
+  if (isSortableHeader(hit, columns)) return 'pointer'
   if (isTreeArrowSlot({ hit, columns, flatInfo: context.flatInfo })) return 'pointer'
-
-  if (!hit.isHeader && hit.colIndex >= 0 && context.editable) {
-    const column = columns?.[hit.colIndex]
-
-    if (column && context.isCellEditableFn?.(column)) return 'text'
-  }
+  if (isEditableCell(hit, columns, context)) return 'text'
 
   return 'default'
 }
@@ -282,107 +280,6 @@ export function resolveResizeWidth ({ pointerX, scrollLeft = 0, columnLeft, minW
 }
 
 /**
- * 拖拽 move 的脏区（02-design.md A3 重绘表 / A5 move 行 / 评审 M9）：
- * 该列【左缘】至视口右端的竖带 + 表头整幅。左界取列左缘而非右缘——列宽变化
- * 同时影响该列内容截断与右侧所有列位置，取 min(旧右缘, 新右缘) 会在加宽时
- * 遗留 [旧右缘, 新右缘] 旧像素残影，取列左缘则一并覆盖该列重绘需求。
- *
- * @param {Object} params
- * @param {Number} params.columnLeft 拖拽列左缘（canvas 视口坐标，固定列不可调宽故恒为 colLefts − scrollLeft）
- * @param {Number} params.viewportWidth canvas 视口宽（容器 clientWidth）
- * @returns {{ band: { x: Number, width: Number }, header: Boolean }}
- *   band 为视口坐标竖带；header 为 true 表示表头整幅一并重绘
- */
-export function resolveResizeDirty ({ columnLeft, viewportWidth }) {
-  return {
-    band: { x: columnLeft, width: Math.max(0, viewportWidth - columnLeft) },
-    header: true
-  }
-}
-
-/**
- * hover 变化的脏区矩形（02-design.md A3 重绘表：仅旧行+新行两条横带，列 hover
- * 则两条竖带）。返回 canvas 视口坐标矩形数组（行带全宽、列带表头以下全高、
- * cell 模式逐格矩形）；prev 与 next 相同位置去重为一条，均无则空数组。
- * 调用方（S1）在 rAF 合帧回调内将矩形交给 painter clip 重绘。
- *
- * @param {Object} params
- * @param {String} [params.mode='row'] hoverMode：'none'|'row'|'column'|'cross'|'cell'
- * @param {{ row: Number, col: Number }} [params.prev] 旧 hover 位置（行列号）
- * @param {{ row: Number, col: Number }} [params.next] 新 hover 位置
- * @param {Number} params.rowHeight
- * @param {Number} [params.headHeight=0]
- * @param {Number} [params.scrollTop=0]
- * @param {Number} [params.scrollLeft=0]
- * @param {Number[]} params.colLefts 列前缀和
- * @param {Number[]} params.colWidths 列宽数组
- * @param {Number} [params.fixedLeftColumns=0]
- * @param {Number} params.viewportWidth canvas 视口宽
- * @param {Number} params.viewportHeight canvas 视口高
- * @returns {Array<{ x: Number, y: Number, width: Number, height: Number }>}
- */
-export function resolveHoverDirtyRects ({
-  mode = 'row',
-  prev,
-  next,
-  rowHeight,
-  headHeight = 0,
-  scrollTop = 0,
-  scrollLeft = 0,
-  colLefts,
-  colWidths,
-  fixedLeftColumns = 0,
-  viewportWidth,
-  viewportHeight
-} = {}) {
-  if (!mode || mode === 'none') return []
-
-  const same = (a, b) => a && b && a.row === b.row && a.col === b.col
-  const positions = []
-
-  if (prev) positions.push(prev)
-  if (next && !same(prev, next)) positions.push(next)
-
-  const rects = []
-
-  for (const { row, col } of positions) {
-    // 列带 x：固定列不随滚动位移，滚动区按视口坐标（colLefts − scrollLeft）
-    const colX = col != null && colLefts
-      ? colLefts[col] - (col < fixedLeftColumns ? 0 : scrollLeft)
-      : null
-
-    if ((mode === 'row' || mode === 'cross') && row != null) {
-      rects.push({
-        x: 0,
-        y: headHeight + row * rowHeight - scrollTop,
-        width: viewportWidth,
-        height: rowHeight
-      })
-    }
-
-    if ((mode === 'column' || mode === 'cross') && colX != null) {
-      rects.push({
-        x: colX,
-        y: headHeight,
-        width: colWidths?.[col] ?? 0,
-        height: Math.max(0, viewportHeight - headHeight)
-      })
-    }
-
-    if (mode === 'cell' && colX != null && row != null) {
-      rects.push({
-        x: colX,
-        y: headHeight + row * rowHeight - scrollTop,
-        width: colWidths?.[col] ?? 0,
-        height: rowHeight
-      })
-    }
-  }
-
-  return rects
-}
-
-/**
  * 画布 pointerdown 决策（02-design.md A6 画布侧隔离 + A5 拖拽开始）：
  * editing 中落在画布的 pointerdown 不屏蔽命中，先同步 commit 当前编辑再继续
  * 正常命中处理（点击其他单元格一步完成「提交 + 选中新行」）；落在表头手柄上
@@ -420,6 +317,32 @@ export function resolveTreeToggle ({ hit, columns, flatInfo, recordKey } = {}) {
   return { row: hit.rowIndex, key: recordKey }
 }
 
+/** 条目点击前置条件：itemHits/hit 存在且命中数据区单元格（非表头、行列号有效） */
+function isItemClickable (itemHits, hit) {
+  return (
+    Boolean(itemHits) && Boolean(hit) && !hit.isHeader && hit.colIndex >= 0 && hit.rowIndex >= 0
+  )
+}
+
+/** 矩形命中判定（视口坐标，半开区间 [x, x+w) × [y, y+h)） */
+function isItemRectHit (hit, rect) {
+  return (
+    hit.x >= rect.x && hit.x < rect.x + rect.width &&
+    hit.y >= rect.y && hit.y < rect.y + rect.height
+  )
+}
+
+/** 返回首个命中条目的结果对象（命中时才分配），无命中 null */
+function findHitItem (hit, rects) {
+  for (const entry of rects) {
+    if (isItemRectHit(hit, entry.rect)) {
+      return { kind: entry.kind, index: entry.index, row: hit.rowIndex, col: hit.colIndex }
+    }
+  }
+
+  return null
+}
+
 /**
  * 条目点击命中（02-design.md A3.3/A4.3 序 3 / 评审 6 P4）：hit.x/hit.y 对
  * painter itemHits（Map<row, Map<col, Array<{ kind, index, rect }>>>，视口坐标）
@@ -433,24 +356,13 @@ export function resolveTreeToggle ({ hit, columns, flatInfo, recordKey } = {}) {
  * @returns {{ kind: String, index: Number, row: Number, col: Number } | null}
  */
 export function resolveItemClick ({ hit, itemHits } = {}) {
-  if (!itemHits || !hit || hit.isHeader || hit.colIndex < 0 || hit.rowIndex < 0) return null
+  if (!isItemClickable(itemHits, hit)) return null
 
   const rects = itemHits.get(hit.rowIndex)?.get(hit.colIndex)
 
   if (!rects) return null
 
-  for (const entry of rects) {
-    const rect = entry.rect
-
-    if (
-      hit.x >= rect.x && hit.x < rect.x + rect.width &&
-      hit.y >= rect.y && hit.y < rect.y + rect.height
-    ) {
-      return { kind: entry.kind, index: entry.index, row: hit.rowIndex, col: hit.colIndex }
-    }
-  }
-
-  return null
+  return findHitItem(hit, rects)
 }
 
 /**

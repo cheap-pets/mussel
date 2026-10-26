@@ -22,7 +22,7 @@ import {
   computeRowHeights,
   ensureRowMeasured
 } from '@/components/canvas-table/row-geometry.js'
-import { computeViewRows } from '@/components/canvas-table/layout.js'
+import { OVERSCAN, computeViewRows } from '@/components/canvas-table/layout.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)
@@ -138,13 +138,20 @@ export const checks = [
 
       for (const [scrollTop, viewH] of [[0, 400], [1800018, 360], [55, 300], [1440, 72], [3599, 0]]) {
         const range = g.visibleRange(scrollTop, viewH, 2)
-        const ref = computeViewRows({ scrollTop, viewH, rowHeight: h, rowCount: n })
+        const ref = computeViewRows({ scrollTop, viewH, rowGeometry: g })
 
         assert(range.start === ref.start && range.end === ref.end && range.count === ref.count,
           `visibleRange(${scrollTop},${viewH}) 期望 ${JSON.stringify(ref)}，实际 ${JSON.stringify(range)}`)
+
+        // 对照经典等高算式（C4 前 computeViewRows 的 rowHeight 分支口径）
+        const eqStart = Math.min(Math.max(Math.floor(scrollTop / h), 0), n)
+        const eqEnd = Math.min(Math.max(Math.ceil((scrollTop + viewH) / h) + OVERSCAN, eqStart), n)
+
+        assert(ref.start === eqStart && ref.end === eqEnd,
+          `等高算式对照(${scrollTop},${viewH}) 期望 [${eqStart},${eqEnd})，实际 [${ref.start},${ref.end})`)
       }
 
-      return 'topAt=i×h / offsetToRow=floor(y/h)；5 组 scrollTop 与 computeViewRows 全等'
+      return 'topAt=i×h / offsetToRow=floor(y/h)；5 组 scrollTop 与 computeViewRows 及等高算式全等'
     }
   },
   {

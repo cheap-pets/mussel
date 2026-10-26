@@ -54,7 +54,6 @@ const THEME = {
   fontFamily: 'sans-serif',
   cellPadding: 8,
   cellLineHeight: 18,
-  controlHeight: 32,
   colors: THEME_COLORS
 }
 

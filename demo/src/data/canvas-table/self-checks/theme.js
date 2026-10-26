@@ -1,8 +1,8 @@
 /**
  * canvas-table 自检断言 — theme 模块（G1-b）。
  *
- * 覆盖 02-design.md G1-b 判据：快照 21 固定字段计数（14 色 + 字号/字体 + 5 尺寸，
- * 含 bgStrong/controlHeight/textColorMuted/bgDisabled 四个新字段）+ colors 固定
+ * 覆盖 02-design.md G1-b 判据：快照 20 固定字段计数（14 色 + 字号/字体 + 4 尺寸，
+ * 含 bgStrong/textColorMuted/bgDisabled；controlHeight 已随 C3 死代码清理移除）+ colors 固定
  * 17 色形态（12 彩色 + 5 语义，gray 不入，每色 color+translucent 双形态）+
  * bgStrong 半透明形态；另含 readVar/readFont/readPx 输出合法颜色计算值与 px 数、
  * withAlpha、测量缓存容量上限、createTextMeasurer 测量工厂、观察根解析
@@ -236,7 +236,7 @@ export const checks = [
     }
   },
   {
-    name: 'readSnapshot：快照 21 固定字段齐全，颜色/字号/字体/尺寸形态正确',
+    name: 'readSnapshot：快照 20 固定字段齐全，颜色/字号/字体/尺寸形态正确',
     fn: () =>
       withFixture('', fixture => {
         const probe = createProbe(fixture)
@@ -263,24 +263,18 @@ export const checks = [
           assert(snapshot[key] === expected, `快照.${key} 应为 ${expected}，实际 ${snapshot[key]}`)
         }
 
-        // controlHeight 来自 root.scss（--mu-control-height-normal，非夹具内联），只断 px 数形态
-        assert(
-          typeof snapshot.controlHeight === 'number' && snapshot.controlHeight > 0,
-          `快照.controlHeight 应为正 px 数，实际 ${snapshot.controlHeight}`
-        )
-
         assert(snapshot.colors && typeof snapshot.colors === 'object', '快照.colors 缺失')
 
-        // 21 固定字段（14 色 + 字号/字体 + 5 尺寸）+ colors map = 22 键
-        const fixedCount = colorKeys.length + 2 + Object.keys(pxKeys).length + 1
-        assert(fixedCount === 21, `固定字段计数口径应为 21，实际 ${fixedCount}`)
+        // 20 固定字段（14 色 + 字号/字体 + 4 尺寸）+ colors map = 21 键
+        const fixedCount = colorKeys.length + 2 + Object.keys(pxKeys).length
+        assert(fixedCount === 20, `固定字段计数口径应为 20，实际 ${fixedCount}`)
         assert(
           Object.keys(snapshot).length === fixedCount + 1,
-          `快照应含 ${fixedCount + 1} 个键（21 固定字段 + colors），实际 ${Object.keys(snapshot).length}`
+          `快照应含 ${fixedCount + 1} 个键（20 固定字段 + colors），实际 ${Object.keys(snapshot).length}`
         )
 
         probe.remove()
-        return `${Object.keys(snapshot).length} 键：21 固定字段（14 色 + 字号/字体 + 5 尺寸）+ colors`
+        return `${Object.keys(snapshot).length} 键：20 固定字段（14 色 + 字号/字体 + 4 尺寸）+ colors`
       })
   },
   {

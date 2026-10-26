@@ -11,20 +11,16 @@
  * （wrapLines 折行 + maxLines 钳制）。measure/wrapCache 经参数注入（theme.js
  * createTextMeasurer 工厂产物），行高计算与绘制折行同一函数同一缓存。
  */
-import { estimateLineCount, wrapLines } from './text-wrap'
+import { estimateLineCount, wrapLines, cellFontOf } from './text-wrap'
+import { CELL_PADDING_FALLBACK } from './constants'
 
-/** 主题快照缺字段时的容错回退（与 --row-height / --cell-padding / --cell-line-height 缺省一致） */
+/** 主题快照缺字段时的容错回退（与 --row-height / --cell-line-height 缺省一致） */
 const ROW_HEIGHT_FALLBACK = 36
-const PADDING_FALLBACK = 8
 const LINE_HEIGHT_FALLBACK = 18
 const FONT_SIZE_FALLBACK = 14
-const FONT_FAMILY_FALLBACK = 'sans-serif'
 
 /** maxItems 缺省上限（人工 2 意见 2：缺省 10） */
 const DEFAULT_MAX_ITEMS = 10
-
-/** 树形列缩进常量（镜像 tree.scss --mu-tree_node-indent: 16px；组件探针不可达取常量） */
-export const TREE_INDENT = 16
 
 /**
  * 恒单行高的列类型（图形/条目列，不参与多行行高；A3.5 列分类）。
@@ -48,10 +44,8 @@ function isTextPresentingColumn (col) {
   return typeof col.type === 'string' ? !SINGLE_LINE_TYPES.has(col.type) : true
 }
 
-function cellFontOf (theme) {
-  const fontSize = theme?.fontSize || FONT_SIZE_FALLBACK
-
-  return { font: `${fontSize}px ${theme?.fontFamily || FONT_FAMILY_FALLBACK}`, fontSize }
+function cellFontSizeOf (theme) {
+  return theme?.fontSize || FONT_SIZE_FALLBACK
 }
 
 /** 单列内容区宽（列宽 − 2×padding − 树形列 inset；实施约束 6） */
@@ -71,6 +65,41 @@ function valueOf (col, record) {
   const fromFn = typeof col._value === 'function' ? col._value(record) : undefined
 
   return fromFn ?? (col.field ? record?.[col.field] : undefined)
+}
+
+/** link 条目列行数：render 求值 items 计数（轻量数组构造，与绘制期同款调用）后 min(count, maxItems) */
+function linkItemCountOf (col, record, recordNumber, value, emit, maxItems) {
+  const rendered = col._render?.({ record, recordNumber, value, emit })
+  const count = Array.isArray(rendered?.items)
+    ? rendered.items.length
+    : (rendered ? 1 : 0)
+
+  return Math.min(count, maxItems)
+}
+
+/** 文本精算行数：estimateLineCount 短路（len × fontSize ≤ width → 1，无测量），否则 wrapLines 精算 */
+function measuredLineCountOf (text, width, font, fontSize, measure, wrapCache, maxLines) {
+  if (estimateLineCount({ text, fontSize, maxWidth: width }) === 1) return 1
+  if (typeof measure !== 'function') return 1
+
+  return wrapLines({ text, font, maxWidth: width, measure, cache: wrapCache, maxLines }).lineCount
+}
+
+/** 文本列行数：空值 0；单行省略与估高恒 1 行（下界），precise 时走精算 */
+function textLineCountOf (col, record, value, width, precise, font, fontSize, measure, wrapCache) {
+  const text = value == null ? '' : String(value)
+
+  if (!text) return 0
+
+  const maxLines = resolveMaxLinesOf(col, record)
+
+  // 单行省略（含 maxLines == 1）：恒 1 行，不参与变高
+  if (!(maxLines > 1)) return 1
+
+  // 估高：字符串一律估 1 行（下界；短路命中即真值——两者数值相同），标记待精
+  if (!precise) return 1
+
+  return measuredLineCountOf(text, width, font, fontSize, measure, wrapCache, maxLines)
 }
 
 /**
@@ -97,32 +126,9 @@ function columnLineCount ({
   if (Array.isArray(value)) return Math.min(value.length, maxItems)
 
   // link 条目列：render 求值 items 计数（轻量数组构造，与绘制期同款调用）后 min(count, maxItems)
-  if (isLinkColumn(col)) {
-    const rendered = col._render?.({ record, recordNumber, value, emit })
-    const count = Array.isArray(rendered?.items)
-      ? rendered.items.length
-      : (rendered ? 1 : 0)
+  if (isLinkColumn(col)) return linkItemCountOf(col, record, recordNumber, value, emit, maxItems)
 
-    return Math.min(count, maxItems)
-  }
-
-  const text = value == null ? '' : String(value)
-
-  if (!text) return 0
-
-  const maxLines = resolveMaxLinesOf(col, record)
-
-  // 单行省略（含 maxLines == 1）：恒 1 行，不参与变高
-  if (!(maxLines > 1)) return 1
-
-  // 估高：字符串一律估 1 行（下界；短路命中即真值——两者数值相同），标记待精
-  if (!precise) return 1
-
-  // 精算：estimateLineCount 短路（len × fontSize ≤ width → 1，无测量），否则 wrapLines 精算
-  if (estimateLineCount({ text, fontSize, maxWidth: width }) === 1) return 1
-  if (typeof measure !== 'function') return 1
-
-  return wrapLines({ text, font, maxWidth: width, measure, cache: wrapCache, maxLines }).lineCount
+  return textLineCountOf(col, record, value, width, precise, font, fontSize, measure, wrapCache)
 }
 
 /** 单行行高（行数 → max(基础行高, padding×2 + lines×lineHeight)；A6.2） */
@@ -133,7 +139,7 @@ function rowHeightOf (lines, { rowHeight, padding, lineHeight }) {
 function rowMetricsOf (theme) {
   return {
     rowHeight: theme?.rowHeight || ROW_HEIGHT_FALLBACK,
-    padding: theme?.cellPadding || PADDING_FALLBACK,
+    padding: theme?.cellPadding || CELL_PADDING_FALLBACK,
     lineHeight: theme?.cellLineHeight || LINE_HEIGHT_FALLBACK
   }
 }
@@ -349,6 +355,17 @@ export function computeAnchorShift ({ prevTopAtAnchor, nextTopAtAnchor }) {
   return (nextTopAtAnchor ?? 0) - (prevTopAtAnchor ?? 0)
 }
 
+/** 列取值容错（缺位 → 空列对象） */
+function columnAt (cols, i) {
+  return cols[i] ?? {}
+}
+
+/** 模式判定输入（A2.2）：文本呈现列（不含 link）数组值 / link 条目数 > 1
+    （link 复用计数结果，不重复调用 render——render 为轻量数组构造但仍应单次） */
+function indicatesVariableMode (col, value, count) {
+  return (Array.isArray(value) && isTextPresentingColumn(col)) || (isLinkColumn(col) && count > 1)
+}
+
 /**
  * 全量快速估高（A2.2 管线 1，O(n) 纯算术无测量）：
  * - 数组值列 → min(length, maxItems) 真值；
@@ -379,7 +396,8 @@ export function computeRowHeights ({
   const cols = columns ?? []
   const widths = colWidths ?? []
   const metrics = rowMetricsOf(theme)
-  const { font, fontSize } = cellFontOf(theme)
+  const font = cellFontOf(theme)
+  const fontSize = cellFontSizeOf(theme)
   const heights = new Array(list.length)
   let hasArrayValues = false
 
@@ -388,15 +406,14 @@ export function computeRowHeights ({
     let lines = 0
 
     for (let i = 0; i < cols.length; i++) {
-      const col = cols[i] ?? {}
+      const col = columnAt(cols, i)
       const value = valueOf(col, record)
-      const width = contentWidthOf(widths[i], metrics.padding, insetOf(treeIndents, i, row))
       const count = columnLineCount({
         col,
         record,
         recordNumber: row,
         value,
-        width,
+        width: contentWidthOf(widths[i], metrics.padding, insetOf(treeIndents, i, row)),
         precise: false,
         font,
         fontSize,
@@ -407,15 +424,8 @@ export function computeRowHeights ({
 
       if (count > lines) lines = count
 
-      // 模式判定输入（A2.2）：文本呈现列（不含 link）数组值 / link 条目数 > 1
-      // （link 复用计数结果，不重复调用 render——render 为轻量数组构造但仍应单次）
-      if (!hasArrayValues) {
-        if (Array.isArray(value) && isTextPresentingColumn(col)) {
-          hasArrayValues = true
-        } else if (isLinkColumn(col) && count > 1) {
-          hasArrayValues = true
-        }
-      }
+      // 模式判定输入（A2.2）：见 indicatesVariableMode（命中后不再重复判定）
+      if (!hasArrayValues) hasArrayValues = indicatesVariableMode(col, value, count)
     }
 
     heights[row] = rowHeightOf(lines, metrics)
@@ -455,7 +465,8 @@ export function ensureRowMeasured ({
   const cols = columns ?? []
   const widths = colWidths ?? []
   const metrics = rowMetricsOf(theme)
-  const { font, fontSize } = cellFontOf(theme)
+  const font = cellFontOf(theme)
+  const fontSize = cellFontSizeOf(theme)
   let lines = 0
 
   for (let i = 0; i < cols.length; i++) {

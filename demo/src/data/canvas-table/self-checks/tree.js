@@ -70,7 +70,7 @@ export const checks = [
   {
     name: 'buildFlatRows：DFS 展开序 + 层级数组 + hasChildren 平行数组（父行 true / 叶行 false）',
     fn: () => {
-      const { rows, levels, parentKeys, hasChildren } = buildFlatRows(RECORDS, {
+      const { rows, levels, hasChildren } = buildFlatRows(RECORDS, {
         keyOf,
         parentKeyOf,
         expandedKeys: new Set([1, 11])
@@ -79,7 +79,6 @@ export const checks = [
       assertArray(rows.map(keyOf), [1, 11, 111, 12, 2, 99], 'DFS 展开序（2 未展开 → 21 隐藏）')
       assertArray(levels, [0, 1, 2, 1, 0, 0], '层级数组')
       assertArray(hasChildren, [true, true, false, false, true, false], 'hasChildren 平行数组')
-      assertArray(parentKeys, [null, 1, 11, 1, null, 42], 'parentKeys 平行数组（孤儿存原始 parentKey 42）')
 
       return '序 [1,11,111,12,2,99]；levels [0,1,2,1,0,0]；父行箭头/叶行空槽判定源'
     }

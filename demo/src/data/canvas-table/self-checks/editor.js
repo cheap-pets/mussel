@@ -32,13 +32,12 @@ import {
   normalizeCommitValue,
   resolveSelectOptions,
   resolveEditorProps,
-  resolveEditorComponent,
   computeEditorStyle,
   isInDropdownPanel,
   resolveBlurFallback,
   createEditorController
 } from '@/components/canvas-table/editor.js'
-import { createVariableRowGeometry } from '@/components/canvas-table/row-geometry.js'
+import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/canvas-table/row-geometry.js'
 import { MuInput, MuSelect, MuDateInput, MuSwitch } from '@/components/form/index.js'
 
 function assert (cond, message) {
@@ -107,30 +106,34 @@ export const checks = [
   {
     name: '编辑器解析：列类型缺省映射与显式 editor.type 优先（组件身份）、textarea 判定',
     fn: () => {
-      assertEqual(resolveEditorComponent({ type: 'text', editor: true }), EDITOR_COMPONENTS.input, 'text → MuInput')
-      assertEqual(resolveEditorComponent({ type: 'number', editor: true }), EDITOR_COMPONENTS.input, 'number → MuInput')
-      assertEqual(resolveEditorComponent({ type: 'currency', editor: true }), EDITOR_COMPONENTS.input, 'currency → MuInput')
-      assertEqual(resolveEditorComponent({ type: 'enum', editor: true }), EDITOR_COMPONENTS.select, 'enum → MuSelect')
-      assertEqual(resolveEditorComponent({ type: 'date', editor: true }), EDITOR_COMPONENTS.date, 'date → MuDateInput')
-      assertEqual(resolveEditorComponent({ type: 'datetime', editor: true }), EDITOR_COMPONENTS.date, 'datetime → MuDateInput')
-      assertEqual(resolveEditorComponent({ type: 'bool', editor: true }), EDITOR_COMPONENTS.switch, 'bool → MuSwitch')
-      assertEqual(resolveEditorComponent({ field: 'x', editor: true }), EDITOR_COMPONENTS.input, '未知列类型回退 input')
+      // resolveEditorComponent 已随 C3 死代码清理删除；映射断言 = 类型解析 ×
+      // EDITOR_COMPONENTS 表（生产消费组合，open 内同款查表）
+      const componentOf = column => EDITOR_COMPONENTS[resolveEditorType(column)]
+
+      assertEqual(componentOf({ type: 'text', editor: true }), EDITOR_COMPONENTS.input, 'text → MuInput')
+      assertEqual(componentOf({ type: 'number', editor: true }), EDITOR_COMPONENTS.input, 'number → MuInput')
+      assertEqual(componentOf({ type: 'currency', editor: true }), EDITOR_COMPONENTS.input, 'currency → MuInput')
+      assertEqual(componentOf({ type: 'enum', editor: true }), EDITOR_COMPONENTS.select, 'enum → MuSelect')
+      assertEqual(componentOf({ type: 'date', editor: true }), EDITOR_COMPONENTS.date, 'date → MuDateInput')
+      assertEqual(componentOf({ type: 'datetime', editor: true }), EDITOR_COMPONENTS.date, 'datetime → MuDateInput')
+      assertEqual(componentOf({ type: 'bool', editor: true }), EDITOR_COMPONENTS.switch, 'bool → MuSwitch')
+      assertEqual(componentOf({ field: 'x', editor: true }), EDITOR_COMPONENTS.input, '未知列类型回退 input')
 
       // 显式指定优先；非法显式类型回退列类型映射
       assertEqual(
-        resolveEditorComponent({ type: 'text', editor: { type: 'date' } }),
+        componentOf({ type: 'text', editor: { type: 'date' } }),
         EDITOR_COMPONENTS.date,
         '显式 editor.type 优先'
       )
       assertEqual(
-        resolveEditorComponent({ type: 'enum', editor: { type: 'nope' } }),
+        componentOf({ type: 'enum', editor: { type: 'nope' } }),
         EDITOR_COMPONENTS.select,
         '非法显式类型回退映射'
       )
 
       // textarea 编辑器：原生元素 tag 字符串（INPUT_TYPES.memo 约定，人工 2 意见 2）
       assertEqual(EDITOR_COMPONENTS.textarea, 'textarea', 'textarea 编辑器 = 原生元素 tag')
-      assertEqual(resolveEditorComponent({ type: 'text', editor: { type: 'textarea' } }), 'textarea', '显式 textarea 优先')
+      assertEqual(componentOf({ type: 'text', editor: { type: 'textarea' } }), 'textarea', '显式 textarea 优先')
 
       // text 列缺省判定（A5.5）：开值数组 → textarea；_resolveMaxLines(record) 行级
       // 求值 > 1 → textarea（函数形态按 record，评审 6 P6）；单值单行 → input
@@ -180,10 +183,10 @@ export const checks = [
       )
 
       // 组件身份与 form/index.js 导出一致（模板 <component :is> 不依赖全局注册）
-      assertEqual(resolveEditorComponent({ type: 'text', editor: true }), MuInput, 'input 组件 = MuInput 导出')
-      assertEqual(resolveEditorComponent({ type: 'enum', editor: true }), MuSelect, 'select 组件 = MuSelect 导出')
-      assertEqual(resolveEditorComponent({ type: 'date', editor: true }), MuDateInput, 'date 组件 = MuDateInput 导出')
-      assertEqual(resolveEditorComponent({ type: 'bool', editor: true }), MuSwitch, 'switch 组件 = MuSwitch 导出')
+      assertEqual(componentOf({ type: 'text', editor: true }), MuInput, 'input 组件 = MuInput 导出')
+      assertEqual(componentOf({ type: 'enum', editor: true }), MuSelect, 'select 组件 = MuSelect 导出')
+      assertEqual(componentOf({ type: 'date', editor: true }), MuDateInput, 'date 组件 = MuDateInput 导出')
+      assertEqual(componentOf({ type: 'bool', editor: true }), MuSwitch, 'switch 组件 = MuSwitch 导出')
       assertEqual(resolveEditorType({ type: 'enum', editor: true }), 'select', 'resolveEditorType')
 
       return 'input/select/date/switch/textarea 映射与组件身份一致；text/link 形态判定生效'
@@ -417,12 +420,13 @@ export const checks = [
   {
     name: '统一等距内缩矩形 computeEditorStyle：三类型同矩形、两态同矩形、固定列对照、theme 不再消费（A5.4 R1）',
     fn: () => {
+      // C4 起 rowGeometry 必传：等高基线经 uniform 几何构造（36×3）
       const base = {
         colLefts: [0, 100, 300],
         colWidths: [100, 200, 80],
         headHeight: 36,
-        rowHeight: 36,
-        theme: { controlHeight: 32, cellPadding: 8, cellLineHeight: 18 },
+        theme: { cellPadding: 8, cellLineHeight: 18 },
+        rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 3 }),
         editorType: 'input',
         border: true
       }
@@ -462,7 +466,6 @@ export const checks = [
         ...base,
         colIndex: 1,
         rowIndex: 1,
-        rowHeight: 0,
         rowGeometry: createVariableRowGeometry({ initialHeights: [36, 100] }),
         editorType: 'textarea'
       })
@@ -470,7 +473,12 @@ export const checks = [
       assertArray([tallRow.top, tallRow.height], [76, 92], '变高行 heightAt − 8 占满内容区')
 
       // 退化配置防负值：heightAt(row) = 0 → height max(−8, 0) = 0
-      const degenerate = computeEditorStyle({ ...base, colIndex: 1, rowIndex: 0, rowHeight: 0 })
+      const degenerate = computeEditorStyle({
+        ...base,
+        colIndex: 1,
+        rowIndex: 0,
+        rowGeometry: createVariableRowGeometry({ initialHeights: [0, 36] })
+      })
 
       assertEqual(degenerate.height, 0, 'heightAt 0 → height 0（防负值）')
 
@@ -479,11 +487,11 @@ export const checks = [
 
       assertArray([fallback.left, fallback.top, fallback.width, fallback.height], [104, 40, 192, 28], 'theme: undefined 同矩形')
 
-      // 无 rowGeometry 时 rowHeight 等高回退（top = headHeight + rowIndex×rowHeight − scrollTop + 4）
-      const uniform = computeEditorStyle({ ...base, colIndex: 1, rowIndex: 2, scrollTop: 100, scrollLeft: 50, fixedCount: 0 })
+      // 无固定列（fixedCount 0）：left = colLefts − scrollLeft + 4、top 含 scrollTop 位移
+      const noFixed = computeEditorStyle({ ...base, colIndex: 1, rowIndex: 2, scrollTop: 100, scrollLeft: 50, fixedCount: 0 })
 
-      assertEqual(uniform.left, 54, '无固定列 left = colLefts − scrollLeft + 4')
-      assertEqual(uniform.top, 36 + 2 * 36 - 100 + 4, 'top = headHeight + topAt − scrollTop + EDITOR_GAP')
+      assertEqual(noFixed.left, 54, '无固定列 left = colLefts − scrollLeft + 4')
+      assertEqual(noFixed.top, 36 + 2 * 36 - 100 + 4, 'top = headHeight + topAt − scrollTop + EDITOR_GAP')
 
       return 'A5.4 R1 统一矩形：EDITOR_GAP=4、三类型/两态同矩形、固定列对照、变高行、theme 不再消费、防负值'
     }

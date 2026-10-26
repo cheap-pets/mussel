@@ -21,7 +21,7 @@
  * - dpr            devicePixelRatio，每次绘制 ctx.setTransform(dpr, 0, 0, dpr, 0, 0)（A2 标准直乘）
  * - layout         layout.js relayout() 返回的布局快照（含 rowGeometry 引用；画布 css
  *                  宽高取 stickyWidth/Height。行坐标经 rowGeometry.topAt/heightAt 取值，
- *                  缺失时按 uniform 等高回退——等高算式恒等）
+ *                  几何必传——C4 起 relayout 产物恒携几何，缺失即快速失败)
  * - theme          theme.js readSnapshot() 快照
  * - records        行数据（与 layout 的 rowCount 同源；G2 起被 displayRows 取代时保留兜底）
  * - displayRows    读行集合（02-design.md A2.1）：树开 = 平铺行数组、树关 = records 原序；
@@ -37,6 +37,8 @@
  *                  selectedRecordKey ?? selectedRecord?.[keyField || '_key'] 解析后传入
  * - headerChecked  check 表头受控态 { [field]: Boolean }（null/undefined = 不绘制表头 ✓）
  * - gridlines / hoverMode / striped / orderBy   渲染 props 原样传入
+ * - placeholder   表格级占位文本（drawCell 空内容兜底第三级：
+ *                 content.text ?? 列级 placeholder ?? 此值；不进列准备依赖）
  * - hover          { row, col } | null 视口命中索引（interactions 产出）
  * - resizeGuideX   调宽拖拽参考线视口 x | null
  * - onImageLoad    (row, col) => void，纯函数绘制的 img 加载完成回调；
@@ -64,15 +66,23 @@
  * 直接叠画会在旧帧上重复混色；整幅绘制由 clearRect 保证同一起点）。
  */
 
-import { drawCell } from './cell-painters.js'
+import { drawCell, drawTreeArrow } from './cell-painters.js'
 import { EDITOR_GAP } from './editor.js'
 import { createMeasureCache, withAlpha } from './theme.js'
-import { createUniformRowGeometry, TREE_INDENT } from './row-geometry.js'
+import { ellipsize } from './text-wrap.js'
+import { isExpandedKey } from './tree.js'
+import {
+  TREE_INDENT,
+  CELL_PADDING_FALLBACK,
+  CHECK_SIZE,
+  CHECK_RADIUS,
+  CHECK_FONT_SIZE,
+  FONT_SIZE_FALLBACK,
+  FONT_FAMILY_FALLBACK
+} from './constants.js'
 
-// 表头 ✓ 方框（镜像 .mu-table__cell-check，与 cell-painters 单元格 check 同规格）
-const CHECK_SIZE = 16
-const CHECK_RADIUS = 4
-const CHECK_FONT_SIZE = 12
+// 表头 ✓ 方框：与单元格 check（cell-painters.drawCheck）同规格互指（CHECK_*
+// 共享常量；状态机不同——表头无 disabled——绘制函数不强合，规格变更两处同步）
 
 // 排序图标：th 内 absolute right: cell-padding、font-size 18px（table.scss .mu-sort-icon），
 // viewBox 24 双三角 path M18 10l-6 -6l-6 6h12 / M18 14l-6 6l-6 -6h12（sort-icon.vue），
@@ -81,9 +91,6 @@ const SORT_ICON_SIZE = 18
 const SORT_ICON_RESERVE = 18
 
 const FALLBACK_DPR = 1
-const FALLBACK_FONT_SIZE = 14
-const FALLBACK_FONT_FAMILY = 'sans-serif'
-const FALLBACK_PADDING = 8
 
 // —— 文本测量缓存（theme.js createMeasureCache 消费方；模块级共享，主线程同步绘制） ——
 
@@ -105,21 +112,19 @@ function measureText (ctx, text, font) {
 }
 
 function headerFontOf (theme) {
-  const fontSize = theme?.fontSize || FALLBACK_FONT_SIZE
+  const fontSize = theme?.fontSize || FONT_SIZE_FALLBACK
 
-  return `500 ${fontSize}px ${theme?.fontFamily || FALLBACK_FONT_FAMILY}`
+  return `500 ${fontSize}px ${theme?.fontFamily || FONT_FAMILY_FALLBACK}`
 }
 
-/** 超宽截断加省略号（A7 单行省略；溢出字符 '...' 按实施约束 4 统一）；放不下一个字符时返回空串 */
-function ellipsizeText (ctx, text, maxWidth, font) {
-  if (!(maxWidth > 0)) return ''
-  if (measureText(ctx, text, font) <= maxWidth) return text
+/** 表头测量回调：优先注入的 state.measure（与表体/行高同一缓存实例）；
+    未注入（自检夹具）回退模块级缓存测量（借用绘制 ctx） */
+function headerMeasureOf (ctx, state) {
+  const injected = state?.measure
 
-  let end = text.length
+  if (typeof injected === 'function') return injected
 
-  while (end > 0 && measureText(ctx, text.slice(0, end) + '...', font) > maxWidth) end--
-
-  return end > 0 ? text.slice(0, end) + '...' : ''
+  return (text, font) => measureText(ctx, text, font)
 }
 
 // —— 几何换算 ——
@@ -140,31 +145,8 @@ function recordKeyOf (state, record, row) {
       : row
 }
 
-/** 展开 key 集合命中（镜像 cell-painters.isExpandedKey：Set/Array 双形态） */
-function isExpandedKey (expandedKeys, key) {
-  if (expandedKeys == null || key == null) return false
-
-  if (typeof expandedKeys.has === 'function') return expandedKeys.has(key)
-
-  return typeof expandedKeys.includes === 'function' ? expandedKeys.includes(key) : false
-}
-
-// layout 快照缺失 rowGeometry 时的 uniform 回退缓存（cellRectAt 等外部消费方
-// 传入手织 layout 的容错路径；等高算式恒等，WeakMap 防每帧重建）
-const geometryFallbacks = new WeakMap()
-
-function rowGeometryOf (layout) {
-  if (layout.rowGeometry) return layout.rowGeometry
-
-  let geometry = geometryFallbacks.get(layout)
-
-  if (!geometry) {
-    geometry = createUniformRowGeometry({ rowHeight: layout.rowHeight, rowCount: 0 })
-    geometryFallbacks.set(layout, geometry)
-  }
-
-  return geometry
-}
+// 行几何直取 layout.rowGeometry（C4 删 WeakMap uniform 回退：layout 一律由
+// relayout() 产出、恒携几何；缺失即 TypeError 快速暴露，不再静默等高兜底）
 
 /** 列视口 x：固定列不随滚动位移，滚动区列减 scrollLeft */
 function viewportColX (layout, col) {
@@ -173,7 +155,7 @@ function viewportColX (layout, col) {
 
 /** 行视口 y（表头下缘起算，随 scrollTop 位移；变高行经 rowGeometry.topAt） */
 function viewportRowY (layout, row) {
-  return layout.headHeight + rowGeometryOf(layout).topAt(row) - layout.scrollTop
+  return layout.headHeight + layout.rowGeometry.topAt(row) - layout.scrollTop
 }
 
 /** 单元格视口矩形（interactions / editor / 自检共用；高度 = heightAt(row)，变高行适配） */
@@ -182,7 +164,7 @@ export function cellRectAt (layout, row, col) {
     x: viewportColX(layout, col),
     y: viewportRowY(layout, row),
     width: layout.colWidths?.[col] || 0,
-    height: rowGeometryOf(layout).heightAt(row)
+    height: layout.rowGeometry.heightAt(row)
   }
 }
 
@@ -270,6 +252,52 @@ function trimItemHits (itemHits, viewRows) {
   }
 }
 
+/** rows/cols 绘制区间为空（含缺省入参）——paintCellRange / paintGridlines 共用卫语句 */
+function isEmptyRange (range) {
+  return !range || range.to <= range.from
+}
+
+/** 行背景带右缘视口 x：max(所绘列区间右缘 x1, bandToX ?? x1)（bandToX 语义见 paintCellRange 头注） */
+function rowBandEndX (layout, cols, bandToX) {
+  const last = cols.to - 1
+  const x1 = viewportColX(layout, last) + (layout.colWidths[last] || 0)
+
+  return Math.max(x1, bandToX ?? x1)
+}
+
+/** 表体单行：行背景一条矩形覆盖列区间（选中/斑马纹按行取值，A2 分区 1）+ 逐格内容绘制 */
+function paintBodyRow (ctx, state, records, columns, r, cols, x0, bandWidth, W, H) {
+  const { layout } = state
+  const geometry = layout.rowGeometry
+  const rowHeight = geometry.heightAt(r)
+  const y = layout.headHeight + geometry.topAt(r) - layout.scrollTop
+
+  // 高度 = heightAt(r)；带右缘经 bandToX 扩展（见 paintCellRange 函数头注）
+  ctx.fillStyle = rowBackground(state, r)
+  ctx.fillRect(x0, y, bandWidth, rowHeight)
+
+  const record = records?.[r]
+
+  if (record == null) return
+
+  const recordNumber = (state.recordsOffset || 0) + r + 1
+
+  for (let c = Math.max(cols.from, 0); c < cols.to; c++) {
+    const col = columns?.[c]
+
+    if (!col) continue
+
+    const rect = {
+      x: viewportColX(layout, c),
+      y,
+      width: layout.colWidths[c] || 0,
+      height: rowHeight
+    }
+
+    drawCellClipped(ctx, state, col, record, recordNumber, rect, r, c, W, H)
+  }
+}
+
 /**
  * 单元格区域绘制（滚动区与固定区共用，含行背景）。
  * bandToX（R1/人工 3 意见 1，A2.1）：行背景带右缘视口 x 下限——带右缘 =
@@ -279,46 +307,17 @@ function trimItemHits (itemHits, viewRows) {
  * [0, fixedWidth]，防固定 pass 行底色覆盖已绘滚动区内容（遮挡由分区顺序承担）。
  */
 function paintCellRange (ctx, state, rows, cols, bandToX) {
-  if (!rows || !cols || rows.to <= rows.from || cols.to <= cols.from) return
+  if (isEmptyRange(rows) || isEmptyRange(cols)) return
 
   const { layout, columns } = state
   const records = rowsOf(state)
-  const geometry = rowGeometryOf(layout)
   const W = layout.stickyWidth
   const H = layout.stickyHeight
-  const last = cols.to - 1
+  const x0 = viewportColX(layout, cols.from)
+  const bandWidth = rowBandEndX(layout, cols, bandToX) - x0
 
   for (let r = Math.max(rows.from, 0); r < rows.to; r++) {
-    const rowHeight = geometry.heightAt(r)
-    const y = layout.headHeight + geometry.topAt(r) - layout.scrollTop
-    const x0 = viewportColX(layout, cols.from)
-    const x1 = viewportColX(layout, last) + (layout.colWidths[last] || 0)
-
-    // 行背景一条矩形覆盖列区间（选中/斑马纹按行取值，A2 分区 1；高度 = heightAt(r)）；
-    // 带右缘经 bandToX 扩展（见函数头注）
-    ctx.fillStyle = rowBackground(state, r)
-    ctx.fillRect(x0, y, Math.max(x1, bandToX ?? x1) - x0, rowHeight)
-
-    const record = records?.[r]
-
-    if (record == null) continue
-
-    const recordNumber = (state.recordsOffset || 0) + r + 1
-
-    for (let c = Math.max(cols.from, 0); c < cols.to; c++) {
-      const col = columns?.[c]
-
-      if (!col) continue
-
-      const rect = {
-        x: viewportColX(layout, c),
-        y,
-        width: layout.colWidths[c] || 0,
-        height: rowHeight
-      }
-
-      drawCellClipped(ctx, state, col, record, recordNumber, rect, r, c, W, H)
-    }
+    paintBodyRow(ctx, state, records, columns, r, cols, x0, bandWidth, W, H)
   }
 }
 
@@ -356,6 +355,7 @@ function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colI
     recordKey: recordKeyOf(state, record, row),
     measure: state.measure,
     wrapCache: state.wrapCache,
+    placeholder: state.placeholder,
     onItemRect: itemRects ? entry => itemRects.push(entry) : undefined
   })
 
@@ -366,49 +366,71 @@ function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colI
 
 // —— 分区 2：网格线 ——
 
+/** 网格线模式含某向：all 全画，其余按 row / column 精确匹配（未知值不画线） */
+function isGridlineMode (mode, kind) {
+  return mode === 'all' || mode === kind
+}
+
+/** 行线：可视行区间 [from, to] 每行下界 1px（首行顶线 r=0 由表头底边框承担） */
+function paintRowGridlines (ctx, layout, rows, W) {
+  for (let r = Math.max(rows.from, 1); r <= rows.to; r++) {
+    ctx.fillRect(0, viewportRowY(layout, r), W, 1)
+  }
+}
+
+/** 列线：列右缘 1px，遇末列索引终止（同 .last-col） */
+function paintColGridlines (ctx, layout, cols) {
+  const n = layout.colWidths.length
+
+  for (let c = cols.from; c < cols.to; c++) {
+    if (c >= n - 1) break
+
+    ctx.fillRect(
+      viewportColX(layout, c) + (layout.colWidths[c] || 0) - 1,
+      layout.headHeight,
+      1,
+      layout.stickyHeight - layout.headHeight
+    )
+  }
+}
+
 function paintGridlines (ctx, state, rows, cols, maxWidth) {
   const mode = state.gridlines ?? 'all'
 
-  if (mode === 'none' || !rows || !cols || rows.to <= rows.from || cols.to <= cols.from) return
+  if (mode === 'none' || isEmptyRange(rows) || isEmptyRange(cols)) return
 
   const { layout, theme } = state
   const W = Math.min(maxWidth ?? layout.stickyWidth, layout.stickyWidth)
-  const H = layout.stickyHeight
 
   ctx.fillStyle = theme.borderColorSoft
 
   // 行线：行界 1px（首行顶线由表头底边框承担，同 .mu-table td border-top 首行无线）
-  if (mode === 'all' || mode === 'row') {
-    for (let r = Math.max(rows.from, 1); r <= rows.to; r++) {
-      ctx.fillRect(0, viewportRowY(layout, r), W, 1)
-    }
-  }
+  if (isGridlineMode(mode, 'row')) paintRowGridlines(ctx, layout, rows, W)
 
   // 列线：列右缘 1px（末列无线，同 .last-col；固定区分界线由固定区强化色覆盖）
-  if (mode === 'all' || mode === 'column') {
-    const n = layout.colWidths.length
-
-    for (let c = cols.from; c < cols.to; c++) {
-      if (c >= n - 1) break
-
-      ctx.fillRect(viewportColX(layout, c) + (layout.colWidths[c] || 0) - 1, layout.headHeight, 1, H - layout.headHeight)
-    }
-  }
+  if (isGridlineMode(mode, 'column')) paintColGridlines(ctx, layout, cols)
 }
 
 // —— 分区 3：固定左列区 ——
 
-function paintFixedArea (ctx, state) {
+/**
+ * 固定左列区（分区 3）：整高不透明底重绘盖住滚过的表体。rows 限定重绘行区间
+ * （P0-2）：行带/单格等脏区入口只画与脏带相交的行（脏区 clip 会裁剪到底色
+ * 擦除与网格线均以带内为限，语义不变）；缺省整幅可视行（整幅绘制/列带入口）。
+ */
+function paintFixedArea (ctx, state, rows) {
   const { layout, theme } = state
 
   if (!layout.fixedCount) return
 
-  // 整高不透明重绘，盖住滚过的表体（A2 分区 3）
+  const range = rows ?? viewRowsRange(layout)
+
+  // 整高不透明重绘，盖住滚过的表体（A2 分区 3；在脏区 clip 内被裁到脏带）
   ctx.fillStyle = theme.bgNormal
   ctx.fillRect(0, 0, layout.fixedWidth, layout.stickyHeight)
 
-  paintCellRange(ctx, state, viewRowsRange(layout), { from: 0, to: layout.fixedCount })
-  paintGridlines(ctx, state, viewRowsRange(layout), { from: 0, to: layout.fixedCount }, layout.fixedWidth)
+  paintCellRange(ctx, state, range, { from: 0, to: layout.fixedCount })
+  paintGridlines(ctx, state, range, { from: 0, to: layout.fixedCount }, layout.fixedWidth)
 
   // 分界线：横向滚动后强化色覆盖（对齐 table.scss .mu-table--x-scrolled .last-fixed-col，
   // 不受 gridlines 模式约束；表头部分由表头区自绘）
@@ -442,7 +464,7 @@ function drawHeaderCheck (ctx, theme, x, centerY, checked) {
   ctx.stroke()
 
   if (checked) {
-    ctx.font = `600 ${CHECK_FONT_SIZE}px ${theme?.fontFamily || FALLBACK_FONT_FAMILY}`
+    ctx.font = `600 ${CHECK_FONT_SIZE}px ${theme?.fontFamily || FONT_FAMILY_FALLBACK}`
     ctx.fillStyle = theme.textColor
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
@@ -470,50 +492,97 @@ function drawSortIcon (ctx, state, col, ix, iy) {
   drawTriangle([[18, 14], [12, 20], [6, 14]], direction === 'down')
 }
 
+/** check 表头 ✓ 判定：table.vue:22 同款条件（type=check + field + headerCheckbox + headerChecked 受控态） */
+function isHeaderCheckColumn (state, raw) {
+  return !!(raw.type === 'check' && raw.field && raw.headerCheckbox && state.headerChecked)
+}
+
+/** caption → 展示文本（null/undefined 空串兜底，其余 String 化） */
+function headerCaptionText (caption) {
+  return caption != null ? String(caption) : ''
+}
+
+/** 表头文本锚点 x：check 列恒取 ✓ 后文本起点；否则按 align（right 贴右缘扣预留，其余居中） */
+function headerTextAnchorX (align, hasHeaderCheck, textX, x, width, padding, reserve) {
+  if (hasHeaderCheck || align === 'left') return textX
+
+  return align === 'right' ? x + width - padding - reserve : x + (width - reserve) / 2
+}
+
+/** 表头文本绘制：ellipsize 截断后按 align 绘制（check 列强制 left 对齐于 ✓ 后文本起点） */
+function drawHeaderText (ctx, state, col, font, align, hasHeaderCheck, textX, maxTextWidth, centerY, x, width) {
+  const { text: display } = ellipsize({
+    text: headerCaptionText(col.caption),
+    font,
+    maxWidth: maxTextWidth,
+    measure: headerMeasureOf(ctx, state)
+  })
+
+  if (!display) return
+
+  const { theme } = state
+  const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
+  const reserve = col.sortable ? SORT_ICON_RESERVE : 0
+
+  ctx.font = font
+  ctx.fillStyle = theme.textColor
+  ctx.textAlign = hasHeaderCheck ? 'left' : align
+  ctx.textBaseline = 'middle'
+  ctx.fillText(display, headerTextAnchorX(align, hasHeaderCheck, textX, x, width, padding, reserve), centerY)
+}
+
 function drawHeaderCell (ctx, state, col, x, width) {
   const { layout, theme } = state
-  const padding = theme?.cellPadding || FALLBACK_PADDING
+  const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
   const centerY = layout.headHeight / 2
   const raw = col._raw ?? {}
   const sortable = !!col.sortable
   const align = col._align || 'left'
   const reserve = sortable ? SORT_ICON_RESERVE : 0
-  // check 表头 ✓：table.vue:22 同款条件（type=check + field + headerCheckbox + headerChecked 受控态）
-  const hasHeaderCheck = raw.type === 'check' && raw.field && raw.headerCheckbox && state.headerChecked
+  const hasHeaderCheck = isHeaderCheckColumn(state, raw)
 
   const font = headerFontOf(theme)
   let textX = x + padding
   let maxTextWidth = width - padding * 2 - reserve
-  let checked = false
 
   if (hasHeaderCheck) {
-    checked = !!state.headerChecked[raw.field]
-    drawHeaderCheck(ctx, theme, x + padding, centerY, checked)
+    drawHeaderCheck(ctx, theme, x + padding, centerY, !!state.headerChecked[raw.field])
     textX = x + padding + CHECK_SIZE + 6
     maxTextWidth -= CHECK_SIZE + 6
   }
 
-  const display = ellipsizeText(ctx, col.caption != null ? String(col.caption) : '', maxTextWidth, font)
-
-  if (display) {
-    ctx.font = font
-    ctx.fillStyle = theme.textColor
-    ctx.textAlign = hasHeaderCheck ? 'left' : align
-    ctx.textBaseline = 'middle'
-
-    let anchorX = textX
-
-    if (!hasHeaderCheck && align !== 'left') {
-      anchorX = align === 'right'
-        ? x + width - padding - reserve
-        : x + (width - reserve) / 2
-    }
-
-    ctx.fillText(display, anchorX, centerY)
-  }
+  drawHeaderText(ctx, state, col, font, align, hasHeaderCheck, textX, maxTextWidth, centerY, x, width)
 
   if (sortable) {
     drawSortIcon(ctx, state, col, x + width - padding - SORT_ICON_SIZE, centerY - SORT_ICON_SIZE / 2)
+  }
+}
+
+/** 表头分隔线绘制条件：固定分界强化线（x-scrolled）恒画，其余仅 all/column 模式 */
+function showsHeaderColLine (mode, strong) {
+  return strong || mode === 'all' || mode === 'column'
+}
+
+/** 单条表头列分隔线（.mu-table__th border-right 同款 1px）：固定分界线强化色，其余柔色 */
+function paintHeaderColLine (ctx, theme, layout, c, strong) {
+  ctx.fillStyle = strong ? theme.borderColorStrong : theme.borderColorSoft
+  ctx.fillRect(viewportColX(layout, c) + (layout.colWidths[c] || 0) - 1, 0, 1, layout.headHeight - 1)
+}
+
+/** 表头列分隔线整批：可视列从左到右，遇末列终止（.last-col 末列无线） */
+function paintHeaderColLines (ctx, state, layout, theme) {
+  const mode = state.gridlines ?? 'all'
+  const n = layout.colWidths.length
+  const strongBoundary = layout.scrollLeft > 0.5
+
+  if (!showsHeaderColLine(mode, strongBoundary)) return
+
+  for (const c of headerColIndexes(layout)) {
+    if (c >= n - 1) break
+
+    const strong = strongBoundary && c === layout.fixedCount - 1
+
+    if (showsHeaderColLine(mode, strong)) paintHeaderColLine(ctx, theme, layout, c, strong)
   }
 }
 
@@ -533,22 +602,7 @@ function paintHeader (ctx, state) {
   }
 
   // 表头列分隔线（.mu-table__th border-right 同款：末列无线、固定分界线 x-scrolled 强化）
-  const mode = state.gridlines ?? 'all'
-  const n = layout.colWidths.length
-  const strongBoundary = layout.scrollLeft > 0.5
-
-  if (mode === 'all' || mode === 'column' || strongBoundary) {
-    for (const c of headerColIndexes(layout)) {
-      if (c >= n - 1) break
-
-      const strong = strongBoundary && c === layout.fixedCount - 1
-
-      if (!strong && mode !== 'all' && mode !== 'column') continue
-
-      ctx.fillStyle = strong ? theme.borderColorStrong : theme.borderColorSoft
-      ctx.fillRect(viewportColX(layout, c) + (layout.colWidths[c] || 0) - 1, 0, 1, headHeight - 1)
-    }
-  }
+  paintHeaderColLines(ctx, state, layout, theme)
 
   // 底边框（--head-border-bottom: 1px solid var(--mu-border-color-soft)）
   ctx.fillStyle = theme.borderColorSoft
@@ -560,9 +614,8 @@ function paintHeader (ctx, state) {
 /**
  * 树箭头 hover 主色（A2.4「hover 主色」，S1 遗留收尾）：hover 命中树形列父行格时，
  * 在覆盖层以主色重画箭头三角盖住分区 1 的常态 textColor 箭头（取色 = 快照
- * colors.primary.color，缺 colors 时回退 primaryColor）。三角几何与展开判定镜像
- * cell-painters drawTreeAffordance（x + padding + level×16 槽内 2..10，±3.5 / ±5），
- * 该处形状变更需同步。
+ * colors.primary.color，缺 colors 时回退 primaryColor）。三角几何与展开判定
+ * 共用 cell-painters.drawTreeArrow（C2 收拢，形状单一事实源）。
  *
  * 粒度说明：壳的 hover 载荷为 { row, col }（hitTest 的 hit.cellX 未入 paintState，
  * 且同格内槽位进出不触发重绘）——槽位级命中需壳改动，本处为格级粒度：
@@ -581,89 +634,113 @@ function paintTreeArrowAccent (ctx, state) {
 
   if (record == null) return
 
-  const geometry = rowGeometryOf(state.layout)
-  const padding = theme?.cellPadding || FALLBACK_PADDING
+  const geometry = state.layout.rowGeometry
+  const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
   const level = flatInfo.levels?.[hover.row] ?? 0
   const x = viewportColX(state.layout, hover.col) + padding + level * TREE_INDENT
   const centerY = viewportRowY(state.layout, hover.row) + geometry.heightAt(hover.row) / 2
 
-  ctx.beginPath()
+  drawTreeArrow(
+    ctx,
+    x,
+    centerY,
+    isExpandedKey(state.expandedKeys, recordKeyOf(state, record, hover.row)),
+    theme?.colors?.primary?.color ?? theme?.primaryColor
+  )
+}
 
-  if (isExpandedKey(state.expandedKeys, recordKeyOf(state, record, hover.row))) {
-    // 展开 ▾（下指三角）
-    ctx.moveTo(x + 2, centerY - 3.5)
-    ctx.lineTo(x + 10, centerY - 3.5)
-    ctx.lineTo(x + 6, centerY + 3.5)
-  } else {
-    // 收起 ▸（右指三角）
-    ctx.moveTo(x + 3, centerY - 5)
-    ctx.lineTo(x + 3, centerY + 5)
-    ctx.lineTo(x + 10, centerY)
+/** hover 模式含某向高亮：cross 同时含行与列，其余按 row / column / cell 精确匹配 */
+function hoverModeShows (mode, kind) {
+  return mode === kind || mode === 'cross'
+}
+
+/** hover 行带高亮（row / cross） */
+function paintHoverRow (ctx, layout, row) {
+  ctx.fillRect(0, viewportRowY(layout, row), layout.stickyWidth, layout.rowGeometry.heightAt(row))
+}
+
+/** hover 列带高亮（column / cross） */
+function paintHoverCol (ctx, layout, col) {
+  ctx.fillRect(
+    viewportColX(layout, col),
+    layout.headHeight,
+    layout.colWidths[col] || 0,
+    layout.stickyHeight - layout.headHeight
+  )
+}
+
+/** hover 单格高亮（cell） */
+function paintHoverCell (ctx, layout, row, col) {
+  ctx.fillRect(
+    viewportColX(layout, col),
+    viewportRowY(layout, row),
+    layout.colWidths[col] || 0,
+    layout.rowGeometry.heightAt(row)
+  )
+}
+
+/** hover 高亮矩形（fillStyle 由调用方预设为 hoverBg）：行带 / 列带 / 单格按模式与命中有效性 */
+function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid) {
+  if (hoverModeShows(mode, 'row') && rowValid) paintHoverRow(ctx, layout, hover.row)
+
+  if (hoverModeShows(mode, 'column') && colValid) paintHoverCol(ctx, layout, hover.col)
+
+  if (mode === 'cell' && rowValid && colValid) paintHoverCell(ctx, layout, hover.row, hover.col)
+}
+
+/**
+ * 可编辑格 hover 感知（A5.3，R1/人工 3 意见 2）：1px 主色内描边，矩形 =
+ * cellRectAt 内缩 EDITOR_GAP（与 editor.js 编辑浮层矩形逐边相等——import 同一
+ * 常量单一事实源，与单元格边框四周 4px 间距）；不占布局、随 hover 带重绘生效
+ */
+function paintHoverEditorStroke (ctx, state, hover) {
+  if (!state.editable || !state.isCellEditableFn) return
+
+  const column = state.columns?.[hover.col]
+
+  if (!column || !state.isCellEditableFn(column)) return
+
+  const rect = cellRectAt(state.layout, hover.row, hover.col)
+
+  ctx.strokeStyle = withAlpha(state.theme.primaryColor, 0.45)
+  ctx.lineWidth = 1
+  ctx.strokeRect(
+    rect.x + EDITOR_GAP + 0.5,
+    rect.y + EDITOR_GAP + 0.5,
+    rect.width - EDITOR_GAP * 2 - 1,
+    rect.height - EDITOR_GAP * 2 - 1
+  )
+}
+
+/** hover 叠加：高亮底色 → 可编辑格内描边 → 树箭头主色（绘制顺序固定） */
+function paintHoverOverlay (ctx, state, hover, mode) {
+  const { layout, theme } = state
+  const rowCount = rowsOf(state)?.length ?? 0
+  const rowValid = hover.row >= 0 && hover.row < rowCount
+  const colValid = hover.col >= 0 && hover.col < layout.colWidths.length
+
+  ctx.fillStyle = theme.hoverBg
+
+  paintHoverHighlight(ctx, layout, hover, mode, rowValid, colValid)
+
+  if (rowValid && colValid) {
+    paintHoverEditorStroke(ctx, state, hover)
+
+    // 树箭头 hover 主色（A2.4）：同受 hoverMode none 抑制——用户显式关闭 hover 反馈时不画
+    paintTreeArrowAccent(ctx, state)
   }
-
-  ctx.closePath()
-  ctx.fillStyle = theme?.colors?.primary?.color ?? theme?.primaryColor
-  ctx.fill()
 }
 
 function paintOverlay (ctx, state) {
   const { layout, theme, hover } = state
   const mode = state.hoverMode || 'row'
-  const H = layout.stickyHeight
-  const W = layout.stickyWidth
-  const geometry = rowGeometryOf(layout)
-  const rowCount = rowsOf(state)?.length ?? 0
-  const colCount = layout.colWidths.length
 
-  if (hover && mode !== 'none') {
-    const { row, col } = hover
-    const rowValid = row >= 0 && row < rowCount
-    const colValid = col >= 0 && col < colCount
-
-    ctx.fillStyle = theme.hoverBg
-
-    if ((mode === 'row' || mode === 'cross') && rowValid) {
-      ctx.fillRect(0, viewportRowY(layout, row), W, geometry.heightAt(row))
-    }
-
-    if ((mode === 'column' || mode === 'cross') && colValid) {
-      ctx.fillRect(viewportColX(layout, col), layout.headHeight, layout.colWidths[col] || 0, H - layout.headHeight)
-    }
-
-    if (mode === 'cell' && rowValid && colValid) {
-      ctx.fillRect(viewportColX(layout, col), viewportRowY(layout, row), layout.colWidths[col] || 0, geometry.heightAt(row))
-    }
-
-    // 可编辑格 hover 感知（A5.3，R1/人工 3 意见 2）：1px 主色内描边，矩形 =
-    // cellRectAt 内缩 EDITOR_GAP（与 editor.js 编辑浮层矩形逐边相等——import 同一
-    // 常量单一事实源，与单元格边框四周 4px 间距）；不占布局、随 hover 带重绘生效；
-    // hoverMode none 时不画（用户显式关闭 hover 反馈）
-    if (rowValid && colValid && state.editable && state.isCellEditableFn) {
-      const column = state.columns?.[col]
-
-      if (column && state.isCellEditableFn(column)) {
-        const rect = cellRectAt(layout, row, col)
-
-        ctx.strokeStyle = withAlpha(theme.primaryColor, 0.45)
-        ctx.lineWidth = 1
-        ctx.strokeRect(
-          rect.x + EDITOR_GAP + 0.5,
-          rect.y + EDITOR_GAP + 0.5,
-          rect.width - EDITOR_GAP * 2 - 1,
-          rect.height - EDITOR_GAP * 2 - 1
-        )
-      }
-    }
-
-    // 树箭头 hover 主色（A2.4）：hover 命中树形列父行格时箭头覆盖主色（同受
-    // hoverMode none 抑制——用户显式关闭 hover 反馈时不画）
-    if (rowValid && colValid) paintTreeArrowAccent(ctx, state)
-  }
+  if (hover && mode !== 'none') paintHoverOverlay(ctx, state, hover, mode)
 
   // 调宽拖拽参考线：1px 主色、全高（A2 分区 5）
   if (state.resizeGuideX != null) {
     ctx.fillStyle = theme.primaryColor
-    ctx.fillRect(Math.round(state.resizeGuideX), 0, 1, H)
+    ctx.fillRect(Math.round(state.resizeGuideX), 0, 1, layout.stickyHeight)
   }
 }
 
@@ -708,7 +785,7 @@ function paintRowBand (ctx, state, range) {
     eraseClipRegion(ctx, rect)
     paintCellRange(ctx, state, { from, to }, viewColsRange(layout), layout.stickyWidth)
     paintGridlines(ctx, state, { from, to }, viewColsRange(layout), layout.stickyWidth)
-    paintFixedArea(ctx, state)
+    paintFixedArea(ctx, state, { from, to })
     paintOverlay(ctx, state)
   })
 
@@ -767,13 +844,13 @@ function paintCellRegion (ctx, state, cell) {
 
   const x = viewportColX(layout, col)
   const y = Math.max(viewportRowY(layout, row), layout.headHeight)
-  const rect = [x, y, (layout.colWidths[col] || 0) + 1, rowGeometryOf(layout).heightAt(row) + 1]
+  const rect = [x, y, (layout.colWidths[col] || 0) + 1, layout.rowGeometry.heightAt(row) + 1]
 
   withClip(ctx, rect, () => {
     eraseClipRegion(ctx, rect)
     paintCellRange(ctx, state, { from: row, to: row + 1 }, { from: col, to: col + 1 }, layout.stickyWidth)
     paintGridlines(ctx, state, { from: row, to: row + 1 }, { from: col, to: col + 1 }, layout.stickyWidth)
-    paintFixedArea(ctx, state)
+    paintFixedArea(ctx, state, { from: row, to: row + 1 })
     paintOverlay(ctx, state)
   })
 
@@ -819,51 +896,64 @@ function paintResizeBand (ctx, state, colFrom) {
   return stats
 }
 
+/** 无 region 或未识别的 region 形状（无任何已知字段）按整幅兜底（正确性优先） */
+function isFullPaintRegion (region) {
+  return !region ||
+    (region.header !== true && region.rows == null && region.cols == null &&
+      region.cell == null && region.colFrom == null)
+}
+
+/** 整幅绘制：clearRect 起点复位 → 分区管线 → lastPaint 统计 */
+function paintFull (ctx, state) {
+  const { layout } = state
+
+  ctx.clearRect(0, 0, layout.stickyWidth, layout.stickyHeight)
+  paintCellRange(ctx, state, viewRowsRange(layout), viewColsRange(layout), layout.stickyWidth)
+  paintGridlines(ctx, state, viewRowsRange(layout), viewColsRange(layout), layout.stickyWidth)
+  paintFixedArea(ctx, state)
+  paintHeader(ctx, state)
+  paintOverlay(ctx, state)
+
+  return windowStats(layout)
+}
+
+/** 已知 region 形状调度（header → rows → cols → cell → colFrom 依次匹配），无匹配返回 null */
+function paintRegion (ctx, state, region) {
+  const { layout } = state
+
+  if (region.header) {
+    paintHeaderPass(ctx, state)
+
+    return { rowStart: 0, rowEnd: 0, rowCount: 0, colStart: layout.viewCols.start, colEnd: layout.viewCols.end }
+  }
+
+  if (region.rows) return paintRowBand(ctx, state, region.rows)
+  if (region.cols) return paintColBand(ctx, state, region.cols)
+  if (region.cell) return paintCellRegion(ctx, state, region.cell)
+  if (region.colFrom != null) return paintResizeBand(ctx, state, region.colFrom)
+
+  return null
+}
+
 /**
  * 绘制执行：setTransform DPR 直乘 → 分区管线 → lastPaint 统计。
  * region 为 null/undefined 时整幅绘制（clearRect 起点复位）。
  */
 function paint (ctx, state, region) {
   const startedAt = performance.now()
-  const { layout } = state
   const dpr = state.dpr || window.devicePixelRatio || FALLBACK_DPR
-  const W = layout.stickyWidth
-  const H = layout.stickyHeight
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
   // 无 region 或空 region = 整幅；未识别的 region 形状按整幅兜底（正确性优先）
-  const isFullPaint = !region ||
-    (region.header !== true && region.rows == null && region.cols == null &&
-      region.cell == null && region.colFrom == null)
-
-  let stats = null
-
-  if (isFullPaint) {
-    ctx.clearRect(0, 0, W, H)
-    paintCellRange(ctx, state, viewRowsRange(layout), viewColsRange(layout), layout.stickyWidth)
-    paintGridlines(ctx, state, viewRowsRange(layout), viewColsRange(layout), W)
-    paintFixedArea(ctx, state)
-    paintHeader(ctx, state)
-    paintOverlay(ctx, state)
-    stats = windowStats(layout)
-  } else if (region.header) {
-    paintHeaderPass(ctx, state)
-    stats = { rowStart: 0, rowEnd: 0, rowCount: 0, colStart: layout.viewCols.start, colEnd: layout.viewCols.end }
-  } else if (region.rows) {
-    stats = paintRowBand(ctx, state, region.rows)
-  } else if (region.cols) {
-    stats = paintColBand(ctx, state, region.cols)
-  } else if (region.cell) {
-    stats = paintCellRegion(ctx, state, region.cell)
-  } else if (region.colFrom != null) {
-    stats = paintResizeBand(ctx, state, region.colFrom)
-  }
+  const stats = isFullPaintRegion(region)
+    ? paintFull(ctx, state)
+    : paintRegion(ctx, state, region)
 
   if (stats) stats.elapsed = performance.now() - startedAt
 
   // 条目命中集合窗口裁剪（A3.3）：按当前可视窗口行 [start, end) 删除窗口外行
-  if (state.itemHits) trimItemHits(state.itemHits, layout.viewRows)
+  if (state.itemHits) trimItemHits(state.itemHits, state.layout.viewRows)
 
   return stats
 }
@@ -878,6 +968,25 @@ export function drawRegion (ctx, state, region) {
   return paint(ctx, state, region)
 }
 
+/** 行横带与当前可视窗口行相交（to 排他区间重叠判定） */
+function rowsRegionPaintable (region, viewRows) {
+  return region.rows[1] > viewRows.start && region.rows[0] < viewRows.end
+}
+
+/** 列竖带与列空间相交 */
+function colsRegionPaintable (region, colWidths) {
+  return region.cols[1] > 0 && region.cols[0] < colWidths.length
+}
+
+/** 单格落在可视窗口：行在窗口内，列在固定列或可视列区间 */
+function cellRegionPaintable (region, layout) {
+  const { row, col } = region.cell
+  const cols = layout.viewCols
+
+  return row >= layout.viewRows.start && row < layout.viewRows.end &&
+    (col < layout.fixedCount || (col >= cols.start && col < cols.end))
+}
+
 /** region 是否落在当前可视窗口内（img onload → invalidateCell 前的行窗口校验等） */
 function isRegionPaintable (state, region) {
   if (!region) return true
@@ -890,23 +999,9 @@ function isRegionPaintable (state, region) {
     return region.colFrom >= 0 && region.colFrom < layout.colWidths.length
   }
 
-  const rows = layout.viewRows
-
-  if (region.rows) {
-    return region.rows[1] > rows.start && region.rows[0] < rows.end
-  }
-
-  if (region.cols) {
-    return region.cols[1] > 0 && region.cols[0] < layout.colWidths.length
-  }
-
-  if (region.cell) {
-    const { row, col } = region.cell
-    const cols = layout.viewCols
-
-    return row >= rows.start && row < rows.end &&
-      (col < layout.fixedCount || (col >= cols.start && col < cols.end))
-  }
+  if (region.rows) return rowsRegionPaintable(region, layout.viewRows)
+  if (region.cols) return colsRegionPaintable(region, layout.colWidths)
+  if (region.cell) return cellRegionPaintable(region, layout)
 
   return false
 }

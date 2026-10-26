@@ -7,19 +7,15 @@
  *   （columns 引用替换时清空）由组件壳（canvas-table.vue）负责；
  * - 可视窗口口径（decisions「[I1 前]④」全链统一，含 lastPaint 断言口径）：
  *   viewH = clientHeight − headHeight、viewW = clientWidth − fixedWidth；
- * - 行几何（02-design.md A2.2）：computeViewRows / rowAt / relayout 接受可选
- *   rowGeometry（变高模式）；未传时经 resolveRowGeometry 缺省构造 uniform
- *   几何（等高算式恒等）——G2 中间态组件壳不传参仍可用（03-review-5 问题 3）。
+ * - 行几何（02-design.md A2.2）：computeViewRows / rowAt / relayout 均要求
+ *   rowGeometry 必传（C4 删 uniform 等高回退——生产路径 relayout() 恒产几何；
+ *   自检/手织 layout 夹具统一经 createUniformRowGeometry 构造）。
  */
 import { getPixelNumber } from '../table/utils'
 import { resolveColumnType } from '../table/column-types'
-import { createUniformRowGeometry } from './row-geometry'
 
 /** 滚动虚拟窗口上下各多绘的行数（02-design.md A3） */
 export const OVERSCAN = 2
-
-/** 未定宽列的初始宽下限（02-design.md A3 COL_FALLBACK；自定义类型回退条目复用） */
-export const COL_FALLBACK = 80
 
 /** 调宽手柄命中距离：距列缘 <= 4px（02-design.md A5） */
 export const RESIZE_HANDLE = 4
@@ -85,6 +81,59 @@ function getColumnKey (col, index) {
 }
 
 /**
+ * 定宽解析：widthOverrides[key] ?? col.width ?? type.width 经 getPixelNumber 取 px，
+ * 可解析时 clamp 到 [min, max]，不可解析返回 null（转弹性分支）。
+ * 覆盖值不可解析为 px 时按未覆盖处理，回退列定义（decisions「[I1 前]⑥」）。
+ */
+function resolveFixedWidth (col, index, widthOverrides, min, max) {
+  const overridePx = getPixelNumber(widthOverrides?.[getColumnKey(col, index)])
+  const px = getPixelNumber(
+    overridePx != null ? overridePx : col.width ?? resolveColumnType(col.type).width
+  )
+
+  return px != null ? clamp(px, min, max) : null
+}
+
+/**
+ * 弹性初始宽（A3.2）：类型默认宽 clamp 到 [min ?? 类型 minWidth, max]；
+ * col.minWidth 显式值覆盖类型最小宽。
+ */
+function resolveFlexWidth (col, min, max) {
+  const base = TYPE_DEFAULT_WIDTHS[typeNameOf(col)] ?? TYPE_DEFAULT_WIDTHS._fallback
+
+  return clamp(base.width, col.minWidth == null ? base.minWidth : min, max)
+}
+
+/**
+ * 余量摊派（A3「宽度求解」步骤 3）：remain 均摊给未封顶弹性列，被 clamp 消耗的
+ * 宽度下一轮再摊，迭代至无消耗或剩余列空（上限 3 轮，未收敛列保持当前值）。
+ * 就地写 widths，不返回余量（调用方不消费）。
+ */
+function distributeRemain (widths, maxes, flexes, remain) {
+  let open = flexes.filter(i => widths[i] < maxes[i])
+
+  for (let round = 0; round < 3 && remain > 0 && open.length; round++) {
+    const share = remain / open.length
+    let consumed = 0
+    const uncapped = []
+
+    for (const i of open) {
+      const grown = Math.min(widths[i] + share, maxes[i])
+
+      consumed += grown - widths[i]
+      widths[i] = grown
+
+      if (grown < maxes[i]) uncapped.push(i)
+    }
+
+    remain -= consumed
+    open = uncapped
+
+    if (consumed <= 0) break
+  }
+}
+
+/**
  * 宽度求解（02-design.md A3「宽度求解」）：
  * 1. 定宽列：widthOverrides[key] ?? col.width ?? type.width，经 getPixelNumber 取 px，
  *    clamp 到 [minWidth ?? 0, maxWidth ?? Infinity]（现状定宽链，完全不动——评审 6 P5）
@@ -118,48 +167,19 @@ export function solveWidths ({ columns, containerWidth = 0, widthOverrides } = {
 
     maxes[i] = max
 
-    // widthOverrides 按列 key 优先于列定义 width（decisions「[I1 前]⑥」）；
-    // 覆盖值不可解析为 px 时按未覆盖处理，回退列定义
-    const overridePx = getPixelNumber(widthOverrides?.[getColumnKey(col, i)])
-    const px = getPixelNumber(
-      overridePx != null ? overridePx : col.width ?? resolveColumnType(col.type).width
-    )
+    const px = resolveFixedWidth(col, i, widthOverrides, min, max)
 
     if (px != null) {
-      widths[i] = clamp(px, min, max)
+      widths[i] = px
     } else {
-      // 弹性分支（A3.2）：类型默认宽/最小宽双值基线；col.minWidth 显式值覆盖类型最小宽
-      const base = TYPE_DEFAULT_WIDTHS[typeNameOf(col)] ?? TYPE_DEFAULT_WIDTHS._fallback
-
-      widths[i] = clamp(base.width, col.minWidth == null ? base.minWidth : min, max)
+      widths[i] = resolveFlexWidth(col, min, max)
       flexes.push(i)
     }
 
     determined += widths[i]
   }
 
-  let remain = containerWidth - determined
-  let open = flexes.filter(i => widths[i] < maxes[i])
-
-  for (let round = 0; round < 3 && remain > 0 && open.length; round++) {
-    const share = remain / open.length
-    let consumed = 0
-    const uncapped = []
-
-    for (const i of open) {
-      const grown = Math.min(widths[i] + share, maxes[i])
-
-      consumed += grown - widths[i]
-      widths[i] = grown
-
-      if (grown < maxes[i]) uncapped.push(i)
-    }
-
-    remain -= consumed
-    open = uncapped
-
-    if (consumed <= 0) break
-  }
+  distributeRemain(widths, maxes, flexes, containerWidth - determined)
 
   return widths
 }
@@ -184,40 +204,16 @@ export function computePrefixSums (colWidths) {
 }
 
 /**
- * 行几何缺省回退（评审 6 P3，03-review-5 问题 3）：传入 rowGeometry 原样返回
- * （变高模式）；未传时构造 uniform 等高几何（算式与现状恒等）——G2 中间态
- * 组件壳不传参仍可用，G3 接线真实几何。
- *
- * @param {Object} params
- * @param {Object} [params.rowGeometry] 行几何实例（row-geometry.js 产物）
- * @param {Number} [params.rowHeight=0] 探针解析行高 px（uniform 回退用）
- * @param {Number} [params.rowCount=0] 行数（uniform 回退用）
- * @returns {Object} 行几何实例
- */
-export function resolveRowGeometry ({ rowGeometry, rowHeight = 0, rowCount = 0 } = {}) {
-  return rowGeometry ?? createUniformRowGeometry({ rowHeight, rowCount })
-}
-
-/**
- * 可视行窗口（含上下缘跨行与 OVERSCAN）。
+ * 可视行窗口（含上下缘跨行与 OVERSCAN），委托 rowGeometry.visibleRange。
  *
  * @param {Object} params
  * @param {Number} [params.scrollTop=0]
  * @param {Number} [params.viewH=0] 可视高 = clientHeight − headHeight（口径见模块头注释）
- * @param {Number} [params.rowHeight] 探针解析的行高 px（未传 rowGeometry 时必需）
- * @param {Number} [params.rowCount=0] 记录总数
- * @param {Object} [params.rowGeometry] 行几何实例（变高模式；uniform 缺省回退见 resolveRowGeometry）
+ * @param {Object} params.rowGeometry 行几何实例（row-geometry.js 产物，必传）
  * @returns {{ start: Number, end: Number, count: Number }} end 为排他边界
  */
-export function computeViewRows ({ scrollTop = 0, viewH = 0, rowHeight, rowCount = 0, rowGeometry } = {}) {
-  if (rowGeometry) return rowGeometry.visibleRange(scrollTop, viewH, OVERSCAN)
-
-  if (!(rowHeight > 0) || !(rowCount > 0)) return { start: 0, end: 0, count: 0 }
-
-  const start = clamp(Math.floor(scrollTop / rowHeight), 0, rowCount)
-  const end = clamp(Math.ceil((scrollTop + viewH) / rowHeight) + OVERSCAN, start, rowCount)
-
-  return { start, end, count: end - start }
+export function computeViewRows ({ scrollTop = 0, viewH = 0, rowGeometry } = {}) {
+  return rowGeometry.visibleRange(scrollTop, viewH, OVERSCAN)
 }
 
 /**
@@ -298,25 +294,39 @@ function firstIndexAtLeast (lefts, value) {
  * @param {Object} params
  * @param {Number} [params.headHeight=0]
  * @param {Number} [params.scrollTop=0]
- * @param {Number} [params.rowHeight] 行高 px（未传 rowGeometry 时必需）
- * @param {Number} [params.rowCount=0]
- * @param {Object} [params.rowGeometry] 行几何实例（变高模式；见 resolveRowGeometry）
+ * @param {Object} params.rowGeometry 行几何实例（row-geometry.js 产物，必传）
  * @returns {Number} 行号或 -1
  */
-export function rowAt (y, { headHeight = 0, scrollTop = 0, rowHeight, rowCount = 0, rowGeometry } = {}) {
+export function rowAt (y, { headHeight = 0, scrollTop = 0, rowGeometry } = {}) {
   if (y < headHeight) return -1
 
-  if (rowGeometry) {
-    const index = rowGeometry.offsetToRow(y - headHeight + scrollTop)
+  const index = rowGeometry.offsetToRow(y - headHeight + scrollTop)
 
-    return index >= 0 && index < rowGeometry.rowCount ? index : -1
+  return index >= 0 && index < rowGeometry.rowCount ? index : -1
+}
+
+/** 固定列区右边界：第 fixed 列左缘（fixed >= 列数时为 Infinity，全区按固定列处理） */
+function fixedLeftEdge (lefts, fixed) {
+  return fixed < lefts.length ? lefts[fixed] : Infinity
+}
+
+/** 固定列区域线性命中：返回命中列号或 -1（固定列不随滚动位移，按视口坐标） */
+function findFixedColumn (x, lefts, widths, fixed) {
+  for (let i = 0; i < fixed; i++) {
+    if (x < lefts[i] + (widths[i] || 0)) return x >= lefts[i] ? i : -1
   }
 
-  if (!(rowHeight > 0)) return -1
+  return -1
+}
 
-  const index = Math.floor((y - headHeight + scrollTop) / rowHeight)
+/** 滚动区命中：contentX = x + scrollLeft 二分定位列，越出该列右缘返回 -1 */
+function scrollRegionColAt (x, scrollLeft, lefts, widths) {
+  const contentX = x + scrollLeft
+  const index = lastIndexAtMost(lefts, contentX)
 
-  return index >= 0 && index < rowCount ? index : -1
+  if (index < 0) return -1
+
+  return contentX < lefts[index] + (widths[index] || 0) ? index : -1
 }
 
 /**
@@ -339,20 +349,23 @@ export function colAt (x, { scrollLeft = 0, colLefts, colWidths, fixedLeftColumn
 
   if (!n || x < 0) return -1
 
-  if (x < (fixed < n ? lefts[fixed] : Infinity)) {
-    for (let i = 0; i < fixed; i++) {
-      if (x < lefts[i] + (widths[i] || 0)) return x >= lefts[i] ? i : -1
-    }
+  if (x < fixedLeftEdge(lefts, fixed)) return findFixedColumn(x, lefts, widths, fixed)
 
-    return -1
-  }
+  return scrollRegionColAt(x, scrollLeft, lefts, widths)
+}
 
-  const contentX = x + scrollLeft
-  const index = lastIndexAtMost(lefts, contentX)
+/** 调宽候选：距命中列右缘 <= RESIZE_HANDLE 取该列，距左缘 <= RESIZE_HANDLE 取左邻列，否则 -1 */
+function resizeCandidate (hit, left, right, x) {
+  if (right - x <= RESIZE_HANDLE) return hit
 
-  if (index < 0) return -1
+  return x - left <= RESIZE_HANDLE ? hit - 1 : -1
+}
 
-  return contentX < lefts[index] + (widths[index] || 0) ? index : -1
+/** 固定列排除与列级 resizable 判定：候选 < 0、命中列/候选任一 < fixed、列 resizable === false */
+function isResizeBlocked (candidate, hit, fixed, columns) {
+  if (candidate < 0) return true
+
+  return hit < fixed || candidate < fixed || columns?.[candidate]?.resizable === false
 }
 
 /**
@@ -393,13 +406,9 @@ export function findResizeColumn ({
   // 命中列的视口左/右缘：固定列不随滚动位移
   const left = lefts[hit] - (hit < fixed ? 0 : scrollLeft)
   const right = left + (widths[hit] || 0)
-  const candidate = right - x <= RESIZE_HANDLE
-    ? hit
-    : (x - left <= RESIZE_HANDLE ? hit - 1 : -1)
+  const candidate = resizeCandidate(hit, left, right, x)
 
-  if (candidate < 0) return -1
-  if (hit < fixed || candidate < fixed) return -1
-  if (columns?.[candidate]?.resizable === false) return -1
+  if (isResizeBlocked(candidate, hit, fixed, columns)) return -1
 
   return candidate
 }
@@ -420,8 +429,8 @@ export function findResizeColumn ({
  * @param {Number} [params.scrollTop=0]
  * @param {Number} [params.scrollLeft=0]
  * @param {Object} [params.widthOverrides] 拖拽列宽（按列 key），见 solveWidths
- * @param {Object} [params.rowGeometry] 行几何实例（变高模式；未传时经
- *   resolveRowGeometry 构造 uniform——contentHeight/viewRows 算式与现状恒等）
+ * @param {Object} params.rowGeometry 行几何实例（row-geometry.js 产物，必传——
+ *   生产路径组件壳恒传；uniform 模式传 createUniformRowGeometry 产物）
  * @returns {Object} 布局快照（含 rowGeometry 引用，字段见实现返回值）
  */
 export function relayout ({
@@ -437,7 +446,7 @@ export function relayout ({
   widthOverrides,
   rowGeometry
 } = {}) {
-  const geometry = resolveRowGeometry({ rowGeometry, rowHeight, rowCount })
+  const geometry = rowGeometry
   const colWidths = solveWidths({ columns, containerWidth, widthOverrides })
   const { colLefts, colsWidth } = computePrefixSums(colWidths)
   const n = colWidths.length
@@ -464,7 +473,7 @@ export function relayout ({
     spacerHeight: Math.max(0, contentHeight - containerHeight),
     viewH,
     viewW,
-    viewRows: computeViewRows({ scrollTop, viewH, rowHeight, rowCount, rowGeometry: geometry }),
+    viewRows: computeViewRows({ scrollTop, viewH, rowGeometry: geometry }),
     viewCols: computeViewCols({ scrollLeft, viewW, colLefts, fixedLeftColumns: fixedCount }),
     scrollTop,
     scrollLeft

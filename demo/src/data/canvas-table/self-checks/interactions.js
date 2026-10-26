@@ -3,13 +3,14 @@
  *
  * 覆盖（02-design.md G3 判据 + 03-review-4 问题 1 + 评审 6 P2/P3/P4）：
  * 命中检测（hitTest 表头/表体/手柄 + x/y/cellX 返回值，cellX 内容区相对口径）、
- * 排序 next（无→asc→desc→无）、调宽 clamp 与 move 脏区左界=列左缘、
+ * 排序 next（无→asc→desc→无）、调宽 clamp（resolveResizeDirty/resolveHoverDirtyRects
+ * 为设计期残留已随 C3 清理，脏区改由 painter 带 invalidate 承担）、
  * resolveResizeWidth + resolveTypeMinWidth 组合拖拽下限（评审 6 P2）、
  * check disabled 跳过翻转但续行点击流程、树槽 toggle（hit.cellX 槽内判定，
  * 槽外/叶行不 toggle）、条目点击反查（hit.x/y，含 dots '...' 命中、窗口外不命中）、
  * 单击开编辑门控（click 语义，dblclick 通道已删除——03-review-4 问题 1）、
  * resolveCursor 三参 context（树槽 pointer / 叶行 default / 可编辑格 text /
- * context 缺省回归）、拖拽误触抑制（pointerup 后延时清除）、hover 脏区、
+ * context 缺省回归）、拖拽误触抑制（pointerup 后延时清除）、
  * editing 中 pointerdown 先提交再续命中、光标决策与 rAF 合帧。
  */
 import {
@@ -23,14 +24,13 @@ import {
   resolveItemClick,
   resolveCellClickOpen,
   resolveResizeWidth,
-  resolveResizeDirty,
-  resolveHoverDirtyRects,
   resolvePointerdown,
   resolveTreeToggle,
   createClickGuard,
   createFrameScheduler
 } from '@/components/canvas-table/interactions.js'
 import { resolveTypeMinWidth } from '@/components/canvas-table/layout.js'
+import { createUniformRowGeometry } from '@/components/canvas-table/row-geometry.js'
 import { getPixelNumber } from '@/components/table/utils'
 
 function assert (cond, message) {
@@ -61,15 +61,15 @@ function assertEvents (events, expected, label) {
   return assertArray(normalized, expected, label)
 }
 
-// 命中检测共用布局（与 layout 自检同款）：列宽 [100, 200, 300, 80]
+// 命中检测共用布局（与 layout 自检同款）：列宽 [100, 200, 300, 80]；
+// C4 起 rowGeometry 必传，等高夹具经 createUniformRowGeometry 构造
 const HIT_BASE = {
   headHeight: 36,
   scrollTop: 0,
   scrollLeft: 0,
   colLefts: [0, 100, 300, 600],
   colWidths: [100, 200, 300, 80],
-  rowHeight: 36,
-  rowCount: 100,
+  rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 100 }),
   columns: [{}, {}, {}, {}],
   fixedLeftColumns: 0,
   resizable: true
@@ -312,75 +312,6 @@ export const checks = [
       assertEqual(resolveResizeWidth({ pointerX: 900, columnLeft: 100, maxWidth: 400 }), 400, 'maxWidth clamp')
 
       return 'pointerX+scrollLeft−columnLeft，clamp [minWidth??40, maxWidth??∞]'
-    }
-  },
-  {
-    name: 'resolveResizeDirty：move 脏区左界=列左缘（至视口右端）+ 表头整幅',
-    fn: () => {
-      const dirty = resolveResizeDirty({ columnLeft: 100, viewportWidth: 800 })
-
-      assertArray(dirty.band, { x: 100, width: 700 }, '脏区竖带（左界=列左缘）')
-      assertEqual(dirty.header, true, '表头整幅标记')
-
-      // 加宽场景：左界不因旧右缘收缩（列左缘一并覆盖该列与右侧列的重绘需求，防残影）
-      const widened = resolveResizeDirty({ columnLeft: 100, viewportWidth: 800 })
-
-      assertEqual(widened.band.x, 100, '加宽后左界仍为列左缘（非 min(旧右缘, 新右缘)）')
-
-      const clamped = resolveResizeDirty({ columnLeft: 900, viewportWidth: 800 })
-
-      assertEqual(clamped.band.width, 0, '列左缘超出视口时带宽 clamp 0')
-
-      return 'band.x=columnLeft，band.width=viewportWidth−columnLeft，header=true'
-    }
-  },
-  {
-    name: 'resolveHoverDirtyRects：行带/列带/交叉/单元格（旧+新去重）与 none/移出',
-    fn: () => {
-      const base = {
-        rowHeight: 36,
-        headHeight: 36,
-        scrollTop: 72,
-        scrollLeft: 200,
-        colLefts: [0, 100, 300, 600],
-        colWidths: [100, 200, 300, 80],
-        fixedLeftColumns: 1,
-        viewportWidth: 800,
-        viewportHeight: 436
-      }
-
-      // row 模式：旧行+新行两条全宽横带；y 含 scrollTop/行高换算
-      const rows = resolveHoverDirtyRects({ ...base, mode: 'row', prev: { row: 0, col: 1 }, next: { row: 2, col: 1 } })
-
-      assertEqual(rows.length, 2, 'row 两条横带')
-      assertArray(rows[0], { x: 0, y: 36 + 0 * 36 - 72, width: 800, height: 36 }, '旧行带')
-      assertArray(rows[1], { x: 0, y: 36 + 2 * 36 - 72, width: 800, height: 36 }, '新行带')
-
-      // 同位置去重为一条；移出（next 缺）只剩旧行；移入（prev 缺）只剩新行
-      assertEqual(resolveHoverDirtyRects({ ...base, mode: 'row', prev: { row: 1, col: 0 }, next: { row: 1, col: 0 } }).length, 1, '同位置去重')
-      assertEqual(resolveHoverDirtyRects({ ...base, mode: 'row', prev: { row: 1, col: 0 }, next: null }).length, 1, '移出仅旧行')
-      assertEqual(resolveHoverDirtyRects({ ...base, mode: 'row', prev: null, next: { row: 1, col: 0 } }).length, 1, '移入仅新行')
-
-      // column 模式：固定列按视口坐标、滚动列减 scrollLeft；竖带表头以下全高
-      const cols = resolveHoverDirtyRects({ ...base, mode: 'column', prev: { row: 1, col: 0 }, next: { row: 1, col: 2 } })
-
-      assertEqual(cols.length, 2, 'column 两条竖带')
-      assertArray(cols[0], { x: 0, y: 36, width: 100, height: 400 }, '固定列带（不随滚动位移）')
-      assertArray(cols[1], { x: 300 - 200, y: 36, width: 300, height: 400 }, '滚动列带')
-
-      // cross：行列各两条；cell：逐格矩形
-      assertEqual(resolveHoverDirtyRects({ ...base, mode: 'cross', prev: { row: 0, col: 0 }, next: { row: 2, col: 2 } }).length, 4, 'cross 四条')
-      assertArray(
-        resolveHoverDirtyRects({ ...base, mode: 'cell', prev: null, next: { row: 1, col: 2 } })[0],
-        { x: 100, y: 36 + 36 - 72, width: 300, height: 36 },
-        'cell 单格矩形'
-      )
-
-      // none / 无 hover
-      assertEqual(resolveHoverDirtyRects({ ...base, mode: 'none', prev: { row: 1, col: 0 }, next: { row: 2, col: 0 } }).length, 0, 'none 无脏区')
-      assertEqual(resolveHoverDirtyRects({ ...base, mode: 'row' }).length, 0, '无位置无脏区')
-
-      return '行带/列带/交叉/单格；旧+新去重；固定列视口坐标'
     }
   },
   {

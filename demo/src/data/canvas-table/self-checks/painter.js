@@ -20,7 +20,7 @@ import { draw, drawRegion, cellRectAt, createPainter } from '@/components/canvas
 import { EDITOR_GAP } from '@/components/canvas-table/editor.js'
 import { relayout } from '@/components/canvas-table/layout.js'
 import { prepareColumn } from '@/components/canvas-table/cell-painters.js'
-import { createVariableRowGeometry } from '@/components/canvas-table/row-geometry.js'
+import { createVariableRowGeometry, createUniformRowGeometry } from '@/components/canvas-table/row-geometry.js'
 import { withAlpha } from '@/components/canvas-table/theme.js'
 
 function assert (cond, message) {
@@ -111,7 +111,9 @@ function makeState ({
       headHeight: HEAD_HEIGHT,
       scrollTop,
       scrollLeft,
-      widthOverrides
+      widthOverrides,
+      // C4 起 rowGeometry 必传：默认等高夹具（变高用例经 ...rest 覆盖 layout）
+      rowGeometry: createUniformRowGeometry({ rowHeight: ROW_HEIGHT, rowCount: records.length })
     }),
     theme: THEME,
     records,
@@ -685,7 +687,8 @@ export const checks = [
         fixedLeftColumns: 1,
         rowHeight: ROW_HEIGHT,
         headHeight: HEAD_HEIGHT,
-        scrollTop: 0
+        scrollTop: 0,
+        rowGeometry: createUniformRowGeometry({ rowHeight: ROW_HEIGHT, rowCount: records.length })
       }
       const layout = relayout(baseLayout)
       const state = {
