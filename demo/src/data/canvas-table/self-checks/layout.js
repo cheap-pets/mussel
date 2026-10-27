@@ -63,11 +63,11 @@ export const checks = [
     fn: () => {
       const widths = solveWidths({
         columns: [
-          { field: 'a', width: '50px' },      // px 字符串 → 50
+          { field: 'a', width: '50px' }, // px 字符串 → 50
           { field: 'b', width: 400, maxWidth: 260 }, // 超 maxWidth → clamp 260
-          { field: 'c', width: 40, minWidth: 120 },  // 低于 minWidth → clamp 120
-          { field: 'd', type: 'check' },      // 无 width → type.width('50px') → 50
-          { field: 'e', width: 160 }          // 原样
+          { field: 'c', width: 40, minWidth: 120 }, // 低于 minWidth → clamp 120
+          { field: 'd', type: 'check' }, // 无 width → type.width('50px') → 50
+          { field: 'e', width: 160 } // 原样
         ],
         containerWidth: 0 // 无剩余宽，只验证定宽解析
       })
@@ -84,7 +84,7 @@ export const checks = [
         { key: 'col-a', field: 'a', width: 100 },
         { key: 'col-b', field: 'b', width: 120 },
         { key: 'col-c', field: 'c', type: 'check' }, // 定宽来源为 type.width
-        { key: 'col-d', field: 'd' }                 // 未定宽列
+        { key: 'col-d', field: 'd' } // 未定宽列
       ]
       const before = JSON.stringify(columns)
       const widths = solveWidths({
@@ -177,10 +177,20 @@ export const checks = [
     name: 'TYPE_DEFAULT_WIDTHS：双值表形态齐全（14 条目，宽/最小宽均为正数）',
     fn: () => {
       const expected = {
-        text: [160, 80], number: [100, 60], currency: [110, 60], date: [110, 80],
-        datetime: [160, 100], enum: [100, 60], bool: [60, 40], link: [140, 80],
-        tag: [140, 80], img: [80, 40], image: [80, 40], progress: [100, 60],
-        button: [140, 80], _fallback: [80, 40]
+        text: [160, 80],
+        number: [100, 60],
+        currency: [110, 60],
+        date: [110, 80],
+        datetime: [160, 100],
+        enum: [100, 60],
+        bool: [60, 40],
+        link: [140, 80],
+        tag: [140, 80],
+        img: [80, 40],
+        image: [80, 40],
+        progress: [100, 60],
+        button: [140, 80],
+        _fallback: [80, 40]
       }
 
       assertEqual(Object.keys(TYPE_DEFAULT_WIDTHS).length, Object.keys(expected).length, '条目数')
@@ -194,7 +204,7 @@ export const checks = [
         assert(typeof entry.width === 'number' && typeof entry.minWidth === 'number', `${name} 应为 number 双值`)
       }
 
-      return `14 条目双值齐全（check/rec_no 不在表内——type.width 定宽）`
+      return '14 条目双值齐全（check/rec_no 不在表内——type.width 定宽）'
     }
   },
   {

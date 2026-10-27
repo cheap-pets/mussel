@@ -24,7 +24,9 @@
           <div class="mu-canvas-table__header-shadow" />
           <div class="mu-canvas-table__bottom-shadow" />
           <div v-if="isEmpty" class="mu-canvas-table__empty">
-            <slot name="empty">{{ emptyText }}</slot>
+            <slot name="empty">
+              {{ emptyText }}
+            </slot>
           </div>
           <!-- 编辑浮层（A5/A6）：分类型 v-on 合成、容器 tabindex=-1 聚焦承接 esc；
                bordered === false（switch 无边框 / editor.border:false）挂 --borderless；
@@ -52,8 +54,8 @@
               v-bind="editor.state.editing.props"
               v-on="editor.state.editing.events" />
             <component
-              v-else
               :is="editor.state.editing.component"
+              v-else
               v-model="editor.state.editing.value"
               :invalid="editor.state.editing.invalid || null"
               v-bind="editor.state.editing.props"
@@ -570,11 +572,14 @@
     }
   }
 
-  /** hover 命中 → 高亮格坐标（表头 / 越界 / 无命中均不高亮） */
+  /** hover 命中 → 高亮格坐标（表头 / 越界 / 无命中均不高亮；R5：列宽总和小于
+      表格宽时，行有效但 x 越出列区右缘的空白延伸区放行为行级 hover，
+      colIndex 保持 -1 —— 行带高亮整宽、列高亮/编辑描边/树箭头按 col 无效跳过） */
   function hoverCellOf (hit) {
-    return hit && !hit.isHeader && hit.colIndex >= 0 && hit.rowIndex >= 0
-      ? { row: hit.rowIndex, col: hit.colIndex }
-      : null
+    if (!hit || hit.isHeader || hit.rowIndex < 0) return null
+    if (hit.colIndex >= 0 || hit.beyondCols) return { row: hit.rowIndex, col: hit.colIndex }
+
+    return null
   }
 
   /** hover 未变化判定：null 同侧相等，或行列号完全一致 */
@@ -584,14 +589,15 @@
     return prev.row === next.row && prev.col === next.col
   }
 
-  /** 行/列带脏区（按行列号去重，prev/next 同带时至多一次） */
+  /** 行/列带脏区（按行列号去重，prev/next 同带时至多一次；R5：空白区命中
+      col = -1 不产生列带） */
   function bandRegionsOf (active, values, key) {
     const regions = []
 
     if (!active) return regions
 
     for (const value of new Set(values)) {
-      if (value != null) regions.push({ [key]: [value, value + 1] })
+      if (value != null && value >= 0) regions.push({ [key]: [value, value + 1] })
     }
 
     return regions
@@ -746,6 +752,16 @@
     }
   }
 
+  /** R5：空白延伸区点击（行有效、x 越出列区右缘）仅选中行——同 resolveCellClick
+      的选中事件序（key → record），不发 cell-click（该区域无对应列，payload
+      column 无值；check/树槽/编辑均不适用） */
+  function selectRowOnly (record) {
+    const recordKey = resolveRecordKey(record)
+
+    if (recordKey !== selectedKey.value) emit('update:selected-record-key', recordKey)
+    if (record !== props.selectedRecord) emit('update:selected-record', record)
+  }
+
   function onClick (event) {
     // 拖拽误触抑制：拖拽后紧随的 click 丢弃（A5 / decisions「[I1 前]⑧」）
     if (clickGuard.consume()) return
@@ -765,7 +781,14 @@
 
     const record = displayRows.value?.[hit.rowIndex]
 
-    if (!col || record == null) return
+    if (record == null) return
+
+    // R5：空白延伸区命中（beyondCols）无对应列，仅选中行
+    if (!col) {
+      if (hit.beyondCols) selectRowOnly(record)
+
+      return
+    }
 
     // A4.3 序 2：树箭头槽 toggle（局部交互，不选中行、不发 cell-click）
     if (tryToggleTreeRow(hit, record)) return
@@ -869,6 +892,7 @@
       scrollLeft: cur.scrollLeft,
       fixedCount: cur.fixedCount,
       rowGeometry: cur.rowGeometry,
+      gridlines: props.gridlines,
       theme: themeWatcher?.snapshot,
       editorType,
       border
@@ -888,8 +912,8 @@
   }
 
   /** column.editor 为对象形态时读取 border（true 形态按缺省 true） */
-  function isObjectEditor (editor) {
-    return editor != null && typeof editor === 'object'
+  function isObjectEditor (editorConfig) {
+    return editorConfig != null && typeof editorConfig === 'object'
   }
 
   /** 编辑器聚焦（A5.5 打开流程）：渲染完成后 input/select/date 聚焦内部真实 input，

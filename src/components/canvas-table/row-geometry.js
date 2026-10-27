@@ -272,7 +272,7 @@ export function createUniformRowGeometry ({ rowHeight, rowCount }) {
  */
 export function createVariableRowGeometry ({ initialHeights } = {}) {
   let heights = Float64Array.from(initialHeights ?? [])
-  let fenwick = createFenwick(heights)
+  const fenwick = createFenwick(heights)
 
   const geometry = {
     mode: 'variable',

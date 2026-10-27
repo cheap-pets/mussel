@@ -184,7 +184,9 @@ export const checks = [
       const index = buildChildrenIndex(RECORDS, { keyOf, parentKeyOf })
 
       assertArray(
-        resolveInitialExpandedKeys({ defaultExpandLevel: 1, records: RECORDS, keyOf, parentKeyOf, childrenIndex: index }),
+        resolveInitialExpandedKeys({
+          defaultExpandLevel: 1, records: RECORDS, keyOf, parentKeyOf, childrenIndex: index
+        }),
         [1, 11, 2],
         '外部 childrenIndex 复用一致'
       )

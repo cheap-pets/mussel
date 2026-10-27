@@ -32,7 +32,6 @@ import {
   CHECK_RADIUS,
   CHECK_FONT_SIZE,
   ELLIPSIS,
-  FONT_SIZE_FALLBACK,
   FONT_FAMILY_FALLBACK
 } from './constants'
 
@@ -154,7 +153,7 @@ export function prepareColumn (column, { placeholder } = {}) {
 
   const type = resolveColumnType(column.type)
 
-  const { width = type.width, align = type.align } = column
+  const { align = type.align } = column
 
   col._align = align ?? 'left'
   col._text = ensureFn(column.text)
@@ -406,17 +405,27 @@ function textAnchorX (rect, align, padding) {
 }
 
 /**
+ * 多行文本块首行 y（R4b）：块整体在格内垂直居中——单行内容（n=1）时与单行
+ * 省略路径的 rect.height/2 锚一致，首行文字与其他单行格文字对齐；此前恒从
+ * 顶部 padding 起画，等高行偏 1px、变高行（如 h=52）偏 9px。估高与行高公式
+ * 一致时 (h − 块高)/2 ≥ padding，max(…, padding) 为行数不一致时的顶部防溢出。
+ */
+function multilineBlockTop (rect, blockHeight, padding) {
+  return rect.y + Math.max(padding, (rect.height - blockHeight) / 2)
+}
+
+/**
  * 文本取值落地（A3.5 统一规则）：
- * - 数组值 → 每元素一行（逐元素 String 化）、顶部对齐；行数 > maxItems 时第
- *   maxItems 行显示 '...'（dots 字面，DOM link.js:47/tag.js:46 同款）
+ * - 数组值 → 每元素一行（逐元素 String 化）、块整体垂直居中（R4b）；行数 >
+ *   maxItems 时第 maxItems 行显示 '...'（dots 字面，DOM link.js:47/tag.js:46 同款）
  * - 字符串 + maxLines>1 → wrapLines 多行（折行 + maxLines 钳制一体；与
  *   row-geometry 同一函数与缓存，行高与绘制折行必然一致；measure 未注入时
- *   回退单行省略），顶部对齐（首行 = rect.y + padding + lineHeight/2）
- * - 其余 → 单行省略（现状路径，垂直居中）
+ *   回退单行省略），块整体垂直居中（R4b）
+ * - 其余 → 单行省略（现状路径，垂直居中：锚 = rect.y + rect.height/2）
  */
 function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wrapCache, maxLines, maxItems }) {
   if (Array.isArray(display)) {
-    drawArrayLines(ctx, rect, display, align, { padding, theme, maxItems })
+    drawArrayLines(ctx, rect, display, align, { padding, theme, maxItems, measure })
     return
   }
 
@@ -428,12 +437,14 @@ function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wr
   const lineHeight = theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
 
   if (maxLines > 1 && typeof measure === 'function' && text) {
-    const { lines } = wrapLines({ text, font: cellFontOf(theme), maxWidth: contentWidth, measure, cache: wrapCache, maxLines })
+    const { lines } = wrapLines({
+      text, font: cellFontOf(theme), maxWidth: contentWidth, measure, cache: wrapCache, maxLines
+    })
 
     ctx.fillStyle = theme?.textColor
     ctx.textAlign = align
 
-    let y = rect.y + padding + lineHeight / 2
+    let y = multilineBlockTop(rect, lines.length * lineHeight, padding) + lineHeight / 2
 
     for (const line of lines) {
       ctx.fillText(line, textAnchorX(rect, align, padding), y)
@@ -458,7 +469,7 @@ function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wr
   ctx.fillText(single, textAnchorX(rect, align, padding), rect.y + rect.height / 2)
 }
 
-/** 数组值多行（文本呈现列）：每元素一行、顶部对齐、超限第 maxItems 行 '...' */
+/** 数组值多行（文本呈现列）：每元素一行、块整体垂直居中（R4b）、超限第 maxItems 行 '...' */
 function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, measure }) {
   const contentWidth = rect.width - padding * 2
 
@@ -474,7 +485,7 @@ function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, m
   ctx.fillStyle = theme?.textColor
   ctx.textAlign = align
 
-  let y = rect.y + padding + lineHeight / 2
+  let y = multilineBlockTop(rect, shown.length * lineHeight, padding) + lineHeight / 2
 
   for (const element of shown) {
     const { text: line } = ellipsize({ text: String(element ?? ''), font, maxWidth: contentWidth, measure: measureFn })
@@ -851,9 +862,10 @@ function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure) {
 
 /**
  * link 列竖排（数组每条一行，A3.5）：单条超宽省略；条目数 > maxItems 时第
- * maxItems 条显示 '...'（DOM dots 字面值，评审 6 P4）；对象元素颜色经
- * mu-link--{color} class 解析（link.js 产出，评审 6 P1）；条目矩形（含 dots）
- * 经 onItemRect 回报（kind 'link'，disabled 过滤在交互侧与取色同口径）。
+ * maxItems 条显示 '...'（DOM dots 字面值，评审 6 P4）；条目块整体垂直居中
+ * （R4b，与 wrap/数组路径同口径）；对象元素颜色经 mu-link--{color} class
+ * 解析（link.js 产出，评审 6 P1）；条目矩形（含 dots）经 onItemRect 回报
+ * （kind 'link'，disabled 过滤在交互侧与取色同口径）。
  */
 function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect, measure }) {
   const contentWidth = rect.width - padding * 2
@@ -864,8 +876,9 @@ function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect
   const x = rect.x + padding
   const overflow = items.length > maxItems
   const shown = overflow ? items.slice(0, maxItems - 1) : items
+  const lineCount = Math.min(items.length, maxItems)
 
-  let y = rect.y + padding + lineHeight / 2
+  let y = multilineBlockTop(rect, lineCount * lineHeight, padding) + lineHeight / 2
 
   const report = (index, width) => {
     onItemRect?.({
@@ -936,7 +949,10 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure }) 
 
   // 轨道（bgStrong 缺失时回退 hoverBg，与 check disabled 底衬同款回退链）
   ctx.beginPath()
-  ctx.roundRect(rect.x + padding + 0.5, centerY - PROGRESS_TRACK_HEIGHT / 2 + 0.5, trackWidth - 1, PROGRESS_TRACK_HEIGHT - 1, PROGRESS_RADIUS)
+  ctx.roundRect(
+    rect.x + padding + 0.5, centerY - PROGRESS_TRACK_HEIGHT / 2 + 0.5,
+    trackWidth - 1, PROGRESS_TRACK_HEIGHT - 1, PROGRESS_RADIUS
+  )
   ctx.fillStyle = theme?.bgStrong || theme?.hoverBg
   ctx.fill()
 
@@ -945,7 +961,10 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure }) 
 
   if (fillWidth > 0.5) {
     ctx.beginPath()
-    ctx.roundRect(rect.x + padding + 0.5, centerY - PROGRESS_TRACK_HEIGHT / 2 + 0.5, Math.max(1, fillWidth - 1), PROGRESS_TRACK_HEIGHT - 1, PROGRESS_RADIUS)
+    ctx.roundRect(
+      rect.x + padding + 0.5, centerY - PROGRESS_TRACK_HEIGHT / 2 + 0.5,
+      Math.max(1, fillWidth - 1), PROGRESS_TRACK_HEIGHT - 1, PROGRESS_RADIUS
+    )
     ctx.fillStyle = color
     ctx.fill()
   }

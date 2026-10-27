@@ -33,10 +33,6 @@ import { resolveTypeMinWidth } from '@/components/canvas-table/layout.js'
 import { createUniformRowGeometry } from '@/components/canvas-table/row-geometry.js'
 import { getPixelNumber } from '@/components/table/utils'
 
-function assert (cond, message) {
-  if (!cond) throw new Error(message)
-}
-
 function assertEqual (actual, expected, label) {
   if (actual !== expected) {
     throw new Error(`${label} 期望 ${expected}，实际 ${actual}`)
@@ -120,6 +116,61 @@ export const checks = [
       )
 
       return '表头/表体/手柄/越界判定正确；x/y 透传；cellX 内容区相对口径两态对照'
+    }
+  },
+  {
+    name: 'hitTest·R5：列宽总和 < 表格宽时空白延伸区命中（beyondCols），列区/表头/行越界/边界不放行',
+    fn: () => {
+      // 窄列夹具：ΣcolWidths = 680 → 视口 x ∈ [680, ∞) 为空白延伸区（实际组件中
+      // 上限 = 画布宽；列宽总和小于表格宽时存在，行背景带已延伸覆盖）
+      const base = {
+        ...HIT_BASE,
+        colLefts: [0, 200, 480, 620],
+        colWidths: [200, 280, 140, 60]
+      }
+
+      // (a) 空白区命中：行有效 + colIndex -1 + beyondCols true（R5 行 hover/选中放行依据）
+      const blank = hitTest({ ...base, x: 750, y: 50 })
+
+      assertEqual(blank.isHeader, false, '空白区非表头')
+      assertEqual(blank.rowIndex, 0, '空白区行号有效')
+      assertEqual(blank.colIndex, -1, '空白区无对应列')
+      assertEqual(blank.beyondCols, true, '空白区 beyondCols = true')
+      assertEqual(blank.cellX, null, '空白区 cellX null')
+
+      // (b) 列区内不放行（末列右缘以内 colIndex 有效）
+      const inCol = hitTest({ ...base, x: 650, y: 50 })
+
+      assertEqual(inCol.colIndex, 3, '末列内命中')
+      assertEqual(inCol.beyondCols, false, '列区内 beyondCols = false')
+
+      // (c) 表头空白区不放行（无行语义）
+      const headerBlank = hitTest({ ...base, x: 750, y: 20 })
+
+      assertEqual(headerBlank.beyondCols, false, '表头区 beyondCols = false')
+
+      // (d) 行越界（表格底部以下）不放行
+      const belowRows = hitTest({ ...base, x: 750, y: 36 + 100 * 36 })
+
+      assertEqual(belowRows.rowIndex, -1, '行越界 -1')
+      assertEqual(belowRows.beyondCols, false, '行越界 beyondCols = false')
+
+      // (e) 边界：内容右缘 x=680 处起 beyondCols（679 仍属末列内）
+      const lastInside = hitTest({ ...base, x: 679, y: 50 })
+      const firstBlank = hitTest({ ...base, x: 680, y: 50 })
+
+      assertEqual(lastInside.colIndex, 3, '右缘内侧仍属末列')
+      assertEqual(lastInside.beyondCols, false, '右缘内侧 beyondCols = false')
+      assertEqual(firstBlank.beyondCols, true, '内容右缘起 beyondCols = true')
+
+      // (f) 横向滚动中空白区按内容右缘 − scrollLeft 判定
+      const scrolled = hitTest({ ...base, x: 700, y: 50, scrollLeft: 30 })
+      const scrolledInside = hitTest({ ...base, x: 640, y: 50, scrollLeft: 30 })
+
+      assertEqual(scrolled.beyondCols, true, 'scrollLeft 位移后右缘判定（700 ≥ 680−30）')
+      assertEqual(scrolledInside.beyondCols, false, 'scrollLeft 下右缘内侧（640 < 650）不放行')
+
+      return '空白区 beyondCols：放行/列区/表头/行越界/右缘边界/scrollLeft 六态正确'
     }
   },
   {

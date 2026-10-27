@@ -38,8 +38,6 @@ function assertEqual (actual, expected, label) {
 
 // 等宽假测量：每字符 10px（CJK/拉丁同宽，折行位置可精确断言）
 const CHAR_W = 10
-const FONT = '14px test-font'
-
 const plainMeasure = text => text.length * CHAR_W
 
 /** 计数包装：统计 measure 调用次数（零测量断言用） */
@@ -277,10 +275,10 @@ export const checks = [
     fn: () => {
       const counter = { calls: 0 }
       const columns = [
-        { field: 'name' },                                    // 短字符串 → 1 行真值
-        { field: 'note', _maxLines: 3 },                      // 长字符串 → 估 1 行下界（待精）
-        { field: 'tags', _maxItems: 3 },                      // 数组超限 → min(5, 3) = 3 行真值
-        { field: 'items' }                                    // 数组未配 maxItems → 缺省 10
+        { field: 'name' }, // 短字符串 → 1 行真值
+        { field: 'note', _maxLines: 3 }, // 长字符串 → 估 1 行下界（待精）
+        { field: 'tags', _maxItems: 3 }, // 数组超限 → min(5, 3) = 3 行真值
+        { field: 'items' } // 数组未配 maxItems → 缺省 10
       ]
       const records = [
         { name: 'ab', note: 'x'.repeat(30), tags: ['a', 'b', 'c', 'd', 'e'], items: ['i', 'j'] },
@@ -445,8 +443,8 @@ export const checks = [
   {
     name: 'treeIndents(colIndex, row)：inset 仅扣树形列 contentWidth，非树形多行列按全宽折行',
     fn: () => {
-      const treeCol = { field: 'note', _maxLines: 2 }   // 树形列（多行候选）
-      const plainCol = { field: 'memo', _maxLines: 2 }  // 非树形多行列（误扣回归）
+      const treeCol = { field: 'note', _maxLines: 2 } // 树形列（多行候选）
+      const plainCol = { field: 'memo', _maxLines: 2 } // 非树形多行列（误扣回归）
       const levels = [0, 1]
       const calls = []
       const treeIndents = (colIndex, row) => {

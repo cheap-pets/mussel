@@ -16,7 +16,7 @@ import { createClickGuard, resolveResizeWidth, RESIZE_MIN_WIDTH } from './intera
  * 创建列宽拖拽（组件壳 setup 内调用）。
  *
  * @param {Object} ctx 组件壳注入
- * - props / emit                    组件 props（resizable）与 emit
+ * - emit                           组件 emit（column-resize 事件）
  * - getPreparedColumns ()           → prepareColumn 后的内部列数组
  * - getLayout () / setLayout (v)    → layout shallowRef 读写（拖拽 move 临时几何）
  * - getCanvasEl ()                  → canvas 元素（拖拽起点 rect）
@@ -28,7 +28,7 @@ import { createClickGuard, resolveResizeWidth, RESIZE_MIN_WIDTH } from './intera
  * }}
  */
 export function useColumnResize (ctx) {
-  const { props, emit } = ctx
+  const { emit } = ctx
 
   /** 调宽拖拽参考线视口 x（overlay 覆盖层绘制；拖拽中非 null） */
   const resizeGuideX = shallowRef(null)

@@ -4,8 +4,9 @@
  * 职责：只读判定（表格级 + 列级）、编辑器组件/props 解析（enum options 由
  * mappings Object 转 [{value,label}] Array 且排除 default；text/link 列缺省
  * 按开值形态与 maxLines 判定 textarea/input，评审 6 P6 行级求值）、统一等距
- * 内缩矩形定位（A5.4 R1：全编辑器类型同矩形 = 格矩形四周内缩 EDITOR_GAP，
- * hover 描边经 painter import 同一常量同源）、分类型提交矩阵（input 走 Enter；
+ * 内缩矩形定位（A5.4 R1 + R3 格线内缘口径：全编辑器类型同矩形 =
+ * editorRectOf(格矩形)，上/右格线占用的 1px 从内缩量扣除，hover 描边经
+ * painter import 同一函数同源）、分类型提交矩阵（input 走 Enter；
  * textarea Ctrl/Cmd+Enter 显式提交、Enter 换行；
  * select/date/switch 走值变化即提交；画布 pointerdown / 容器滚动同步提交；
  * blur 延迟兜底）、Esc 取消、validate 校验（失败不关闭不失焦）、commit 幂等、
@@ -81,13 +82,46 @@ export const EDITOR_COMPONENTS = {
 export const DROPDOWN_PANEL_SELECTOR = '.mu-dropdown-panel'
 
 /**
- * 编辑浮层/hover 描边统一内缩间距（A5.4 R1，人工 3 意见 2）：全编辑器类型
- * 浮层矩形 = 单元格矩形四周内缩 EDITOR_GAP；painter.js hover 编辑描边 import
- * 同一常量（单一事实源，A7 模块隔离例外——描边矩形与浮层矩形逐边相等）。
+ * 编辑浮层/hover 描边统一内缩间距（A5.4 R1，人工 3 意见 2）：浮层矩形/hover 描边
+ * 相对单元格【格线内缘】四周内缩 EDITOR_GAP（R3 修复前相对格矩形内缩，上/右格线
+ * 画在本格矩形内占用 1px，导致上/右边距比下/左少 1px）；painter.js hover 编辑描边
+ * import 同一函数（单一事实源，A7 模块隔离例外——描边外缘与浮层盒缘逐边相等）。
  * scss 侧文本左缘补偿以「EDITOR_GAP + 边框 1px」= 5px 为基数经
  * calc(var(--cell-padding, 8px) - 5px) 落地（canvas-table.scss）。
  */
 export const EDITOR_GAP = 4
+
+/**
+ * 格线口径判定（R3）：gridlines 模式含某向（all 全含，row/column 精确匹配）。
+ * editor.js 不 import painter.js（模块隔离），两元判定内联同款。
+ */
+function gridlineShows (mode, kind) {
+  return mode === 'all' || mode === kind
+}
+
+/**
+ * 编辑浮层/hover 描边内缩矩形（R3 格线内缘等距口径）：
+ * 单元格矩形四周内缩 EDITOR_GAP，其中上格线（row > 0 且行线开——行线画在本行
+ * 顶部 1px）与右格线（非末列且列线开——列线画在本列右缘 1px）占用本格矩形内
+ * 1px，从对应内缩量中额外扣除（top 与 height / width 各扣 1px，四周与最近格线
+ * 空白恒为 EDITOR_GAP）；首行顶线（表头底边框，画在本行矩形之外）与末列右缘、
+ * gridlines 关闭方向无此占用。产出 = 编辑浮层 DOM 盒矩形，hover 描边
+ * （painter.paintHoverEditorStroke）外缘与之逐边相等。
+ *
+ * @param {{ x: Number, y: Number, width: Number, height: Number }} rect 单元格矩形
+ * @param {Object} [options]
+ * @param {Boolean} [options.topGridline=true] 本格顶部有行格线（占用矩形内 1px）
+ * @param {Boolean} [options.rightGridline=true] 本格右缘有列格线（占用矩形内 1px）
+ * @returns {{ left: Number, top: Number, width: Number, height: Number }}
+ */
+export function editorRectOf (rect, { topGridline = true, rightGridline = true } = {}) {
+  return {
+    left: rect.x + EDITOR_GAP,
+    top: rect.y + EDITOR_GAP + (topGridline ? 1 : 0),
+    width: rect.width - EDITOR_GAP * 2 - (rightGridline ? 1 : 0),
+    height: rect.height - EDITOR_GAP * 2 - (topGridline ? 1 : 0)
+  }
+}
 
 /** 列类型 → 编辑器类型缺省映射（A6；column.editor.type 显式指定优先） */
 const COLUMN_TYPE_EDITORS = {
@@ -330,11 +364,12 @@ export function resolveEditorProps (column) {
 
 /**
  * 编辑浮层定位计算（A5.4 R1 统一等距内缩矩形，相对 __overlay 原点 = canvas 视口
- * 原点）：全编辑器类型共用同一矩形 = 单元格矩形四周内缩 EDITOR_GAP——
- * left/top = 格原点 + EDITOR_GAP、width/height = 格宽高 − 2×EDITOR_GAP
- * （height 经 max(…, 0) 防退化配置负值）。矩形中心恒 = 单元格中心，垂直对齐
- * 自动成立（前稿 per-type 高度分支与垂直居中式整体删除，R1/人工 3 意见 2）；
- * hover 编辑描边（painter.js）import 同一 EDITOR_GAP，描边矩形与浮层矩形逐边相等。
+ * 原点）：全编辑器类型共用同一矩形 = editorRectOf(格矩形)——四周内缩 EDITOR_GAP，
+ * 上/右格线占用本格矩形的 1px 额外扣除（R3 格线内缘等距口径，判定经
+ * rowIndex/colIndex + colLefts.length + gridlines 入参）；矩形中心恒 = 单元格
+ * 可视中心，垂直对齐自动成立（前稿 per-type 高度分支与垂直居中式整体删除，
+ * R1/人工 3 意见 2）；hover 编辑描边（painter.js）import 同一 editorRectOf，
+ * 描边外缘与浮层盒缘逐边相等。
  * - 固定列不随滚动偏移；数值经 Vue :style 绑定前由组件壳转 px 串；
  * - bordered 判定：switch 恒 false；textarea 恒 true（mu-input 边框提供编辑态
  *   边界，borderless 类不适用于多行文本）；其余按 border !== false（缺省 true）
@@ -353,6 +388,7 @@ export function resolveEditorProps (column) {
  * @param {Number} [params.fixedCount=0] 固定列数
  * @param {Object} params.rowGeometry 行几何实例（topAt/heightAt，必传——C4 删
  *   rowHeight 等高内联回退，uniform 模式传 createUniformRowGeometry 产物）
+ * @param {String} [params.gridlines='all'] 网格线模式（R3 上/右格线占用判定）
  * @param {Object} [params.theme] 主题快照（保留签名兼容，定位不再消费——R1）
  * @param {String} [params.editorType='input'] 编辑器类型（仅 bordered 判定消费）
  * @param {Boolean} [params.border=true] 编辑器边框配置（switch/textarea 忽略）
@@ -368,6 +404,7 @@ export function computeEditorStyle ({
   scrollLeft = 0,
   fixedCount = 0,
   rowGeometry,
+  gridlines = 'all',
   theme,
   editorType = 'input',
   border = true
@@ -376,11 +413,24 @@ export function computeEditorStyle ({
     ? false
     : (editorType === 'textarea' ? true : border !== false)
 
+  const cellRect = {
+    x: colLefts[colIndex] - (colIndex < fixedCount ? 0 : scrollLeft),
+    y: headHeight + rowGeometry.topAt(rowIndex) - scrollTop,
+    width: colWidths[colIndex],
+    height: rowGeometry.heightAt(rowIndex)
+  }
+  const rect = editorRectOf(cellRect, {
+    // 首行顶线由表头底边框承担（画在本行矩形之外），本格顶部无行线占用
+    topGridline: rowIndex > 0 && gridlineShows(gridlines, 'row'),
+    // 末列右缘无线（同 .last-col）
+    rightGridline: colIndex < colLefts.length - 1 && gridlineShows(gridlines, 'column')
+  })
+
   return {
-    left: colLefts[colIndex] - (colIndex < fixedCount ? 0 : scrollLeft) + EDITOR_GAP,
-    top: headHeight + rowGeometry.topAt(rowIndex) - scrollTop + EDITOR_GAP,
-    width: colWidths[colIndex] - EDITOR_GAP * 2,
-    height: Math.max(rowGeometry.heightAt(rowIndex) - EDITOR_GAP * 2, 0),
+    left: rect.left,
+    top: rect.top,
+    width: Math.max(rect.width, 0),
+    height: Math.max(rect.height, 0),
     bordered
   }
 }

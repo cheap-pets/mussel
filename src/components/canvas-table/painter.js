@@ -67,7 +67,7 @@
  */
 
 import { drawCell, drawTreeArrow } from './cell-painters.js'
-import { EDITOR_GAP } from './editor.js'
+import { editorRectOf } from './editor.js'
 import { createMeasureCache, withAlpha } from './theme.js'
 import { ellipsize } from './text-wrap.js'
 import { isExpandedKey } from './tree.js'
@@ -546,9 +546,26 @@ function drawHeaderCell (ctx, state, col, x, width) {
   let maxTextWidth = width - padding * 2 - reserve
 
   if (hasHeaderCheck) {
-    drawHeaderCheck(ctx, theme, x + padding, centerY, !!state.headerChecked[raw.field])
-    textX = x + padding + CHECK_SIZE + 6
-    maxTextWidth -= CHECK_SIZE + 6
+    // 内容组（✓ + 可选 caption）按列 align 整体分布（R2：对齐 DOM 版 th
+    // text-align 对行内内容的作用——check 列 align 缺省 center，无 caption 时
+    // ✓ 在表头格内水平居中；此前固定 x + padding 贴左缘不居中）
+    const checkTextWidth = width - padding * 2 - reserve - CHECK_SIZE - 6
+    const { text: caption } = ellipsize({
+      text: headerCaptionText(col.caption),
+      font,
+      maxWidth: Math.max(0, checkTextWidth),
+      measure: headerMeasureOf(ctx, state)
+    })
+    const groupWidth = CHECK_SIZE + (caption ? 6 + headerMeasureOf(ctx, state)(caption, font) : 0)
+
+    let startX = x + padding
+
+    if (align === 'center') startX = x + (width - groupWidth) / 2
+    else if (align === 'right') startX = x + width - padding - groupWidth
+
+    drawHeaderCheck(ctx, theme, startX, centerY, !!state.headerChecked[raw.field])
+    textX = startX + CHECK_SIZE + 6
+    maxTextWidth = checkTextWidth
   }
 
   drawHeaderText(ctx, state, col, font, align, hasHeaderCheck, textX, maxTextWidth, centerY, x, width)
@@ -569,21 +586,81 @@ function paintHeaderColLine (ctx, theme, layout, c, strong) {
   ctx.fillRect(viewportColX(layout, c) + (layout.colWidths[c] || 0) - 1, 0, 1, layout.headHeight - 1)
 }
 
-/** 表头列分隔线整批：可视列从左到右，遇末列终止（.last-col 末列无线） */
+/** 表头列分隔线整批：可视列从左到右，遇末列终止（.last-col 末列无线）；
+    滚动列部分在固定区右缘 clip 内（R1：部分滚入固定区下方的首可见列分隔线
+    不绘入固定表头区，与文字同口径） */
 function paintHeaderColLines (ctx, state, layout, theme) {
   const mode = state.gridlines ?? 'all'
-  const n = layout.colWidths.length
   const strongBoundary = layout.scrollLeft > 0.5
 
   if (!showsHeaderColLine(mode, strongBoundary)) return
 
-  for (const c of headerColIndexes(layout)) {
+  const cols = headerColIndexes(layout)
+  const scrollStart = cols.findIndex(c => c >= layout.fixedCount)
+
+  if (scrollStart < 0 || !layout.fixedCount) {
+    paintHeaderColLineRange(ctx, state, theme, layout, cols, mode, strongBoundary)
+    return
+  }
+
+  paintHeaderColLineRange(ctx, state, theme, layout, cols.slice(0, scrollStart), mode, strongBoundary)
+
+  const rect = [layout.fixedWidth, 0, layout.stickyWidth - layout.fixedWidth, layout.headHeight]
+
+  withClip(ctx, rect, () => {
+    paintHeaderColLineRange(ctx, state, theme, layout, cols.slice(scrollStart), mode, strongBoundary)
+  })
+}
+
+/** 表头列分隔线区间绘制（paintHeaderColLines 固定/滚动两段共用） */
+function paintHeaderColLineRange (ctx, state, theme, layout, cols, mode, strongBoundary) {
+  const n = layout.colWidths.length
+
+  for (const c of cols) {
     if (c >= n - 1) break
 
     const strong = strongBoundary && c === layout.fixedCount - 1
 
     if (showsHeaderColLine(mode, strong)) paintHeaderColLine(ctx, theme, layout, c, strong)
   }
+}
+
+/**
+ * 表头单元格内容绘制（文字/check/排序图标）。R1：滚动列部分在固定区右缘
+ * clip 内绘制——横向滚动后首可见滚动列左缘可能位于固定区下方，其表头内容
+ * 若不裁剪会绘入固定表头区形成残影（表体侧由分区 3 固定区整高覆盖承担，
+ * 表头为最后分区须自裁剪）。
+ */
+function paintHeaderCells (ctx, state) {
+  const { layout } = state
+  const cols = headerColIndexes(layout)
+  const scrollStart = cols.findIndex(c => c >= layout.fixedCount)
+
+  if (scrollStart < 0 || !layout.fixedCount) {
+    for (const c of cols) {
+      const col = state.columns?.[c]
+
+      if (col) drawHeaderCell(ctx, state, col, viewportColX(layout, c), layout.colWidths[c] || 0)
+    }
+
+    return
+  }
+
+  for (const c of cols.slice(0, scrollStart)) {
+    const col = state.columns?.[c]
+
+    if (col) drawHeaderCell(ctx, state, col, viewportColX(layout, c), layout.colWidths[c] || 0)
+  }
+
+  const rect = [layout.fixedWidth, 0, layout.stickyWidth - layout.fixedWidth, layout.headHeight]
+
+  withClip(ctx, rect, () => {
+    for (const c of cols.slice(scrollStart)) {
+      const col = state.columns?.[c]
+
+      if (col) drawHeaderCell(ctx, state, col, viewportColX(layout, c), layout.colWidths[c] || 0)
+    }
+  })
 }
 
 function paintHeader (ctx, state) {
@@ -595,11 +672,7 @@ function paintHeader (ctx, state) {
   ctx.fillStyle = theme.bgFill
   ctx.fillRect(0, 0, W, headHeight)
 
-  for (const c of headerColIndexes(layout)) {
-    const col = state.columns?.[c]
-
-    if (col) drawHeaderCell(ctx, state, col, viewportColX(layout, c), layout.colWidths[c] || 0)
-  }
+  paintHeaderCells(ctx, state)
 
   // 表头列分隔线（.mu-table__th border-right 同款：末列无线、固定分界线 x-scrolled 强化）
   paintHeaderColLines(ctx, state, layout, theme)
@@ -689,9 +762,10 @@ function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid) {
 }
 
 /**
- * 可编辑格 hover 感知（A5.3，R1/人工 3 意见 2）：1px 主色内描边，矩形 =
- * cellRectAt 内缩 EDITOR_GAP（与 editor.js 编辑浮层矩形逐边相等——import 同一
- * 常量单一事实源，与单元格边框四周 4px 间距）；不占布局、随 hover 带重绘生效
+ * 可编辑格 hover 感知（A5.3，R1/人工 3 意见 2 + R3 格线内缘等距）：1px 主色
+ * 内描边，矩形 = editorRectOf(cellRect)（上/右格线占用本格的 1px 从内缩量扣除，
+ * 与 editor.js 编辑浮层盒缘逐边相等——import 同一函数单一事实源，相对格线
+ * 内缘四周 EDITOR_GAP 等距）；不占布局、随 hover 带重绘生效
  */
 function paintHoverEditorStroke (ctx, state, hover) {
   if (!state.editable || !state.isCellEditableFn) return
@@ -700,16 +774,17 @@ function paintHoverEditorStroke (ctx, state, hover) {
 
   if (!column || !state.isCellEditableFn(column)) return
 
-  const rect = cellRectAt(state.layout, hover.row, hover.col)
+  const gridlines = state.gridlines ?? 'all'
+  const rect = editorRectOf(cellRectAt(state.layout, hover.row, hover.col), {
+    // 首行顶线由表头底边框承担（本行矩形之外）；末列右缘无线（同 .last-col）
+    topGridline: hover.row > 0 && isGridlineMode(gridlines, 'row'),
+    rightGridline: hover.col < state.layout.colWidths.length - 1 &&
+      isGridlineMode(gridlines, 'column')
+  })
 
   ctx.strokeStyle = withAlpha(state.theme.primaryColor, 0.45)
   ctx.lineWidth = 1
-  ctx.strokeRect(
-    rect.x + EDITOR_GAP + 0.5,
-    rect.y + EDITOR_GAP + 0.5,
-    rect.width - EDITOR_GAP * 2 - 1,
-    rect.height - EDITOR_GAP * 2 - 1
-  )
+  ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
 }
 
 /** hover 叠加：高亮底色 → 可编辑格内描边 → 树箭头主色（绘制顺序固定） */

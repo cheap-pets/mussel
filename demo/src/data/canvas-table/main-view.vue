@@ -41,7 +41,9 @@
           @update:tree-expanded-keys="onTreeExpandedKeys"
           @column-resize="onColumnResize">
           <template v-if="emptyVariant === 'slot'" #empty>
-            <div class="ct-empty-slot">自定义空态（#empty 插槽）</div>
+            <div class="ct-empty-slot">
+              自定义空态（#empty 插槽）
+            </div>
           </template>
         </mu-canvas-table>
         <div
@@ -237,7 +239,9 @@
               <span class="ct-check-item__name">{{ result.name }}</span>
               <span class="ct-check-item__detail">{{ result.passed ? result.detail : result.error }}</span>
             </li>
-            <li v-if="!selfCheckResults.length" class="ct-check-item">（尚无自检结果）</li>
+            <li v-if="!selfCheckResults.length" class="ct-check-item">
+              （尚无自检结果）
+            </li>
           </ul>
         </div>
 
@@ -282,7 +286,9 @@
           <span class="ct-event-log__name">{{ log.name }}</span>
           <span class="ct-event-log__detail">{{ log.detail }}</span>
         </li>
-        <li v-if="!eventLogs.length" class="ct-event-log__item">（组件接入后此处记录事件）</li>
+        <li v-if="!eventLogs.length" class="ct-event-log__item">
+          （组件接入后此处记录事件）
+        </li>
       </ol>
     </demo-section>
   </demo-page>

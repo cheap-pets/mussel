@@ -16,7 +16,7 @@
  * 主题夹具字段名对齐 theme.js readSnapshot（值用固定 rgba 串，rowHeight/headHeight
  * 经 layout.js relayout 入参传入，不经 theme）。
  */
-import { draw, drawRegion, cellRectAt, createPainter } from '@/components/canvas-table/painter.js'
+import { drawRegion, cellRectAt, createPainter } from '@/components/canvas-table/painter.js'
 import { EDITOR_GAP } from '@/components/canvas-table/editor.js'
 import { relayout } from '@/components/canvas-table/layout.js'
 import { prepareColumn } from '@/components/canvas-table/cell-painters.js'
@@ -31,15 +31,6 @@ function assertEqual (actual, expected, label) {
   if (actual !== expected) throw new Error(`${label} 期望 ${expected}，实际 ${actual}`)
 
   return String(actual)
-}
-
-function assertArray (actual, expected, label) {
-  const a = JSON.stringify(actual)
-  const e = JSON.stringify(expected)
-
-  if (a !== e) throw new Error(`${label} 期望 ${e}，实际 ${a}`)
-
-  return a
 }
 
 // —— 夹具：600×252 画布、6 列（固定 1 列 + 5 列滚动区，末列未定宽 flex）+ 50 行 ——
@@ -68,12 +59,12 @@ const THEME = {
 }
 
 const RAW_COLUMNS = [
-  { field: 'id', type: 'rec_no', width: 60 },                                    // 固定列
+  { field: 'id', type: 'rec_no', width: 60 }, // 固定列
   { field: 'name', caption: '名称', width: 140 },
   { field: 'status', caption: '状态', type: 'enum', mappings: { a: '启用', b: '停用' }, width: 100, sortable: true },
   { field: 'amount', caption: '金额', type: 'currency', width: 120 },
   { field: 'ok', type: 'check', headerCheckbox: true, width: 50 },
-  { field: 'memo', caption: '备注' }                                              // 未定宽 → 均摊 130
+  { field: 'memo', caption: '备注' } // 未定宽 → 均摊 130
 ]
 
 const COLUMNS = RAW_COLUMNS.map(col => prepareColumn(col, { placeholder: '--' }))
@@ -230,6 +221,42 @@ function assertRegionSame (a, b, x, y, w, h, label) {
     if (da[i] !== db[i]) {
       throw new Error(`${label} 区域 (${x},${y} ${w}×${h}) 像素应一致（偏移 ${i >> 2}）`)
     }
+  }
+}
+
+/** 暗像素包围盒（lum < 150）：R2/R4 文字与方框位置断言用 */
+function darkBoundsOf (canvas, x0, x1, y0, y1) {
+  const data = regionData(canvas, x0, y0, x1 - x0, y1 - y0)
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  let maxY = -Infinity
+  let count = 0
+
+  for (let y = 0; y < y1 - y0; y++) {
+    for (let x = 0; x < x1 - x0; x++) {
+      const i = (y * (x1 - x0) + x) * 4
+      const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+
+      if (data[i + 3] > 40 && lum < 150) {
+        count++
+        if (x < minX) minX = x
+        if (x > maxX) maxX = x
+        if (y < minY) minY = y
+        if (y > maxY) maxY = y
+      }
+    }
+  }
+
+  if (!count) return null
+
+  return {
+    minX: x0 + minX,
+    maxX: x0 + maxX + 1,
+    minY: y0 + minY,
+    maxY: y0 + maxY + 1,
+    centerX: x0 + (minX + maxX + 1) / 2,
+    centerY: y0 + (minY + maxY + 1) / 2
   }
 }
 
@@ -676,7 +703,7 @@ export const checks = [
       ]
       const records = Array.from({ length: 50 }, (_, i) => ({
         tagList: [{ caption: `甲${i}`, color: 'success' }, { caption: '乙' }],
-        links: Array.from({ length: 12 }, (_, k) => `链接${i}-${k}`) // 12 > maxItems 10 → dots
+        links: Array.from({ length: 12 }, (_row, k) => `链接${i}-${k}`) // 12 > maxItems 10 → dots
       }))
       const itemHits = new Map()
       const baseLayout = {
@@ -786,7 +813,7 @@ export const checks = [
       assertEqual(narrowState.layout.stickyWidth, W, 'stickyWidth = 容器宽')
 
       // (a) 延伸区 x ∈ (Σ, W−2)：普通行 = bgNormal、斑马行 = bgStripe、选中行 = selectBg 原色
-      //（透明画布，半透明 selectBg 无下层混合）
+      // （透明画布，半透明 selectBg 无下层混合）
       const gx = 450
 
       painter.draw(narrowState)
@@ -800,8 +827,10 @@ export const checks = [
       assertPixel(canvas, gx, 90, blendColor(THEME.hoverBg, THEME.bgStripe), 'hover 行带延伸区混色一致')
 
       // (c) 行横带脏区（hover 进出）重绘后同采样保持（paintRowBand 经同一 bandToX）
+      const bandState = makeState({ columns: narrow, hover: { row: 0, col: 1 } })
+
       assert(
-        painter.invalidate({ rows: [0, 1] }, { immediate: true, state: makeState({ columns: narrow, hover: { row: 0, col: 1 } }) }),
+        painter.invalidate({ rows: [0, 1] }, { immediate: true, state: bandState }),
         '行横带应受理'
       )
       assertPixel(canvas, gx, 50, blendColor(THEME.hoverBg, THEME.bgNormal), '脏区重绘后 hover 行带延伸区')
@@ -823,6 +852,112 @@ export const checks = [
       painter.dispose()
 
       return `延伸区三态底色/hover 混色/脏区保持/固定区不扩带/Σ>W 裁剪（窄列 Σ=350，W=${W}）`
+    })
+  },
+  {
+    name: '固定列表头：横向滚动后滚动列表头文字/分隔线不绘入固定表头区（R1）',
+    fn: () => withCanvas(canvas => {
+      const painter = createPainter({ canvas })
+
+      // scrollLeft=180：viewCols.start=2（列 2 left 200 → 视口 x 20 < fixedWidth 60，
+      // 部分滚入固定区下方；caption '状态' left 对齐 [28,56) 落入固定表头区）
+      const scrolled = makeState({ scrollLeft: 180 })
+
+      assertEqual(scrolled.layout.viewCols.start, 2, '前置：首可见滚动列 = 2')
+
+      painter.draw(scrolled)
+
+      // 固定表头区右半（避开固定列 caption '#' 与分界强化线 x 59）应无文字像素
+      const zone = darkBoundsOf(canvas, 24, 58, 6, 30)
+
+      assert(zone == null, `固定表头区不应有滚动列文字像素（实际包围盒 ${JSON.stringify(zone)}）`)
+      // 金额列（currency，right 对齐）caption 视口 [204,232)：clip 内正常绘制
+      assertHasDarkPixels(canvas, 196, 6, 40, 24, '滚动列表头文字存在（金额列 right 对齐）')
+
+      painter.dispose()
+
+      return 'scrollLeft=180：固定表头区无残影、滚动列表头（金额列）正常绘制'
+    })
+  },
+  {
+    name: 'check 表头 ✓：无 caption 时在表头格内水平 + 垂直居中（R2，±0.5px）',
+    fn: () => withCanvas(canvas => {
+      const painter = createPainter({ canvas })
+
+      painter.draw(makeState({ headerChecked: { ok: false } }))
+
+      // check 列 x [420,470)：✓ 方框边框 borderColor（lum≈212）像素包围盒中心
+      // == 表头格几何中心 (445, 18)——修复前 checkbox 固定 x + padding 贴左不居中
+      const data = regionData(canvas, 421, 2, 48, 32)
+      let minX = Infinity
+      let maxX = -Infinity
+      let minY = Infinity
+      let maxY = -Infinity
+
+      for (let y = 0; y < 32; y++) {
+        for (let x = 0; x < 48; x++) {
+          const i = (y * 48 + x) * 4
+          const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+
+          if (data[i + 3] > 40 && lum >= 195 && lum <= 222) {
+            if (x < minX) minX = x
+            if (x > maxX) maxX = x
+            if (y < minY) minY = y
+            if (y > maxY) maxY = y
+          }
+        }
+      }
+
+      assert(minX < Infinity, '应找到 ✓ 方框边框像素')
+
+      const cx = 421 + (minX + maxX + 1) / 2
+      const cy = 2 + (minY + maxY + 1) / 2
+
+      assert(Math.abs(cx - 445) <= 0.5, `✓ 中心 x=${cx} 应为表头格几何中心 445 ±0.5`)
+      assert(Math.abs(cy - 18) <= 0.5, `✓ 中心 y=${cy} 应为表头格几何中心 18 ±0.5`)
+
+      painter.dispose()
+
+      return `✓ 像素盒中心 (${cx}, ${cy}) = 表头格几何中心 (445, 18)`
+    })
+  },
+  {
+    name: 'R4a/R4b：单行省略路径垂直居中锚 = 格几何中心；数组一行路径块居中对齐（±1px）',
+    fn: () => withCanvas(canvas => {
+      const painter = createPainter({ canvas })
+      const columns = [
+        prepareColumn({ field: 'name', caption: '名称', width: 140 }),
+        prepareColumn({ field: 'arr', caption: '数组', width: 140, text: r => r.arr })
+      ]
+      const records = [
+        { name: '单行省略路径', arr: ['数组一行路径'], status: 'a', amount: 1, ok: true, memo: '' }
+      ]
+
+      painter.draw(makeState({ columns, records }))
+
+      // 行 0 格 [36,72) 几何中心 54；名称列 [60,200)、数组列 [200,340)
+      const nameBounds = darkBoundsOf(canvas, 62, 198, 40, 70)
+      const arrBounds = darkBoundsOf(canvas, 202, 338, 40, 70)
+
+      assert(nameBounds != null, '名称列（单行省略路径）应有文字像素')
+      assert(arrBounds != null, '数组列（数组一行路径）应有文字像素')
+
+      // R4a：单行文字几何中心 ≈ 格几何中心（±2px 容字体墨迹与 middle 基线差）
+      assert(
+        Math.abs(nameBounds.centerY - 54) <= 2,
+        `R4a 单行文字中心 ${nameBounds.centerY} 应 ≈ 格几何中心 54（±2px）`
+      )
+
+      // R4b：数组一行路径（多行绘制块 n=1）与单行省略路径文字对齐（±1px）——
+      // 修复前数组路径顶部 padding 起画（锚 17），与省略路径居中锚 18 差 1px
+      assert(
+        Math.abs(nameBounds.centerY - arrBounds.centerY) <= 1,
+        `R4b 省略路径 ${nameBounds.centerY} 与数组路径 ${arrBounds.centerY} 应对齐（±1px）`
+      )
+
+      painter.dispose()
+
+      return `省略 ${nameBounds.centerY} / 数组 ${arrBounds.centerY}（格中心 54，±1px 对齐）`
     })
   }
 ]

@@ -16,6 +16,16 @@ import { TREE_INDENT, CELL_PADDING_FALLBACK } from './constants'
 /** 拖拽调宽的下限缺省（02-design.md A5：col.minWidth ?? 40） */
 export const RESIZE_MIN_WIDTH = 40
 
+/** 列区右缘视口 x：列内容总宽 − scrollLeft（scrollLeft=0 且总宽 < 视口宽时，
+    右侧存在有格线的行背景空白延伸区，R5） */
+function contentRightEdgeX (colLefts, colWidths, scrollLeft) {
+  const n = colLefts.length
+
+  if (!n) return 0
+
+  return colLefts[n - 1] + (colWidths[n - 1] || 0) - scrollLeft
+}
+
 /**
  * 命中检测（02-design.md A5 / 评审 6 P3）：指针坐标 → 表头/行列/调宽手柄。
  * 调宽手柄仅在表头区检测（isHeader 且距某列右/左缘 <= RESIZE_HANDLE），
@@ -36,11 +46,13 @@ export const RESIZE_MIN_WIDTH = 40
  * @param {Object} params.rowGeometry 行几何实例（必传——C4 删 rowHeight 等高回退，
  *   rowAt 行定位一律经几何 offsetToRow）
  * @returns {{ isHeader: Boolean, colIndex: Number, rowIndex: Number, resizeCol: Number,
- *   x: Number, y: Number, cellX: Number|null }}
+ *   x: Number, y: Number, cellX: Number|null, beyondCols: Boolean }}
  *   colIndex/rowIndex 越界（表头区/数据区外）为 -1；resizeCol 无手柄为 -1；
  *   x/y 为输入指针坐标透传（resolveItemClick 条目矩形反查用）；cellX = 指针相对
  *   命中列【内容区左缘】的偏移（实施约束 3：列缘偏移再减 padding——树槽判定
- *   cellX < level×16+16 与绘制侧 padding 起画同口径），colIndex < 0 时为 null
+ *   cellX < level×16+16 与绘制侧 padding 起画同口径），colIndex < 0 时为 null；
+ *   beyondCols = 表体行有效但 x 越出列区右缘（列宽总和小于表格宽时的空白
+ *   延伸区，R5：该区域行 hover 高亮与点击选中经此放行）
  */
 export function hitTest ({
   x,
@@ -68,7 +80,10 @@ export function hitTest ({
     ? x - (colLefts[colIndex] - (colIndex < fixedLeftColumns ? 0 : scrollLeft)) - cellPadding
     : null
 
-  return { isHeader, colIndex, rowIndex, resizeCol, x, y, cellX }
+  const beyondCols = !isHeader && rowIndex >= 0 && colIndex < 0 &&
+    x >= contentRightEdgeX(colLefts ?? [], colWidths ?? [], scrollLeft)
+
+  return { isHeader, colIndex, rowIndex, resizeCol, x, y, cellX, beyondCols }
 }
 
 /**
@@ -436,7 +451,7 @@ export function createFrameScheduler (fn, raf) {
   const scheduleFrame = raf ??
     (typeof requestAnimationFrame === 'function'
       ? requestAnimationFrame.bind(window)
-      : (callback => setTimeout(callback, 16)))
+      : callback => setTimeout(callback, 16))
   let pending = false
   let cancelled = false
 

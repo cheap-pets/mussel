@@ -25,6 +25,7 @@ import {
   NON_EDITABLE_TYPES,
   EDITOR_COMPONENTS,
   EDITOR_GAP,
+  editorRectOf,
   isCellEditable,
   resolveEditorType,
   usesDerivedOptions,
@@ -434,34 +435,47 @@ export const checks = [
       // EDITOR_GAP 导出值 = 4（painter hover 描边单一事实源，A5.3）
       assertEqual(EDITOR_GAP, 4, 'EDITOR_GAP 导出值')
 
-      // 统一矩形：left/top = 格原点 + 4、width/height = 格宽高 − 8；
-      // 固定列 left 不随 scrollLeft 偏移
-      const fixed = computeEditorStyle({ ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1 })
+      // 统一矩形（R3 格线内缘等距）：rowIndex 1（上格线占本格 1px）+
+      // colIndex 0 非末列（右格线占 1px）→ top/width/height 各再扣 1px；
+      // 格 [0,100]×[64,100) 四边与最近格线空白恒为 EDITOR_GAP（固定列 left 不随 scrollLeft 偏移）
+      const fixed = computeEditorStyle({
+        ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1
+      })
 
-      assertArray([fixed.left, fixed.top, fixed.width, fixed.height], [4, 68, 92, 28], '固定列统一矩形')
+      assertArray([fixed.left, fixed.top, fixed.width, fixed.height], [4, 69, 91, 27], '固定列统一矩形（R3 等距）')
       assertEqual(fixed.bordered, true, 'border 缺省 true')
 
       // 三编辑器类型同矩形（A5.4 R1 删 per-type 高度分支；switch/textarea 仅 bordered 标记差异）
-      const switchStyle = computeEditorStyle({ ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, editorType: 'switch' })
-      const textarea = computeEditorStyle({ ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, editorType: 'textarea' })
+      const switchStyle = computeEditorStyle({
+        ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, editorType: 'switch'
+      })
+      const textarea = computeEditorStyle({
+        ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, editorType: 'textarea'
+      })
 
-      assertArray([switchStyle.left, switchStyle.top, switchStyle.width, switchStyle.height], [4, 68, 92, 28], 'switch 同矩形')
+      assertArray([switchStyle.left, switchStyle.top, switchStyle.width, switchStyle.height], [4, 69, 91, 27], 'switch 同矩形')
       assertEqual(switchStyle.bordered, false, 'switch bordered false')
-      assertArray([textarea.left, textarea.top, textarea.width, textarea.height], [4, 68, 92, 28], 'textarea 同矩形')
+      assertArray([textarea.left, textarea.top, textarea.width, textarea.height], [4, 69, 91, 27], 'textarea 同矩形')
       assertEqual(textarea.bordered, true, 'textarea 恒 bordered true')
 
       // border/borderless 两态矩形相同（左缘一致性由 scss padding 补偿承担，非定位）
-      const borderless = computeEditorStyle({ ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, border: false })
+      const borderless = computeEditorStyle({
+        ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, border: false
+      })
 
-      assertArray([borderless.left, borderless.top, borderless.width, borderless.height], [4, 68, 92, 28], 'borderless 同矩形')
+      assertArray([borderless.left, borderless.top, borderless.width, borderless.height], [4, 69, 91, 27], 'borderless 同矩形')
       assertEqual(borderless.bordered, false, 'border:false → bordered false')
 
-      // 滚动列：left = colLefts − scrollLeft + 4（横向滚动对照，评审回应 4 问题 11 保留）
-      const scrolled = computeEditorStyle({ ...base, colIndex: 2, rowIndex: 0, scrollTop: 0, scrollLeft: 250, fixedCount: 1 })
+      // 滚动列：left = colLefts − scrollLeft + 4；rowIndex 0 首行无上格线、
+      // colIndex 2 为末列无右格线 → 无 1px 扣除（横向滚动对照，评审回应 4 问题 11 保留）
+      const scrolled = computeEditorStyle({
+        ...base, colIndex: 2, rowIndex: 0, scrollTop: 0, scrollLeft: 250, fixedCount: 1
+      })
 
       assertArray([scrolled.left, scrolled.top, scrolled.width, scrolled.height], [54, 40, 72, 28], '滚动列统一矩形')
 
-      // 变高行（fake rowGeometry 高 100）：height = heightAt − 8、top = headHeight + topAt + 4
+      // 变高行（fake rowGeometry 高 100）：top = headHeight + topAt + 4 + 1（上格线）、
+      // height = heightAt − 9（R3：上格线占用从高度扣 1px）
       const tallRow = computeEditorStyle({
         ...base,
         colIndex: 1,
@@ -470,9 +484,9 @@ export const checks = [
         editorType: 'textarea'
       })
 
-      assertArray([tallRow.top, tallRow.height], [76, 92], '变高行 heightAt − 8 占满内容区')
+      assertArray([tallRow.top, tallRow.height], [77, 91], '变高行 top/height 含上格线 1px 扣除')
 
-      // 退化配置防负值：heightAt(row) = 0 → height max(−8, 0) = 0
+      // 退化配置防负值：heightAt(row) = 0 → height max(−9, 0) = 0
       const degenerate = computeEditorStyle({
         ...base,
         colIndex: 1,
@@ -485,15 +499,53 @@ export const checks = [
       // theme 不再消费（R1）：theme: undefined 与传入 theme 矩形逐边相等
       const fallback = computeEditorStyle({ ...base, theme: undefined, colIndex: 1, rowIndex: 0 })
 
-      assertArray([fallback.left, fallback.top, fallback.width, fallback.height], [104, 40, 192, 28], 'theme: undefined 同矩形')
+      assertArray([fallback.left, fallback.top, fallback.width, fallback.height], [104, 40, 191, 28], 'theme: undefined 同矩形（右格线扣 width）')
 
       // 无固定列（fixedCount 0）：left = colLefts − scrollLeft + 4、top 含 scrollTop 位移
-      const noFixed = computeEditorStyle({ ...base, colIndex: 1, rowIndex: 2, scrollTop: 100, scrollLeft: 50, fixedCount: 0 })
+      const noFixed = computeEditorStyle({
+        ...base, colIndex: 1, rowIndex: 2, scrollTop: 100, scrollLeft: 50, fixedCount: 0
+      })
 
       assertEqual(noFixed.left, 54, '无固定列 left = colLefts − scrollLeft + 4')
-      assertEqual(noFixed.top, 36 + 2 * 36 - 100 + 4, 'top = headHeight + topAt − scrollTop + EDITOR_GAP')
+      assertEqual(noFixed.top, 36 + 2 * 36 - 100 + 4 + 1, 'top 含上格线 1px 扣除（R3）')
 
       return 'A5.4 R1 统一矩形：EDITOR_GAP=4、三类型/两态同矩形、固定列对照、变高行、theme 不再消费、防负值'
+    }
+  },
+  {
+    name: 'editorRectOf：R3 格线内缘等距——盒四边与最近格线空白恒为 EDITOR_GAP',
+    fn: () => {
+      // 格 [60,200]×[72,108)；四向最近格线：左 [59,60)（前列右缘）上 [72,73)
+      // （本行顶）右 [199,200)（本列右缘）下 [108,109)（下行顶）——上/右占用本格
+      const rect = { x: 60, y: 72, width: 140, height: 36 }
+      const normal = editorRectOf(rect)
+
+      // 盒 [64,195]×[77,104]：左 64−60 / 上 77−73 / 右 199−195 / 下 108−104 全 4px
+      assertArray([normal.left, normal.top, normal.width, normal.height], [64, 77, 131, 27], '常规格等距矩形')
+
+      // 首行 + 末列（无上/右格线占用，R3 判定）：盒 [64,196]×[76,104]
+      const edge = editorRectOf(rect, { topGridline: false, rightGridline: false })
+
+      assertArray([edge.left, edge.top, edge.width, edge.height], [64, 76, 132, 28], '首行末列无 1px 扣除')
+
+      // computeEditorStyle 消费同函数：gridlines none 时无任何扣除（四周对格缘 4px）
+      const noneGridlines = computeEditorStyle({
+        colLefts: [0, 100],
+        colWidths: [100, 100],
+        headHeight: 36,
+        rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 2 }),
+        colIndex: 1,
+        rowIndex: 1,
+        gridlines: 'none'
+      })
+
+      assertArray(
+        [noneGridlines.left, noneGridlines.top, noneGridlines.width, noneGridlines.height],
+        [104, 76, 92, 28],
+        'gridlines none 全向无扣除'
+      )
+
+      return '常规 [64,77,131,27] / 边缘 [64,76,132,28] / none [104,77,92,28] 四边等距'
     }
   },
   {

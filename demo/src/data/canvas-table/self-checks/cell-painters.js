@@ -65,7 +65,10 @@ function content (col, record, extra = {}) {
   return resolveCellContent(col, { record, recordNumber: RECORD_NUMBER, ...extra })
 }
 
-function drawToCanvas (col, record, { theme = THEME, emit, onImageLoad, width = CELL_WIDTH, height = CELL_HEIGHT, rect, recording, ...extra } = {}) {
+function drawToCanvas (
+  col, record,
+  { theme = THEME, emit, onImageLoad, width = CELL_WIDTH, height = CELL_HEIGHT, rect, recording, ...extra } = {}
+) {
   const canvas = document.createElement('canvas')
 
   canvas.width = width
@@ -300,7 +303,7 @@ export const checks = [
         'recordNumber 应随入参变化（recordsOffset + index + 1 由调用方计算）'
       )
 
-      return `recordNumber=42 落地为文本 42（offset 语义由调用方传入）`
+      return 'recordNumber=42 落地为文本 42（offset 语义由调用方传入）'
     }
   },
   {
@@ -497,7 +500,7 @@ export const checks = [
         assert(pixels > 0, `${name} 类型 painter 应有非空像素，实际 ${pixels}`)
       }
 
-      return `10 种类型全部非空像素（含 bool/rec_no）`
+      return '10 种类型全部非空像素（含 bool/rec_no）'
     }
   },
   {
@@ -655,7 +658,7 @@ export const checks = [
       assertEqual(calls.fillText.length, 2, 'maxLines=2 应绘制 2 行')
       assertEqual(calls.fillText[0].text.length, 16, '首行按测量宽度折行（16 字符 × 9px = 144 ≤ 内容宽）')
       assert(calls.fillText[1].text.endsWith('...'), `钳制末行应以 '...' 收缩，实际「${calls.fillText[1].text}」`)
-      assertArray(calls.fillText.map(c => c.y), [17, 35], '顶部对齐（padding + lineHeight/2 顺次 +18）')
+      assertArray(calls.fillText.map(c => c.y), [21, 39], '块整体垂直居中（(60−36)/2 + lineHeight/2 顺次 +18，R4b）')
 
       // maxLines=1（缺省）：即使注入 measure 也走单行省略（现状路径）
       const single = drawRecorded(prepareColumn({ field: 'memo' }), { memo: long }, { measure: fakeMeasure })
@@ -678,7 +681,7 @@ export const checks = [
       const { calls } = drawRecorded(col, { v: [1, '二', 3, 4, 5] }, { height: 80 })
 
       assertArray(calls.fillText.map(c => c.text), ['1', '二', '...'], '前 maxItems−1 项 + dots 行')
-      assertArray(calls.fillText.map(c => c.y), [17, 35, 53], '顶部对齐逐行')
+      assertArray(calls.fillText.map(c => c.y), [22, 40, 58], '块整体垂直居中逐行（(80−54)/2 起，R4b）')
       assertEqual(calls.fillText[0].text, '1', '数字元素应 String 化')
 
       // 缺省 maxItems=10：不超限全量显示
@@ -686,7 +689,7 @@ export const checks = [
 
       assertArray(full.calls.fillText.map(c => c.text), ['1', '2', '3'], '不超限逐元素显示')
 
-      return `['1','二','...']（maxItems=3）；数字 String 化`
+      return '[\'1\',\'二\',\'...\']（maxItems=3）；数字 String 化'
     }
   },
   {
@@ -714,7 +717,7 @@ export const checks = [
       const redirected = drawRecorded(clampedCol, { memo: long }, { measure: fakeMeasure, height: 60 })
 
       assertEqual(redirected.calls.fillText.length, 2, '单 div item 应改道 drawText 多行（maxLines=2 钳制）')
-      assertArray(redirected.calls.fillText.map(c => c.y), [17, 35], '改道后顶部对齐')
+      assertArray(redirected.calls.fillText.map(c => c.y), [21, 39], '改道后块整体垂直居中（R4b）')
 
       return 'deep 3 行 / shallow 1 行；line-clamp item 改道 2 行'
     }
