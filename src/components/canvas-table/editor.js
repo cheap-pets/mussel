@@ -2,11 +2,13 @@
  * canvas-table 编辑状态机（02-design.md A5）。
  *
  * 职责：只读判定（表格级 + 列级）、编辑器组件/props 解析（enum options 由
- * mappings Object 转 [{value,label}] Array 且排除 default；text/link 列缺省
- * 按开值形态与 maxLines 判定 textarea/input，评审 6 P6 行级求值）、统一等距
- * 内缩矩形定位（A5.4 R1 + R3 格线内缘口径：全编辑器类型同矩形 =
- * editorRectOf(格矩形)，上/右格线占用的 1px 从内缩量扣除，hover 描边经
- * painter import 同一函数同源）、分类型提交矩阵（input 走 Enter；
+ * mappings Object 转 [{value,label}] Array 且排除 default；text 列缺省
+ * 按开值形态与 maxLines 判定 textarea/input，评审 6 P6 行级求值）、整格矩形
+ * 定位（20261027 问题 3：EDITOR_GAP 内缩口径作废，全编辑器类型同矩形 =
+ * editorRectOf(格矩形) 恒等映射，边框与格线直接重叠，hover 描边经
+ * painter import 同一函数同源）、编辑按钮区矩形 editorButtonRectOf
+ * （20261027 问题 5，painter 绘制与壳命中共用的单一事实源）、
+ * 分类型提交矩阵（input 走 Enter；
  * textarea Ctrl/Cmd+Enter 显式提交、Enter 换行；
  * select/date/switch 走值变化即提交；画布 pointerdown / 容器滚动同步提交；
  * blur 延迟兜底）、Esc 取消、validate 校验（失败不关闭不失焦）、commit 幂等、
@@ -27,9 +29,10 @@
  *   textarea 数组原值 → 换行分割的字符串数组（元素一律字符串、空行保留，
  *   对象属性不随编辑保留——A8 #21）；textarea 数字原值类型保持。
  *
- * 模块隔离（A8）：不 import layout.js / theme.js / cell-painters.js；
- * 定位所需的布局数据（rowGeometry）由组件壳经参数传入（主题快照参数保留签名
- * 兼容，R1 起定位不再消费——A5.4 统一矩形只依赖格几何）。
+ * 模块隔离（A8）：不 import layout.js / theme.js / cell-painters.js（跨模块
+ * 镜像常量经零依赖的 constants.js 引入）；定位所需的布局数据（rowGeometry）
+ * 由组件壳经参数传入（定位只依赖格几何，gridlines/theme 参数已随 EDITOR_GAP
+ * 内缩口径作废一并删除，20261027 问题 3）。
  *
  * 组件壳（canvas-table.vue）对接契约：
  * - const editor = createEditorController({ onCommit })，setup 内创建（值变化
@@ -44,7 +47,7 @@
  *   invalid/message 经容器 :title 显示错误文案；
  * - 打开：click 命中可编辑格（resolveCellClickOpen 判定）调 editor.open({
  *   column, record, recordIndex, editable, style, bordered, getEditorEl })，
- *   style 用 computeEditorStyle(...) 产出（布局/主题/编辑器类型传参）；
+ *   style 用 computeEditorStyle(...) 产出（布局/编辑器类型传参）；
  *   getEditorEl 返回 __editor 容器元素；聚焦由壳 focusEditor 承担（input/select/
  *   date 聚焦内部 input、textarea 聚焦 textarea 元素、switch 聚焦容器），
  *   未传 getEditorEl 时兜底判据②跳过；
@@ -54,13 +57,21 @@
 import { markRaw, reactive, watch } from 'vue'
 import { isFunction, isObject, isString } from '@/utils/type'
 
+import {
+  CELL_PADDING_FALLBACK,
+  CELL_LINE_HEIGHT_FALLBACK,
+  ROW_TOP_INSET,
+  EDITOR_BUTTON_AREA
+} from './constants'
 import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../form/index.js'
 
 /**
- * 不可编辑的列类型（A6 只读控制；link 本期起可编辑——人工 2 意见 2）。
+ * 不可编辑的列类型（A6 只读控制；link 20261027 起恢复不可编辑——用户清单 4，
+ * decisions [S1]，推翻 20261025「link 本期起可编辑」人工决定；button/progress
+ * 为 canvas 专属展示类型一并排除）。
  * image 为 img 在列类型注册表的别名（column-types/index.js），一并排除。
  */
-export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check']
+export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check', 'link', 'button', 'progress']
 
 /**
  * 编辑器类型 → mussel 输入组件（form/index.js 导出名，A6）。
@@ -82,44 +93,48 @@ export const EDITOR_COMPONENTS = {
 export const DROPDOWN_PANEL_SELECTOR = '.mu-dropdown-panel'
 
 /**
- * 编辑浮层/hover 描边统一内缩间距（A5.4 R1，人工 3 意见 2）：浮层矩形/hover 描边
- * 相对单元格【格线内缘】四周内缩 EDITOR_GAP（R3 修复前相对格矩形内缩，上/右格线
- * 画在本格矩形内占用 1px，导致上/右边距比下/左少 1px）；painter.js hover 编辑描边
- * import 同一函数（单一事实源，A7 模块隔离例外——描边外缘与浮层盒缘逐边相等）。
- * scss 侧文本左缘补偿以「EDITOR_GAP + 边框 1px」= 5px 为基数经
- * calc(var(--cell-padding, 8px) - 5px) 落地（canvas-table.scss）。
+ * 编辑浮层/hover 描边矩形（单一事实源：hover 描边与浮层盒同源，painter.js
+ * paintHoverEditorStroke import 同一函数——模块隔离例外沿用）。
+ * 20261027 问题 3：EDITOR_GAP=4 内缩口径作废（decisions [S1]），改为恒等
+ * 映射 = 整格矩形——hover 描边与编辑输入框边框直接与单元格边框重叠。
+ *
+ * @param {{ x: Number, y: Number, width: Number, height: Number }} rect 单元格矩形
+ * @returns {{ left: Number, top: Number, width: Number, height: Number }}
  */
-export const EDITOR_GAP = 4
-
-/**
- * 格线口径判定（R3）：gridlines 模式含某向（all 全含，row/column 精确匹配）。
- * editor.js 不 import painter.js（模块隔离），两元判定内联同款。
- */
-function gridlineShows (mode, kind) {
-  return mode === 'all' || mode === kind
+export function editorRectOf (rect) {
+  return {
+    left: rect.x,
+    top: rect.y,
+    width: rect.width,
+    height: rect.height
+  }
 }
 
 /**
- * 编辑浮层/hover 描边内缩矩形（R3 格线内缘等距口径）：
- * 单元格矩形四周内缩 EDITOR_GAP，其中上格线（row > 0 且行线开——行线画在本行
- * 顶部 1px）与右格线（非末列且列线开——列线画在本列右缘 1px）占用本格矩形内
- * 1px，从对应内缩量中额外扣除（top 与 height / width 各扣 1px，四周与最近格线
- * 空白恒为 EDITOR_GAP）；首行顶线（表头底边框，画在本行矩形之外）与末列右缘、
- * gridlines 关闭方向无此占用。产出 = 编辑浮层 DOM 盒矩形，hover 描边
- * （painter.paintHoverEditorStroke）外缘与之逐边相等。
+ * 列定义自定义编辑按钮（column.editorButton，20261027 问题 5）的命中/绘制区
+ * 矩形（单一事实源：painter 绘制与组件壳命中共用）。区右缘贴格内容区右缘
+ * （right-align：x = 格右 − padding − EDITOR_BUTTON_AREA），垂直中心 = 首行
+ * 行框槽位锚 rect.y + ROW_TOP_INSET + padding + lineHeight/2（与单元格文字
+ * 垂直锚、树箭头中心同一公式，Q2 统一槽位式；不使用 rect.height——超高行中
+ * 与多行首行同高）。图标 EDITOR_BUTTON_ICON_SIZE 居中于 EDITOR_BUTTON_AREA 区。
  *
  * @param {{ x: Number, y: Number, width: Number, height: Number }} rect 单元格矩形
  * @param {Object} [options]
- * @param {Boolean} [options.topGridline=true] 本格顶部有行格线（占用矩形内 1px）
- * @param {Boolean} [options.rightGridline=true] 本格右缘有列格线（占用矩形内 1px）
- * @returns {{ left: Number, top: Number, width: Number, height: Number }}
+ * @param {Number} [options.padding=CELL_PADDING_FALLBACK] 单元格内容区 padding
+ * @param {Number} [options.lineHeight=CELL_LINE_HEIGHT_FALLBACK] 行框高（--cell-line-height 镜像缺省）
+ * @returns {{ x: Number, y: Number, width: Number, height: Number }}
  */
-export function editorRectOf (rect, { topGridline = true, rightGridline = true } = {}) {
+export function editorButtonRectOf (
+  rect,
+  { padding = CELL_PADDING_FALLBACK, lineHeight = CELL_LINE_HEIGHT_FALLBACK } = {}
+) {
+  const centerY = rect.y + ROW_TOP_INSET + padding + lineHeight / 2
+
   return {
-    left: rect.x + EDITOR_GAP,
-    top: rect.y + EDITOR_GAP + (topGridline ? 1 : 0),
-    width: rect.width - EDITOR_GAP * 2 - (rightGridline ? 1 : 0),
-    height: rect.height - EDITOR_GAP * 2 - (topGridline ? 1 : 0)
+    x: rect.x + rect.width - padding - EDITOR_BUTTON_AREA,
+    y: centerY - EDITOR_BUTTON_AREA / 2,
+    width: EDITOR_BUTTON_AREA,
+    height: EDITOR_BUTTON_AREA
   }
 }
 
@@ -155,7 +170,7 @@ export function isCellEditable ({ editable = false, column } = {}) {
 }
 
 /**
- * text/link 列编辑器形态判定（评审 6 P6 行级求值）：函数形态 lineClamp 的
+ * text 列编辑器形态判定（评审 6 P6 行级求值）：函数形态 lineClamp 的
  * legacy 列按 record 求值（与 drawText/computeRowHeights 同源，行高与编辑器
  * 形态必然一致），否则取列配置 _maxLines/maxLines；开值为数组或 maxLines > 1
  * → 'textarea'，否则 'input'。
@@ -170,9 +185,10 @@ function resolveTextLikeEditorType (column, rawValue, record) {
 
 /**
  * 编辑器类型解析（A5.5）：column.editor.type 显式指定优先（非法值回退）；
- * text/link 列缺省按开值形态与 maxLines 判定——开值为数组或
+ * text 列缺省按开值形态与 maxLines 判定——开值为数组或
  * column._resolveMaxLines(record) > 1（行级求值，评审 6 P6）→ 'textarea'，
- * 否则 'input'；其余列按类型映射（enum → select、date/datetime → date、
+ * 否则 'input'（link 列已列入 NON_EDITABLE_TYPES 不可进入编辑，20261027
+ * 问题 4）；其余列按类型映射（enum → select、date/datetime → date、
  * bool → switch），未知列类型回退 input。
  *
  * @param {Object} column 列定义（组件壳传已准备内部列，含 _resolveMaxLines）
@@ -189,7 +205,7 @@ export function resolveEditorType (column, { rawValue, record } = {}) {
   // 无 type 列回退 text（resolveColumnType(undefined) 同回退 TextColumn，A3.5）
   const typeName = column?.type == null ? 'text' : column.type
 
-  if (typeName === 'text' || typeName === 'link') {
+  if (typeName === 'text') {
     return resolveTextLikeEditorType(column, rawValue, record)
   }
 
@@ -363,19 +379,16 @@ export function resolveEditorProps (column) {
 }
 
 /**
- * 编辑浮层定位计算（A5.4 R1 统一等距内缩矩形，相对 __overlay 原点 = canvas 视口
- * 原点）：全编辑器类型共用同一矩形 = editorRectOf(格矩形)——四周内缩 EDITOR_GAP，
- * 上/右格线占用本格矩形的 1px 额外扣除（R3 格线内缘等距口径，判定经
- * rowIndex/colIndex + colLefts.length + gridlines 入参）；矩形中心恒 = 单元格
- * 可视中心，垂直对齐自动成立（前稿 per-type 高度分支与垂直居中式整体删除，
- * R1/人工 3 意见 2）；hover 编辑描边（painter.js）import 同一 editorRectOf，
- * 描边外缘与浮层盒缘逐边相等。
+ * 编辑浮层定位计算（20261027 问题 3：矩形 = 整格，相对 __overlay 原点 =
+ * canvas 视口原点）：全编辑器类型共用同一矩形 = editorRectOf(格矩形) 恒等
+ * 映射——输入框覆盖整个单元格区域，外框与格线直接重叠；hover 编辑描边
+ * （painter.js）import 同一 editorRectOf，描边与浮层盒同源。
  * - 固定列不随滚动偏移；数值经 Vue :style 绑定前由组件壳转 px 串；
  * - bordered 判定：switch 恒 false；textarea 恒 true（mu-input 边框提供编辑态
  *   边界，borderless 类不适用于多行文本）；其余按 border !== false（缺省 true）
  *   ——仅切换容器 --borderless 类（边框/底色可见性），矩形不受影响；
- * - theme 参数保留以稳调用方签名（组件壳传快照），定位不再消费（R1 起
- *   cellPadding/cellLineHeight 均不参与）。
+ * - gridlines/theme 参数已随 EDITOR_GAP 内缩口径作废一并删除（20261027
+ *   问题 3），定位只依赖格几何。
  *
  * @param {Object} params
  * @param {Number} params.colIndex 列号
@@ -388,8 +401,6 @@ export function resolveEditorProps (column) {
  * @param {Number} [params.fixedCount=0] 固定列数
  * @param {Object} params.rowGeometry 行几何实例（topAt/heightAt，必传——C4 删
  *   rowHeight 等高内联回退，uniform 模式传 createUniformRowGeometry 产物）
- * @param {String} [params.gridlines='all'] 网格线模式（R3 上/右格线占用判定）
- * @param {Object} [params.theme] 主题快照（保留签名兼容，定位不再消费——R1）
  * @param {String} [params.editorType='input'] 编辑器类型（仅 bordered 判定消费）
  * @param {Boolean} [params.border=true] 编辑器边框配置（switch/textarea 忽略）
  * @returns {{ left: Number, top: Number, width: Number, height: Number, bordered: Boolean }}
@@ -404,8 +415,6 @@ export function computeEditorStyle ({
   scrollLeft = 0,
   fixedCount = 0,
   rowGeometry,
-  gridlines = 'all',
-  theme,
   editorType = 'input',
   border = true
 } = {}) {
@@ -419,12 +428,7 @@ export function computeEditorStyle ({
     width: colWidths[colIndex],
     height: rowGeometry.heightAt(rowIndex)
   }
-  const rect = editorRectOf(cellRect, {
-    // 首行顶线由表头底边框承担（画在本行矩形之外），本格顶部无行线占用
-    topGridline: rowIndex > 0 && gridlineShows(gridlines, 'row'),
-    // 末列右缘无线（同 .last-col）
-    rightGridline: colIndex < colLefts.length - 1 && gridlineShows(gridlines, 'column')
-  })
+  const rect = editorRectOf(cellRect)
 
   return {
     left: rect.left,

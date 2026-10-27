@@ -161,6 +161,7 @@
         <div class="ct-control">
           <mu-button caption="expandAll()" @click="onExpandAll" />
           <mu-button caption="collapseAll()" @click="onCollapseAll" />
+          <mu-button caption="树排序成本测量" @click="onMeasureTreeSort" />
         </div>
 
         <div class="ct-control">
@@ -295,11 +296,13 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, onUnmounted } from 'vue'
+  import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
   import { runChecks } from './self-checks/index.js'
+  // 问题 5 夹具：备注列自定义编辑按钮图标（demo 构建通路先例 demo/src/common/app.js）
+  import pencilIcon from '~icons/outline/pencil.svg'
 
   // S1：真实组件本地接入（相对路径，不依赖 S2 全局注册；见 02-design.md S1 行）
   import { MuCanvasTable } from '../../../../src/components/canvas-table/index.js'
@@ -313,6 +316,15 @@
   window.__canvasTable = {
     getCellRect: () => null
   }
+
+  // 问题 8 调试夹具：舞台数据快照 getter（与 __canvasTable 组件实例并列，后者不含
+  // 舞台数据）。契约：调用返回 { records: 当前舞台 records（含排序产物）, treeProps:
+  // 当前 treeProps 绑定 }；供 A8 排序断言（同级有序/不跨节点）与成本夹具有效性判据
+  // 读取。展开态仍走 __canvasTable.getTreeExpandedKeys()（两者不重复）。
+  window.__ctStage = () => ({
+    records: stageRecords.value,
+    treeProps: treePropsBind.value
+  })
 
   const canvasTableRef = ref(null)
 
@@ -396,6 +408,11 @@
         editor: {
           validate: value =>
             (String(value).includes('错误') ? '备注不能包含"错误"字样' : true)
+        },
+        // 问题 5 夹具：hover 格内最右侧铅笔按钮（仅图标、仅一个），点击行为用户自定义
+        editorButton: {
+          icon: pencilIcon,
+          onClick: payload => logEvent('editorButton 点击', payload)
         }
       },
       { caption: '启用', field: 'active', type: 'bool', width: 80, editable: true, editor: true },
@@ -582,14 +599,8 @@
 
   const itemColumns = [
     { caption: '名称', field: 'name', width: 120 },
-    {
-      caption: '链接（三态）',
-      field: 'links',
-      type: 'link',
-      width: 170,
-      editable: true,
-      editor: true
-    },
+    // link 恢复不可编辑（问题 4，decisions [S1]）：摘除原 editable/editor 配置
+    { caption: '链接（三态）', field: 'links', type: 'link', width: 170 },
     { caption: '标签（彩色）', field: 'tags', type: 'tag', width: 210 },
     {
       caption: '进度',
@@ -709,13 +720,17 @@
   const orderBy = ref('')
   const selectedKey = ref(null)
 
-  // 展示型排序：父级按 orderBy（'field:asc' | 'field:desc' | ''）执行实际排序
-  const sortedRecords = computed(() => {
-    if (!orderBy.value) return records.value
+  // 展示型排序：父级按 orderBy（'field:asc' | 'field:desc' | ''）执行实际排序。
+  // applyOrder（问题 8 A 案）：排序比较器抽取——order 为空原样返回同一引用，否则
+  // 返回拷贝排序（非破坏性，orderBy 清空即恢复原序）；比较逻辑与抽取前 sortedRecords
+  // 逐字相同。显式 order 参数供「树排序成本测量」夹具在 orderBy 复位后单独计时
+  // （否则夹具第 1 步复位 orderBy 后计时的是一次恒 0ms 的空排序）。
+  function applyOrder (list, order = orderBy.value) {
+    if (!order) return list
 
-    const [field, direction] = orderBy.value.split(':')
+    const [field, direction] = order.split(':')
 
-    return [...records.value].sort((a, b) => {
+    return [...list].sort((a, b) => {
       const va = a[field]
       const vb = b[field]
       const cmp =
@@ -723,7 +738,14 @@
 
       return direction === 'desc' ? -cmp : cmp
     })
-  })
+  }
+
+  const sortedRecords = computed(() => applyOrder(records.value))
+
+  // 树场景排序产物（问题 8 A 案）：treeRecords 保持 const 数组（排序经 computed 派生，
+  // applyOrder 返回拷贝不改原数组）；「同级子节点内排序、不跨节点」由 tree.js
+  // buildChildrenIndex 收集序 + buildFlatRows DFS 重组语义保证
+  const sortedTreeRecords = computed(() => applyOrder(treeRecords))
 
   // ---------- 夹具状态 ----------
   const dataScale = ref('full') // full | few | empty
@@ -788,7 +810,7 @@
 
   const stageRecords = computed(() => {
     switch (scene.value) {
-      case 'tree': return treeRecords
+      case 'tree': return sortedTreeRecords.value
       case 'multiline': return multilineRecords
       case 'items':
       case 'fixed': return itemRecords
@@ -992,6 +1014,50 @@
   function onPrintThemeSnapshot () {
     pollDebugPanel()
     logEvent('打印主题快照（调试按钮）')
+  }
+
+  // ---------- 树排序成本测量夹具（问题 8 A 案，A8 附件实测来源） ----------
+  // 程序化设 orderBy 走真实管线（computed → 父重渲染 → 子 props 更新 → watch 内同步
+  // relayout + redraw）；applyOrder 拷贝单独计时。运行场景 = 树场景（A8 断言上下文）。
+  async function onMeasureTreeSort () {
+    // ① 先复位：若当前已是 name:asc，computed 不重算、prop 不变、不触发 watch，
+    //    lastRelayout/lastPaint 会是上次旧值 → 复位归零后等一 tick
+    orderBy.value = ''
+    await nextTick()
+
+    // ② 纯排序 + 拷贝耗时（显式传 order，与 orderBy ref 状态无关）
+    const t0 = performance.now()
+    applyOrder(treeRecords, 'name:asc')
+    const sortMs = performance.now() - t0
+
+    // ③ 设 orderBy 触发真实管线；两次 tick 覆盖跨 tick 情况
+    orderBy.value = 'name:asc'
+    await nextTick()
+    await nextTick()
+
+    // ④ 有效性判据（先于读数字）：舞台数据确实已按 name 升序，lastRelayout/lastPaint
+    //    才是本次的产物；未生效附 stale 中止（不得记 0）。不可用 lastRelayout 对象
+    //    引用判新——getLayoutInfo() 每次 {...} 展开返回新对象，引用恒不同。
+    const stageRows = window.__ctStage?.()?.records
+    const sorted = Array.isArray(stageRows) && stageRows.length > 1 &&
+      stageRows.every((row, i) =>
+        i === 0 ||
+        String(row.name).localeCompare(String(stageRows[i - 1].name)) >= 0
+      )
+
+    if (!sorted) {
+      logEvent('树排序成本', { sortMs, stale: true })
+      return
+    }
+
+    // ⑤ 回读管线耗时
+    const layout = window.__canvasTable?.getLayoutInfo?.() ?? null
+
+    logEvent('树排序成本', {
+      sortMs,
+      relayoutMs: layout?.lastRelayout?.elapsed ?? null,
+      paintMs: layout?.lastPaint?.elapsed ?? null
+    })
   }
 
   // ---------- 调试面板：重绘统计 / 主题快照（轮询实例，未接入时显示占位） ----------

@@ -6,7 +6,7 @@
  *   2 网格线（按 gridlines；固定区线由分区 3 自绘）
  *   3 固定左列区（整高不透明重绘，盖住滚过的表体；x-scrolled 右缘强化色分界）
  *   4 表头区（整宽不透明重绘：底色/caption/排序图标/check 表头/列分隔线/底边框）
- *   5 覆盖层（hover 高亮、可编辑格描边、树箭头 hover 主色、调宽拖拽参考线）
+ *   5 覆盖层（hover 高亮、可编辑格描边、树箭头 hover 主色、编辑按钮图标、调宽拖拽参考线）
  * 选中底色与斑马纹在分区 1/3 画行背景时直接取值，不做覆盖层。
  *
  * 入口（设计命名 draw(state) 的 ctx 前置纯函数形式）：
@@ -40,12 +40,18 @@
  * - placeholder   表格级占位文本（drawCell 空内容兜底第三级：
  *                 content.text ?? 列级 placeholder ?? 此值；不进列准备依赖）
  * - hover          { row, col } | null 视口命中索引（interactions 产出）
+ * - hoverItem      { row, col, kind, index, disabled } | null 条目悬停（问题 7）：
+ *                  drawCellClipped 仅对 hover 格注入 { kind, index, disabled }；
+ *                  hoverMode = none 时壳侧归一为 null（syncPaintState 总开关）
+ * - editingCell    { row, col } | null 编辑中格（问题 6 veil）：drawCellClipped 对
+ *                  命中格跳过内容绘制（行背景带与格线照画）并显式清空本格 itemHits 组
  * - resizeGuideX   调宽拖拽参考线视口 x | null
  * - onImageLoad    (row, col) => void，纯函数绘制的 img 加载完成回调；
  *                  createPainter 内部自动接管为 invalidateCell(row, col)
- * - itemHits       条目命中矩形集合（A3.3）：Map<row, Map<col, Array<{kind,index,rect}>>>，
+ * - itemHits       条目命中矩形集合（A3.3）：Map<row, Map<col, Array<{kind,index,rect,disabled}>>>，
  *                  paintCellRange 绘制 items 时按 (row, col) 粒度整组替换收集，
- *                  每次绘制批次结束按当前可视窗口行裁剪（组件壳创建传入，可选）
+ *                  每次绘制批次结束按当前可视窗口行裁剪（组件壳创建传入，可选；
+ *                  disabled 问题 7，与取色/点击同口径 isTruthyAttr；veil 格整组清空）
  * - flatInfo / expandedKeys
  *                  树形列绘制（A2.4）：{ levels, hasChildren } 平行数组 + 展开 key 集合
  *                  （树关 = flatInfo null，无树形缩进）；可选
@@ -66,14 +72,18 @@
  * 直接叠画会在旧帧上重复混色；整幅绘制由 clearRect 保证同一起点）。
  */
 
-import { drawCell, drawTreeArrow } from './cell-painters.js'
-import { editorRectOf } from './editor.js'
+import { drawCell, drawTreeArrow, requestIconImage } from './cell-painters.js'
+import { editorRectOf, editorButtonRectOf } from './editor.js'
 import { createMeasureCache, withAlpha } from './theme.js'
 import { ellipsize } from './text-wrap.js'
 import { isExpandedKey } from './tree.js'
 import {
   TREE_INDENT,
   CELL_PADDING_FALLBACK,
+  CELL_LINE_HEIGHT_FALLBACK,
+  ROW_TOP_INSET,
+  EDITOR_BUTTON_AREA,
+  EDITOR_BUTTON_ICON_SIZE,
   CHECK_SIZE,
   CHECK_RADIUS,
   CHECK_FONT_SIZE,
@@ -321,21 +331,77 @@ function paintCellRange (ctx, state, rows, cols, bandToX) {
   }
 }
 
+/** veil（问题 6）命中判定：editingCell 与当前格同行列 */
+function isVeiledCell (state, row, colIndex) {
+  const cell = state.editingCell
+
+  return cell != null && cell.row === row && cell.col === colIndex
+}
+
 /**
- * 单元格内容绘制：完全可见格跳过 save/clip/restore（A3 性能措施，kaka P0），
- * 视口边缘部分可见格才 clip（画布边界外像素本就被丢弃，clip 兜底内容外溢）。
- * itemHits 存在时按 (row, col) 粒度收集本格条目矩形（整组替换，A3.3）。
+ * veil（问题 6）：编辑中格命中时显式清空本格命中组并返回 true（调用方跳过
+ * 内容绘制）——跳过 drawCell 后原收集逻辑不执行，不清空会残留上一次绘制的
+ * 条目矩形，浮层下方仍可点中 link/button（veil 语义被破坏）。
  */
-function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colIndex, W, H) {
+function veilEditingCell (state, row, colIndex) {
+  if (!isVeiledCell(state, row, colIndex)) return false
+
+  if (state.itemHits) setItemHitGroup(state.itemHits, row, colIndex, [])
+
+  return true
+}
+
+/**
+ * 本格右缘列线占用 px（问题 1 水平锚注入值）：非末列，或末列但存在空白区
+ * （问题 9 blankTail 时末列右缘画 1px 线，占用本格矩形），且 gridlines 含
+ * column。blankTail = stickyWidth > contentWidth，与问题 9 两处列线绘制同一
+ * 派生式（三处消费点：本处 / paintColGridlines / paintHeaderColLineRange）。
+ */
+function rightInsetOf (state, colIndex) {
+  const { layout } = state
+  const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
+  const showsColLine = (colIndex < layout.colWidths.length - 1) || blankTail
+
+  return showsColLine && isGridlineMode(state.gridlines ?? 'all', 'column') ? 1 : 0
+}
+
+/** 条目悬停注入（问题 7）：仅 hover 格产出 { kind, index, disabled }，其余格 undefined */
+function cellHoverItemOf (state, row, colIndex) {
+  const hover = state.hoverItem
+
+  if (!hover || hover.row !== row || hover.col !== colIndex) return undefined
+
+  return { kind: hover.kind, index: hover.index, disabled: hover.disabled }
+}
+
+/** 视口边缘部分可见格 clip（A3 性能措施：完全可见格跳过 save/clip/restore，
+    画布边界外像素本就被丢弃，clip 兜底内容外溢）；返回是否执行了 clip */
+function clipIfPartial (ctx, rect, W, H) {
   const partial = rect.x < 0 || rect.y < 0 ||
     rect.x + rect.width > W || rect.y + rect.height > H
 
-  if (partial) {
-    ctx.save()
-    ctx.beginPath()
-    ctx.rect(0, 0, W, H)
-    ctx.clip()
-  }
+  if (!partial) return false
+
+  ctx.save()
+  ctx.beginPath()
+  ctx.rect(0, 0, W, H)
+  ctx.clip()
+
+  return true
+}
+
+/**
+ * 单元格内容绘制：完全可见格跳过 save/clip/restore（A3 性能措施，kaka P0），
+ * 视口边缘部分可见格才 clip（见 clipIfPartial 头注）。
+ * itemHits 存在时按 (row, col) 粒度收集本格条目矩形（整组替换，A3.3）。
+ * veil（问题 6）：editingCell 命中格跳过 drawCell（行背景带与格线照画）并
+ * 清空本格命中组（见 veilEditingCell 头注）。
+ * rightInset / hoverItem 注入（问题 1/7）：见 rightInsetOf / cellHoverItemOf 头注。
+ */
+function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colIndex, W, H) {
+  if (veilEditingCell(state, row, colIndex)) return
+
+  const clipped = clipIfPartial(ctx, rect, W, H)
 
   let itemRects = null
 
@@ -356,12 +422,14 @@ function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colI
     measure: state.measure,
     wrapCache: state.wrapCache,
     placeholder: state.placeholder,
+    rightInset: rightInsetOf(state, colIndex),
+    hoverItem: cellHoverItemOf(state, row, colIndex),
     onItemRect: itemRects ? entry => itemRects.push(entry) : undefined
   })
 
   if (itemRects) setItemHitGroup(state.itemHits, row, colIndex, itemRects)
 
-  if (partial) ctx.restore()
+  if (clipped) ctx.restore()
 }
 
 // —— 分区 2：网格线 ——
@@ -378,12 +446,14 @@ function paintRowGridlines (ctx, layout, rows, W) {
   }
 }
 
-/** 列线：列右缘 1px，遇末列索引终止（同 .last-col） */
+/** 列线：列右缘 1px，遇末列索引终止（同 .last-col）；存在空白区时末列右缘
+    补画 1px（问题 9，blankTail 与 drawCellClipped 同一派生式） */
 function paintColGridlines (ctx, layout, cols) {
   const n = layout.colWidths.length
+  const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
 
   for (let c = cols.from; c < cols.to; c++) {
-    if (c >= n - 1) break
+    if (c >= n - 1 && !blankTail) break
 
     ctx.fillRect(
       viewportColX(layout, c) + (layout.colWidths[c] || 0) - 1,
@@ -612,12 +682,14 @@ function paintHeaderColLines (ctx, state, layout, theme) {
   })
 }
 
-/** 表头列分隔线区间绘制（paintHeaderColLines 固定/滚动两段共用） */
+/** 表头列分隔线区间绘制（paintHeaderColLines 固定/滚动两段共用）；末列无线
+    同 .last-col，存在空白区时末列右缘补画 1px（问题 9，blankTail 同一派生式） */
 function paintHeaderColLineRange (ctx, state, theme, layout, cols, mode, strongBoundary) {
   const n = layout.colWidths.length
+  const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
 
   for (const c of cols) {
-    if (c >= n - 1) break
+    if (c >= n - 1 && !blankTail) break
 
     const strong = strongBoundary && c === layout.fixedCount - 1
 
@@ -693,6 +765,11 @@ function paintHeader (ctx, state) {
  * 粒度说明：壳的 hover 载荷为 { row, col }（hitTest 的 hit.cellX 未入 paintState，
  * 且同格内槽位进出不触发重绘）——槽位级命中需壳改动，本处为格级粒度：
  * hover 停留在树形列父行格上即主色，移出该格随行带重绘还原。
+ *
+ * centerY = 首行行框槽位锚（问题 1 统一公式，与 cell-painters drawCell 的
+ * centerY 同式同值：viewportRowY + ROW_TOP_INSET + cellPadding + cellLineHeight/2；
+ * 不用 heightAt/2——超高行中两分区会错位出双层边，槽位锚下 hover 主色重画
+ * 与常态箭头逐值重合）。
  */
 function paintTreeArrowAccent (ctx, state) {
   const { hover, flatInfo, columns, theme } = state
@@ -707,11 +784,11 @@ function paintTreeArrowAccent (ctx, state) {
 
   if (record == null) return
 
-  const geometry = state.layout.rowGeometry
   const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
+  const lineHeight = theme?.cellLineHeight || CELL_LINE_HEIGHT_FALLBACK
   const level = flatInfo.levels?.[hover.row] ?? 0
   const x = viewportColX(state.layout, hover.col) + padding + level * TREE_INDENT
-  const centerY = viewportRowY(state.layout, hover.row) + geometry.heightAt(hover.row) / 2
+  const centerY = viewportRowY(state.layout, hover.row) + ROW_TOP_INSET + padding + lineHeight / 2
 
   drawTreeArrow(
     ctx,
@@ -762,10 +839,10 @@ function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid) {
 }
 
 /**
- * 可编辑格 hover 感知（A5.3，R1/人工 3 意见 2 + R3 格线内缘等距）：1px 主色
- * 内描边，矩形 = editorRectOf(cellRect)（上/右格线占用本格的 1px 从内缩量扣除，
- * 与 editor.js 编辑浮层盒缘逐边相等——import 同一函数单一事实源，相对格线
- * 内缘四周 EDITOR_GAP 等距）；不占布局、随 hover 带重绘生效
+ * 可编辑格 hover 感知（A5.3；20261027 问题 3 改口径，EDITOR_GAP 内缩作废）：
+ * 1px 主色内描边，矩形 = editorRectOf(cellRectAt(...)) 恒等整格——描边与格线
+ * 直接重叠、与 editor.js 编辑浮层盒缘逐边相等（import 同一函数单一事实源）；
+ * 不占布局、随 hover 带重绘生效
  */
 function paintHoverEditorStroke (ctx, state, hover) {
   if (!state.editable || !state.isCellEditableFn) return
@@ -774,20 +851,45 @@ function paintHoverEditorStroke (ctx, state, hover) {
 
   if (!column || !state.isCellEditableFn(column)) return
 
-  const gridlines = state.gridlines ?? 'all'
-  const rect = editorRectOf(cellRectAt(state.layout, hover.row, hover.col), {
-    // 首行顶线由表头底边框承担（本行矩形之外）；末列右缘无线（同 .last-col）
-    topGridline: hover.row > 0 && isGridlineMode(gridlines, 'row'),
-    rightGridline: hover.col < state.layout.colWidths.length - 1 &&
-      isGridlineMode(gridlines, 'column')
-  })
+  const rect = editorRectOf(cellRectAt(state.layout, hover.row, hover.col))
 
   ctx.strokeStyle = withAlpha(state.theme.primaryColor, 0.45)
   ctx.lineWidth = 1
   ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
 }
 
-/** hover 叠加：高亮底色 → 可编辑格内描边 → 树箭头主色（绘制顺序固定） */
+/**
+ * 编辑按钮绘制（问题 5，覆盖层最上层）：hover 格所在列配 editorButton.icon
+ * 时，经 editorButtonRectOf（editor.js 单一事实源，centerY = 首行槽位锚，与
+ * 文字/树箭头同式）取 24×24 区矩形，requestIconImage（cell-painters 缓存管线
+ * 单一事实源，SVG currentColor 着色 = theme.textColor）取图；仅
+ * status === 'loaded' 才 drawImage（加载中/失败不半绘制），onLoad 经
+ * state.onImageLoad 转 invalidateCell 联动重绘（createPainter withImageRelay；
+ * 缓存命中时不重挂 onLoad，当帧直接可绘）。hoverMode none 时随
+ * paintHoverOverlay 一并抑制（paintOverlay 门控）。
+ */
+function paintEditorButton (ctx, state, hover) {
+  const column = state.columns?.[hover.col]
+  const icon = column?.editorButton?.icon
+
+  if (!icon) return
+
+  const { theme } = state
+  const rect = editorButtonRectOf(cellRectAt(state.layout, hover.row, hover.col), {
+    padding: theme?.cellPadding || CELL_PADDING_FALLBACK,
+    lineHeight: theme?.cellLineHeight || CELL_LINE_HEIGHT_FALLBACK
+  })
+  const entry = requestIconImage(icon, theme.textColor, () => state.onImageLoad?.(hover.row, hover.col))
+
+  if (entry.status !== 'loaded') return
+
+  const size = EDITOR_BUTTON_ICON_SIZE
+  const inset = (EDITOR_BUTTON_AREA - size) / 2
+
+  ctx.drawImage(entry.image, rect.x + inset, rect.y + inset, size, size)
+}
+
+/** hover 叠加：高亮底色 → 可编辑格描边 → 树箭头主色 → 编辑按钮（绘制顺序固定） */
 function paintHoverOverlay (ctx, state, hover, mode) {
   const { layout, theme } = state
   const rowCount = rowsOf(state)?.length ?? 0
@@ -803,6 +905,9 @@ function paintHoverOverlay (ctx, state, hover, mode) {
 
     // 树箭头 hover 主色（A2.4）：同受 hoverMode none 抑制——用户显式关闭 hover 反馈时不画
     paintTreeArrowAccent(ctx, state)
+
+    // 编辑按钮（问题 5）：最上层
+    paintEditorButton(ctx, state, hover)
   }
 }
 

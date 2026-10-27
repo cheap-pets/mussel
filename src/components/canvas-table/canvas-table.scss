@@ -70,8 +70,11 @@
   height: 0;
 }
 
+// 阴影条锚在 header 下沿（贴 header 底边、不覆盖 header，20261027 问题 2）：
+// +1px 使 --mu-shadow-float 首项 0 0 0 1px 的 hairline 覆盖 [headHeight, headHeight+2)，
+// 完整强度阴影不落入 header 区域（header 底边框画在 headHeight−1，painter 侧）
 .mu-canvas-table__header-shadow {
-  top: 0;
+  top: calc(var(--head-row-height, 36px) + 1px);
 }
 
 .mu-canvas-table__bottom-shadow {
@@ -102,10 +105,10 @@
 }
 
 // 编辑浮层（A6）：absolute 定位由 editor.js computeEditorStyle 产出（相对 __overlay
-// 原点 = canvas 视口原点，格矩形四周内缩 EDITOR_GAP 4px——A5.4 R1 统一矩形）；
-// 控件自身尺寸随单元格填充——.mu-input 固定 200x32 不覆盖
-// 会溢出单元格并拦截相邻格点击。背景遮蔽 canvas 单元格内容（switch 等小控件不铺满
-// 浮层，无背景会与 canvas 绘制的文本/图形叠影）
+// 原点 = canvas 视口原点，矩形 = 整格——hover 描边与输入框边框直接与格线重叠，
+// 内缩口径已废除，20261027 问题 3）；控件自身尺寸随单元格填充——.mu-input 固定
+// 200x32 不覆盖会溢出单元格并拦截相邻格点击。无背景（20261027 问题 6）：编辑格
+// 内容的遮蔽由画布侧 veil 承担（编辑中该格跳绘内容），行底色经透明容器透出
 .mu-canvas-table__editor {
   pointer-events: auto;
 
@@ -116,23 +119,25 @@
   display: flex;
   align-items: center;
 
-  background: var(--mu-bg-normal);
-
-  // 文本左缘一致性（A5.4 R1，实施约束 5）：浮层 left = 格左 + EDITOR_GAP(4)，
-  // 输入文本左缘 = left + 边框 1 + padding-left（padding − 5）= 格左 + padding，
+  // 文本左缘一致性：浮层 left = 格左（矩形 = 整格），
+  // 输入文本左缘 = left + 边框 1 + padding-left（padding − 1）= 格左 + padding，
   // 与单元格文本左缘精确一致；--cell-padding 被覆盖时经 calc 同步成立
-  // （5 = EDITOR_GAP + 边框 1）。.mu-input 选择器通配 combo 根
-  // （combo-wrapper 根类名同为 mu-input）
+  // （1 = 输入框边框）。方角贴格格缘：.mu-input 基础圆角 4px 会使边框四角
+  // 内缩、偏离格线并透出行底色，与「边框与格边框重叠」不符。
+  // .mu-input 选择器通配 combo 根（combo-wrapper 根类名同为 mu-input）
   > .mu-input {
     width: 100%;
     height: 100%;
-    padding: 0 0 0 calc(var(--cell-padding, 8px) - 5px);
+    border-radius: 0;
+    padding: 0 0 0 calc(var(--cell-padding, 8px) - 1px);
   }
 
   // textarea 编辑器（人工 2 意见 2）：复用 form INPUT_TYPES.memo 约定
   // （原生 <textarea class="mu-input"> + v-model）；浮层内联 style 控制宽高
-  // （覆盖 memo 固定 height:80px）；四边 padding 同口径——文本左缘/首行顶 =
-  // 格左/格顶 + padding，与 drawText 多行首行顶对齐（A5.4 R1）
+  // （覆盖 memo 固定 height:80px）；四边 padding 同口径——文本左缘/首行文字顶 =
+  // 格左/格顶 + padding；画布统一槽位锚下任意列首行文字行框顶 = 内容区顶 +
+  // padding = 格顶 + 上格线 1 + padding，与 textarea 首行顶恒相差上格线 1px
+  // （所有行、所有 gridlines 模式都成立）
   > textarea.mu-input {
     resize: none;
 
@@ -141,7 +146,7 @@
 
     width: 100%;
     height: 100%;
-    padding: calc(var(--cell-padding, 8px) - 5px);
+    padding: calc(var(--cell-padding, 8px) - 1px);
 
     font-family: inherit;
     line-height: var(--cell-line-height, 18px);
@@ -151,7 +156,7 @@
 // borderless 形态（A5.4 editor.border:false）：仅覆盖边框/底色两项白名单，
 // 不触 box-shadow（focus 光环保留，提供编辑态反馈）与 clear/下拉交互；
 // 不覆盖 padding——透明边框宽仍 1px，基础规则的 padding-left 补偿对两态同效，
-// 同特异性后定义的 padding: 0 会清掉补偿使 borderless 左缘退到格左 + 5（A5.4 R1）
+// 同特异性后定义的 padding: 0 会清掉补偿使 borderless 左缘退到格左 + 1（仅边框）
 .mu-canvas-table__editor--borderless > .mu-input {
   border-color: transparent;
   background: none;

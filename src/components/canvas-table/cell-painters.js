@@ -17,6 +17,19 @@
  *   （评审 6 P1）；TextColumn 的单 line-clamp item 形态改道 drawText 多行（A3.5）；
  *   class/style/title 为 DOM 通道字段，canvas 忽略
  *
+ * 绘制锚（02-design 问题 1，Q2 统一垂直锚）：所有列内容锚定首行行框槽位——
+ * centerY = 格顶 + ROW_TOP_INSET(1) + padding + lineHeight/2（常量、与 gridlines
+ * 模式无关、不使用 rect.height），单行文本 / 多行首行 / 树箭头 / 横排 items /
+ * progress / button 同式（编辑按钮 editor.editorButtonRectOf 同式），多行后续行
+ * += lineHeight；水平居中锚扣本格右缘列线占用 rightInset（painter 注入，缺省 0），
+ * left/right 锚不动。行高公式（row-geometry）不变，槽位锚下 top 块底恒不越
+ * 格底，无裁剪。
+ *
+ * 问题 5/7：requestIconImage（编辑按钮图标加载，SVG currentColor 着色 → data
+ * URL → requestImage 单一缓存管线）；link 条目悬停（linkHoverColorOf 色变 +
+ * linkUnderlineY 下划线，横排 drawItemText 与竖排 drawLinkEntry 共用）、button
+ * pill 悬停反转、itemHits 条目携带 disabled（与取色/点击同口径 isTruthyAttr）。
+ *
  * 模块隔离（A8）：不 import theme.js / layout.js，主题色与 colors（固定 17 色
  * map）经 drawCell 的 theme 快照参数传入（字段同 theme.js readSnapshot）；
  * text-wrap 为纯函数模块（measure 经参数注入，painter state 携带）。
@@ -28,6 +41,8 @@ import { isExpandedKey } from './tree'
 import {
   TREE_INDENT,
   CELL_PADDING_FALLBACK,
+  ROW_TOP_INSET,
+  FONT_SIZE_FALLBACK,
   CHECK_SIZE,
   CHECK_RADIUS,
   CHECK_FONT_SIZE,
@@ -101,6 +116,26 @@ function requestImage (src, onLoad) {
   }
 
   return entry
+}
+
+/**
+ * 编辑按钮图标加载（02-design 问题 5）：SVG 标记串（含 '<svg'）经
+ * /currentColor/gi 替换为着色串（img 上下文 currentColor 不可靠，tabler 图标
+ * stroke/fill 两种写法均命中）后转 data URL，再委托既有 requestImage（缓存 /
+ * onload 管线单一事实源；缓存键含着色串，主题色变自然分键）；非 SVG 串按
+ * 图片 src 直通。
+ *
+ * @param {String} icon SVG 标记串或图片 URL / data-URL
+ * @param {String} color 着色色值（生产路径 = theme.textColor）
+ * @param {Function} [onLoad] 首次加载完成回调（painter 转 invalidateCell）
+ * @returns {Object} requestImage 缓存条目 { image, status }（同参复用同一条目）
+ */
+export function requestIconImage (icon, color, onLoad) {
+  const src = typeof icon === 'string' && icon.includes('<svg')
+    ? 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(String(icon).replace(/currentColor/gi, color))
+    : icon
+
+  return requestImage(src, onLoad)
 }
 
 // —— 列准备（table.vue internalColumns 的 canvas 等价物，仅保留绘制所需字段） ——
@@ -235,10 +270,17 @@ function maxLinesOf (col, record) {
  * - recordKey      当前行 key（箭头展开态判定），可选
  * - measure / wrapCache   文本测量注入（theme.js 工厂产物，多行折行），可选；
  *                        单行省略经 ellipsize 走 measure 缓存，未注入时回退 ctx 直测
- * - onItemRect     条目命中矩形收集回调 ({ kind, index, rect })（painter itemHits），
- *                  link/tag/button 条目回报（dots '...' 条目同样回报），可选
+ * - onItemRect     条目命中矩形收集回调 ({ kind, index, rect, disabled })（painter
+ *                  itemHits），link/tag/button 条目回报（dots '...' 条目同样回报；
+ *                  disabled 与取色/点击同口径 isTruthyAttr），可选
  * - placeholder    表格级占位文本兜底（content.text ?? 列级 placeholder ?? 此值），
  *                  painter state.placeholder 注入，可选
+ * - rightInset     本格右缘列线占用 px（0|1，painter drawCellClipped 注入，缺省 0；
+ *                  非末列或 blankTail 且 gridlines 含 column 时为 1）：仅参与水平
+ *                  居中锚（内容区水平中心精确扣除列线占用），left/right 锚与折行
+ *                  宽不受影响（宽度不减，与估高 contentWidthOf 同式）
+ * - hoverItem      条目悬停（painter 注入，仅 hover 格非空）：{ kind, index, disabled }，
+ *                  link 条目色变 + 下划线、button pill 反转（问题 7），可选
  * @returns {Object} resolveCellContent 的解析结果（painter 调试用）
  */
 export function drawCell (ctx, {
@@ -256,48 +298,68 @@ export function drawCell (ctx, {
   measure,
   wrapCache,
   onItemRect,
-  placeholder
+  placeholder,
+  rightInset = 0,
+  hoverItem
 }) {
   const content = resolveCellContent(col, { record, recordNumber, emit })
 
   if (isSkippableRect(rect)) return content
 
   const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
+  const lineHeight = theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
+
+  // 首行行框槽位（问题 1）：行线占用本格矩形顶部 ROW_TOP_INSET 1px，box = 格
+  // 矩形扣除该 1px；宽度不减（padding 8 ≫ 1px，折行/截断无可观察差异，且与
+  // 估高 contentWidthOf 同式）；rightInset 不扣宽度，只参与水平居中锚
+  const box = { ...rect, y: rect.y + ROW_TOP_INSET, height: rect.height - ROW_TOP_INSET }
+
+  // 槽位中心（全文唯一垂直锚公式）：单行 / 多行首行 / 树箭头 / 横排 items /
+  // progress / button 同式；不使用 rect.height（超高行贴行顶，与多行首行同高）
+  const centerY = box.y + padding + lineHeight / 2
 
   ctx.font = cellFontOf(theme)
   ctx.textBaseline = 'middle'
 
   // 树形列（A2.4/A3.4）：内容区前置 level×16 缩进 + 16px 箭头槽（父行箭头/
   // 叶行空槽，判定 = flatInfo.hasChildren[row]），箭头方向经 expandedKeys 判定
-  const inset = drawTreeAffordance(ctx, rect, {
+  const inset = drawTreeAffordance(ctx, box, {
     col,
     row,
     flatInfo,
     expandedKeys,
     recordKey,
     padding,
-    theme
+    theme,
+    centerY
   })
 
   const contentRect = inset
-    ? { ...rect, x: rect.x + inset, width: rect.width - inset }
-    : rect
+    ? { ...box, x: box.x + inset, width: box.width - inset }
+    : box
 
   // canvas 专属分发（A3.3）：progress / button 真实绘制，非 items 产物
-  if (drawCanvasKindContent(ctx, contentRect, content, padding, theme, record, measure, onItemRect)) {
+  // （button 命中矩形另传整格 rect——itemHits 条目 rect 保持整格语义）
+  if (drawCanvasKindContent(
+    ctx, contentRect, rect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
+  )) {
     return content
   }
 
   if (Array.isArray(content.items) && content.items.length) {
     drawContentItems(
-      ctx, contentRect, content, col, record,
-      padding, theme, measure, wrapCache, onItemRect, onImageLoad
+      ctx, contentRect, rect, content, col, record,
+      padding, theme, measure, wrapCache, onItemRect, onImageLoad,
+      centerY, rightInset, hoverItem
     )
 
     return content
   }
 
-  drawDisplayText(ctx, contentRect, content, col, record, placeholder, padding, theme, measure, wrapCache)
+  drawDisplayText(
+    ctx, contentRect, content, col, record, placeholder,
+    padding, theme, measure, wrapCache, centerY, rightInset
+  )
 
   return content
 }
@@ -308,15 +370,26 @@ function isSkippableRect (rect) {
   return !rect || rect.width <= 0 || rect.height <= 0
 }
 
-/** canvas 专属分发（A3.3）：progress / button 真实绘制；命中返回 true */
-function drawCanvasKindContent (ctx, rect, content, padding, theme, record, measure, onItemRect) {
+/** canvas 专属分发（A3.3）：progress / button 真实绘制；命中返回 true。
+    rect = 绘制矩形（box 派生），cellRect = 整格矩形（button 命中回报用） */
+function drawCanvasKindContent (
+  ctx, rect, cellRect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
+) {
   if (content.canvasKind === 'progress') {
-    drawProgress(ctx, rect, content, { padding, theme, record, measure })
+    drawProgress(ctx, rect, content, { padding, theme, record, measure, centerY })
     return true
   }
 
   if (content.canvasKind === 'button') {
-    drawButton(ctx, rect, content.buttons, { padding, theme, record, onItemRect, measure })
+    drawButton(ctx, rect, cellRect, content.buttons, {
+      padding,
+      theme,
+      record,
+      onItemRect,
+      measure,
+      centerY,
+      hoverItem
+    })
     return true
   }
 
@@ -327,10 +400,12 @@ function drawCanvasKindContent (ctx, rect, content, padding, theme, record, meas
  * items 数组落地：单 item + line-clamp class 形态改道 drawText 多行（A3.5
  * DOM 风格兼容，评审 6 P6：maxLines 取 _resolveMaxLines(record)，与 render 内
  * --line-clamp 同函数求值恒等）；link 列 = 条目列竖排（A3.5）；其余横排。
+ * rect = 绘制矩形（box 派生），cellRect = 整格矩形（横排条目命中回报 y/height 用）。
  */
 function drawContentItems (
-  ctx, rect, content, col, record,
-  padding, theme, measure, wrapCache, onItemRect, onImageLoad
+  ctx, rect, cellRect, content, col, record,
+  padding, theme, measure, wrapCache, onItemRect, onImageLoad,
+  centerY, rightInset, hoverItem
 ) {
   if (content.items.length === 1) {
     const only = content.items[0]
@@ -342,7 +417,9 @@ function drawContentItems (
         measure,
         wrapCache,
         maxLines: maxLinesOf(col, record),
-        maxItems: col._maxItems
+        maxItems: col._maxItems,
+        centerY,
+        rightInset
       })
 
       return
@@ -351,23 +428,37 @@ function drawContentItems (
 
   // link 列 = 条目列（A3.5）：数组竖排每条一行（单条超宽省略）+ maxItems 钳制
   if (col.type === 'link') {
-    drawLinkItems(ctx, rect, content.items, { padding, theme, maxItems: col._maxItems, onItemRect, measure })
+    drawLinkItems(ctx, rect, content.items, {
+      padding,
+      theme,
+      maxItems: col._maxItems,
+      onItemRect,
+      measure,
+      centerY,
+      hoverItem
+    })
 
     return
   }
 
-  drawItems(ctx, rect, content.items, {
+  drawItems(ctx, rect, cellRect, content.items, {
     align: col._align,
     padding,
     theme,
     onImageLoad,
     onItemRect,
-    measure
+    measure,
+    centerY,
+    rightInset,
+    hoverItem
   })
 }
 
 /** 空内容落占位文本（table-row.vue 的 cell.text ?? col.placeholder ?? 表格级 placeholder） */
-function drawDisplayText (ctx, rect, content, col, record, placeholder, padding, theme, measure, wrapCache) {
+function drawDisplayText (
+  ctx, rect, content, col, record, placeholder,
+  padding, theme, measure, wrapCache, centerY, rightInset
+) {
   const display = content.text ?? col.placeholder ?? placeholder
 
   if (display != null) {
@@ -377,7 +468,9 @@ function drawDisplayText (ctx, rect, content, col, record, placeholder, padding,
       measure,
       wrapCache,
       maxLines: maxLinesOf(col, record),
-      maxItems: col._maxItems
+      maxItems: col._maxItems,
+      centerY,
+      rightInset
     })
   }
 }
@@ -395,37 +488,36 @@ function measureOf (ctx, measure) {
   }
 }
 
-/** 文本水平锚点（ctx.textAlign 与 align 同值时的 x 坐标） */
-function textAnchorX (rect, align, padding) {
+/**
+ * 文本水平锚点（ctx.textAlign 与 align 同值时的 x 坐标）：center 锚按内容区
+ * 水平几何中心精确计算——rightInset 为本格右缘列线占用 1px（问题 1 列线占用
+ * 扣除，非末列或 blankTail 时 painter 注入 1），left/right 锚不动（padding 8 ≫
+ * 1px 格线，文字不会压线）。
+ */
+function textAnchorX (rect, align, padding, rightInset) {
   return align === 'right'
     ? rect.x + rect.width - padding
     : align === 'center'
-      ? rect.x + rect.width / 2
+      ? rect.x + (rect.width - rightInset) / 2
       : rect.x + padding
 }
 
 /**
- * 多行文本块首行 y（R4b）：块整体在格内垂直居中——单行内容（n=1）时与单行
- * 省略路径的 rect.height/2 锚一致，首行文字与其他单行格文字对齐；此前恒从
- * 顶部 padding 起画，等高行偏 1px、变高行（如 h=52）偏 9px。估高与行高公式
- * 一致时 (h − 块高)/2 ≥ padding，max(…, padding) 为行数不一致时的顶部防溢出。
- */
-function multilineBlockTop (rect, blockHeight, padding) {
-  return rect.y + Math.max(padding, (rect.height - blockHeight) / 2)
-}
-
-/**
- * 文本取值落地（A3.5 统一规则）：
- * - 数组值 → 每元素一行（逐元素 String 化）、块整体垂直居中（R4b）；行数 >
- *   maxItems 时第 maxItems 行显示 '...'（dots 字面，DOM link.js:47/tag.js:46 同款）
+ * 文本取值落地（A3.5 统一规则；垂直锚 = Q2 首行行框槽位，问题 1）：
+ * - 数组值 → 每元素一行（逐元素 String 化）、首行槽位锚（centerY），后续行
+ *   += lineHeight；行数 > maxItems 时第 maxItems 行显示 '...'（dots 字面，
+ *   DOM link.js:47/tag.js:46 同款）
  * - 字符串 + maxLines>1 → wrapLines 多行（折行 + maxLines 钳制一体；与
  *   row-geometry 同一函数与缓存，行高与绘制折行必然一致；measure 未注入时
- *   回退单行省略），块整体垂直居中（R4b）
- * - 其余 → 单行省略（现状路径，垂直居中：锚 = rect.y + rect.height/2）
+ *   回退单行省略），首行槽位锚起排（原块整体居中口径作废）；行高公式
+ *   max(rowHeight, padding×2 + lines×lineHeight) 保证块底不越格底，无裁剪
+ * - 其余 → 单行省略（垂直锚 = 槽位中心 centerY，与多行首行同式）
  */
-function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wrapCache, maxLines, maxItems }) {
+function drawTextValue (ctx, rect, display, align, {
+  padding, theme, measure, wrapCache, maxLines, maxItems, centerY, rightInset
+}) {
   if (Array.isArray(display)) {
-    drawArrayLines(ctx, rect, display, align, { padding, theme, maxItems, measure })
+    drawArrayLines(ctx, rect, display, align, { padding, theme, maxItems, measure, centerY, rightInset })
     return
   }
 
@@ -434,7 +526,7 @@ function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wr
   if (contentWidth <= 0) return
 
   const text = String(display)
-  const lineHeight = theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
+  const lineHeight = cellLineHeightOf(theme)
 
   if (maxLines > 1 && typeof measure === 'function' && text) {
     const { lines } = wrapLines({
@@ -444,17 +536,18 @@ function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wr
     ctx.fillStyle = theme?.textColor
     ctx.textAlign = align
 
-    let y = multilineBlockTop(rect, lines.length * lineHeight, padding) + lineHeight / 2
+    // 首行槽位锚：文字 top = 内容区顶 + padding（行框槽位），后续行 += lineHeight
+    let y = centerY
 
     for (const line of lines) {
-      ctx.fillText(line, textAnchorX(rect, align, padding), y)
+      ctx.fillText(line, textAnchorX(rect, align, padding, rightInset), y)
       y += lineHeight
     }
 
     return
   }
 
-  // 单行省略（现状路径）：垂直居中；截断经注入 measure 走缓存（P0-1）
+  // 单行省略：垂直锚 = 槽位中心（与多行首行同式）；截断经注入 measure 走缓存（P0-1）
   const { text: single } = ellipsize({
     text,
     font: cellFontOf(theme),
@@ -466,16 +559,16 @@ function drawTextValue (ctx, rect, display, align, { padding, theme, measure, wr
 
   ctx.fillStyle = theme?.textColor
   ctx.textAlign = align
-  ctx.fillText(single, textAnchorX(rect, align, padding), rect.y + rect.height / 2)
+  ctx.fillText(single, textAnchorX(rect, align, padding, rightInset), centerY)
 }
 
-/** 数组值多行（文本呈现列）：每元素一行、块整体垂直居中（R4b）、超限第 maxItems 行 '...' */
-function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, measure }) {
+/** 数组值多行（文本呈现列）：每元素一行、首行槽位锚（centerY）、超限第 maxItems 行 '...' */
+function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, measure, centerY, rightInset }) {
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0 || !values.length) return
 
-  const lineHeight = theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
+  const lineHeight = cellLineHeightOf(theme)
   const shown = values.length > maxItems
     ? values.slice(0, maxItems - 1).concat(ELLIPSIS)
     : values
@@ -485,12 +578,12 @@ function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, m
   ctx.fillStyle = theme?.textColor
   ctx.textAlign = align
 
-  let y = multilineBlockTop(rect, shown.length * lineHeight, padding) + lineHeight / 2
+  let y = centerY
 
   for (const element of shown) {
     const { text: line } = ellipsize({ text: String(element ?? ''), font, maxWidth: contentWidth, measure: measureFn })
 
-    if (line) ctx.fillText(line, textAnchorX(rect, align, padding), y)
+    if (line) ctx.fillText(line, textAnchorX(rect, align, padding, rightInset), y)
 
     y += lineHeight
   }
@@ -527,8 +620,9 @@ export function drawTreeArrow (ctx, x, centerY, expanded, color) {
  * 树形列缩进与箭头：内容区前置 level×16 缩进 + 16px 箭头槽（父行 12px 三角、
  * 叶行空槽）；返回内容区应右移的 inset px（= level×16 + 16，与行高估高的
  * contentWidth 扣减口径一致——实施约束 6），非树形列/树关返回 0。
+ * 箭头垂直锚 = 槽位中心 centerY（问题 1 统一锚，与文字首行/编辑按钮共线）。
  */
-function drawTreeAffordance (ctx, rect, { col, row, flatInfo, expandedKeys, recordKey, padding, theme }) {
+function drawTreeAffordance (ctx, rect, { col, row, flatInfo, expandedKeys, recordKey, padding, theme, centerY }) {
   if (!col._isTreeColumn || !flatInfo) return 0
 
   const level = flatInfo.levels?.[row] ?? 0
@@ -538,7 +632,7 @@ function drawTreeAffordance (ctx, rect, { col, row, flatInfo, expandedKeys, reco
     drawTreeArrow(
       ctx,
       rect.x + padding + level * TREE_INDENT,
-      rect.y + rect.height / 2,
+      centerY,
       isExpandedKey(expandedKeys, recordKey),
       theme?.textColor
     )
@@ -600,15 +694,38 @@ function linkTextColorOf (item, theme) {
 }
 
 /**
+ * link 条目悬停色（02-design 问题 7，A7）：disabled → textColorMuted（不悬停
+ * 表达，与常态同）；语义色名 → colors[name].hover（theme.readColors 扩展的
+ * --mu-{name}-color-4 谱系，缺字段时回退 color）；彩色名（hover === color）/
+ * 未知名 → 同色 / primaryColor。与常态取色 linkTextColorOf 同构，仅多 hover
+ * 字段一档。
+ */
+export function linkHoverColorOf (item, theme) {
+  const attrs = item.attrs ?? {}
+
+  if (attrs.disabled != null && attrs.disabled !== false) {
+    return theme?.textColorMuted || theme?.gray
+  }
+
+  const name = colorClassOf(item, 'link')
+  const colored = name ? theme?.colors?.[name] : null
+
+  return colored?.hover ?? colored?.color ?? theme?.primaryColor
+}
+
+/**
  * items 行绘制：先测各条目宽度，按列 align 分布整体起点
  * （check 列 align:center 的方框居中，与 DOM text-align 行为一致），
  * 再逐条目绘制；超出右缘的条目丢弃。link/tag 条目矩形经 onItemRect 回报
- * （kind/index/rect，painter itemHits 命中来源，A3.3）。
+ * （kind/index/rect/disabled，painter itemHits 命中来源，A3.3 + 问题 7）。
+ * rect = 绘制矩形（box 派生，contentHeight/img 最大高随槽位扣行顶 1px），
+ * cellRect = 整格矩形（命中回报 y/height 保持整格语义）。
  */
-function drawItems (ctx, rect, items, { align, padding, theme, onImageLoad, onItemRect, measure }) {
+function drawItems (ctx, rect, cellRect, items, {
+  align, padding, theme, onImageLoad, onItemRect, measure, centerY, rightInset, hoverItem
+}) {
   const gap = padding
   const contentWidth = rect.width - padding * 2
-  const centerY = rect.y + rect.height / 2
 
   const hooks = { contentWidth, contentHeight: rect.height, padding, theme, onImageLoad, measure }
   const widths = items.map(item => measureItem(ctx, item, hooks))
@@ -616,7 +733,7 @@ function drawItems (ctx, rect, items, { align, padding, theme, onImageLoad, onIt
   const { positions, offset, visible } = layoutItemPositions(items, widths, gap)
 
   // 内容超宽时回退左对齐（溢出部分被右缘丢弃，不向两侧外溢）
-  const start = itemsStartX(rect, align, padding, offset, visible, contentWidth)
+  const start = itemsStartX(rect, align, padding, offset, visible, contentWidth, rightInset)
   const rightBound = rect.x + rect.width - padding
 
   for (let i = 0; i < items.length; i++) {
@@ -634,10 +751,13 @@ function drawItems (ctx, rect, items, { align, padding, theme, onImageLoad, onIt
       padding,
       theme,
       onImageLoad,
-      measure
+      measure,
+      index: i,
+      hoverItem
     })
 
-    if (onItemRect) reportHitRect(onItemRect, items[i], i, x, rect.y, width, rect.height)
+    // 命中矩形 y/height 用整格 rect（横向条目命中区保持整格语义，问题 1）
+    if (onItemRect) reportHitRect(onItemRect, items[i], i, x, cellRect.y, width, cellRect.height)
   }
 }
 
@@ -664,24 +784,32 @@ function layoutItemPositions (items, widths, gap) {
   return { positions, offset, visible }
 }
 
-/** items 整体起点：内容未超宽时按列 align 分布，超宽回退左对齐 */
-function itemsStartX (rect, align, padding, offset, visible, contentWidth) {
+/** items 整体起点：内容未超宽时按列 align 分布（center 锚按内容区水平中心
+    扣 rightInset，问题 1），超宽回退左对齐 */
+function itemsStartX (rect, align, padding, offset, visible, contentWidth, rightInset) {
   let start = rect.x + padding
 
   if (visible && offset < contentWidth) {
-    if (align === 'center') start = rect.x + (rect.width - offset) / 2
+    if (align === 'center') start = rect.x + (rect.width - rightInset - offset) / 2
     else if (align === 'right') start = rect.x + rect.width - padding - offset
   }
 
   return start
 }
 
-/** tag/link 条目命中矩形回报（painter itemHits 命中来源，A3.3；其余类别不回报） */
+/** tag/link 条目命中矩形回报（painter itemHits 命中来源，A3.3；其余类别不回报）；
+    disabled 随条目回报（问题 7：isTruthyAttr 口径与取色 linkTextColorOf /
+    linkHoverColorOf、点击侧同源，避免 disabled 条目跨通道行为分裂） */
 function reportHitRect (onItemRect, item, index, x, y, width, height) {
   const kind = resolveItemKind(item)
 
   if (kind === 'tag' || kind === 'link') {
-    onItemRect({ kind, index, rect: { x, y, width, height } })
+    onItemRect({
+      kind,
+      index,
+      rect: { x, y, width, height },
+      disabled: isTruthyAttr(item.attrs?.disabled)
+    })
   }
 }
 
@@ -708,7 +836,9 @@ function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, 
   return Math.min(width, contentWidth)
 }
 
-function drawItem (ctx, item, x, centerY, { maxWidth, contentHeight, padding, theme, onImageLoad, measure }) {
+function drawItem (ctx, item, x, centerY, {
+  maxWidth, contentHeight, padding, theme, onImageLoad, measure, index, hoverItem
+}) {
   const kind = resolveItemKind(item)
 
   if (kind === 'check') return drawCheck(ctx, item, x, centerY, theme)
@@ -721,18 +851,46 @@ function drawItem (ctx, item, x, centerY, { maxWidth, contentHeight, padding, th
 
   if (kind == null) return
 
+  // link 条目悬停（问题 7）：当前条目命中 hoverItem 时色变 hover 谱系 + 下划线
+  // （tag/check/img 不悬停，tag 按 DOM 基准保持常态）
+  const hovered = kind === 'link' && isLinkEntryHovered(hoverItem, item, index)
+
   // link 条目色经 class 解析（mu-link--{color} → theme.colors 查表，评审 6 P1；
   // danger/disabled 同路径）；其余条目按普通文本绘制
   drawItemText(ctx, item, x, centerY, {
     maxWidth,
     theme,
     measure,
-    color: kind === 'link' ? linkTextColorOf(item, theme) : theme?.textColor
+    hovered,
+    color: kind === 'link'
+      ? (hovered ? linkHoverColorOf(item, theme) : linkTextColorOf(item, theme))
+      : theme?.textColor
   })
 }
 
-function drawItemText (ctx, item, x, centerY, { maxWidth, theme, measure, color }) {
-  const { text } = ellipsize({
+/** link 悬停下划线 y（问题 7，drawLinkEntry 与 drawItemText 共用单函数防公式
+    漂移）：anchorY = 该行 middle 基线 y；fontSize 14 → +7px，落在行框内 */
+function linkUnderlineY (anchorY, fontSize) {
+  return anchorY + Math.round(fontSize * 0.35) + 2
+}
+
+/** 行框高（--cell-line-height 快照缺省回退 18）：drawTextValue / drawArrayLines /
+    drawLinkItems 三路径同源 */
+function cellLineHeightOf (theme) {
+  return theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
+}
+
+/** link 条目悬停判定（问题 7，横排 drawItem 与竖排 drawLinkItems 共用防口径
+    漂移）：hoverItem 命中该条目且非 disabled（disabled 条目不悬停，与取色
+    disabled → muted 分支一致） */
+function isLinkEntryHovered (hoverItem, item, index) {
+  return hoverItem?.kind === 'link' &&
+    hoverItem.index === index &&
+    !isTruthyAttr(item.attrs?.disabled)
+}
+
+function drawItemText (ctx, item, x, centerY, { maxWidth, theme, measure, color, hovered }) {
+  const { text, width } = ellipsize({
     text: String(item.text ?? ''),
     font: cellFontOf(theme),
     maxWidth: Math.max(0, maxWidth),
@@ -746,6 +904,13 @@ function drawItemText (ctx, item, x, centerY, { maxWidth, theme, measure, color 
   ctx.textAlign = 'left'
   ctx.textBaseline = 'middle'
   ctx.fillText(text, x, centerY)
+
+  // link 悬停下划线（问题 7）：1px，宽 = 实绘文本宽（省略后），fillStyle 即 hover 色
+  if (hovered) {
+    const underlineWidth = Math.min(width, Math.max(0, maxWidth))
+
+    ctx.fillRect(x, linkUnderlineY(centerY, theme?.fontSize || FONT_SIZE_FALLBACK), underlineWidth, 1)
+  }
 }
 
 /** attrs 存在性判定（disabled / data-checked 与交互命中同口径：非 null 且非 false） */
@@ -840,8 +1005,9 @@ function drawTag (ctx, item, x, centerY, { maxWidth, theme, measure }) {
 
 // —— link 列竖排（条目列，A3.5） ——
 
-/** 单条 link 文本绘制：单行省略，返回绘制宽度（命中矩形用，省略后免二次测量） */
-function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure) {
+/** 单条 link 文本绘制：单行省略，返回绘制宽度（命中矩形用，省略后免二次测量）；
+    hovered（问题 7，色已由调用侧取 hover 谱系）时补画 1px 下划线（宽 = 实绘文本宽） */
+function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure, hovered) {
   const { text: display, width } = ellipsize({
     text,
     font: cellFontOf(theme),
@@ -857,42 +1023,58 @@ function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure) {
   ctx.textBaseline = 'middle'
   ctx.fillText(display, x, y)
 
+  if (hovered) {
+    ctx.fillRect(x, linkUnderlineY(y, theme?.fontSize || FONT_SIZE_FALLBACK), Math.min(width, Math.max(0, maxWidth)), 1)
+  }
+
   return Math.min(width, maxWidth)
 }
 
 /**
  * link 列竖排（数组每条一行，A3.5）：单条超宽省略；条目数 > maxItems 时第
- * maxItems 条显示 '...'（DOM dots 字面值，评审 6 P4）；条目块整体垂直居中
- * （R4b，与 wrap/数组路径同口径）；对象元素颜色经 mu-link--{color} class
- * 解析（link.js 产出，评审 6 P1）；条目矩形（含 dots）经 onItemRect 回报
- * （kind 'link'，disabled 过滤在交互侧与取色同口径）。
+ * maxItems 条显示 '...'（DOM dots 字面值，评审 6 P4）；首行槽位锚（问题 1
+ * centerY，原块整体居中口径作废，后续行 += lineHeight）；对象元素颜色经
+ * mu-link--{color} class 解析（link.js 产出，评审 6 P1）；悬停条目色变 +
+ * 下划线（问题 7）；条目矩形（含 dots）经 onItemRect 回报（kind 'link'，
+ * 携带 disabled，逐行命中矩形随 lineY 跟随槽位锚）。
  */
-function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect, measure }) {
+function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect, measure, centerY, hoverItem }) {
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0 || !items.length) return
 
-  const lineHeight = theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
+  const lineHeight = cellLineHeightOf(theme)
   const x = rect.x + padding
   const overflow = items.length > maxItems
   const shown = overflow ? items.slice(0, maxItems - 1) : items
-  const lineCount = Math.min(items.length, maxItems)
 
-  let y = multilineBlockTop(rect, lineCount * lineHeight, padding) + lineHeight / 2
+  let y = centerY
 
-  const report = (index, width) => {
+  const report = (index, width, disabled) => {
     onItemRect?.({
       kind: 'link',
       index,
-      rect: { x, y: y - lineHeight / 2, width, height: lineHeight }
+      rect: { x, y: y - lineHeight / 2, width, height: lineHeight },
+      disabled
     })
   }
 
   for (let i = 0; i < shown.length; i++) {
     const item = shown[i]
-    const width = drawLinkEntry(ctx, String(item.text ?? ''), x, y, contentWidth, theme, linkTextColorOf(item, theme), measure)
+    const hovered = isLinkEntryHovered(hoverItem, item, i)
+    const width = drawLinkEntry(
+      ctx,
+      String(item.text ?? ''),
+      x,
+      y,
+      contentWidth,
+      theme,
+      hovered ? linkHoverColorOf(item, theme) : linkTextColorOf(item, theme),
+      measure,
+      hovered
+    )
 
-    if (width > 0) report(i, width)
+    if (width > 0) report(i, width, isTruthyAttr(item.attrs?.disabled))
 
     y += lineHeight
   }
@@ -900,7 +1082,7 @@ function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect
   if (overflow) {
     const width = drawLinkEntry(ctx, ELLIPSIS, x, y, contentWidth, theme, theme?.primaryColor, measure)
 
-    if (width > 0) report(maxItems - 1, width)
+    if (width > 0) report(maxItems - 1, width, false)
   }
 }
 
@@ -913,8 +1095,9 @@ function colorNameOf (value, record) {
   return typeof name === 'string' && name ? name : 'primary'
 }
 
-/** progress 条：轨道 bgStrong 8px 圆角 4 + 填充 colors[color].color + 百分比文本（单行高） */
-function drawProgress (ctx, rect, content, { padding, theme, record, measure }) {
+/** progress 条：轨道 bgStrong 8px 圆角 4 + 填充 colors[color].color + 百分比文本
+    （单行高；垂直锚 = 槽位中心 centerY，问题 1 统一锚） */
+function drawProgress (ctx, rect, content, { padding, theme, record, measure, centerY }) {
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0) return
@@ -925,7 +1108,6 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure }) 
   const colorName = colorNameOf(option.color, record)
   const color = theme?.colors?.[colorName]?.color ?? theme?.primaryColor
   const showText = option.showText !== false
-  const centerY = rect.y + rect.height / 2
 
   let trackWidth = contentWidth
 
@@ -974,16 +1156,18 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure }) 
  * button 组（tag 同构轻量按钮：20px / padding 0 8px / 圆角 4 / 12px）：横排，
  * 底 colors[color].translucent + 边框/文字 colors[color].color；disabled 底
  * bgDisabled、文字 textColorMuted；超宽丢弃；条目矩形回报 itemHits
- * （kind 'button'，可点击命中），progress 不回报。
+ * （kind 'button'，携带 disabled，rect 保持整格语义），progress 不回报。
+ * rect = 绘制矩形（box 派生），cellRect = 整格矩形（命中回报 y/height 用）。
  */
-function drawButton (ctx, rect, buttons, { padding, theme, record, onItemRect, measure }) {
+function drawButton (ctx, rect, cellRect, buttons, {
+  padding, theme, record, onItemRect, measure, centerY, hoverItem
+}) {
   if (!Array.isArray(buttons) || !buttons.length) return
 
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0) return
 
-  const centerY = rect.y + rect.height / 2
   const rightBound = rect.x + rect.width - padding
   const font = tagFontOf(theme)
   const measureFn = measureOf(ctx, measure)
@@ -993,15 +1177,22 @@ function drawButton (ctx, rect, buttons, { padding, theme, record, onItemRect, m
   for (let i = 0; i < buttons.length; i++) {
     if (x >= rightBound) break
 
+    const button = buttons[i] ?? EMPTY_BUTTON
     const width = drawButtonPill(
-      ctx, buttons[i] ?? EMPTY_BUTTON, x, centerY, rightBound, record, theme, font, measureFn
+      ctx, button, x, centerY, rightBound, record, theme, font, measureFn,
+      hoverItem?.kind === 'button' && hoverItem.index === i
     )
 
     // ellipsize 空文本（caption 空或剩余宽度放不下）→ -1 哨兵，停止绘制后续
     // 按钮（等效原 `if (!text) break`；NaN 宽度经 `< 0` 判定不中断，分支一致）
     if (width < 0) break
 
-    onItemRect?.({ kind: 'button', index: i, rect: { x, y: rect.y, width, height: rect.height } })
+    onItemRect?.({
+      kind: 'button',
+      index: i,
+      rect: { x, y: cellRect.y, width, height: cellRect.height },
+      disabled: isTruthyAttr(button.disabled)
+    })
 
     x += width + padding
   }
@@ -1028,8 +1219,11 @@ function buttonTextOf (theme, colored, disabled) {
  * 单个 button pill 绘制：返回占用宽度（供命中矩形与游标推进）；
  * ellipsize 结果为空文本（caption 空或 maxWidth 耗尽）返回 -1 哨兵、不绘制。
  * 正常宽度恒 ≥ min(TAG_PADDING_X × 2, rightBound - x) > 0，与哨兵不重叠。
+ * hovered（问题 7）且非 disabled 时反转：底/边框 = colors[name].color ??
+ * primaryColor、文字 = bgNormal（cell-painters 不 import theme.js 的隔离约定下
+ * 唯一可用的强反馈表达，深浅主题均可读）；disabled 保持常态置灰。
  */
-function drawButtonPill (ctx, button, x, centerY, rightBound, record, theme, font, measureFn) {
+function drawButtonPill (ctx, button, x, centerY, rightBound, record, theme, font, measureFn, hovered) {
   const { text, width: textWidth } = ellipsize({
     text: String(button.caption ?? ''),
     font,
@@ -1044,17 +1238,22 @@ function drawButtonPill (ctx, button, x, centerY, rightBound, record, theme, fon
   const colored = theme?.colors?.[colorName]
   const width = Math.min(textWidth + TAG_PADDING_X * 2, rightBound - x)
   const y = centerY - TAG_HEIGHT / 2
+  const inverted = hovered && !disabled
 
   ctx.font = font
   ctx.beginPath()
   ctx.roundRect(x + 0.5, y + 0.5, width - 1, TAG_HEIGHT - 1, TAG_RADIUS)
-  ctx.fillStyle = buttonFillOf(theme, colored, disabled)
+  ctx.fillStyle = inverted
+    ? (colored?.color ?? theme?.primaryColor)
+    : buttonFillOf(theme, colored, disabled)
   ctx.fill()
-  ctx.strokeStyle = buttonBorderOf(theme, colored, disabled)
+  ctx.strokeStyle = inverted
+    ? (colored?.color ?? theme?.primaryColor)
+    : buttonBorderOf(theme, colored, disabled)
   ctx.lineWidth = 1
   ctx.stroke()
 
-  ctx.fillStyle = buttonTextOf(theme, colored, disabled)
+  ctx.fillStyle = inverted ? theme?.bgNormal : buttonTextOf(theme, colored, disabled)
   ctx.textAlign = 'left'
   ctx.textBaseline = 'middle'
   ctx.fillText(text, x + TAG_PADDING_X, centerY)

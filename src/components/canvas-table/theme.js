@@ -65,27 +65,39 @@ const BASE_COLOR_NAMES = [
 const SEMANTIC_COLOR_NAMES = ['primary', 'secondary', 'success', 'warning', 'danger']
 
 /**
- * 固定 17 色 map：每色 { color, translucent } 双形态，34 次 getComputedStyle
- * 在一次探针批次内完成。固定全量读取（不经列准备期收集）——记录级色
+ * 固定 17 色 map：每色 { color, translucent, hover } 三形态，39 次
+ * getComputedStyle 在一次探针批次内完成。固定全量读取（不经列准备期收集）——记录级色
  * （tag.color、(record)=> 配置）与条目级 color 在列准备期不可见，收集式
  * 动态 map 必然漏色；colors 随任何一次快照重读一并刷新，无过期契约。
  * 彩色读 --mu-{name}、语义读 --mu-{name}-color，translucent 双态全定义
  * （基础色 root.scss `.mu-root,.mu-light` 块、语义色明态 + .mu-dark 覆盖）。
+ * hover 为条目悬停浅色（问题 7 复刻 .mu-link:hover）：语义色取
+ * --mu-{name}-color-4（root.scss 0–9 谱系，readFont 同款原始串读取）——
+ * 不能走 readVar 的 color 求值路径：变量被自定义主题裁剪时该声明在计算值
+ * 阶段失效、回退为探针继承色（合法颜色串），无法区分「未定义」；原始串
+ * 未定义为 ''，据此回退同色。12 彩色无 -4 谱系（link.scss 先例），hover 同色。
  */
 function readColors (probe) {
   const colors = {}
 
   for (const name of BASE_COLOR_NAMES) {
+    const color = readVar(probe, `--mu-${name}`)
+
     colors[name] = {
-      color: readVar(probe, `--mu-${name}`),
-      translucent: readVar(probe, `--mu-${name}-translucent`)
+      color,
+      translucent: readVar(probe, `--mu-${name}-translucent`),
+      hover: color
     }
   }
 
   for (const name of SEMANTIC_COLOR_NAMES) {
+    const color = readVar(probe, `--mu-${name}-color`)
+    const hover = getComputedStyle(probe).getPropertyValue(`--mu-${name}-color-4`).trim()
+
     colors[name] = {
-      color: readVar(probe, `--mu-${name}-color`),
-      translucent: readVar(probe, `--mu-${name}-translucent`)
+      color,
+      translucent: readVar(probe, `--mu-${name}-translucent`),
+      hover: hover || color
     }
   }
 
@@ -213,7 +225,7 @@ export function createTextMeasurer () {
   })
 }
 
-/** colors map 相等：每色 color/translucent 严格相等（键数不一致防护） */
+/** colors map 相等：每色 color/translucent/hover 严格相等（键数不一致防护） */
 function colorsEqual (a, b) {
   if (!a || !b) return false
 
@@ -222,7 +234,11 @@ function colorsEqual (a, b) {
   if (names.length !== Object.keys(b).length) return false
 
   for (const name of names) {
-    if (a[name]?.color !== b[name]?.color || a[name]?.translucent !== b[name]?.translucent) {
+    if (
+      a[name]?.color !== b[name]?.color ||
+      a[name]?.translucent !== b[name]?.translucent ||
+      a[name]?.hover !== b[name]?.hover
+    ) {
       return false
     }
   }
@@ -232,7 +248,7 @@ function colorsEqual (a, b) {
 
 /**
  * 快照相等判定（mutation 变更抑制门控，verify-1 失败项 1）：20 固定字段逐键
- * 严格相等 + colors 每色 color/translucent 严格相等。滚动状态 class 翻转
+ * 严格相等 + colors 每色 color/translucent/hover 严格相等。滚动状态 class 翻转
  * （mu-canvas-table--y-scrolled 等）等与主题无关的观察根 attribute 变更，
  * 重读快照结果不变 → 不通知 onChange，壳侧行几何不被误 rebuild（已精算
  * 行高丢失、滚动条回缩的触发源）。

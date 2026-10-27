@@ -1,15 +1,19 @@
 /**
  * canvas-table 自检断言 — painter 模块（G2）。
  *
- * 覆盖（02-design.md G2 判据 + R1/人工 3 + 既有绘制回归）：在位 canvas（挂入文档的真实 canvas）
- * 渲染出完整表格（文字/网格线/表头/固定列/覆盖层）；lastPaint 统计字段有值且
- * rowCount 与窗口一致；变高行坐标（fake rowGeometry：viewportRowY/cellRectAt 高度、
- * 行带高度、单格脏区裁剪高 heightAt 化——03-review-5 问题 9）；itemHits (row,col)
- * 粒度收集（双 pass 不互覆 + dots '...' 条目 + 窗口裁剪，A3.3）；hover 可编辑格
- * 1px 主色内描边（A5.3 R1：EDITOR_GAP 4px 等距内缩 = 编辑浮层矩形）；行背景带
- * 宽度（R1/人工 3 意见 1：ΣcolWidths < 视口宽时充满至视口右缘）；另覆盖：选中/
- * 斑马纹底色、虚拟滚动窗口一致性、脏区调度（行横带/单格/表头/调宽竖带）、
- * createPainter 契约。
+ * 覆盖（02-design.md G2 判据 + 20261027 问题 1/3/5/6/9 + 既有绘制回归）：在位
+ * canvas（挂入文档的真实 canvas）渲染出完整表格（文字/网格线/表头/固定列/覆盖层）；
+ * lastPaint 统计字段有值且 rowCount 与窗口一致；变高行坐标（fake rowGeometry：
+ * viewportRowY/cellRectAt 高度、行带高度、单格脏区裁剪高 heightAt 化——03-review-5
+ * 问题 9）；itemHits (row,col) 粒度收集（双 pass 不互覆 + dots '...' 条目 + 窗口裁剪，
+ * A3.3）；hover 可编辑格 1px 主色整格内描边（20261027 问题 3：EDITOR_GAP 内缩作废，
+ * 描边与格线重叠 = 编辑浮层矩形）；行背景带宽度（R1/人工 3 意见 1：ΣcolWidths <
+ * 视口宽时充满至视口右缘）；树箭头 hover 主色与常态箭头同槽位 centerY（问题 1）；
+ * veil 编辑格跳绘 + itemHits 显式清空（问题 6）；rightInset 注入门控与 painter 路径
+ * 槽位锚（问题 1/9，stub ctx 记录 fillText）；编辑按钮加载中不半绘制、hoverMode none
+ * 整体抑制（问题 5，加载像素与点击回调归浏览器）；blankTail 末列右缘线（问题 9）；
+ * 另覆盖：选中/斑马纹底色、虚拟滚动窗口一致性、脏区调度（行横带/单格/表头/调宽
+ * 竖带）、createPainter 契约。
  *
  * 断言全部同步执行（runChecks 不支持异步）；img onload → invalidateCell 重绘联动为
  * rAF 异步路径，此处只断言窗口校验的同步返回值，端到端联动留 S1 验证。
@@ -17,9 +21,10 @@
  * 经 layout.js relayout 入参传入，不经 theme）。
  */
 import { drawRegion, cellRectAt, createPainter } from '@/components/canvas-table/painter.js'
-import { EDITOR_GAP } from '@/components/canvas-table/editor.js'
+import { editorButtonRectOf } from '@/components/canvas-table/editor.js'
+import { CELL_LINE_HEIGHT_FALLBACK } from '@/components/canvas-table/constants.js'
 import { relayout } from '@/components/canvas-table/layout.js'
-import { prepareColumn } from '@/components/canvas-table/cell-painters.js'
+import { prepareColumn, requestIconImage } from '@/components/canvas-table/cell-painters.js'
 import { createVariableRowGeometry, createUniformRowGeometry } from '@/components/canvas-table/row-geometry.js'
 import { withAlpha } from '@/components/canvas-table/theme.js'
 
@@ -69,8 +74,10 @@ const RAW_COLUMNS = [
 
 const COLUMNS = RAW_COLUMNS.map(col => prepareColumn(col, { placeholder: '--' }))
 
-// 列几何（relayout 求解结果，采样坐标依据）：
-// colWidths [60, 140, 100, 120, 50, 130]，colLefts [0, 60, 200, 300, 420, 470]，fixedWidth 60
+// 列几何（relayout 求解结果，采样坐标依据）：备注列未定宽 → text 类型弹性基线
+// 160（定宽列已占 470，容器 600 无余量可摊）：
+// colWidths [60, 140, 100, 120, 50, 160]，colLefts [0, 60, 200, 300, 420, 470]，
+// fixedWidth 60，Σ=630 > stickyWidth 600 → blankTail false（末列右缘无线）
 
 function makeRecords (count = 50) {
   return Array.from({ length: count }, (_, i) => ({
@@ -279,6 +286,87 @@ function assertLastPaint (actual, expected, label) {
   assertEqual(actual.colStart, expected.colStart, `${label}.colStart`)
   assertEqual(actual.colEnd, expected.colEnd, `${label}.colEnd`)
   assert(typeof actual.elapsed === 'number' && actual.elapsed >= 0, `${label}.elapsed 应为非负数`)
+}
+
+/** blendColor 产的 rgba 数组转回 css 串（供二次叠加混合的底层色入参） */
+function cssOf (px) {
+  return `rgba(${px[0]},${px[1]},${px[2]},${px[3] / 255})`
+}
+
+/** 单像素是否落在目标色的逐通道容差内（colorBoundsOf 谓词，alpha > 40 计入） */
+function isPixelNear (data, i, target, tolerance) {
+  return data[i + 3] > 40 &&
+    Math.abs(data[i] - target[0]) <= tolerance &&
+    Math.abs(data[i + 1] - target[1]) <= tolerance &&
+    Math.abs(data[i + 2] - target[2]) <= tolerance
+}
+
+/** 指定颜色邻近像素包围盒（树箭头主色 accent 三角判定用；tolerance 逐通道容差） */
+function colorBoundsOf (canvas, x0, x1, y0, y1, cssColor, tolerance = 60) {
+  const target = colorPixel(cssColor)
+  const data = regionData(canvas, x0, y0, x1 - x0, y1 - y0)
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  let maxY = -Infinity
+  let count = 0
+
+  for (let y = 0; y < y1 - y0; y++) {
+    for (let x = 0; x < x1 - x0; x++) {
+      const i = (y * (x1 - x0) + x) * 4
+
+      if (isPixelNear(data, i, target, tolerance)) {
+        count++
+        if (x < minX) minX = x
+        if (x > maxX) maxX = x
+        if (y < minY) minY = y
+        if (y > maxY) maxY = y
+      }
+    }
+  }
+
+  if (!count) return null
+
+  return {
+    centerX: x0 + (minX + maxX + 1) / 2,
+    centerY: y0 + (minY + maxY + 1) / 2
+  }
+}
+
+/** 记录 fillText 调用的 ctx 桩（rightInset 注入 / painter 路径槽位锚精确断言；
+    paintFull 全管线的其余 ctx 方法 no-op、measureText 按字符数估宽） */
+function makeRecordingCtx (fillTexts) {
+  return {
+    fillStyle: '',
+    strokeStyle: '',
+    lineWidth: 1,
+    font: '',
+    textAlign: 'left',
+    textBaseline: 'alphabetic',
+    globalCompositeOperation: 'source-over',
+    setTransform () {},
+    clearRect () {},
+    save () {},
+    restore () {},
+    beginPath () {},
+    rect () {},
+    clip () {},
+    closePath () {},
+    moveTo () {},
+    lineTo () {},
+    fill () {},
+    stroke () {},
+    roundRect () {},
+    fillRect () {},
+    strokeRect () {},
+    drawImage () {},
+    measureText (text) {
+      return { width: String(text).length * 8 + 2 }
+    },
+    fillText (text, x, y) {
+      fillTexts.push({ text: String(text), x, y })
+    }
+  }
 }
 
 export const checks = [
@@ -671,7 +759,9 @@ export const checks = [
       assertPixel(canvas, 300, 144, THEME.borderColorSoft, '变高行界网格线')
       assertPixel(canvas, 300, 140, THEME.bgStripe, '变高行底色延伸至 72px 带内')
 
-      // 单格脏区裁剪高 = heightAt + 1（旧实现 36+1 会把 y≥109 的重绘截掉）
+      // 单格脏区裁剪高 = heightAt + 1；采样区跟随问题 1 槽位锚墨迹：行 1 锚
+      // lineY = 72+1+8+9 = 90，fontSize 14 middle 基线墨迹 [83,97)，区域 y 80..110
+      // 完整覆盖（旧居中锚采样 (60,110,140,30) 与新墨迹不相交，差异不可见恒败）
       const baseCanvas = document.createElement('canvas')
 
       baseCanvas.width = W
@@ -685,7 +775,7 @@ export const checks = [
       const accepted = painter.invalidateCell(1, 1, { immediate: true, state })
 
       assert(accepted, '变高行单格应受理')
-      assertRegionDiffer(baseCanvas, canvas, 60, 110, 140, 30, '单格裁剪覆盖行 1 下半（裁剪高 = heightAt+1）')
+      assertRegionDiffer(baseCanvas, canvas, 60, 80, 140, 30, '单格重绘可见（区域覆盖行 1 槽位锚墨迹带）')
       assertRegionSame(baseCanvas, canvas, 60, 144, 140, 36, '行 2 不受影响')
 
       painter.dispose()
@@ -735,7 +825,9 @@ export const checks = [
       assert(tagGroup?.length === 2 && tagGroup[0].kind === 'tag', '固定列 tag 条目组应存在')
       assert(linkGroup?.length === 10, `滚动区 link 条目组应存在（12 条截断 10），实际 ${linkGroup?.length}`)
       assertEqual(linkGroup[9].kind + ':' + linkGroup[9].index, 'link:9', 'dots 条目（第 maxItems 项）应收集')
-      assertEqual(`${linkGroup[0].rect.x},${linkGroup[0].rect.y}`, '208,44', 'link 首条目矩形（格左+padding，行顶+padding）')
+      // 首行槽位锚（问题 1）：首行 lineY = 格顶 36 + 1 + 8 + 9 = 54，逐行命中
+      // 矩形 y = lineY − lineHeight/2 = 45（随槽位锚自动跟随，不回退到行顶+padding）
+      assertEqual(`${linkGroup[0].rect.x},${linkGroup[0].rect.y}`, '208,45', 'link 首条目矩形（格左+padding，首行槽位行框）')
       assertEqual(linkGroup[0].rect.height, 18, 'link 条目行高 = lineHeight')
 
       // 窗口裁剪：滚动后 itemHits 行集合 ⊆ 最新窗口（旧行删除，长滚不增长）
@@ -754,29 +846,45 @@ export const checks = [
     })
   },
   {
-    name: 'hover 编辑感知：可编辑格 1px 主色内描边（EDITOR_GAP 4px 等距内缩 = 编辑浮层矩形），非可编辑/关闭无描边',
+    name: 'hover 编辑感知：可编辑格 1px 主色整格内描边（与格线重叠，问题 3），非可编辑/关闭/none 无描边',
     fn: () => withCanvas(canvas => {
       const painter = createPainter({ canvas })
       const isEditable = col => col.field === 'name'
-      // blendColor 产 rgba 数组，二次混合需 css 串
-      const bandPixels = blendColor(THEME.hoverBg, THEME.bgNormal)
-      const bandCss = `rgba(${bandPixels[0]},${bandPixels[1]},${bandPixels[2]},${bandPixels[3] / 255})`
-      const row0Band = bandPixels
-      const stroke = blendColor(withAlpha(THEME.primaryColor, 0.45), bandCss)
-      // 名称格 cellRect = (60, 36, 140, 36)：描边路径 x = 60 + EDITOR_GAP + 0.5，
-      // 1px 描边覆盖 [64, 65) → 采样 cellRect.x + EDITOR_GAP 为整描边像素
-      const CELL_X = 60
-      const CELL_Y = 36
+      // 行 1（斑马 bgStripe）与行 0（bgNormal）的行带/描边混色期望；
+      // 行线/列线（borderColorSoft）上先叠 hover 带、再叠描边为三重混合
+      const row1Band = blendColor(THEME.hoverBg, THEME.bgStripe)
+      const row1Stroke = blendColor(withAlpha(THEME.primaryColor, 0.45), cssOf(row1Band))
+      const row0Band = blendColor(THEME.hoverBg, THEME.bgNormal)
+      const row0Stroke = blendColor(withAlpha(THEME.primaryColor, 0.45), cssOf(row0Band))
+      const lineBand = blendColor(THEME.hoverBg, THEME.borderColorSoft)
+      const lineStroke = blendColor(withAlpha(THEME.primaryColor, 0.45), cssOf(lineBand))
+      // 行 1 名称格 cellRect = (60, 72, 140, 36)：描边 = editorRectOf 恒等整格的
+      // 1px 内缘（strokeRect(x+0.5, y+0.5, w−1, h−1)），与格线直接重叠
+      const r1 = cellRectAt(makeState().layout, 1, 1)
 
-      assertEqual(`${cellRectAt(makeState().layout, 0, 1).x},${cellRectAt(makeState().layout, 0, 1).y}`, '60,36', '名称格夹具 rect')
+      assertEqual(`${r1.x},${r1.y},${r1.width},${r1.height}`, '60,72,140,36', '名称格夹具 rect（行 1）')
 
-      // hover 行 0 名称格（可编辑）：描边 0.45 主色叠 hover 行带（左缘/顶缘均内缩 EDITOR_GAP）
-      painter.draw(makeState({ hover: { row: 0, col: 1 }, editable: true, isCellEditableFn: isEditable }))
-      assertPixel(canvas, CELL_X + EDITOR_GAP, 50, stroke, '可编辑格描边（左缘内缩 4px）', 2)
-      assertPixel(canvas, 100, CELL_Y + EDITOR_GAP, stroke, '描边顶边内缩 4px', 2)
-      // 描边外缘距格缘 = EDITOR_GAP：格缘侧（x−1 / y−1）为纯行带无描边
-      assertPixel(canvas, CELL_X + EDITOR_GAP - 1, 50, row0Band, '描边外缘距左格缘 4px', 2)
-      assertPixel(canvas, 100, CELL_Y + EDITOR_GAP - 1, row0Band, '描边外缘距顶格缘 4px', 2)
+      // hover 行 1 名称格（可编辑，r≥1）：五边逐点核对（20261027 问题 3 终稿口径）
+      painter.draw(makeState({ hover: { row: 1, col: 1 }, editable: true, isCellEditableFn: isEditable }))
+      // 左缘 (60, 90)：描边叠 hover 行带（本格左缘无列线，前列右缘线在 x=59）
+      assertPixel(canvas, 60, 90, row1Stroke, '左缘描边贴格缘', 2)
+      // 顶缘 (130, 72)：与画在本格顶的行线（r≥1）重叠 → 三重混合
+      assertPixel(canvas, 130, 72, lineStroke, '顶缘描边与行线重叠', 2)
+      // 右缘 (199, 90)：与画在本格右缘的列线重叠
+      assertPixel(canvas, 199, 90, lineStroke, '右缘描边与列线重叠', 2)
+      // 底缘 (130, 107)：行线画在下一行顶 y=108（本格外）→ 描边叠行带
+      assertPixel(canvas, 130, 107, row1Stroke, '底缘描边贴格缘', 2)
+      // 内邻 (61, 90)/(130, 73)：无描边像素（= hover 行带色；采样避开文字墨迹）
+      assertPixel(canvas, 61, 90, row1Band, '内邻左无描边', 2)
+      assertPixel(canvas, 130, 73, row1Band, '内邻顶无描边', 2)
+      // 外邻 (59, 90)：前列右缘列线叠 hover 带（描边不外溢出格缘）
+      assertPixel(canvas, 59, 90, lineBand, '外邻为前列右缘列线叠行带', 2)
+
+      // 行 0 顶缘：格内无行线（表头底边框在其上方相邻）→ 描边叠行带；
+      // header 底边框（y=35）不被描边覆盖
+      drawRegion(canvas.getContext('2d'), makeState({ hover: { row: 0, col: 1 }, editable: true, isCellEditableFn: isEditable }), null)
+      assertPixel(canvas, 130, 36, row0Stroke, '行 0 顶缘描边（格内无行线）', 2)
+      assertPixel(canvas, 130, 35, THEME.borderColorSoft, 'header 底边框不被描边覆盖')
 
       // 同 hover 落在不可编辑列（金额 col 3）：仅行带无描边
       drawRegion(canvas.getContext('2d'), makeState({ hover: { row: 0, col: 3 }, editable: true, isCellEditableFn: isEditable }), null)
@@ -784,15 +892,300 @@ export const checks = [
 
       // editable=false：无描边
       drawRegion(canvas.getContext('2d'), makeState({ hover: { row: 0, col: 1 }, isCellEditableFn: isEditable }), null)
-      assertPixel(canvas, CELL_X + EDITOR_GAP, 50, row0Band, 'editable 关闭无描边', 2)
+      assertPixel(canvas, 60, 50, row0Band, 'editable 关闭无描边', 2)
 
       // hoverMode none：无高亮无描边
       drawRegion(canvas.getContext('2d'), makeState({ hover: { row: 0, col: 1 }, editable: true, isCellEditableFn: isEditable, hoverMode: 'none' }), null)
-      assertPixel(canvas, CELL_X + EDITOR_GAP, 50, THEME.bgNormal, 'hoverMode=none 无描边', 2)
+      assertPixel(canvas, 60, 50, THEME.bgNormal, 'hoverMode=none 无描边（无行带）')
 
       painter.dispose()
 
-      return '描边随 editable+isCellEditableFn 开合、四周内缩 4px（= 浮层矩形），hoverMode=none 抑制'
+      return '描边随 editable+isCellEditableFn 开合、整格内缘与格线重叠（= 浮层矩形），hoverMode=none 抑制'
+    })
+  },
+  {
+    name: '树箭头 hover 主色 accent：与常态箭头同槽位 centerY（row 0 与 r≥1 变高行两态，问题 1）',
+    fn: () => withCanvas(canvas => {
+      const painter = createPainter({ canvas })
+      const treeColumns = [
+        prepareColumn({ field: 'id', type: 'rec_no', width: 60 }),
+        prepareColumn({ field: 'name', caption: '名称', treeNode: true, width: 140 })
+      ]
+      const heights = Array.from({ length: 50 }, (_, i) => (i === 1 ? 60 : 36))
+      const geometry = createVariableRowGeometry({ initialHeights: heights })
+      const records = makeRecords()
+      const layout = relayout({
+        columns: treeColumns,
+        rowCount: records.length,
+        containerWidth: W,
+        containerHeight: H,
+        fixedLeftColumns: FIXED_COLS,
+        rowHeight: ROW_HEIGHT,
+        headHeight: HEAD_HEIGHT,
+        scrollTop: 0,
+        rowGeometry: geometry
+      })
+      const flatInfo = { levels: [0, 0], hasChildren: [true, true] }
+      const base = { ...makeState({ records }), layout, columns: treeColumns, flatInfo }
+      // 箭头槽（level 0：x = 格左 60 + padding 8，三角 x ∈ [70,78]）：采样区
+      // x ∈ [64,80) 避开树列文字（文字起 x = 84）
+      const AX0 = 64
+      const AX1 = 80
+
+      // 无 hover：常态三角 textColor；槽位 centerY = viewportRowY + 1 + 8 + 9
+      painter.draw(base)
+
+      // row 0（r=0，h=36）：centerY = 36 + 18 = 54
+      const normal0 = darkBoundsOf(canvas, AX0, AX1, 44, 64)
+      assert(normal0 != null, 'row 0 常态树箭头应有暗像素')
+      assert(Math.abs(normal0.centerY - 54) <= 1, `row 0 常态箭头中心 ${normal0.centerY} 应 = 槽位锚 54（±1px）`)
+
+      // row 1（r≥1，超高行 h=60）：centerY = 72 + 18 = 90
+      // （改前 accent 用 heightAt/2 = 102，与常态 90 错位 12px）
+      const normal1 = darkBoundsOf(canvas, AX0, AX1, 80, 100)
+      assert(normal1 != null, 'row 1 常态树箭头应有暗像素')
+      assert(Math.abs(normal1.centerY - 90) <= 1, `row 1 常态箭头中心 ${normal1.centerY} 应 = 槽位锚 90（±1px）`)
+
+      // hover 同格：覆盖层主色 accent 三角叠画，与常态三角同 y（无 0.5px 错位）
+      drawRegion(canvas.getContext('2d'), { ...base, hover: { row: 1, col: 1 } }, null)
+      const accent1 = colorBoundsOf(canvas, AX0, AX1, 80, 100, THEME.primaryColor)
+      assert(accent1 != null, 'row 1 hover 主色 accent 三角应有像素')
+      assert(Math.abs(accent1.centerY - 90) <= 1, `row 1 accent 中心 ${accent1.centerY} 应 = 槽位锚 90（±1px）`)
+      assert(Math.abs(accent1.centerY - normal1.centerY) <= 1, `row 1 accent ${accent1.centerY} 与常态 ${normal1.centerY} 应同 y（±1px）`)
+
+      drawRegion(canvas.getContext('2d'), { ...base, hover: { row: 0, col: 1 } }, null)
+      const accent0 = colorBoundsOf(canvas, AX0, AX1, 44, 64, THEME.primaryColor)
+      assert(accent0 != null, 'row 0 hover 主色 accent 三角应有像素')
+      assert(Math.abs(accent0.centerY - 54) <= 1, `row 0 accent 中心 ${accent0.centerY} 应 = 槽位锚 54（±1px）`)
+      assert(Math.abs(accent0.centerY - normal0.centerY) <= 1, `row 0 accent ${accent0.centerY} 与常态 ${normal0.centerY} 应同 y（±1px）`)
+
+      painter.dispose()
+
+      return `常态/accent centerY：row 0 = ${normal0.centerY}/${accent0.centerY}（槽位 54）、row 1 = ${normal1.centerY}/${accent1.centerY}（槽位 90）`
+    })
+  },
+  {
+    name: 'veil：editingCell 命中格跳过内容绘制、行背景照画并显式清空本格 itemHits（问题 6）',
+    fn: () => withCanvas(canvas => {
+      const painter = createPainter({ canvas })
+      // 条目夹具（tag 固定列 + link 滚动列）：veil 格有可观测的条目内容与命中组
+      const itemColumns = [
+        prepareColumn({ field: 'tagList', caption: '标签', type: 'tag', tags: r => r.tagList, width: 200 }),
+        prepareColumn({ field: 'links', caption: '链接', type: 'link', width: 300 })
+      ]
+      const records = Array.from({ length: 50 }, (_, i) => ({
+        tagList: [{ caption: `甲${i}`, color: 'success' }, { caption: '乙' }],
+        links: Array.from({ length: 12 }, (_row, k) => `链接${i}-${k}`)
+      }))
+      const itemHits = new Map()
+      const layout = relayout({
+        columns: itemColumns,
+        rowCount: records.length,
+        containerWidth: W,
+        containerHeight: H,
+        fixedLeftColumns: 1,
+        rowHeight: ROW_HEIGHT,
+        headHeight: HEAD_HEIGHT,
+        scrollTop: 0,
+        rowGeometry: createUniformRowGeometry({ rowHeight: ROW_HEIGHT, rowCount: records.length })
+      })
+      const state = {
+        ...makeState({ records, striped: false }),
+        layout,
+        columns: itemColumns,
+        itemHits,
+        editingCell: { row: 0, col: 1 }
+      }
+      const cell = cellRectAt(layout, 0, 1)
+
+      assertEqual(`${cell.x},${cell.y},${cell.width},${cell.height}`, '200,36,300,36', 'veil 格夹具 rect')
+
+      // 对照帧：同一 state 不开 veil（link 文字照绘）
+      const controlCanvas = document.createElement('canvas')
+
+      controlCanvas.width = W
+      controlCanvas.height = H
+      createPainter({ canvas: controlCanvas }).draw({ ...state, editingCell: null })
+
+      painter.draw(state)
+
+      // veil 格无内容墨迹（link 文字跳绘），行背景照画；与对照帧有差异
+      assert(darkBoundsOf(canvas, cell.x + 4, cell.x + cell.width - 4, cell.y + 4, cell.y + 32) == null, 'veil 格应无内容墨迹')
+      assertPixel(canvas, 300, 50, THEME.bgNormal, 'veil 格行背景照画')
+      assertRegionDiffer(controlCanvas, canvas, cell.x, cell.y, cell.width, cell.height, 'veil 格与对照帧')
+
+      // 非 veil 格照常绘制：同行固定列 tag、下一行 link
+      assert(darkBoundsOf(canvas, 8, 60, 44, 64) != null, '同行固定列 tag 条目照常绘制')
+      assertHasDarkPixels(canvas, 208, 80, 100, 20, '下一行 link 文字照常绘制')
+
+      // 命中组：veil 格显式清空为空数组（非「不写入」——absent 即残留旧组可点中），
+      // 其他格照常收集
+      const rowHits = itemHits.get(0)
+
+      assert(Array.isArray(rowHits?.get(1)) && rowHits.get(1).length === 0, 'veil 格 itemHits 组应显式清空为 []')
+      assert(rowHits?.get(0)?.length === 2, '固定列 tag 条目组照常收集（2 条）')
+      assert(itemHits.get(1)?.get(1)?.length === 10, '非 veil 行 link 条目组照常收集（10 条含 dots）')
+
+      painter.dispose()
+
+      return 'veil 格跳绘 + 命中组清空为 []、行背景照画、非 veil 格内容与命中组不受影响'
+    })
+  },
+  {
+    name: 'rightInset 注入与 painter 路径槽位锚：非末列/blankTail 列线门控（stub ctx 记录 fillText，问题 1/9）',
+    fn: () => {
+      // 3 列全定宽（Σ=330）且后两列 center 对齐：last 列 rightInset 随 blankTail
+      // 与 gridlines 门控变化，center 锚 x 可精确断言
+      const centerColumns = [
+        prepareColumn({ field: 'id', type: 'rec_no', width: 60 }),
+        prepareColumn({ field: 'name', caption: '名称', width: 140, align: 'center' }),
+        prepareColumn({ field: 'memo', caption: '备注', width: 130, align: 'center' })
+      ]
+      const records = [
+        { id: 1, name: '货品 0', memo: 'M0' },
+        { id: 2, name: '货品 1', memo: 'M1' }
+      ]
+      const geometry = createUniformRowGeometry({ rowHeight: ROW_HEIGHT, rowCount: records.length })
+      const makeLayout = containerWidth => relayout({
+        columns: centerColumns,
+        rowCount: records.length,
+        containerWidth,
+        containerHeight: H,
+        fixedLeftColumns: FIXED_COLS,
+        rowHeight: ROW_HEIGHT,
+        headHeight: HEAD_HEIGHT,
+        scrollTop: 0,
+        rowGeometry: geometry
+      })
+      const fillTextAt = state => {
+        const calls = []
+
+        drawRegion(makeRecordingCtx(calls), state, null)
+
+        return calls
+      }
+      const rowText = (calls, text, y) => calls.filter(call => call.text === text && call.y === y)
+
+      // 无空白：stickyWidth = contentWidth = 330 → 末列 rightInset 0
+      const tight = { ...makeState({ columns: centerColumns, records }), layout: makeLayout(330) }
+
+      assertEqual(tight.layout.stickyWidth, 330, '紧夹具 stickyWidth')
+      assertEqual(tight.layout.contentWidth, 330, '紧夹具 contentWidth（无空白）')
+
+      let calls = fillTextAt(tight)
+
+      assertEqual(rowText(calls, 'M0', 54)[0]?.x, 200 + 65, '无空白末列 center 锚不扣列线')
+      assertEqual(rowText(calls, '货品 0', 54)[0]?.x, 60 + 69.5, '非末列 center 锚扣右缘列线 1px')
+
+      // blankTail：stickyWidth 600 > contentWidth 330 → 末列右缘画线，center 锚同扣 1px
+      const blank = { ...makeState({ columns: centerColumns, records }), layout: makeLayout(600) }
+
+      assert(blank.layout.stickyWidth > blank.layout.contentWidth, '前置：宽夹具存在空白区（blankTail）')
+
+      calls = fillTextAt(blank)
+      assertEqual(rowText(calls, 'M0', 54)[0]?.x, 200 + 64.5, 'blankTail 末列 center 锚扣右缘列线 1px')
+
+      // gridlines row：列线门控 → rightInset 归 0（末列与非末列同）
+      calls = fillTextAt({ ...blank, gridlines: 'row' })
+      assertEqual(rowText(calls, 'M0', 54)[0]?.x, 200 + 65, 'row 模式末列 rightInset 门控归 0')
+      assertEqual(rowText(calls, '货品 0', 54)[0]?.x, 60 + 70, 'row 模式非末列 rightInset 门控归 0')
+
+      // painter 路径垂直锚 = 行顶常量 1 + padding 8 + lineHeight 18/2（row 0 → 54、
+      // row 1 → 72 + 18 = 90；ROW_TOP_INSET 内建于 cell-painters，painter 不传）
+      assertEqual(rowText(calls, 'M0', 54).length, 1, 'row 0 槽位锚 y=54 恰一次')
+      assertEqual(rowText(calls, 'M1', 90)[0]?.x, 200 + 65, 'row 1 center 锚（row 模式不扣列线）')
+
+      return 'rightInset 门控（非末列/blankTail/gridlines row）与 painter 路径槽位锚 y=54/90 逐值正确'
+    }
+  },
+  {
+    name: '编辑按钮绘制调用路径：hover 态加载中不半绘制、hoverMode=none 整体抑制（问题 5，像素归浏览器）',
+    fn: () => withCanvas(canvas => {
+      const painter = createPainter({ canvas })
+      // SVG 串每次运行唯一（imageCache 模块级跨检查持存，固定串会命中历史缓存条目
+      // 使「加载中」前提失效）
+      const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">' +
+        `<path d="M3 17v4h4l11-11-4-4L3 17z" fill="currentColor" data-stamp="${Date.now()}"/></svg>`
+      const buttonColumns = RAW_COLUMNS
+        .map(col => (col.field === 'amount' ? { ...col, editorButton: { icon } } : col))
+        .map(col => prepareColumn(col, { placeholder: '--' }))
+      const hover = { row: 0, col: 3 }
+      // 按钮区矩形（editor.js 单一事实源）：金额格 (300, 36, 120, 36) → 区 (388, 42) 24×24
+      // （centerY = 格顶 36 + 1 + 8 + 9 = 54，与文字锚同槽位式）
+      const area = editorButtonRectOf(cellRectAt(makeState({ columns: buttonColumns }).layout, 0, 3), {
+        padding: THEME.cellPadding,
+        lineHeight: CELL_LINE_HEIGHT_FALLBACK
+      })
+
+      assertEqual(`${area.x},${area.y},${area.width},${area.height}`, '388,42,24,24', '编辑按钮区矩形')
+
+      // 同步绘制帧内图标必为 loading（data URL onload 异步），证明「不半绘制」前提
+      assertEqual(requestIconImage(icon, THEME.textColor).status, 'loading', '首帧图标加载中')
+
+      // 帧 A：icon 首次请求（loading，不得 drawImage）；帧 B：无 editorButton 同 hover
+      // 对照（按钮区 hover 带底色对齐，隔离「半绘制」单变量）
+      painter.draw(makeState({ columns: buttonColumns, hover }))
+      const controlCanvas = document.createElement('canvas')
+
+      controlCanvas.width = W
+      controlCanvas.height = H
+      createPainter({ canvas: controlCanvas }).draw(makeState({ hover }))
+
+      assertRegionSame(controlCanvas, canvas, area.x, area.y, area.width, area.height, '加载中按钮区不半绘制')
+
+      // hoverMode none：paintOverlay 整体抑制（含编辑按钮），与真·无 hover 帧整幅一致
+      // （对照帧须 makeState({})——makeState({ hover }) 是整行高亮带，并非「无 hover 帧」）
+      const plainCanvas = document.createElement('canvas')
+
+      plainCanvas.width = W
+      plainCanvas.height = H
+      createPainter({ canvas: plainCanvas }).draw(makeState({}))
+
+      drawRegion(canvas.getContext('2d'), makeState({ columns: buttonColumns, hover, hoverMode: 'none' }), null)
+      assertRegionSame(plainCanvas, canvas, 0, 0, W, H, 'hoverMode=none 与无 hover 帧整幅一致（编辑按钮一并抑制）')
+
+      painter.dispose()
+
+      return `按钮区 (${area.x},${area.y}) 加载中无半绘制、hoverMode=none 抑制；加载像素与点击回调归浏览器`
+    })
+  },
+  {
+    name: 'blankTail 末列线：Σ < 视口宽时表体段与表头段末列右缘 1px，row 模式与无空白不画（问题 9）',
+    fn: () => withCanvas(canvas => {
+      const painter = createPainter({ canvas })
+      // 窄列夹具：4 列全定宽 Σ=350 < W=600 → blankTail；固定 1 列
+      const narrow = [
+        { field: 'id', type: 'rec_no', width: 50 },
+        { field: 'name', caption: '名称', width: 120 },
+        { field: 'status', caption: '状态', type: 'enum', mappings: { a: '启用', b: '停用' }, width: 100 },
+        { field: 'amount', caption: '金额', type: 'currency', width: 80 }
+      ].map(col => prepareColumn(col, { placeholder: '--' }))
+      const narrowState = makeState({ columns: narrow })
+
+      assertEqual(narrowState.layout.colWidths.reduce((a, b) => a + b, 0), 350, '窄列夹具 ΣcolWidths')
+      assertEqual(narrowState.layout.contentWidth, 350, '窄列夹具 contentWidth')
+      assert(narrowState.layout.stickyWidth > narrowState.layout.contentWidth, '前置：存在空白区（blankTail）')
+
+      // 末列右缘内 1px：colLefts[3] + width − 1 = 270 + 80 − 1 = 349（表体段
+      // y ∈ [36, 252)、表头段 y ∈ [0, 35)），色 = borderColorSoft（列线同口径）
+      painter.draw(narrowState)
+      assertPixel(canvas, 349, 100, THEME.borderColorSoft, '表体段末列右缘线')
+      assertPixel(canvas, 349, 200, THEME.borderColorSoft, '表体段末列右缘线（行 4）')
+      assertPixel(canvas, 349, 4, THEME.borderColorSoft, '表头段末列右缘线')
+
+      // gridlines row：列线门控 → 表体与表头段均不画
+      drawRegion(canvas.getContext('2d'), makeState({ columns: narrow, gridlines: 'row' }), null)
+      assertPixelNot(canvas, 349, 100, THEME.borderColorSoft, 'row 模式表体段末列线不画')
+      assertPixelNot(canvas, 349, 4, THEME.borderColorSoft, 'row 模式表头段末列线不画')
+
+      // 无空白（默认夹具 Σ=630 > stickyWidth 600）：末列右缘无线（现状维持）
+      drawRegion(canvas.getContext('2d'), makeState(), null)
+      assertPixelNot(canvas, 599, 100, THEME.borderColorSoft, '无空白表体段末列无线')
+      assertPixelNot(canvas, 599, 4, THEME.borderColorSoft, '无空白表头段末列无线')
+
+      painter.dispose()
+
+      return 'blankTail 表体+表头末列右缘 1px（borderColorSoft）；row 模式与无空白两态不画'
     })
   },
   {

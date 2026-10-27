@@ -1,10 +1,12 @@
 /**
- * canvas-table 自检断言 — theme 模块（G1-b）。
+ * canvas-table 自检断言 — theme 模块（G1-b，G2-6 扩 hover）。
  *
  * 覆盖 02-design.md G1-b 判据：快照 20 固定字段计数（14 色 + 字号/字体 + 4 尺寸，
  * 含 bgStrong/textColorMuted/bgDisabled；controlHeight 已随 C3 死代码清理移除）+ colors 固定
- * 17 色形态（12 彩色 + 5 语义，gray 不入，每色 color+translucent 双形态）+
- * bgStrong 半透明形态；另含 readVar/readFont/readPx 输出合法颜色计算值与 px 数、
+ * 17 色形态（12 彩色 + 5 语义，gray 不入，每色 color+translucent+hover 三形态）+
+ * bgStrong 半透明形态 + hover 悬停色专项（02-design.md A7：语义色取
+ * --mu-{name}-color-4 原始串且 ≠ color、彩色同色、未定义变量回退同色）；
+ * 另含 readVar/readFont/readPx 输出合法颜色计算值与 px 数、
  * withAlpha、测量缓存容量上限、createTextMeasurer 测量工厂、观察根解析
  * （closest('.mu-root') 与组件根）、watcher 接线（refresh 同步通知 / destroy 清理）、
  * snapshotsEqual 快照相等判定（mutation 变更抑制门控，verify-1 失败项 1 回归）。
@@ -300,7 +302,7 @@ export const checks = [
       })
   },
   {
-    name: 'readSnapshot.colors：固定 17 色（12 彩色 + 5 语义，gray 不入）双形态',
+    name: 'readSnapshot.colors：固定 17 色（12 彩色 + 5 语义，gray 不入）三形态',
     fn: () =>
       withFixture('', fixture => {
         const probe = createProbe(fixture)
@@ -321,7 +323,7 @@ export const checks = [
         for (const name of expected) {
           const entry = colors[name]
 
-          assert(entry && typeof entry === 'object', `colors.${name} 应为 { color, translucent } 对象`)
+          assert(entry && typeof entry === 'object', `colors.${name} 应为 { color, translucent, hover } 对象`)
           assertValidCssColor(entry.color, `colors.${name}.color`)
           assertValidCssColor(entry.translucent, `colors.${name}.translucent`)
 
@@ -331,10 +333,77 @@ export const checks = [
             parsed && parsed.a < 1,
             `colors.${name}.translucent 应为半透明（alpha < 1），实际「${entry.translucent}」`
           )
+
+          // hover（问题 7 扩展）：17 色恒为非空合法色形态（语义 -4 原始串 / 彩色同色，
+          // 分支细节归下一条 hover 专项断言）
+          assert(
+            typeof entry.hover === 'string' && entry.hover.length > 0,
+            `colors.${name}.hover 应为非空字符串，实际「${entry.hover}」`
+          )
+          assertValidCssColor(entry.hover, `colors.${name}.hover`)
         }
 
         probe.remove()
-        return '17 色（12 彩 + 5 语义）color+translucent 双形态、gray 不入、translucent 半透明'
+        return '17 色（12 彩 + 5 语义）color+translucent+hover 三形态、gray 不入、translucent 半透明'
+      })
+  },
+  {
+    name: 'readSnapshot.colors：hover 悬停色（语义 -4 原始串且 ≠ color、彩色同色、未定义回退同色）',
+    fn: () =>
+      withFixture('', fixture => {
+        const probe = createProbe(fixture)
+        const { colors } = readSnapshot(probe)
+
+        // 语义色：hover = --mu-{name}-color-4 原始串（readFont 同款 getPropertyValue
+        // 读取，非 readVar 求值——变量被自定义主题裁剪时须能区分「未定义」）；
+        // root.scss 0–9 谱系下 -4 为浅色，≠ 基础色（link:hover 变浅色的前提），
+        // 且为具体色值（src/colors.js 产物），canvas fillStyle 可直接消费
+        for (const name of EXPECTED_SEMANTIC_COLORS) {
+          const entry = colors[name]
+          const raw = getComputedStyle(probe).getPropertyValue(`--mu-${name}-color-4`).trim()
+
+          assert(raw.length > 0, `夹具前提：--mu-${name}-color-4 原始串应为非空（.mu-root 谱系）`)
+          assert(
+            entry.hover === raw,
+            `colors.${name}.hover 应取 --mu-${name}-color-4 原始串「${raw}」，实际「${entry.hover}」`
+          )
+          assert(
+            entry.hover !== entry.color,
+            `colors.${name}.hover 应 ≠ color（悬停变浅色），实际两者同为「${entry.hover}」`
+          )
+          assertValidCssColor(entry.hover, `colors.${name}.hover`)
+        }
+
+        // 彩色 12 色：无 -4 谱系（link.scss 先例），hover === color（同色仅下划线）
+        for (const name of EXPECTED_BASE_COLORS) {
+          assert(
+            colors[name].hover === colors[name].color,
+            `colors.${name}.hover 应与 color 同色，实际「${colors[name].hover}」≠「${colors[name].color}」`
+          )
+        }
+
+        // 未定义回退：--mu-primary-color-4 置 initial（guaranteed-invalid，
+        // getPropertyValue 得 ''，模拟自定义主题裁剪该变量）→ readColors 按
+        // raw || color 回退同色，悬停色不会落成探针继承色（黑色）
+        const fallbackHost = document.createElement('div')
+        fallbackHost.style.cssText = '--mu-primary-color-4: initial;'
+        fixture.appendChild(fallbackHost)
+
+        const fallbackProbe = createProbe(fallbackHost)
+        const fallbackColors = readSnapshot(fallbackProbe).colors
+
+        assert(
+          getComputedStyle(fallbackProbe).getPropertyValue('--mu-primary-color-4').trim() === '',
+          '夹具前提：--mu-primary-color-4 置 initial 后原始串应为空'
+        )
+        assert(
+          fallbackColors.primary.hover === fallbackColors.primary.color,
+          `--mu-{name}-color-4 未定义时 hover 应回退同色，实际「${fallbackColors.primary.hover}」≠「${fallbackColors.primary.color}」`
+        )
+
+        probe.remove()
+        fallbackProbe.remove()
+        return '语义 5 色 -4 原始串且 ≠ color / 彩色 12 色同色 / 未定义回退同色'
       })
   },
   {
@@ -431,7 +500,7 @@ export const checks = [
           '固定字段（fontSize）变化应判不等'
         )
 
-        // colors 维度：单色 color 变化判不等；浅拷贝同色值相等；键集合不一致防护
+        // colors 维度：单色 color/translucent/hover 变化判不等；浅拷贝同色值相等；键集合不一致防护
         const singleColorChanged = {
           ...a,
           colors: { ...a.colors, primary: { ...a.colors.primary, color: 'rgb(1, 2, 3)' } }
@@ -446,6 +515,15 @@ export const checks = [
 
         assert(!snapshotsEqual(a, translucentChanged), 'colors 单色 translucent 变化应判不等')
 
+        // hover 维度（问题 7）：换肤改变 --mu-{name}-color-4 时 hover 变化必须被
+        // 判不等，否则 mutation 门控抑制 onChange、换肤不触发重绘
+        const hoverChanged = {
+          ...a,
+          colors: { ...a.colors, danger: { ...a.colors.danger, hover: 'rgb(9, 9, 9)' } }
+        }
+
+        assert(!snapshotsEqual(a, hoverChanged), 'colors 单色 hover 变化应判不等（换肤触发重绘的前提）')
+
         const shallowCopied = { ...a, colors: { ...a.colors } }
 
         assert(snapshotsEqual(a, shallowCopied), 'colors 浅拷贝（同色值）应相等')
@@ -459,7 +537,7 @@ export const checks = [
         assert(!snapshotsEqual(a, missingColors), '键集合不一致（缺 colors）应判不等')
 
         probe.remove()
-        return '同环境相等 / 同引用 / 空值 / fontSize / colors 单色两维度 / 浅拷贝 / 键集合'
+        return '同环境相等 / 同引用 / 空值 / fontSize / colors 单色三维度（color/translucent/hover）/ 浅拷贝 / 键集合'
       })
   },
   {

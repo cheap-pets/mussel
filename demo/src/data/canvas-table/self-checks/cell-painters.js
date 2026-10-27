@@ -12,15 +12,26 @@
  * color/pill/flat 落 class，DOM 版回归，S1 续做）；tag 17 色、button/disabled、
  * 树形列缩进箭头。
  *
+ * 问题 1/5/7（G2-3，A1/A5/A7）：槽位锚断言组（首行 y = ROW_TOP_INSET + padding +
+ * lineHeight/2 不随行高变、水平 center 扣 rightInset、超高行跨列首行同高——
+ * decisions 检查点-A1判据：直调残差 0（r=0 / 格线不含 row）/ 0.5px（r≥1 且含 row，
+ * 授权 ≤0.5px））；requestIconImage（SVG currentColor 着色 → data URL、同参复用
+ * 缓存条目、非 SVG src 直通）；linkHoverColorOf 分支；link 悬停两路径色变 +
+ * fillRect 下划线（recordingCtx 增记 fillRect/stroke）；button pill 悬停反转三色；
+ * itemHits 条目 disabled 字段。
+ *
  * 断言全部同步执行（runChecks 不支持异步）；img 加载完成后的重绘联动属 painter
  * 集成行为，此处只断言加载状态、crossOrigin 与未加载前空格（data URI 每次运行
- * 生成不同像素，规避页内重跑时序竞争——G1-b 遗留）。
+ * 生成不同像素，规避页内重跑时序竞争——G1-b 遗留；requestIconImage 的 SVG 串
+ * 同理逐次唯一）。
  */
 import {
   prepareColumn,
   resolveCellContent,
   drawCell,
-  getImageEntry
+  getImageEntry,
+  requestIconImage,
+  linkHoverColorOf
 } from '../../../../../src/components/canvas-table/cell-painters.js'
 import { LinkColumn } from '../../../../../src/components/table/column-types/link.js'
 import { TagColumn } from '../../../../../src/components/table/column-types/tag.js'
@@ -33,9 +44,16 @@ const SEMANTIC_COLOR_NAMES = ['primary', 'secondary', 'success', 'warning', 'dan
 const THEME_COLORS = {}
 
 for (const [index, name] of [...BASE_COLOR_NAMES, ...SEMANTIC_COLOR_NAMES].entries()) {
+  const semantic = index >= BASE_COLOR_NAMES.length
+
   THEME_COLORS[name] = {
     color: `rgba(${20 + index * 10}, 60, 200, 1)`,
-    translucent: `rgba(${20 + index * 10}, 60, 200, 0.1)`
+    translucent: `rgba(${20 + index * 10}, 60, 200, 0.1)`,
+    // hover（问题 7 谱系）：语义色 = --mu-{name}-color-4 等价的可区分配色
+    // （断言 hover ≠ color 才有效）；彩色 hover === color（DOM 版 hover 基准）
+    hover: semantic
+      ? `rgba(${20 + index * 10}, 130, 245, 0.85)`
+      : `rgba(${20 + index * 10}, 60, 200, 1)`
   }
 }
 
@@ -46,6 +64,7 @@ const THEME = {
   borderColorSoft: 'rgba(232, 236, 241, 1)',
   borderColorStrong: 'rgba(153, 158, 165, 1)',
   hoverBg: 'rgba(0, 0, 0, 0.04)',
+  bgNormal: 'rgba(255, 255, 255, 1)',
   bgStrong: 'rgba(0, 0, 0, 0.08)',
   bgDisabled: 'rgba(0, 0, 0, 0.12)',
   primaryColor: 'rgba(0, 102, 255, 1)',
@@ -90,7 +109,7 @@ function drawToCanvas (
   return canvas
 }
 
-/** 绘制并返回 fillText/fill 调用记录（文本/x/y 与绘制时 fillStyle，供取色/布局断言） */
+/** 绘制并返回 fillText/fill/fillRect/stroke 调用记录（坐标与绘制时颜色，供取色/布局断言） */
 function drawRecorded (col, record, options = {}) {
   const canvas = drawToCanvas(col, record, { ...options, recording: true })
 
@@ -98,14 +117,15 @@ function drawRecorded (col, record, options = {}) {
 }
 
 /**
- * canvas 2d 上下文代理：记录 fillText（text/x/y + 调用时 fillStyle）与 fill
- * （调用时 fillStyle）。文本取色断言避免像素抗锯齿噪声，直接捕获 fillStyle。
- * set 派发到 target 本体（默认 set 的 receiver 为 proxy，会触发原生 setter 的
- * 品牌检查抛 Illegal invocation）。
+ * canvas 2d 上下文代理：记录 fillText（text/x/y + 调用时 fillStyle）、fill
+ * （调用时 fillStyle）、fillRect（x/y/width/height + fillStyle——link 悬停下划线
+ * 断言，A5 行）与 stroke（strokeStyle——button 悬停反转边框色断言）。文本取色
+ * 断言避免像素抗锯齿噪声，直接捕获 fillStyle。set 派发到 target 本体（默认 set
+ * 的 receiver 为 proxy，会触发原生 setter 的品牌检查抛 Illegal invocation）。
  */
 function recordingCtx (canvas) {
   const ctx = canvas.getContext('2d')
-  const calls = { fillText: [], fill: [] }
+  const calls = { fillText: [], fill: [], fillRect: [], stroke: [] }
 
   canvas.__paintCalls = calls
 
@@ -122,6 +142,20 @@ function recordingCtx (canvas) {
         return () => {
           calls.fill.push({ fillStyle: target.fillStyle })
           return target.fill()
+        }
+      }
+
+      if (prop === 'fillRect') {
+        return (x, y, width, height) => {
+          calls.fillRect.push({ x, y, width, height, fillStyle: target.fillStyle })
+          return target.fillRect(x, y, width, height)
+        }
+      }
+
+      if (prop === 'stroke') {
+        return () => {
+          calls.stroke.push({ strokeStyle: target.strokeStyle })
+          return target.stroke()
         }
       }
 
@@ -195,6 +229,11 @@ function tinyPngDataUri () {
 
   return canvas.toDataURL('image/png')
 }
+
+/** requestIconImage 夹具的 SVG 串逐次唯一序号：imageCache 是模块级 Map 跨检查
+ *  持存，固定串在页内重跑时会直接命中已加载条目，「loading」断言假红（同
+ *  tinyPngDataUri 的重跑时序规避，A5 行） */
+let iconSeed = 0
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)
@@ -643,9 +682,11 @@ export const checks = [
       assertEqual(calls.fill[0].fillStyle, cssColorOf(THEME_COLORS.danger.translucent), '常规按钮底色 translucent')
       assertEqual(calls.fill[1].fillStyle, cssColorOf(THEME.bgDisabled), 'disabled 按钮底色 bgDisabled')
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['button:0', 'button:1'], 'itemHits 回报')
+      assertEqual(rects[0].disabled, false, '常规按钮条目 disabled = false（isTruthyAttr 口径）')
+      assertEqual(rects[1].disabled, true, 'disabled 按钮条目携带 disabled = true')
       assert(rects[0].rect.width > 0 && rects[0].rect.height === 36, '条目矩形应含宽高')
 
-      return '编辑/删除两按钮取色与回报正确（kind=button）'
+      return '编辑/删除两按钮取色与回报正确（kind=button，含 disabled 字段）'
     }
   },
   {
@@ -658,13 +699,13 @@ export const checks = [
       assertEqual(calls.fillText.length, 2, 'maxLines=2 应绘制 2 行')
       assertEqual(calls.fillText[0].text.length, 16, '首行按测量宽度折行（16 字符 × 9px = 144 ≤ 内容宽）')
       assert(calls.fillText[1].text.endsWith('...'), `钳制末行应以 '...' 收缩，实际「${calls.fillText[1].text}」`)
-      assertArray(calls.fillText.map(c => c.y), [21, 39], '块整体垂直居中（(60−36)/2 + lineHeight/2 顺次 +18，R4b）')
+      assertArray(calls.fillText.map(c => c.y), [18, 36], '首行槽位锚（y0 = ROW_TOP_INSET 1 + padding 8 + lineHeight/2 9 = 18，与行高无关；后续 +18）')
 
       // maxLines=1（缺省）：即使注入 measure 也走单行省略（现状路径）
       const single = drawRecorded(prepareColumn({ field: 'memo' }), { memo: long }, { measure: fakeMeasure })
 
       assertEqual(single.calls.fillText.length, 1, '缺省单行省略')
-      assertEqual(single.calls.fillText[0].y, 18, '单行垂直居中（现状）')
+      assertEqual(single.calls.fillText[0].y, 18, '单行槽位锚 18（与改前 rect.y + h/2 逐值相等，零回归）')
 
       // measure 未注入：多行列回退单行省略（不抛错）
       const fallback = drawRecorded(col, { memo: long })
@@ -681,7 +722,7 @@ export const checks = [
       const { calls } = drawRecorded(col, { v: [1, '二', 3, 4, 5] }, { height: 80 })
 
       assertArray(calls.fillText.map(c => c.text), ['1', '二', '...'], '前 maxItems−1 项 + dots 行')
-      assertArray(calls.fillText.map(c => c.y), [22, 40, 58], '块整体垂直居中逐行（(80−54)/2 起，R4b）')
+      assertArray(calls.fillText.map(c => c.y), [18, 36, 54], '首行槽位锚逐行（y0 = 18 = 1+8+9，不随行高变；顺次 +18）')
       assertEqual(calls.fillText[0].text, '1', '数字元素应 String 化')
 
       // 缺省 maxItems=10：不超限全量显示
@@ -717,9 +758,49 @@ export const checks = [
       const redirected = drawRecorded(clampedCol, { memo: long }, { measure: fakeMeasure, height: 60 })
 
       assertEqual(redirected.calls.fillText.length, 2, '单 div item 应改道 drawText 多行（maxLines=2 钳制）')
-      assertArray(redirected.calls.fillText.map(c => c.y), [21, 39], '改道后块整体垂直居中（R4b）')
+      assertArray(redirected.calls.fillText.map(c => c.y), [18, 36], '改道后首行槽位锚（y0 = 18，与行高无关）')
 
       return 'deep 3 行 / shallow 1 行；line-clamp item 改道 2 行'
+    }
+  },
+  {
+    name: '槽位锚（问题 1/A1）：垂直锚 = ROW_TOP_INSET+padding+lineHeight/2 不随行高变、水平 center 扣 rightInset、超高行跨列首行同高',
+    fn: () => {
+      const col = prepareColumn({ field: 'v', align: 'center' })
+      const rect = { x: 0, y: 0, width: 160, height: 36 }
+
+      // 残差口径（decisions 检查点-A1判据，写入注释供 verifier）：直调锚恒为
+      // rect.y + 1 + 8 + 9 = 18（ROW_TOP_INSET 内建常量，gridlines 不参与直调路径）。
+      // 与「不含边线内容区中心」之差：r≥1 且 gridlines 含 row → 中心 18.5 → 偏上
+      // 0.5px（终版判据授权 ≤0.5px，行线占用扣除口径）；r=0 或不含 row → 中心 18
+      // → 残差 0。超高行不设与内容区中心的差，只验跨列首行同高（见末组断言）。
+      const base = drawRecorded(col, { v: '甲' }, { rect, rightInset: 0 })
+
+      assertEqual(base.calls.fillText[0].x, 80, 'center rightInset=0 → x=80（rect.x + width/2）')
+      assertEqual(base.calls.fillText[0].y, 18, '槽位锚 y=18（1 + 8 + 9）')
+
+      // rightInset=1（本格右缘列线占用）：内容区水平中心精确 −0.5px，垂直不变
+      const inset = drawRecorded(col, { v: '甲' }, { rect, rightInset: 1 })
+
+      assertEqual(inset.calls.fillText[0].x, 79.5, 'center rightInset=1 → x=79.5（列线占用扣除）')
+      assertEqual(inset.calls.fillText[0].y, 18, 'rightInset 只参与水平锚，垂直仍 18')
+
+      // left/right 锚不受 rightInset 影响（padding 8 ≫ 1px 格线，防误改分支）
+      const left = drawRecorded(prepareColumn({ field: 'v' }), { v: '甲' }, { rect, rightInset: 1 })
+
+      assertEqual(left.calls.fillText[0].x, 8, 'left 锚 x=8（不受 rightInset 影响）')
+
+      const right = drawRecorded(prepareColumn({ field: 'v', align: 'right' }), { v: '甲' }, { rect, rightInset: 1 })
+
+      assertEqual(right.calls.fillText[0].x, 152, 'right 锚 x=152（不受 rightInset 影响）')
+
+      // 超高行（h=88，同行多行列撑高场景的单行格）：仍锚首行槽位 18，与多行文本
+      // /link 竖排首行 y=18 同高（decisions 检查点-A1判据：超高行只验跨列首行同高）
+      const tall = drawRecorded(col, { v: '甲' }, { height: 88, rightInset: 0 })
+
+      assertEqual(tall.calls.fillText[0].y, 18, '超高行单行 y=18（锚不随行高变，与多行/link 竖排首行同高）')
+
+      return 'x=80/79.5/8/152；y 恒 18（h=36/88 同值，跨列首行同高）'
     }
   },
   {
@@ -848,13 +929,14 @@ export const checks = [
       const { calls } = drawRecorded(col, record, { height: 88, onItemRect: r => rects.push(r) })
 
       assertArray(calls.fillText.map(c => c.text), ['A', 'B', 'C', '...'], '3 条 + dots（maxItems=4，第 4 条 \'...\'）')
-      assertArray(calls.fillText.map(c => c.y), [17, 35, 53, 71], '竖排每条一行（+18）')
+      assertArray(calls.fillText.map(c => c.y), [18, 36, 54, 72], '竖排每条一行（首行槽位锚 18 = 1+8+9；+18 顺排）')
       assertArray(calls.fillText.map(c => c.x), [8, 8, 8, 8], '左缘对齐内容区')
       assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.success.color), 'mu-link--success class → colors 查表')
       assertEqual(calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled（存在性判定）→ textColorMuted')
       assertEqual(calls.fillText[2].fillStyle, cssColorOf(THEME_COLORS.danger.color), 'mu-link--danger → colors.danger')
       assertEqual(calls.fillText[3].fillStyle, cssColorOf(THEME.primaryColor), 'dots 条目回退主色（mu-link 缺省）')
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['link:0', 'link:1', 'link:2', 'link:3'], '条目矩形（含 dots）回报')
+      assertArray(rects.map(r => r.disabled), [false, true, false, false], '条目 disabled 字段（B disabled=true、dots false）')
 
       // 字符串数组竖排 + 数字单值 String 化
       const strings = drawRecorded(col, { v: ['甲', '乙'] }, { height: 60 })
@@ -865,7 +947,143 @@ export const checks = [
 
       assertArray(single.calls.fillText.map(c => c.text), ['9'], '单值数字 String 化')
 
-      return '竖排 y=17/35/53/71；success/muted/danger/primary 四态取色正确'
+      return '竖排 y=18/36/54/72；success/muted/danger/primary 四态取色正确'
+    }
+  },
+  {
+    name: 'link 悬停（问题 7/A7）：竖排与横排两路径色变 + 1px 下划线、disabled 不悬停、条目 disabled 字段',
+    fn: () => {
+      const col = prepareColumn({ field: 'v', type: 'link', maxItems: 4 })
+      const record = { v: [{ caption: 'A', color: 'success' }, { caption: 'B', disabled: true }, { caption: 'C', danger: true }, 'D', 'E'] }
+
+      // 竖排路径（drawLinkItems）：hover 第 0 条（success 语义色）→ hover 谱系 + 下划线
+      const vertical = drawRecorded(col, record, { height: 88, hoverItem: { kind: 'link', index: 0 } })
+      const successHover = cssColorOf(THEME_COLORS.success.hover)
+
+      assertEqual(vertical.calls.fillText[0].fillStyle, successHover, '竖排 hover 条目 fillStyle = colors.success.hover')
+      assertEqual(vertical.calls.fillRect.length, 1, '竖排仅 hover 条目画下划线')
+      assertEqual(vertical.calls.fillRect[0].y, 25, '下划线 y = anchorY(18) + round(14×0.35) + 2 = 25')
+      assertEqual(vertical.calls.fillRect[0].x, 8, '下划线 x = 条目起点（内容区左缘）')
+      assert(vertical.calls.fillRect[0].width > 0 && vertical.calls.fillRect[0].height === 1, '下划线 1px 高、宽 = 实绘文本宽')
+      assertEqual(vertical.calls.fillRect[0].fillStyle, successHover, '下划线 fillStyle = hover 色')
+
+      // 竖排 disabled 条目被 hover：不悬停（常态 muted、无下划线）
+      const verticalDisabled = drawRecorded(col, record, { height: 88, hoverItem: { kind: 'link', index: 1 } })
+
+      assertEqual(verticalDisabled.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), '竖排 disabled 被 hover 仍为常态 muted')
+      assertEqual(verticalDisabled.calls.fillRect.length, 0, '竖排 disabled 被 hover 不画下划线')
+
+      // 横排路径（drawItemText）：自定义类型产 is:'a' 条目（col.type 非 link → 横排）
+      const hCol = prepareColumn({
+        field: 'v',
+        type: {
+          render: () => ({
+            items: [
+              { is: 'a', text: '甲', attrs: { class: 'mu-link--danger' } },
+              { is: 'a', text: '乙', attrs: { class: 'mu-link--blue', disabled: true } }
+            ]
+          })
+        }
+      })
+      const rects = []
+      const horizontal = drawRecorded(hCol, { v: 1 }, { onItemRect: r => rects.push(r), hoverItem: { kind: 'link', index: 0 } })
+
+      assertEqual(horizontal.calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.danger.hover), '横排 hover 条目 fillStyle = colors.danger.hover')
+      assertEqual(horizontal.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), '横排未 hover 的 disabled 条目仍 muted')
+      assertEqual(horizontal.calls.fillRect.length, 1, '横排仅 hover 条目画下划线')
+      assertEqual(horizontal.calls.fillRect[0].y, 25, '横排下划线 y 同式（anchorY 18 + 5 + 2）')
+      assertEqual(horizontal.calls.fillRect[0].fillStyle, cssColorOf(THEME_COLORS.danger.hover), '横排下划线 fillStyle = hover 色')
+
+      // 横排 disabled 条目被 hover：不悬停（第 0 条回落常态 danger.color）
+      const horizontalDisabled = drawRecorded(hCol, { v: 1 }, { hoverItem: { kind: 'link', index: 1 } })
+
+      assertEqual(horizontalDisabled.calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.danger.color), '横排未 hover 条目为常态 danger.color')
+      assertEqual(horizontalDisabled.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), '横排 disabled 被 hover 仍 muted（不悬停）')
+      assertEqual(horizontalDisabled.calls.fillRect.length, 0, '横排 disabled 被 hover 不画下划线')
+
+      // 横排条目 disabled 字段（reportHitRect 路径）
+      assertArray(rects.map(r => `${r.kind}:${r.index}`), ['link:0', 'link:1'], '横排条目回报')
+      assertArray(rects.map(r => r.disabled), [false, true], '横排条目携带 disabled 布尔')
+
+      return '两路径 hover 色变 + 下划线 y=25；disabled 两态不悬停；横排 disabled=[false,true]'
+    }
+  },
+  {
+    name: 'button 悬停反转（问题 7/A7）：命中且非 disabled 反转三色、disabled 不反转',
+    fn: () => {
+      const col = prepareColumn({
+        field: 'v',
+        type: 'button',
+        buttons: [{ caption: '编辑', color: 'danger' }, { caption: '删除', disabled: true }]
+      })
+
+      // hover 第 0 条（danger，非 disabled）：底/边框 = colored.color、文字 = bgNormal
+      const inverted = drawRecorded(col, {}, { width: 220, hoverItem: { kind: 'button', index: 0 } })
+
+      assertEqual(inverted.calls.fill[0].fillStyle, cssColorOf(THEME_COLORS.danger.color), '反转底色 = colors.danger.color')
+      assertEqual(inverted.calls.stroke[0].strokeStyle, cssColorOf(THEME_COLORS.danger.color), '反转边框 = colors.danger.color')
+      assertEqual(inverted.calls.fillText[0].fillStyle, cssColorOf(THEME.bgNormal), '反转文字 = bgNormal')
+
+      // hover 第 1 条（disabled）：不反转，两按钮均保持常态
+      const disabledHover = drawRecorded(col, {}, { width: 220, hoverItem: { kind: 'button', index: 1 } })
+
+      assertEqual(disabledHover.calls.fill[0].fillStyle, cssColorOf(THEME_COLORS.danger.translucent), 'hover 第 1 条不影响第 0 条常态底色')
+      assertEqual(disabledHover.calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.danger.color), '第 0 条常态文字色')
+      assertEqual(disabledHover.calls.fill[1].fillStyle, cssColorOf(THEME.bgDisabled), 'disabled 被 hover 不反转（底 bgDisabled）')
+      assertEqual(disabledHover.calls.stroke[1].strokeStyle, cssColorOf(THEME.borderColor), 'disabled 边框常态 borderColor')
+      assertEqual(disabledHover.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled 文字常态 muted')
+
+      return '反转三色（底/边框 = danger.color、文字 = bgNormal）；disabled 保持置灰'
+    }
+  },
+  {
+    name: 'linkHoverColorOf：语义 hover / 彩色同色 / hover 缺失回退 color / disabled muted / 未知名 primary（A7）',
+    fn: () => {
+      assert(THEME_COLORS.danger.hover !== THEME_COLORS.danger.color, '前置：夹具语义色 hover 与 color 可区分')
+      assertEqual(linkHoverColorOf({ attrs: { class: 'mu-link--danger' } }, THEME), THEME_COLORS.danger.hover, '语义色 → colors[name].hover')
+      assertEqual(linkHoverColorOf({ attrs: { class: 'mu-link--red' } }, THEME), THEME_COLORS.red.hover, '彩色 → hover === color（同色）')
+      assertEqual(
+        linkHoverColorOf({ attrs: { class: 'mu-link--warning' } }, { ...THEME, colors: { warning: { color: '#123456' } } }),
+        '#123456',
+        'hover 字段缺失回退 color（自定义主题裁剪变量场景）'
+      )
+      assertEqual(linkHoverColorOf({ attrs: { class: 'mu-link--danger', disabled: true } }, THEME), THEME.textColorMuted, 'disabled → textColorMuted')
+      assertEqual(linkHoverColorOf({ attrs: { class: 'mu-link--ghost' } }, THEME), THEME.primaryColor, '未知名 → primaryColor')
+      assertEqual(linkHoverColorOf({}, THEME), THEME.primaryColor, '无 class → primaryColor')
+
+      return 'danger.hover / red 同色 / 缺失回退 / muted / primary 五分支'
+    }
+  },
+  {
+    name: 'requestIconImage（问题 5/A5）：SVG currentColor 着色 → data URL、同参复用缓存条目、非 SVG src 直通',
+    fn: () => {
+      const color = 'rgb(9, 87, 200)'
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="currentColor"><path d="M4 4h${iconSeed++}"/></svg>`
+      const entry = requestIconImage(svg, color, () => {})
+
+      assert(entry != null, '应返回 requestImage 缓存条目')
+      assertEqual(entry.status, 'loading', '未完成前 status = loading（SVG 串逐次唯一，防重跑命中缓存）')
+      assertEqual(entry.image.crossOrigin, 'anonymous', 'Image crossOrigin = anonymous（requestImage 单一管线）')
+
+      const prefix = 'data:image/svg+xml;charset=utf-8,'
+      assert(entry.image.src.startsWith(prefix), `SVG 应转 data URL（前缀 ${prefix}）`)
+
+      const decoded = decodeURIComponent(entry.image.src.slice(prefix.length))
+
+      assert(!/currentcolor/i.test(decoded), 'currentColor 应全部替换为着色串（img 上下文不可靠）')
+      assertEqual(decoded.split(color).length - 1, 2, 'stroke/fill 两处写法均着色')
+      assert(decoded.includes('<svg'), 'SVG 标记保留在 data URL 内')
+
+      assertEqual(requestIconImage(svg, color), entry, '同参二次调用返回同一缓存条目')
+      assert(requestIconImage(svg, 'rgb(1, 2, 3)') !== entry, '着色串入缓存键（异色分键）')
+
+      const png = tinyPngDataUri()
+      const direct = requestIconImage(png, color)
+
+      assertEqual(direct.image.src, png, '非 SVG 串按 src 直通（不转 data URL）')
+      assert(getImageEntry(png) === direct, '直通串经 getImageEntry 可查到（入 imageCache）')
+
+      return 'data URL 前缀 + 着色 ×2 + 同参同条目 + 异色分键 + src 直通'
     }
   },
   {
@@ -881,6 +1099,7 @@ export const checks = [
       assertEqual(calls.fill[0].fillStyle, cssColorOf(THEME_COLORS.success.translucent), '彩色 tag 底 translucent')
       assertEqual(calls.fill[1].fillStyle, cssColorOf(THEME.hoverBg), '无色类 tag 回退现状灰底')
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['tag:0', 'tag:1'], 'tag 条目矩形回报（可点击命中）')
+      assert(rects.every(r => r.disabled === false), 'tag 条目 disabled 缺省 false（横排 reportHitRect 路径）')
 
       return 'success 色查表 + gray 回退；kind=tag 回报'
     }

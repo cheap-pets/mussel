@@ -347,11 +347,17 @@ function isItemRectHit (hit, rect) {
   )
 }
 
-/** 返回首个命中条目的结果对象（命中时才分配），无命中 null */
+/** 返回首个命中条目的结果对象（disabled 随条目透传，缺字段时为 false），无命中 null */
 function findHitItem (hit, rects) {
   for (const entry of rects) {
     if (isItemRectHit(hit, entry.rect)) {
-      return { kind: entry.kind, index: entry.index, row: hit.rowIndex, col: hit.colIndex }
+      return {
+        kind: entry.kind,
+        index: entry.index,
+        row: hit.rowIndex,
+        col: hit.colIndex,
+        disabled: entry.disabled === true
+      }
     }
   }
 
@@ -360,15 +366,17 @@ function findHitItem (hit, rects) {
 
 /**
  * 条目点击命中（02-design.md A3.3/A4.3 序 3 / 评审 6 P4）：hit.x/hit.y 对
- * painter itemHits（Map<row, Map<col, Array<{ kind, index, rect }>>>，视口坐标）
- * 反查命中条目；dots '...' 超限省略条目同样命中（对齐 DOM 版 dots 绑定
+ * painter itemHits（Map<row, Map<col, Array<{ kind, index, rect, disabled }>>>，
+ * 视口坐标）反查命中条目；dots '...' 超限省略条目同样命中（对齐 DOM 版 dots 绑定
  * events.click）；窗口外行不在集合内 → null。link/tag/button 命中，progress/img
- * 不回报矩形（DOM 版无对应事件）。
+ * 不回报矩形（DOM 版无对应事件）。disabled 随命中条目透传（条目禁用态，
+ * hover 取色/光标与点击侧同口径消费），条目缺该字段时为 false。
  *
  * @param {Object} params
  * @param {Object} params.hit hitTest 产出（消费 x/y/rowIndex/colIndex）
  * @param {Map} [params.itemHits] painter 收集的条目命中矩形集合
- * @returns {{ kind: String, index: Number, row: Number, col: Number } | null}
+ * @returns {{ kind: String, index: Number, row: Number, col: Number,
+ *   disabled: Boolean } | null}
  */
 export function resolveItemClick ({ hit, itemHits } = {}) {
   if (!isItemClickable(itemHits, hit)) return null

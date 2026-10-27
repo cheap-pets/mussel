@@ -100,6 +100,7 @@
   import {
     computeEditorStyle,
     createEditorController,
+    editorButtonRectOf,
     isCellEditable,
     resolveEditorType
   } from './editor'
@@ -256,6 +257,10 @@
   )
 
   const hover = shallowRef(null)
+  // 条目悬停（20261027 问题 7）：{ row, col, kind, index, disabled } | null，
+  // onPointerMove 经 resolveItemClick 求值；paintState.hoverItem 在 syncPaintState
+  // 以本值归一（hoverMode none 恒 null）
+  const hoverItem = shallowRef(null)
   const cursor = ref('default')
 
   const yScrolled = ref(false)
@@ -296,6 +301,9 @@
   let themeWatcher = null
   // 最近一次 relayout 统计（getLayoutInfo 暴露，调试面板显示）
   let lastRelayout = null
+  // veil 编辑格行列（20261027 问题 6）：editor 控制器的 editing 不含 row/col，
+  // 行列由壳承载；paintState.editingCell 在 syncPaintState 以本值归一
+  let editingCellRef = null
 
   // painter 持久 state（G2-a 契约：原地变更后 invalidate/draw 即以新状态重绘；
   // paintState 组装扩展（A2.1/A2.2）：displayRows/flatInfo/expandedKeys/
@@ -328,6 +336,8 @@
     orderBy: props.orderBy,
     placeholder: props.placeholder,
     hover: null,
+    hoverItem: null,
+    editingCell: null,
     resizeGuideX: null
   }
 
@@ -371,6 +381,11 @@
     paintState.orderBy = props.orderBy
     paintState.placeholder = props.placeholder
     paintState.hover = hover.value
+    // 条目悬停（问题 7）+ veil 编辑格（问题 6）。hoverMode none 总开关归一：
+    // 条目 hover 色在表体 pass（drawCell）绘制，不经 paintOverlay 的 hoverMode
+    // 门控，切到 none 后（指针不动）须由本处立即置 null
+    paintState.hoverItem = props.hoverMode === 'none' ? null : hoverItem.value
+    paintState.editingCell = editingCellRef
     paintState.resizeGuideX = resizeGuideX.value
     paintState.theme = themeWatcher?.snapshot ?? paintState.theme
   }
@@ -639,6 +654,52 @@
     for (const region of hoverRegions(prev, next, props.hoverMode || 'row')) invalidate(region)
   }
 
+  /** 条目悬停相等判定（问题 7）：行列 + 条目身份（kind/index）+ disabled 全等 */
+  function isSameHoverItem (prev, next) {
+    if (prev == null || next == null) return (prev == null) === (next == null)
+
+    return (
+      prev.row === next.row &&
+      prev.col === next.col &&
+      prev.kind === next.kind &&
+      prev.index === next.index &&
+      prev.disabled === next.disabled
+    )
+  }
+
+  /** hoverItem 变化脏区：prev/next 两格按行列号去重（同格至多一次失效） */
+  function hoverItemCells (prev, next) {
+    const cells = []
+
+    for (const cell of [prev, next]) {
+      if (cell == null) continue
+
+      const { row, col } = cell
+
+      if (!cells.some(el => el.row === row && el.col === col)) cells.push({ row, col })
+    }
+
+    return cells
+  }
+
+  /** 条目悬停接线（问题 7）：经既有 resolveItemClick 求值（itemHits 含 link/button/
+      tag 矩形与 disabled），变化时对 prev/next 格去重逐格失效。独立于 updateHover
+      （同格内条目间移动或移出条目不触发 hover 变化，须在此单独求值失效）；
+      hoverMode none 恒 null（与编辑按钮绘制同受总开关抑制） */
+  function updateHoverItem (hit) {
+    const prev = hoverItem.value
+    const next = props.hoverMode === 'none'
+      ? null
+      : resolveItemClick({ hit, itemHits: paintState.itemHits })
+
+    if (isSameHoverItem(prev, next)) return
+
+    hoverItem.value = next
+    paintState.hoverItem = next
+
+    for (const cell of hoverItemCells(prev, next)) invalidate({ cell })
+  }
+
   function onPointerMove (event) {
     const result = hitAt(event)
 
@@ -651,12 +712,57 @@
       isCellEditableFn: cellEditableOf
     })
 
+    updateHoverItem(result.hit)
     updateHover(result.hit)
+
+    // 光标覆盖（问题 5/7）：resolveCursor 结果先落位，条目 / 编辑按钮区再覆盖
+    applyItemCursor(result.hit)
   }
 
   function onPointerLeave () {
     cursor.value = 'default'
+    updateHoverItem(null)
     updateHover(null)
+  }
+
+  /** 编辑按钮命中判定（20261027 问题 5）：列配 editorButton.icon 且指针落在
+      editorButtonRectOf 区矩形内（半开区间，与 interactions.isItemRectHit 同口径，
+      不新增跨模块导出；区矩形为 painter 绘制与壳命中共用的单一事实源，centerY
+      = 首行行框槽位锚） */
+  function isEditorButtonHit (hit, col) {
+    if (!col?.editorButton?.icon) return false
+
+    const rect = editorButtonRectOf(
+      cellRectAt(layout.value, hit.rowIndex, hit.colIndex),
+      {
+        padding: themeWatcher?.snapshot?.cellPadding,
+        lineHeight: themeWatcher?.snapshot?.cellLineHeight
+      }
+    )
+
+    return (
+      hit.x >= rect.x && hit.x < rect.x + rect.width &&
+      hit.y >= rect.y && hit.y < rect.y + rect.height
+    )
+  }
+
+  /** 光标覆盖（问题 5/7）：resolveCursor 结果之后追加判定，仅覆盖表体
+      text/default——条目（link/button 且非禁用）与编辑按钮区为 pointer；
+      col-resize 手柄与表头 pointer 不覆盖 */
+  function applyItemCursor (hit) {
+    if (hit.resizeCol >= 0 || hit.isHeader) return
+
+    const item = hoverItem.value
+
+    if (item && !item.disabled && (item.kind === 'link' || item.kind === 'button')) {
+      cursor.value = 'pointer'
+
+      return
+    }
+
+    const col = hit.colIndex >= 0 ? wiredColumns.value[hit.colIndex] : null
+
+    if (isEditorButtonHit(hit, col)) cursor.value = 'pointer'
   }
 
   function onPointerDown (event) {
@@ -687,6 +793,21 @@
         orderBy: props.orderBy
       }).events
     )
+  }
+
+  /** 编辑按钮派发（20261027 问题 5，局部交互——对齐树槽先例：不选中行、不发
+      cell-click、不开编辑，点击行为由用户 editorButton.onClick 定义，column 传
+      原始列引用）；命中并派发返回 true */
+  function tryEditorButtonClick (hit, record, col) {
+    if (!isEditorButtonHit(hit, col)) return false
+
+    col.editorButton.onClick?.({
+      record,
+      recordIndex: hit.rowIndex,
+      column: col._raw ?? col
+    })
+
+    return true
   }
 
   /** 树箭头槽 toggle（A4.3 序 2，局部交互）：命中则应用展开态并返回 true */
@@ -790,6 +911,10 @@
       return
     }
 
+    // 编辑按钮命中（20261027 问题 5）：局部交互，不选中行、不发 cell-click、
+    // 不开编辑；判定在树槽之前（A4.3 序 2 前置）
+    if (tryEditorButtonClick(hit, record, col)) return
+
     // A4.3 序 2：树箭头槽 toggle（局部交互，不选中行、不发 cell-click）
     if (tryToggleTreeRow(hit, record)) return
 
@@ -892,8 +1017,6 @@
       scrollLeft: cur.scrollLeft,
       fixedCount: cur.fixedCount,
       rowGeometry: cur.rowGeometry,
-      gridlines: props.gridlines,
-      theme: themeWatcher?.snapshot,
       editorType,
       border
     })
@@ -908,7 +1031,21 @@
       getEditorEl: () => editorEl.value
     })
 
-    if (opened) focusEditor()
+    if (!opened) return
+
+    focusEditor()
+
+    // veil 接线（20261027 问题 6）：先更新行列引用再失效——syncPaintState 以
+    // editingCellRef 归一 paintState.editingCell，旧格 invalidate 时已不在 veil
+    // （恢复内容），新格 invalidate 置 veil。同一 tick 内「提交旧格 + 打开新格」
+    // 时关闭 watch 尚未 flush（old/new 均非 null 不触发清除），旧格恢复由本处
+    // 失效直接完成
+    const prevCell = editingCellRef
+
+    editingCellRef = { row: hit.rowIndex, col: hit.colIndex }
+
+    if (prevCell) invalidate({ cell: prevCell })
+    invalidate({ cell: editingCellRef })
   }
 
   /** column.editor 为对象形态时读取 border（true 形态按缺省 true） */
@@ -1093,6 +1230,30 @@
   })
 
   // —— 渲染 props watch（A3 重绘表） ——
+
+  // 编辑关闭 veil 清理（20261027 问题 6）：仅 editing 变为 null（关闭）时恢复
+  // 编辑格内容。commit 与 open 落在同一 tick 时 watcher 只 flush 一次（old/new
+  // 均非 null），无条件清除会把新格 veil 抹掉；行列由 editingCellRef 承载
+  // （editor 控制器的 editing 不含 row/col）。覆盖全部关闭路径（commit/cancel/
+  // blur 兜底/值变化提交/滚动与画布 pointerdown 提交）
+  watch(() => editor.state.editing, newValue => {
+    if (newValue != null) return
+
+    const cell = editingCellRef
+
+    if (cell == null) return
+
+    editingCellRef = null
+
+    // 卸载路径空值防护：painter 未创建 / 已 dispose 时无重绘意义
+    if (!painter) {
+      paintState.editingCell = null
+
+      return
+    }
+
+    invalidate({ cell })
+  })
 
   // records 引用变化：滚动复位 → relayout → 整幅重绘（A2，table.vue 同款 watch）
   watch(() => props.records, (newValue, oldValue) => {

@@ -7,7 +7,8 @@
  * 为设计期残留已随 C3 清理，脏区改由 painter 带 invalidate 承担）、
  * resolveResizeWidth + resolveTypeMinWidth 组合拖拽下限（评审 6 P2）、
  * check disabled 跳过翻转但续行点击流程、树槽 toggle（hit.cellX 槽内判定，
- * 槽外/叶行不 toggle）、条目点击反查（hit.x/y，含 dots '...' 命中、窗口外不命中）、
+ * 槽外/叶行不 toggle）、条目点击反查（hit.x/y，含 dots '...' 命中、disabled
+ * 两态透传——问题 7 A7、窗口外不命中）、
  * 单击开编辑门控（click 语义，dblclick 通道已删除——03-review-4 问题 1）、
  * resolveCursor 三参 context（树槽 pointer / 叶行 default / 可编辑格 text /
  * context 缺省回归）、拖拽误触抑制（pointerup 后延时清除）、
@@ -475,31 +476,42 @@ export const checks = [
     }
   },
   {
-    name: 'resolveItemClick：hit.x/y 条目矩形反查（dots 命中、窗口外行不命中）',
+    name: 'resolveItemClick：hit.x/y 条目矩形反查（dots 命中、disabled 透传、窗口外行不命中）',
     fn: () => {
-      // itemHits 形状（painter 契约）：Map<row, Map<col, Array<{ kind, index, rect }>>>，
-      // rect 为视口坐标
+      // itemHits 形状（painter 契约）：Map<row, Map<col, Array<{ kind, index, rect, disabled }>>>，
+      // rect 为视口坐标；disabled 为条目禁用态布尔（问题 7，与点击侧 isDisabledAttr 同口径）
       const itemHits = new Map([
         [3, new Map([
           [1, [
             { kind: 'link', index: 0, rect: { x: 120, y: 120, width: 40, height: 18 } },
-            { kind: 'link', index: 2, rect: { x: 120, y: 156, width: 24, height: 18 } }
+            { kind: 'link', index: 2, disabled: true, rect: { x: 120, y: 156, width: 24, height: 18 } }
           ]],
           [2, [
-            { kind: 'tag', index: 0, rect: { x: 320, y: 120, width: 30, height: 36 } }
+            { kind: 'tag', index: 0, disabled: false, rect: { x: 320, y: 120, width: 30, height: 36 } }
           ]]
         ])]
       ])
 
-      // 命中 link 条目 0
+      // 命中 link 条目 0（无 disabled 字段 → false，缺字段缺省）
       const hitLink = resolveItemClick({ hit: { isHeader: false, colIndex: 1, rowIndex: 3, x: 130, y: 130 }, itemHits })
 
-      assertArray([hitLink.kind, hitLink.index, hitLink.row, hitLink.col], ['link', 0, 3, 1], 'link 条目反查')
+      assertArray(
+        [hitLink.kind, hitLink.index, hitLink.row, hitLink.col, hitLink.disabled],
+        ['link', 0, 3, 1, false],
+        'link 条目反查含 disabled'
+      )
 
-      // dots '...' 条目（index 2）同样命中（评审 6 P4：DOM 版 dots 绑定 events.click）
+      // dots '...' 条目（index 2）同样命中（评审 6 P4：DOM 版 dots 绑定 events.click）；
+      // disabled 条目透传 true（A7：hover 取色/光标与点击侧同口径消费）
       const hitDots = resolveItemClick({ hit: { isHeader: false, colIndex: 1, rowIndex: 3, x: 132, y: 160 }, itemHits })
 
       assertArray([hitDots.kind, hitDots.index], ['link', 2], 'dots 条目命中')
+      assertEqual(hitDots.disabled, true, 'disabled 条目 → true')
+
+      // 正常条目（显式 disabled: false）→ false（A7 两态）
+      const hitTag = resolveItemClick({ hit: { isHeader: false, colIndex: 2, rowIndex: 3, x: 330, y: 130 }, itemHits })
+
+      assertEqual(hitTag.disabled, false, '正常条目 → false')
 
       // 矩形间空隙不命中
       assertEqual(
@@ -521,7 +533,7 @@ export const checks = [
       )
       assertEqual(resolveItemClick({ hit: { isHeader: false, colIndex: 1, rowIndex: 3, x: 1, y: 1 } }), null, 'itemHits 缺省安全')
 
-      return 'x/y (row,col) 反查命中；dots 命中；间隙/窗口外/表头不命中'
+      return 'x/y (row,col) 反查命中；dots 命中；disabled 两态透传（缺字段 false）；间隙/窗口外/表头不命中'
     }
   },
   {

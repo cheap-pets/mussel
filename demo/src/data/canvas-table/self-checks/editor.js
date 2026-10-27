@@ -1,21 +1,26 @@
 /**
  * canvas-table 自检断言 — editor 模块（G3）。
  *
- * 覆盖（02-design.md G3 判据 + decisions「[I1 前]①」+ A5.5 规整层 + 评审 6 P6）：
+ * 覆盖（02-design.md G3 判据 + decisions「[I1 前]①」+ A5.5 规整层 + 评审 6 P6
+ * + 20261027 问题 3/4/5 断言同步）：
  * 打开（只读判定、value 取值链、编辑器组装、textarea/数组开值）/ 编辑器类型
- * 解析（text/link 按开值形态与 _resolveMaxLines(record) 行级求值判定 textarea）/
- * 值类型规整层（usesDerivedOptions / normalizeEditorOpenValue /
- * normalizeCommitValue：number/currency 三形态、数值枚举类型保持、textarea ④⑤
- * 数组换行分割、对象数组开值取 caption、null 直通、显式 options 原样）/
- * 分类型提交矩阵（input Enter、textarea Ctrl/Cmd+Enter 显式提交且 Enter 换行不提交、
- * select/date/switch 值变化即提交、值变化不重复提交 input）/ 取消 / 校验 /
- * 统一等距内缩矩形定位（A5.4 R1：EDITOR_GAP=4、input/switch/textarea 三类型
- * 同矩形、border/borderless 矩形相同仅 bordered 标记差异、固定列横向滚动
- * 两态对照、变高行 heightAt − 8、theme 不再消费、height 防负值）/ enum options
- * 由 mappings Object 转换为
- * [{value,label}] Array 且排除 default（字符串原值提交仍为 key 字符串、
- * 数值原值类型保持）/ blur 兜底面板判定条件③（焦点或最近 window pointerdown
- * 目标在 .mu-dropdown-panel 内不提交；mu-icon-button 不可聚焦场景）。
+ * 解析（text 列按开值形态与 _resolveMaxLines(record) 行级求值判定 textarea；
+ * link 分支已删、直调回退 input 且实际被只读判定拦截）/ 值类型规整层
+ * （usesDerivedOptions / normalizeEditorOpenValue / normalizeCommitValue：
+ * number/currency 三形态、数值枚举类型保持、textarea ④⑤ 数组换行分割、
+ * 对象数组开值取 caption、null 直通、显式 options 原样）/ 分类型提交矩阵
+ * （input Enter、textarea Ctrl/Cmd+Enter 显式提交且 Enter 换行不提交、
+ * select/date/switch 值变化即提交、值变化不重复提交 input、textarea 数组
+ * 开值/提交由 text 列 + 对象数组承接）/ 取消 / 校验 /
+ * 整格矩形定位（20261027 问题 3：EDITOR_GAP 内缩口径作废，editorRectOf 恒等
+ * 映射、computeEditorStyle 矩形 = 整格——全编辑器类型同矩形仅 bordered 标记
+ * 差异、固定列横向滚动两态对照、变高行、height 防负值）/ 编辑按钮区矩形
+ * editorButtonRectOf（20261027 问题 5：right-align x = 格右 − padding − 24、
+ * centerY = 格顶 + ROW_TOP_INSET + padding + lineHeight/2 首行槽位式）/
+ * enum options 由 mappings Object 转换为 [{value,label}] Array 且排除 default
+ * （字符串原值提交仍为 key 字符串、数值原值类型保持）/ blur 兜底面板判定
+ * 条件③（焦点或最近 window pointerdown 目标在 .mu-dropdown-panel 内不提交；
+ * mu-icon-button 不可聚焦场景）。
  *
  * 说明：blur 兜底的 setTimeout 0 定时器接线为薄封装，自检以纯判定函数
  * resolveBlurFallback + 控制器 pointerdown 记录（getLastPointerdownTarget）
@@ -24,8 +29,8 @@
 import {
   NON_EDITABLE_TYPES,
   EDITOR_COMPONENTS,
-  EDITOR_GAP,
   editorRectOf,
+  editorButtonRectOf,
   isCellEditable,
   resolveEditorType,
   usesDerivedOptions,
@@ -165,10 +170,12 @@ export const checks = [
         '_maxLines 常量 > 1 → textarea'
       )
       assertEqual(resolveEditorType({ type: 'text', editor: true }, { rawValue: '文本' }), 'input', 'text 单值单行 → input')
+      // link 分支已删（20261027 问题 4：link 不可编辑）——直调走未知类型回退 input，
+      // 实际开格被 isCellEditable 拦截（见只读判定块）
       assertEqual(
         resolveEditorType({ type: 'link', editor: true }, { rawValue: [{ caption: 'a', color: 'red' }] }),
-        'textarea',
-        'link 对象数组 → textarea'
+        'input',
+        'link 直调回退 input（分支已删）'
       )
       // 无 type 列（TextColumn 回退）数组开值 → textarea（A3.5 列分类对齐）
       assertEqual(
@@ -190,11 +197,11 @@ export const checks = [
       assertEqual(componentOf({ type: 'bool', editor: true }), MuSwitch, 'switch 组件 = MuSwitch 导出')
       assertEqual(resolveEditorType({ type: 'enum', editor: true }), 'select', 'resolveEditorType')
 
-      return 'input/select/date/switch/textarea 映射与组件身份一致；text/link 形态判定生效'
+      return 'input/select/date/switch/textarea 映射与组件身份一致；text 形态判定生效（link 回退 input）'
     }
   },
   {
-    name: '只读判定 isCellEditable：表格级/列级/editor 缺失/排除类型；link 本期可编辑',
+    name: '只读判定 isCellEditable：表格级/列级/editor 缺失/排除类型；link/button/progress 不可编辑',
     fn: () => {
       assert(!isCellEditable({ editable: false, column: { type: 'text', editor: true } }), '表格级 editable=false 应只读')
       assert(!isCellEditable({ editable: true, column: { type: 'text', editor: true, editable: false } }), '列级 editable=false 应只读')
@@ -207,14 +214,31 @@ export const checks = [
 
       // image 为 img 的注册表别名，同样排除
       assert(NON_EDITABLE_TYPES.includes('image'), 'image 别名未排除')
-      // link 本期移出排除清单（人工 2 意见 2，A5）
-      assert(!NON_EDITABLE_TYPES.includes('link'), 'link 不应再在排除清单')
+
+      // 20261027 问题 4：link 恢复不可编辑（decisions [S1]，推翻 20261025 人工决定），
+      // button/progress 为 canvas 专属展示类型一并排除——清单 + 判定两态断言
+      for (const type of ['link', 'button', 'progress']) {
+        assert(NON_EDITABLE_TYPES.includes(type), `类型 ${type} 应在排除清单`)
+        assert(!isCellEditable({ editable: true, column: { type, editor: true } }), `类型 ${type} 应只读`)
+      }
 
       assert(isCellEditable({ editable: true, column: { type: 'text', editor: true } }), '可编辑格判定')
       assert(isCellEditable({ editable: true, column: { type: 'enum', editor: { type: 'select' } } }), 'editor 对象形态判定')
-      assert(isCellEditable({ editable: true, column: { type: 'link', editor: true } }), 'link 列可编辑')
 
-      return '表格级/列级/editor 缺失/排除类型（rec_no/img/image/tag/check）生效；link 可编辑'
+      // open 通道同判（isCellEditable 是 open 的唯一闸门）：配 editor 仍拒绝、无编辑态
+      const { commits, controller } = createSpyController()
+
+      try {
+        for (const type of ['link', 'button', 'progress']) {
+          assertEqual(controller.open({ column: { type, editor: true }, record: {}, editable: true }), false, `${type} 列 open 拒绝`)
+        }
+        assertEqual(controller.state.editing, null, '拒绝后无编辑态')
+        assertEqual(commits.length, 0, '拒绝不产生提交')
+      } finally {
+        controller.destroy()
+      }
+
+      return '表格级/列级/editor 缺失/排除类型（rec_no/img/image/tag/check/link/button/progress）生效，open 同判'
     }
   },
   {
@@ -232,11 +256,12 @@ export const checks = [
       assertEqual(normalizeEditorOpenValue({ column: mappingsColumn, editorType: 'select', value: 1 }), '1', 'select open 字符串化')
       assertEqual(normalizeEditorOpenValue({ column: mappingsColumn, editorType: 'select', value: null }), null, 'select null 直通')
 
-      // textarea：数组开值逐元素取 caption 换行拼接（link 对象数组取 caption、
-      // 字符串/数字数组直接元素）；非数组 → String；null → ''
+      // textarea：数组开值逐元素取 caption 换行拼接（对象数组取 caption、字符串/
+      // 数字数组直接元素——列类型无关的通用规整，20261027 问题 4 起由 text 列的
+      // 对象数组值承接，link 已不可编辑）；非数组 → String；null → ''
       assertEqual(
         normalizeEditorOpenValue({
-          column: { type: 'link', editor: true },
+          column: { type: 'text', editor: true },
           editorType: 'textarea',
           value: [{ caption: 'A', color: 'red' }, { caption: 'B' }, 'C', 4]
         }),
@@ -419,33 +444,30 @@ export const checks = [
     }
   },
   {
-    name: '统一等距内缩矩形 computeEditorStyle：三类型同矩形、两态同矩形、固定列对照、theme 不再消费（A5.4 R1）',
+    name: '整格矩形 computeEditorStyle：全类型同矩形、border 两态对照、固定列/滚动列/变高行（20261027 问题 3）',
     fn: () => {
-      // C4 起 rowGeometry 必传：等高基线经 uniform 几何构造（36×3）
+      // C4 起 rowGeometry 必传：等高基线经 uniform 几何构造（36×3）。
+      // 20261027 问题 3：EDITOR_GAP 内缩口径作废，gridlines/theme 参数已删，
+      // 矩形 = editorRectOf(格矩形) 恒等 = 整格（定位只依赖格几何）
       const base = {
         colLefts: [0, 100, 300],
         colWidths: [100, 200, 80],
         headHeight: 36,
-        theme: { cellPadding: 8, cellLineHeight: 18 },
         rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 3 }),
         editorType: 'input',
         border: true
       }
 
-      // EDITOR_GAP 导出值 = 4（painter hover 描边单一事实源，A5.3）
-      assertEqual(EDITOR_GAP, 4, 'EDITOR_GAP 导出值')
-
-      // 统一矩形（R3 格线内缘等距）：rowIndex 1（上格线占本格 1px）+
-      // colIndex 0 非末列（右格线占 1px）→ top/width/height 各再扣 1px；
-      // 格 [0,100]×[64,100) 四边与最近格线空白恒为 EDITOR_GAP（固定列 left 不随 scrollLeft 偏移）
+      // 整格矩形：rowIndex 1 / colIndex 0（固定列不随 scrollLeft 偏移）——
+      // 四值与格矩形恒等，无任何 1px 格线扣除
       const fixed = computeEditorStyle({
         ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1
       })
 
-      assertArray([fixed.left, fixed.top, fixed.width, fixed.height], [4, 69, 91, 27], '固定列统一矩形（R3 等距）')
+      assertArray([fixed.left, fixed.top, fixed.width, fixed.height], [0, 64, 100, 36], '固定列整格矩形')
       assertEqual(fixed.bordered, true, 'border 缺省 true')
 
-      // 三编辑器类型同矩形（A5.4 R1 删 per-type 高度分支；switch/textarea 仅 bordered 标记差异）
+      // 全编辑器类型同矩形（矩形恒等；switch/textarea 仅 bordered 标记差异）
       const switchStyle = computeEditorStyle({
         ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, editorType: 'switch'
       })
@@ -453,29 +475,29 @@ export const checks = [
         ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, editorType: 'textarea'
       })
 
-      assertArray([switchStyle.left, switchStyle.top, switchStyle.width, switchStyle.height], [4, 69, 91, 27], 'switch 同矩形')
+      assertArray([switchStyle.left, switchStyle.top, switchStyle.width, switchStyle.height], [0, 64, 100, 36], 'switch 同矩形')
       assertEqual(switchStyle.bordered, false, 'switch bordered false')
-      assertArray([textarea.left, textarea.top, textarea.width, textarea.height], [4, 69, 91, 27], 'textarea 同矩形')
+      assertArray([textarea.left, textarea.top, textarea.width, textarea.height], [0, 64, 100, 36], 'textarea 同矩形')
       assertEqual(textarea.bordered, true, 'textarea 恒 bordered true')
 
-      // border/borderless 两态矩形相同（左缘一致性由 scss padding 补偿承担，非定位）
+      // border/borderless 两态矩形相同（仅 bordered 标记差异；左缘一致性由 scss
+      // padding 补偿承担，非定位）
       const borderless = computeEditorStyle({
         ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, border: false
       })
 
-      assertArray([borderless.left, borderless.top, borderless.width, borderless.height], [4, 69, 91, 27], 'borderless 同矩形')
+      assertArray([borderless.left, borderless.top, borderless.width, borderless.height], [0, 64, 100, 36], 'borderless 同矩形')
       assertEqual(borderless.bordered, false, 'border:false → bordered false')
 
-      // 滚动列：left = colLefts − scrollLeft + 4；rowIndex 0 首行无上格线、
-      // colIndex 2 为末列无右格线 → 无 1px 扣除（横向滚动对照，评审回应 4 问题 11 保留）
+      // 滚动列：left = colLefts − scrollLeft、top = headHeight + topAt − scrollTop（整格，
+      // 横向滚动对照，评审回应 4 问题 11 保留）
       const scrolled = computeEditorStyle({
         ...base, colIndex: 2, rowIndex: 0, scrollTop: 0, scrollLeft: 250, fixedCount: 1
       })
 
-      assertArray([scrolled.left, scrolled.top, scrolled.width, scrolled.height], [54, 40, 72, 28], '滚动列统一矩形')
+      assertArray([scrolled.left, scrolled.top, scrolled.width, scrolled.height], [50, 36, 80, 36], '滚动列整格矩形')
 
-      // 变高行（fake rowGeometry 高 100）：top = headHeight + topAt + 4 + 1（上格线）、
-      // height = heightAt − 9（R3：上格线占用从高度扣 1px）
+      // 变高行（fake rowGeometry 高 100）：top = headHeight + topAt、height = heightAt（整格）
       const tallRow = computeEditorStyle({
         ...base,
         colIndex: 1,
@@ -484,9 +506,9 @@ export const checks = [
         editorType: 'textarea'
       })
 
-      assertArray([tallRow.top, tallRow.height], [77, 91], '变高行 top/height 含上格线 1px 扣除')
+      assertArray([tallRow.left, tallRow.top, tallRow.width, tallRow.height], [100, 72, 200, 100], '变高行整格矩形')
 
-      // 退化配置防负值：heightAt(row) = 0 → height max(−9, 0) = 0
+      // 退化配置防负值：heightAt(row) = 0 → height 0
       const degenerate = computeEditorStyle({
         ...base,
         colIndex: 1,
@@ -496,56 +518,64 @@ export const checks = [
 
       assertEqual(degenerate.height, 0, 'heightAt 0 → height 0（防负值）')
 
-      // theme 不再消费（R1）：theme: undefined 与传入 theme 矩形逐边相等
-      const fallback = computeEditorStyle({ ...base, theme: undefined, colIndex: 1, rowIndex: 0 })
-
-      assertArray([fallback.left, fallback.top, fallback.width, fallback.height], [104, 40, 191, 28], 'theme: undefined 同矩形（右格线扣 width）')
-
-      // 无固定列（fixedCount 0）：left = colLefts − scrollLeft + 4、top 含 scrollTop 位移
+      // 无固定列（fixedCount 0）：left = colLefts − scrollLeft、top 含 scrollTop 位移
       const noFixed = computeEditorStyle({
         ...base, colIndex: 1, rowIndex: 2, scrollTop: 100, scrollLeft: 50, fixedCount: 0
       })
 
-      assertEqual(noFixed.left, 54, '无固定列 left = colLefts − scrollLeft + 4')
-      assertEqual(noFixed.top, 36 + 2 * 36 - 100 + 4 + 1, 'top 含上格线 1px 扣除（R3）')
+      assertEqual(noFixed.left, 50, '无固定列 left = colLefts − scrollLeft')
+      assertEqual(noFixed.top, 8, 'top = headHeight + topAt(2) − scrollTop = 36 + 72 − 100')
 
-      return 'A5.4 R1 统一矩形：EDITOR_GAP=4、三类型/两态同矩形、固定列对照、变高行、theme 不再消费、防负值'
+      return '整格矩形：固定列 [0,64,100,36]、滚动列 [50,36,80,36]、变高行 [100,72,200,100]、全类型同矩形仅 bordered 差异、防负值'
     }
   },
   {
-    name: 'editorRectOf：R3 格线内缘等距——盒四边与最近格线空白恒为 EDITOR_GAP',
+    name: 'editorRectOf：恒等映射——hover 描边/编辑浮层矩形 = 整格矩形（20261027 问题 3）',
     fn: () => {
-      // 格 [60,200]×[72,108)；四向最近格线：左 [59,60)（前列右缘）上 [72,73)
-      // （本行顶）右 [199,200)（本列右缘）下 [108,109)（下行顶）——上/右占用本格
+      // EDITOR_GAP 内缩口径作废（decisions [S1]）：四值 = 格矩形，hover 描边与
+      // 输入框边框直接与单元格边框重叠
       const rect = { x: 60, y: 72, width: 140, height: 36 }
-      const normal = editorRectOf(rect)
+      const identity = editorRectOf(rect)
 
-      // 盒 [64,195]×[77,104]：左 64−60 / 上 77−73 / 右 199−195 / 下 108−104 全 4px
-      assertArray([normal.left, normal.top, normal.width, normal.height], [64, 77, 131, 27], '常规格等距矩形')
+      assertArray([identity.left, identity.top, identity.width, identity.height], [60, 72, 140, 36], '恒等四值')
 
-      // 首行 + 末列（无上/右格线占用，R3 判定）：盒 [64,196]×[76,104]
-      const edge = editorRectOf(rect, { topGridline: false, rightGridline: false })
+      // 首行/末列等边界格同恒等（无 gridline 占用特判——topGridline/rightGridline 参数已删）
+      const edge = editorRectOf({ x: 0, y: 0, width: 80, height: 36 })
 
-      assertArray([edge.left, edge.top, edge.width, edge.height], [64, 76, 132, 28], '首行末列无 1px 扣除')
+      assertArray([edge.left, edge.top, edge.width, edge.height], [0, 0, 80, 36], '边缘格同恒等')
 
-      // computeEditorStyle 消费同函数：gridlines none 时无任何扣除（四周对格缘 4px）
-      const noneGridlines = computeEditorStyle({
-        colLefts: [0, 100],
-        colWidths: [100, 100],
-        headHeight: 36,
-        rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 2 }),
-        colIndex: 1,
-        rowIndex: 1,
-        gridlines: 'none'
-      })
+      // computeEditorStyle 消费同函数（painter hover 描边 import 同一函数同源），
+      // 整格期望值见上一断言块
+      return 'editorRectOf 恒等映射：四值 = 格矩形，边界格同'
+    }
+  },
+  {
+    name: 'editorButtonRectOf：right-align + 首行槽位 centerY（20261027 问题 5 / A5）',
+    fn: () => {
+      // 默认参（padding 8 / lineHeight 18）：区右缘贴格内容区右缘（right-align）
+      // x = 格右 − padding − 24；centerY = 格顶 + ROW_TOP_INSET(1) + padding + lineHeight/2
+      const area = editorButtonRectOf({ x: 0, y: 0, width: 160, height: 36 })
 
-      assertArray(
-        [noneGridlines.left, noneGridlines.top, noneGridlines.width, noneGridlines.height],
-        [104, 76, 92, 28],
-        'gridlines none 全向无扣除'
-      )
+      assertArray([area.x, area.y, area.width, area.height], [128, 6, 24, 24], '默认参几何（centerY = 0+1+8+9 = 18）')
 
-      return '常规 [64,77,131,27] / 边缘 [64,76,132,28] / none [104,77,92,28] 四边等距'
+      // centerY 为首行槽位式而非 rect.height/2：超高行（h=88，行高被多行列撑大）
+      // 锚不变——与单元格文字首行、树箭头中心同一公式（Q2 统一槽位式）
+      const tall = editorButtonRectOf({ x: 0, y: 0, width: 160, height: 88 })
+
+      assertEqual(tall.y, 6, '超高行 centerY 恒 18（槽位锚，不使用 rect.height）')
+      assertEqual(tall.x, 128, '超高行 right-align 不变')
+
+      // 自定义 padding/lineHeight 同式：x = 40+200−12−24 = 204；centerY = 40+1+12+10 = 63 → y = 51
+      const custom = editorButtonRectOf({ x: 40, y: 40, width: 200, height: 60 }, { padding: 12, lineHeight: 20 })
+
+      assertArray([custom.x, custom.y, custom.width, custom.height], [204, 51, 24, 24], '自定义 padding/lineHeight 同式')
+
+      // 偏移格同式：x = 100+120−8−24 = 188；centerY = 200+1+8+9 = 218 → y = 206
+      const offset = editorButtonRectOf({ x: 100, y: 200, width: 120, height: 36 })
+
+      assertArray([offset.x, offset.y, offset.width, offset.height], [188, 206, 24, 24], '偏移格同式')
+
+      return 'right-align x = 格右−padding−24；centerY = 格顶+1+padding+lineHeight/2（槽位式，不随 rect.height）'
     }
   },
   {
@@ -711,7 +741,7 @@ export const checks = [
       const { commits, controller } = createSpyController()
 
       try {
-        // 数组值 text 列（maxLines 缺省判定 textarea）+ link 对象数组开值取 caption
+        // 数组值 text 列（maxLines 缺省判定 textarea）
         const column = { field: 'tags', type: 'text', editor: true }
         const record = { tags: ['alpha', 'beta'] }
 
@@ -751,22 +781,24 @@ export const checks = [
         assertEqual(commits.length, 2, 'Cmd+Enter 提交')
         assertArray(commits[1].value, ['a', '', 'b'], '空行保留为元素')
 
-        // link 对象数组：开值取 caption 拼接、提交为字符串数组（属性不保留，A8 #21）
-        const linkColumn = { field: 'links', type: 'link', editor: true }
+        // 对象数组值 text 列（20261027 问题 4 起 link 不可编辑，caption 拼接覆盖改由
+        // text 列 + 对象数组承接——normalizeEditorOpenValue/normalizeTextareaCommitValue
+        // 为列类型无关的通用逻辑）：开值取 caption 拼接、提交为字符串数组（属性不保留）
+        const objectArrayColumn = { field: 'links', type: 'text', editor: true }
 
         controller.open({
-          column: linkColumn,
+          column: objectArrayColumn,
           record: { links: [{ caption: 'A', color: 'red' }, { caption: 'B' }] },
           recordIndex: 6,
           editable: true
         })
-        assertEqual(controller.state.editing.editorType, 'textarea', 'link 对象数组 → textarea')
-        assertEqual(controller.state.editing.value, 'A\nB', 'link 开值取 caption')
+        assertEqual(controller.state.editing.editorType, 'textarea', '对象数组开值 → textarea')
+        assertEqual(controller.state.editing.value, 'A\nB', '对象数组开值取 caption')
 
         controller.state.editing.value = 'A\nB\nC'
         controller.state.editing.events.keydown({ key: 'Enter', ctrlKey: true, preventDefault: () => {} })
 
-        assertArray(commits[2].value, ['A', 'B', 'C'], 'link 提交 = 字符串数组')
+        assertArray(commits[2].value, ['A', 'B', 'C'], '对象数组提交 = 字符串数组（属性不保留）')
 
         // Esc 取消：直接关闭不发事件（textarea 冒泡至容器的 esc 转发同通道）
         controller.open({ column, record, recordIndex: 5, editable: true })
@@ -774,7 +806,7 @@ export const checks = [
         assertEqual(controller.state.editing, null, '取消后关闭')
         assertEqual(commits.length, 3, '取消不发事件')
 
-        return 'join/split、Ctrl/Cmd+Enter、Enter 换行、link caption、Esc 全链生效'
+        return 'join/split、Ctrl/Cmd+Enter、Enter 换行、对象数组 caption、Esc 全链生效'
       } finally {
         controller.destroy()
       }
