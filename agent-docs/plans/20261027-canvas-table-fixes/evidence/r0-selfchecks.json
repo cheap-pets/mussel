@@ -1,0 +1,16 @@
+{
+  "check": "R0 自检面板回归",
+  "url": "http://localhost:3000/data/canvas-table/",
+  "summary": "自检结果（147/147 通过）",
+  "total": 147,
+  "failCount": 0,
+  "modules": {
+    "[text-wrap]": 10, "[row-geometry]": 12, "[tree]": 8, "[theme]": 15,
+    "[layout]": 21, "[cell-painters]": 28, "[painter]": 18, "[interactions]": 17,
+    "[editor]": 14, "[data]": 4
+  },
+  "note": "location.reload() 后复测一次仍 147/147；dpr=1",
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_INVALID_URL @ data:image/png;base64,AAAA1:0（demo 夹具既有，任务前存在，与本次改动无关）"
+  ]
+}

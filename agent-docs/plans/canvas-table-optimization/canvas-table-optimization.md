@@ -1,8 +1,8 @@
 # canvas-table 性能与复杂度优化方案
 
 > 依据：2026-10-26 对 `src/components/canvas-table/`（11 文件 ~6,600 行）全量源码走查。
-> 基线：`.pipeline/20261025-editable-table/`（02-design.md 为行为权威）、
-> `.pipeline/20261023-canvas-table/02-design.md` 被拒绝备选 #5（滚动自拷贝为 profile 后备选）。
+> 基线：`agent-docs/plans/20261025-editable-table/`（02-design.md 为行为权威）、
+> `agent-docs/plans/20261023-canvas-table/02-design.md` 被拒绝备选 #5（滚动自拷贝为 profile 后备选）。
 > 本文只做评估与方案，未改代码。
 
 ## 总体判断

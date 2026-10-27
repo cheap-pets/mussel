@@ -1,0 +1,17 @@
+{
+  "check": "R4a/R4b 文字居中与多行首行对齐",
+  "scene": "multiline",
+  "row": 1,
+  "cellHeight": 52,
+  "rowY": 232,
+  "columnsProbed": [0, 2, 3, 5],
+  "columnsLabels": ["名称(单行省略)", "maxLines=10(wrap 单行内容)", "字符串数组 maxItems=3(数组单元素)", "multiline+lineClamp(函数, shallow 1 行)"],
+  "inkBounds": [
+    { "minX": 9, "maxX": 90, "minY": 251, "maxY": 263, "centerY": 257 },
+    { "minX": 358, "maxX": 428, "minY": 251, "maxY": 263, "centerY": 257 },
+    { "minX": 578, "maxX": 634, "minY": 251, "maxY": 263, "centerY": 257 },
+    { "minX": 829, "maxX": 956, "minY": 251, "maxY": 263, "centerY": 257 }
+  ],
+  "r4b": { "alignC0vsC2": 0, "alignC0vsC3": 0, "tolerance": 1, "pass": true },
+  "r4a": { "col0InkCenterY": 257, "cellGeometricCenterY": 258, "offset": -1, "tolerance": 2, "note": "-1px 为字体 middle 基线与墨迹中心固有差（实施偏离 2 口径），非格线 1px 系统性偏移；与实施记录一致", "pass": true }
+}

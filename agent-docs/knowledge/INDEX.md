@@ -1,102 +1,48 @@
 # 项目知识
 
-> 按 project-knowledge skill 规范维护：新知识写入 `pitfalls/`、`patterns/`、`conventions/`、`constraints/`、`tradeoffs/` 子目录，并在此索引登记。方案/规划类文档归 `agent-docs/plans/`，不入知识库。
+使用规则：
 
-## Patterns
+- 命中即采用，不重复查证（含不进外部仓库复核）；待改代码须实际读取，不凭知识库推断。
+- 报错先匹配 `pitfall` 条目。
+- 依据条目执行或验证发现不符时，重新查证并调用 `project-knowledge` 覆写条目。
+- 来源 `user` 的条目直接采信，与代码冲突先告知用户；其余冲突以代码为准。
+- 只按索引读取相关条目，禁止遍历知识库。
 
-- [sizechange 事件：监听元素尺寸变化](./patterns/sizechange-event.md)
-  共享 ResizeObserver + prototype patch 实现的 `@sizechange`，禁止直接 new ResizeObserver；注意首挂即触发一次、不冒泡、卸载不解绑。
+## Project
 
-- [Playwright 验证 watch 驱动路径：经组件实例替换 props](./patterns/playwright-props-swap-verification.md)
-  demo 数据为 const 无替换入口时，`el.__vueParentComponent.props.x = …` 替换 props 触发子组件 watch；实测无警告，注意替换后勿触发父重渲。
+- [sizechange 事件：监听元素尺寸变化](./project/sizechange-event.md) `convention`：监听元素尺寸变化统一 `@sizechange`，禁止直接 new ResizeObserver；首挂即触发一次、不冒泡、卸载不解绑。
+- [canvas-table 前台性能验证：原型劫持计数 + props 直替 + lastRelayout](./project/canvas-table-performance-profiling.md) `convention`：劫持 measureText/setTransform 计数 + props 直替注入 + `lastRelayout` 归因 relayout 耗时。
+- [headless Edge 做 DOM/控制台断言（无 playwright 时）](./project/headless-edge-dom-verification.md) `convention`：无 playwright 时用 Edge `--dump-dom` 断言 DOM 与 console 输出，脚本走 dist/mussel.js dev 构建。
+- [包裹层 display: contents 兼容既有扁平布局](./project/wrapper-display-contents-legacy-layout.md) `convention`：新增包裹层默认 display: contents 保扁平布局；`& > *` 不再命中孙元素，overflow/max-width 须下放。
+- [桌面环境下触摸手势的运行时验证](./project/touch-gesture-runtime-verification.md) `convention`：桌面无 ontouchstart 手势拦截器不注册；addInitScript 伪造门槛 + 合成触摸事件 + page.clock 驱动长按。
+- [国际化：locale 无响应式，运行时不可切换](./project/langs-locale-not-reactive.md) `convention`：locale 仅安装时确定一次；依赖文案宽度的计算不必为切语言预留重算路径。
+- [Teleport 弹层与宿主组件的 CSS 变量级联断裂](./project/teleport-popup-css-vars.md) `pitfall`：弹层 Teleport 到根后宿主类上的组件级 CSS 变量不生效；弹层类须重复声明默认值。
+- [级联延时收起：hide 不可向上清祖先计时器](./project/cascade-delay-hide-clears-ancestor-timer.md) `pitfall`：链离开后祖先面板滞留不关——hide 向上清了祖先未触发计时器；hide 只清自身。
+- [集中样式拆分到各组件后，同特异性覆盖规则跨文件失效](./project/css-split-equal-specificity-order.md) `pitfall`：叠加态样式盖不住——覆盖对随 import 顺序漂移失效；覆盖规则须随被覆盖选择器同文件置尾。
+- [demo watch 运行中新增页面目录需重启构建](./project/demo-watch-new-entry-restart.md) `pitfall`：新增 demo 页后 :3000 访问 404——rollup input 启动时枚举；须重启 demo:build。
+- [demo watch 重建会清空 demo/dist](./project/demo-watch-wipes-dist.md) `pitfall`：手工放入的临时资产重建后 404 / `Vue is not defined`——watch 重建清空 outDir；资产随用随放。
+- [Playwright 验证延时收起弹层：整场景须单调用内完成](./project/playwright-delay-hide-popup-testing.md) `pitfall`：调用间隙链自关、同坐标重进无 mouseenter——hover→停留→断言须单脚本完成，重开前先移出移入。
+- [容器 display:none 期间测量污染溢出折叠宽度缓存](./project/overflow-measure-hidden-container-cache.md) `pitfall`：恢复显示后全部项展开、触发器消失——隐藏期 0 宽写入 widthCache；0 宽须视同未测量。
+- [Playwright 断言 modal 可见性须用 mask 的 display](./project/playwright-modal-visibility-assert.md) `pitfall`：关闭后 `.mu-dialog` display 恒非 none——自身值不受祖先 v-show 影响；须取 closest('.mu-modal-mask')。
+- [Playwright 模拟 splitter 拖拽：真实 mouse + scrollIntoView + 方向语义](./project/playwright-splitter-drag-verify.md) `pitfall`：合成 PointerEvent 拖不动（setPointerCapture 抛错）——须真实 mouse 先 scrollIntoView；collapse-only 向 prev 方向拖为折叠。
+- [canvas-table 自检像素断言随锚点口径漂移](./project/canvas-pixel-assert-anchor-drift.md) `pitfall`：锚点变更后自检断言恒败伪装成组件缺陷——采样区与对照帧须同批改写，对照帧用真·基线 makeState({})。
+- [overlay DOM 阴影 canvas getImageData 不可见](./project/dom-shadow-canvas-imagedata-invisible.md) `pitfall`：getImageData 读不到滚动阴影——overlay 阴影是 DOM box-shadow；断言 DOM 或截图合成像素。
+- mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
+- mu-dialog / mu-drawer 的 dismissible 无默认值 `pitfall` `code@9517eb6`：不传 dismissible 时 ESC 与遮罩点击均不关闭；需此交互须显式传 dismissible。
 
-- [canvas-table 前台性能验证：原型劫持计数 + props 直替 + lastRelayout](./patterns/canvas-table-performance-profiling.md)
-  劫持 measureText/setTransform 计数 + props 直替注入 + `getLayoutInfo().lastRelayout` 归因 relayout 阶段；含 getCellRect 视口坐标/真实键盘/暗像素采样三陷阱。
+## Global
 
-- [headless Edge 做 DOM/控制台断言（无 playwright 时）](./patterns/headless-edge-dom-verification.md)
-  `--dump-dom --enable-logging=stderr --virtual-time-budget` + UMD 产物（dist/mussel.js dev 构建 + vue.global.js）挂载多 app，grep DOM class 与 CONSOLE 行断言；模块级全局对象跨 app 共享，隔离断言用独立页面。
-
-- [包裹层 display: contents 兼容既有扁平布局](./patterns/wrapper-display-contents-legacy-layout.md)
-  新增包裹层但默认模式依赖扁平子元素布局时，wrapper 默认 display: contents、仅新模式生成盒子；注意 `& > *` 规则不再命中下沉的孙元素，overflow/max-width 须下放。
-
-## Pitfalls
-
-- [Teleport 弹层与宿主组件的 CSS 变量级联断裂](./pitfalls/teleport-popup-css-vars.md)
-  弹层 Teleport 到 root 后宿主类上的组件级 CSS 变量不生效，弹层类须重复声明默认值。
-
-- [grid-template-rows 展开动画期间执行 scrollIntoView 会错位](./pitfalls/scroll-during-grid-rows-animation.md)
-  nextTick 后立即滚动按动画中间态计算，须等动画时长结束后再滚。
-
-- [Vue 卸载元素不会移除模板事件监听](./pitfalls/vue-unmount-no-listener-removal.md)
-  Vue 3 卸载时不调 removeEventListener（unmount 只 hostRemove），"卸载自动解绑"假设不成立，依赖记账的观察机制不会归零。
-
-- [Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流](./pitfalls/playwright-hidden-page-resize-observer.md)
-  浏览器窗口后台时页面 hidden，渲染阶段 API 停发、setTimeout/setInterval 节流、CSS transition 不启动（样式变更不触发过渡、computed 停旧值）；验证 sizechange 用手动 dispatch 等价模拟，验证 interval 周期逻辑改用 `page.clock` 假时钟驱动（不改源码常量），验证页须选加载库的组件页（demo `/` 首页不加载库）。
-
-- [flex 压缩截断破坏 rect 内容宽测量](./pitfalls/flex-ellipsis-breaks-rect-measurement.md)
-  `overflow: hidden` 使 flex item 最小宽度归零、行溢出时被压出省略号，rect 跨度随之缩小；实测内容宽须用 Range 补回文本自然宽并计入首尾子元素 margin。
-
-- [桌面环境下触摸手势的运行时验证](./pitfalls/touch-gesture-runtime-verification.md)
-  桌面 Chrome 无 `'ontouchstart'` 导致手势拦截器不注册；伪造门槛（addInitScript）+ 合成触摸事件 + `page.clock` 驱动长按计时，可在桌面完整验证 tap / press 与 bind/unbind 清账。
-
-- [inert 子树内元素不参与 hit-test](./pitfalls/inert-subtree-no-hover-no-click.md)
-  inert 元素整棵子树不匹配 `:hover`、鼠标事件不派发；hover 显现/可点的附属元素（如收藏星标）移入 inert 行内即失效，置于 inert 容器外不受影响。
-
-- [grid 0fr 收缩轨道计入 item margin](./pitfalls/grid-0fr-track-margin-leak.md)
-  `grid-template-rows: 0fr` 收起动画中 item 的 margin 泄漏进轨道尺寸（收起残留空隙）；间距须放进 overflow hidden 裁剪区内的首子元素上。
-
-- [grid 单条显式轨道忽略多余 item](./pitfalls/grid-single-explicit-track-ignores-extra-items.md)
-  单条 `minmax(0,·fr)` 只约束首个 grid item，插槽多根元素时其余落隐式 `auto` 轨道不收缩；须加收敛层保证单 item。
-
-- [Boolean prop 未传被转换为 false](./pitfalls/boolean-prop-absent-casts-false.md)
-  Boolean prop 未传且无 default 时值为 `false` 非 `undefined`，`??` 兜底链失效；须显式 `default: undefined`。defineModel 具名必须传名字，漏名绑到 modelValue 静默失效。
-
-- [grid 过渡中 auto 轨道被 fr 插值隆起](./pitfalls/grid-auto-track-fr-transition-bump.md)
-  `auto 0fr ↔ auto 1fr` 过渡中 content-based 轨道每帧按 fr 中间态重解析、钟形膨胀（行内内容抖动）；首轨道须用确定长度或单 fr 轨道独立成动画容器。
-
-- [watch immediate 回调的 TDZ 陷阱](./pitfalls/watch-immediate-callback-tdz.md)
-  `immediate: true` 回调在 watch() 返回前同步执行，回调内引用 unwatch 句柄或后置声明变量会 ReferenceError；标志前置 + nextTick 停表。
-
-- [级联延时收起：hide 不可向上清祖先计时器](./pitfalls/cascade-delay-hide-clears-ancestor-timer.md)
-  整链同延时臂定后先触发的 hide 若向上清，会取消祖先未触发的计时器、链滞留成孤儿；hide 只清自身，向上清仅限 mouseenter 保活与 delayHide 重臂。
-
-- [响应式 style patch 异步：递归重定位读到旧 rect](./pitfalls/reactive-style-patch-vs-recursive-rect-read.md)
-  同步递归链中子层读父面板内锚点 rect 时，父面板样式尚未 patch 落地；递归前须清旧键后同步 Object.assign(el.style, style)。
-
-- [被滚动裁剪容器滚出的行 rect 仍在视口内](./pitfalls/clipped-row-rect-still-in-viewport.md)
-  `isElementInViewport` 只查窗口边界，被 `mu-scroll-box` 裁剪滚出的行误报可见；锚点可见性须再与裁剪容器可见矩形求交。
-
-- [集中样式拆分到各组件后，同特异性覆盖规则跨文件失效](./pitfalls/css-split-equal-specificity-order.md)
-  靠同文件书写顺序生效的同特异性覆盖对（如根禁用类覆盖行 `[active]`），拆分后随 import 顺序漂移失效；覆盖规则须随被覆盖选择器搬进同一文件置尾。
-
-- [demo watch 运行中新增页面目录需重启构建](./pitfalls/demo-watch-new-entry-restart.md)
-  rollup input 在 config 加载时枚举 demo/src，watch 不跟踪新目录；新增 demo 页后 :3000 404，须重启 demo:build。
-
-- [demo watch 重建会清空 demo/dist](./pitfalls/demo-watch-wipes-dist.md)
-  vite build --watch 每次重建清空 outDir，手工放入的临时验证资产被静默删除（404 / Vue is not defined）；临时资产随用随放，中间不改 src。
-
-- [Playwright 验证延时收起弹层：整场景须单调用内完成](./pitfalls/playwright-delay-hide-popup-testing.md)
-  工具调用间隔超 HIDE_DELAY 链自关、同坐标重进无 mouseenter、滚动致弹层脱离鼠标、旧链面板遮挡锚点行；hover→停留→断言须单脚本完成，重开前先移出移入。
-
-- [fixed 弹层可见性断言不可用 offsetParent](./pitfalls/fixed-popup-offset-parent-visibility.md)
-  fixed 元素 offsetParent 恒 null，可见弹层被误判隐藏；用 playwright `:visible` 或 `getClientRects().length` 断言。
-
-- [容器 display:none 期间测量污染溢出折叠宽度缓存](./pitfalls/overflow-measure-hidden-container-cache.md)
-  隐藏期间测量把 0 宽写入 `widthCache`，恢复后全部行展开被裁剪；0 宽须视同未测量（加守卫），漂移检测删除后不再自愈。
-
-- [Playwright 断言 modal 可见性须用 mask 的 display](./pitfalls/playwright-modal-visibility-assert.md)
-  `.mu-dialog`/`.mu-drawer` 自身 computed display 不受祖先 v-show 影响、恒为块级；关闭断言须取 `closest('.mu-modal-mask')` 的 display。
-
-- [Playwright 模拟 splitter 拖拽：真实 mouse + scrollIntoView + 方向语义](./pitfalls/playwright-splitter-drag-verify.md)
-  合成 PointerEvent 使 setPointerCapture 抛错、监听器不挂载；须真实 mouse 且先 scrollIntoView；collapse-only 分隔条 target=prev 向左拖为折叠。
-
-- mu-split-box 侧栏面板初始尺寸
-  `__start/__end` 为 flex-grow:0 且 basis auto，无内容宽度时初始仅约 37px；侧栏内容须给 min-width 或固定宽度，否则无拖拽余地。
-
-- mu-dialog / mu-drawer 的 dismissible 无默认值
-  modalProps.dismissible 无 default，不传时 ESC 与遮罩点击均不关闭，只能按钮或程序化 hide；需 ESC/遮罩关闭须显式传 dismissible。
-
-## Constraints
-
-- [国际化：locale 无响应式，运行时不可切换](./constraints/langs-locale-not-reactive.md)
-  locale 仅安装时确定一次，无响应式来源；依赖文案宽度的计算不必为"切语言"预留重算路径。
+- [Playwright 验证 watch 驱动路径：经组件实例替换 props](./global/playwright-props-swap-verification.md) `convention`：watch 身份路径 UI 不可达时，经 `el.__vueParentComponent.props` 直替触发；替换后勿触发父重渲。
+- [Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流，transition 不启动](./global/playwright-hidden-page-resize-observer.md) `pitfall`：页面 hidden 时 rAF/RO 停发、定时器节流、transition 永停旧值；用手动派发与 page.clock 驱动验证。
+- [grid-template-rows 展开动画期间执行 scrollIntoView 会错位](./global/scroll-during-grid-rows-animation.md) `pitfall`：展开动画中滚动落点错位——nextTick 后仍按中间态计算；等动画时长结束后再滚。
+- [Vue 卸载元素不会移除模板事件监听](./global/vue-unmount-no-listener-removal.md) `pitfall`：依赖卸载自动解绑的记账不归零——Vue 3 卸载只 hostRemove；需确定性释放须显式 removeEventListener。
+- [flex 压缩截断破坏 rect 内容宽测量](./global/flex-ellipsis-breaks-rect-measurement.md) `pitfall`：行溢出时 rect 跨度被截断量抵消、判定虚高——用 Range 补回文本自然宽并计入首尾 margin。
+- [inert 子树内元素不参与 hit-test：:hover 不匹配、点击无效](./global/inert-subtree-no-hover-no-click.md) `pitfall`：hover 显现/可点的附属元素移入 inert 行内即失效；置于 inert 容器外不受影响。
+- [grid 0fr 收缩轨道计入 item margin，收起态泄漏间距](./global/grid-0fr-track-margin-leak.md) `pitfall`：收起后残留等高空隙——0fr 轨道计入 item margin；间距放 overflow hidden 裁剪区内首子元素上。
+- [grid 单条显式轨道忽略多余 item](./global/grid-single-explicit-track-ignores-extra-items.md) `pitfall`：多根插槽内容收不干净——单条显式轨道只约束首个 item，其余落隐式 auto 轨道；须加收敛层。
+- [Boolean prop 未传被转换为 false](./global/boolean-prop-absent-casts-false.md) `pitfall`：`??` 兜底链失效——Boolean prop 未传且无 default 时为 false 非 undefined；须显式 default: undefined。
+- [grid-template-rows 过渡中 auto 轨道被 fr 插值隆起](./global/grid-auto-track-fr-transition-bump.md) `pitfall`：过渡中行内内容抖动——auto 轨道按 fr 中间态钟形膨胀；首轨道用确定长度或 fr 轨道独立成动画容器。
+- [watch immediate 回调的 TDZ 陷阱](./global/watch-immediate-callback-tdz.md) `pitfall`：`Cannot access 'xxx' before initialization`——immediate 回调在 watch 返回前同步执行；标志前置 + nextTick 停表。
+- [响应式 style patch 异步：递归重定位读到旧 rect](./global/reactive-style-patch-vs-recursive-rect-read.md) `pitfall`：递归重定位后子层原地不动——style patch 异步、锚点 rect 仍旧值；递归前清旧键同步 Object.assign。
+- [被滚动裁剪容器滚出的行 rect 仍在视口内](./global/clipped-row-rect-still-in-viewport.md) `pitfall`：滚出滚动容器的元素误报可见——getBoundingClientRect 不受裁剪影响；须与裁剪容器可见矩形求交。
+- [fixed 弹层可见性断言不可用 offsetParent](./global/fixed-popup-offset-parent-visibility.md) `pitfall`：可见 fixed 弹层被误判隐藏——fixed 元素 offsetParent 恒 null；用 :visible 或 getClientRects().length 断言。

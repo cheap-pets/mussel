@@ -1,0 +1,25 @@
+{
+  "scene": "default",
+  "colWidth": 48,
+  "headHeight": 36,
+  "pixelCount": 68,
+  "bbox": {
+    "minX": 16,
+    "maxX": 32,
+    "minY": 10,
+    "maxY": 26
+  },
+  "center": [
+    24,
+    18
+  ],
+  "expectCenter": [
+    24,
+    18
+  ],
+  "dx": 0,
+  "dy": 0,
+  "boxWidth": 16,
+  "boxHeight": 16,
+  "pass": true
+}

@@ -1,0 +1,24 @@
+{
+  "check": "R5 表格宽于列宽总和时空白区 hover/选中",
+  "scene": "narrow",
+  "colWidths": [56, 280, 240],
+  "contentWidthSum": 576,
+  "canvasWidth": 956,
+  "probe": { "blank": [700, 54], "inColumn": [300, 54], "row": 0 },
+  "baselineNoHover": { "blank": [255, 255, 255, 255], "inColumn": [255, 255, 255, 255] },
+  "hoverBlankArea": { "blank": [242, 242, 243, 255], "inColumn": [242, 242, 243, 255], "spansBlankAndMatchesColumnArea": true },
+  "clickBlankEvents": [
+    { "seq": 4, "name": "update:selected-record-key", "detail": "1" },
+    { "seq": 5, "name": "update:selected-record", "detail": "{\"record\":\"#1\"}" }
+  ],
+  "clickBlankNoCellClick": true,
+  "afterClickRowBg": { "blank": [225, 236, 243, 255], "inColumn": [225, 236, 243, 255], "note": "选中底色满宽覆盖空白区与列区一致" },
+  "regressionClickNormalCell": {
+    "events": [
+      { "seq": 6, "name": "update:selected-record", "detail": "{\"record\":\"#1\"}" },
+      { "seq": 7, "name": "cell-click", "detail": "{\"record\":\"#1\",\"recordIndex\":0,\"column\":\"name\"}" }
+    ],
+    "cellClickEmitted": true
+  },
+  "pass": true
+}

@@ -47,6 +47,7 @@ Mussel — Vue 3 组件库。
 - 开发时，项目使用 rollup 的 watch 模式打包，并启用了 3000 端口监听的站点服务。
   使用 playwright 验证时，先尝试直接访问，不用每次执行打包。
 - 没有明确要求进行仓库提交时，不要提交。
+- dev-pipeline 任务目录使用 `agent-docs/plans/<yyyymmdd>-<slug>/`，不使用 `.pipeline/`。
 
 
 

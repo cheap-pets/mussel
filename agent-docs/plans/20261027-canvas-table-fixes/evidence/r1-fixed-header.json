@@ -1,0 +1,29 @@
+{
+  "check": "R1 固定列表头无残影",
+  "probeA": {
+    "scene": "fixed（固定列组合）",
+    "colWidths": [70, 160, 320, 200, 100, 190],
+    "fixedW": 230,
+    "scrollLeft": 84,
+    "assert": "固定表头区 [0,228)x[0,36)（避开分界强化线列 [228,230)）滚动前后逐像素一致",
+    "fixedHeaderIdentical": true,
+    "firstDiffOffset": -1,
+    "darkBeyondBefore": 96,
+    "darkBeyondAfter": 0,
+    "note": "scrollLeft=84 时名称列表头文字（视口 x 154 起）完全落入固定区被裁剪：固定区无残影，分界右侧无该文字像素"
+  },
+  "probeB": {
+    "scene": "default + fixedLeftColumns=2",
+    "colWidths": [48, 56, 160, 100, 100],
+    "fixedW": 104,
+    "scrollLeft": 180,
+    "statusCaptionContentX": 272,
+    "statusCaptionViewportX": 92,
+    "straddle": true,
+    "fixedHeaderIdentical": true,
+    "firstDiffOffset": -1,
+    "darkBeyondBefore": 120,
+    "darkBeyondAfter": 280,
+    "note": "状态列表头文字部分跨越分界（x=92 < 104）：固定区仍逐像素一致（无残影），分界右侧 [104,264) 文字像素 120→280（裁剪后可见部分正常绘制，clip 边界精确）"
+  }
+}

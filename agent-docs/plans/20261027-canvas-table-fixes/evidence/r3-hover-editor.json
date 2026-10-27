@@ -1,0 +1,13 @@
+{
+  "check": "R3 可编辑格 hover 内边框与格边框四周等距 + 编辑浮层同矩形",
+  "cell": { "scene": "default", "row": 2, "col": 3, "colLeft": 264, "colWidth": 100, "top": 108, "bottom": 144, "note": "非首行非末列 → 上/右格线均占用本格 1px" },
+  "method": "基线=hover 同行远端格（col 8，行带一致无本格描边）→ hover 目标格 → getImageData 差分取描边包围盒；随后点击开编辑浮层读 DOM 盒",
+  "cursorAtEditableCell": "text",
+  "strokeBbox": { "minX": 268, "maxX": 359, "minY": 113, "maxY": 140, "count": 232 },
+  "gaps": { "left": 4, "top": 4, "right": 4, "bottom": 4 },
+  "gapFormula": "left=stroke.minX-cellLeft; top=stroke.minY-(cellTop+1); right=(cellRight-1)-stroke.maxX; bottom=cellBottom-stroke.maxY（最近格线内缘空白）",
+  "editorBox": { "x": 268, "y": 113, "w": 91, "h": 27, "style": "left: 268px; top: 113px; width: 91px; height: 27px;" },
+  "editorEqualsStroke": true,
+  "escapeClosed": true,
+  "pass": true
+}
