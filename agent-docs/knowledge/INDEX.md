@@ -29,6 +29,7 @@
 - [demo 页 URL 前缀 /data/](./project/demo-page-url-data-prefix.md) `fact` `code@worktree(2026-10-28)`：验证页在 `http://localhost:3000/data/<name>/`，AGENTS.md 的 `/<name>/` 表述已过时。
 - [overlay DOM 阴影 canvas getImageData 不可见](./project/dom-shadow-canvas-imagedata-invisible.md) `pitfall`：getImageData 读不到滚动阴影——overlay 阴影是 DOM box-shadow；断言 DOM 或截图合成像素。
 - [canvas-table demo 页交互验证](./project/canvas-table-demo-interaction-verify.md) `convention` `code@worktree(2026-10-28)`：单元格点击向 sticky 派发带 clientX 的 pointer/click，坐标经 getLayoutInfo 前缀和；浮层断言等 80ms+；事件日志 unshift 最新在前；条目命中区=pill 绘制区非整格，多 pill 探针勿取联合包围盒中点（8px 间隙）。
+- TagColumn mu-tag--{color} 色名解析协议 `convention` `code@worktree(2026-10-28)`：TagColumn 输出的 mu-tag--{color} class 不可删——canvas-table colorClassOf 靠它取色、self-checks 断言它；DOM 着色另走 mu-faint-{color}。
 - mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
 - mu-dialog / mu-drawer 的 dismissible 无默认值 `pitfall` `code@9517eb6`：不传 dismissible 时 ESC 与遮罩点击均不关闭；需此交互须显式传 dismissible。
 - Cannot convert undefined or null to object（列夹具） `pitfall` `code@worktree(2026-10-28)`：mu-table {type:'enum'} 缺 mappings 即抛——EnumColumn.compile 无守卫 entries(column.mappings)（column-types/enum.js），夹具须带 mappings；canvas-table 侧 enum 已移除。

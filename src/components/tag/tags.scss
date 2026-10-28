@@ -34,13 +34,9 @@
   flex-wrap: nowrap;
 }
 
+// 形态（高/padding/圆角/灰底/描边）复用全局 .mu-tag 基类（styles/tag.scss）
 .mu-tags__tag,
 .mu-tags__more {
-  height: 20px;
-  padding: 0 5px;
-  border-radius: var(--mu-radius-control);
-
-  background-color: var(--mu-gray-translucent);
   outline: none;
 
   &:focus,
@@ -53,8 +49,7 @@
   }
 }
 
-.mu-tags__tag {
-  overflow: hidden;
+.mu-tag.mu-tags__tag {
   display: inline-flex;
   flex: none;
   gap: var(--mu-half-spacing);
@@ -62,8 +57,6 @@
 
   min-width: 40px;
   max-width: 100%;
-
-  white-space: nowrap;
 
   & > label {
     overflow: hidden;
@@ -88,7 +81,6 @@
 .mu-tags__more {
   cursor: pointer;
   flex: none;
-  line-height: 20px;
 }
 
 .mu-tags[tag-shrink] > .mu-tags__tag {

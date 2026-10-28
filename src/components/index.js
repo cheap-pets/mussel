@@ -15,6 +15,7 @@ import * as TooltipComponents from './tooltip'
 import * as MessageComponents from './message'
 import * as CollapseComponents from './collapse'
 
+import MuTag from './tag/tag.vue'
 import MuTags from './tag/tags.vue'
 import MuBadge from './badge/badge.vue'
 import MuTable from './table/table.vue'
@@ -52,6 +53,7 @@ function installComponents (app, options) {
   _install(CollapseComponents)
 
   _install({
+    MuTag,
     MuTags,
     MuBadge,
     MuTable,

@@ -43,6 +43,28 @@
     </demo-section>
 
     <demo-section
+      title="Tag 基础用法"
+      note="MuTag 组件，默认灰底描边；color 走 tones（faint 淡底 / solid 实底）；pill 全圆角、flat 去描边">
+      <mu-tag>Default</mu-tag>
+      <mu-tag color="success">
+        Success
+      </mu-tag>
+      <mu-tag
+        color="success"
+        faint>
+        Success faint
+      </mu-tag>
+      <mu-tag
+        color="pink"
+        pill>
+        Pink pill
+      </mu-tag>
+      <mu-tag flat>
+        Flat
+      </mu-tag>
+    </demo-section>
+
+    <demo-section
       title="Tags 基础用法"
       note="MuTags 组件，tags 为 { label, title? } 数组，title 为悬停提示">
       <mu-tags :tags="tags" />

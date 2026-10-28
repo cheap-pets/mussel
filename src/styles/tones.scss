@@ -16,7 +16,7 @@
   "red", "pink", "grape", "violet", "indigo", "blue",
   "cyan", "teal", "green", "lime", "yellow", "orange"
 ) {
-  .mu-solid--#{$v} {
+  .mu-solid-#{$v} {
     color: #FFF;
     background-color: var(--mu-#{$v});
   }
