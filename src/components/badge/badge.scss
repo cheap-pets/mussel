@@ -21,6 +21,7 @@
 
   &:empty {
     width: var(--mu-badge_dot-size);
+    min-width: unset;
     height: var(--mu-badge_dot-size);
     padding: 0;
     border-radius: calc(var(--mu-badge_dot-size) / 2);
