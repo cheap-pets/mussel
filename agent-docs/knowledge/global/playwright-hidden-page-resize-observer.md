@@ -12,6 +12,8 @@ Playwright MCP 的浏览器窗口处于后台/最小化时，页面 `document.vi
 
 验证依赖 interval 的周期逻辑（如挂载状态清扫）时，用 `page.clock` 假时钟驱动，不改源码常量、不依赖 `browser_wait_for`（等待期间页面随时可能转 hidden）：`browser_run_code_unsafe` 里先 `await page.clock.install()` 再导航，之后 `await page.clock.runFor(11000)` 精确触发周期回调——页面 hidden 下也照常执行（interval 回调是纯 JS，不依赖渲染帧）。
 
+验证依赖 rAF 的 canvas 自检（绘制计数、像素断言）时，hidden 页 rAF 挂起导致自检永不执行：截一张图即可——截图请求强制 Chromium BeginFrame 渲染一帧，rAF 回调随帧恢复（canvas-table 自检面板验证实测）。
+
 ## 原因
 
 Chromium 的 RO 回调在渲染阶段交付；页面不可见时渲染帧暂停，交付挂起。定时器走 Chrome 后台节流策略（budget-based throttling）。两者都不是库代码缺陷——用户切回标签页后浏览器会补发/补跑。

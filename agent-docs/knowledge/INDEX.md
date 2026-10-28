@@ -31,12 +31,12 @@
 - [canvas-table demo 页交互验证](./project/canvas-table-demo-interaction-verify.md) `convention` `code@worktree(2026-10-28)`：单元格点击向 sticky 派发带 clientX 的 pointer/click，坐标经 getLayoutInfo 前缀和；浮层断言等 80ms+；事件日志 unshift 最新在前；条目命中区=pill 绘制区非整格，多 pill 探针勿取联合包围盒中点（8px 间隙）。
 - mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
 - mu-dialog / mu-drawer 的 dismissible 无默认值 `pitfall` `code@9517eb6`：不传 dismissible 时 ESC 与遮罩点击均不关闭；需此交互须显式传 dismissible。
-- Cannot convert undefined or null to object（列夹具） `pitfall` `code@03632af`：prepareColumn({type:'enum'}) 缺 mappings 即抛——EnumColumn.compile 列准备期求值 mappings，夹具须带 mappings。
+- Cannot convert undefined or null to object（列夹具） `pitfall` `code@worktree(2026-10-28)`：mu-table {type:'enum'} 缺 mappings 即抛——EnumColumn.compile 无守卫 entries(column.mappings)（column-types/enum.js），夹具须带 mappings；canvas-table 侧 enum 已移除。
 
 ## Global
 
 - [Playwright 验证 watch 驱动路径：经组件实例替换 props](./global/playwright-props-swap-verification.md) `convention`：watch 身份路径 UI 不可达时，经 `el.__vueParentComponent.props` 直替触发；替换后勿触发父重渲。
-- [Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流，transition 不启动](./global/playwright-hidden-page-resize-observer.md) `pitfall`：页面 hidden 时 rAF/RO 停发、定时器节流、transition 永停旧值；用手动派发与 page.clock 驱动验证。
+- [Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流，transition 不启动](./global/playwright-hidden-page-resize-observer.md) `pitfall`：页面 hidden 时 rAF/RO 停发、定时器节流、transition 永停旧值；手动派发 / page.clock 驱动，canvas 帧依赖用截图强制 BeginFrame。
 - [grid-template-rows 展开动画期间执行 scrollIntoView 会错位](./global/scroll-during-grid-rows-animation.md) `pitfall`：展开动画中滚动落点错位——nextTick 后仍按中间态计算；等动画时长结束后再滚。
 - [Vue 卸载元素不会移除模板事件监听](./global/vue-unmount-no-listener-removal.md) `pitfall`：依赖卸载自动解绑的记账不归零——Vue 3 卸载只 hostRemove；需确定性释放须显式 removeEventListener。
 - [flex 压缩截断破坏 rect 内容宽测量](./global/flex-ellipsis-breaks-rect-measurement.md) `pitfall`：行溢出时 rect 跨度被截断量抵消、判定虚高——用 Range 补回文本自然宽并计入首尾 margin。
@@ -49,3 +49,6 @@
 - [响应式 style patch 异步：递归重定位读到旧 rect](./global/reactive-style-patch-vs-recursive-rect-read.md) `pitfall`：递归重定位后子层原地不动——style patch 异步、锚点 rect 仍旧值；递归前清旧键同步 Object.assign。
 - [被滚动裁剪容器滚出的行 rect 仍在视口内](./global/clipped-row-rect-still-in-viewport.md) `pitfall`：滚出滚动容器的元素误报可见——getBoundingClientRect 不受裁剪影响；须与裁剪容器可见矩形求交。
 - [fixed 弹层可见性断言不可用 offsetParent](./global/fixed-popup-offset-parent-visibility.md) `pitfall`：可见 fixed 弹层被误判隐藏——fixed 元素 offsetParent 恒 null；用 :visible 或 getClientRects().length 断言。
+- Vue reactive 代理引用相等比较恒 false `pitfall` `code@worktree(2026-10-28)`：代理 ≠ 原对象 / 另一代理——断言对象同一性须 `toRaw` 后比较原引用。
+- 自检断言 Intl 数字格式化结果失败 `pitfall` `code@worktree(2026-10-28)`：手写期望值易错（分组分隔、尾零：`'1,234.50'` 实为 `'1,234.5'`）——先 node 复算实际输出。
+- npm 后台脚本记录的是 shell PID，dev 服务杀不掉 `pitfall` `code@worktree(2026-10-28)`：shell PID ≠ node 服务进程——按端口 netstat 定位实际 PID 再 taskkill，事后验证端口释放。
