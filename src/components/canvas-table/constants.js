@@ -32,15 +32,17 @@ export const FONT_FAMILY_FALLBACK = 'sans-serif'
 /** 行顶内容内缩 1px：行格线画在下一行矩形顶部（占用本格矩形内 1px，r ≥ 1），
     全部垂直锚（cell-painters 文字/树箭头/items/progress/button、painter
     paintTreeArrowAccent、editor editorButtonRectOf）统一为「格顶 + ROW_TOP_INSET
-    + padding + lineHeight/2」首行行框槽位式；常量、与 gridlines 模式无关、
-    对所有行（含 r = 0）取同一值（20261027 问题 1 Q2 统一槽位锚） */
+    + (ROW_HEIGHT − ROW_TOP_INSET) / 2」行线间空白中点式（= rect.y + (ROW_HEIGHT
+    + 1) / 2，与 lineHeight/padding 解耦）；常量、与 gridlines 模式无关、
+    对所有行（含 r = 0）取同一值（20261027 问题 1 Q2 统一槽位锚，20261028 归零
+    0.5px 几何偏差） */
 export const ROW_TOP_INSET = 1
+
+/** --row-height 镜像缺省（editor.js 不可 import theme.js，模块隔离；镜像
+    row-geometry.js 同值容错回退）。垂直锚的行线间空白中点式消费 */
+export const ROW_HEIGHT_FALLBACK = 36
 
 /** 列定义自定义编辑按钮（column.editorButton，20261027 问题 5）命中/绘制区
     规格：24×24 区右缘贴格内容区右缘，16px 图标居中其中 */
 export const EDITOR_BUTTON_AREA = 24
 export const EDITOR_BUTTON_ICON_SIZE = 16
-
-/** --cell-line-height 镜像缺省（editor.js 不可 import theme.js，模块隔离）；
-    editor.editorButtonRectOf 与 painter 槽位锚（S4）共用 */
-export const CELL_LINE_HEIGHT_FALLBACK = 18

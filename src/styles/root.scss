@@ -122,7 +122,7 @@ $SEMANTIC_COLORS: (
 
 .mu-root {
   --mu-font-sans: system-ui, -apple-system, "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
-  --mu-font-mono: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace;  
+  --mu-font-mono: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace;
 
   --mu-z-index-float: 1; // 暂时兼容性保留
   --mu-z-index-above: 1;
@@ -154,6 +154,7 @@ $SEMANTIC_COLORS: (
   font-family: var(--mu-font-sans);
   font-size: var(--mu-font-size-normal);
   font-weight: 400;
+  font-variant-numeric: tabular-nums;
   color: var(--mu-text-color-normal);
 
   background-color: var(--mu-bg-normal);
@@ -172,4 +173,5 @@ input,
 select,
 textarea {
   font-family: inherit;
+  font-variant-numeric: tabular-nums;
 }

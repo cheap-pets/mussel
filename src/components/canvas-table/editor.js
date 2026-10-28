@@ -3,15 +3,16 @@
  *
  * 职责：只读判定（表格级 + 列级）、编辑器组件/props 解析（enum options 由
  * mappings Object 转 [{value,label}] Array 且排除 default；text 列缺省
- * 按开值形态与 maxLines 判定 textarea/input，评审 6 P6 行级求值）、整格矩形
- * 定位（20261027 问题 3：EDITOR_GAP 内缩口径作废，全编辑器类型同矩形 =
- * editorRectOf(格矩形) 恒等映射，边框与格线直接重叠，hover 描边经
- * painter import 同一函数同源）、编辑按钮区矩形 editorButtonRectOf
- * （20261027 问题 5，painter 绘制与壳命中共用的单一事实源）、
+ * 按开值形态与 maxLines 判定 textarea/input，评审 6 P6 行级求值）、编辑盒
+ * 矩形定位（editorRectOf 按格线占位内缩 + editorGridlineFlagsOf 标志派生，
+ * 20261028 起浮层盒缘贴格线内侧、与 hover 描边同源同位）、编辑按钮区矩形
+ * editorButtonRectOf（20261027 问题 5，painter 绘制与壳命中共用的单一事实源）、
  * 分类型提交矩阵（input 走 Enter；
  * textarea Ctrl/Cmd+Enter 显式提交、Enter 换行；
- * select/date/switch 走值变化即提交；画布 pointerdown / 容器滚动同步提交；
- * blur 延迟兜底）、Esc 取消、validate 校验（失败不关闭不失焦）、commit 幂等、
+ * select/date/switch 走值变化即提交且保持编辑态——20261028 起点选下拉项/
+ * 开关切换/选日期不退出编辑，关闭仍走画布 pointerdown / 容器滚动 / 换格 /
+ * blur 延迟兜底；同值不重复 emit）、Esc 取消、validate 校验（失败不关闭
+ * 不失焦，值变化通道失败不 emit）、commit 幂等、
  * 值类型规整层（normalizeEditorOpenValue / normalizeCommitValue）。
  *
  * blur 延迟兜底判据（decisions「[I1 前]①」修订设计 A6：三条同时满足才提交）——
@@ -30,9 +31,9 @@
  *   对象属性不随编辑保留——A8 #21）；textarea 数字原值类型保持。
  *
  * 模块隔离（A8）：不 import layout.js / theme.js / cell-painters.js（跨模块
- * 镜像常量经零依赖的 constants.js 引入）；定位所需的布局数据（rowGeometry）
- * 由组件壳经参数传入（定位只依赖格几何，gridlines/theme 参数已随 EDITOR_GAP
- * 内缩口径作废一并删除，20261027 问题 3）。
+ * 镜像常量经零依赖的 constants.js 引入）；定位所需的布局数据（rowGeometry、
+ * stickyWidth/contentWidth）由组件壳经参数传入，gridlines 模式经 props 原样
+ * 传入（editorGridlineFlagsOf 只消费标量，格线绘制细节仍在 painter.js）。
  *
  * 组件壳（canvas-table.vue）对接契约：
  * - const editor = createEditorController({ onCommit })，setup 内创建（值变化
@@ -59,8 +60,8 @@ import { isFunction, isObject, isString } from '@/utils/type'
 
 import {
   CELL_PADDING_FALLBACK,
-  CELL_LINE_HEIGHT_FALLBACK,
   ROW_TOP_INSET,
+  ROW_HEIGHT_FALLBACK,
   EDITOR_BUTTON_AREA
 } from './constants'
 import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../form/index.js'
@@ -93,42 +94,81 @@ export const EDITOR_COMPONENTS = {
 export const DROPDOWN_PANEL_SELECTOR = '.mu-dropdown-panel'
 
 /**
- * 编辑浮层/hover 描边矩形（单一事实源：hover 描边与浮层盒同源，painter.js
+ * 编辑浮层盒矩形（单一事实源：hover 描边与浮层盒同源，painter.js
  * paintHoverEditorStroke import 同一函数——模块隔离例外沿用）。
- * 20261027 问题 3：EDITOR_GAP=4 内缩口径作废（decisions [S1]），改为恒等
- * 映射 = 整格矩形——hover 描边与编辑输入框边框直接与单元格边框重叠。
+ * 20261027 问题 3 曾改恒等 = 整格（EDITOR_GAP 内缩口径作废）；20261028 起
+ * 浮层盒与 hover 描边同位——按格线占位内缩：topGridline/rightGridline 标示
+ * 本格矩形内是否被行线（r≥1 顶行）/列线（右缘列）占用，占用则盒缘退至格线
+ * 内侧 1px，边框不与格线重叠（editorGridlineFlagsOf 产出标志）。
  *
  * @param {{ x: Number, y: Number, width: Number, height: Number }} rect 单元格矩形
+ * @param {Object} [flags] 格线占位标志（editorGridlineFlagsOf 产物）
+ * @param {Boolean} [flags.topGridline=false] 本格顶行被行线占用
+ * @param {Boolean} [flags.rightGridline=false] 本格右缘列被列线占用
  * @returns {{ left: Number, top: Number, width: Number, height: Number }}
  */
-export function editorRectOf (rect) {
+export function editorRectOf (rect, { topGridline = false, rightGridline = false } = {}) {
+  const topInset = topGridline ? 1 : 0
+  const rightInset = rightGridline ? 1 : 0
+
   return {
     left: rect.x,
-    top: rect.y,
-    width: rect.width,
-    height: rect.height
+    top: rect.y + topInset,
+    width: rect.width - rightInset,
+    height: rect.height - topInset
+  }
+}
+
+/**
+ * 本格格线占位标志（editorRectOf 入参；painter.js hover 描边与 computeEditorStyle
+ * 共用的单一事实源）。判定式与 painter.js isGridlineMode / rightInsetOf 同式：
+ * - topGridline：r≥1 且 gridlines 含 row（首行顶线为表头底边框，在本格之外）；
+ * - rightGridline：非末列，或末列但存在空白区（blankTail = stickyWidth >
+ *   contentWidth），且 gridlines 含 column（末列右缘线规则同 paintColGridlines）。
+ * gridlines 缺省按 'all'（与绘制侧一致）。
+ *
+ * @param {Object} params
+ * @param {Number} params.rowIndex 行号
+ * @param {Number} params.colIndex 列号
+ * @param {Number} params.colCount 总列数
+ * @param {Number} [params.stickyWidth=0] 画布（可视区）宽（layout.js）
+ * @param {Number} [params.contentWidth=0] 列宽合计（layout.js）
+ * @param {String} [params.gridlines] 格线模式（'all' / 'row' / 'column' / 'none'）
+ * @returns {{ topGridline: Boolean, rightGridline: Boolean }}
+ */
+export function editorGridlineFlagsOf ({
+  rowIndex, colIndex, colCount, stickyWidth = 0, contentWidth = 0, gridlines
+} = {}) {
+  const mode = gridlines ?? 'all'
+
+  return {
+    topGridline: rowIndex > 0 && (mode === 'all' || mode === 'row'),
+    rightGridline: (colIndex < colCount - 1 || stickyWidth > (contentWidth || 0)) &&
+      (mode === 'all' || mode === 'column')
   }
 }
 
 /**
  * 列定义自定义编辑按钮（column.editorButton，20261027 问题 5）的命中/绘制区
  * 矩形（单一事实源：painter 绘制与组件壳命中共用）。区右缘贴格内容区右缘
- * （right-align：x = 格右 − padding − EDITOR_BUTTON_AREA），垂直中心 = 首行
- * 行框槽位锚 rect.y + ROW_TOP_INSET + padding + lineHeight/2（与单元格文字
- * 垂直锚、树箭头中心同一公式，Q2 统一槽位式；不使用 rect.height——超高行中
- * 与多行首行同高）。图标 EDITOR_BUTTON_ICON_SIZE 居中于 EDITOR_BUTTON_AREA 区。
+ * （right-align：x = 格右 − padding − EDITOR_BUTTON_AREA），垂直中心 = 行线间
+ * 空白中点 rect.y + ROW_TOP_INSET + (rowHeight − ROW_TOP_INSET)/2（与单元格文字
+ * 垂直锚、树箭头中心同一槽位公式，Q2 统一，20261028 与 lineHeight 解耦；
+ * cell-painters 内容锚同式但四舍五入取整，本区矩形维持中点原式；
+ * 不使用 rect.height——超高行中与多行首行同高）。图标 EDITOR_BUTTON_ICON_SIZE
+ * 居中于 EDITOR_BUTTON_AREA 区。
  *
  * @param {{ x: Number, y: Number, width: Number, height: Number }} rect 单元格矩形
  * @param {Object} [options]
  * @param {Number} [options.padding=CELL_PADDING_FALLBACK] 单元格内容区 padding
- * @param {Number} [options.lineHeight=CELL_LINE_HEIGHT_FALLBACK] 行框高（--cell-line-height 镜像缺省）
+ * @param {Number} [options.rowHeight=ROW_HEIGHT_FALLBACK] 行高（--row-height 镜像缺省）
  * @returns {{ x: Number, y: Number, width: Number, height: Number }}
  */
 export function editorButtonRectOf (
   rect,
-  { padding = CELL_PADDING_FALLBACK, lineHeight = CELL_LINE_HEIGHT_FALLBACK } = {}
+  { padding = CELL_PADDING_FALLBACK, rowHeight = ROW_HEIGHT_FALLBACK } = {}
 ) {
-  const centerY = rect.y + ROW_TOP_INSET + padding + lineHeight / 2
+  const centerY = rect.y + ROW_TOP_INSET + (rowHeight - ROW_TOP_INSET) / 2
 
   return {
     x: rect.x + rect.width - padding - EDITOR_BUTTON_AREA,
@@ -379,16 +419,17 @@ export function resolveEditorProps (column) {
 }
 
 /**
- * 编辑浮层定位计算（20261027 问题 3：矩形 = 整格，相对 __overlay 原点 =
- * canvas 视口原点）：全编辑器类型共用同一矩形 = editorRectOf(格矩形) 恒等
- * 映射——输入框覆盖整个单元格区域，外框与格线直接重叠；hover 编辑描边
- * （painter.js）import 同一 editorRectOf，描边与浮层盒同源。
+ * 编辑浮层定位计算（矩形相对 __overlay 原点 = canvas 视口原点）：全编辑器类型
+ * 共用同一矩形 = editorRectOf(格矩形, editorGridlineFlagsOf(...))——浮层盒缘
+ * 贴格线内侧（本格内被行线/列线占用的边缘像素扣除 1px，20261028 恢复格线
+ * 感知；20261027 问题 3 的整格口径作废），与 hover 编辑描边 import 同一
+ * editorRectOf 同源同位。
  * - 固定列不随滚动偏移；数值经 Vue :style 绑定前由组件壳转 px 串；
  * - bordered 判定：switch 恒 false；textarea 恒 true（mu-input 边框提供编辑态
  *   边界，borderless 类不适用于多行文本）；其余按 border !== false（缺省 true）
  *   ——仅切换容器 --borderless 类（边框/底色可见性），矩形不受影响；
- * - gridlines/theme 参数已随 EDITOR_GAP 内缩口径作废一并删除（20261027
- *   问题 3），定位只依赖格几何。
+ * - gridlines/stickyWidth/contentWidth 为格线占位判定入参（经
+ *   editorGridlineFlagsOf 消费，缺省按 'all' / 无空白区退化）。
  *
  * @param {Object} params
  * @param {Number} params.colIndex 列号
@@ -403,6 +444,9 @@ export function resolveEditorProps (column) {
  *   rowHeight 等高内联回退，uniform 模式传 createUniformRowGeometry 产物）
  * @param {String} [params.editorType='input'] 编辑器类型（仅 bordered 判定消费）
  * @param {Boolean} [params.border=true] 编辑器边框配置（switch/textarea 忽略）
+ * @param {String} [params.gridlines] 格线模式（'all' / 'row' / 'column' / 'none'）
+ * @param {Number} [params.stickyWidth=0] 画布（可视区）宽（layout.js）
+ * @param {Number} [params.contentWidth=0] 列宽合计（layout.js）
  * @returns {{ left: Number, top: Number, width: Number, height: Number, bordered: Boolean }}
  */
 export function computeEditorStyle ({
@@ -416,7 +460,10 @@ export function computeEditorStyle ({
   fixedCount = 0,
   rowGeometry,
   editorType = 'input',
-  border = true
+  border = true,
+  gridlines,
+  stickyWidth = 0,
+  contentWidth = 0
 } = {}) {
   const bordered = editorType === 'switch'
     ? false
@@ -428,7 +475,14 @@ export function computeEditorStyle ({
     width: colWidths[colIndex],
     height: rowGeometry.heightAt(rowIndex)
   }
-  const rect = editorRectOf(cellRect)
+  const rect = editorRectOf(cellRect, editorGridlineFlagsOf({
+    rowIndex,
+    colIndex,
+    colCount: colWidths.length,
+    stickyWidth,
+    contentWidth,
+    gridlines
+  }))
 
   return {
     left: rect.left,
@@ -452,10 +506,11 @@ export function isInDropdownPanel (target) {
 
 /**
  * blur 延迟兜底的提交判定（纯函数，decisions「[I1 前]①」三条判据）：
- * ① editing 仍在（已清空 → 不提交，点选下拉项的值变化提交先于本兜底）；
+ * ① editing 仍在（已清空 → 不提交）；
  * ② 焦点在 __editor 容器内 → 不提交；
  * ③ 焦点或最近 window pointerdown 目标在 .mu-dropdown-panel 内 → 不提交
- *    （面板内交互：下拉项选择、日期面板月份切换等）。
+ *    （面板内交互：下拉项选择、日期面板月份切换等——值变化提交后编辑保持
+ *    开启，面板内交互不误关编辑即靠本判据）。
  *
  * @param {Object} params
  * @param {Object} [params.editing] 当前编辑态（null = 已关闭）
@@ -507,16 +562,20 @@ export function createEditorController ({ onCommit } = {}) {
   let getEditorEl = null
   let blurTimer = 0
   let lastPointerdownTarget = null
+  // 本编辑会话最近一次已提交的规整值（UNCHANGED = 尚未提交过）：值变化通道
+  // 即时提交后编辑保持开启，随后的关闭通道提交经此去重；open 开新会话时重置
+  let emittedValue = UNCHANGED
 
   const onWindowPointerdown = event => {
     lastPointerdownTarget = event.target
   }
 
-  // 值变化提交（select/date/switch；A5.5 提交矩阵）。input/textarea 类型的
-  // source 恒为 UNCHANGED，键入不触发提交（textarea Enter 换行不提交）；open/
-  // close 的状态切换经 oldValue === UNCHANGED 守卫跳过。flush:'sync' 保证点选
-  // 下拉项的模型更新在 blur 延迟兜底（宏任务）之前同步完成提交，延迟任务发现
-  // editing 已空跳过（commit 幂等，双通道不重复 emit）。
+  // 值变化提交（select/date/switch；A5.5 提交矩阵）：提交 emit 但保持编辑态
+  // （20261028：点选下拉项/开关切换/选日期不退出编辑）。input/textarea 类型
+  // 的 source 恒为 UNCHANGED，键入不触发提交（textarea Enter 换行不提交）；
+  // open/close 的状态切换经 oldValue === UNCHANGED 守卫跳过。flush:'sync'
+  // 保证点选下拉项的模型更新在 blur 延迟兜底（宏任务）之前同步完成提交，
+  // 面板内交互由兜底判据③拦下不误关，面板外失焦仍兜底关闭。
   const stopValueWatch = watch(
     () => {
       const editing = state.editing
@@ -526,7 +585,7 @@ export function createEditorController ({ onCommit } = {}) {
     (value, oldValue) => {
       if (value === UNCHANGED || oldValue === UNCHANGED || value === oldValue) return
 
-      commit()
+      applyCommit()
     },
     { flush: 'sync' }
   )
@@ -644,6 +703,7 @@ export function createEditorController ({ onCommit } = {}) {
 
     context = { column, record, recordIndex, rawValue, rawWasArray: Array.isArray(rawValue) }
     getEditorEl = editorElGetter ?? null
+    emittedValue = UNCHANGED
 
     const editing = {
       editorType,
@@ -671,14 +731,17 @@ export function createEditorController ({ onCommit } = {}) {
   }
 
   /**
-   * 提交（幂等）：值规整（A5.5 normalizeCommitValue）→ validate（规整后值）→
-   * 关闭 → onCommit({ record, recordIndex, column, value })。校验失败置
-   * invalid/message（透传 mussel 组件 invalid 态、容器 title 显示文案），不关闭、
-   * 不失焦。
+   * 应用提交（值规整 A5.5 normalizeCommitValue → validate → emit 去重），
+   * 不关闭编辑：值变化通道（select/date/switch 的 watch）与关闭通道（commit）
+   * 共用。校验失败置 invalid/message（透传 mussel 组件 invalid 态、容器 title
+   * 显示文案）不 emit；成功则解除上一轮校验痕迹，并按「规整值 ≠ 最近已提交
+   * 值」去重 emit——值变化通道提交后编辑保持开启，随后的关闭通道提交（画布
+   * pointerdown / 容器滚动 / 换格 open 前置提交 / blur 兜底）值未再变化时
+   * 只关闭不再重复 emit。
    *
-   * @returns {Boolean} 是否实际提交
+   * @returns {Boolean} 校验是否通过（去重跳过 emit 仍算通过）
    */
-  function commit () {
+  function applyCommit () {
     if (!state.editing || !context) return false
 
     const { column, record, recordIndex, rawValue } = context
@@ -703,11 +766,30 @@ export function createEditorController ({ onCommit } = {}) {
       }
     }
 
-    // 先清空再 emit：值变化与 blur 延迟兜底等并发通道经「editing 已清空」
-    // 跳过（commit 幂等，双通道不重复 emit）
+    // 值变化通道编辑保持开启：成功提交须解除上一轮校验失败的 invalid/message
+    state.editing.invalid = false
+    state.editing.message = ''
+
+    if (value !== emittedValue) {
+      emittedValue = value
+
+      onCommit?.({ record, recordIndex, column, value })
+    }
+
+    return true
+  }
+
+  /**
+   * 提交并关闭（幂等）：applyCommit 校验通过后关闭；校验失败不关闭、不失焦。
+   * emit 去重见 applyCommit（值变化通道已提交的同值只关闭不重复 emit）。
+   *
+   * @returns {Boolean} 是否实际提交并关闭
+   */
+  function commit () {
+    if (!applyCommit()) return false
+
     state.editing = null
     teardown()
-    onCommit?.({ record, recordIndex, column, value })
 
     return true
   }

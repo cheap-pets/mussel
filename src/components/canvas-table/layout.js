@@ -35,7 +35,7 @@ export const TYPE_DEFAULT_WIDTHS = {
   text: { width: 160, minWidth: 80 },
   number: { width: 100, minWidth: 60 },
   currency: { width: 110, minWidth: 60 },
-  date: { width: 110, minWidth: 80 },
+  date: { width: 125, minWidth: 80 },
   datetime: { width: 160, minWidth: 100 },
   enum: { width: 100, minWidth: 60 },
   bool: { width: 60, minWidth: 40 },
@@ -43,7 +43,7 @@ export const TYPE_DEFAULT_WIDTHS = {
   tag: { width: 140, minWidth: 80 },
   img: { width: 80, minWidth: 40 },
   image: { width: 80, minWidth: 40 },
-  progress: { width: 100, minWidth: 60 },
+  progress: { width: 120, minWidth: 60 },
   button: { width: 140, minWidth: 80 },
   _fallback: { width: 80, minWidth: 40 }
 }

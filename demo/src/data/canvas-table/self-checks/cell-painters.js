@@ -12,10 +12,10 @@
  * color/pill/flat 落 class，DOM 版回归，S1 续做）；tag 17 色、button/disabled、
  * 树形列缩进箭头。
  *
- * 问题 1/5/7（G2-3，A1/A5/A7）：槽位锚断言组（首行 y = ROW_TOP_INSET + padding +
- * lineHeight/2 不随行高变、水平 center 扣 rightInset、超高行跨列首行同高——
- * decisions 检查点-A1判据：直调残差 0（r=0 / 格线不含 row）/ 0.5px（r≥1 且含 row，
- * 授权 ≤0.5px））；requestIconImage（SVG currentColor 着色 → data URL、同参复用
+ * 问题 1/5/7（G2-3，A1/A5/A7）：槽位锚断言组（首行 y = Math.round(ROW_TOP_INSET +
+ * (rowHeight − ROW_TOP_INSET)/2) 不随行高变、水平 center 扣 rightInset、超高行跨列首行同高——
+ * decisions 检查点-A1判据：直调残差 1px（r=0 / 格线不含 row）/ 0.5px（r≥1 且含 row），
+ * 锚为行线中点四舍五入取整）；requestIconImage（SVG currentColor 着色 → data URL、同参复用
  * 缓存条目、非 SVG src 直通）；linkHoverColorOf 分支；link 悬停两路径色变 +
  * fillRect 下划线（recordingCtx 增记 fillRect/stroke）；button pill 悬停反转三色；
  * itemHits 条目 disabled 字段。
@@ -71,6 +71,7 @@ const THEME = {
   gray: 'rgba(153, 153, 153, 1)',
   fontSize: 14,
   fontFamily: 'sans-serif',
+  rowHeight: 36,
   cellPadding: 8,
   cellLineHeight: 18,
   colors: THEME_COLORS
@@ -684,7 +685,12 @@ export const checks = [
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['button:0', 'button:1'], 'itemHits 回报')
       assertEqual(rects[0].disabled, false, '常规按钮条目 disabled = false（isTruthyAttr 口径）')
       assertEqual(rects[1].disabled, true, 'disabled 按钮条目携带 disabled = true')
-      assert(rects[0].rect.width > 0 && rects[0].rect.height === 36, '条目矩形应含宽高')
+      assert(rects[0].rect.width > 0, '条目矩形应含宽高')
+      assertEqual(
+        `${rects[0].rect.y},${rects[0].rect.height}`,
+        '9,20',
+        'button 命中矩形 = pill 绘制区（centerY 19 ± TAG_HEIGHT/2，非整格）'
+      )
 
       return '编辑/删除两按钮取色与回报正确（kind=button，含 disabled 字段）'
     }
@@ -699,13 +705,13 @@ export const checks = [
       assertEqual(calls.fillText.length, 2, 'maxLines=2 应绘制 2 行')
       assertEqual(calls.fillText[0].text.length, 16, '首行按测量宽度折行（16 字符 × 9px = 144 ≤ 内容宽）')
       assert(calls.fillText[1].text.endsWith('...'), `钳制末行应以 '...' 收缩，实际「${calls.fillText[1].text}」`)
-      assertArray(calls.fillText.map(c => c.y), [18, 36], '首行槽位锚（y0 = ROW_TOP_INSET 1 + padding 8 + lineHeight/2 9 = 18，与行高无关；后续 +18）')
+      assertArray(calls.fillText.map(c => c.y), [19, 37], '首行槽位锚（y0 = Math.round(1 + (36 − 1)/2) = 19，与行高无关、与 padding/lineHeight 解耦；后续 +18）')
 
       // maxLines=1（缺省）：即使注入 measure 也走单行省略（现状路径）
       const single = drawRecorded(prepareColumn({ field: 'memo' }), { memo: long }, { measure: fakeMeasure })
 
       assertEqual(single.calls.fillText.length, 1, '缺省单行省略')
-      assertEqual(single.calls.fillText[0].y, 18, '单行槽位锚 18（与改前 rect.y + h/2 逐值相等，零回归）')
+      assertEqual(single.calls.fillText[0].y, 19, '单行槽位锚 19 = rect.y + Math.round((36+1)/2)（行线中点 18.5 四舍五入；20261028 解耦 lineHeight）')
 
       // measure 未注入：多行列回退单行省略（不抛错）
       const fallback = drawRecorded(col, { memo: long })
@@ -722,7 +728,7 @@ export const checks = [
       const { calls } = drawRecorded(col, { v: [1, '二', 3, 4, 5] }, { height: 80 })
 
       assertArray(calls.fillText.map(c => c.text), ['1', '二', '...'], '前 maxItems−1 项 + dots 行')
-      assertArray(calls.fillText.map(c => c.y), [18, 36, 54], '首行槽位锚逐行（y0 = 18 = 1+8+9，不随行高变；顺次 +18）')
+      assertArray(calls.fillText.map(c => c.y), [19, 37, 55], '首行槽位锚逐行（y0 = 19 = Math.round(1 + (36−1)/2)，不随行高变；顺次 +18）')
       assertEqual(calls.fillText[0].text, '1', '数字元素应 String 化')
 
       // 缺省 maxItems=10：不超限全量显示
@@ -758,32 +764,33 @@ export const checks = [
       const redirected = drawRecorded(clampedCol, { memo: long }, { measure: fakeMeasure, height: 60 })
 
       assertEqual(redirected.calls.fillText.length, 2, '单 div item 应改道 drawText 多行（maxLines=2 钳制）')
-      assertArray(redirected.calls.fillText.map(c => c.y), [18, 36], '改道后首行槽位锚（y0 = 18，与行高无关）')
+      assertArray(redirected.calls.fillText.map(c => c.y), [19, 37], '改道后首行槽位锚（y0 = 19，与行高无关）')
 
       return 'deep 3 行 / shallow 1 行；line-clamp item 改道 2 行'
     }
   },
   {
-    name: '槽位锚（问题 1/A1）：垂直锚 = ROW_TOP_INSET+padding+lineHeight/2 不随行高变、水平 center 扣 rightInset、超高行跨列首行同高',
+    name: '槽位锚（问题 1/A1）：垂直锚 = 行线间空白中点不随行高变、水平 center 扣 rightInset、超高行跨列首行同高',
     fn: () => {
       const col = prepareColumn({ field: 'v', align: 'center' })
       const rect = { x: 0, y: 0, width: 160, height: 36 }
 
       // 残差口径（decisions 检查点-A1判据，写入注释供 verifier）：直调锚恒为
-      // rect.y + 1 + 8 + 9 = 18（ROW_TOP_INSET 内建常量，gridlines 不参与直调路径）。
-      // 与「不含边线内容区中心」之差：r≥1 且 gridlines 含 row → 中心 18.5 → 偏上
-      // 0.5px（终版判据授权 ≤0.5px，行线占用扣除口径）；r=0 或不含 row → 中心 18
-      // → 残差 0。超高行不设与内容区中心的差，只验跨列首行同高（见末组断言）。
+      // Math.round(rect.y + 1 + (36 − 1)/2) = 19（ROW_TOP_INSET 内建常量，gridlines 不参与
+      // 直调路径；行线间空白 [1,36) 中点 18.5 四舍五入，文字基线落整数像素）。
+      // r≥1 且 gridlines 含 row 时与「不含边线内容区中心」残差 0.5px；r=0 或
+      // 不含 row 时中心 18 → 锚偏下 1px。
+      // 超高行不设与内容区中心的差，只验跨列首行同高（见末组断言）。
       const base = drawRecorded(col, { v: '甲' }, { rect, rightInset: 0 })
 
       assertEqual(base.calls.fillText[0].x, 80, 'center rightInset=0 → x=80（rect.x + width/2）')
-      assertEqual(base.calls.fillText[0].y, 18, '槽位锚 y=18（1 + 8 + 9）')
+      assertEqual(base.calls.fillText[0].y, 19, '槽位锚 y=19（Math.round(1 + (36−1)/2)）')
 
       // rightInset=1（本格右缘列线占用）：内容区水平中心精确 −0.5px，垂直不变
       const inset = drawRecorded(col, { v: '甲' }, { rect, rightInset: 1 })
 
       assertEqual(inset.calls.fillText[0].x, 79.5, 'center rightInset=1 → x=79.5（列线占用扣除）')
-      assertEqual(inset.calls.fillText[0].y, 18, 'rightInset 只参与水平锚，垂直仍 18')
+      assertEqual(inset.calls.fillText[0].y, 19, 'rightInset 只参与水平锚，垂直仍 19')
 
       // left/right 锚不受 rightInset 影响（padding 8 ≫ 1px 格线，防误改分支）
       const left = drawRecorded(prepareColumn({ field: 'v' }), { v: '甲' }, { rect, rightInset: 1 })
@@ -794,13 +801,13 @@ export const checks = [
 
       assertEqual(right.calls.fillText[0].x, 152, 'right 锚 x=152（不受 rightInset 影响）')
 
-      // 超高行（h=88，同行多行列撑高场景的单行格）：仍锚首行槽位 18，与多行文本
-      // /link 竖排首行 y=18 同高（decisions 检查点-A1判据：超高行只验跨列首行同高）
+      // 超高行（h=88，同行多行列撑高场景的单行格）：仍锚首行槽位 19，与多行文本
+      // /link 竖排首行 y=19 同高（decisions 检查点-A1判据：超高行只验跨列首行同高）
       const tall = drawRecorded(col, { v: '甲' }, { height: 88, rightInset: 0 })
 
-      assertEqual(tall.calls.fillText[0].y, 18, '超高行单行 y=18（锚不随行高变，与多行/link 竖排首行同高）')
+      assertEqual(tall.calls.fillText[0].y, 19, '超高行单行 y=19（锚不随行高变，与多行/link 竖排首行同高）')
 
-      return 'x=80/79.5/8/152；y 恒 18（h=36/88 同值，跨列首行同高）'
+      return 'x=80/79.5/8/152；y 恒 19（h=36/88 同值，跨列首行同高）'
     }
   },
   {
@@ -929,7 +936,7 @@ export const checks = [
       const { calls } = drawRecorded(col, record, { height: 88, onItemRect: r => rects.push(r) })
 
       assertArray(calls.fillText.map(c => c.text), ['A', 'B', 'C', '...'], '3 条 + dots（maxItems=4，第 4 条 \'...\'）')
-      assertArray(calls.fillText.map(c => c.y), [18, 36, 54, 72], '竖排每条一行（首行槽位锚 18 = 1+8+9；+18 顺排）')
+      assertArray(calls.fillText.map(c => c.y), [19, 37, 55, 73], '竖排每条一行（首行槽位锚 19 = Math.round(1 + (36−1)/2)；+18 顺排）')
       assertArray(calls.fillText.map(c => c.x), [8, 8, 8, 8], '左缘对齐内容区')
       assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.success.color), 'mu-link--success class → colors 查表')
       assertEqual(calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled（存在性判定）→ textColorMuted')
@@ -947,7 +954,7 @@ export const checks = [
 
       assertArray(single.calls.fillText.map(c => c.text), ['9'], '单值数字 String 化')
 
-      return '竖排 y=18/36/54/72；success/muted/danger/primary 四态取色正确'
+      return '竖排 y=19/37/55/73；success/muted/danger/primary 四态取色正确'
     }
   },
   {
@@ -962,7 +969,7 @@ export const checks = [
 
       assertEqual(vertical.calls.fillText[0].fillStyle, successHover, '竖排 hover 条目 fillStyle = colors.success.hover')
       assertEqual(vertical.calls.fillRect.length, 1, '竖排仅 hover 条目画下划线')
-      assertEqual(vertical.calls.fillRect[0].y, 25, '下划线 y = anchorY(18) + round(14×0.35) + 2 = 25')
+      assertEqual(vertical.calls.fillRect[0].y, 26, '下划线 y = anchorY(19) + round(14×0.35) + 2 = 26')
       assertEqual(vertical.calls.fillRect[0].x, 8, '下划线 x = 条目起点（内容区左缘）')
       assert(vertical.calls.fillRect[0].width > 0 && vertical.calls.fillRect[0].height === 1, '下划线 1px 高、宽 = 实绘文本宽')
       assertEqual(vertical.calls.fillRect[0].fillStyle, successHover, '下划线 fillStyle = hover 色')
@@ -991,7 +998,7 @@ export const checks = [
       assertEqual(horizontal.calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.danger.hover), '横排 hover 条目 fillStyle = colors.danger.hover')
       assertEqual(horizontal.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), '横排未 hover 的 disabled 条目仍 muted')
       assertEqual(horizontal.calls.fillRect.length, 1, '横排仅 hover 条目画下划线')
-      assertEqual(horizontal.calls.fillRect[0].y, 25, '横排下划线 y 同式（anchorY 18 + 5 + 2）')
+      assertEqual(horizontal.calls.fillRect[0].y, 26, '横排下划线 y 同式（anchorY 19 + 5 + 2）')
       assertEqual(horizontal.calls.fillRect[0].fillStyle, cssColorOf(THEME_COLORS.danger.hover), '横排下划线 fillStyle = hover 色')
 
       // 横排 disabled 条目被 hover：不悬停（第 0 条回落常态 danger.color）
@@ -1005,7 +1012,7 @@ export const checks = [
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['link:0', 'link:1'], '横排条目回报')
       assertArray(rects.map(r => r.disabled), [false, true], '横排条目携带 disabled 布尔')
 
-      return '两路径 hover 色变 + 下划线 y=25；disabled 两态不悬停；横排 disabled=[false,true]'
+      return '两路径 hover 色变 + 下划线 y=26；disabled 两态不悬停；横排 disabled=[false,true]'
     }
   },
   {

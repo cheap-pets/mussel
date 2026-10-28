@@ -12,9 +12,10 @@
  * （input Enter、textarea Ctrl/Cmd+Enter 显式提交且 Enter 换行不提交、
  * select/date/switch 值变化即提交、值变化不重复提交 input、textarea 数组
  * 开值/提交由 text 列 + 对象数组承接）/ 取消 / 校验 /
- * 整格矩形定位（20261027 问题 3：EDITOR_GAP 内缩口径作废，editorRectOf 恒等
- * 映射、computeEditorStyle 矩形 = 整格——全编辑器类型同矩形仅 bordered 标记
- * 差异、固定列横向滚动两态对照、变高行、height 防负值）/ 编辑按钮区矩形
+ * 编辑盒矩形定位（20261028：editorRectOf 格线占位内缩 + editorGridlineFlagsOf
+ * 标志派生，computeEditorStyle 矩形贴格线内侧与 hover 描边同位——全编辑器
+ * 类型同矩形仅 bordered 标记差异、gridlines/blankTail 门控、固定列横向滚动
+ * 两态对照、变高行、height 防负值）/ 编辑按钮区矩形
  * editorButtonRectOf（20261027 问题 5：right-align x = 格右 − padding − 24、
  * centerY = 格顶 + ROW_TOP_INSET + padding + lineHeight/2 首行槽位式）/
  * enum options 由 mappings Object 转换为 [{value,label}] Array 且排除 default
@@ -444,27 +445,29 @@ export const checks = [
     }
   },
   {
-    name: '整格矩形 computeEditorStyle：全类型同矩形、border 两态对照、固定列/滚动列/变高行（20261027 问题 3）',
+    name: '编辑盒矩形 computeEditorStyle：浮层盒贴格线内侧（20261028 与 hover 描边同位）、全类型同矩形、border 两态、固定列/滚动列/变高行',
     fn: () => {
       // C4 起 rowGeometry 必传：等高基线经 uniform 几何构造（36×3）。
-      // 20261027 问题 3：EDITOR_GAP 内缩口径作废，gridlines/theme 参数已删，
-      // 矩形 = editorRectOf(格矩形) 恒等 = 整格（定位只依赖格几何）
+      // 20261028：浮层盒 = editorRectOf(格矩形, 格线占位标志)——本格内被行线
+      // （r≥1 顶行）/列线（右缘列）占用的边缘扣除 1px；stickyWidth/contentWidth
+      // 缺省 0/0 → blankTail false（末列右缘无线）
       const base = {
         colLefts: [0, 100, 300],
         colWidths: [100, 200, 80],
         headHeight: 36,
         rowGeometry: createUniformRowGeometry({ rowHeight: 36, rowCount: 3 }),
         editorType: 'input',
-        border: true
+        border: true,
+        gridlines: 'all'
       }
 
-      // 整格矩形：rowIndex 1 / colIndex 0（固定列不随 scrollLeft 偏移）——
-      // 四值与格矩形恒等，无任何 1px 格线扣除
+      // 固定列 col 0（非末列）/ row 1（r≥1）：格矩形 [0,64,100,36] 扣顶行线 +
+      // 右列线 → [0, 65, 99, 35]（固定列不随 scrollLeft 偏移）
       const fixed = computeEditorStyle({
         ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1
       })
 
-      assertArray([fixed.left, fixed.top, fixed.width, fixed.height], [0, 64, 100, 36], '固定列整格矩形')
+      assertArray([fixed.left, fixed.top, fixed.width, fixed.height], [0, 65, 99, 35], '固定列编辑盒（顶/右各扣 1px 格线）')
       assertEqual(fixed.bordered, true, 'border 缺省 true')
 
       // 全编辑器类型同矩形（矩形恒等；switch/textarea 仅 bordered 标记差异）
@@ -475,9 +478,9 @@ export const checks = [
         ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, editorType: 'textarea'
       })
 
-      assertArray([switchStyle.left, switchStyle.top, switchStyle.width, switchStyle.height], [0, 64, 100, 36], 'switch 同矩形')
+      assertArray([switchStyle.left, switchStyle.top, switchStyle.width, switchStyle.height], [0, 65, 99, 35], 'switch 同矩形')
       assertEqual(switchStyle.bordered, false, 'switch bordered false')
-      assertArray([textarea.left, textarea.top, textarea.width, textarea.height], [0, 64, 100, 36], 'textarea 同矩形')
+      assertArray([textarea.left, textarea.top, textarea.width, textarea.height], [0, 65, 99, 35], 'textarea 同矩形')
       assertEqual(textarea.bordered, true, 'textarea 恒 bordered true')
 
       // border/borderless 两态矩形相同（仅 bordered 标记差异；左缘一致性由 scss
@@ -486,18 +489,35 @@ export const checks = [
         ...base, colIndex: 0, rowIndex: 1, scrollTop: 8, scrollLeft: 200, fixedCount: 1, border: false
       })
 
-      assertArray([borderless.left, borderless.top, borderless.width, borderless.height], [0, 64, 100, 36], 'borderless 同矩形')
+      assertArray([borderless.left, borderless.top, borderless.width, borderless.height], [0, 65, 99, 35], 'borderless 同矩形')
       assertEqual(borderless.bordered, false, 'border:false → bordered false')
 
-      // 滚动列：left = colLefts − scrollLeft、top = headHeight + topAt − scrollTop（整格，
-      // 横向滚动对照，评审回应 4 问题 11 保留）
+      // 滚动列：left = colLefts − scrollLeft；col 2 为末列（blankTail false 无右
+      // 缘线）+ row 0（顶线为表头底边框、在本格外）→ 整格无扣除
       const scrolled = computeEditorStyle({
         ...base, colIndex: 2, rowIndex: 0, scrollTop: 0, scrollLeft: 250, fixedCount: 1
       })
 
-      assertArray([scrolled.left, scrolled.top, scrolled.width, scrolled.height], [50, 36, 80, 36], '滚动列整格矩形')
+      assertArray([scrolled.left, scrolled.top, scrolled.width, scrolled.height], [50, 36, 80, 36], '滚动列末列首行整格（无格线占位）')
 
-      // 变高行（fake rowGeometry 高 100）：top = headHeight + topAt、height = heightAt（整格）
+      // gridlines 'none'：无格线占位，非末列 r≥1 也整格（scrollTop 缺省 0 →
+      // top = headHeight + topAt(1) = 72）
+      const noLines = computeEditorStyle({
+        ...base, colIndex: 0, rowIndex: 1, fixedCount: 1, gridlines: 'none'
+      })
+
+      assertArray([noLines.left, noLines.top, noLines.width, noLines.height], [0, 72, 100, 36], "gridlines 'none' 整格")
+
+      // blankTail：stickyWidth > contentWidth（480 > 380）→ 末列右缘补线，
+      // 末列 col 2 + row 0 → 仅右扣 1px（scrollLeft 缺省 0 → left = colLefts[2]）
+      const blankTail = computeEditorStyle({
+        ...base, colIndex: 2, rowIndex: 0, fixedCount: 1, stickyWidth: 480, contentWidth: 380
+      })
+
+      assertArray([blankTail.left, blankTail.top, blankTail.width, blankTail.height], [300, 36, 79, 36], 'blankTail 末列右扣 1px')
+
+      // 变高行（fake rowGeometry 高 100）：top = headHeight + topAt + 1、
+      // height = heightAt − 1（r≥1 顶行线扣除）
       const tallRow = computeEditorStyle({
         ...base,
         colIndex: 1,
@@ -506,7 +526,7 @@ export const checks = [
         editorType: 'textarea'
       })
 
-      assertArray([tallRow.left, tallRow.top, tallRow.width, tallRow.height], [100, 72, 200, 100], '变高行整格矩形')
+      assertArray([tallRow.left, tallRow.top, tallRow.width, tallRow.height], [100, 73, 199, 99], '变高行编辑盒（顶扣 1px）')
 
       // 退化配置防负值：heightAt(row) = 0 → height 0
       const degenerate = computeEditorStyle({
@@ -524,58 +544,69 @@ export const checks = [
       })
 
       assertEqual(noFixed.left, 50, '无固定列 left = colLefts − scrollLeft')
-      assertEqual(noFixed.top, 8, 'top = headHeight + topAt(2) − scrollTop = 36 + 72 − 100')
+      assertEqual(noFixed.top, 9, 'top = headHeight + topAt(2) − scrollTop + 顶扣 = 36 + 72 − 100 + 1')
 
-      return '整格矩形：固定列 [0,64,100,36]、滚动列 [50,36,80,36]、变高行 [100,72,200,100]、全类型同矩形仅 bordered 差异、防负值'
+      return '编辑盒贴格线内侧：固定列 [0,65,99,35]、滚动末列首行整格 [50,36,80,36]、none 整格、blankTail 右扣、变高行顶扣、全类型同矩形、防负值'
     }
   },
   {
-    name: 'editorRectOf：恒等映射——hover 描边/编辑浮层矩形 = 整格矩形（20261027 问题 3）',
+    name: 'editorRectOf：格线占位内缩——默认整格，top/right 各扣 1px（hover 描边/编辑浮层同源）',
     fn: () => {
-      // EDITOR_GAP 内缩口径作废（decisions [S1]）：四值 = 格矩形，hover 描边与
-      // 输入框边框直接与单元格边框重叠
+      // 浮层盒与 hover 描边 import 同一函数：盒缘贴格线内侧（本格内格线占位
+      // 像素扣除）；缺省 flags = 整格（无占位信息时退化为格矩形）
       const rect = { x: 60, y: 72, width: 140, height: 36 }
       const identity = editorRectOf(rect)
 
-      assertArray([identity.left, identity.top, identity.width, identity.height], [60, 72, 140, 36], '恒等四值')
+      assertArray([identity.left, identity.top, identity.width, identity.height], [60, 72, 140, 36], '缺省 flags 恒等四值')
 
-      // 首行/末列等边界格同恒等（无 gridline 占用特判——topGridline/rightGridline 参数已删）
+      // 边界格：flags 缺省不占位（首行顶线在表头、末列右缘无线由 flags 派生承担）
       const edge = editorRectOf({ x: 0, y: 0, width: 80, height: 36 })
 
       assertArray([edge.left, edge.top, edge.width, edge.height], [0, 0, 80, 36], '边缘格同恒等')
 
-      // computeEditorStyle 消费同函数（painter hover 描边 import 同一函数同源），
-      // 整格期望值见上一断言块
-      return 'editorRectOf 恒等映射：四值 = 格矩形，边界格同'
+      // r≥1 行线 + 非末列列线：top+1、width−1、height−1（底缘贴本格末行 =
+      // 底行线内侧）；right 缘 = rightGridline 像素列内侧
+      const inset = editorRectOf(rect, { topGridline: true, rightGridline: true })
+
+      assertArray([inset.left, inset.top, inset.width, inset.height], [60, 73, 139, 35], '双格线占位内缩')
+
+      // 仅右列线（首行非末列）：width −1、top/height 不变
+      const rightOnly = editorRectOf(rect, { rightGridline: true })
+
+      assertArray([rightOnly.left, rightOnly.top, rightOnly.width, rightOnly.height], [60, 72, 139, 36], '仅右列线占位')
+
+      // computeEditorStyle 消费同函数（编辑浮层定位单一事实源），
+      // 整格/内缩期望值见上一断言块
+      return 'editorRectOf：缺省恒等、双占位 [60,73,139,35]、仅右 [60,72,139,36]'
     }
   },
   {
-    name: 'editorButtonRectOf：right-align + 首行槽位 centerY（20261027 问题 5 / A5）',
+    name: 'editorButtonRectOf：right-align + 行线中点 centerY（20261027 问题 5 / A5；20261028 解耦 lineHeight）',
     fn: () => {
-      // 默认参（padding 8 / lineHeight 18）：区右缘贴格内容区右缘（right-align）
-      // x = 格右 − padding − 24；centerY = 格顶 + ROW_TOP_INSET(1) + padding + lineHeight/2
+      // 默认参（padding 8 / rowHeight 36）：区右缘贴格内容区右缘（right-align）
+      // x = 格右 − padding − 24；centerY = 格顶 + ROW_TOP_INSET(1) + (rowHeight − 1)/2
       const area = editorButtonRectOf({ x: 0, y: 0, width: 160, height: 36 })
 
-      assertArray([area.x, area.y, area.width, area.height], [128, 6, 24, 24], '默认参几何（centerY = 0+1+8+9 = 18）')
+      assertArray([area.x, area.y, area.width, area.height], [128, 6.5, 24, 24], '默认参几何（centerY = 0+1+17.5 = 18.5）')
 
-      // centerY 为首行槽位式而非 rect.height/2：超高行（h=88，行高被多行列撑大）
+      // centerY 为行线中点式而非 rect.height/2：超高行（h=88，行高被多行列撑大）
       // 锚不变——与单元格文字首行、树箭头中心同一公式（Q2 统一槽位式）
       const tall = editorButtonRectOf({ x: 0, y: 0, width: 160, height: 88 })
 
-      assertEqual(tall.y, 6, '超高行 centerY 恒 18（槽位锚，不使用 rect.height）')
+      assertEqual(tall.y, 6.5, '超高行 centerY 恒 18.5（槽位锚，不使用 rect.height）')
       assertEqual(tall.x, 128, '超高行 right-align 不变')
 
-      // 自定义 padding/lineHeight 同式：x = 40+200−12−24 = 204；centerY = 40+1+12+10 = 63 → y = 51
-      const custom = editorButtonRectOf({ x: 40, y: 40, width: 200, height: 60 }, { padding: 12, lineHeight: 20 })
+      // 自定义 padding/rowHeight 同式：x = 40+200−12−24 = 204；centerY = 40+1+43/2 = 62.5 → y = 50.5
+      const custom = editorButtonRectOf({ x: 40, y: 40, width: 200, height: 60 }, { padding: 12, rowHeight: 44 })
 
-      assertArray([custom.x, custom.y, custom.width, custom.height], [204, 51, 24, 24], '自定义 padding/lineHeight 同式')
+      assertArray([custom.x, custom.y, custom.width, custom.height], [204, 50.5, 24, 24], '自定义 padding/rowHeight 同式')
 
-      // 偏移格同式：x = 100+120−8−24 = 188；centerY = 200+1+8+9 = 218 → y = 206
+      // 偏移格同式：x = 100+120−8−24 = 188；centerY = 200+1+17.5 = 218.5 → y = 206.5
       const offset = editorButtonRectOf({ x: 100, y: 200, width: 120, height: 36 })
 
-      assertArray([offset.x, offset.y, offset.width, offset.height], [188, 206, 24, 24], '偏移格同式')
+      assertArray([offset.x, offset.y, offset.width, offset.height], [188, 206.5, 24, 24], '偏移格同式')
 
-      return 'right-align x = 格右−padding−24；centerY = 格顶+1+padding+lineHeight/2（槽位式，不随 rect.height）'
+      return 'right-align x = 格右−padding−24；centerY = 格顶+1+(rowHeight−1)/2（槽位式，不随 rect.height）'
     }
   },
   {
@@ -677,12 +708,13 @@ export const checks = [
     }
   },
   {
-    name: '提交矩阵·select/date/switch：值变化即提交（同步 watch）、switch 事件为空',
+    name: '提交矩阵·select/date/switch：值变化即提交且保持编辑态（同步 watch）、关闭通道同值去重、switch 事件为空',
     fn: () => {
       const { commits, controller } = createSpyController()
 
       try {
-        // select：v-model 回写即提交，值为 mapping key 字符串（decisions⑦）
+        // select：v-model 回写即提交（emit），编辑态保持开启（20261028：
+        // 点选下拉项不退出编辑）
         const enumColumn = { field: 'status', type: 'enum', editor: true, mappings: { a: 'A', b: 'B', default: '兜底' } }
         const enumRecord = { status: 'a' }
 
@@ -695,7 +727,24 @@ export const checks = [
         assertEqual(commits.length, 1, 'select 值变化应立即提交')
         assertEqual(commits[0].value, 'b', '提交值')
         assert(typeof commits[0].value === 'string', '字符串原值枚举提交 = mapping key 字符串（原值类型保持）')
-        assertEqual(controller.state.editing, null, '提交后关闭')
+        assert(controller.state.editing != null, '值变化提交后保持编辑态')
+        assertEqual(controller.state.editing.value, 'b', '编辑值保持')
+        assertEqual(controller.state.editing.invalid, false, '成功提交无校验痕迹')
+
+        // 关闭通道去重：值未再变化时 commit 只关闭不重复 emit
+        assertEqual(controller.commit(), true, '关闭通道提交返回')
+        assertEqual(commits.length, 1, '已提交同值不重复 emit')
+        assertEqual(controller.state.editing, null, '关闭后无编辑态')
+
+        // 二次会话连续换选：每次值变化各 emit 一次（与最近提交值比较）
+        controller.open({ column: enumColumn, record: enumRecord, recordIndex: 1, editable: true })
+        controller.state.editing.value = 'b'
+        controller.state.editing.value = 'a'
+        assertEqual(commits.length, 3, '两次值变化各提交一次')
+        assertEqual(commits[2].value, 'a', '换回原值仍提交')
+        assert(controller.state.editing != null, '编辑态保持')
+        assertEqual(controller.cancel(), true, '取消关闭')
+        assertEqual(commits.length, 3, '取消不重复 emit')
 
         // date：同矩阵
         const dateColumn = { field: 'date', type: 'date', editor: true }
@@ -705,8 +754,9 @@ export const checks = [
 
         controller.state.editing.value = '2026-02-02'
 
-        assertEqual(commits.length, 2, 'date 值变化应提交')
-        assertEqual(commits[1].column, dateColumn, 'date 载荷 column')
+        assertEqual(commits.length, 4, 'date 值变化应提交')
+        assertEqual(commits[3].column, dateColumn, 'date 载荷 column')
+        assert(controller.state.editing != null, 'date 值变化后保持编辑态')
 
         // switch：值变化（click 切换）即提交，事件矩阵为空对象（esc 挂容器）
         const boolColumn = { field: 'active', type: 'bool', editor: true }
@@ -717,19 +767,24 @@ export const checks = [
 
         controller.state.editing.value = true
 
-        assertEqual(commits.length, 3, 'switch 值变化应提交')
-        assertEqual(commits[2].value, true, '布尔提交值原样')
+        assertEqual(commits.length, 5, 'switch 值变化应提交')
+        assertEqual(commits[4].value, true, '布尔提交值原样')
+        assert(controller.state.editing != null, 'switch 值变化后保持编辑态')
 
-        // 数值原值枚举：open 字符串化进下拉、提交按原值类型回写 number（A5.5 ②）
+        // 数值原值枚举：open 字符串化进下拉、提交按原值类型回写 number（A5.5 ②）；
+        // 会话内连续换选均按 open 原值锚定规整、逐次 emit
         const numericEnumColumn = { field: 'level', type: 'enum', editor: true, mappings: { 1: '低', 2: '高', default: '未知' } }
 
         controller.open({ column: numericEnumColumn, record: { level: 2 }, recordIndex: 4, editable: true })
         assertEqual(controller.state.editing.value, '2', '数值枚举 open 字符串化')
         controller.state.editing.value = '1'
-        assertEqual(commits.length, 4, '数值枚举值变化提交')
-        assertEqual(commits[3].value, 1, '提交值回写 number（类型保持）')
+        assertEqual(commits.length, 6, '数值枚举值变化提交')
+        assertEqual(commits[5].value, 1, '提交值回写 number（类型保持）')
+        controller.state.editing.value = '2'
+        assertEqual(commits.length, 7, '会话内二次换选仍提交')
+        assertEqual(commits[6].value, 2, '二次提交类型保持 number')
 
-        return 'select/date/switch 值变化同步提交恰一次；switch 空事件矩阵；数值枚举类型保持'
+        return 'select/date/switch 值变化同步提交且保持编辑态；关闭通道同值去重；连续换选逐次 emit；switch 空事件矩阵；数值枚举类型保持'
       } finally {
         controller.destroy()
       }
@@ -849,7 +904,26 @@ export const checks = [
         assertEqual(controller.commit(), false, 'falsy 校验失败')
         assertEqual(controller.state.editing.message, '', '非字符串失败无文案')
 
-        return '失败 invalid+message 不关闭不 emit；修正后提交；falsy 文案为空'
+        // select 值变化通道同闸门：失败保持编辑不 emit，修正后值变化提交成功
+        // 并解除 invalid（编辑态保持开启）。先 cancel 上一个校验失败会话——
+        // 校验未通过时 open 被拒、不开新格
+        controller.cancel()
+        controller.open({
+          column: { field: 'level', type: 'enum', editor: { validate: value => (value === 'x' ? '非法选项' : true) } },
+          record: { level: 'ok' },
+          recordIndex: 2,
+          editable: true
+        })
+        controller.state.editing.value = 'x'
+        assertEqual(commits.length, 1, '值变化校验失败不 emit')
+        assert(controller.state.editing != null, '校验失败保持编辑态')
+        assertEqual(controller.state.editing.invalid, true, 'invalid 置位')
+        controller.state.editing.value = 'y'
+        assertEqual(commits.length, 2, '修正后值变化提交')
+        assertEqual(commits[1].value, 'y', '提交值')
+        assertEqual(controller.state.editing.invalid, false, '成功提交解除 invalid')
+
+        return '失败 invalid+message 不关闭不 emit；修正后提交；falsy 文案为空；select 值变化失败不 emit 修正后解除 invalid'
       } finally {
         controller.destroy()
       }

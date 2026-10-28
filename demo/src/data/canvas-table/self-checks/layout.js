@@ -180,7 +180,7 @@ export const checks = [
         text: [160, 80],
         number: [100, 60],
         currency: [110, 60],
-        date: [110, 80],
+        date: [125, 80],
         datetime: [160, 100],
         enum: [100, 60],
         bool: [60, 40],
@@ -188,7 +188,7 @@ export const checks = [
         tag: [140, 80],
         img: [80, 40],
         image: [80, 40],
-        progress: [100, 60],
+        progress: [120, 60],
         button: [140, 80],
         _fallback: [80, 40]
       }

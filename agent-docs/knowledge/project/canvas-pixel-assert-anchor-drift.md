@@ -8,12 +8,15 @@
 
 断言构造仍按旧口径：采样区域按旧锚点计算，墨迹已移出采样区（重绘差异不可见、断言恒败）；对照帧误用携带无关字段的 state（如 `makeState({ hover })` 实为整行高亮帧，并非「无 hover」基线）。
 
+另一变体（20261028 锚解耦实测）：**方案文档的断言同步清单本身漏列整文件**——§5 只列 cell-painters/editor 自检，遗漏 painter.js 自检的 7 处 `rowText(…, 54/90)` 精确断言、itemHits 矩形 `'208,45'`/`'44,20'`、按钮区矩形 `'388,42,24,24'`，以及 THEME 夹具缺 `rowHeight` 字段导致新公式恒走回退分支。
+
 ## 做法
 
-- 错误：只改实现锚点公式，像素断言的采样区/期望值沿用旧值；对照帧复用带无关字段的 state 工厂。
+- 错误：只改实现锚点公式，像素断言的采样区/期望值沿用旧值；对照帧复用带无关字段的 state 工厂；断言同步范围只按方案清单执行，不独立复核。
 - 正确：锚点公式变更与受影响断言的采样区、期望值、对照帧构造同批改写；对照帧必须用真·基线态（`makeState({})`）；改前先按新锚点推算墨迹落位再定采样区。
+- **同步清单不依赖方案文档，grep 旧锚字面值全量扫 self-checks 全目录**（如 `54`、`'208,45'`、`42,24`、夹具字段名），凡精确值断言逐一重算；±1px 容差断言数值上不破，但注释口径一并同步，防下次误判。
 - 「直调 harness 通过」不覆盖像素与页面层——实施自验结论不能替代浏览器面板验证。
 
 ## 来源
 
-agent-docs/plans/20261027-canvas-table-improve/05-verify-1.md 失败项 1/2；demo/src/data/canvas-table/self-checks/painter.js
+agent-docs/plans/20261027-canvas-table-improve/05-verify-1.md 失败项 1/2；agent-docs/plans/20261028-canvas-table-anchor-rowheight/01-impl.md（painter.js 自检遗漏实例）

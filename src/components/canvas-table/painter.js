@@ -73,15 +73,15 @@
  */
 
 import { drawCell, drawTreeArrow, requestIconImage } from './cell-painters.js'
-import { editorRectOf, editorButtonRectOf } from './editor.js'
-import { createMeasureCache, withAlpha } from './theme.js'
+import { editorRectOf, editorGridlineFlagsOf, editorButtonRectOf } from './editor.js'
+import { createMeasureCache } from './theme.js'
 import { ellipsize } from './text-wrap.js'
 import { isExpandedKey } from './tree.js'
 import {
   TREE_INDENT,
   CELL_PADDING_FALLBACK,
-  CELL_LINE_HEIGHT_FALLBACK,
   ROW_TOP_INSET,
+  ROW_HEIGHT_FALLBACK,
   EDITOR_BUTTON_AREA,
   EDITOR_BUTTON_ICON_SIZE,
   CHECK_SIZE,
@@ -766,10 +766,10 @@ function paintHeader (ctx, state) {
  * 且同格内槽位进出不触发重绘）——槽位级命中需壳改动，本处为格级粒度：
  * hover 停留在树形列父行格上即主色，移出该格随行带重绘还原。
  *
- * centerY = 首行行框槽位锚（问题 1 统一公式，与 cell-painters drawCell 的
- * centerY 同式同值：viewportRowY + ROW_TOP_INSET + cellPadding + cellLineHeight/2；
- * 不用 heightAt/2——超高行中两分区会错位出双层边，槽位锚下 hover 主色重画
- * 与常态箭头逐值重合）。
+ * centerY = 首行行框槽位锚（问题 1 统一公式：viewportRowY + ROW_TOP_INSET +
+ * (rowHeight − ROW_TOP_INSET)/2，20261028 与 lineHeight 解耦；cell-painters
+ * drawCell 同式但四舍五入取整，本覆盖层维持中点原式、较常态锚高 0.5px）；
+ * 不用 heightAt/2——超高行中两分区会错位出双层边。
  */
 function paintTreeArrowAccent (ctx, state) {
   const { hover, flatInfo, columns, theme } = state
@@ -784,11 +784,11 @@ function paintTreeArrowAccent (ctx, state) {
 
   if (record == null) return
 
+  const rowHeight = theme?.rowHeight || ROW_HEIGHT_FALLBACK
   const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
-  const lineHeight = theme?.cellLineHeight || CELL_LINE_HEIGHT_FALLBACK
   const level = flatInfo.levels?.[hover.row] ?? 0
   const x = viewportColX(state.layout, hover.col) + padding + level * TREE_INDENT
-  const centerY = viewportRowY(state.layout, hover.row) + ROW_TOP_INSET + padding + lineHeight / 2
+  const centerY = viewportRowY(state.layout, hover.row) + ROW_TOP_INSET + (rowHeight - ROW_TOP_INSET) / 2
 
   drawTreeArrow(
     ctx,
@@ -839,10 +839,11 @@ function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid) {
 }
 
 /**
- * 可编辑格 hover 感知（A5.3；20261027 问题 3 改口径，EDITOR_GAP 内缩作废）：
- * 1px 主色内描边，矩形 = editorRectOf(cellRectAt(...)) 恒等整格——描边与格线
- * 直接重叠、与 editor.js 编辑浮层盒缘逐边相等（import 同一函数单一事实源）；
- * 不占布局、随 hover 带重绘生效
+ * 可编辑格 hover 感知（A5.3）：1px 不透明主色描边，矩形 = editorRectOf(
+ * cellRectAt(...), editorGridlineFlagsOf(...))——与编辑浮层盒 import 同一
+ * 函数单一事实源、盒缘逐边相等（20261028 同位口径：盒缘贴格线内侧，本格内
+ * 被行线/列线占用的边缘像素扣除 1px，边框不与格线重叠）；不占布局、随
+ * hover 带重绘生效
  */
 function paintHoverEditorStroke (ctx, state, hover) {
   if (!state.editable || !state.isCellEditableFn) return
@@ -851,17 +852,28 @@ function paintHoverEditorStroke (ctx, state, hover) {
 
   if (!column || !state.isCellEditableFn(column)) return
 
-  const rect = editorRectOf(cellRectAt(state.layout, hover.row, hover.col))
+  const { layout } = state
+  const rect = editorRectOf(
+    cellRectAt(layout, hover.row, hover.col),
+    editorGridlineFlagsOf({
+      rowIndex: hover.row,
+      colIndex: hover.col,
+      colCount: layout.colWidths.length,
+      stickyWidth: layout.stickyWidth,
+      contentWidth: layout.contentWidth,
+      gridlines: state.gridlines
+    })
+  )
 
-  ctx.strokeStyle = withAlpha(state.theme.primaryColor, 0.45)
+  ctx.strokeStyle = state.theme.primaryColor
   ctx.lineWidth = 1
   ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
 }
 
 /**
  * 编辑按钮绘制（问题 5，覆盖层最上层）：hover 格所在列配 editorButton.icon
- * 时，经 editorButtonRectOf（editor.js 单一事实源，centerY = 首行槽位锚，与
- * 文字/树箭头同式）取 24×24 区矩形，requestIconImage（cell-painters 缓存管线
+ * 时，经 editorButtonRectOf（editor.js 单一事实源，centerY = 首行槽位锚中点
+ * 原式；cell-painters 内容锚 20261028 起四舍五入取整，差 0.5px）取 24×24 区矩形，requestIconImage（cell-painters 缓存管线
  * 单一事实源，SVG currentColor 着色 = theme.textColor）取图；仅
  * status === 'loaded' 才 drawImage（加载中/失败不半绘制），onLoad 经
  * state.onImageLoad 转 invalidateCell 联动重绘（createPainter withImageRelay；
@@ -877,7 +889,7 @@ function paintEditorButton (ctx, state, hover) {
   const { theme } = state
   const rect = editorButtonRectOf(cellRectAt(state.layout, hover.row, hover.col), {
     padding: theme?.cellPadding || CELL_PADDING_FALLBACK,
-    lineHeight: theme?.cellLineHeight || CELL_LINE_HEIGHT_FALLBACK
+    rowHeight: theme?.rowHeight || ROW_HEIGHT_FALLBACK
   })
   const entry = requestIconImage(icon, theme.textColor, () => state.onImageLoad?.(hover.row, hover.col))
 

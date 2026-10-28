@@ -1,3 +1,4 @@
+<!-- eslint-disable max-len -->
 <template>
   <demo-page path="form/form">
     <demo-section
@@ -12,6 +13,7 @@
         <mu-form-field label="Text 1" :width="1 / 3">
           <mu-input value="Value 1" />
         </mu-form-field>
+        <div style="width: 100%; height: 0;" />
         <mu-form-field label="Text 2" :width="1 / 3" required>
           <mu-input value="Value 2" />
         </mu-form-field>
@@ -296,7 +298,7 @@
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>

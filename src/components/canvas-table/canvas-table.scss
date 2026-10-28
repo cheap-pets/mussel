@@ -118,6 +118,7 @@
   overflow: hidden;
   display: flex;
   align-items: center;
+  justify-content: center;
 
   // 文本左缘一致性：浮层 left = 格左（矩形 = 整格），
   // 输入文本左缘 = left + 边框 1 + padding-left（padding − 1）= 格左 + padding，
@@ -128,8 +129,8 @@
   > .mu-input {
     width: 100%;
     height: 100%;
-    border-radius: 0;
-    padding: 0 0 0 calc(var(--cell-padding, 8px) - 1px);
+    padding: 0 calc(var(--cell-padding, 8px) - 1px);
+    border-radius: 1px;
   }
 
   // textarea 编辑器（人工 2 意见 2）：复用 form INPUT_TYPES.memo 约定

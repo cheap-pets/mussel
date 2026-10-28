@@ -736,7 +736,7 @@
       cellRectAt(layout.value, hit.rowIndex, hit.colIndex),
       {
         padding: themeWatcher?.snapshot?.cellPadding,
-        lineHeight: themeWatcher?.snapshot?.cellLineHeight
+        rowHeight: themeWatcher?.snapshot?.rowHeight
       }
     )
 
@@ -996,8 +996,8 @@
     return disabled != null && disabled !== false
   }
 
-  /** 单击进编辑（A5.2/A5.5）：style 按 A5.4 内容区矩形（border/编辑器类型分支），
-      editorType 判定用开值形态与 _resolveMaxLines(record) 行级求值 */
+  /** 单击进编辑（A5.2/A5.5）：style 按 computeEditorStyle 浮层盒（贴格线内侧，
+      border/编辑器类型分支），editorType 判定用开值形态与 _resolveMaxLines(record) 行级求值 */
   function openEditorAt (hit, record, col) {
     const cur = layout.value
 
@@ -1018,7 +1018,10 @@
       fixedCount: cur.fixedCount,
       rowGeometry: cur.rowGeometry,
       editorType,
-      border
+      border,
+      gridlines: props.gridlines,
+      stickyWidth: cur.stickyWidth,
+      contentWidth: cur.contentWidth
     })
 
     const opened = editor.open({

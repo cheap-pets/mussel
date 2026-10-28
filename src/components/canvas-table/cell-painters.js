@@ -17,13 +17,16 @@
  *   （评审 6 P1）；TextColumn 的单 line-clamp item 形态改道 drawText 多行（A3.5）；
  *   class/style/title 为 DOM 通道字段，canvas 忽略
  *
- * 绘制锚（02-design 问题 1，Q2 统一垂直锚）：所有列内容锚定首行行框槽位——
- * centerY = 格顶 + ROW_TOP_INSET(1) + padding + lineHeight/2（常量、与 gridlines
- * 模式无关、不使用 rect.height），单行文本 / 多行首行 / 树箭头 / 横排 items /
- * progress / button 同式（编辑按钮 editor.editorButtonRectOf 同式），多行后续行
- * += lineHeight；水平居中锚扣本格右缘列线占用 rightInset（painter 注入，缺省 0），
- * left/right 锚不动。行高公式（row-geometry）不变，槽位锚下 top 块底恒不越
- * 格底，无裁剪。
+ * 绘制锚（02-design 问题 1，Q2 统一垂直锚；20261028 与 lineHeight 解耦）：所有
+ * 列内容锚定行线间空白中点四舍五入取整——centerY = Math.round(格顶 +
+ * ROW_TOP_INSET(1) + (rowHeight − ROW_TOP_INSET)/2 + 0.01)（.5 恒向上，
+ * +0.01 浮点容差，见 drawCell 内注）= rect.y + Math.round((rowHeight + 1)/2)
+ * （常量、与 gridlines 模式无关、不使用 rect.height、与 padding/lineHeight
+ * 无关，取整使文字基线落整数像素），单行文本 / 多行首行 / 树箭头 /
+ * 横排 items / progress / button 同式（编辑按钮 editor.editorButtonRectOf 为
+ * 中点原式，差 0.5px），多行后续行 += lineHeight；水平居中锚扣本格右缘列线占用
+ * rightInset（painter 注入，缺省 0），left/right 锚不动。行高公式（row-geometry）
+ * 不变，槽位锚下 top 块底恒不越格底，无裁剪。
  *
  * 问题 5/7：requestIconImage（编辑按钮图标加载，SVG currentColor 着色 → data
  * URL → requestImage 单一缓存管线）；link 条目悬停（linkHoverColorOf 色变 +
@@ -42,6 +45,7 @@ import {
   TREE_INDENT,
   CELL_PADDING_FALLBACK,
   ROW_TOP_INSET,
+  ROW_HEIGHT_FALLBACK,
   FONT_SIZE_FALLBACK,
   CHECK_SIZE,
   CHECK_RADIUS,
@@ -307,7 +311,7 @@ export function drawCell (ctx, {
   if (isSkippableRect(rect)) return content
 
   const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
-  const lineHeight = theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
+  const rowHeight = theme?.rowHeight || ROW_HEIGHT_FALLBACK
 
   // 首行行框槽位（问题 1）：行线占用本格矩形顶部 ROW_TOP_INSET 1px，box = 格
   // 矩形扣除该 1px；宽度不减（padding 8 ≫ 1px，折行/截断无可观察差异，且与
@@ -315,8 +319,13 @@ export function drawCell (ctx, {
   const box = { ...rect, y: rect.y + ROW_TOP_INSET, height: rect.height - ROW_TOP_INSET }
 
   // 槽位中心（全文唯一垂直锚公式）：单行 / 多行首行 / 树箭头 / 横排 items /
-  // progress / button 同式；不使用 rect.height（超高行贴行顶，与多行首行同高）
-  const centerY = box.y + padding + lineHeight / 2
+  // progress / button 同式；不使用 rect.height（超高行贴行顶，与多行首行同高）。
+  // 行线间空白 [ROW_TOP_INSET, rowHeight) 的中点四舍五入取整（.5 恒向上；文字
+  // 基线锚定整数像素，小数行顶/滚动偏移下偏离中点 ≤0.5px），+0.01 为浮点容差
+  // （中点被坐标运算算亏成 x.4999… 时仍归上；容差量级远大于布局坐标的 1ulp
+  // 误差），与 padding/lineHeight 解耦（20261028）：默认配置下 = rect.y + 19
+  // （中点 18.5）
+  const centerY = Math.round(box.y + (rowHeight - ROW_TOP_INSET) / 2 + 0.01)
 
   ctx.font = cellFontOf(theme)
   ctx.textBaseline = 'middle'
@@ -339,16 +348,15 @@ export function drawCell (ctx, {
     : box
 
   // canvas 专属分发（A3.3）：progress / button 真实绘制，非 items 产物
-  // （button 命中矩形另传整格 rect——itemHits 条目 rect 保持整格语义）
   if (drawCanvasKindContent(
-    ctx, contentRect, rect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
+    ctx, contentRect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
   )) {
     return content
   }
 
   if (Array.isArray(content.items) && content.items.length) {
     drawContentItems(
-      ctx, contentRect, rect, content, col, record,
+      ctx, contentRect, content, col, record,
       padding, theme, measure, wrapCache, onItemRect, onImageLoad,
       centerY, rightInset, hoverItem
     )
@@ -371,9 +379,9 @@ function isSkippableRect (rect) {
 }
 
 /** canvas 专属分发（A3.3）：progress / button 真实绘制；命中返回 true。
-    rect = 绘制矩形（box 派生），cellRect = 整格矩形（button 命中回报用） */
+    rect = 绘制矩形（box 派生），button 命中矩形按 pill 绘制区回报 */
 function drawCanvasKindContent (
-  ctx, rect, cellRect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
+  ctx, rect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
 ) {
   if (content.canvasKind === 'progress') {
     drawProgress(ctx, rect, content, { padding, theme, record, measure, centerY })
@@ -381,7 +389,7 @@ function drawCanvasKindContent (
   }
 
   if (content.canvasKind === 'button') {
-    drawButton(ctx, rect, cellRect, content.buttons, {
+    drawButton(ctx, rect, content.buttons, {
       padding,
       theme,
       record,
@@ -400,10 +408,10 @@ function drawCanvasKindContent (
  * items 数组落地：单 item + line-clamp class 形态改道 drawText 多行（A3.5
  * DOM 风格兼容，评审 6 P6：maxLines 取 _resolveMaxLines(record)，与 render 内
  * --line-clamp 同函数求值恒等）；link 列 = 条目列竖排（A3.5）；其余横排。
- * rect = 绘制矩形（box 派生），cellRect = 整格矩形（横排条目命中回报 y/height 用）。
+ * rect = 绘制矩形（box 派生）。
  */
 function drawContentItems (
-  ctx, rect, cellRect, content, col, record,
+  ctx, rect, content, col, record,
   padding, theme, measure, wrapCache, onItemRect, onImageLoad,
   centerY, rightInset, hoverItem
 ) {
@@ -441,7 +449,7 @@ function drawContentItems (
     return
   }
 
-  drawItems(ctx, rect, cellRect, content.items, {
+  drawItems(ctx, rect, content.items, {
     align: col._align,
     padding,
     theme,
@@ -718,10 +726,9 @@ export function linkHoverColorOf (item, theme) {
  * （check 列 align:center 的方框居中，与 DOM text-align 行为一致），
  * 再逐条目绘制；超出右缘的条目丢弃。link/tag 条目矩形经 onItemRect 回报
  * （kind/index/rect/disabled，painter itemHits 命中来源，A3.3 + 问题 7）。
- * rect = 绘制矩形（box 派生，contentHeight/img 最大高随槽位扣行顶 1px），
- * cellRect = 整格矩形（命中回报 y/height 保持整格语义）。
+ * rect = 绘制矩形（box 派生，contentHeight/img 最大高随槽位扣行顶 1px）。
  */
-function drawItems (ctx, rect, cellRect, items, {
+function drawItems (ctx, rect, items, {
   align, padding, theme, onImageLoad, onItemRect, measure, centerY, rightInset, hoverItem
 }) {
   const gap = padding
@@ -756,8 +763,8 @@ function drawItems (ctx, rect, cellRect, items, {
       hoverItem
     })
 
-    // 命中矩形 y/height 用整格 rect（横向条目命中区保持整格语义，问题 1）
-    if (onItemRect) reportHitRect(onItemRect, items[i], i, x, cellRect.y, width, cellRect.height)
+    // 命中矩形 = 绘制区域（纵向随条目形态，横向随实绘宽）
+    if (onItemRect) reportHitRect(onItemRect, items[i], i, x, width, centerY, theme)
   }
 }
 
@@ -797,17 +804,28 @@ function itemsStartX (rect, align, padding, offset, visible, contentWidth, right
   return start
 }
 
-/** tag/link 条目命中矩形回报（painter itemHits 命中来源，A3.3；其余类别不回报）；
+/** tag/link 条目命中矩形回报（painter itemHits 命中来源，A3.3；其余类别不回报）。
+    命中区 = 绘制区域：tag 为 pill 绘制区（centerY ± TAG_HEIGHT/2），link 为首行
+    行框（centerY ± lineHeight/2，与竖排 link 列逐行矩形同口径）；
     disabled 随条目回报（问题 7：isTruthyAttr 口径与取色 linkTextColorOf /
     linkHoverColorOf、点击侧同源，避免 disabled 条目跨通道行为分裂） */
-function reportHitRect (onItemRect, item, index, x, y, width, height) {
+function reportHitRect (onItemRect, item, index, x, width, centerY, theme) {
   const kind = resolveItemKind(item)
+  let rect = null
 
-  if (kind === 'tag' || kind === 'link') {
+  if (kind === 'tag') {
+    rect = { x, y: centerY - TAG_HEIGHT / 2, width, height: TAG_HEIGHT }
+  } else if (kind === 'link') {
+    const lineHeight = cellLineHeightOf(theme)
+
+    rect = { x, y: centerY - lineHeight / 2, width, height: lineHeight }
+  }
+
+  if (rect) {
     onItemRect({
       kind,
       index,
-      rect: { x, y, width, height },
+      rect,
       disabled: isTruthyAttr(item.attrs?.disabled)
     })
   }
@@ -1156,10 +1174,10 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure, ce
  * button 组（tag 同构轻量按钮：20px / padding 0 8px / 圆角 4 / 12px）：横排，
  * 底 colors[color].translucent + 边框/文字 colors[color].color；disabled 底
  * bgDisabled、文字 textColorMuted；超宽丢弃；条目矩形回报 itemHits
- * （kind 'button'，携带 disabled，rect 保持整格语义），progress 不回报。
- * rect = 绘制矩形（box 派生），cellRect = 整格矩形（命中回报 y/height 用）。
+ * （kind 'button'，携带 disabled，命中区 = pill 绘制区），progress 不回报。
+ * rect = 绘制矩形（box 派生）。
  */
-function drawButton (ctx, rect, cellRect, buttons, {
+function drawButton (ctx, rect, buttons, {
   padding, theme, record, onItemRect, measure, centerY, hoverItem
 }) {
   if (!Array.isArray(buttons) || !buttons.length) return
@@ -1190,7 +1208,7 @@ function drawButton (ctx, rect, cellRect, buttons, {
     onItemRect?.({
       kind: 'button',
       index: i,
-      rect: { x, y: cellRect.y, width, height: cellRect.height },
+      rect: { x, y: centerY - TAG_HEIGHT / 2, width, height: TAG_HEIGHT },
       disabled: isTruthyAttr(button.disabled)
     })
 

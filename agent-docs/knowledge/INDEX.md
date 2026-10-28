@@ -25,10 +25,13 @@
 - [容器 display:none 期间测量污染溢出折叠宽度缓存](./project/overflow-measure-hidden-container-cache.md) `pitfall`：恢复显示后全部项展开、触发器消失——隐藏期 0 宽写入 widthCache；0 宽须视同未测量。
 - [Playwright 断言 modal 可见性须用 mask 的 display](./project/playwright-modal-visibility-assert.md) `pitfall`：关闭后 `.mu-dialog` display 恒非 none——自身值不受祖先 v-show 影响；须取 closest('.mu-modal-mask')。
 - [Playwright 模拟 splitter 拖拽：真实 mouse + scrollIntoView + 方向语义](./project/playwright-splitter-drag-verify.md) `pitfall`：合成 PointerEvent 拖不动（setPointerCapture 抛错）——须真实 mouse 先 scrollIntoView；collapse-only 向 prev 方向拖为折叠。
-- [canvas-table 自检像素断言随锚点口径漂移](./project/canvas-pixel-assert-anchor-drift.md) `pitfall`：锚点变更后自检断言恒败伪装成组件缺陷——采样区与对照帧须同批改写，对照帧用真·基线 makeState({})。
+- [canvas-table 自检像素断言随锚点口径漂移](./project/canvas-pixel-assert-anchor-drift.md) `pitfall` `code@worktree(2026-10-28)`：锚点变更后自检恒败伪装组件缺陷——采样区/对照帧同批改写，同步清单 grep 旧值全扫 self-checks。
+- [demo 页 URL 前缀 /data/](./project/demo-page-url-data-prefix.md) `fact` `code@worktree(2026-10-28)`：验证页在 `http://localhost:3000/data/<name>/`，AGENTS.md 的 `/<name>/` 表述已过时。
 - [overlay DOM 阴影 canvas getImageData 不可见](./project/dom-shadow-canvas-imagedata-invisible.md) `pitfall`：getImageData 读不到滚动阴影——overlay 阴影是 DOM box-shadow；断言 DOM 或截图合成像素。
+- [canvas-table demo 页交互验证](./project/canvas-table-demo-interaction-verify.md) `convention` `code@worktree(2026-10-28)`：单元格点击向 sticky 派发带 clientX 的 pointer/click，坐标经 getLayoutInfo 前缀和；浮层断言等 80ms+；事件日志 unshift 最新在前；条目命中区=pill 绘制区非整格，多 pill 探针勿取联合包围盒中点（8px 间隙）。
 - mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
 - mu-dialog / mu-drawer 的 dismissible 无默认值 `pitfall` `code@9517eb6`：不传 dismissible 时 ESC 与遮罩点击均不关闭；需此交互须显式传 dismissible。
+- Cannot convert undefined or null to object（列夹具） `pitfall` `code@03632af`：prepareColumn({type:'enum'}) 缺 mappings 即抛——EnumColumn.compile 列准备期求值 mappings，夹具须带 mappings。
 
 ## Global
 
