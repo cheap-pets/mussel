@@ -1,45 +1,8 @@
-/**
- * canvas-table 单元格绘制适配器：复用现有 table 列类型体系，把列类型 render
- * 产物（text / items）落地为 canvas 绘制（02-design.md A3/A4 取值与渲染管线 / A3.5）。
- *
- * 取值链与 table.vue:164-178（列准备）、table-row.vue:44-69（取值）同款：
- * - 列准备：resolveColumnType → _text/_value 均 ensureFn → _render（compile | render | 类型本身）；
- *   canvas 专属类型（progress/button）经 CANVAS_ONLY_TYPES 在 resolveColumnType 之前
- *   分发（03-review-5 问题 6），不产出 render items；另挂 _maxLines/_maxItems/
- *   _resolveMaxLines（maxLines 常量与 legacy multiline+lineClamp 双形态，行级求值
- *   闭包——评审 6 P6）与 _isTreeColumn（A3.4）
- * - 取值：_text(record) 非 null 直接作为显示文本（跳过类型渲染）；否则
- *   value = _value(record) ?? record[field]，调 _render({ record, recordNumber, value, emit })
- * - 落地：text 直绘（string/number/array——数组每元素一行、超 _maxItems 第
- *   _maxItems 行 '...'）；字符串 + maxLines>1 经 wrapLines 多行（钳制末行 '...'，
- *   实施约束 4）；items 按 DOM class 标记落地 check / link / tag / img——link 列
- *   竖排每条一行（条目列，A3.5）并解析 mu-link--{color} class 查 theme.colors 取色
- *   （评审 6 P1）；TextColumn 的单 line-clamp item 形态改道 drawText 多行（A3.5）；
- *   class/style/title 为 DOM 通道字段，canvas 忽略
- *
- * 绘制锚（02-design 问题 1，Q2 统一垂直锚；20261028 与 lineHeight 解耦）：所有
- * 列内容锚定行线间空白中点四舍五入取整——centerY = Math.round(格顶 +
- * ROW_TOP_INSET(1) + (rowHeight − ROW_TOP_INSET)/2 + 0.01)（.5 恒向上，
- * +0.01 浮点容差，见 drawCell 内注）= rect.y + Math.round((rowHeight + 1)/2)
- * （常量、与 gridlines 模式无关、不使用 rect.height、与 padding/lineHeight
- * 无关，取整使文字基线落整数像素），单行文本 / 多行首行 / 树箭头 /
- * 横排 items / progress / button 同式（编辑按钮 editor.editorButtonRectOf 为
- * 中点原式，差 0.5px），多行后续行 += lineHeight；水平居中锚扣本格右缘列线占用
- * rightInset（painter 注入，缺省 0），left/right 锚不动。行高公式（row-geometry）
- * 不变，槽位锚下 top 块底恒不越格底，无裁剪。
- *
- * 问题 5/7：requestIconImage（编辑按钮图标加载，SVG currentColor 着色 → data
- * URL → requestImage 单一缓存管线）；link 条目悬停（linkHoverColorOf 色变 +
- * linkUnderlineY 下划线，横排 drawItemText 与竖排 drawLinkEntry 共用）、button
- * pill 悬停反转、itemHits 条目携带 disabled（与取色/点击同口径 isTruthyAttr）。
- *
- * 模块隔离（A8）：不 import theme.js / layout.js，主题色与 colors（固定 17 色
- * map）经 drawCell 的 theme 快照参数传入（字段同 theme.js readSnapshot）；
- * text-wrap 为纯函数模块（measure 经参数注入，painter state 携带）。
- */
+/** canvas-table 单元格绘制适配器：复用 table 列类型体系，把列类型 render 产物（text / items）落地为 canvas 绘制 */
 import { ensureFn } from '../table/utils'
 import { resolveColumnType } from '../table/column-types'
 import { wrapLines, ellipsize, cellFontOf, MAX_LINES_LIMIT } from './text-wrap'
+import { isMappableColumnType, createDisplayMapper } from './mappings'
 import { isExpandedKey } from './tree'
 import {
   TREE_INDENT,
@@ -54,12 +17,26 @@ import {
   FONT_FAMILY_FALLBACK
 } from './constants'
 
-// 视觉常量（镜像现有 DOM 规格，非新增设计值）：
-// check 方框（CHECK_*，与表头 painter.drawHeaderCheck 同规格互指——状态机不同
-// 不强合，规格变更两处同步）—— src/components/table/column-types/style.scss
-//   .mu-table__cell-check
-// tag pill / button —— src/styles/tag.scss .mu-tag（height 20px / padding 0 8px /
-//   font-size 12px / 圆角 var(--mu-radius-control) = 4px）；button 为 tag 同构轻量按钮（A3.3）
+// 取值链（table.vue:164-178 列准备、table-row.vue:44-69 取值同款）：
+// - 列准备：resolveColumnType → _text/_value 均 ensureFn → _render（compile | render | 类型本身）；
+//   另挂 _maxLines/_maxItems/_resolveMaxLines/_isTreeColumn/_mapText/_plainText
+
+// - 取值：_text(record) 非 null 直接作为显示文本；否则 value = _value(record) ?? record[field]，
+//   映射列经 _mapText 求显示文本，其余调 _render；class/style/title 为 DOM 通道字段忽略
+
+// 绘制锚（Q2 统一垂直锚，与 lineHeight 解耦）：centerY = Math.round(rect.y +
+// ROW_TOP_INSET + (rowHeight − ROW_TOP_INSET)/2 + 0.01)（行线间空白中点四舍五入，
+// .5 恒向上，+0.01 浮点容差），多行后续行 += lineHeight；水平居中锚扣 rightInset
+
+// 模块隔离（A8）：不 import theme.js / layout.js；主题色与 colors 经 drawCell 的
+// theme 快照参数传入；mappings.js 为零依赖共享模块，editor 侧共用不违反禁令
+
+// —— 视觉常量（镜像现有 DOM 规格，非新增设计值）——
+// check 方框 —— table/column-types/style.scss .mu-table__cell-check（与表头
+// painter.drawHeaderCheck 同规格，规格变更两处同步）
+
+// tag pill / button —— styles/tag.scss .mu-tag（height 20 / padding 0 8 / font-size
+// 12 / 圆角 4px）；button 为 tag 同构轻量按钮（A3.3）
 const TAG_HEIGHT = 20
 const TAG_PADDING_X = 8
 const TAG_FONT_SIZE = 12
@@ -75,21 +52,18 @@ const IMAGE_CACHE_LIMIT = 200
 // 生产路径 theme 快照必含以下字段（readSnapshot）；缺省值仅为容错
 const FALLBACK_LINE_HEIGHT = 18
 
-// button 组条目缺省占位（buttons[i] 为 null/undefined 时的只读替身，
-// 仅访问 caption/disabled/color，共享单例替代循环内逐次 {} 分配）
+// button 组条目缺省占位（共享单例替代循环内逐次 {} 分配）
 const EMPTY_BUTTON = {}
 
 // canvas 专属类型（A3.3）：不入 table 列类型注册表，prepareColumn 在
-// resolveColumnType 之前分发，drawCell 按 canvasKind 走 drawProgress/drawButton；
-// DOM 版 mu-table 无此二字段时回退 TextColumn（A3.1 差异 ④）
+// resolveColumnType 之前分发，drawCell 按 canvasKind 走 drawProgress/drawButton
 const CANVAS_ONLY_TYPES = { progress: true, button: true }
 
 // —— img 异步加载缓存：src → { image, status: 'loading' | 'loaded' | 'failed' } ——
 
 const imageCache = new Map()
 
-/** 读取某 src 的缓存条目（self-check only：img 缓存行为的自检观测窗口，
-    生产路径经 requestImage 内部消费，无其他调用方） */
+/** 读取某 src 的缓存条目（self-check only：img 缓存行为的自检观测窗口） */
 export function getImageEntry (src) {
   return (src && imageCache.get(src)) || null
 }
@@ -105,12 +79,11 @@ function requestImage (src, onLoad) {
     entry = { image, status: 'loading' }
     imageCache.set(src, entry)
 
-    // 统一 crossOrigin=anonymous：跨域无 CORS 头的图加载失败，避免污染画布
-    // （02-design.md 风险表：加载失败按空格处理，不绘制）
+    // crossOrigin=anonymous：跨域无 CORS 头的图加载失败，避免污染画布
     image.crossOrigin = 'anonymous'
     image.onload = () => {
       entry.status = 'loaded'
-      // 同一 src 只回调一次；重绘范围（该格 / 整幅）由 painter 侧回调决定
+      // 同一 src 只回调一次；重绘范围由 painter 侧回调决定
       onLoad?.()
     }
     image.onerror = () => {
@@ -122,18 +95,8 @@ function requestImage (src, onLoad) {
   return entry
 }
 
-/**
- * 编辑按钮图标加载（02-design 问题 5）：SVG 标记串（含 '<svg'）经
- * /currentColor/gi 替换为着色串（img 上下文 currentColor 不可靠，tabler 图标
- * stroke/fill 两种写法均命中）后转 data URL，再委托既有 requestImage（缓存 /
- * onload 管线单一事实源；缓存键含着色串，主题色变自然分键）；非 SVG 串按
- * 图片 src 直通。
- *
- * @param {String} icon SVG 标记串或图片 URL / data-URL
- * @param {String} color 着色色值（生产路径 = theme.textColor）
- * @param {Function} [onLoad] 首次加载完成回调（painter 转 invalidateCell）
- * @returns {Object} requestImage 缓存条目 { image, status }（同参复用同一条目）
- */
+/** 编辑按钮图标加载：SVG 标记串着色后转 data URL（缓存键含着色串，主题色变自然分键），
+    非 SVG 串按图片 src 直通；委托 requestImage 单一管线 */
 export function requestIconImage (icon, color, onLoad) {
   const src = typeof icon === 'string' && icon.includes('<svg')
     ? 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(String(icon).replace(/currentColor/gi, color))
@@ -144,19 +107,16 @@ export function requestIconImage (icon, color, onLoad) {
 
 // —— 列准备（table.vue internalColumns 的 canvas 等价物，仅保留绘制所需字段） ——
 
-/** maxLines/maxItems 配置值钳制（人工 2 意见 2：1–10；非法值回退 fallback） */
+/** maxLines/maxItems 配置值钳制（1–10；非法值回退 fallback） */
 function clampLimit (value, fallback) {
   const n = Math.round(Number(value))
 
   return Number.isFinite(n) ? Math.min(Math.max(n, 1), MAX_LINES_LIMIT) : fallback
 }
 
-/**
- * _render 构建：canvas 专属类型（progress/button，03-review-5 问题 6）不经
- * resolveColumnType 产物（回退 TextColumn 会绘制文本），直接产出 canvasKind
- * render；普通类型走 table.vue:178 同款——compile 优先，其次类型对象/函数
- * 自身作为 render。
- */
+// _render 构建：canvas 专属类型（progress/button）不经 resolveColumnType 产物
+// （回退 TextColumn 会绘制文本），直接产出 canvasKind render；普通类型 compile 优先，
+// 其次类型对象/函数自身作为 render
 function createColumnRender (column, type, canvasOnlyKind) {
   if (canvasOnlyKind === 'progress') {
     const getProgressOption = ensureFn(column.progressOption)
@@ -177,16 +137,8 @@ function createColumnRender (column, type, canvasOnlyKind) {
   return type.compile ? type.compile(column) : (type.render || type)
 }
 
-/**
- * 列定义 → 内部列：解析列类型缺省 align/width、ensureFn 化 text/value、
- * 构建 render；canvas 专属类型（progress/button）分发；挂 maxLines/maxItems/
- * 树形列标记；placeholder 列级缺省继承表格级（table.vue:195 同款）。
- *
- * @param {Object} column 原始列定义（不修改）
- * @param {{ placeholder?: String }} [options] 表格级 placeholder
- * @returns {Object} 内部列（_raw / _align / _text / _value / _render / _maxLines /
- *   _maxItems / _resolveMaxLines / _isTreeColumn / placeholder）
- */
+// 列定义 → 内部列：解析缺省 align、ensureFn 化 text/value、构建 render、canvas 专属
+// 类型分发、挂 maxLines/maxItems/树形列标记与映射字段；placeholder 继承表格级
 export function prepareColumn (column, { placeholder } = {}) {
   const col = { ...column, _raw: column }
 
@@ -198,12 +150,8 @@ export function prepareColumn (column, { placeholder } = {}) {
   col._text = ensureFn(column.text)
   col._value = ensureFn(column.value)
 
-  // 多行/条目上限（评审 6 P6 + 人工 2 意见 2）：
-  // - _maxLines 仅常量形态；DOM 风格 multiline + lineClamp 等效映射进闭包
-  // - _resolveMaxLines(record) 行级求值闭包：drawText、computeRowHeights/
-  //   ensureRowMeasured、editor textarea 判定三处同源调用（函数形态 lineClamp
-  //   的行高与绘制必然一致）；不在列准备期求值（无 record，函数形态只会得
-  //   undefined 回退 10，行高/绘制分裂）
+  // 多行/条目上限：_resolveMaxLines(record) 行级求值闭包（drawText、行高计算、
+  // editor textarea 判定同源）；不在列准备期求值（无 record，行高/绘制分裂）
   col._maxLines = column.maxLines != null ? clampLimit(column.maxLines, null) : null
   col._maxItems = clampLimit(column.maxItems ?? MAX_LINES_LIMIT, MAX_LINES_LIMIT)
   col._isTreeColumn = column.treeNode === true
@@ -218,23 +166,26 @@ export function prepareColumn (column, { placeholder } = {}) {
     col._resolveMaxLines = () => 1
   }
 
-  // canvas 专属类型分发（03-review-5 问题 6）：progress/button 不经
-  // resolveColumnType（回退 TextColumn 会绘制文本），产出 canvasKind 产物
+  // canvas 专属类型分发：progress/button 不经 resolveColumnType
   const canvasOnlyKind = CANVAS_ONLY_TYPES[column.type] ? column.type : null
 
   col._render = createColumnRender(column, type, canvasOnlyKind)
+
+  // 显示映射（mappings 优先，仅 options 时由其转换；column.text 显示优先不参与
+  // 映射——valueOf 无 _text 分支，挂映射会行高与文本分裂）
+  col._mapText = !column.text && isMappableColumnType(column.type) ? createDisplayMapper(column) : null
+  // 纯文本直渲短路标记（P2）：非 multiline 原生 text 列，compile 产物恒
+  // ({value}) => ({text: value})，可跳过 render 调用
+  col._plainText = !column.text && !column.multiline && !canvasOnlyKind &&
+    (column.type == null || column.type === '' || column.type === 'text')
 
   col.placeholder ??= placeholder
 
   return col
 }
 
-/**
- * 单元格内容解析（table-row.vue cells computed 的纯函数等价物）：
- * 返回 { text } / { items } / { canvasKind, ... }（皆空的空对象 = 空内容，
- * 绘制时落 placeholder）。render 产物的 class/style/title 为 DOM 通道字段，
- * 此处剔除、不消费。
- */
+// 单元格内容解析（table-row.vue cells computed 的纯函数等价物）：返回 { text } /
+// { items } / { canvasKind, ... }（皆空 = 空内容，绘制落 placeholder）
 export function resolveCellContent (col, { record, recordNumber, emit }) {
   const text = col._text(record)
 
@@ -243,13 +194,23 @@ export function resolveCellContent (col, { record, recordNumber, emit }) {
   // value 传字符串等非函数值经 ensureFn 包装后恒为函数，不会抛错
   const value = col._value(record) ?? (col.field ? record[col.field] : undefined)
 
+  // P2 短路：纯文本列免 render 调用与中间对象（映射命中/未命中均终结于此）
+  if (col._plainText) return { text: col._mapText ? col._mapText(value) : value }
+
+  // 映射器返回非 null（命中 / default / 原值回退）即终结，number 列不再走 Intl
+  if (col._mapText) {
+    const mapped = col._mapText(value)
+
+    if (mapped != null) return { text: mapped }
+  }
+
   const { class: _class, style: _style, title: _title, ...params } =
     col._render({ record, recordNumber, value, emit }) || {}
 
   return params
 }
 
-/** maxLines 行级求值（消费方容错形态：优先 _resolveMaxLines 闭包，其次 _maxLines） */
+/** maxLines 行级求值（优先 _resolveMaxLines 闭包，其次 _maxLines） */
 function maxLinesOf (col, record) {
   if (typeof col._resolveMaxLines === 'function') return col._resolveMaxLines(record)
 
@@ -258,35 +219,8 @@ function maxLinesOf (col, record) {
 
 // —— canvas 落地 ——
 
-/**
- * 绘制单个单元格内容（背景/网格线/hover 等由 painter 负责，此函数只画内容）。
- *
- * @param {CanvasRenderingContext2D} ctx
- * @param {Object} options
- * - col            prepareColumn 产出的内部列
- * - record / recordNumber / emit   透传给列类型 render
- * - rect           { x, y, width, height } 单元格矩形（canvas 坐标）
- * - theme          主题快照（字段同 theme.js readSnapshot，含 colors 17 色 map）
- * - onImageLoad    img 异步加载完成回调（painter 用于触发重绘），可选
- * - row            行号（树形列 levels/hasChildren 平行数组取值），可选
- * - flatInfo       { levels, hasChildren } 树平铺信息（树关 = null），可选
- * - expandedKeys   展开 key 集合（Set），可选
- * - recordKey      当前行 key（箭头展开态判定），可选
- * - measure / wrapCache   文本测量注入（theme.js 工厂产物，多行折行），可选；
- *                        单行省略经 ellipsize 走 measure 缓存，未注入时回退 ctx 直测
- * - onItemRect     条目命中矩形收集回调 ({ kind, index, rect, disabled })（painter
- *                  itemHits），link/tag/button 条目回报（dots '...' 条目同样回报；
- *                  disabled 与取色/点击同口径 isTruthyAttr），可选
- * - placeholder    表格级占位文本兜底（content.text ?? 列级 placeholder ?? 此值），
- *                  painter state.placeholder 注入，可选
- * - rightInset     本格右缘列线占用 px（0|1，painter drawCellClipped 注入，缺省 0；
- *                  非末列或 blankTail 且 gridlines 含 column 时为 1）：仅参与水平
- *                  居中锚（内容区水平中心精确扣除列线占用），left/right 锚与折行
- *                  宽不受影响（宽度不减，与估高 contentWidthOf 同式）
- * - hoverItem      条目悬停（painter 注入，仅 hover 格非空）：{ kind, index, disabled }，
- *                  link 条目色变 + 下划线、button pill 反转（问题 7），可选
- * @returns {Object} resolveCellContent 的解析结果（painter 调试用）
- */
+// 绘制单个单元格内容（背景/网格线/hover 由 painter 负责此函数只画内容）：
+// onImageLoad 为 (row, colIndex) => void 处理器，仅 img 消费分支内创建闭包（P1b）
 export function drawCell (ctx, {
   col,
   record,
@@ -296,6 +230,7 @@ export function drawCell (ctx, {
   theme,
   onImageLoad,
   row,
+  colIndex,
   flatInfo,
   expandedKeys,
   recordKey,
@@ -313,25 +248,18 @@ export function drawCell (ctx, {
   const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
   const rowHeight = theme?.rowHeight || ROW_HEIGHT_FALLBACK
 
-  // 首行行框槽位（问题 1）：行线占用本格矩形顶部 ROW_TOP_INSET 1px，box = 格
-  // 矩形扣除该 1px；宽度不减（padding 8 ≫ 1px，折行/截断无可观察差异，且与
-  // 估高 contentWidthOf 同式）；rightInset 不扣宽度，只参与水平居中锚
+  // 首行行框槽位（问题 1）：行线占用本格矩形顶部 1px；宽度不减（与估高同式）；
+  // rightInset 不扣宽度，只参与水平居中锚
   const box = { ...rect, y: rect.y + ROW_TOP_INSET, height: rect.height - ROW_TOP_INSET }
 
-  // 槽位中心（全文唯一垂直锚公式）：单行 / 多行首行 / 树箭头 / 横排 items /
-  // progress / button 同式；不使用 rect.height（超高行贴行顶，与多行首行同高）。
-  // 行线间空白 [ROW_TOP_INSET, rowHeight) 的中点四舍五入取整（.5 恒向上；文字
-  // 基线锚定整数像素，小数行顶/滚动偏移下偏离中点 ≤0.5px），+0.01 为浮点容差
-  // （中点被坐标运算算亏成 x.4999… 时仍归上；容差量级远大于布局坐标的 1ulp
-  // 误差），与 padding/lineHeight 解耦（20261028）：默认配置下 = rect.y + 19
-  // （中点 18.5）
+  // 槽位中心（全文唯一垂直锚公式）：中点四舍五入取整（.5 恒向上，+0.01 浮点
+  // 容差）；不使用 rect.height（超高行贴行顶）
   const centerY = Math.round(box.y + (rowHeight - ROW_TOP_INSET) / 2 + 0.01)
 
   ctx.font = cellFontOf(theme)
   ctx.textBaseline = 'middle'
 
-  // 树形列（A2.4/A3.4）：内容区前置 level×16 缩进 + 16px 箭头槽（父行箭头/
-  // 叶行空槽，判定 = flatInfo.hasChildren[row]），箭头方向经 expandedKeys 判定
+  // 树形列（A2.4/A3.4）：内容区前置 level×16 缩进 + 16px 箭头槽
   const inset = drawTreeAffordance(ctx, box, {
     col,
     row,
@@ -358,7 +286,7 @@ export function drawCell (ctx, {
     drawContentItems(
       ctx, contentRect, content, col, record,
       padding, theme, measure, wrapCache, onItemRect, onImageLoad,
-      centerY, rightInset, hoverItem
+      centerY, rightInset, hoverItem, row, colIndex
     )
 
     return content
@@ -372,14 +300,12 @@ export function drawCell (ctx, {
   return content
 }
 
-/** 矩形缺失 / 零尺寸（含 NaN 尺寸：`<= 0` 判定为 false 时照常进入绘制，
-    与原实现逐分支一致）时跳过内容绘制 */
+/** 矩形缺失 / 零尺寸（NaN 尺寸照常进入绘制，与原实现一致）时跳过内容绘制 */
 function isSkippableRect (rect) {
   return !rect || rect.width <= 0 || rect.height <= 0
 }
 
-/** canvas 专属分发（A3.3）：progress / button 真实绘制；命中返回 true。
-    rect = 绘制矩形（box 派生），button 命中矩形按 pill 绘制区回报 */
+/** canvas 专属分发（A3.3）：progress / button 真实绘制；命中返回 true */
 function drawCanvasKindContent (
   ctx, rect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
 ) {
@@ -404,16 +330,12 @@ function drawCanvasKindContent (
   return false
 }
 
-/**
- * items 数组落地：单 item + line-clamp class 形态改道 drawText 多行（A3.5
- * DOM 风格兼容，评审 6 P6：maxLines 取 _resolveMaxLines(record)，与 render 内
- * --line-clamp 同函数求值恒等）；link 列 = 条目列竖排（A3.5）；其余横排。
- * rect = 绘制矩形（box 派生）。
- */
+// items 数组落地：单 item + line-clamp class 形态改道 drawText 多行（A3.5 DOM 风格
+// 兼容）；link 列 = 条目列竖排；其余横排
 function drawContentItems (
   ctx, rect, content, col, record,
   padding, theme, measure, wrapCache, onItemRect, onImageLoad,
-  centerY, rightInset, hoverItem
+  centerY, rightInset, hoverItem, row, colIndex
 ) {
   if (content.items.length === 1) {
     const only = content.items[0]
@@ -458,11 +380,13 @@ function drawContentItems (
     measure,
     centerY,
     rightInset,
-    hoverItem
+    hoverItem,
+    row,
+    colIndex
   })
 }
 
-/** 空内容落占位文本（table-row.vue 的 cell.text ?? col.placeholder ?? 表格级 placeholder） */
+/** 空内容落占位文本（content.text ?? col.placeholder ?? 表格级 placeholder） */
 function drawDisplayText (
   ctx, rect, content, col, record, placeholder,
   padding, theme, measure, wrapCache, centerY, rightInset
@@ -483,10 +407,7 @@ function drawDisplayText (
   }
 }
 
-/**
- * 测量回调解析：注入 measure 优先（生产路径 = theme.js 测量缓存实例，与行高
- * 估高/精算同一缓存）；未注入（自检/手织调用容错）回退当前 ctx 直测，无缓存
- */
+/** 测量回调解析：注入 measure 优先（theme.js 测量缓存）；未注入回退 ctx 直测无缓存 */
 function measureOf (ctx, measure) {
   if (typeof measure === 'function') return measure
 
@@ -496,12 +417,7 @@ function measureOf (ctx, measure) {
   }
 }
 
-/**
- * 文本水平锚点（ctx.textAlign 与 align 同值时的 x 坐标）：center 锚按内容区
- * 水平几何中心精确计算——rightInset 为本格右缘列线占用 1px（问题 1 列线占用
- * 扣除，非末列或 blankTail 时 painter 注入 1），left/right 锚不动（padding 8 ≫
- * 1px 格线，文字不会压线）。
- */
+/** 文本水平锚点：center 锚扣本格右缘列线占用 rightInset（painter 注入），left/right 不动 */
 function textAnchorX (rect, align, padding, rightInset) {
   return align === 'right'
     ? rect.x + rect.width - padding
@@ -510,17 +426,13 @@ function textAnchorX (rect, align, padding, rightInset) {
       : rect.x + padding
 }
 
-/**
- * 文本取值落地（A3.5 统一规则；垂直锚 = Q2 首行行框槽位，问题 1）：
- * - 数组值 → 每元素一行（逐元素 String 化）、首行槽位锚（centerY），后续行
- *   += lineHeight；行数 > maxItems 时第 maxItems 行显示 '...'（dots 字面，
- *   DOM link.js:47/tag.js:46 同款）
- * - 字符串 + maxLines>1 → wrapLines 多行（折行 + maxLines 钳制一体；与
- *   row-geometry 同一函数与缓存，行高与绘制折行必然一致；measure 未注入时
- *   回退单行省略），首行槽位锚起排（原块整体居中口径作废）；行高公式
- *   max(rowHeight, padding×2 + lines×lineHeight) 保证块底不越格底，无裁剪
- * - 其余 → 单行省略（垂直锚 = 槽位中心 centerY，与多行首行同式）
- */
+// 文本取值落地（A3.5 统一规则）：
+// - 数组值 → 每元素一行（逐元素 String 化）、首行槽位锚，行数 > maxItems 时
+//   第 maxItems 行显示 '...'（dots 字面，DOM link.js:47/tag.js:46 同款）
+
+// - 字符串 + maxLines>1 → wrapLines 多行（与 row-geometry 同一函数与缓存；
+//   measure 未注入时回退单行省略），首行槽位锚起排
+// - 其余 → 单行省略（垂直锚 = 槽位中心 centerY，与多行首行同式）
 function drawTextValue (ctx, rect, display, align, {
   padding, theme, measure, wrapCache, maxLines, maxItems, centerY, rightInset
 }) {
@@ -544,7 +456,7 @@ function drawTextValue (ctx, rect, display, align, {
     ctx.fillStyle = theme?.textColor
     ctx.textAlign = align
 
-    // 首行槽位锚：文字 top = 内容区顶 + padding（行框槽位），后续行 += lineHeight
+    // 首行槽位锚：后续行 += lineHeight
     let y = centerY
 
     for (const line of lines) {
@@ -555,7 +467,7 @@ function drawTextValue (ctx, rect, display, align, {
     return
   }
 
-  // 单行省略：垂直锚 = 槽位中心（与多行首行同式）；截断经注入 measure 走缓存（P0-1）
+  // 单行省略：截断经注入 measure 走缓存（P0-1）
   const { text: single } = ellipsize({
     text,
     font: cellFontOf(theme),
@@ -570,7 +482,7 @@ function drawTextValue (ctx, rect, display, align, {
   ctx.fillText(single, textAnchorX(rect, align, padding, rightInset), centerY)
 }
 
-/** 数组值多行（文本呈现列）：每元素一行、首行槽位锚（centerY）、超限第 maxItems 行 '...' */
+/** 数组值多行（文本呈现列）：每元素一行、首行槽位锚、超限第 maxItems 行 '...' */
 function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, measure, centerY, rightInset }) {
   const contentWidth = rect.width - padding * 2
 
@@ -599,11 +511,7 @@ function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, m
 
 // —— 树形列（A2.4/A3.4） ——
 
-/**
- * 树箭头三角绘制（C2 收拢：槽内 2..10、展开 ▾ / 收起 ▸ ±3.5 / ±5 的坐标
- * 单一事实源）：分区 1 常态（drawTreeAffordance，textColor）与分区 5 hover
- * 主色（painter.paintTreeArrowAccent）共用，形状变更只改此处。
- */
+/** 树箭头三角绘制（形状单一事实源）：常态 textColor 与 hover 主色（painter 分区 5）共用 */
 export function drawTreeArrow (ctx, x, centerY, expanded, color) {
   ctx.beginPath()
 
@@ -624,12 +532,8 @@ export function drawTreeArrow (ctx, x, centerY, expanded, color) {
   ctx.fill()
 }
 
-/**
- * 树形列缩进与箭头：内容区前置 level×16 缩进 + 16px 箭头槽（父行 12px 三角、
- * 叶行空槽）；返回内容区应右移的 inset px（= level×16 + 16，与行高估高的
- * contentWidth 扣减口径一致——实施约束 6），非树形列/树关返回 0。
- * 箭头垂直锚 = 槽位中心 centerY（问题 1 统一锚，与文字首行/编辑按钮共线）。
- */
+// 树形列缩进与箭头：内容区前置 level×16 缩进 + 16px 箭头槽（父行三角、叶行空槽）；
+// 返回内容区应右移的 inset px（与行高估高扣减口径一致），非树形列/树关返回 0
 function drawTreeAffordance (ctx, rect, { col, row, flatInfo, expandedKeys, recordKey, padding, theme, centerY }) {
   if (!col._isTreeColumn || !flatInfo) return 0
 
@@ -657,11 +561,7 @@ function itemClassOf (item) {
   return Array.isArray(cls) ? cls.join(' ') : String(cls ?? '')
 }
 
-/**
- * 条目落地类别。check 与 multiline 的 div 条目 is 均为 'div'，
- * 以列类型写入的 DOM class 标记区分（mu-table__cell-check / mu-tag / line-clamp），
- * 与列类型内部实现解耦。
- */
+/** 条目落地类别：以列类型写入的 DOM class 标记区分（mu-table__cell-check / mu-tag / line-clamp） */
 function resolveItemKind (item) {
   const cls = itemClassOf(item)
 
@@ -670,8 +570,7 @@ function resolveItemKind (item) {
   if (item.is === 'a') return 'link'
   if (cls.includes('mu-tag')) return 'tag'
 
-  // 未识别 is 且 text != null 的条目按文本绘制（decisions「[I1 前]⑤」；
-  // 单 line-clamp div 已在 drawCell 改道，其余（无文本的未知条目）忽略
+  // 未识别 is 且 text != null 的条目按文本绘制；无文本的未知条目忽略
   return item.text != null ? 'text' : null
 }
 
@@ -682,12 +581,7 @@ function colorClassOf (item, prefix) {
   return match?.[1] ?? null
 }
 
-/**
- * link 条目文本色（评审 6 P1 完整链路 + 实施约束 7）：
- * disabled（存在性判定 attrs.disabled != null && attrs.disabled !== false，与
- * 命中/发事件口径一致）→ textColorMuted；mu-link--{color} class → colors[name].color
- * （mu-link--danger → colors.danger.color 同路径）；未知名/无 class → primaryColor。
- */
+/** link 条目文本色：disabled → textColorMuted；mu-link--{color} → colors[name].color；未知名 → primaryColor */
 function linkTextColorOf (item, theme) {
   const attrs = item.attrs ?? {}
 
@@ -701,13 +595,7 @@ function linkTextColorOf (item, theme) {
   return colored || theme?.primaryColor
 }
 
-/**
- * link 条目悬停色（02-design 问题 7，A7）：disabled → textColorMuted（不悬停
- * 表达，与常态同）；语义色名 → colors[name].hover（theme.readColors 扩展的
- * --mu-{name}-color-4 谱系，缺字段时回退 color）；彩色名（hover === color）/
- * 未知名 → 同色 / primaryColor。与常态取色 linkTextColorOf 同构，仅多 hover
- * 字段一档。
- */
+/** link 条目悬停色（问题 7）：语义色名 → colors[name].hover（缺字段回退 color）；彩色名同色；disabled muted */
 export function linkHoverColorOf (item, theme) {
   const attrs = item.attrs ?? {}
 
@@ -721,20 +609,15 @@ export function linkHoverColorOf (item, theme) {
   return colored?.hover ?? colored?.color ?? theme?.primaryColor
 }
 
-/**
- * items 行绘制：先测各条目宽度，按列 align 分布整体起点
- * （check 列 align:center 的方框居中，与 DOM text-align 行为一致），
- * 再逐条目绘制；超出右缘的条目丢弃。link/tag 条目矩形经 onItemRect 回报
- * （kind/index/rect/disabled，painter itemHits 命中来源，A3.3 + 问题 7）。
- * rect = 绘制矩形（box 派生，contentHeight/img 最大高随槽位扣行顶 1px）。
- */
+// items 行绘制：先测各条目宽度，按列 align 分布整体起点，再逐条目绘制；超出右缘
+// 的条目丢弃；link/tag 条目矩形经 onItemRect 回报（painter itemHits 命中来源）
 function drawItems (ctx, rect, items, {
-  align, padding, theme, onImageLoad, onItemRect, measure, centerY, rightInset, hoverItem
+  align, padding, theme, onImageLoad, onItemRect, measure, centerY, rightInset, hoverItem, row, colIndex
 }) {
   const gap = padding
   const contentWidth = rect.width - padding * 2
 
-  const hooks = { contentWidth, contentHeight: rect.height, padding, theme, onImageLoad, measure }
+  const hooks = { contentWidth, contentHeight: rect.height, padding, theme, onImageLoad, measure, row, colIndex }
   const widths = items.map(item => measureItem(ctx, item, hooks))
 
   const { positions, offset, visible } = layoutItemPositions(items, widths, gap)
@@ -760,7 +643,9 @@ function drawItems (ctx, rect, items, {
       onImageLoad,
       measure,
       index: i,
-      hoverItem
+      hoverItem,
+      row,
+      colIndex
     })
 
     // 命中矩形 = 绘制区域（纵向随条目形态，横向随实绘宽）
@@ -768,8 +653,7 @@ function drawItems (ctx, rect, items, {
   }
 }
 
-/** 逐条目横向起点（可见条目间以 gap 分隔；测量失败条目 null 跳过不占位），
-    一并产出累计宽度 offset 与是否含可见条目 visible（起点分布判定用） */
+/** 逐条目横向起点（可见条目间以 gap 分隔；测量失败条目 null 跳过不占位） */
 function layoutItemPositions (items, widths, gap) {
   const positions = []
   let offset = 0
@@ -791,8 +675,7 @@ function layoutItemPositions (items, widths, gap) {
   return { positions, offset, visible }
 }
 
-/** items 整体起点：内容未超宽时按列 align 分布（center 锚按内容区水平中心
-    扣 rightInset，问题 1），超宽回退左对齐 */
+/** items 整体起点：未超宽按列 align 分布（center 扣 rightInset），超宽回退左对齐 */
 function itemsStartX (rect, align, padding, offset, visible, contentWidth, rightInset) {
   let start = rect.x + padding
 
@@ -804,11 +687,8 @@ function itemsStartX (rect, align, padding, offset, visible, contentWidth, right
   return start
 }
 
-/** tag/link 条目命中矩形回报（painter itemHits 命中来源，A3.3；其余类别不回报）。
-    命中区 = 绘制区域：tag 为 pill 绘制区（centerY ± TAG_HEIGHT/2），link 为首行
-    行框（centerY ± lineHeight/2，与竖排 link 列逐行矩形同口径）；
-    disabled 随条目回报（问题 7：isTruthyAttr 口径与取色 linkTextColorOf /
-    linkHoverColorOf、点击侧同源，避免 disabled 条目跨通道行为分裂） */
+// tag/link 条目命中矩形回报（其余类别不回报）。命中区 = 绘制区域：tag 为 pill
+// 绘制区，link 为首行行框；disabled 随条目回报（与取色/点击同口径 isTruthyAttr）
 function reportHitRect (onItemRect, item, index, x, width, centerY, theme) {
   const kind = resolveItemKind(item)
   let rect = null
@@ -831,13 +711,14 @@ function reportHitRect (onItemRect, item, index, x, width, centerY, theme) {
   }
 }
 
-function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, onImageLoad, measure }) {
+function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, onImageLoad, measure, row, colIndex }) {
   const kind = resolveItemKind(item)
 
   if (kind === 'check') return CHECK_SIZE
 
   if (kind === 'img') {
-    const entry = requestImage(item.attrs?.src, onImageLoad)
+    // img 分支内建 onImageLoad 闭包（P1b：其余格零闭包分配）
+    const entry = requestImage(item.attrs?.src, onImageLoad ? () => onImageLoad(row, colIndex) : undefined)
 
     // 加载中 / 失败按空格处理（不占位；加载完成后经回调触发重绘）
     if (entry.status !== 'loaded') return null
@@ -855,26 +736,24 @@ function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, 
 }
 
 function drawItem (ctx, item, x, centerY, {
-  maxWidth, contentHeight, padding, theme, onImageLoad, measure, index, hoverItem
+  maxWidth, contentHeight, padding, theme, onImageLoad, measure, index, hoverItem, row, colIndex
 }) {
   const kind = resolveItemKind(item)
 
   if (kind === 'check') return drawCheck(ctx, item, x, centerY, theme)
 
   if (kind === 'img') {
-    return drawCellImage(ctx, item, x, centerY, { maxWidth, contentHeight, padding, theme, onImageLoad })
+    return drawCellImage(ctx, item, x, centerY, { maxWidth, contentHeight, padding, theme, onImageLoad, row, colIndex })
   }
 
   if (kind === 'tag') return drawTag(ctx, item, x, centerY, { maxWidth, theme, measure })
 
   if (kind == null) return
 
-  // link 条目悬停（问题 7）：当前条目命中 hoverItem 时色变 hover 谱系 + 下划线
-  // （tag/check/img 不悬停，tag 按 DOM 基准保持常态）
+  // link 条目悬停（问题 7）：命中 hoverItem 时色变 hover 谱系 + 下划线
   const hovered = kind === 'link' && isLinkEntryHovered(hoverItem, item, index)
 
-  // link 条目色经 class 解析（mu-link--{color} → theme.colors 查表，评审 6 P1；
-  // danger/disabled 同路径）；其余条目按普通文本绘制
+  // link 条目色经 class 解析（mu-link--{color} → theme.colors 查表）
   drawItemText(ctx, item, x, centerY, {
     maxWidth,
     theme,
@@ -886,21 +765,17 @@ function drawItem (ctx, item, x, centerY, {
   })
 }
 
-/** link 悬停下划线 y（问题 7，drawLinkEntry 与 drawItemText 共用单函数防公式
-    漂移）：anchorY = 该行 middle 基线 y；fontSize 14 → +7px，落在行框内 */
+/** link 悬停下划线 y（drawLinkEntry 与 drawItemText 共用单函数防公式漂移） */
 function linkUnderlineY (anchorY, fontSize) {
   return anchorY + Math.round(fontSize * 0.35) + 2
 }
 
-/** 行框高（--cell-line-height 快照缺省回退 18）：drawTextValue / drawArrayLines /
-    drawLinkItems 三路径同源 */
+/** 行框高（--cell-line-height 快照缺省回退 18）：三条文本绘制路径同源 */
 function cellLineHeightOf (theme) {
   return theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
 }
 
-/** link 条目悬停判定（问题 7，横排 drawItem 与竖排 drawLinkItems 共用防口径
-    漂移）：hoverItem 命中该条目且非 disabled（disabled 条目不悬停，与取色
-    disabled → muted 分支一致） */
+/** link 条目悬停判定（横排 drawItem 与竖排 drawLinkItems 共用防口径漂移） */
 function isLinkEntryHovered (hoverItem, item, index) {
   return hoverItem?.kind === 'link' &&
     hoverItem.index === index &&
@@ -923,7 +798,7 @@ function drawItemText (ctx, item, x, centerY, { maxWidth, theme, measure, color,
   ctx.textBaseline = 'middle'
   ctx.fillText(text, x, centerY)
 
-  // link 悬停下划线（问题 7）：1px，宽 = 实绘文本宽（省略后），fillStyle 即 hover 色
+  // link 悬停下划线（问题 7）：1px，宽 = 实绘文本宽（省略后）
   if (hovered) {
     const underlineWidth = Math.min(width, Math.max(0, maxWidth))
 
@@ -949,8 +824,7 @@ function drawCheck (ctx, item, x, centerY, theme) {
   const y = centerY - CHECK_SIZE / 2
 
   if (disabled) {
-    // 置灰底衬：--mu-bg-strong（DOM 版同款变量，03-review-3 问题 1 回退链统一：
-    // 自定义主题缺该变量时回退 hoverBg 现状等效色）
+    // 置灰底衬：--mu-bg-strong（缺该变量时回退 hoverBg 现状等效色）
     ctx.beginPath()
     ctx.roundRect(x + 0.5, y + 0.5, CHECK_SIZE - 1, CHECK_SIZE - 1, CHECK_RADIUS)
     ctx.fillStyle = theme?.bgStrong || theme?.hoverBg
@@ -960,8 +834,7 @@ function drawCheck (ctx, item, x, centerY, theme) {
   ctx.beginPath()
   ctx.roundRect(x + 0.5, y + 0.5, CHECK_SIZE - 1, CHECK_SIZE - 1, CHECK_RADIUS)
 
-  // DOM 规格：checked 边框 --mu-border-color-strong，否则 --mu-border-color-normal；
-  // disabled 边框恒为 --mu-border-color-normal
+  // DOM 规格：checked 边框 --mu-border-color-strong，否则 --mu-border-color-normal
   ctx.strokeStyle = disabled
     ? theme?.borderColor
     : (checked ? theme?.borderColorStrong : theme?.borderColor)
@@ -983,11 +856,7 @@ function tagFontOf (theme) {
   return `${TAG_FONT_SIZE}px ${fontFamilyOf(theme)}`
 }
 
-/**
- * tag pill 落地：解析 mu-tag--{color} class → 底 colors[name].translucent +
- * 边框/文字 colors[name].color（17 色板，A3.3；无 class/未知名/gray 回退现状灰底）。
- * 单次 ellipsize 同时产出截断文本与宽度（省略后免二次测量）。
- */
+/** tag pill 落地：mu-tag--{color} class → 底 translucent + 边框/文字 color（缺省灰底） */
 function drawTag (ctx, item, x, centerY, { maxWidth, theme, measure }) {
   const font = tagFontOf(theme)
   const { text, width: textWidth } = ellipsize({
@@ -1023,8 +892,7 @@ function drawTag (ctx, item, x, centerY, { maxWidth, theme, measure }) {
 
 // —— link 列竖排（条目列，A3.5） ——
 
-/** 单条 link 文本绘制：单行省略，返回绘制宽度（命中矩形用，省略后免二次测量）；
-    hovered（问题 7，色已由调用侧取 hover 谱系）时补画 1px 下划线（宽 = 实绘文本宽） */
+/** 单条 link 文本绘制：单行省略，返回绘制宽度；hovered 时补画 1px 下划线 */
 function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure, hovered) {
   const { text: display, width } = ellipsize({
     text,
@@ -1048,14 +916,9 @@ function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure, hovere
   return Math.min(width, maxWidth)
 }
 
-/**
- * link 列竖排（数组每条一行，A3.5）：单条超宽省略；条目数 > maxItems 时第
- * maxItems 条显示 '...'（DOM dots 字面值，评审 6 P4）；首行槽位锚（问题 1
- * centerY，原块整体居中口径作废，后续行 += lineHeight）；对象元素颜色经
- * mu-link--{color} class 解析（link.js 产出，评审 6 P1）；悬停条目色变 +
- * 下划线（问题 7）；条目矩形（含 dots）经 onItemRect 回报（kind 'link'，
- * 携带 disabled，逐行命中矩形随 lineY 跟随槽位锚）。
- */
+// link 列竖排（数组每条一行）：单条超宽省略；条目数 > maxItems 时第 maxItems 条
+// 显示 '...'；首行槽位锚 + 后续行 += lineHeight；条目矩形（含 dots）经 onItemRect
+// 回报（kind 'link'，携带 disabled）
 function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect, measure, centerY, hoverItem }) {
   const contentWidth = rect.width - padding * 2
 
@@ -1113,8 +976,7 @@ function colorNameOf (value, record) {
   return typeof name === 'string' && name ? name : 'primary'
 }
 
-/** progress 条：轨道 bgStrong 8px 圆角 4 + 填充 colors[color].color + 百分比文本
-    （单行高；垂直锚 = 槽位中心 centerY，问题 1 统一锚） */
+/** progress 条：轨道 bgStrong 8px 圆角 4 + 填充 colors[color].color + 百分比文本 */
 function drawProgress (ctx, rect, content, { padding, theme, record, measure, centerY }) {
   const contentWidth = rect.width - padding * 2
 
@@ -1170,13 +1032,8 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure, ce
   }
 }
 
-/**
- * button 组（tag 同构轻量按钮：20px / padding 0 8px / 圆角 4 / 12px）：横排，
- * 底 colors[color].translucent + 边框/文字 colors[color].color；disabled 底
- * bgDisabled、文字 textColorMuted；超宽丢弃；条目矩形回报 itemHits
- * （kind 'button'，携带 disabled，命中区 = pill 绘制区），progress 不回报。
- * rect = 绘制矩形（box 派生）。
- */
+// button 组（tag 同构轻量按钮）：横排，底 translucent + 边框/文字 colors[color].color；
+// disabled 置灰；超宽丢弃；条目矩形回报 itemHits（kind 'button'，命中区 = pill 区）
 function drawButton (ctx, rect, buttons, {
   padding, theme, record, onItemRect, measure, centerY, hoverItem
 }) {
@@ -1201,8 +1058,7 @@ function drawButton (ctx, rect, buttons, {
       hoverItem?.kind === 'button' && hoverItem.index === i
     )
 
-    // ellipsize 空文本（caption 空或剩余宽度放不下）→ -1 哨兵，停止绘制后续
-    // 按钮（等效原 `if (!text) break`；NaN 宽度经 `< 0` 判定不中断，分支一致）
+    // ellipsize 空文本 → -1 哨兵，停止绘制后续按钮
     if (width < 0) break
 
     onItemRect?.({
@@ -1233,14 +1089,8 @@ function buttonTextOf (theme, colored, disabled) {
     : (colored?.color ?? theme?.textColor)
 }
 
-/**
- * 单个 button pill 绘制：返回占用宽度（供命中矩形与游标推进）；
- * ellipsize 结果为空文本（caption 空或 maxWidth 耗尽）返回 -1 哨兵、不绘制。
- * 正常宽度恒 ≥ min(TAG_PADDING_X × 2, rightBound - x) > 0，与哨兵不重叠。
- * hovered（问题 7）且非 disabled 时反转：底/边框 = colors[name].color ??
- * primaryColor、文字 = bgNormal（cell-painters 不 import theme.js 的隔离约定下
- * 唯一可用的强反馈表达，深浅主题均可读）；disabled 保持常态置灰。
- */
+// 单个 button pill 绘制：返回占用宽度；空文本返回 -1 哨兵不绘制；hovered 且非
+// disabled 时反转（底/边框 = colors[name].color、文字 = bgNormal）；disabled 置灰
 function drawButtonPill (ctx, button, x, centerY, rightBound, record, theme, font, measureFn, hovered) {
   const { text, width: textWidth } = ellipsize({
     text: String(button.caption ?? ''),
@@ -1288,12 +1138,13 @@ function imageLayoutSize (image, maxH, maxW) {
   return { width: width * scale, height: height * scale }
 }
 
-function drawCellImage (ctx, item, x, centerY, { maxWidth, contentHeight, padding, theme, onImageLoad }) {
+function drawCellImage (ctx, item, x, centerY, { maxWidth, contentHeight, padding, theme, onImageLoad, row, colIndex }) {
   const src = item.attrs?.src
 
   if (!src) return
 
-  const entry = requestImage(src, onImageLoad)
+  // img 分支内建 onImageLoad 闭包（P1b）
+  const entry = requestImage(src, onImageLoad ? () => onImageLoad(row, colIndex) : undefined)
 
   // 加载中 / 失败按空格处理；onload 后经回调触发该格重绘（painter 侧）
   if (entry.status !== 'loaded') return

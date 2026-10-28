@@ -28,14 +28,9 @@
               {{ emptyText }}
             </slot>
           </div>
-          <!-- 编辑浮层（A5/A6）：分类型 v-on 合成、容器 tabindex=-1 聚焦承接 esc；
-               bordered === false（switch 无边框 / editor.border:false）挂 --borderless；
-               事件冒泡拦截，画布侧 pointerdown 先同步提交再续行命中。
-               textarea 分支渲染真实 <textarea class="mu-input" v-model>（memo 约定）——
-               <component :is="'textarea'"> 的 v-model 编译为 modelValue prop（落到
-               modelvalue 属性），不产生 vModelText 语义（实现偏离记录 03 编号）。
-               keydown.esc 空值防护：input 内 esc 转发 cancel 后同一事件冒泡到容器，
-               届时 editing 已清空 -->
+          <!-- 编辑浮层（A5/A6）：分类型 v-on 合成、容器 tabindex=-1 承接 esc；
+               bordered === false 挂 --borderless；画布侧 pointerdown 先提交再续行。
+               textarea 须渲染真实元素（<component :is> 下 v-model 失效，memo 约定） -->
           <div
             v-if="editor.state.editing"
             ref="editorEl"
@@ -167,10 +162,8 @@
   const genColumnKey = autoIncrementKeyBuilder()
 
   // 列准备（table.vue internalColumns 等价物）：columns 变化即重建；
-  // _key 经 genColumnKey WeakMap 记忆，列对象不变则键稳定（widthOverrides 定位键）。
-  // placeholder 不进此依赖（复核 2026-10-26）：表格级占位文本改由绘制期
-  // drawCell 第三级兜底消费（paintState.placeholder），切换占位文本只整幅重绘、
-  // 不重建列对象（避免触发估高全量重扫）
+  // _key 经 genColumnKey WeakMap 记忆，列对象不变则键稳定（widthOverrides 定位键）
+  // placeholder 不进此依赖：绘制期第三级兜底，切换占位只整幅重绘不重建列
   const preparedColumns = computed(() =>
     props.columns.map(el => {
       const col = prepareColumn(el)
@@ -184,9 +177,8 @@
   const layout = shallowRef(null)
 
   // —— 树接线（A2.4，C1 拆出 use-tree-rows）：childrenIndex/flatRows/displayRows/
-  // wiredColumns/缩进回调/toggle/expandAll/collapseAll + 三条树 watch。
-  // immediate tree watch 在 setup 期触发 ctx.relayout()，relayoutAndRedraw 以
-  // scrollEl 未挂载早退，后续接线（controller/resize）无初始化顺序问题 ——
+  // wiredColumns/缩进回调/toggle + 三条树 watch。
+  // immediate tree watch 在 setup 期触发 relayout，scrollEl 未挂载早退，无顺序问题 ——
 
   const {
     treeExpanded,
@@ -432,10 +424,8 @@
   }
 
   /** 统一布局重算入口（A2 relayout()）：探针尺寸 → 变高候选全量快速估高 + 几何
-      重建/升级（row-geometry-controller.resolveForRelayout，估高扫描输入签名
-      拆分）→ sticky/spacer 尺寸 → 列宽求解 → canvas 物理尺寸 → 可视窗口 →
-      整幅重绘。估高需 contentWidth（列宽），先按首过几何解一次列宽再带几何
-      重算（solveWidths 纯函数，重复求解成本可忽略） */
+      重建/升级 → sticky/spacer 尺寸 → 列宽求解 → canvas 物理尺寸 → 可视窗口 → 整幅重绘。
+      估高需 contentWidth（列宽），先按首过几何解一次列宽再带几何重算（纯函数，成本可忽略） */
   function relayoutAndRedraw () {
     const el = scrollEl.value
 
@@ -682,9 +672,8 @@
     return cells
   }
 
-  /** 条目悬停接线（问题 7）：经既有 resolveItemClick 求值（itemHits 含 link/button/
-      tag 矩形与 disabled），变化时对 prev/next 格去重逐格失效。独立于 updateHover
-      （同格内条目间移动或移出条目不触发 hover 变化，须在此单独求值失效）；
+  /** 条目悬停接线（问题 7）：经既有 resolveItemClick 求值，变化时对 prev/next
+      格去重逐格失效；独立于 updateHover（同格内条目间移动不触发 hover 变化）；
       hoverMode none 恒 null（与编辑按钮绘制同受总开关抑制） */
   function updateHoverItem (hit) {
     const prev = hoverItem.value
@@ -726,9 +715,8 @@
   }
 
   /** 编辑按钮命中判定（20261027 问题 5）：列配 editorButton.icon 且指针落在
-      editorButtonRectOf 区矩形内（半开区间，与 interactions.isItemRectHit 同口径，
-      不新增跨模块导出；区矩形为 painter 绘制与壳命中共用的单一事实源，centerY
-      = 首行行框槽位锚） */
+      editorButtonRectOf 区矩形内（半开区间，与 interactions.isItemRectHit 同口径）；
+      区矩形为 painter 绘制与壳命中共用的单一事实源 */
   function isEditorButtonHit (hit, col) {
     if (!col?.editorButton?.icon) return false
 
@@ -874,8 +862,7 @@
   }
 
   /** R5：空白延伸区点击（行有效、x 越出列区右缘）仅选中行——同 resolveCellClick
-      的选中事件序（key → record），不发 cell-click（该区域无对应列，payload
-      column 无值；check/树槽/编辑均不适用） */
+      的选中事件序（key → record），不发 cell-click（无对应列），check/树槽/编辑不适用 */
   function selectRowOnly (record) {
     const recordKey = resolveRecordKey(record)
 
@@ -921,15 +908,9 @@
     finishCellClick(hit, record, col)
   }
 
-  /**
-   * cell-item-click 派发（A1/A3.3，payload 对齐 DOM 版 + canvas 附加 recordIndex）：
-   * - link/tag：经列类型 render 产物的 events.click 取 DOM 版同源 payload
-     （dots 条目值 = '...'、常规条目 = 条目对象——link 对象数组元素即原引用），
-     外包 recordIndex；
-   * - button（canvas 专属 render 产物，无 DOM events 通道）：payload = buttons[index]
-     配置对象；
-   * - disabled 条目只续链不发 item 事件（A8 #12 注，约束 7 存在性判定与绘制侧一致）。
-   */
+  // cell-item-click 派发（A1/A3.3，payload 对齐 DOM 版 + recordIndex）：
+  // link/tag 经 render 产物 events.click 取同源 payload；button（canvas 专属产物，
+  // 无 DOM events 通道）payload = buttons[index]；disabled 条目只续链不发
   function emitCellItemClick (item, record, col, row) {
     const raw = col._raw ?? col
     const recordNumber = (props.recordsOffset || 0) + row + 1
@@ -971,10 +952,9 @@
     const domItem = items?.[item.index]
 
     if (domItem && !isDisabledAttr(domItem.attrs?.disabled)) {
-      // dots payload（A1/A3.3，评审 6 P4）：DOM render 自产 dots（linkOption.max /
-      // tagOption.max，item.text === '...'）与 canvas 侧 maxItems 截断 dots
-      // （渲染条目数 > _maxItems 时第 _maxItems 条为绘制层省略条目）payload 值
-      // 同为 '...'；常规条目 = 条目对象（link 对象数组元素即原引用）
+      // dots payload（A1/A3.3）：DOM render 自产 dots（item.text === '...'）与
+      // canvas 侧 _maxItems 截断 dots 的 payload 值同为 '...'；
+      // 常规条目 = 条目对象（link 对象数组元素即原引用）
       if (isDotsItem(item, domItem, items, col)) {
         emit('cell-item-click', { record, column: raw, [item.kind]: '...', recordIndex: row })
       } else {
@@ -1038,11 +1018,9 @@
 
     focusEditor()
 
-    // veil 接线（20261027 问题 6）：先更新行列引用再失效——syncPaintState 以
-    // editingCellRef 归一 paintState.editingCell，旧格 invalidate 时已不在 veil
-    // （恢复内容），新格 invalidate 置 veil。同一 tick 内「提交旧格 + 打开新格」
-    // 时关闭 watch 尚未 flush（old/new 均非 null 不触发清除），旧格恢复由本处
-    // 失效直接完成
+    // veil 接线（20261027 问题 6）：先更新行列引用再失效——旧格 invalidate 时
+    // 已不在 veil（恢复内容），新格 invalidate 置 veil；同一 tick 内「提交旧格 +
+    // 打开新格」时旧格恢复由本处失效直接完成
     const prevCell = editingCellRef
 
     editingCellRef = { row: hit.rowIndex, col: hit.colIndex }
@@ -1056,11 +1034,9 @@
     return editorConfig != null && typeof editorConfig === 'object'
   }
 
-  /** 编辑器聚焦（A5.5 打开流程）：渲染完成后 input/select/date 聚焦内部真实 input，
-      textarea 聚焦 textarea 元素，switch 聚焦 __editor 容器（tabindex=-1 承接 esc）。
-      focus() 会把最近的可滚动祖先滚出溢出量——__overlay 为 overflow:hidden 亦可被
-      程序化滚动（宽表格浮层超出视口右缘时 scrollLeft 被滚到 83 等值，浮层相对画布
-      漂移），聚焦后复位浮层容器滚动 */
+  /** 编辑器聚焦（A5.5）：渲染完成后 input/select/date 聚焦内部真实 input，
+      textarea 聚焦 textarea 元素，switch 聚焦容器。focus() 会把最近的可滚动
+      祖先滚出溢出量（浮层相对画布漂移），聚焦后复位浮层容器滚动 */
   function focusEditor () {
     nextTick(() => {
       const el = editorEl.value
@@ -1235,10 +1211,8 @@
   // —— 渲染 props watch（A3 重绘表） ——
 
   // 编辑关闭 veil 清理（20261027 问题 6）：仅 editing 变为 null（关闭）时恢复
-  // 编辑格内容。commit 与 open 落在同一 tick 时 watcher 只 flush 一次（old/new
-  // 均非 null），无条件清除会把新格 veil 抹掉；行列由 editingCellRef 承载
-  // （editor 控制器的 editing 不含 row/col）。覆盖全部关闭路径（commit/cancel/
-  // blur 兜底/值变化提交/滚动与画布 pointerdown 提交）
+  // 编辑格内容。commit 与 open 落在同一 tick 时 watcher 只 flush 一次，无条件
+  // 清除会把新格 veil 抹掉；行列由 editingCellRef 承载，覆盖全部关闭路径
   watch(() => editor.state.editing, newValue => {
     if (newValue != null) return
 

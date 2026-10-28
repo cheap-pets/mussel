@@ -441,6 +441,33 @@ export const checks = [
     }
   },
   {
+    name: '映射文本参与精算行高：_mapText 显示文本进 ensureRowMeasured 折行（估高恒 1 行下界）',
+    fn: () => {
+      // 手写 _mapText（约束 2：夹具不依赖 prepareColumn）：命中返回长标签，未命中返回原值
+      const col = {
+        field: 'status',
+        _maxLines: 2,
+        _mapText: value => (value === 'long' ? '标'.repeat(20) : value)
+      }
+      const base = { columns: [col], colWidths: [100], theme: THEME, measure: plainMeasure }
+
+      // 精算：映射文本 20 字 × 10px = 200 > 内容宽 84 → 折 2 行 → 行高 16 + 2×18
+      const tall = ensureRowMeasured({ record: { status: 'long' }, ...base })
+
+      assertEqual(tall, 16 + 2 * 18, '长映射标签按显示文本折 2 行')
+
+      // 未命中映射：原值 'ok' 单行 → 基线行高
+      const plain = ensureRowMeasured({ record: { status: 'ok' }, ...base })
+
+      assertEqual(plain, 36, '短值单行基线')
+
+      // 估高路径字符串恒 1 行下界（设计语义，不作行高断言，仅确认不抛错）
+      computeRowHeights({ records: [{ status: 'long' }], ...base })
+
+      return '精算 52 / 36（估高恒 1 行下界，进窗后精算补齐）'
+    }
+  },
+  {
     name: 'treeIndents(colIndex, row)：inset 仅扣树形列 contentWidth，非树形多行列按全宽折行',
     fn: () => {
       const treeCol = { field: 'note', _maxLines: 2 } // 树形列（多行候选）

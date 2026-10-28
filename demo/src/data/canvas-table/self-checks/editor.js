@@ -4,8 +4,9 @@
  * 覆盖（02-design.md G3 判据 + decisions「[I1 前]①」+ A5.5 规整层 + 评审 6 P6
  * + 20261027 问题 3/4/5 断言同步）：
  * 打开（只读判定、value 取值链、编辑器组装、textarea/数组开值）/ 编辑器类型
- * 解析（text 列按开值形态与 _resolveMaxLines(record) 行级求值判定 textarea；
- * link 分支已删、直调回退 input 且实际被只读判定拦截）/ 值类型规整层
+ * 解析（text/number 列带 mappings/options 下拉来源缺省 select；text 列按开值
+ * 形态与 _resolveMaxLines(record) 行级求值判定 textarea；link 分支已删、直调
+ * 回退 input 且实际被只读判定拦截）/ 值类型规整层
  * （usesDerivedOptions / normalizeEditorOpenValue / normalizeCommitValue：
  * number/currency 三形态、数值枚举类型保持、textarea ④⑤ 数组换行分割、
  * 对象数组开值取 caption、null 直通、显式 options 原样）/ 分类型提交矩阵
@@ -18,8 +19,9 @@
  * 两态对照、变高行、height 防负值）/ 编辑按钮区矩形
  * editorButtonRectOf（20261027 问题 5：right-align x = 格右 − padding − 24、
  * centerY = 格顶 + ROW_TOP_INSET + padding + lineHeight/2 首行槽位式）/
- * enum options 由 mappings Object 转换为 [{value,label}] Array 且排除 default
- * （字符串原值提交仍为 key 字符串、数值原值类型保持）/ blur 兜底面板判定
+ * select 编辑器 options 三级来源（editor.props.options > column.options >
+ * mappings 派生 [{value,label}] 且排除 default；字符串原值提交仍为 key 字符串、
+ * 数值原值类型保持）/ blur 兜底面板判定
  * 条件③（焦点或最近 window pointerdown 目标在 .mu-dropdown-panel 内不提交；
  * mu-icon-button 不可聚焦场景）。
  *
@@ -27,6 +29,7 @@
  * resolveBlurFallback + 控制器 pointerdown 记录（getLastPointerdownTarget）
  * 同步断言判定输入；聚焦由组件壳 focusEditor 承担（留浏览器用例）。
  */
+import { toRaw } from 'vue'
 import {
   NON_EDITABLE_TYPES,
   EDITOR_COMPONENTS,
@@ -120,7 +123,8 @@ export const checks = [
       assertEqual(componentOf({ type: 'text', editor: true }), EDITOR_COMPONENTS.input, 'text → MuInput')
       assertEqual(componentOf({ type: 'number', editor: true }), EDITOR_COMPONENTS.input, 'number → MuInput')
       assertEqual(componentOf({ type: 'currency', editor: true }), EDITOR_COMPONENTS.input, 'currency → MuInput')
-      assertEqual(componentOf({ type: 'enum', editor: true }), EDITOR_COMPONENTS.select, 'enum → MuSelect')
+      assertEqual(componentOf({ type: 'text', editor: true, mappings: { a: '甲' } }), EDITOR_COMPONENTS.select, 'text+mappings → MuSelect')
+      assertEqual(componentOf({ type: 'number', editor: true, options: [{ value: 1, label: '低' }] }), EDITOR_COMPONENTS.select, 'number+options → MuSelect')
       assertEqual(componentOf({ type: 'date', editor: true }), EDITOR_COMPONENTS.date, 'date → MuDateInput')
       assertEqual(componentOf({ type: 'datetime', editor: true }), EDITOR_COMPONENTS.date, 'datetime → MuDateInput')
       assertEqual(componentOf({ type: 'bool', editor: true }), EDITOR_COMPONENTS.switch, 'bool → MuSwitch')
@@ -133,7 +137,7 @@ export const checks = [
         '显式 editor.type 优先'
       )
       assertEqual(
-        componentOf({ type: 'enum', editor: { type: 'nope' } }),
+        componentOf({ type: 'text', editor: { type: 'nope' }, mappings: { a: '甲' } }),
         EDITOR_COMPONENTS.select,
         '非法显式类型回退映射'
       )
@@ -193,10 +197,10 @@ export const checks = [
 
       // 组件身份与 form/index.js 导出一致（模板 <component :is> 不依赖全局注册）
       assertEqual(componentOf({ type: 'text', editor: true }), MuInput, 'input 组件 = MuInput 导出')
-      assertEqual(componentOf({ type: 'enum', editor: true }), MuSelect, 'select 组件 = MuSelect 导出')
+      assertEqual(componentOf({ type: 'text', editor: true, mappings: { a: '甲' } }), MuSelect, 'select 组件 = MuSelect 导出')
       assertEqual(componentOf({ type: 'date', editor: true }), MuDateInput, 'date 组件 = MuDateInput 导出')
       assertEqual(componentOf({ type: 'bool', editor: true }), MuSwitch, 'switch 组件 = MuSwitch 导出')
-      assertEqual(resolveEditorType({ type: 'enum', editor: true }), 'select', 'resolveEditorType')
+      assertEqual(resolveEditorType({ type: 'text', editor: true, mappings: { a: '甲' } }), 'select', 'resolveEditorType')
 
       return 'input/select/date/switch/textarea 映射与组件身份一致；text 形态判定生效（link 回退 input）'
     }
@@ -224,7 +228,7 @@ export const checks = [
       }
 
       assert(isCellEditable({ editable: true, column: { type: 'text', editor: true } }), '可编辑格判定')
-      assert(isCellEditable({ editable: true, column: { type: 'enum', editor: { type: 'select' } } }), 'editor 对象形态判定')
+      assert(isCellEditable({ editable: true, column: { type: 'text', editor: { type: 'select' } } }), 'editor 对象形态判定')
 
       // open 通道同判（isCellEditable 是 open 的唯一闸门）：配 editor 仍拒绝、无编辑态
       const { commits, controller } = createSpyController()
@@ -245,7 +249,7 @@ export const checks = [
   {
     name: '值类型规整层：usesDerivedOptions / open 规整（select 字符串化、textarea caption 拼接）',
     fn: () => {
-      const mappingsColumn = { type: 'enum', editor: true, mappings: { 1: '低' } }
+      const mappingsColumn = { type: 'text', editor: true, mappings: { 1: '低' } }
       const explicitColumn = { editor: { type: 'select', props: { options: [{ value: 1, label: 1 }] } } }
 
       // 派生 options 锚定（显式 options 原样透传 = 范围边界 #14 例外）
@@ -308,20 +312,20 @@ export const checks = [
 
       // ② select + 派生 + 数值原值：类型保持回写 number；null → null；非数值保留
       assertEqual(
-        normalizeCommitValue({ column: { type: 'enum' }, editorType: 'select', rawValue: 1, value: '2' }),
+        normalizeCommitValue({ column: { type: 'text', mappings: { 1: '低', 2: '高' } }, editorType: 'select', rawValue: 1, value: '2' }),
         2,
-        '数值枚举回写 number'
+        '派生 select 数值回写 number'
       )
       assertEqual(
-        normalizeCommitValue({ column: { type: 'enum' }, editorType: 'select', rawValue: 1, value: null }),
+        normalizeCommitValue({ column: { type: 'text', mappings: { 1: '低' } }, editorType: 'select', rawValue: 1, value: null }),
         null,
-        '数值枚举清空 null'
+        '派生 select 清空 null'
       )
-      // 字符串原值枚举：key 字符串原样（原 decisions⑦ 行为对字符串原值不变）
+      // 字符串原值：key 字符串原样
       assertEqual(
-        normalizeCommitValue({ column: { type: 'enum' }, editorType: 'select', rawValue: 'a', value: 'b' }),
+        normalizeCommitValue({ column: { type: 'text', mappings: { a: 'A' } }, editorType: 'select', rawValue: 'a', value: 'b' }),
         'b',
-        '字符串枚举 key 原样'
+        '字符串 key 原样'
       )
 
       // ④ textarea + 数组原值：换行分割成数组（元素字符串、空行保留）
@@ -363,43 +367,121 @@ export const checks = [
     }
   },
   {
-    name: 'enum options：mappings Object → [{value,label}] Array、排除 default（decisions⑦ key 字符串）',
+    name: 'select options 三级来源：editor.props.options > column.options > mappings 派生（排除 default）',
     fn: () => {
-      const options = resolveSelectOptions({
-        type: 'enum',
-        editor: true,
-        mappings: {
-          active: '启用',
-          pending: { text: '待处理', class: 'is-warn' },
-          archived: { text: '已归档' },
-          default: '未知'
-        }
-      })
+      const explicit = [{ value: 'x', label: 'X' }]
+      const columnOptions = [{ value: 1, label: '低' }, { value: 2, label: '中' }]
 
-      assert(Array.isArray(options), 'options 应为 Array')
+      // 显式 options 原样优先（两级均原样透传，值携带原类型直通）
+      assertEqual(
+        resolveSelectOptions({ editor: { props: { options: explicit } }, options: columnOptions, mappings: { a: 'A' } }),
+        explicit,
+        'editor.props.options 原样优先'
+      )
+      assertEqual(
+        resolveSelectOptions({ editor: true, options: columnOptions, mappings: { a: 'A' } }),
+        columnOptions,
+        'column.options 原样次之'
+      )
+
+      // mappings 派生：对象值取 text、排除 default、value = key 字符串
       assertArray(
-        options,
+        resolveSelectOptions({
+          editor: true,
+          mappings: {
+            active: '启用',
+            pending: { text: '待处理', class: 'is-warn' },
+            archived: { text: '已归档' },
+            default: '未知'
+          }
+        }),
         [
           { value: 'active', label: '启用' },
           { value: 'pending', label: '待处理' },
           { value: 'archived', label: '已归档' }
         ],
-        'mappings 转换'
+        'mappings 派生转换'
       )
-      assert(!options.some(option => option.value === 'default'), 'default 兜底映射不应成为可选项')
-      assert(options.every(option => typeof option.value === 'string'), 'value 应为 mapping key（字符串）')
-      // 数字键经 Object.entries 字符串化（options.value 恒为 mapping key 字符串；
-      // 提交值类型规整见 normalizeCommitValue——数值原值回写 number，A5.5 ②）
+      assert(!resolveSelectOptions({ editor: true, mappings: { default: '未知' } }).length, 'default 不成为可选项')
+
+      // 数字键经 Object.entries 字符串化（派生 value 恒为 key 字符串；
+      // 提交值类型规整见 normalizeCommitValue——数值原值回写 number）
       assertArray(resolveSelectOptions({ editor: true, mappings: { 1: '低', 2: '高', default: '未知' } }),
         [{ value: '1', label: '低' }, { value: '2', label: '高' }],
         '数字键字符串化')
 
-      // 显式 options 原样透传；无 mappings → 空数组（编辑器照开、下拉为空）
-      const explicit = [{ value: 'x', label: 'X' }]
-      assertEqual(resolveSelectOptions({ editor: { props: { options: explicit } } }), explicit, '显式 options 原样透传')
-      assertArray(resolveSelectOptions({ editor: true }), [], '无 mappings 返回空数组')
+      assertArray(resolveSelectOptions({ editor: true }), [], '全部缺省返回空数组（编辑器照开、下拉为空）')
 
-      return 'default 排除、对象取 text、value=key 字符串、显式 options 透传、空 mappings → []'
+      return '三级来源 / default 排除 / 对象取 text / 数字键字符串化 / 空数组兜底'
+    }
+  },
+  {
+    name: 'resolveEditorType：text/number 列三下拉来源缺省 select，优先于形态判定',
+    fn: () => {
+      assertEqual(resolveEditorType({ type: 'text', editor: true, mappings: { a: '甲' } }), 'select', 'text + mappings')
+      assertEqual(resolveEditorType({ type: 'number', editor: true, mappings: { 1: '低' } }), 'select', 'number + mappings')
+      assertEqual(resolveEditorType({ type: 'number', editor: true, options: [{ value: 1, label: '低' }] }), 'select', 'number + options')
+      assertEqual(resolveEditorType({ field: 'x', editor: true, options: [{ value: 1 }] }), 'select', '无 type + options（缺省按 text）')
+      assertEqual(
+        resolveEditorType({ type: 'text', editor: { props: { options: [{ value: 'a' }] } } }),
+        'select',
+        'text + editor.props.options'
+      )
+
+      // 下拉来源优先于形态判定（数组开值 + mappings 仍 select）
+      assertEqual(
+        resolveEditorType({ type: 'text', editor: true, mappings: { a: '甲' } }, { rawValue: ['a', 'b'] }),
+        'select',
+        '下拉来源优先于形态判定'
+      )
+
+      // 无来源保持原判定：number → input、text 数组开值 → textarea
+      assertEqual(resolveEditorType({ type: 'number', editor: true }, { rawValue: 5 }), 'input', 'number 无来源仍 input')
+      assertEqual(resolveEditorType({ type: 'text', editor: true }, { rawValue: ['a'] }), 'textarea', 'text 无来源按形态判定')
+      // 其余类型列带 mappings/options 不改缺省映射（可映射类型限定 text/number）
+      assertEqual(
+        resolveEditorType({ type: 'currency', editor: true, mappings: { a: '甲' } }),
+        'input',
+        'currency 带 mappings 仍 input'
+      )
+
+      return '三来源 → select / 优先形态判定 / 无来源保持缺省 / 范围限定 text+number'
+    }
+  },
+  {
+    name: '仅 options 的 select：column.options 原样下拉、开值不字符串化、数值提交类型保持',
+    fn: () => {
+      const column = {
+        field: 'level',
+        type: 'number',
+        editor: true,
+        options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }]
+      }
+
+      assertEqual(resolveEditorType(column), 'select', 'number + options → select')
+      assert(!usesDerivedOptions(column, 'select'), 'column.options 非派生（值携带原类型直通）')
+      assertEqual(resolveSelectOptions(column), column.options, 'options 原样透传')
+      assertEqual(normalizeEditorOpenValue({ column, editorType: 'select', value: 2 }), 2, '开值保持 number（不字符串化）')
+
+      const { commits, controller } = createSpyController()
+
+      try {
+        controller.open({ column, record: { level: 2 }, recordIndex: 0, editable: true })
+
+        assertEqual(controller.state.editing.editorType, 'select', '编辑器类型 select')
+        assertEqual(controller.state.editing.value, 2, 'open 值保持 number')
+        // state 为 reactive 深代理，读回的 options 是 Proxy；toRaw 解代理后比原引用
+        assertEqual(toRaw(controller.state.editing.props.options), column.options, '编辑器 options 注入原样')
+
+        controller.state.editing.value = 1
+
+        assertEqual(commits.length, 1, '值变化提交')
+        assertEqual(commits[0].value, 1, '提交值保持 number（显式 options 原样通道）')
+      } finally {
+        controller.destroy()
+      }
+
+      return 'select / 非派生 / 原样注入 / number 开值与提交类型保持'
     }
   },
   {
@@ -424,7 +506,7 @@ export const checks = [
 
       // select：options 缺省注入 resolveSelectOptions 产物；显式 options 不被覆盖
       const selectProps = resolveEditorProps({
-        type: 'enum',
+        type: 'text',
         editor: true,
         mappings: { a: 'A', default: '兜底' }
       })
@@ -714,11 +796,11 @@ export const checks = [
 
       try {
         // select：v-model 回写即提交（emit），编辑态保持开启（20261028：
-        // 点选下拉项不退出编辑）
-        const enumColumn = { field: 'status', type: 'enum', editor: true, mappings: { a: 'A', b: 'B', default: '兜底' } }
-        const enumRecord = { status: 'a' }
+        // 点选下拉项不退出编辑）；text+mappings 列缺省 select（完整替代原枚举列）
+        const selectColumn = { field: 'status', type: 'text', editor: true, mappings: { a: 'A', b: 'B', default: '兜底' } }
+        const selectRecord = { status: 'a' }
 
-        controller.open({ column: enumColumn, record: enumRecord, recordIndex: 1, editable: true })
+        controller.open({ column: selectColumn, record: selectRecord, recordIndex: 1, editable: true })
         assertArray(eventKeysOf(controller.state.editing.events), ['blur', 'esc'], 'select 事件矩阵（无 enter）')
         assert(controller.state.editing.commitOnValueChange, 'select 走值变化提交')
 
@@ -737,7 +819,7 @@ export const checks = [
         assertEqual(controller.state.editing, null, '关闭后无编辑态')
 
         // 二次会话连续换选：每次值变化各 emit 一次（与最近提交值比较）
-        controller.open({ column: enumColumn, record: enumRecord, recordIndex: 1, editable: true })
+        controller.open({ column: selectColumn, record: selectRecord, recordIndex: 1, editable: true })
         controller.state.editing.value = 'b'
         controller.state.editing.value = 'a'
         assertEqual(commits.length, 3, '两次值变化各提交一次')
@@ -771,14 +853,14 @@ export const checks = [
         assertEqual(commits[4].value, true, '布尔提交值原样')
         assert(controller.state.editing != null, 'switch 值变化后保持编辑态')
 
-        // 数值原值枚举：open 字符串化进下拉、提交按原值类型回写 number（A5.5 ②）；
+        // 数值原值派生 select：open 字符串化进下拉、提交按原值类型回写 number；
         // 会话内连续换选均按 open 原值锚定规整、逐次 emit
-        const numericEnumColumn = { field: 'level', type: 'enum', editor: true, mappings: { 1: '低', 2: '高', default: '未知' } }
+        const numericEnumColumn = { field: 'level', type: 'number', editor: true, mappings: { 1: '低', 2: '高', default: '未知' } }
 
         controller.open({ column: numericEnumColumn, record: { level: 2 }, recordIndex: 4, editable: true })
-        assertEqual(controller.state.editing.value, '2', '数值枚举 open 字符串化')
+        assertEqual(controller.state.editing.value, '2', '数值派生 select open 字符串化')
         controller.state.editing.value = '1'
-        assertEqual(commits.length, 6, '数值枚举值变化提交')
+        assertEqual(commits.length, 6, '数值派生 select 值变化提交')
         assertEqual(commits[5].value, 1, '提交值回写 number（类型保持）')
         controller.state.editing.value = '2'
         assertEqual(commits.length, 7, '会话内二次换选仍提交')
@@ -909,7 +991,7 @@ export const checks = [
         // 校验未通过时 open 被拒、不开新格
         controller.cancel()
         controller.open({
-          column: { field: 'level', type: 'enum', editor: { validate: value => (value === 'x' ? '非法选项' : true) } },
+          column: { field: 'level', editor: { type: 'select', validate: value => (value === 'x' ? '非法选项' : true) } },
           record: { level: 'ok' },
           recordIndex: 2,
           editable: true
@@ -948,11 +1030,11 @@ export const checks = [
         assert(!panelEl.contains(document.activeElement), 'blur 后焦点不在面板内（落 body）')
 
         const { commits, controller } = createSpyController()
-        const enumColumn = { field: 'status', type: 'enum', editor: true, mappings: { a: 'A' } }
+        const selectColumn = { field: 'status', type: 'text', editor: true, mappings: { a: 'A' } }
 
         try {
           controller.open({
-            column: enumColumn,
+            column: selectColumn,
             record: { status: 'a' },
             recordIndex: 0,
             editable: true,

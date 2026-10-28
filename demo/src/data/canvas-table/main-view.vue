@@ -339,6 +339,13 @@
   }
   const STATUS_KEYS = ['active', 'pending', 'archived']
 
+  // 等级列 options（mu-select options 格式：数值 value + label，兼作单元格显示映射）
+  const LEVEL_OPTIONS = [
+    { value: 1, label: '低' },
+    { value: 2, label: '中' },
+    { value: 3, label: '高' }
+  ]
+
   function createRecords (count = RECORD_COUNT) {
     const records = new Array(count)
 
@@ -380,7 +387,7 @@
       {
         caption: '状态',
         field: 'status',
-        type: 'enum',
+        type: 'text',
         width: 100,
         sortable: true,
         mappings: STATUS_MAPPINGS,
@@ -416,6 +423,8 @@
         }
       },
       { caption: '启用', field: 'active', type: 'bool', width: 80, editable: true, editor: true },
+      // 等级列（type number + options 数值选项）：仅定义 options 的显示映射与编辑下拉载体
+      { caption: '等级', field: 'level', type: 'number', width: 90, options: LEVEL_OPTIONS, editable: true, editor: true },
       { caption: '锁定宽', field: 'level', width: 90, resizable: false },
       { caption: '覆盖文本', field: 'name', width: 150, text: record => `文本:${record.name}` },
       { caption: 'value 字符串', field: 'extra', width: 110, value: '固定值' },
@@ -652,7 +661,7 @@
     { caption: '文本（无 type）', field: 'name' },
     { caption: '数量', field: 'count', type: 'number' },
     { caption: '金额', field: 'amount', type: 'currency' },
-    { caption: '状态', field: 'status', type: 'enum', mappings: STATUS_MAPPINGS },
+    { caption: '状态', field: 'status', type: 'text', mappings: STATUS_MAPPINGS },
     { caption: '日期', field: 'date', type: 'date' },
     { caption: '日期时间', field: 'datetime', type: 'datetime' },
     { caption: '启用', field: 'active', type: 'bool' },

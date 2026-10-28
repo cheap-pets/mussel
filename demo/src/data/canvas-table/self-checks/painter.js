@@ -65,7 +65,7 @@ const THEME = {
 const RAW_COLUMNS = [
   { field: 'id', type: 'rec_no', width: 60 }, // 固定列
   { field: 'name', caption: '名称', width: 140 },
-  { field: 'status', caption: '状态', type: 'enum', mappings: { a: '启用', b: '停用' }, width: 100, sortable: true },
+  { field: 'status', caption: '状态', type: 'text', mappings: { a: '启用', b: '停用' }, width: 100, sortable: true },
   { field: 'amount', caption: '金额', type: 'currency', width: 120 },
   { field: 'ok', type: 'check', headerCheckbox: true, width: 50 },
   { field: 'memo', caption: '备注' } // 未定宽 → 均摊 130
@@ -1158,7 +1158,7 @@ export const checks = [
       const narrow = [
         { field: 'id', type: 'rec_no', width: 50 },
         { field: 'name', caption: '名称', width: 120 },
-        { field: 'status', caption: '状态', type: 'enum', mappings: { a: '启用', b: '停用' }, width: 100 },
+        { field: 'status', caption: '状态', type: 'text', mappings: { a: '启用', b: '停用' }, width: 100 },
         { field: 'amount', caption: '金额', type: 'currency', width: 80 }
       ].map(col => prepareColumn(col, { placeholder: '--' }))
       const narrowState = makeState({ columns: narrow })
@@ -1197,7 +1197,7 @@ export const checks = [
       const narrow = [
         { field: 'id', type: 'rec_no', width: 50 },
         { field: 'name', caption: '名称', width: 120 },
-        { field: 'status', caption: '状态', type: 'enum', mappings: { a: '启用', b: '停用' }, width: 100 },
+        { field: 'status', caption: '状态', type: 'text', mappings: { a: '启用', b: '停用' }, width: 100 },
         { field: 'amount', caption: '金额', type: 'currency', width: 80 }
       ].map(col => prepareColumn(col, { placeholder: '--' }))
       const narrowState = makeState({ columns: narrow, selectedKey: 2 })

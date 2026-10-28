@@ -174,7 +174,7 @@ export const checks = [
     }
   },
   {
-    name: 'TYPE_DEFAULT_WIDTHS：双值表形态齐全（14 条目，宽/最小宽均为正数）',
+    name: 'TYPE_DEFAULT_WIDTHS：双值表形态齐全（13 条目，宽/最小宽均为正数）',
     fn: () => {
       const expected = {
         text: [160, 80],
@@ -182,7 +182,6 @@ export const checks = [
         currency: [110, 60],
         date: [125, 80],
         datetime: [160, 100],
-        enum: [100, 60],
         bool: [60, 40],
         link: [140, 80],
         tag: [140, 80],
@@ -204,7 +203,7 @@ export const checks = [
         assert(typeof entry.width === 'number' && typeof entry.minWidth === 'number', `${name} 应为 number 双值`)
       }
 
-      return '14 条目双值齐全（check/rec_no 不在表内——type.width 定宽）'
+      return '13 条目双值齐全（check/rec_no 不在表内——type.width 定宽）'
     }
   },
   {

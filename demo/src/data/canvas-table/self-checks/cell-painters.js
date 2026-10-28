@@ -3,8 +3,9 @@
  *
  * 覆盖（02-design.md G2 判据 + 既有取值链回归）：
  * 取值链 text→value→field（含 value 传字符串）、rec_no 的 recordNumber、check disabled
- * （底衬 bgStrong 回退链）、enum/number/currency/date 格式化、自定义类型 render、
- * link/tag/items 落地；canvas 类型分发（progress/button 产 canvasKind，03-review-5
+ * （底衬 bgStrong 回退链）、mappings/options 显示映射（mappings 优先、仅 options
+ * 转换、未命中原值回退、number 列命中终结）、number/currency/date 格式化、
+ * 自定义类型 render、link/tag/items 落地；canvas 类型分发（progress/button 产 canvasKind，03-review-5
  * 问题 6）；多行文本（maxLines 常量与函数形态 lineClamp 行级求值——评审 6 P6、
  * 数组值 maxItems dots '...'、line-clamp item 改道）；link 列竖排 + 对象数组颜色
  * （mu-link--{color} class → theme.colors 取色，评审 6 P1）+ LinkColumn compile
@@ -347,11 +348,11 @@ export const checks = [
     }
   },
   {
-    name: 'enum：mapping 文本、对象形式与 default 兜底',
+    name: 'mappings 显示映射：文本、对象形式与 default 兜底（text 列）',
     fn: () => {
       const col = prepareColumn({
         field: 's',
-        type: 'enum',
+        type: 'text',
         mappings: { a: '甲', b: { text: '乙' }, default: '未知' }
       })
 
@@ -359,7 +360,82 @@ export const checks = [
       assert(content(col, { s: 'b' }).text === '乙', 'mapping 对象形式应取 text 字段')
       assert(content(col, { s: 'zz' }).text === '未知', '未匹配应落 default 兜底映射')
 
-      return '甲 / 乙 / default 未知'
+      // 空值不映射：null 经 _plainText 短路直出 null（落占位链，不走 default）
+      assert(content(col, { s: null }).text == null, '空值不映射（不走 default，落占位链）')
+
+      return '甲 / 乙 / default 未知；空值不映射'
+    }
+  },
+  {
+    name: 'mappings/options 优先级：mappings 优先、仅 options 转换、未命中原值回退',
+    fn: () => {
+      // mappings 与 options 同时定义时显示映射只取 mappings
+      const both = prepareColumn({
+        field: 'v',
+        type: 'text',
+        mappings: { a: '甲' },
+        options: [{ value: 'a', label: '乙' }]
+      })
+
+      assert(content(both, { v: 'a' }).text === '甲', 'mappings 优先于 options')
+
+      // 仅 options：转换为显示映射（mu-select options 口径，'-' 分隔项跳过）
+      const onlyOptions = prepareColumn({
+        field: 'v',
+        type: 'text',
+        options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, '-', { value: 'x' }]
+      })
+
+      assert(content(onlyOptions, { v: 1 }).text === '低', '仅 options 命中显示 label')
+      assert(content(onlyOptions, { v: 'x' }).text === 'x', '纯字符串项缺省 label 取 value')
+      assert(content(onlyOptions, { v: 5 }).text === 5, '未命中回退原值（number 原样，绘制经 String 化）')
+
+      // number 列映射：命中终结不走 Intl；未命中回退原值（不再格式化）
+      const numberCol = prepareColumn({ field: 'v', type: 'number', mappings: { 2: '中' } })
+
+      assert(content(numberCol, { v: 2 }).text === '中', 'number 列映射命中')
+      assert(content(numberCol, { v: 1234.5 }).text === 1234.5, 'number 未命中回退原值（不走 Intl）')
+      assert(
+        content(prepareColumn({ field: 'v', type: 'number' }), { v: 1234.5 }).text === '1,234.5',
+        '无映射 number 列保持 Intl 格式化（minimumFractionDigits: 0）'
+      )
+
+      return 'mappings 优先 / options 转换 / 原值回退 / number 命中终结'
+    }
+  },
+  {
+    name: 'prepareColumn：_mapText/_plainText 判定（类型门控 / column.text / multiline）',
+    fn: () => {
+      const mapped = prepareColumn({ field: 'v', type: 'text', mappings: { a: '甲' } })
+
+      assert(typeof mapped._mapText === 'function', 'text + mappings 挂 _mapText')
+      assert(mapped._plainText === true, '原生 text 列挂 _plainText 直渲短路')
+
+      const numberMapped = prepareColumn({ field: 'v', type: 'number', options: [{ value: 1, label: '低' }] })
+
+      assert(typeof numberMapped._mapText === 'function', 'number + options 挂 _mapText（options 转换）')
+      assert(numberMapped._plainText === false, 'number 列不走纯文本短路')
+
+      assert(prepareColumn({ field: 'v' })._mapText === null, '无映射列 _mapText null')
+      assert(prepareColumn({ field: 'v', options: [] })._mapText === null, '空 options 不产映射')
+      assert(
+        prepareColumn({ field: 'v', type: 'currency', mappings: { a: '甲' } })._mapText === null,
+        '非 text/number 类型不可映射'
+      )
+      assert(
+        prepareColumn({ field: 'v', type: 'text', text: r => 'T', mappings: { a: '甲' } })._mapText === null,
+        'column.text 优先显示不挂映射（估高与显示同源）'
+      )
+      assert(
+        prepareColumn({ field: 'v', multiline: true, mappings: { a: '甲' } })._plainText === false,
+        'multiline 不短路（走 render）'
+      )
+      assert(
+        prepareColumn({ field: 'v', type: 'number' })._plainText === false,
+        'number 列不走短路（经 render 分支）'
+      )
+
+      return '类型门控 / options 转换 / column.text 门控 / multiline 语义正确'
     }
   },
   {
@@ -496,6 +572,50 @@ export const checks = [
     }
   },
   {
+    name: 'onImageLoad 契约（P1b）：img 分支闭包以 (row, colIndex) 调用处理器',
+    fn: () => {
+      const calls = []
+      const RealImage = window.Image
+
+      // 同步 Image 桩：src 赋值即触发 onload（runChecks 不支持异步；
+      // 真实 img 元素保证 drawImage 不抛错——未解码时按规范静默不绘制）
+      window.Image = function () {
+        const img = document.createElement('img')
+        let src = ''
+
+        Object.defineProperty(img, 'src', {
+          get () {
+            return src
+          },
+          set (value) {
+            src = value
+            img.onload?.()
+          }
+        })
+
+        return img
+      }
+
+      try {
+        const src = tinyPngDataUri() // 唯一 src，防缓存条目复用吞掉本次 onLoad 注册
+        const col = prepareColumn({ field: 'v', type: 'img' })
+
+        drawToCanvas(col, { v: src }, {
+          onImageLoad: (row, colIndex) => calls.push([row, colIndex]),
+          row: 3,
+          colIndex: 5
+        })
+
+        assertArray(calls, [[3, 5]], 'onImageLoad 应以 (row, colIndex) 调用（新契约）')
+        assertEqual(getImageEntry(src).status, 'loaded', '同步加载完成后条目 loaded')
+      } finally {
+        window.Image = RealImage
+      }
+
+      return 'img 分支闭包转发 (row, colIndex)，恰回调一次'
+    }
+  },
+  {
     name: 'multiline/lineClamp：div items 按文本落地不空白（decisions ⑤）',
     fn: () => {
       const col = prepareColumn({ field: 'memo', multiline: true, lineClamp: 2 })
@@ -519,12 +639,12 @@ export const checks = [
     }
   },
   {
-    name: '各类型离屏绘制非空像素（text/bool/enum/number/currency/date/rec_no/check/link/tag）',
+    name: '各类型离屏绘制非空像素（text/bool/text+mappings/number/currency/date/rec_no/check/link/tag）',
     fn: () => {
       const cases = [
         ['text', prepareColumn({ field: 'v' }), { v: '文本' }],
         ['bool', prepareColumn({ field: 'v', type: 'bool' }), { v: true }],
-        ['enum', prepareColumn({ field: 'v', type: 'enum', mappings: { a: '甲' } }), { v: 'a' }],
+        ['text+mappings', prepareColumn({ field: 'v', type: 'text', mappings: { a: '甲' } }), { v: 'a' }],
         ['number', prepareColumn({ field: 'v', type: 'number' }), { v: 1234.5 }],
         ['currency', prepareColumn({ field: 'v', type: 'currency' }), { v: 1234.5 }],
         ['date', prepareColumn({ field: 'v', type: 'date' }), { v: new Date(2026, 0, 9) }],

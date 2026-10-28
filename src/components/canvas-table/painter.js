@@ -1,77 +1,5 @@
-/**
- * canvas-table 绘制管线（02-design.md A2 图层划分 / A3 按需重绘与 lastPaint / A8）。
- *
- * 单 canvas 分区绘制，分区顺序固定（后区不透明覆盖前区）：
- *   1 表体滚动区（可视行 × 滚动区可视列，逐格背景→内容）
- *   2 网格线（按 gridlines；固定区线由分区 3 自绘）
- *   3 固定左列区（整高不透明重绘，盖住滚过的表体；x-scrolled 右缘强化色分界）
- *   4 表头区（整宽不透明重绘：底色/caption/排序图标/check 表头/列分隔线/底边框）
- *   5 覆盖层（hover 高亮、可编辑格描边、树箭头 hover 主色、编辑按钮图标、调宽拖拽参考线）
- * 选中底色与斑马纹在分区 1/3 画行背景时直接取值，不做覆盖层。
- *
- * 入口（设计命名 draw(state) 的 ctx 前置纯函数形式）：
- * - draw(ctx, state)                 整幅绘制，返回 lastPaint 统计
- * - drawRegion(ctx, state, region)   脏区绘制（save/clip/restore 调度），返回 lastPaint 统计
- * - cellRectAt(layout, row, col)     单元格视口矩形
- * 有状态封装（S1 组件壳一次接线）：
- * - createPainter({ canvas })        rAF 合帧异步失效、img onload → invalidateCell 联动
- *                                    （重绘前校验行仍在窗口内）、lastPaint 存取、dispose 清理
- *
- * state 契约（canvas-table.vue 持有并传入）：
- * - dpr            devicePixelRatio，每次绘制 ctx.setTransform(dpr, 0, 0, dpr, 0, 0)（A2 标准直乘）
- * - layout         layout.js relayout() 返回的布局快照（含 rowGeometry 引用；画布 css
- *                  宽高取 stickyWidth/Height。行坐标经 rowGeometry.topAt/heightAt 取值，
- *                  几何必传——C4 起 relayout 产物恒携几何，缺失即快速失败)
- * - theme          theme.js readSnapshot() 快照
- * - records        行数据（与 layout 的 rowCount 同源；G2 起被 displayRows 取代时保留兜底）
- * - displayRows    读行集合（02-design.md A2.1）：树开 = 平铺行数组、树关 = records 原序；
- *                  组件壳 G3 起组装。painter 一律经 rowsOf(state) = displayRows ?? records
- *                  取行（实施约束 1：中间态壳未组装 displayRows 时行为不变）
- * - columns        cell-painters.prepareColumn() 后的内部列数组
- * - recordsOffset  rec_no 起始序号偏移（缺省 0；recordNumber = recordsOffset + 行号 + 1）
- * - emit           透传列类型 render
- * - keyField / getRecordKey / selectedKey
- *                  选中行判定 getRecordKey(record, 行号) === selectedKey；getRecordKey 缺省时
- *                  keyField ? record[keyField] : 行号（无 keyField 且数组结构不变时与
- *                  autoIncrementKeyBuilder 同序）。selectedKey 由组件壳按
- *                  selectedRecordKey ?? selectedRecord?.[keyField || '_key'] 解析后传入
- * - headerChecked  check 表头受控态 { [field]: Boolean }（null/undefined = 不绘制表头 ✓）
- * - gridlines / hoverMode / striped / orderBy   渲染 props 原样传入
- * - placeholder   表格级占位文本（drawCell 空内容兜底第三级：
- *                 content.text ?? 列级 placeholder ?? 此值；不进列准备依赖）
- * - hover          { row, col } | null 视口命中索引（interactions 产出）
- * - hoverItem      { row, col, kind, index, disabled } | null 条目悬停（问题 7）：
- *                  drawCellClipped 仅对 hover 格注入 { kind, index, disabled }；
- *                  hoverMode = none 时壳侧归一为 null（syncPaintState 总开关）
- * - editingCell    { row, col } | null 编辑中格（问题 6 veil）：drawCellClipped 对
- *                  命中格跳过内容绘制（行背景带与格线照画）并显式清空本格 itemHits 组
- * - resizeGuideX   调宽拖拽参考线视口 x | null
- * - onImageLoad    (row, col) => void，纯函数绘制的 img 加载完成回调；
- *                  createPainter 内部自动接管为 invalidateCell(row, col)
- * - itemHits       条目命中矩形集合（A3.3）：Map<row, Map<col, Array<{kind,index,rect,disabled}>>>，
- *                  paintCellRange 绘制 items 时按 (row, col) 粒度整组替换收集，
- *                  每次绘制批次结束按当前可视窗口行裁剪（组件壳创建传入，可选；
- *                  disabled 问题 7，与取色/点击同口径 isTruthyAttr；veil 格整组清空）
- * - flatInfo / expandedKeys
- *                  树形列绘制（A2.4）：{ levels, hasChildren } 平行数组 + 展开 key 集合
- *                  （树关 = flatInfo null，无树形缩进）；可选
- * - editable / isCellEditableFn
- *                  hover 编辑感知（A5.3）：可编辑格 hover 画 1px 主色内描边；可选
- * - measure / wrapCache
- *                  文本测量注入（A2.2）：theme.js createTextMeasurer/createWrapCache
- *                  产物，经 drawCell 透传 drawText 多行折行（与行高计算同源）；可选
- *
- * 脏区 region 形状（A3 重绘表）：
- *   { rows: [from, to] }   行横带（to 排他）——hover 行/选中行/编辑提交与 check 点击整行
- *   { cols: [from, to] }   列竖带（to 排他）——列 hover
- *   { cell: { row, col } } 单格——invalidateCell 精细重绘
- *   { header: true }       表头整幅——headerChecked 变化
- *   { colFrom }            自该列视口左缘至画布右端竖带 + 表头整幅——列宽拖拽 move
- *                          （左界取列左缘：列宽变化影响该列截断与右侧所有列位置，防加宽残影）
- * 脏区绘制先在 clip 内擦除为透明再走同一分区管线（行底色为半透明变量，
- * 直接叠画会在旧帧上重复混色；整幅绘制由 clearRect 保证同一起点）。
- */
-
+/** canvas-table 绘制管线（02-design.md A2 图层划分 / A3 按需重绘与 lastPaint / A8）。
+    入口：draw / drawRegion / cellRectAt / createPainter（见各导出函数注释） */
 import { drawCell, drawTreeArrow, requestIconImage } from './cell-painters.js'
 import { editorRectOf, editorGridlineFlagsOf, editorButtonRectOf } from './editor.js'
 import { createMeasureCache } from './theme.js'
@@ -91,12 +19,44 @@ import {
   FONT_FAMILY_FALLBACK
 } from './constants.js'
 
-// 表头 ✓ 方框：与单元格 check（cell-painters.drawCheck）同规格互指（CHECK_*
-// 共享常量；状态机不同——表头无 disabled——绘制函数不强合，规格变更两处同步）
+// 单 canvas 分区绘制，分区顺序固定（后区不透明覆盖前区）：
+// 1 表体滚动区（可视行 × 滚动区可视列，逐格背景→内容）；2 网格线
+// 3 固定左列区（整高不透明重绘）；4 表头区（整宽）；5 覆盖层（hover/编辑感知）
 
-// 排序图标：th 内 absolute right: cell-padding、font-size 18px（table.scss .mu-sort-icon），
-// viewBox 24 双三角 path M18 10l-6 -6l-6 6h12 / M18 14l-6 6l-6 -6h12（sort-icon.vue），
-// caption 右侧预留 18px（A5）
+// 选中底色与斑马纹在分区 1/3 画行背景时直接取值，不做覆盖层；脏区绘制先在 clip
+// 内擦除为透明再走同一分区管线（半透明行底色直接叠画会重复混色）
+
+// state 契约（canvas-table.vue 持有并传入，字段见组件壳 syncPaintState 组装）：
+// - dpr 每次绘制 setTransform(dpr,0,0,dpr,0,0)；layout = relayout() 快照（含
+//   rowGeometry 引用，画布 css 宽高取 stickyWidth/Height）
+
+// - records / displayRows：painter 经 rowsOf(state) = displayRows ?? records 取行
+// - columns = prepareColumn() 后的内部列数组；recordsOffset / emit /
+//   keyField/getRecordKey/selectedKey（选中行判定）原样消费
+
+// - headerChecked / gridlines / hoverMode / striped / orderBy / placeholder 原样传入
+// - hover / hoverItem / editingCell（veil）/ resizeGuideX 视口命中与覆盖层状态
+
+// - flatInfo / expandedKeys 树形列绘制（树关 = flatInfo null）
+// - editable / isCellEditableFn hover 编辑感知；measure / wrapCache 文本测量注入
+
+// - itemHits 条目命中矩形集合：Map<row, Map<col, Array>>，绘制 items 时按格
+//   整组替换收集，批次结束按可视窗口行裁剪（veil 格整组清空）
+
+// - onImageLoad (row, col) => void：img 加载完成回调，createPainter 自动接管为
+//   invalidateCell(row, col)（行窗口校验在 invalidate 内）
+
+// 脏区 region 形状（A3 重绘表）：
+//   { rows: [from, to) } 行横带；{ cols: [from, to) } 列竖带；{ cell } 单格
+//   { header: true } 表头整幅；{ colFrom } 自该列至画布右端竖带 + 表头
+
+//   （colFrom 左界取列左缘：列宽变化影响该列截断与右侧所有列位置，防加宽残影）
+
+// 表头 ✓ 方框：与单元格 check（cell-painters.drawCheck）同规格互指（CHECK_* 共享
+// 常量；状态机不同不强合，规格变更两处同步）
+
+// 排序图标：th 内 absolute right: cell-padding、font-size 18px（table.scss
+// .mu-sort-icon），viewBox 24 双三角 path（sort-icon.vue），caption 右侧预留 18px
 const SORT_ICON_SIZE = 18
 const SORT_ICON_RESERVE = 18
 
@@ -127,8 +87,7 @@ function headerFontOf (theme) {
   return `500 ${fontSize}px ${theme?.fontFamily || FONT_FAMILY_FALLBACK}`
 }
 
-/** 表头测量回调：优先注入的 state.measure（与表体/行高同一缓存实例）；
-    未注入（自检夹具）回退模块级缓存测量（借用绘制 ctx） */
+/** 表头测量回调：优先注入的 state.measure（与表体同一缓存）；未注入回退模块级缓存 */
 function headerMeasureOf (ctx, state) {
   const injected = state?.measure
 
@@ -139,7 +98,7 @@ function headerMeasureOf (ctx, state) {
 
 // —— 几何换算 ——
 
-/** 读行集合（实施约束 1）：displayRows ?? records 缺省回退——中间态壳行为不变 */
+/** 读行集合：displayRows ?? records 缺省回退（中间态壳行为不变） */
 function rowsOf (state) {
   return state.displayRows ?? state.records
 }
@@ -155,8 +114,8 @@ function recordKeyOf (state, record, row) {
       : row
 }
 
-// 行几何直取 layout.rowGeometry（C4 删 WeakMap uniform 回退：layout 一律由
-// relayout() 产出、恒携几何；缺失即 TypeError 快速暴露，不再静默等高兜底）
+// 行几何直取 layout.rowGeometry（C4 删 WeakMap uniform 回退：layout 恒由
+// relayout() 产出、恒携几何；缺失即 TypeError 快速暴露）
 
 /** 列视口 x：固定列不随滚动位移，滚动区列减 scrollLeft */
 function viewportColX (layout, col) {
@@ -168,7 +127,7 @@ function viewportRowY (layout, row) {
   return layout.headHeight + layout.rowGeometry.topAt(row) - layout.scrollTop
 }
 
-/** 单元格视口矩形（interactions / editor / 自检共用；高度 = heightAt(row)，变高行适配） */
+/** 单元格视口矩形（interactions / editor / 自检共用；高度 = heightAt(row)） */
 export function cellRectAt (layout, row, col) {
   return {
     x: viewportColX(layout, col),
@@ -182,7 +141,7 @@ function viewColsRange (layout) {
   return { from: layout.viewCols.start, to: layout.viewCols.end }
 }
 
-/** layout.viewRows {start,end,count} → 区间 {from,to}（paintCellRange/paintGridlines 入参形状） */
+/** layout.viewRows {start,end,count} → 区间 {from,to}（paintCellRange 入参形状） */
 function viewRowsRange (layout) {
   return { from: layout.viewRows.start, to: layout.viewRows.end }
 }
@@ -199,7 +158,7 @@ function isSelectedRow (state, row) {
   return record != null && recordKeyOf(state, record, row) === selectedKey
 }
 
-/** 行背景优先级：选中（--mu-primary-faint）> 斑马偶行（--mu-bg-stripe，nth-child(even) 同序）> 普通 */
+/** 行背景优先级：选中（--mu-primary-faint）> 斑马偶行（--mu-bg-stripe）> 普通 */
 function rowBackground (state, row) {
   if (isSelectedRow(state, row)) return state.theme.selectBg
   if (state.striped && row % 2 === 1) return state.theme.bgStripe
@@ -228,10 +187,7 @@ function withClip (ctx, rect, fn) {
   ctx.restore()
 }
 
-/**
- * 擦除当前 clip 区域为透明（destination-out 在 clip 内精确生效，语义无歧义），
- * 使半透明行底色与覆盖层的混色起点与整幅绘制一致。
- */
+/** 擦除当前 clip 区域为透明，使半透明行底色与覆盖层的混色起点与整幅绘制一致 */
 function eraseClipRegion (ctx, rect) {
   ctx.globalCompositeOperation = 'destination-out'
   ctx.fillStyle = '#000'
@@ -241,7 +197,7 @@ function eraseClipRegion (ctx, rect) {
 
 // —— 分区 1：单元格区域（滚动区与固定区共用，含行背景） ——
 
-/** itemHits (row, col) 组写入（A3.3 内层按 (row,col) 键整组替换） */
+/** itemHits (row, col) 组写入（内层按 (row,col) 键整组替换） */
 function setItemHitGroup (itemHits, row, col, rects) {
   let inner = itemHits.get(row)
 
@@ -253,7 +209,7 @@ function setItemHitGroup (itemHits, row, col, rects) {
   inner.set(col, rects)
 }
 
-/** 每次绘制批次结束按当前可视窗口行 [start, end) 裁剪（窗口外行删除，长滚不增长） */
+/** 绘制批次结束按当前可视窗口行 [start, end) 裁剪（窗口外行删除，长滚不增长） */
 function trimItemHits (itemHits, viewRows) {
   const { start, end } = viewRows
 
@@ -267,7 +223,7 @@ function isEmptyRange (range) {
   return !range || range.to <= range.from
 }
 
-/** 行背景带右缘视口 x：max(所绘列区间右缘 x1, bandToX ?? x1)（bandToX 语义见 paintCellRange 头注） */
+/** 行背景带右缘视口 x：max(所绘列区间右缘 x1, bandToX ?? x1)（bandToX 见 paintCellRange） */
 function rowBandEndX (layout, cols, bandToX) {
   const last = cols.to - 1
   const x1 = viewportColX(layout, last) + (layout.colWidths[last] || 0)
@@ -275,14 +231,15 @@ function rowBandEndX (layout, cols, bandToX) {
   return Math.max(x1, bandToX ?? x1)
 }
 
-/** 表体单行：行背景一条矩形覆盖列区间（选中/斑马纹按行取值，A2 分区 1）+ 逐格内容绘制 */
+// 表体单行：行背景一条矩形覆盖列区间 + 逐格内容绘制；recordKey 行级求值一次
+// （P1a：树关时为 null，drawTreeAffordance 不消费）
 function paintBodyRow (ctx, state, records, columns, r, cols, x0, bandWidth, W, H) {
   const { layout } = state
   const geometry = layout.rowGeometry
   const rowHeight = geometry.heightAt(r)
   const y = layout.headHeight + geometry.topAt(r) - layout.scrollTop
 
-  // 高度 = heightAt(r)；带右缘经 bandToX 扩展（见 paintCellRange 函数头注）
+  // 高度 = heightAt(r)；带右缘经 bandToX 扩展（见 paintCellRange 头注）
   ctx.fillStyle = rowBackground(state, r)
   ctx.fillRect(x0, y, bandWidth, rowHeight)
 
@@ -291,6 +248,7 @@ function paintBodyRow (ctx, state, records, columns, r, cols, x0, bandWidth, W, 
   if (record == null) return
 
   const recordNumber = (state.recordsOffset || 0) + r + 1
+  const recordKey = state.flatInfo ? recordKeyOf(state, record, r) : null
 
   for (let c = Math.max(cols.from, 0); c < cols.to; c++) {
     const col = columns?.[c]
@@ -304,18 +262,13 @@ function paintBodyRow (ctx, state, records, columns, r, cols, x0, bandWidth, W, 
       height: rowHeight
     }
 
-    drawCellClipped(ctx, state, col, record, recordNumber, rect, r, c, W, H)
+    drawCellClipped(ctx, state, col, record, recordNumber, rect, r, c, recordKey, W, H)
   }
 }
 
-/**
- * 单元格区域绘制（滚动区与固定区共用，含行背景）。
- * bandToX（R1/人工 3 意见 1，A2.1）：行背景带右缘视口 x 下限——带右缘 =
- * max(所绘列区间右缘 x1, bandToX ?? x1)。滚动区调用点传 layout.stickyWidth
- * （ΣcolWidths < 视口宽时行背景充满至视口右缘；Σ ≥ 视口宽时 x1 已越界、超界
- * 部分被画布自然裁剪）；固定列 pass（paintFixedArea）不传——带保持固定列区间
- * [0, fixedWidth]，防固定 pass 行底色覆盖已绘滚动区内容（遮挡由分区顺序承担）。
- */
+// 单元格区域绘制（滚动区与固定区共用，含行背景）。bandToX：行背景带右缘视口 x
+// 下限——滚动区调用点传 layout.stickyWidth（ΣcolWidths < 视口宽时行背景充满至
+// 视口右缘）；固定列 pass 不传（带保持固定列区间，防覆盖已绘滚动区内容）
 function paintCellRange (ctx, state, rows, cols, bandToX) {
   if (isEmptyRange(rows) || isEmptyRange(cols)) return
 
@@ -338,11 +291,8 @@ function isVeiledCell (state, row, colIndex) {
   return cell != null && cell.row === row && cell.col === colIndex
 }
 
-/**
- * veil（问题 6）：编辑中格命中时显式清空本格命中组并返回 true（调用方跳过
- * 内容绘制）——跳过 drawCell 后原收集逻辑不执行，不清空会残留上一次绘制的
- * 条目矩形，浮层下方仍可点中 link/button（veil 语义被破坏）。
- */
+/** veil（问题 6）：编辑中格清空本格命中组并返回 true（调用方跳过内容绘制）——
+    不清空会残留上一次绘制的条目矩形，浮层下方仍可点中 link/button */
 function veilEditingCell (state, row, colIndex) {
   if (!isVeiledCell(state, row, colIndex)) return false
 
@@ -351,12 +301,8 @@ function veilEditingCell (state, row, colIndex) {
   return true
 }
 
-/**
- * 本格右缘列线占用 px（问题 1 水平锚注入值）：非末列，或末列但存在空白区
- * （问题 9 blankTail 时末列右缘画 1px 线，占用本格矩形），且 gridlines 含
- * column。blankTail = stickyWidth > contentWidth，与问题 9 两处列线绘制同一
- * 派生式（三处消费点：本处 / paintColGridlines / paintHeaderColLineRange）。
- */
+/** 本格右缘列线占用 px（问题 1）：非末列（或末列但有空白区）且 gridlines 含
+    column 时为 1；blankTail = stickyWidth > contentWidth（三处消费点同派生式） */
 function rightInsetOf (state, colIndex) {
   const { layout } = state
   const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
@@ -374,8 +320,8 @@ function cellHoverItemOf (state, row, colIndex) {
   return { kind: hover.kind, index: hover.index, disabled: hover.disabled }
 }
 
-/** 视口边缘部分可见格 clip（A3 性能措施：完全可见格跳过 save/clip/restore，
-    画布边界外像素本就被丢弃，clip 兜底内容外溢）；返回是否执行了 clip */
+/** 视口边缘部分可见格 clip（完全可见格跳过 save/clip/restore，画布边界外像素
+    本就被丢弃）；返回是否执行了 clip */
 function clipIfPartial (ctx, rect, W, H) {
   const partial = rect.x < 0 || rect.y < 0 ||
     rect.x + rect.width > W || rect.y + rect.height > H
@@ -390,15 +336,10 @@ function clipIfPartial (ctx, rect, W, H) {
   return true
 }
 
-/**
- * 单元格内容绘制：完全可见格跳过 save/clip/restore（A3 性能措施，kaka P0），
- * 视口边缘部分可见格才 clip（见 clipIfPartial 头注）。
- * itemHits 存在时按 (row, col) 粒度收集本格条目矩形（整组替换，A3.3）。
- * veil（问题 6）：editingCell 命中格跳过 drawCell（行背景带与格线照画）并
- * 清空本格命中组（见 veilEditingCell 头注）。
- * rightInset / hoverItem 注入（问题 1/7）：见 rightInsetOf / cellHoverItemOf 头注。
- */
-function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colIndex, W, H) {
+// 单元格内容绘制：完全可见格跳过 clip（A3 性能措施）；itemHits 按格收集（整组
+// 替换）；veil 格跳过 drawCell；recordKey 由 paintBodyRow 行级注入（P1a）；
+// onImageLoad 直传 (row, col) 处理器（P1b：闭包下沉 cell-painters img 分支）
+function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colIndex, recordKey, W, H) {
   if (veilEditingCell(state, row, colIndex)) return
 
   const clipped = clipIfPartial(ctx, rect, W, H)
@@ -414,11 +355,12 @@ function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colI
     emit: state.emit,
     rect,
     theme: state.theme,
-    onImageLoad: state.onImageLoad ? () => state.onImageLoad(row, colIndex) : undefined,
+    onImageLoad: state.onImageLoad,
     row,
+    colIndex,
     flatInfo: state.flatInfo,
     expandedKeys: state.expandedKeys,
-    recordKey: recordKeyOf(state, record, row),
+    recordKey,
     measure: state.measure,
     wrapCache: state.wrapCache,
     placeholder: state.placeholder,
@@ -439,15 +381,14 @@ function isGridlineMode (mode, kind) {
   return mode === 'all' || mode === kind
 }
 
-/** 行线：可视行区间 [from, to] 每行下界 1px（首行顶线 r=0 由表头底边框承担） */
+/** 行线：可视行区间每行下界 1px（首行顶线 r=0 由表头底边框承担） */
 function paintRowGridlines (ctx, layout, rows, W) {
   for (let r = Math.max(rows.from, 1); r <= rows.to; r++) {
     ctx.fillRect(0, viewportRowY(layout, r), W, 1)
   }
 }
 
-/** 列线：列右缘 1px，遇末列索引终止（同 .last-col）；存在空白区时末列右缘
-    补画 1px（问题 9，blankTail 与 drawCellClipped 同一派生式） */
+/** 列线：列右缘 1px，遇末列终止（同 .last-col）；空白区时末列右缘补画 1px（问题 9） */
 function paintColGridlines (ctx, layout, cols) {
   const n = layout.colWidths.length
   const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
@@ -474,20 +415,17 @@ function paintGridlines (ctx, state, rows, cols, maxWidth) {
 
   ctx.fillStyle = theme.borderColorSoft
 
-  // 行线：行界 1px（首行顶线由表头底边框承担，同 .mu-table td border-top 首行无线）
+  // 行线：行界 1px（首行顶线由表头底边框承担）；列线：末列无线（固定区分界线
+  // 由固定区强化色覆盖）
   if (isGridlineMode(mode, 'row')) paintRowGridlines(ctx, layout, rows, W)
 
-  // 列线：列右缘 1px（末列无线，同 .last-col；固定区分界线由固定区强化色覆盖）
   if (isGridlineMode(mode, 'column')) paintColGridlines(ctx, layout, cols)
 }
 
 // —— 分区 3：固定左列区 ——
 
-/**
- * 固定左列区（分区 3）：整高不透明底重绘盖住滚过的表体。rows 限定重绘行区间
- * （P0-2）：行带/单格等脏区入口只画与脏带相交的行（脏区 clip 会裁剪到底色
- * 擦除与网格线均以带内为限，语义不变）；缺省整幅可视行（整幅绘制/列带入口）。
- */
+/** 固定左列区：整高不透明底重绘盖住滚过的表体。rows 限定重绘行区间（P0-2）：
+    行带/单格脏区入口只画与脏带相交的行；缺省整幅可视行 */
 function paintFixedArea (ctx, state, rows) {
   const { layout, theme } = state
 
@@ -495,15 +433,14 @@ function paintFixedArea (ctx, state, rows) {
 
   const range = rows ?? viewRowsRange(layout)
 
-  // 整高不透明重绘，盖住滚过的表体（A2 分区 3；在脏区 clip 内被裁到脏带）
+  // 整高不透明重绘，盖住滚过的表体（在脏区 clip 内被裁到脏带）
   ctx.fillStyle = theme.bgNormal
   ctx.fillRect(0, 0, layout.fixedWidth, layout.stickyHeight)
 
   paintCellRange(ctx, state, range, { from: 0, to: layout.fixedCount })
   paintGridlines(ctx, state, range, { from: 0, to: layout.fixedCount }, layout.fixedWidth)
 
-  // 分界线：横向滚动后强化色覆盖（对齐 table.scss .mu-table--x-scrolled .last-fixed-col，
-  // 不受 gridlines 模式约束；表头部分由表头区自绘）
+  // 分界线：横向滚动后强化色覆盖（对齐 .mu-table--x-scrolled .last-fixed-col）
   if (layout.scrollLeft > 0.5) {
     ctx.fillStyle = theme.borderColorStrong
     ctx.fillRect(layout.fixedWidth - 1, layout.headHeight, 1, layout.stickyHeight - layout.headHeight)
@@ -542,7 +479,7 @@ function drawHeaderCheck (ctx, theme, x, centerY, checked) {
   }
 }
 
-/** 排序图标：caption 右侧 18px 见方，上下双三角，激活方向主色、非激活灰（sort-icon.vue 复刻） */
+/** 排序图标：caption 右侧 18px 见方，上下双三角，激活方向主色、非激活灰（复刻） */
 function drawSortIcon (ctx, state, col, ix, iy) {
   const { theme } = state
   const direction = sortDirectionOf(state.orderBy)[col.field]
@@ -562,7 +499,7 @@ function drawSortIcon (ctx, state, col, ix, iy) {
   drawTriangle([[18, 14], [12, 20], [6, 14]], direction === 'down')
 }
 
-/** check 表头 ✓ 判定：table.vue:22 同款条件（type=check + field + headerCheckbox + headerChecked 受控态） */
+/** check 表头 ✓ 判定（table.vue:22 同款：type=check + field + headerCheckbox + 受控态） */
 function isHeaderCheckColumn (state, raw) {
   return !!(raw.type === 'check' && raw.field && raw.headerCheckbox && state.headerChecked)
 }
@@ -572,14 +509,14 @@ function headerCaptionText (caption) {
   return caption != null ? String(caption) : ''
 }
 
-/** 表头文本锚点 x：check 列恒取 ✓ 后文本起点；否则按 align（right 贴右缘扣预留，其余居中） */
+/** 表头文本锚点 x：check 列恒取 ✓ 后文本起点；否则按 align（right 贴右缘扣预留） */
 function headerTextAnchorX (align, hasHeaderCheck, textX, x, width, padding, reserve) {
   if (hasHeaderCheck || align === 'left') return textX
 
   return align === 'right' ? x + width - padding - reserve : x + (width - reserve) / 2
 }
 
-/** 表头文本绘制：ellipsize 截断后按 align 绘制（check 列强制 left 对齐于 ✓ 后文本起点） */
+/** 表头文本绘制：ellipsize 截断后按 align 绘制（check 列强制 left 对齐 ✓ 后） */
 function drawHeaderText (ctx, state, col, font, align, hasHeaderCheck, textX, maxTextWidth, centerY, x, width) {
   const { text: display } = ellipsize({
     text: headerCaptionText(col.caption),
@@ -616,9 +553,7 @@ function drawHeaderCell (ctx, state, col, x, width) {
   let maxTextWidth = width - padding * 2 - reserve
 
   if (hasHeaderCheck) {
-    // 内容组（✓ + 可选 caption）按列 align 整体分布（R2：对齐 DOM 版 th
-    // text-align 对行内内容的作用——check 列 align 缺省 center，无 caption 时
-    // ✓ 在表头格内水平居中；此前固定 x + padding 贴左缘不居中）
+    // 内容组（✓ + 可选 caption）按列 align 整体分布（对齐 DOM 版 th text-align）
     const checkTextWidth = width - padding * 2 - reserve - CHECK_SIZE - 6
     const { text: caption } = ellipsize({
       text: headerCaptionText(col.caption),
@@ -650,15 +585,14 @@ function showsHeaderColLine (mode, strong) {
   return strong || mode === 'all' || mode === 'column'
 }
 
-/** 单条表头列分隔线（.mu-table__th border-right 同款 1px）：固定分界线强化色，其余柔色 */
+/** 单条表头列分隔线（.mu-table__th border-right 同款 1px）：固定分界线强化色 */
 function paintHeaderColLine (ctx, theme, layout, c, strong) {
   ctx.fillStyle = strong ? theme.borderColorStrong : theme.borderColorSoft
   ctx.fillRect(viewportColX(layout, c) + (layout.colWidths[c] || 0) - 1, 0, 1, layout.headHeight - 1)
 }
 
-/** 表头列分隔线整批：可视列从左到右，遇末列终止（.last-col 末列无线）；
-    滚动列部分在固定区右缘 clip 内（R1：部分滚入固定区下方的首可见列分隔线
-    不绘入固定表头区，与文字同口径） */
+/** 表头列分隔线整批：可视列从左到右，遇末列终止；滚动列部分在固定区右缘
+    clip 内（R1：部分滚入固定区下方的首可见列分隔线不绘入固定表头区） */
 function paintHeaderColLines (ctx, state, layout, theme) {
   const mode = state.gridlines ?? 'all'
   const strongBoundary = layout.scrollLeft > 0.5
@@ -682,8 +616,7 @@ function paintHeaderColLines (ctx, state, layout, theme) {
   })
 }
 
-/** 表头列分隔线区间绘制（paintHeaderColLines 固定/滚动两段共用）；末列无线
-    同 .last-col，存在空白区时末列右缘补画 1px（问题 9，blankTail 同一派生式） */
+/** 表头列分隔线区间绘制；末列无线同 .last-col，空白区时末列右缘补画 1px（问题 9） */
 function paintHeaderColLineRange (ctx, state, theme, layout, cols, mode, strongBoundary) {
   const n = layout.colWidths.length
   const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
@@ -697,12 +630,8 @@ function paintHeaderColLineRange (ctx, state, theme, layout, cols, mode, strongB
   }
 }
 
-/**
- * 表头单元格内容绘制（文字/check/排序图标）。R1：滚动列部分在固定区右缘
- * clip 内绘制——横向滚动后首可见滚动列左缘可能位于固定区下方，其表头内容
- * 若不裁剪会绘入固定表头区形成残影（表体侧由分区 3 固定区整高覆盖承担，
- * 表头为最后分区须自裁剪）。
- */
+/** 表头单元格内容绘制（文字/check/排序图标）。R1：滚动列部分在固定区右缘
+    clip 内绘制——不裁剪会绘入固定表头区形成残影（表头为最后分区须自裁剪） */
 function paintHeaderCells (ctx, state) {
   const { layout } = state
   const cols = headerColIndexes(layout)
@@ -746,31 +675,17 @@ function paintHeader (ctx, state) {
 
   paintHeaderCells(ctx, state)
 
-  // 表头列分隔线（.mu-table__th border-right 同款：末列无线、固定分界线 x-scrolled 强化）
+  // 表头列分隔线（末列无线、固定分界线 x-scrolled 强化）+ 底边框
   paintHeaderColLines(ctx, state, layout, theme)
 
-  // 底边框（--head-border-bottom: 1px solid var(--mu-border-color-soft)）
   ctx.fillStyle = theme.borderColorSoft
   ctx.fillRect(0, headHeight - 1, W, 1)
 }
 
 // —— 分区 5：覆盖层 ——
 
-/**
- * 树箭头 hover 主色（A2.4「hover 主色」，S1 遗留收尾）：hover 命中树形列父行格时，
- * 在覆盖层以主色重画箭头三角盖住分区 1 的常态 textColor 箭头（取色 = 快照
- * colors.primary.color，缺 colors 时回退 primaryColor）。三角几何与展开判定
- * 共用 cell-painters.drawTreeArrow（C2 收拢，形状单一事实源）。
- *
- * 粒度说明：壳的 hover 载荷为 { row, col }（hitTest 的 hit.cellX 未入 paintState，
- * 且同格内槽位进出不触发重绘）——槽位级命中需壳改动，本处为格级粒度：
- * hover 停留在树形列父行格上即主色，移出该格随行带重绘还原。
- *
- * centerY = 首行行框槽位锚（问题 1 统一公式：viewportRowY + ROW_TOP_INSET +
- * (rowHeight − ROW_TOP_INSET)/2，20261028 与 lineHeight 解耦；cell-painters
- * drawCell 同式但四舍五入取整，本覆盖层维持中点原式、较常态锚高 0.5px）；
- * 不用 heightAt/2——超高行中两分区会错位出双层边。
- */
+/** 树箭头 hover 主色（A2.4）：hover 命中树形列父行格时，覆盖层以主色重画箭头
+    三角盖住分区 1 的常态箭头；粒度为格级（槽位级命中需壳改动） */
 function paintTreeArrowAccent (ctx, state) {
   const { hover, flatInfo, columns, theme } = state
 
@@ -788,6 +703,8 @@ function paintTreeArrowAccent (ctx, state) {
   const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
   const level = flatInfo.levels?.[hover.row] ?? 0
   const x = viewportColX(state.layout, hover.col) + padding + level * TREE_INDENT
+  // centerY = 首行行框槽位锚中点原式（cell-painters 内容锚四舍五入，差 0.5px）；
+  // 不用 heightAt/2——超高行中两分区会错位出双层边
   const centerY = viewportRowY(state.layout, hover.row) + ROW_TOP_INSET + (rowHeight - ROW_TOP_INSET) / 2
 
   drawTreeArrow(
@@ -829,7 +746,7 @@ function paintHoverCell (ctx, layout, row, col) {
   )
 }
 
-/** hover 高亮矩形（fillStyle 由调用方预设为 hoverBg）：行带 / 列带 / 单格按模式与命中有效性 */
+/** hover 高亮矩形（fillStyle 由调用方预设为 hoverBg）：按模式与命中有效性 */
 function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid) {
   if (hoverModeShows(mode, 'row') && rowValid) paintHoverRow(ctx, layout, hover.row)
 
@@ -838,13 +755,8 @@ function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid) {
   if (mode === 'cell' && rowValid && colValid) paintHoverCell(ctx, layout, hover.row, hover.col)
 }
 
-/**
- * 可编辑格 hover 感知（A5.3）：1px 不透明主色描边，矩形 = editorRectOf(
- * cellRectAt(...), editorGridlineFlagsOf(...))——与编辑浮层盒 import 同一
- * 函数单一事实源、盒缘逐边相等（20261028 同位口径：盒缘贴格线内侧，本格内
- * 被行线/列线占用的边缘像素扣除 1px，边框不与格线重叠）；不占布局、随
- * hover 带重绘生效
- */
+/** 可编辑格 hover 感知（A5.3）：1px 主色描边，矩形与编辑浮层盒 import 同一
+    editorRectOf 同源同位（贴格线内侧）；不占布局、随 hover 带重绘生效 */
 function paintHoverEditorStroke (ctx, state, hover) {
   if (!state.editable || !state.isCellEditableFn) return
 
@@ -870,16 +782,9 @@ function paintHoverEditorStroke (ctx, state, hover) {
   ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
 }
 
-/**
- * 编辑按钮绘制（问题 5，覆盖层最上层）：hover 格所在列配 editorButton.icon
- * 时，经 editorButtonRectOf（editor.js 单一事实源，centerY = 首行槽位锚中点
- * 原式；cell-painters 内容锚 20261028 起四舍五入取整，差 0.5px）取 24×24 区矩形，requestIconImage（cell-painters 缓存管线
- * 单一事实源，SVG currentColor 着色 = theme.textColor）取图；仅
- * status === 'loaded' 才 drawImage（加载中/失败不半绘制），onLoad 经
- * state.onImageLoad 转 invalidateCell 联动重绘（createPainter withImageRelay；
- * 缓存命中时不重挂 onLoad，当帧直接可绘）。hoverMode none 时随
- * paintHoverOverlay 一并抑制（paintOverlay 门控）。
- */
+/** 编辑按钮绘制（问题 5，覆盖层最上层）：hover 格所在列配 editorButton.icon 时，
+    经 editorButtonRectOf 取区矩形、requestIconImage 取图；仅 loaded 才 drawImage，
+    onLoad 经 state.onImageLoad 转 invalidateCell；hoverMode none 随覆盖层抑制 */
 function paintEditorButton (ctx, state, hover) {
   const column = state.columns?.[hover.col]
   const icon = column?.editorButton?.icon
@@ -901,7 +806,7 @@ function paintEditorButton (ctx, state, hover) {
   ctx.drawImage(entry.image, rect.x + inset, rect.y + inset, size, size)
 }
 
-/** hover 叠加：高亮底色 → 可编辑格描边 → 树箭头主色 → 编辑按钮（绘制顺序固定） */
+/** hover 叠加：高亮底色 → 可编辑格描边 → 树箭头主色 → 编辑按钮（顺序固定） */
 function paintHoverOverlay (ctx, state, hover, mode) {
   const { layout, theme } = state
   const rowCount = rowsOf(state)?.length ?? 0
@@ -915,10 +820,9 @@ function paintHoverOverlay (ctx, state, hover, mode) {
   if (rowValid && colValid) {
     paintHoverEditorStroke(ctx, state, hover)
 
-    // 树箭头 hover 主色（A2.4）：同受 hoverMode none 抑制——用户显式关闭 hover 反馈时不画
+    // 树箭头 hover 主色与编辑按钮（最上层）同受 hoverMode none 抑制
     paintTreeArrowAccent(ctx, state)
 
-    // 编辑按钮（问题 5）：最上层
     paintEditorButton(ctx, state, hover)
   }
 }
@@ -1055,7 +959,7 @@ function paintCellRegion (ctx, state, cell) {
   }
 }
 
-/** 调宽 move：表头整幅 + 自该列视口左缘至画布右端竖带（A3 重绘表，左界=列左缘防加宽残影） */
+/** 调宽 move：表头整幅 + 自该列视口左缘至画布右端竖带（左界=列左缘防加宽残影） */
 function paintResizeBand (ctx, state, colFrom) {
   const { layout } = state
   const n = layout.colWidths.length
@@ -1109,7 +1013,7 @@ function paintFull (ctx, state) {
   return windowStats(layout)
 }
 
-/** 已知 region 形状调度（header → rows → cols → cell → colFrom 依次匹配），无匹配返回 null */
+/** 已知 region 形状调度（header → rows → cols → cell → colFrom），无匹配返回 null */
 function paintRegion (ctx, state, region) {
   const { layout } = state
 
@@ -1127,35 +1031,32 @@ function paintRegion (ctx, state, region) {
   return null
 }
 
-/**
- * 绘制执行：setTransform DPR 直乘 → 分区管线 → lastPaint 统计。
- * region 为 null/undefined 时整幅绘制（clearRect 起点复位）。
- */
+/** 绘制执行：setTransform DPR 直乘 → 分区管线 → lastPaint 统计；
+    region 为 null/undefined 或未识别形状时整幅绘制（clearRect 起点复位） */
 function paint (ctx, state, region) {
   const startedAt = performance.now()
   const dpr = state.dpr || window.devicePixelRatio || FALLBACK_DPR
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-  // 无 region 或空 region = 整幅；未识别的 region 形状按整幅兜底（正确性优先）
   const stats = isFullPaintRegion(region)
     ? paintFull(ctx, state)
     : paintRegion(ctx, state, region)
 
   if (stats) stats.elapsed = performance.now() - startedAt
 
-  // 条目命中集合窗口裁剪（A3.3）：按当前可视窗口行 [start, end) 删除窗口外行
+  // 条目命中集合窗口裁剪：按当前可视窗口行 [start, end) 删除窗口外行
   if (state.itemHits) trimItemHits(state.itemHits, state.layout.viewRows)
 
   return stats
 }
 
-/** 整幅绘制入口（A2）：返回 lastPaint 统计 { rowStart, rowEnd, rowCount, colStart, colEnd, elapsed } */
+/** 整幅绘制入口（A2）：返回 lastPaint 统计 { rowStart, ..., elapsed } */
 export function draw (ctx, state) {
   return paint(ctx, state, null)
 }
 
-/** 脏区绘制入口（A3 重绘表）：region 形状见模块头注释，返回本次实际绘制统计（未绘制返回 null） */
+/** 脏区绘制入口（A3 重绘表）：region 形状见模块头注释，未绘制返回 null */
 export function drawRegion (ctx, state, region) {
   return paint(ctx, state, region)
 }
@@ -1198,21 +1099,15 @@ function isRegionPaintable (state, region) {
   return false
 }
 
-/**
- * 有状态绘制器：draw 记录最近 state，invalidate 系列以 rAF 合帧异步重绘
- * （同帧多区域合并为整幅，正确性优先）；img 列图片异步加载完成后经
- * invalidateCell 联动重绘，行已滚出窗口则自动跳过（02-design.md 风险表）。
- *
- * - draw(state)                        同步整幅，返回 lastPaint；取消挂起中的脏区任务
- * - invalidate(region, { immediate, state })
- *                                      受理返回 true：immediate 同步重绘（并更新基线 state），
- *                                      否则入队 rAF 合帧；state 缺省用最近一次 draw 的 state
- *                                      （组件以持久 state 对象原地变更后调用即可）
- * - invalidateRow(row) / invalidateCell(row, col)
- *                                      行不在当前窗口（或格不在可视列空间）返回 false 不重绘
- * - lastPaint                          最近一次绘制统计（getLayoutInfo 断言来源）
- * - dispose()                          取消挂起 rAF、清空队列
- */
+// 有状态绘制器：draw 记录最近 state，invalidate 系列以 rAF 合帧异步重绘（同帧
+// 多区域合并为整幅，正确性优先）；img 加载完成后经 invalidateCell 联动重绘
+//（行已滚出窗口自动跳过）
+
+// - draw(state)：同步整幅，返回 lastPaint；取消挂起中的脏区任务
+// - invalidate(region, { immediate, state })：受理返回 true；immediate 同步重绘，
+//   否则入队 rAF 合帧；state 缺省用最近一次 draw 的 state
+
+// - invalidateRow/Cell：行不在当前窗口返回 false 不重绘；dispose：取消 rAF 清队列
 export function createPainter ({ canvas } = {}) {
   const ctx = canvas?.getContext?.('2d')
 
