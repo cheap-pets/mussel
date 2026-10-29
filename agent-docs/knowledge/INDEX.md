@@ -19,7 +19,7 @@
 - [Teleport 弹层与宿主组件的 CSS 变量级联断裂](./project/teleport-popup-css-vars.md) `pitfall`：弹层 Teleport 到根后宿主类上的组件级 CSS 变量不生效；弹层类须重复声明默认值。
 - [级联延时收起：hide 不可向上清祖先计时器](./project/cascade-delay-hide-clears-ancestor-timer.md) `pitfall`：链离开后祖先面板滞留不关——hide 向上清了祖先未触发计时器；hide 只清自身。
 - [集中样式拆分到各组件后，同特异性覆盖规则跨文件失效](./project/css-split-equal-specificity-order.md) `pitfall`：叠加态样式盖不住——覆盖对随 import 顺序漂移失效；覆盖规则须随被覆盖选择器同文件置尾。
-- [demo watch 运行中新增页面目录需重启构建](./project/demo-watch-new-entry-restart.md) `pitfall`：新增 demo 页后 :3000 访问 404——rollup input 启动时枚举；须重启 demo:build。
+- [demo watch 运行中新增页面目录需重启构建](./project/demo-watch-new-entry-restart.md) `pitfall` `code@worktree(2026-10-30)`：新页 404——入口由 catalog.js 登记生成、config 启动时一次求值；须登记 + 重启 demo:build。
 - [demo watch 重建会清空 demo/dist](./project/demo-watch-wipes-dist.md) `pitfall`：手工放入的临时资产重建后 404 / `Vue is not defined`——watch 重建清空 outDir；资产随用随放。
 - [Playwright 验证延时收起弹层：整场景须单调用内完成](./project/playwright-delay-hide-popup-testing.md) `pitfall`：调用间隙链自关、同坐标重进无 mouseenter——hover→停留→断言须单脚本完成，重开前先移出移入。
 - [容器 display:none 期间测量污染溢出折叠宽度缓存](./project/overflow-measure-hidden-container-cache.md) `pitfall`：恢复显示后全部项展开、触发器消失——隐藏期 0 宽写入 widthCache；0 宽须视同未测量。
@@ -36,6 +36,11 @@
 - mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
 - table 列 items 协议 events 可选 `pitfall` `code@worktree(2026-10-29)`：控制台 `v-on with no argument expects an object value`——text/image 等产物无 events；消费端 `table-row.vue` 须 `v-on="item.events ?? {}"` 兜底，生产端不必强加。
 - mu-dialog / mu-drawer 的 dismissible 无默认值 `pitfall` `code@9517eb6`：不传 dismissible 时 ESC 与遮罩点击均不关闭；需此交互须显式传 dismissible。
+- [table-ex relayout 后不精算，格线停留估高](./project/table-ex-relayout-no-remeasure.md) `pitfall` `code@worktree(2026-10-29)`：数据替换后行高不随内容变，滚动 1px 才精算——relayoutAndRedraw 无 remeasure；新路径须接精算三连。
+- [canvas 文本光学居中锚 centeredTextAnchor](./project/canvas-text-optical-centering.md) `convention` `code@worktree(2026-10-29)`：textBaseline='middle' 对 CJK 偏上 1~2px；单元格文本垂直居中统一走 alphabetic 基线 + fontBoundingBox 半差锚。
+- [table-ex 树 isLeaf 懒加载协议](./project/table-ex-tree-lazy-load.md) `convention` `code@worktree(2026-10-29)`：treeProps.isLeaf 未映射即关闭；仅 ===false 且无子级显三角；toggle 必发 tree-expand/collapse；回填就地 push + recordsVersion++ 防闪顶。
+- [eslint 报错爆量 13 万：demo/dist 被拾取](./project/eslint-demo-dist-false-positives.md) `pitfall` `code@worktree(2026-10-30)`：`demo/**` glob 拾取 demo/dist 产物假报错；项目用全局 eslint 8.57.0，.eslintignore 须含 demo/dist，口径限 src 与 demo/src。
+- [table-ex 重构行为冻结：探针基线逐字比对](./project/table-ex-refactor-frozen-probe.md) `convention` `code@worktree(2026-10-30)`：重构前采集行为快照（警告原文序列/构建序）为冻结基线，重构后逐字比对 + 自检双安全网；探针交付前删除。
 
 ## Global
 

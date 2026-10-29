@@ -476,6 +476,68 @@ export const checks = [
     }
   },
   {
+    name: 'resolveTreeToggle·isLeaf：expandable 形态懒节点槽内可 toggle、expandable 优先、旧 hasChildren 形态回退（20261029 问题 3）',
+    fn: () => {
+      const treeColumns = [{}, { _isTreeColumn: true }]
+      const slotHit = { isHeader: false, colIndex: 1, rowIndex: 0, cellX: 8 }
+
+      // 新形态（组件壳恒提供 expandable）：isLeaf:false 懒节点（hasChildren false）槽内可 toggle
+      const lazy = resolveTreeToggle({
+        hit: slotHit,
+        columns: treeColumns,
+        flatInfo: { levels: [0], hasChildren: [false], expandable: [true] },
+        recordKey: 'k-lazy'
+      })
+
+      assertArray([lazy.row, lazy.key], [0, 'k-lazy'], '懒节点（expandable 形态）槽内 toggle')
+
+      // expandable 优先于 hasChildren（组件产物不出现两者矛盾态，构造验证谓词口径）
+      assertEqual(
+        resolveTreeToggle({
+          hit: slotHit,
+          columns: treeColumns,
+          flatInfo: { levels: [0], hasChildren: [true], expandable: [false] },
+          recordKey: 'k'
+        }),
+        null,
+        'expandable false 不 toggle（优先于 hasChildren）'
+      )
+
+      // 旧形态（无 expandable 数组）：回退 hasChildren（自检夹具等旧构造者兼容）
+      const legacy = resolveTreeToggle({
+        hit: slotHit,
+        columns: treeColumns,
+        flatInfo: { levels: [0], hasChildren: [true] },
+        recordKey: 'k-parent'
+      })
+
+      assertEqual(legacy.key, 'k-parent', '旧形态回退 hasChildren 可 toggle')
+      assertEqual(
+        resolveTreeToggle({
+          hit: slotHit,
+          columns: treeColumns,
+          flatInfo: { levels: [0], hasChildren: [false] },
+          recordKey: 'k'
+        }),
+        null,
+        '旧形态叶行不 toggle'
+      )
+
+      // resolveCursor 同谓词：懒节点槽内 pointer
+      assertEqual(
+        resolveCursor(
+          { isHeader: false, colIndex: 1, rowIndex: 0, resizeCol: -1, cellX: 8 },
+          treeColumns,
+          { flatInfo: { levels: [0], hasChildren: [false], expandable: [true] } }
+        ),
+        'pointer',
+        '懒节点树槽光标 pointer'
+      )
+
+      return 'expandable 形态懒节点 toggle；expandable 优先；旧 hasChildren 形态回退；光标同谓词'
+    }
+  },
+  {
     name: 'resolveItemClick：hit.x/y 条目矩形反查（dots 命中、disabled 透传、窗口外行不命中）',
     fn: () => {
       // itemHits 形状（painter 契约）：Map<row, Map<col, Array<{ kind, index, rect, disabled }>>>，

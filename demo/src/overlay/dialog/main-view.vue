@@ -55,7 +55,9 @@
         <mu-button caption="不可 Dismiss" @click="lockedVisible = true" />
         <mu-button caption="Dispose On Hide" @click="disposeVisible = true" />
       </div>
-      <div class="demo-log demo-log--block">{{ eventLog || '（暂无事件）' }}</div>
+      <div class="demo-log demo-log--block">
+        {{ eventLog || '（暂无事件）' }}
+      </div>
     </demo-section>
 
     <!-- 基础 -->

@@ -41,6 +41,8 @@
           @update:selected-record-key="onSelectedKeyChange"
           @update:order-by="onOrderByChange"
           @update:tree-expanded-keys="onTreeExpandedKeys"
+          @tree-expand="onTreeExpand"
+          @tree-collapse="onTreeCollapse"
           @column-resize="onColumnResize">
           <template v-if="emptyVariant === 'slot'" #empty>
             <div class="ct-empty-slot">
@@ -67,6 +69,7 @@
             :options="[
               { value: 'default', label: '默认' },
               { value: 'tree', label: '树' },
+              { value: 'tree-lazy', label: '树（懒加载）' },
               { value: 'multiline', label: '多行文本' },
               { value: 'items', label: '条目/新列型' },
               { value: 'widths', label: '全类型默认宽' },
@@ -210,8 +213,8 @@
         <span>orderBy：{{ orderBy || '（空）' }}</span>
         <span>headerChecked.checked：{{ headerChecked.checked }}</span>
         <span>recordsVersion：{{ recordsVersion }}</span>
-        <span>场景：{{ scene }}{{ scene === 'tree' ? (stageTree ? '（树开）' : '（树关）') : '' }}</span>
-        <span>treeProps：{{ scene === 'tree' ? JSON.stringify(treePropsBind) : '—' }}</span>
+        <span>场景：{{ scene }}{{ stageTree ? '（树开）' : (scene === 'tree' || scene === 'tree-lazy' ? '（树关）' : '') }}</span>
+        <span>treeProps：{{ stageTree || scene === 'tree' || scene === 'tree-lazy' ? JSON.stringify(treePropsBind) : '—' }}</span>
         <span>展开节点数：{{ treeExpandedKeys?.length ?? '（未受控）' }}</span>
         <span>平铺行数：{{ debugFlatRowsLength ?? '—' }}</span>
         <span>舞台尺寸：{{ stageWidth }} × {{ stageHeight }}</span>
@@ -527,6 +530,16 @@
 
   const treeRecords = createTreeRecords()
 
+  // 懒加载树夹具（问题 3）：根 A/B 为 isLeaf:false 无子级（懒节点）、根 C 普通叶。
+  // id 取 200001+ 与既有树夹具（1..90003）隔离，防受控展开集跨场景串键
+  const lazyTreeRecords = [
+    { id: 200001, pid: null, name: '懒加载根 A', count: 11, date: '2026-10-01', isLeaf: false },
+    { id: 200002, pid: null, name: '懒加载根 B', count: 22, date: '2026-10-02', isLeaf: false },
+    { id: 200003, pid: null, name: '普通叶根 C', count: 33, date: '2026-10-03' }
+  ]
+
+  let lazyChildSeq = 0
+
   const treeColumns = [
     { caption: '名称（树形列）', field: 'name', treeNode: true, width: 240, sortable: true },
     // 树形列长文本组合：树缩进扣减内容宽后折行（行高 e2e，实施约束 6）
@@ -740,18 +753,18 @@
     'data:image/svg+xml;charset=utf-8,' +
     encodeURIComponent(
       '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="28">' +
-      '<rect width="48" height="28" rx="4" fill="#409eff"/>' +
-      '<text x="24" y="18" font-size="12" text-anchor="middle" fill="#fff">IMG</text></svg>'
+        '<rect width="48" height="28" rx="4" fill="#409eff"/>' +
+        '<text x="24" y="18" font-size="12" text-anchor="middle" fill="#fff">IMG</text></svg>'
     )
 
   function createSpanRecords () {
-    const records = []
+    const rows = []
     let id = 0
 
     for (const cat of ['数码', '家居']) {
       for (const sub of ['电脑', '配件']) {
         for (let i = 0; i < 7; i++) {
-          records.push({
+          rows.push({
             id: ++id,
             cat,
             sub,
@@ -763,7 +776,7 @@
           })
         }
 
-        records.push({
+        rows.push({
           id: ++id,
           cat: null,
           sub: null,
@@ -775,7 +788,7 @@
       }
     }
 
-    return records
+    return rows
   }
 
   const spanRecords = createSpanRecords()
@@ -857,7 +870,7 @@
 
   // ---------- 夹具状态 ----------
   const dataScale = ref('full') // full | few | empty
-  const scene = ref('default') // default | tree | multiline | items | widths | fixed | spans
+  const scene = ref('default') // default | tree | tree-lazy | multiline | items | widths | fixed | spans
   const emptyVariant = ref('none') // none | slot | text
   const editable = ref(true)
   const resizable = ref(true)
@@ -892,13 +905,16 @@
 
   // —— 场景接线（列/记录/树 props 按夹具场景切换） ——
 
-  const stageTree = computed(() => scene.value === 'tree' && treeOn.value)
+  const stageTree = computed(() => (scene.value === 'tree' || scene.value === 'tree-lazy') && treeOn.value)
 
-  const treePropsBind = computed(() =>
-    treePropsAlternate.value
+  // 懒加载场景固定 isLeaf 字段映射（数据仅含 pid，不参与 treePropsAlternate 切换）
+  const treePropsBind = computed(() => {
+    if (scene.value === 'tree-lazy') return { key: 'id', parentKey: 'pid', isLeaf: 'isLeaf' }
+
+    return treePropsAlternate.value
       ? { key: 'id', parentKey: 'parentId' }
       : { key: 'id', parentKey: 'pid' }
-  )
+  })
 
   const defaultExpandLevel = computed(() => {
     const n = Number(defaultExpandLevelInput.value)
@@ -909,6 +925,7 @@
   const stageColumns = computed(() => {
     switch (scene.value) {
       case 'tree': return treeColumns
+      case 'tree-lazy': return treeColumns
       case 'multiline': return multilineColumns
       case 'items': return itemColumns
       case 'widths': return widthColumns
@@ -922,6 +939,7 @@
   const stageRecords = computed(() => {
     switch (scene.value) {
       case 'tree': return sortedTreeRecords.value
+      case 'tree-lazy': return lazyTreeRecords
       case 'multiline': return multilineRecords
       case 'items':
       case 'fixed': return itemRecords
@@ -943,18 +961,20 @@
     return fixedLeftColumns.value
   })
 
-  // 平铺行数（调试/e2e）：与组件同参重算（展开集优先取组件实例受控回读）
+  // 平铺行数（调试/e2e）：与组件同参重算（展开集优先取组件实例受控回读）；
+  // 数据源取舞台 records（树/懒加载树场景各取其数据）
   const debugFlatRowsLength = computed(() => {
     if (!stageTree.value) return null
 
     const keys = treeExpandedKeys.value ?? window.__canvasTable?.getTreeExpandedKeys?.() ?? []
     const props = treePropsBind.value
-    const childrenIndex = buildChildrenIndex(treeRecords, {
+    const rows = stageRecords.value
+    const childrenIndex = buildChildrenIndex(rows, {
       keyOf: record => record?.[props.key],
       parentKeyOf: record => record?.[props.parentKey]
     })
 
-    return buildFlatRows(treeRecords, {
+    return buildFlatRows(rows, {
       keyOf: record => record?.[props.key],
       parentKeyOf: record => record?.[props.parentKey],
       expandedKeys: new Set(keys),
@@ -970,6 +990,35 @@
   function onTreeExpandedKeys (keys) {
     treeExpandedKeys.value = keys
     logEvent('update:tree-expanded-keys', { count: keys.length, keys: keys.slice(0, 8) })
+  }
+
+  // 懒加载消费范式（问题 3，对齐 demo/src/data/tree-advanced loadChildren）：
+  // tree-expand 载荷 { key, record, level }，isLeaf:false 且未回填过才异步加载；
+  // 就地 push 子级 + recordsVersion++ 通知 relayout（不替换 records 引用，不闪顶）
+  function onTreeExpand (payload) {
+    logEvent('tree-expand', payload)
+
+    if (payload.record?.isLeaf !== false) return
+    if (lazyTreeRecords.some(r => r.pid === payload.key)) return
+
+    setTimeout(() => {
+      for (let i = 1; i <= 3; i++) {
+        lazyTreeRecords.push({
+          id: 200101 + lazyChildSeq++,
+          pid: payload.key,
+          name: `子节点 ${String(payload.key).slice(-1)}-${i}`,
+          count: i,
+          date: '2026-10-29'
+        })
+      }
+
+      recordsVersion.value++
+      logEvent('懒加载回填（recordsVersion++）', { parent: payload.key })
+    }, 300)
+  }
+
+  function onTreeCollapse (payload) {
+    logEvent('tree-collapse', payload)
   }
 
   function onExpandAll () {

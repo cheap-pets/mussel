@@ -28,8 +28,9 @@ import { buildChildrenIndex, buildFlatRows, resolveInitialExpandedKeys, toggleKe
  * - getScrollEl () / getLayout ()   → 滚动容器与 layout 快照（toggle 锚定补偿）
  * @returns {{
  *   treeExpanded: Object, treeOptions: Object, childrenIndex: Object|null,
- *   flatRows: Object|null（buildFlatRows 产物：rows/levels/hasChildren/parentKeys
- *   四平行数组，parentKeys 供 spans 树父链切断）,
+ *   flatRows: Object|null（buildFlatRows 产物：rows/levels/hasChildren/
+ *   parentKeys/expandable 五平行数组，parentKeys 供 spans 树父链切断、
+ *   expandable 供懒节点三角/命中判定，20261029 问题 3）,
  *   displayRows: Array, wiredColumns: Array,
  *   treeColumnIndex: Number, treeIndentsOf: Function,
  *   applyTreeToggle: Function, expandAll: Function, collapseAll: Function,
@@ -42,14 +43,22 @@ export function useTreeRows (ctx) {
   // 展开节点 key 集合（内部持有；受控 prop 引用变化覆盖，点击箭头 toggle + emit）
   const treeExpanded = shallowRef(new Set())
 
+  // isLeaf 字段名映射（20261029 问题 3）：缺省 undefined = 特性关闭（对齐 tree
+  // 组件 DEFAULT_DATA_PROPS.isLeaf 未映射不生效的兼容语义）
   const treeOptions = computed(() => ({
     key: props.treeProps?.key ?? props.keyField ?? 'id',
-    parentKey: props.treeProps?.parentKey ?? 'parentId'
+    parentKey: props.treeProps?.parentKey ?? 'parentId',
+    isLeaf: props.treeProps?.isLeaf ?? undefined
   }))
 
-  // 子级索引（O(n) Map + hasChildren Set；树关 = null 零成本）
+  // 子级索引（O(n) Map + hasChildren Set；树关 = null 零成本）。
+  // recordsVersion 显式依赖（spans computed 同款先例）：records 就地 push 子级
+  // （懒加载回填，问题 3）不改变组内 computed 依赖的数组引用，须随版本号重算
+  // （flatRows 经 childrenIndex 间接失效重建）
   const childrenIndex = computed(() => {
     if (!props.tree) return null
+
+    void props.recordsVersion
 
     const { key, parentKey } = treeOptions.value
 
@@ -59,17 +68,19 @@ export function useTreeRows (ctx) {
     })
   })
 
-  // DFS 展开序平铺（迭代防爆栈、visited 防环、孤儿挂根）；树关 = null
+  // DFS 展开序平铺（迭代防爆栈、visited 防环、孤儿挂根）；树关 = null；
+  // isLeafOf 映射开启时产出含懒节点的 expandable 平行数组（问题 3）
   const flatRows = computed(() => {
     if (!props.tree) return null
 
-    const { key, parentKey } = treeOptions.value
+    const { key, parentKey, isLeaf } = treeOptions.value
 
     return buildFlatRows(props.records, {
       keyOf: record => record?.[key],
       parentKeyOf: record => record?.[parentKey],
       expandedKeys: treeExpanded.value,
-      childrenIndex: childrenIndex.value
+      childrenIndex: childrenIndex.value,
+      isLeafOf: isLeaf ? record => record?.[isLeaf] : null
     })
   })
 
@@ -126,8 +137,12 @@ export function useTreeRows (ctx) {
 
   /** 树箭头 toggle（A2.4 联动链）：行号语义失效先提交（commit 幂等）→
       toggle + emit → 平铺重建（displayRows computed 失效）→ 全量估高 + 几何
-      rebuild + spacer + 锚定（视口首行内容保持）+ 整幅重绘 */
-  function applyTreeToggle (key) {
+      rebuild + spacer + 锚定（视口首行内容保持）+ 整幅重绘。
+      meta（20261029 问题 3）：壳的 tryToggleTreeRow 已知命中行 record/level，
+      免 O(n) 反查；toggle 后追加发 tree-expand / tree-collapse（载荷
+      { key, record, level }，语义对齐 tree 组件 nodeExpand/nodeCollapse——
+      每次 toggle 均发，消费方自判是否懒加载子级） */
+  function applyTreeToggle (key, meta = {}) {
     const el = ctx.getScrollEl()
     const cur = ctx.getLayout()
     let anchor = null
@@ -143,6 +158,11 @@ export function useTreeRows (ctx) {
 
     treeExpanded.value = toggleKey(treeExpanded.value, key)
     emit('update:tree-expanded-keys', [...treeExpanded.value])
+    emit(treeExpanded.value.has(key) ? 'tree-expand' : 'tree-collapse', {
+      key,
+      record: meta.record,
+      level: meta.level
+    })
 
     ctx.relayout()
 

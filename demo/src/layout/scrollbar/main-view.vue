@@ -42,10 +42,16 @@
             class="demo-sticky demo-sticky--top">
             sticky top
           </div>
-          <div class="demo-sticky demo-sticky--left">left</div>
-          <div class="demo-sticky demo-sticky--right">right</div>
+          <div class="demo-sticky demo-sticky--left">
+            left
+          </div>
+          <div class="demo-sticky demo-sticky--right">
+            right
+          </div>
         </div>
-        <div class="demo-scroll-element--huge">huge content</div>
+        <div class="demo-scroll-element--huge">
+          huge content
+        </div>
       </mu-scroll-box>
     </demo-section>
   </demo-page>

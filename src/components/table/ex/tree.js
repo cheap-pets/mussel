@@ -89,17 +89,22 @@ function pushChildren (stack, childrenMap, key, level) {
 /**
  * 迭代 DFS 平铺（显式栈防爆栈；visited Set 防环）：从根集（parentKey 空或
  * 孤儿——父 key 不在集合中，容错挂根）出发，仅展开节点递归子级。
- * 产出 levels / hasChildren / parentKeys 三个与 rows 同序的平行数组：
+ * 产出 levels / hasChildren / parentKeys / expandable 四个与 rows 同序的平行数组：
  * parentKeys 为各行直接父 key（根行 null）——spans 构建树模式父链切断
  * （autoRowSpan 分段在层级变化或父链不同处切断）的单一事实源，消费方免
- * O(n) 反查、不求数据新增字段。
+ * O(n) 反查、不求数据新增字段；expandable 为行可展开判定（hasChildren 或
+ * isLeafOf(record) === false 的懒节点——20261029 问题 3 分级加载），
+ * hasChildren 语义保持纯「被 parentKey 引用」不变。
  *
  * @param {Array} records 平铺记录
  * @param {Set} [params.expandedKeys] 展开节点 key 集合
  * @param {Object} [params.childrenIndex] buildChildrenIndex 产物（缺省内部构建）
- * @returns {{ rows: Array, levels: Number[], hasChildren: Boolean[], parentKeys: Array }}
+ * @param {Function} [params.isLeafOf] record => isLeaf 字段值读取器（未传 = 特性
+ *   关闭，expandable 退化为 hasChildren；对齐 tree 组件 DEFAULT_DATA_PROPS.isLeaf
+ *   缺省 undefined「未映射不生效」兼容语义）
+ * @returns {{ rows: Array, levels: Number[], hasChildren: Boolean[], parentKeys: Array, expandable: Boolean[] }}
  */
-export function buildFlatRows (records, { keyOf, parentKeyOf, expandedKeys, childrenIndex } = {}) {
+export function buildFlatRows (records, { keyOf, parentKeyOf, expandedKeys, childrenIndex, isLeafOf } = {}) {
   const list = records ?? []
   const { childrenMap, hasChildren, keySet } = childrenIndex ?? buildChildrenIndex(list, { keyOf, parentKeyOf })
   const stack = buildRootStack(list, { keyOf, parentKeyOf }, keySet)
@@ -108,6 +113,7 @@ export function buildFlatRows (records, { keyOf, parentKeyOf, expandedKeys, chil
   const levels = []
   const hasChildrenFlags = []
   const parentKeys = []
+  const expandableFlags = []
   const visited = new Set()
 
   while (stack.length) {
@@ -119,15 +125,39 @@ export function buildFlatRows (records, { keyOf, parentKeyOf, expandedKeys, chil
 
     visited.add(key)
 
+    // 仅明确 === false 视为懒节点（undefined / 缺字段 / true 不算，与用户口径一致）
+    const hasKids = hasChildren.has(key)
+
     rows.push(record)
     levels.push(level)
-    hasChildrenFlags.push(hasChildren.has(key))
+    hasChildrenFlags.push(hasKids)
     parentKeys.push(parentKey ?? null)
+    expandableFlags.push(hasKids || isLeafOf?.(record) === false)
 
     if (expandedKeys?.has(key)) pushChildren(stack, childrenMap, key, level)
   }
 
-  return { rows, levels, hasChildren: hasChildrenFlags, parentKeys }
+  return { rows, levels, hasChildren: hasChildrenFlags, parentKeys, expandable: expandableFlags }
+}
+
+/**
+ * 行可展开判定（20261029 问题 3）：树箭头三角显示（cell-painters.drawTreeAffordance）、
+ * 箭头槽命中/光标（interactions.isTreeArrowSlot）、hover 主色箭头（painter.
+ * paintTreeArrowAccent）三消费点共用单函数防公式漂移（isExpandedKey 同款模式）。
+ * expandable = 有子级（hasChildren）或 isLeaf:false 懒节点；flatInfo.expandable
+ * 缺省回退 flatInfo.hasChildren（旧形态兼容——组件壳恒提供 expandable，回退
+ * 面向自检夹具等旧构造者）。
+ *
+ * @param {Object} flatInfo buildFlatRows 产物（树关 = null）
+ * @param {Number} row 行号
+ * @returns {Boolean}
+ */
+export function expandableAt (flatInfo, row) {
+  if (!flatInfo) return false
+
+  if (Array.isArray(flatInfo.expandable)) return flatInfo.expandable[row] === true
+
+  return flatInfo.hasChildren?.[row] === true
 }
 
 /** BFS 根集入队（0-based 计层，根 = 0；孤儿挂根；同 key 重复行只入队一次）。 */

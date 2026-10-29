@@ -14,7 +14,9 @@
           <div class="gesture-box__gradient" />
         </div>
         <div class="gesture-log">
-          <div v-for="(log, i) in logs" :key="i" class="gesture-log__entry">{{ log }}</div>
+          <div v-for="(log, i) in logs" :key="i" class="gesture-log__entry">
+            {{ log }}
+          </div>
         </div>
       </div>
     </demo-section>

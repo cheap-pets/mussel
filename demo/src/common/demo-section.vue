@@ -15,7 +15,9 @@
       </h3>
       <p
         v-if="note"
-        class="demo-section__note">{{ note }}</p>
+        class="demo-section__note">
+        {{ note }}
+      </p>
     </header>
 
     <div class="demo-section__body">

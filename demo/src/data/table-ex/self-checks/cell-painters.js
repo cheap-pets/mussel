@@ -180,6 +180,25 @@ function fakeMeasure (text) {
   return String(text).replace(/\s/g, '').length * 7 + String(text).length * 2
 }
 
+/** 文本光学居中锚偏移（20261029 问题 1）：与 cell-painters.centeredTextAnchor
+ *  同参口径现算——y = centerY + round((fbAscent − fbDescent)/2)，随运行时字体
+ *  自适应（fontBoundingBox 须 alphabetic 状态测量；度量缺失环境回退 0 = middle） */
+function textAnchorOffset (font) {
+  const c = document.createElement('canvas').getContext('2d')
+
+  c.font = font
+  c.textBaseline = 'alphabetic'
+  const m = c.measureText('')
+
+  return Number.isFinite(m?.fontBoundingBoxAscent) && Number.isFinite(m?.fontBoundingBoxDescent)
+    ? Math.round((m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2)
+    : 0
+}
+
+// THEME fixture 的 cellFontOf 产物与对应锚偏移（槽位锚 y 断言 = 19 + OFF）
+const CELL_FONT = '14px sans-serif'
+const TEXT_ANCHOR_OFF = textAnchorOffset(CELL_FONT)
+
 /** css 颜色串按 canvas 序列化口径归一（fillStyle 赋值后回读：#rrggbb / rgba(...)） */
 const COLOR_PROBE = document.createElement('canvas').getContext('2d')
 
@@ -894,13 +913,21 @@ export const checks = [
       assertEqual(calls.fillText.length, 2, 'maxLines=2 应绘制 2 行')
       assertEqual(calls.fillText[0].text.length, 16, '首行按测量宽度折行（16 字符 × 9px = 144 ≤ 内容宽）')
       assert(calls.fillText[1].text.endsWith('...'), `钳制末行应以 '...' 收缩，实际「${calls.fillText[1].text}」`)
-      assertArray(calls.fillText.map(c => c.y), [19, 37], '首行槽位锚（y0 = Math.round(1 + (36 − 1)/2) = 19，与行高无关、与 padding/lineHeight 解耦；后续 +18）')
+      assertArray(
+        calls.fillText.map(c => c.y),
+        [19 + TEXT_ANCHOR_OFF, 37 + TEXT_ANCHOR_OFF],
+        `首行光学居中锚（槽位 19 + 字体偏移 ${TEXT_ANCHOR_OFF}，与行高无关、与 padding/lineHeight 解耦；后续 +18）`
+      )
 
       // maxLines=1（缺省）：即使注入 measure 也走单行省略（现状路径）
       const single = drawRecorded(prepareColumn({ field: 'memo' }), { memo: long }, { measure: fakeMeasure })
 
       assertEqual(single.calls.fillText.length, 1, '缺省单行省略')
-      assertEqual(single.calls.fillText[0].y, 19, '单行槽位锚 19 = rect.y + Math.round((36+1)/2)（行线中点 18.5 四舍五入；20261028 解耦 lineHeight）')
+      assertEqual(
+        single.calls.fillText[0].y,
+        19 + TEXT_ANCHOR_OFF,
+        `单行光学居中锚（槽位 19 + 字体偏移 ${TEXT_ANCHOR_OFF}；20261029 问题 1）`
+      )
 
       // measure 未注入：多行列回退单行省略（不抛错）
       const fallback = drawRecorded(col, { memo: long })
@@ -917,7 +944,7 @@ export const checks = [
       const { calls } = drawRecorded(col, { v: [1, '二', 3, 4, 5] }, { height: 80 })
 
       assertArray(calls.fillText.map(c => c.text), ['1', '二', '...'], '前 maxItems−1 项 + dots 行')
-      assertArray(calls.fillText.map(c => c.y), [19, 37, 55], '首行槽位锚逐行（y0 = 19 = Math.round(1 + (36−1)/2)，不随行高变；顺次 +18）')
+      assertArray(calls.fillText.map(c => c.y), [19 + TEXT_ANCHOR_OFF, 37 + TEXT_ANCHOR_OFF, 55 + TEXT_ANCHOR_OFF], `首行光学居中锚逐行（槽位 19 + 偏移 ${TEXT_ANCHOR_OFF}，不随行高变；顺次 +18）`)
       assertEqual(calls.fillText[0].text, '1', '数字元素应 String 化')
 
       // 缺省 maxItems=10：不超限全量显示
@@ -953,7 +980,7 @@ export const checks = [
       const redirected = drawRecorded(clampedCol, { memo: long }, { measure: fakeMeasure, height: 60 })
 
       assertEqual(redirected.calls.fillText.length, 2, '单 div item 应改道 drawText 多行（maxLines=2 钳制）')
-      assertArray(redirected.calls.fillText.map(c => c.y), [19, 37], '改道后首行槽位锚（y0 = 19，与行高无关）')
+      assertArray(redirected.calls.fillText.map(c => c.y), [19 + TEXT_ANCHOR_OFF, 37 + TEXT_ANCHOR_OFF], `改道后首行光学居中锚（槽位 19 + 偏移 ${TEXT_ANCHOR_OFF}，与行高无关）`)
 
       return 'deep 3 行 / shallow 1 行；line-clamp item 改道 2 行'
     }
@@ -973,13 +1000,13 @@ export const checks = [
       const base = drawRecorded(col, { v: '甲' }, { rect, rightInset: 0 })
 
       assertEqual(base.calls.fillText[0].x, 80, 'center rightInset=0 → x=80（rect.x + width/2）')
-      assertEqual(base.calls.fillText[0].y, 19, '槽位锚 y=19（Math.round(1 + (36−1)/2)）')
+      assertEqual(base.calls.fillText[0].y, 19 + TEXT_ANCHOR_OFF, `槽位锚 y = 19 + 字体偏移 ${TEXT_ANCHOR_OFF}（光学居中，20261029 问题 1）`)
 
       // rightInset=1（本格右缘列线占用）：内容区水平中心精确 −0.5px，垂直不变
       const inset = drawRecorded(col, { v: '甲' }, { rect, rightInset: 1 })
 
       assertEqual(inset.calls.fillText[0].x, 79.5, 'center rightInset=1 → x=79.5（列线占用扣除）')
-      assertEqual(inset.calls.fillText[0].y, 19, 'rightInset 只参与水平锚，垂直仍 19')
+      assertEqual(inset.calls.fillText[0].y, 19 + TEXT_ANCHOR_OFF, 'rightInset 只参与水平锚，垂直锚不变')
 
       // left/right 锚不受 rightInset 影响（padding 8 ≫ 1px 格线，防误改分支）
       const left = drawRecorded(prepareColumn({ field: 'v' }), { v: '甲' }, { rect, rightInset: 1 })
@@ -994,9 +1021,9 @@ export const checks = [
       // /link 竖排首行 y=19 同高（decisions 检查点-A1判据：超高行只验跨列首行同高）
       const tall = drawRecorded(col, { v: '甲' }, { height: 88, rightInset: 0 })
 
-      assertEqual(tall.calls.fillText[0].y, 19, '超高行单行 y=19（锚不随行高变，与多行/link 竖排首行同高）')
+      assertEqual(tall.calls.fillText[0].y, 19 + TEXT_ANCHOR_OFF, '超高行单行锚不变（不随行高变，与多行/link 竖排首行同高）')
 
-      return 'x=80/79.5/8/152；y 恒 19（h=36/88 同值，跨列首行同高）'
+      return `x=80/79.5/8/152；y 恒 ${19 + TEXT_ANCHOR_OFF}（h=36/88 同值，跨列首行同高）`
     }
   },
   {
@@ -1125,7 +1152,11 @@ export const checks = [
       const { calls } = drawRecorded(col, record, { height: 88, onItemRect: r => rects.push(r) })
 
       assertArray(calls.fillText.map(c => c.text), ['A', 'B', 'C', '...'], '3 条 + dots（maxItems=4，第 4 条 \'...\'）')
-      assertArray(calls.fillText.map(c => c.y), [19, 37, 55, 73], '竖排每条一行（首行槽位锚 19 = Math.round(1 + (36−1)/2)；+18 顺排）')
+      assertArray(
+        calls.fillText.map(c => c.y),
+        [19 + TEXT_ANCHOR_OFF, 37 + TEXT_ANCHOR_OFF, 55 + TEXT_ANCHOR_OFF, 73 + TEXT_ANCHOR_OFF],
+        `竖排每条一行（首行光学居中锚 19 + 偏移 ${TEXT_ANCHOR_OFF}；+18 顺排）`
+      )
       assertArray(calls.fillText.map(c => c.x), [8, 8, 8, 8], '左缘对齐内容区')
       assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.success.color), 'mu-link--success class → colors 查表')
       assertEqual(calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled（存在性判定）→ textColorMuted')
@@ -1143,7 +1174,7 @@ export const checks = [
 
       assertArray(single.calls.fillText.map(c => c.text), ['9'], '单值数字 String 化')
 
-      return '竖排 y=19/37/55/73；success/muted/danger/primary 四态取色正确'
+      return `竖排 y=${[19, 37, 55, 73].map(y => y + TEXT_ANCHOR_OFF).join('/')}；success/muted/danger/primary 四态取色正确`
     }
   },
   {
@@ -1158,7 +1189,7 @@ export const checks = [
 
       assertEqual(vertical.calls.fillText[0].fillStyle, successHover, '竖排 hover 条目 fillStyle = colors.success.hover')
       assertEqual(vertical.calls.fillRect.length, 1, '竖排仅 hover 条目画下划线')
-      assertEqual(vertical.calls.fillRect[0].y, 26, '下划线 y = anchorY(19) + round(14×0.35) + 2 = 26')
+      assertEqual(vertical.calls.fillRect[0].y, 19 + TEXT_ANCHOR_OFF + 2, `下划线 y = 光学锚(${19 + TEXT_ANCHOR_OFF}) + 2（基线下 2px，20261029 问题 1）`)
       assertEqual(vertical.calls.fillRect[0].x, 8, '下划线 x = 条目起点（内容区左缘）')
       assert(vertical.calls.fillRect[0].width > 0 && vertical.calls.fillRect[0].height === 1, '下划线 1px 高、宽 = 实绘文本宽')
       assertEqual(vertical.calls.fillRect[0].fillStyle, successHover, '下划线 fillStyle = hover 色')
@@ -1187,7 +1218,7 @@ export const checks = [
       assertEqual(horizontal.calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.danger.hover), '横排 hover 条目 fillStyle = colors.danger.hover')
       assertEqual(horizontal.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), '横排未 hover 的 disabled 条目仍 muted')
       assertEqual(horizontal.calls.fillRect.length, 1, '横排仅 hover 条目画下划线')
-      assertEqual(horizontal.calls.fillRect[0].y, 26, '横排下划线 y 同式（anchorY 19 + 5 + 2）')
+      assertEqual(horizontal.calls.fillRect[0].y, 19 + TEXT_ANCHOR_OFF + 2, '横排下划线 y 同式（光学锚 + 2）')
       assertEqual(horizontal.calls.fillRect[0].fillStyle, cssColorOf(THEME_COLORS.danger.hover), '横排下划线 fillStyle = hover 色')
 
       // 横排 disabled 条目被 hover：不悬停（第 0 条回落常态 danger.color）
@@ -1201,7 +1232,7 @@ export const checks = [
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['link:0', 'link:1'], '横排条目回报')
       assertArray(rects.map(r => r.disabled), [false, true], '横排条目携带 disabled 布尔')
 
-      return '两路径 hover 色变 + 下划线 y=26；disabled 两态不悬停；横排 disabled=[false,true]'
+      return `两路径 hover 色变 + 下划线 y=${19 + TEXT_ANCHOR_OFF + 2}；disabled 两态不悬停；横排 disabled=[false,true]`
     }
   },
   {

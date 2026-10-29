@@ -7,13 +7,19 @@
       vertical>
       <mu-split-h-box class="demo-split-frame" :splitter="{ collapsible: true }">
         <template #left>
-          <div class="demo-block mu-bg-strong">left</div>
+          <div class="demo-block mu-bg-strong">
+            left
+          </div>
         </template>
         <template #center>
-          <div class="demo-block mu-bg-strong">center</div>
+          <div class="demo-block mu-bg-strong">
+            center
+          </div>
         </template>
         <template #right>
-          <div class="demo-block mu-bg-strong">right</div>
+          <div class="demo-block mu-bg-strong">
+            right
+          </div>
         </template>
       </mu-split-h-box>
     </demo-section>
@@ -23,20 +29,28 @@
       note="center 内嵌 mu-split-v-box 上下分割，拖动水平分隔条调整上下高度">
       <mu-split-h-box class="demo-split-frame" :splitter="{ collapsible: true }">
         <template #left>
-          <div class="demo-block mu-bg-strong">left</div>
+          <div class="demo-block mu-bg-strong">
+            left
+          </div>
         </template>
         <template #center>
           <mu-split-v-box class="demo-split-inner">
             <template #top>
-              <div class="demo-block--fill mu-bg-strong">top</div>
+              <div class="demo-block--fill mu-bg-strong">
+                top
+              </div>
             </template>
             <template #center>
-              <div class="demo-block--fill mu-bg-strong">bottom</div>
+              <div class="demo-block--fill mu-bg-strong">
+                bottom
+              </div>
             </template>
           </mu-split-v-box>
         </template>
         <template #right>
-          <div class="demo-block mu-bg-strong">right</div>
+          <div class="demo-block mu-bg-strong">
+            right
+          </div>
         </template>
       </mu-split-h-box>
     </demo-section>
@@ -53,13 +67,19 @@
         class="demo-split-frame demo-mt"
         :splitter="sharedSplitterOptions">
         <template #left>
-          <div class="demo-block mu-bg-strong">left</div>
+          <div class="demo-block mu-bg-strong">
+            left
+          </div>
         </template>
         <template #center>
-          <div class="demo-block mu-bg-strong">center</div>
+          <div class="demo-block mu-bg-strong">
+            center
+          </div>
         </template>
         <template #right>
-          <div class="demo-block mu-bg-strong">right</div>
+          <div class="demo-block mu-bg-strong">
+            right
+          </div>
         </template>
       </mu-split-h-box>
     </demo-section>
@@ -82,13 +102,19 @@
         left-class="mu-bg-strong"
         right-class="mu-bg-strong">
         <template #left>
-          <div class="demo-block">left</div>
+          <div class="demo-block">
+            left
+          </div>
         </template>
         <template #center>
-          <div class="demo-block mu-bg-strong">center</div>
+          <div class="demo-block mu-bg-strong">
+            center
+          </div>
         </template>
         <template #right>
-          <div class="demo-block">right</div>
+          <div class="demo-block">
+            right
+          </div>
         </template>
       </mu-split-h-box>
     </demo-section>
@@ -106,13 +132,19 @@
         left-style="min-width: 200px"
         right-class="mu-bg-strong">
         <template #left>
-          <div class="demo-block">left（min-width 200px）</div>
+          <div class="demo-block">
+            left（min-width 200px）
+          </div>
         </template>
         <template #center>
-          <div class="demo-block mu-bg-strong">center</div>
+          <div class="demo-block mu-bg-strong">
+            center
+          </div>
         </template>
         <template #right>
-          <div class="demo-block">right</div>
+          <div class="demo-block">
+            right
+          </div>
         </template>
       </mu-split-h-box>
     </demo-section>

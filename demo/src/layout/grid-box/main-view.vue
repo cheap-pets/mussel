@@ -5,14 +5,30 @@
       note="mu-grid-box 用 columns / rows 划分等分轨道，mu-grid-cell 用 col-start / col-end / row-start / row-end 指定占据区间（end 为末轨道号，含端点）"
       :code="basicCode">
       <mu-grid-box class="demo-grid" :columns="4" :rows="2">
-        <mu-grid-cell class="demo-cell">1</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">2</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">3</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">4</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">5</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">6</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">7</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">8</mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          1
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          2
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          3
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          4
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          5
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          6
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          7
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          8
+        </mu-grid-cell>
       </mu-grid-box>
     </demo-section>
 
@@ -20,13 +36,27 @@
       title="跨行跨列"
       note="col-span / row-span 指定跨越数；span 与 end 同时设置时 span 优先">
       <mu-grid-box class="demo-grid" :columns="4" :rows="3">
-        <mu-grid-cell class="demo-cell" :col-span="2">col-span 2</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">2</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">3</mu-grid-cell>
-        <mu-grid-cell class="demo-cell" :row-span="2">row-span 2</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">5</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">6</mu-grid-cell>
-        <mu-grid-cell class="demo-cell">7</mu-grid-cell>
+        <mu-grid-cell class="demo-cell" :col-span="2">
+          col-span 2
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          2
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          3
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell" :row-span="2">
+          row-span 2
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          5
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          6
+        </mu-grid-cell>
+        <mu-grid-cell class="demo-cell">
+          7
+        </mu-grid-cell>
       </mu-grid-box>
     </demo-section>
 
@@ -40,7 +70,9 @@
         class="demo-grid demo-mt"
         :columns="autoExpanded ? 'auto' : 3"
         :rows="2">
-        <mu-grid-cell v-for="i in 6" :key="i" class="demo-cell">{{ autoExpanded ? `auto ${i}` : i }}</mu-grid-cell>
+        <mu-grid-cell v-for="i in 6" :key="i" class="demo-cell">
+          {{ autoExpanded ? `auto ${i}` : i }}
+        </mu-grid-cell>
       </mu-grid-box>
     </demo-section>
 

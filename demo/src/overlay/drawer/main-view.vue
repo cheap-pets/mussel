@@ -38,9 +38,13 @@
           dismissible
           :container="containerEl">
           <div class="flex flex-col" style="height: 100%">
-            <div class="flex-none px-2x py-1x border-b border-soft text-normal">Container drawer</div>
+            <div class="flex-none px-2x py-1x border-b border-soft text-normal">
+              Container drawer
+            </div>
             <mu-scroll-box class="flex-1 p-2x">
-              <p v-for="i in 30" :key="i">line {{ i }}</p>
+              <p v-for="i in 30" :key="i">
+                line {{ i }}
+              </p>
             </mu-scroll-box>
           </div>
         </mu-drawer>
@@ -63,7 +67,9 @@
         <mu-button caption="Open No Mask" @click="noMaskVisible = true" />
         <mu-button caption="遮罩区域按钮" @click="logBehindMask" />
       </div>
-      <div class="demo-log demo-log--block">{{ eventLog || '（暂无事件）' }}</div>
+      <div class="demo-log demo-log--block">
+        {{ eventLog || '（暂无事件）' }}
+      </div>
     </demo-section>
 
     <!-- 基础 -->

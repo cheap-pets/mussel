@@ -90,7 +90,9 @@
       note="底部空间不足时子级弹层向上翻转、无 id 项以对象引用激活、禁用项不可选"
       regression
       vertical>
-      <p class="demo-log">滚动到页面底部，展开「项目管理」子级，弹层应向上翻转而不溢出视口</p>
+      <p class="demo-log">
+        滚动到页面底部，展开「项目管理」子级，弹层应向上翻转而不溢出视口
+      </p>
       <div class="demo-bottom-box">
         <mu-menu v-model:active-item="active6" :items="menus" />
       </div>

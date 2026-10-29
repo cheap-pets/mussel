@@ -1767,7 +1767,7 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；�
 | editable            | Boolean | `false`| 表格级编辑开关；列须同时配置 `editor`                     |
 | resizable           | Boolean | `false`| 表头拖拽调整列宽；列级 `resizable: false` 可单独禁止      |
 | tree                | Boolean | `false`| 树模式：按 `tree-props` 从平铺 `records` 构建层级         |
-| tree-props          | Object  | —      | `{ key, parentKey }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }` |
+| tree-props          | Object  | —      | `{ key, parentKey, isLeaf }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }`；`isLeaf` 映射懒加载字段名（未映射不生效；映射后 `字段 === false` 且无子级的节点显示展开三角，点击发 `tree-expand`，异步回填 = 就地 push 子级 + `records-version`++） |
 | tree-expanded-keys  | Array   | —      | 展开节点 key（双向绑定；传入即接管展开状态，`default-expand-level` 不生效） |
 | default-expand-level| Number  | `0`    | 初始展开层级（0 基：`level <= 值` 的节点展开；`-1` 全收起）|
 
@@ -1778,6 +1778,8 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；�
 | update:order-by             | orderBy                                          | 点击可排序表头，`field:asc → field:desc → ''` 循环 |
 | column-resize               | { column, width }                                | 拖拽列宽结束                                      |
 | update:tree-expanded-keys   | keys                                             | 树节点展开 / 收起                                 |
+| tree-expand                 | { key, record, level }                           | 展开箭头 toggle 展开（每次展开均发；`treeProps.isLeaf` 懒加载在此事件内异步取子级） |
+| tree-collapse               | { key, record, level }                           | 展开箭头 toggle 收起                              |
 | update:cell-value           | { record, recordIndex, column, value }           | check 翻转与编辑提交（较 `MuTable` 多 `recordIndex`） |
 | cell-item-click             | { record, recordIndex, column, link/tag/button } | 条目点击（较 `MuTable` 多 `recordIndex`；`button` 列载荷为按钮配置项） |
 

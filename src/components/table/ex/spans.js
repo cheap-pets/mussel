@@ -136,6 +136,16 @@ function registerRegion (index, occupied, { row, col, rowspan, colspan }, rowCou
 
   anchorRow.set(col, region)
 
+  fillCoveredCells(index, region)
+  index.regions.push(region)
+  fillRowRegions(index, region)
+  occupyRect(occupied, row, rowTo, col, colTo)
+
+  return region
+}
+
+/** covered 表回填：主格以外的覆盖格 → 主格坐标（§3.2 四表回填之一） */
+function fillCoveredCells (index, { row, col, rowTo, colTo }) {
   for (let r = row; r < rowTo; r++) {
     for (let c = col; c < colTo; c++) {
       if (r === row && c === col) continue
@@ -150,19 +160,140 @@ function registerRegion (index, occupied, { row, col, rowspan, colspan }, rowCou
       inner.set(c, { row, col })
     }
   }
+}
 
-  index.regions.push(region)
-
-  for (let r = row; r < rowTo; r++) {
+/** rowRegions 表回填：与区域真正交叠的每一行挂区域引用（窗口查询的行维索引） */
+function fillRowRegions (index, region) {
+  for (let r = region.row; r < region.rowTo; r++) {
     const list = index.rowRegions.get(r)
 
     if (list) list.push(region)
     else index.rowRegions.set(r, [region])
   }
+}
 
-  occupyRect(occupied, row, rowTo, col, colTo)
+/** spanMethod(info) 载荷构造（§2.3）：record/recordIndex/recordNumber/prev/next/columns */
+function buildSpanInfo (records, columns, row, rowCount, recordsOffset) {
+  return {
+    record: records[row],
+    recordIndex: row,
+    recordNumber: (recordsOffset || 0) + row + 1,
+    prevRecord: row > 0 ? records[row - 1] : null,
+    nextRecord: row < rowCount - 1 ? records[row + 1] : null,
+    columns
+  }
+}
 
-  return region
+/**
+ * 键解析（§2.3）：先 column.key 精确匹配；否则 field 匹配全部列（命中多列警告
+ * 一次/键，无匹配列忽略 + 警告一次/键——warnedKeys 键级去重）。返回命中的列下标数组。
+ */
+function resolveDeclColumns (columns, name, warnedKeys, emitWarn) {
+  const byKey = []
+
+  for (let i = 0; i < columns.length; i++) {
+    if (columns[i]?.key === name) byKey.push(i)
+  }
+
+  if (byKey.length) return byKey
+
+  const byField = []
+
+  for (let i = 0; i < columns.length; i++) {
+    if (columns[i]?.field === name) byField.push(i)
+  }
+
+  if (!byField.length) {
+    if (!warnedKeys.has(name)) {
+      warnedKeys.add(name)
+      emitWarn(`key:${name}:none`, `spanMethod 键 "${name}" 无匹配列，声明忽略`)
+    }
+
+    return byField
+  }
+
+  if (byField.length > 1 && !warnedKeys.has(name)) {
+    warnedKeys.add(name)
+    emitWarn(
+      `key:${name}:multi`,
+      `spanMethod 键 "${name}" 按 field 命中 ${byField.length} 列（field 定位不可靠），作用于全部匹配列`
+    )
+  }
+
+  return byField
+}
+
+/** 值形态归一（§2.3 规则 3）：number → { rowspan: n } 糖；对象取 rowspan/colspan
+    （colspan 支持 'rest' 透传）；其余形态警告后返回 null（整条丢弃） */
+function normalizeSpanValue (raw, row, colIndex, emitWarn) {
+  if (typeof raw === 'number') return { rowspan: raw, colspan: 1 }
+
+  if (raw != null && typeof raw === 'object') {
+    return {
+      rowspan: raw.rowspan ?? 1,
+      colspan: raw.colspan != null ? (raw.colspan === 'rest' ? 'rest' : raw.colspan) : 1
+    }
+  }
+
+  emitWarn(`${row}|${colIndex}|invalid`, `spanMethod 声明值形态无效（${row}, ${colIndex}），整条丢弃`)
+
+  return null
+}
+
+/** 跨度校验：rowspan / colspan（非 'rest'）均须 ≥1 整数，否则警告后返回 null */
+function validateSpanSize ({ rowspan, colspan }, row, colIndex, emitWarn) {
+  if (!Number.isInteger(rowspan) || rowspan < 1) {
+    emitWarn(
+      `${row}|${colIndex}|rowspan`,
+      `spanMethod rowspan=${rowspan} 非 ≥1 整数（${row}, ${colIndex}），整条丢弃`
+    )
+
+    return null
+  }
+
+  if (colspan !== 'rest' && (!Number.isInteger(colspan) || colspan < 1)) {
+    emitWarn(
+      `${row}|${colIndex}|colspan`,
+      `spanMethod colspan=${colspan} 非 ≥1 整数（${row}, ${colIndex}），整条丢弃`
+    )
+
+    return null
+  }
+
+  return { rowspan, colspan }
+}
+
+/** 值形态解析（§2.3 规则 3 组合）：归一 → 校验；任一失败整条丢弃（警告） */
+function parseSize (raw, row, colIndex, emitWarn) {
+  const normalized = normalizeSpanValue(raw, row, colIndex, emitWarn)
+
+  return normalized ? validateSpanSize(normalized, row, colIndex, emitWarn) : null
+}
+
+/** 'rest' 展开与固定列边界夹紧（§3.2 规则 2，占用检查之前完成）：主格在固定列区
+    → 展开到 fixedCount，滚动区 → 总末列；固定区内越界夹紧 + clamp 警告 */
+function resolveDeclaredColspan (size, colIndex, fixed, colCount, row, emitWarn) {
+  const partitionEnd = colIndex < fixed ? fixed : colCount
+
+  if (size.colspan === 'rest') return partitionEnd - colIndex
+
+  if (colIndex + size.colspan > partitionEnd) {
+    if (colIndex < fixed) {
+      emitWarn(
+        `${row}|${colIndex}|clamp`,
+        `spanMethod colspan=${size.colspan} 跨固定列边界（${row}, ${colIndex}），夹紧到固定区末列`
+      )
+    }
+
+    return partitionEnd - colIndex
+  }
+
+  return size.colspan
+}
+
+/** 错误消息兜底：Error.message / 原值串化（throw 警告文案内嵌） */
+function errorMessageOf (err) {
+  return err?.message ?? err
 }
 
 /** 入口 B —— 表格级 spanMethod（§2.3）：每行调用一次（O(rows)），返回该行作为
@@ -172,98 +303,15 @@ function applySpanMethod (ctx, index, occupied) {
   const { records, columns, spanMethod, recordsOffset, rowCount, fixed, emitWarn, takenOver } = ctx
   const warnedKeys = new Set()
 
-  /** 键解析：先 column.key 精确匹配；否则 field 匹配全部列（命中多列警告一次/键，
-      无匹配列忽略 + 警告一次/键）。返回命中的列下标数组 */
-  const resolveDeclColumns = name => {
-    const byKey = []
-
-    for (let i = 0; i < columns.length; i++) {
-      if (columns[i]?.key === name) byKey.push(i)
-    }
-
-    if (byKey.length) return byKey
-
-    const byField = []
-
-    for (let i = 0; i < columns.length; i++) {
-      if (columns[i]?.field === name) byField.push(i)
-    }
-
-    if (!byField.length) {
-      if (!warnedKeys.has(name)) {
-        warnedKeys.add(name)
-        emitWarn(`key:${name}:none`, `spanMethod 键 "${name}" 无匹配列，声明忽略`)
-      }
-
-      return byField
-    }
-
-    if (byField.length > 1 && !warnedKeys.has(name)) {
-      warnedKeys.add(name)
-      emitWarn(
-        `key:${name}:multi`,
-        `spanMethod 键 "${name}" 按 field 命中 ${byField.length} 列（field 定位不可靠），作用于全部匹配列`
-      )
-    }
-
-    return byField
-  }
-
-  /** 值形态解析（§2.3 规则 3）：number → { rowspan: n } 糖；对象取 rowspan/colspan
-      （colspan 支持 'rest'）；非 ≥1 整数（含 0）→ 整条丢弃 + 警告 */
-  const parseSize = (raw, row, colIndex) => {
-    let rowspan = 1
-    let colspan = 1
-
-    if (typeof raw === 'number') {
-      rowspan = raw
-    } else if (raw != null && typeof raw === 'object') {
-      rowspan = raw.rowspan ?? 1
-
-      if (raw.colspan != null) colspan = raw.colspan === 'rest' ? 'rest' : raw.colspan
-    } else {
-      emitWarn(`${row}|${colIndex}|invalid`, `spanMethod 声明值形态无效（${row}, ${colIndex}），整条丢弃`)
-
-      return null
-    }
-
-    if (!Number.isInteger(rowspan) || rowspan < 1) {
-      emitWarn(
-        `${row}|${colIndex}|rowspan`,
-        `spanMethod rowspan=${rowspan} 非 ≥1 整数（${row}, ${colIndex}），整条丢弃`
-      )
-
-      return null
-    }
-
-    if (colspan !== 'rest' && (!Number.isInteger(colspan) || colspan < 1)) {
-      emitWarn(
-        `${row}|${colIndex}|colspan`,
-        `spanMethod colspan=${colspan} 非 ≥1 整数（${row}, ${colIndex}），整条丢弃`
-      )
-
-      return null
-    }
-
-    return { rowspan, colspan }
-  }
-
   for (let row = 0; row < rowCount; row++) {
     let declared = null
 
     try {
-      declared = spanMethod({
-        record: records[row],
-        recordIndex: row,
-        recordNumber: (recordsOffset || 0) + row + 1,
-        prevRecord: row > 0 ? records[row - 1] : null,
-        nextRecord: row < rowCount - 1 ? records[row + 1] : null,
-        columns
-      })
+      declared = spanMethod(buildSpanInfo(records, columns, row, rowCount, recordsOffset))
     } catch (err) {
       emitWarn(
         `spanMethod:${row}:throw`,
-        `spanMethod 行 ${row} 抛出异常（${err?.message ?? err}），该行按 null 处理`
+        `spanMethod 行 ${row} 抛出异常（${errorMessageOf(err)}），该行按 null 处理`
       )
 
       continue
@@ -272,7 +320,7 @@ function applySpanMethod (ctx, index, occupied) {
     if (declared == null || typeof declared !== 'object') continue
 
     for (const name of Object.keys(declared)) {
-      for (const colIndex of resolveDeclColumns(name)) {
+      for (const colIndex of resolveDeclColumns(columns, name, warnedKeys, emitWarn)) {
         // 列级接管（§2.4）：返回某列键即接管，该列 autoRowSpan 对全表失效
         takenOver.add(colIndex)
 
@@ -287,29 +335,11 @@ function applySpanMethod (ctx, index, occupied) {
           continue
         }
 
-        const size = parseSize(declared[name], row, colIndex)
+        const size = parseSize(declared[name], row, colIndex, emitWarn)
 
         if (!size) continue
 
-        // 'rest' 展开与固定列边界夹紧在占用检查之前完成（§3.2 规则 2）：
-        // 主格在固定列区 → 展开到 fixedCount，滚动区 → 总末列
-        const partitionEnd = colIndex < fixed ? fixed : columns.length
-        let colspan
-
-        if (size.colspan === 'rest') {
-          colspan = partitionEnd - colIndex
-        } else if (colIndex + size.colspan > partitionEnd) {
-          if (colIndex < fixed) {
-            emitWarn(
-              `${row}|${colIndex}|clamp`,
-              `spanMethod colspan=${size.colspan} 跨固定列边界（${row}, ${colIndex}），夹紧到固定区末列`
-            )
-          }
-
-          colspan = partitionEnd - colIndex
-        } else {
-          colspan = size.colspan
-        }
+        const colspan = resolveDeclaredColspan(size, colIndex, fixed, columns.length, row, emitWarn)
 
         registerRegion(
           index,
@@ -324,16 +354,17 @@ function applySpanMethod (ctx, index, occupied) {
   }
 }
 
-/** 入口 A —— 列级 autoRowSpan（§2.2）：true（显示值含 mappings）/ string 字段键 /
-    Function 键；Object.is 键比较；空值不参与且为分段边界；级联分段（右侧列分段在
-    左侧列分段起点处切断）；树父链切断（levels 变化或 parentKeys 不同）；
-    spanMethod 占用格切断且分段不跨过 */
-function applyAutoRowSpan (ctx, index, occupied) {
-  const { records, columns, rowCount, flatInfo, orderBy, emitWarn, takenOver } = ctx
-  const levels = flatInfo?.levels
-  const parentKeys = flatInfo?.parentKeys
-  const isTree = levels != null
+/** autoRowSpan 键提取（§2.2 三形态）：true → 显示值（含 mappings）；string → 字段值；
+    Function → 行级求值 */
+function autoSpanKeyOf (col, mode, record) {
+  if (mode === true) return displayValueOf(col, record)
 
+  return typeof mode === 'function' ? mode(record) : record?.[mode]
+}
+
+/** 收集启用中的 autoRowSpan 列下标（takenOver 过滤 + info/orderBy 警告一次） */
+function collectAutoRowSpanColumns (ctx) {
+  const { columns, emitWarn, takenOver } = ctx
   const autoCols = []
 
   for (let i = 0; i < columns.length; i++) {
@@ -342,7 +373,7 @@ function applyAutoRowSpan (ctx, index, occupied) {
     if (mode == null) continue
 
     // 列级接管（§2.4/§7）：spanMethod 在任一行返回了该列键 → autoRowSpan 全表失效
-    //（info 一次/列；同一列一部分自动、一部分手写会产出不可预期的缺口，禁止混用）
+    // （info 一次/列；同一列一部分自动、一部分手写会产出不可预期的缺口，禁止混用）
     if (takenOver.has(i)) {
       emitWarn(
         `takenOver:${i}`,
@@ -355,20 +386,78 @@ function applyAutoRowSpan (ctx, index, occupied) {
     autoCols.push(i)
   }
 
-  if (!autoCols.length) return
-
-  if (orderBy) {
+  if (autoCols.length && ctx.orderBy) {
     emitWarn(
       'orderBy:autoRowSpan',
       'orderBy 非空且存在启用中的 autoRowSpan：合并依赖当前行序，排序后的合并块可能无意义（不自动关闭排序）'
     )
   }
 
-  const keyOf = (col, mode, record) => {
-    if (mode === true) return displayValueOf(col, record)
+  return autoCols
+}
 
-    return typeof mode === 'function' ? mode(record) : record?.[mode]
+/** 树父链切断判定（§2.2 规则 4）：树关或首行早退；层级变化或父链（parentKeys
+    祖先链）不同的相邻行处切断（parentKeys 由 tree.js buildFlatRows 产出） */
+function isTreeBoundary (levels, parentKeys, row) {
+  if (levels == null || row === 0) return false
+
+  return levels[row] !== levels[row - 1] ||
+    !Object.is(parentKeys?.[row], parentKeys?.[row - 1])
+}
+
+/** 级联分段判定（§2.2 规则 3）：右侧列的分段在左侧任一 autoRowSpan 列的分段
+    起点处强制切断（autoCols 升序处理，左列起点已定） */
+function isCascadeBoundary (segStartByCol, autoCols, colIndex, row) {
+  for (const earlier of autoCols) {
+    if (earlier >= colIndex) break
+
+    if (segStartByCol.get(earlier) === row) return true
   }
+
+  return false
+}
+
+/** true 形态取到非原始值判定（tag/link/button 等图形/条目列丢弃依据） */
+function isNonPrimitiveSpanKey (mode, key) {
+  return mode === true && typeof key === 'object'
+}
+
+/** true 形态取到数组/对象等非原始值（tag/link/button 等图形/条目列）的警告：
+    Object.is 恒不相等，不会产生任何合并 + 警告一次/列（trueWarned 去重） */
+function warnNonPrimitiveKey (col, colIndex, trueWarned, emitWarn) {
+  if (trueWarned.has(colIndex)) return
+
+  trueWarned.add(colIndex)
+  emitWarn(
+    `autoRowSpan:true:${colIndex}`,
+    `列 ${colIndex}${col.field ? `（${col.field}）` : ''} autoRowSpan true 形态取到非原始值，不会产生任何合并，请改用 string 或 Function 键`
+  )
+}
+
+/** 段推进（§2.2 键比较）：与当前段键不同 → 闭合当前段（close 回调）；
+    未开段（含刚闭合）→ 开段并记录分段起点。seg 每列创建一次（非每行分配） */
+function advanceSegment (seg, key, row, segStartByCol, colIndex, close) {
+  if (seg.openFrom >= 0 && !Object.is(key, seg.openKey)) close(row)
+
+  if (seg.openFrom < 0) {
+    seg.openFrom = row
+    seg.openKey = key
+    segStartByCol.set(colIndex, row)
+  }
+}
+
+/** 入口 A —— 列级 autoRowSpan（§2.2）：true（显示值含 mappings）/ string 字段键 /
+    Function 键；Object.is 键比较；空值不参与且为分段边界；级联分段（右侧列分段在
+    左侧列分段起点处切断）；树父链切断（levels 变化或 parentKeys 不同）；
+    spanMethod 占用格切断且分段不跨过 */
+function applyAutoRowSpan (ctx, index, occupied) {
+  const { records, columns, rowCount, flatInfo, emitWarn } = ctx
+  const autoCols = collectAutoRowSpanColumns(ctx)
+
+  if (!autoCols.length) return
+
+  const levels = flatInfo?.levels
+  const parentKeys = flatInfo?.parentKeys
 
   // 各 autoRowSpan 列最近一次分段起点（列序处理，右侧列级联切断的判定源；
   // close 后保留——分段起点不因段结束而消失，即使段长 1 也成立）
@@ -378,22 +467,21 @@ function applyAutoRowSpan (ctx, index, occupied) {
   for (const colIndex of autoCols) {
     const col = columns[colIndex]
     const mode = col._autoRowSpan
-    let openFrom = -1
-    let openKey
+    const seg = { openFrom: -1, openKey: undefined }
 
     const close = endRowExclusive => {
-      if (openFrom >= 0 && endRowExclusive - openFrom >= 2) {
+      if (seg.openFrom >= 0 && endRowExclusive - seg.openFrom >= 2) {
         registerRegion(
           index,
           occupied,
-          { row: openFrom, col: colIndex, rowspan: endRowExclusive - openFrom, colspan: 1 },
+          { row: seg.openFrom, col: colIndex, rowspan: endRowExclusive - seg.openFrom, colspan: 1 },
           rowCount,
           emitWarn,
-          `${openFrom}|${colIndex}`
+          `${seg.openFrom}|${colIndex}`
         )
       }
 
-      openFrom = -1
+      seg.openFrom = -1
     }
 
     for (let row = 0; row < rowCount; row++) {
@@ -405,30 +493,13 @@ function applyAutoRowSpan (ctx, index, occupied) {
         continue
       }
 
-      // 树模式（§2.2 规则 4）：分段在层级变化或父链（parentKeys 祖先链）不同的
-      // 相邻行处切断（parentKeys 由 tree.js buildFlatRows 产出，单一事实源）
-      if (
-        isTree &&
-        row > 0 &&
-        (levels[row] !== levels[row - 1] ||
-          !Object.is(parentKeys?.[row], parentKeys?.[row - 1]))
-      ) {
-        close(row)
-      }
+      // 树父链切断（§2.2 规则 4）
+      if (isTreeBoundary(levels, parentKeys, row)) close(row)
 
-      // 级联分段（§2.2 规则 3）：右侧列的分段在左侧任一 autoRowSpan 列的分段
-      // 起点处强制切断（autoCols 升序处理，左列起点已定）
-      for (const earlier of autoCols) {
-        if (earlier >= colIndex) break
+      // 级联分段（§2.2 规则 3）
+      if (isCascadeBoundary(segStartByCol, autoCols, colIndex, row)) close(row)
 
-        if (segStartByCol.get(earlier) === row) {
-          close(row)
-
-          break
-        }
-      }
-
-      const key = keyOf(col, mode, records[row])
+      const key = autoSpanKeyOf(col, mode, records[row])
 
       // 空值（null/undefined/''）不参与合并，同时作为分段边界（小计行隔离）
       if (isEmptyKey(key)) {
@@ -437,30 +508,16 @@ function applyAutoRowSpan (ctx, index, occupied) {
         continue
       }
 
-      // true 形态取到数组/对象等非原始值（tag/link/button 等图形/条目列）：
-      // Object.is 恒不相等，不会产生任何合并 + 警告一次/列
-      if (mode === true && typeof key === 'object') {
-        if (!trueWarned.has(colIndex)) {
-          trueWarned.add(colIndex)
-          emitWarn(
-            `autoRowSpan:true:${colIndex}`,
-            `列 ${colIndex}${col.field ? `（${col.field}）` : ''} autoRowSpan true 形态取到非原始值，不会产生任何合并，请改用 string 或 Function 键`
-          )
-        }
-
+      // true 形态非原始值：不产生任何合并 + 警告一次/列
+      if (isNonPrimitiveSpanKey(mode, key)) {
+        warnNonPrimitiveKey(col, colIndex, trueWarned, emitWarn)
         close(row)
 
         continue
       }
 
-      // Object.is 键比较：与当前段键不同 → 分段边界
-      if (openFrom >= 0 && !Object.is(key, openKey)) close(row)
-
-      if (openFrom < 0) {
-        openFrom = row
-        openKey = key
-        segStartByCol.set(colIndex, row)
-      }
+      // Object.is 键比较：与当前段键不同 → 闭合当前段；未开段 → 开段（advanceSegment 全程）
+      advanceSegment(seg, key, row, segStartByCol, colIndex, close)
     }
 
     close(rowCount)

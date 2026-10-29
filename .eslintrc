@@ -17,6 +17,10 @@
     "es6": true,
     "vue/setup-compiler-macros": true
   },
+  // 构建注入全局：库（vite.config.js define）与 demo（vite.demo.config.js define）均注入 __version__
+  "globals": {
+    "__version__": "readonly"
+  },
   "rules": {
     "vue/html-indent": [
       "warn",

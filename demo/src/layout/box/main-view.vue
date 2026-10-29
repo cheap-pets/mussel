@@ -6,9 +6,15 @@
       :code="basicCode">
       <div class="demo-palette-wrap">
         <mu-h-box gap="1x">
-          <div class="demo-block">1</div>
-          <div class="demo-block">2</div>
-          <div class="demo-block">3</div>
+          <div class="demo-block">
+            1
+          </div>
+          <div class="demo-block">
+            2
+          </div>
+          <div class="demo-block">
+            3
+          </div>
         </mu-h-box>
       </div>
     </demo-section>
@@ -18,9 +24,15 @@
       note="mu-v-box 纵向排列；flex-center 同时居中对齐主轴与交叉轴">
       <div class="demo-palette-wrap" style="height: 160px;">
         <mu-v-box gap="half" style="height: 100%;">
-          <div class="demo-block">1</div>
-          <div class="demo-block">2</div>
-          <div class="demo-block">3</div>
+          <div class="demo-block">
+            1
+          </div>
+          <div class="demo-block">
+            2
+          </div>
+          <div class="demo-block">
+            3
+          </div>
         </mu-v-box>
       </div>
     </demo-section>
@@ -30,25 +42,41 @@
       note="gap 间距、flex-wrap 换行、flex-center 居中、align-items / justify-content 对齐、inline 行内、flex-reverse 反向">
       <div class="demo-col">
         <mu-h-box gap="half" flex-wrap style="width: 320px;">
-          <div v-for="i in 8" :key="i" class="demo-block demo-block--sm">{{ i }}</div>
+          <div v-for="i in 8" :key="i" class="demo-block demo-block--sm">
+            {{ i }}
+          </div>
         </mu-h-box>
         <div class="demo-palette-wrap" style="height: 120px;">
           <mu-h-box flex-center class="w-full h-full">
-            <div class="demo-block">center</div>
+            <div class="demo-block">
+              center
+            </div>
           </mu-h-box>
         </div>
         <mu-h-box align-items="end" justify-content="space-between">
-          <div class="demo-block demo-block--sm">start</div>
-          <div class="demo-block demo-block--sm">end</div>
+          <div class="demo-block demo-block--sm">
+            start
+          </div>
+          <div class="demo-block demo-block--sm">
+            end
+          </div>
         </mu-h-box>
         <mu-h-box flex-reverse gap="half">
-          <div class="demo-block demo-block--sm">1</div>
-          <div class="demo-block demo-block--sm">2</div>
-          <div class="demo-block demo-block--sm">3</div>
+          <div class="demo-block demo-block--sm">
+            1
+          </div>
+          <div class="demo-block demo-block--sm">
+            2
+          </div>
+          <div class="demo-block demo-block--sm">
+            3
+          </div>
         </mu-h-box>
         <div>
           <mu-h-box inline gap="half" class="demo-inline-box">
-            <div class="demo-block demo-block--sm">inline</div>
+            <div class="demo-block demo-block--sm">
+              inline
+            </div>
           </mu-h-box>
           <span class="demo-log">（inline 盒与文本同行）</span>
         </div>
@@ -70,11 +98,19 @@
           <span>Right</span>
         </mu-h-box>
         <mu-h-box gap="1x" flex-wrap style="width: 280px;">
-          <div class="demo-block demo-block--sm">1</div>
-          <div class="demo-block demo-block--sm">2</div>
+          <div class="demo-block demo-block--sm">
+            1
+          </div>
+          <div class="demo-block demo-block--sm">
+            2
+          </div>
           <mu-flex-break />
-          <div class="demo-block demo-block--sm">3</div>
-          <div class="demo-block demo-block--sm">4</div>
+          <div class="demo-block demo-block--sm">
+            3
+          </div>
+          <div class="demo-block demo-block--sm">
+            4
+          </div>
         </mu-h-box>
       </div>
     </demo-section>
@@ -84,17 +120,29 @@
       note="flex / flex-col / gap-* / items-* / justify-* / flex-1 等原子类可直接用于普通元素，与组件生成相同类名">
       <div class="demo-col">
         <div class="flex flex-col gap-half">
-          <div class="demo-block demo-block--sm">flex-col</div>
-          <div class="demo-block demo-block--sm">gap-half</div>
+          <div class="demo-block demo-block--sm">
+            flex-col
+          </div>
+          <div class="demo-block demo-block--sm">
+            gap-half
+          </div>
         </div>
         <div class="flex items-center gap-1x">
-          <div class="demo-block demo-block--sm">A</div>
-          <div class="demo-block demo-block--sm">B</div>
+          <div class="demo-block demo-block--sm">
+            A
+          </div>
+          <div class="demo-block demo-block--sm">
+            B
+          </div>
           <span class="demo-log">items-center + gap-1x</span>
         </div>
         <div class="flex" style="height: 80px;">
-          <div class="demo-block demo-block--sm flex-none" style="width: 80px;">fixed</div>
-          <div class="demo-block demo-block--sm flex-1">flex-1</div>
+          <div class="demo-block demo-block--sm flex-none" style="width: 80px;">
+            fixed
+          </div>
+          <div class="demo-block demo-block--sm flex-1">
+            flex-1
+          </div>
         </div>
       </div>
     </demo-section>
@@ -103,11 +151,17 @@
       title="边界与回归"
       note="header / content / footer 经典结构：固定头尾 + flex-1 内容区自适应，内容超出时内部滚动">
       <div class="demo-frame flex flex-col">
-        <div class="flex-none px-2x py-1x border-b border-soft">header</div>
-        <div class="flex-1 p-2x" style="overflow: auto;">
-          <p v-for="i in 20" :key="i">line {{ i }}</p>
+        <div class="flex-none px-2x py-1x border-b border-soft">
+          header
         </div>
-        <div class="flex-none px-2x py-1x border-t border-soft">footer</div>
+        <div class="flex-1 p-2x" style="overflow: auto;">
+          <p v-for="i in 20" :key="i">
+            line {{ i }}
+          </p>
+        </div>
+        <div class="flex-none px-2x py-1x border-t border-soft">
+          footer
+        </div>
       </div>
     </demo-section>
   </demo-page>

@@ -367,6 +367,8 @@ function regionWidthOf (region, widths) {
     hasArrayValues（模式判定输入）。spans（§5.6 分层数据链，缺省 null 零成本）：
     covered 格与 rowspan>1 主格整格排除（不参与行高，也不得触发 hasArrayValues
     变高模式升级），rowspan===1 的 colspan 主格按区域宽参与 */
+// 每行热路径：拆分会引入参数打包与函数调用开销，复杂度收益低于回归风险（02-optimize A 线裁定 #2②）
+// eslint-disable-next-line complexity
 export function computeRowHeights ({
   records,
   columns,

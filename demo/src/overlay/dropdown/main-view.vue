@@ -16,7 +16,9 @@
           dropdown-trigger="hover"
           :dropdown-items="artists"
           @dropdown:itemclick="onItemClick">
-          <mu-button button-style="outline">悬停打开下拉</mu-button>
+          <mu-button button-style="outline">
+            悬停打开下拉
+          </mu-button>
         </mu-dropdown>
         <span class="demo-log">最近选择：{{ lastPicked }}</span>
       </div>
@@ -139,10 +141,14 @@
           @dropdown:hide="logEvent('dropdown:hide')"
           @dropdown:itemclick="onItemClick"
           @action="onAction">
-          <mu-button button-style="outline">Ref Dropdown</mu-button>
+          <mu-button button-style="outline">
+            Ref Dropdown
+          </mu-button>
         </mu-dropdown>
       </div>
-      <div class="demo-log demo-log--block">{{ eventLog || '（暂无事件）' }}</div>
+      <div class="demo-log demo-log--block">
+        {{ eventLog || '（暂无事件）' }}
+      </div>
     </demo-section>
 
     <demo-section
@@ -152,7 +158,9 @@
       vertical>
       <div class="demo-row">
         <mu-dropdown dropdown-disabled :dropdown-items="artists">
-          <mu-button disabled>Disabled</mu-button>
+          <mu-button disabled>
+            Disabled
+          </mu-button>
         </mu-dropdown>
         <mu-dropdown-button caption="短文本 Options 下拉宽度测试" :dropdown-items="shortOptions" />
         <mu-dropdown-button

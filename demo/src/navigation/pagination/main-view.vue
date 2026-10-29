@@ -86,7 +86,7 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
-  const basicCode = `<mu-pagination v-model:page-index="page" :total="200" />`
+  const basicCode = '<mu-pagination v-model:page-index="page" :total="200" />'
 
   const page = ref(0)
   const page2 = ref(0)

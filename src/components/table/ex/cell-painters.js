@@ -3,13 +3,12 @@ import { ensureFn } from '@/utils/type'
 import { resolveColumnType } from '../column-types'
 import { wrapLines, ellipsize, cellFontOf, MAX_LINES_LIMIT } from './text-wrap'
 import { isMappableColumnType, createDisplayMapper } from '../mappings'
-import { isExpandedKey } from './tree'
+import { expandableAt, isExpandedKey } from './tree'
 import {
   TREE_INDENT,
   CELL_PADDING_FALLBACK,
   ROW_TOP_INSET,
   ROW_HEIGHT_FALLBACK,
-  FONT_SIZE_FALLBACK,
   CHECK_SIZE,
   CHECK_RADIUS,
   CHECK_FONT_SIZE,
@@ -136,6 +135,28 @@ function createColumnRender (column, type, canvasOnlyKind) {
   return type.compile ? type.compile(column) : (type.render || type)
 }
 
+/** 行数上限求值闭包构建（maxLines 常量优先 → multiline+lineClamp 行级求值 → 单行）：
+    产物 _resolveMaxLines(record) 为 drawText、行高计算、editor textarea 判定同源；
+    不在列准备期求值（无 record，行高/绘制分裂） */
+function resolveMaxLinesBuilder (column, maxLines) {
+  if (maxLines != null) return () => maxLines
+
+  if (column.multiline) {
+    const getLineClamp = ensureFn(column.lineClamp)
+
+    return record => clampLimit(getLineClamp(record) ?? MAX_LINES_LIMIT, MAX_LINES_LIMIT)
+  }
+
+  return () => 1
+}
+
+/** 纯文本直渲短路判定（P2）：非 multiline 原生 text 列，compile 产物恒
+    ({value}) => ({text: value})，可跳过 render 调用 */
+function isPlainTextColumn (column, canvasOnlyKind) {
+  return !column.text && !column.multiline && !canvasOnlyKind &&
+    (column.type == null || column.type === '' || column.type === 'text')
+}
+
 // 列定义 → 内部列：解析缺省 align、ensureFn 化 text/value、构建 render、canvas 专属
 // 类型分发、挂 maxLines/maxItems/树形列标记与映射字段；placeholder 继承表格级
 export function prepareColumn (column, { placeholder } = {}) {
@@ -149,24 +170,14 @@ export function prepareColumn (column, { placeholder } = {}) {
   col._text = ensureFn(column.text)
   col._value = ensureFn(column.value)
 
-  // 多行/条目上限：_resolveMaxLines(record) 行级求值闭包（drawText、行高计算、
-  // editor textarea 判定同源）；不在列准备期求值（无 record，行高/绘制分裂）
+  // 多行/条目上限（clampLimit 钳制 1–10，非法值回退）
   col._maxLines = column.maxLines != null ? clampLimit(column.maxLines, null) : null
   col._maxItems = clampLimit(column.maxItems ?? MAX_LINES_LIMIT, MAX_LINES_LIMIT)
   col._isTreeColumn = column.treeNode === true
   // 合并单元格列级声明（02-design.md §2.2）：true（显示值键）| string 字段键 |
   // Function 键，spans.buildSpans 消费（spans.js 不 import 本模块，取值链自持）
   col._autoRowSpan = column.autoRowSpan
-
-  if (col._maxLines != null) {
-    col._resolveMaxLines = () => col._maxLines
-  } else if (column.multiline) {
-    const getLineClamp = ensureFn(column.lineClamp)
-
-    col._resolveMaxLines = record => clampLimit(getLineClamp(record) ?? MAX_LINES_LIMIT, MAX_LINES_LIMIT)
-  } else {
-    col._resolveMaxLines = () => 1
-  }
+  col._resolveMaxLines = resolveMaxLinesBuilder(column, col._maxLines)
 
   const canvasOnlyKind = CANVAS_ONLY_TYPES[column.type] ? column.type : null
 
@@ -175,10 +186,7 @@ export function prepareColumn (column, { placeholder } = {}) {
   // 显示映射（mappings 优先，仅 options 时由其转换；column.text 显示优先不参与
   // 映射——valueOf 无 _text 分支，挂映射会行高与文本分裂）
   col._mapText = !column.text && isMappableColumnType(column.type) ? createDisplayMapper(column) : null
-  // 纯文本直渲短路标记（P2）：非 multiline 原生 text 列，compile 产物恒
-  // ({value}) => ({text: value})，可跳过 render 调用
-  col._plainText = !column.text && !column.multiline && !canvasOnlyKind &&
-    (column.type == null || column.type === '' || column.type === 'text')
+  col._plainText = isPlainTextColumn(column, canvasOnlyKind)
 
   col.placeholder ??= placeholder
 
@@ -431,6 +439,72 @@ function measureOf (ctx, measure) {
   }
 }
 
+// —— 文本光学居中锚（20261029 问题 1） ——
+// canvas 'middle' 基线按 em 方框中点定位，与 DOM 行框（字体 ascent/descent，
+// 如 .mu-tag 的 inline-flex + line-height:1）居中口径不同，CJK 字形群系统性
+// 偏上（实测 12px 雅黑链偏 1~2px）。改以 alphabetic 基线 + fontBoundingBox
+// 度量半差补偿，使字形框中点对齐槽位 centerY（与 DOM 行框居中同口径）。
+// 偏移按 font 串缓存取整（主题字体有限，无需淘汰；与既有整数锚一致防亚像素模糊）。
+// 度量不可得（fontBoundingBoxAscent/Descent 缺失或 ctx 无 measureText——自检
+// width-only stub ctx）时回退 { y: centerY, baseline: 'middle' }，行为等同修复前。
+// 注意一：fontBoundingBox 口径随 ctx.textBaseline 当前值变化（middle 状态下返回
+// 相对 em 中点的换算值而非 ascent/descent 本身），测量必须在 alphabetic 状态下取。
+// 注意二：缓存键并入 ctx 实例级「可度量」能力位——真 canvas 与 width-only stub
+// 同 font 串时能力不同，防止真 ctx 条目污染 stub 的回退路径。
+const textAnchorCache = new Map()
+
+/**
+ * ctx 可度量探测（实例级一次）：measureText('') 在 alphabetic 状态下能取到
+ * 有限 fontBoundingBoxAscent/Descent 才走补偿路径。
+ */
+function probeTextMetricsCapable (ctx) {
+  if (typeof ctx.measureText !== 'function') return false
+
+  const prevBaseline = ctx.textBaseline
+
+  ctx.textBaseline = 'alphabetic'
+  const metrics = ctx.measureText('')
+  ctx.textBaseline = prevBaseline
+
+  return Number.isFinite(metrics?.fontBoundingBoxAscent) && Number.isFinite(metrics?.fontBoundingBoxDescent)
+}
+
+/**
+ * 文本光学居中锚：全部单元格文本 fillText 站点共用（槽位 centerY 的字形
+ * 光学居中换算）。
+ * @param {CanvasRenderingContext2D} ctx 已设 ctx.font 的绘制上下文
+ * @param {Number} centerY 槽位中心（drawCell 槽位锚）
+ * @returns {{ y: Number, baseline: 'alphabetic' | 'middle' }}
+ */
+function centeredTextAnchor (ctx, centerY) {
+  if (ctx.__muTextAnchorCapable == null) {
+    ctx.__muTextAnchorCapable = probeTextMetricsCapable(ctx)
+  }
+
+  const key = ctx.__muTextAnchorCapable ? ctx.font : `stub:${ctx.font}`
+  let offset = textAnchorCache.get(key)
+
+  if (offset === undefined) {
+    offset = null
+
+    if (ctx.__muTextAnchorCapable) {
+      const prevBaseline = ctx.textBaseline
+
+      ctx.textBaseline = 'alphabetic'
+      const metrics = ctx.measureText('')
+      ctx.textBaseline = prevBaseline
+      offset = Math.round((metrics.fontBoundingBoxAscent - metrics.fontBoundingBoxDescent) / 2)
+    }
+
+    textAnchorCache.set(key, offset)
+  }
+
+  // 度量缺失（null）→ 'middle' 原行为
+  return offset == null
+    ? { y: centerY, baseline: 'middle' }
+    : { y: centerY + offset, baseline: 'alphabetic' }
+}
+
 /** 文本水平锚点：center 锚扣本格右缘列线占用 rightInset（painter 注入），left/right 不动 */
 function textAnchorX (rect, align, padding, rightInset) {
   return align === 'right'
@@ -470,7 +544,12 @@ function drawTextValue (ctx, rect, display, align, {
     ctx.fillStyle = theme?.textColor
     ctx.textAlign = align
 
-    let y = centerY
+    // 首行光学居中锚（问题 1），后续行 += lineHeight
+    const anchor = centeredTextAnchor(ctx, centerY)
+
+    ctx.textBaseline = anchor.baseline
+
+    let y = anchor.y
 
     for (const line of lines) {
       ctx.fillText(line, textAnchorX(rect, align, padding, rightInset), y)
@@ -492,7 +571,11 @@ function drawTextValue (ctx, rect, display, align, {
 
   ctx.fillStyle = theme?.textColor
   ctx.textAlign = align
-  ctx.fillText(single, textAnchorX(rect, align, padding, rightInset), centerY)
+
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+  ctx.fillText(single, textAnchorX(rect, align, padding, rightInset), anchor.y)
 }
 
 /** 数组值多行（文本呈现列）：每元素一行、首行槽位锚、超限第 maxItems 行 '...' */
@@ -511,7 +594,12 @@ function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, m
   ctx.fillStyle = theme?.textColor
   ctx.textAlign = align
 
-  let y = centerY
+  // 首行光学居中锚（问题 1），后续行 += lineHeight
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+
+  let y = anchor.y
 
   for (const element of shown) {
     const { text: line } = ellipsize({ text: String(element ?? ''), font, maxWidth: contentWidth, measure: measureFn })
@@ -545,15 +633,15 @@ export function drawTreeArrow (ctx, x, centerY, expanded, color) {
   ctx.fill()
 }
 
-// 树形列缩进与箭头：内容区前置 level×16 缩进 + 16px 箭头槽（父行三角、叶行空槽）；
+// 树形列缩进与箭头：内容区前置 level×16 缩进 + 16px 箭头槽（可展开行三角——
+// hasChildren 或 isLeaf:false 懒节点，20261029 问题 3；叶行空槽）；
 // 返回内容区应右移的 inset px（与行高估高扣减口径一致），非树形列/树关返回 0
 function drawTreeAffordance (ctx, rect, { col, row, flatInfo, expandedKeys, recordKey, padding, theme, centerY }) {
   if (!col._isTreeColumn || !flatInfo) return 0
 
   const level = flatInfo.levels?.[row] ?? 0
-  const hasChildren = !!flatInfo.hasChildren?.[row]
 
-  if (hasChildren) {
+  if (expandableAt(flatInfo, row)) {
     drawTreeArrow(
       ctx,
       rect.x + padding + level * TREE_INDENT,
@@ -730,8 +818,13 @@ function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, 
   if (kind === 'check') return CHECK_SIZE
 
   if (kind === 'img') {
+    const src = item.attrs?.src
+
+    // 空 src 不发起请求（绘制端 drawCellImage 同款守卫，:1265）
+    if (!src) return null
+
     // img 分支内建 onImageLoad 闭包（P1b：其余格零闭包分配）
-    const entry = requestImage(item.attrs?.src, onImageLoad ? () => onImageLoad(row, colIndex) : undefined)
+    const entry = requestImage(src, onImageLoad ? () => onImageLoad(row, colIndex) : undefined)
 
     // 加载中 / 失败按空格处理（不占位；加载完成后经回调触发重绘）
     if (entry.status !== 'loaded') return null
@@ -778,9 +871,10 @@ function drawItem (ctx, item, x, centerY, {
   })
 }
 
-/** link 悬停下划线 y（drawLinkEntry 与 drawItemText 共用单函数防公式漂移） */
-function linkUnderlineY (anchorY, fontSize) {
-  return anchorY + Math.round(fontSize * 0.35) + 2
+/** link 悬停下划线 y（drawLinkEntry 与 drawItemText 共用单函数防公式漂移）：
+    基线（alphabetic 锚，问题 1）下 2px——CJK descent ≈ 0.12em < 2px，不下穿字形 */
+function linkUnderlineY (anchorY) {
+  return anchorY + 2
 }
 
 /** 行框高（--cell-line-height 快照缺省回退 18）：三条文本绘制路径同源 */
@@ -808,14 +902,17 @@ function drawItemText (ctx, item, x, centerY, { maxWidth, theme, measure, color,
   ctx.font = cellFontOf(theme)
   ctx.fillStyle = color
   ctx.textAlign = 'left'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(text, x, centerY)
+
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+  ctx.fillText(text, x, anchor.y)
 
   // link 悬停下划线（问题 7）：1px，宽 = 实绘文本宽（省略后）
   if (hovered) {
     const underlineWidth = Math.min(width, Math.max(0, maxWidth))
 
-    ctx.fillRect(x, linkUnderlineY(centerY, theme?.fontSize || FONT_SIZE_FALLBACK), underlineWidth, 1)
+    ctx.fillRect(x, linkUnderlineY(anchor.y), underlineWidth, 1)
   }
 }
 
@@ -857,9 +954,12 @@ function drawCheck (ctx, item, x, centerY, theme) {
   if (checked) {
     ctx.font = `${CHECK_FONT_SIZE}px ${fontFamilyOf(theme)}`
     ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
+
+    const anchor = centeredTextAnchor(ctx, centerY)
+
+    ctx.textBaseline = anchor.baseline
     ctx.fillStyle = disabled ? theme?.gray : theme?.textColor
-    ctx.fillText('✓', x + CHECK_SIZE / 2, centerY)
+    ctx.fillText('✓', x + CHECK_SIZE / 2, anchor.y)
   }
 
   return CHECK_SIZE
@@ -897,8 +997,11 @@ function drawTag (ctx, item, x, centerY, { maxWidth, theme, measure }) {
 
   ctx.fillStyle = colored?.color ?? theme?.textColor
   ctx.textAlign = 'left'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(text, x + TAG_PADDING_X, centerY)
+
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+  ctx.fillText(text, x + TAG_PADDING_X, anchor.y)
 
   return width
 }
@@ -919,11 +1022,14 @@ function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure, hovere
   ctx.font = cellFontOf(theme)
   ctx.fillStyle = color
   ctx.textAlign = 'left'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(display, x, y)
+
+  const anchor = centeredTextAnchor(ctx, y)
+
+  ctx.textBaseline = anchor.baseline
+  ctx.fillText(display, x, anchor.y)
 
   if (hovered) {
-    ctx.fillRect(x, linkUnderlineY(y, theme?.fontSize || FONT_SIZE_FALLBACK), Math.min(width, Math.max(0, maxWidth)), 1)
+    ctx.fillRect(x, linkUnderlineY(anchor.y), Math.min(width, Math.max(0, maxWidth)), 1)
   }
 
   return Math.min(width, maxWidth)
@@ -1012,13 +1118,16 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure, ce
     ctx.font = labelFont
     ctx.fillStyle = theme?.textColor
     ctx.textAlign = 'right'
-    ctx.textBaseline = 'middle'
+
+    const anchor = centeredTextAnchor(ctx, centerY)
+
+    ctx.textBaseline = anchor.baseline
 
     // 极窄列文本放不下时退化为仅轨道
     if (contentWidth - labelWidth > 0) {
       trackWidth = contentWidth - labelWidth
 
-      ctx.fillText(label, rect.x + rect.width - padding, centerY)
+      ctx.fillText(label, rect.x + rect.width - padding, anchor.y)
     }
   }
 
@@ -1135,8 +1244,11 @@ function drawButtonPill (ctx, button, x, centerY, rightBound, record, theme, fon
 
   ctx.fillStyle = inverted ? theme?.bgNormal : buttonTextOf(theme, colored, disabled)
   ctx.textAlign = 'left'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(text, x + TAG_PADDING_X, centerY)
+
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+  ctx.fillText(text, x + TAG_PADDING_X, anchor.y)
 
   return width
 }

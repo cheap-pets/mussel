@@ -11,6 +11,7 @@
  * 坐标（getBoundingClientRect 差值换算，不用 offsetX）。
  */
 import { colAt, findResizeColumn, rowAt } from './layout'
+import { expandableAt } from './tree'
 import { TREE_INDENT, CELL_PADDING_FALLBACK } from './constants'
 
 /** 拖拽调宽的下限缺省（02-design.md A5：col.minWidth ?? 40） */
@@ -87,19 +88,20 @@ export function hitTest ({
 
 /**
  * 树箭头槽命中判定（02-design.md A3.4 / 评审 6 P3，resolveTreeToggle 与
- * resolveCursor 共用）：树平铺中 + 命中列为树形列（_isTreeColumn）+ 该行有
- * 子级（flatInfo.hasChildren）+ hit.cellX 在箭头槽内（cellX < level×16+16，
- * 内容区相对口径，实施约束 3）。
+ * resolveCursor 共用）：树平铺中 + 命中列为树形列（_isTreeColumn）+ 该行可展开
+ * （tree.expandableAt——hasChildren 或 isLeaf:false 懒节点，20261029 问题 3）+
+ * hit.cellX 在箭头槽内（cellX < level×16+16，内容区相对口径，实施约束 3）。
  *
  * @param {Object} params.hit hitTest 产出（消费 x 之外的 cellX）
  * @param {Array} params.columns 已准备内部列（消费 _isTreeColumn 标记）
- * @param {Object|null} [params.flatInfo] 树平铺信息 { levels, hasChildren }（树关 = null）
+ * @param {Object|null} [params.flatInfo] 树平铺信息 { levels, expandable }（树关 = null；
+ *   旧形态无 expandable 时回退 hasChildren）
  * @returns {Boolean}
  */
 function isTreeArrowSlot ({ hit, columns, flatInfo }) {
   if (!flatInfo || !hit || hit.isHeader || hit.colIndex < 0 || hit.rowIndex < 0) return false
   if (!columns?.[hit.colIndex]?._isTreeColumn) return false
-  if (!flatInfo.hasChildren?.[hit.rowIndex]) return false
+  if (!expandableAt(flatInfo, hit.rowIndex)) return false
 
   const level = flatInfo.levels?.[hit.rowIndex] ?? 0
 
@@ -123,7 +125,7 @@ function isEditableCell (hit, columns, context) {
 /**
  * 指针光标（02-design.md A5 pointermove 行 + A5.3 / 评审 6 P3）：手柄上
  * col-resize；表头可排序列内 pointer；树箭头槽 pointer（context.flatInfo 提供
- * hasChildren 判定，A3.4）；表体可编辑格 text（context.editable +
+ * expandableAt 判定，A3.4/20261029 问题 3）；表体可编辑格 text（context.editable +
  * context.isCellEditableFn，A5.3）；其余 default。context 缺省时行为与既有
  * 两参签名一致（回归安全）。
  *
@@ -305,14 +307,14 @@ export function resolvePointerdown ({ editing, hit }) {
 
 /**
  * 树箭头槽 toggle 决策（02-design.md A3.4/A4.3 序 2 / 评审 6 P3）：树平铺中
- * 命中树形列的箭头槽（isTreeArrowSlot 判定，hit.cellX 槽内 + hasChildren）→
- * 返回 toggle 目标；槽外（cellX 超出槽位）或叶行空槽 → null（走普通单元格
+ * 命中树形列的箭头槽（isTreeArrowSlot 判定，hit.cellX 槽内 + expandableAt）→
+ * 返回 toggle 目标；槽外（cellX 超出槽位）或不可展开行空槽 → null（走普通单元格
  * 点击链）。命中时 toggle 不选中行、不发 cell-click（局部交互，对齐 tree-node
  * __expand-icon 的 pointer-events 隔离）。
  *
  * @param {Object} params.hit hitTest 产出（含 cellX）
  * @param {Array} params.columns 已准备内部列（消费 _isTreeColumn）
- * @param {Object|null} params.flatInfo 树平铺信息 { levels, hasChildren }（树关 = null）
+ * @param {Object|null} params.flatInfo 树平铺信息 { levels, expandable }（树关 = null）
  * @param {*} [params.recordKey] 该行 key（组件壳按树 key 字段解析后传入）
  * @returns {{ row: Number, key: * } | null}
  */

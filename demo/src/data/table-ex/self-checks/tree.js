@@ -16,6 +16,7 @@
 import {
   buildChildrenIndex,
   buildFlatRows,
+  expandableAt,
   resolveInitialExpandedKeys,
   toggleKey
 } from '@/components/table/ex/tree.js'
@@ -357,6 +358,51 @@ export const checks = [
       assertArray(collapsed.parentKeys, [null, null, null], '全收起仅根 → 全 null')
 
       return 'parentKeys [null,1,11,1,null,null]（spans 树父链切断数据源）'
+    }
+  },
+  {
+    name: 'buildFlatRows + expandableAt：isLeafOf 懒节点语义（未映射关闭 / ===false 触发 / ===true 与缺字段不触发 / 有子级不变 / 展开懒节点无行变化）',
+    fn: () => {
+      // 20261029 问题 3 夹具：lazy = isLeaf:false 无子级（懒节点）、leafy = isLeaf:true、
+      // plain = 缺字段、real = 有子级（无 isLeaf 字段）
+      const records = [
+        { id: 'lazy', pid: null, isLeaf: false },
+        { id: 'leafy', pid: null, isLeaf: true },
+        { id: 'plain', pid: null },
+        { id: 'real', pid: null },
+        { id: 'real-child', pid: 'real' }
+      ]
+
+      // 未映射（isLeafOf 缺省）→ 特性关闭：expandable 退化为 hasChildren
+      const off = buildFlatRows(records, { keyOf, parentKeyOf, expandedKeys: new Set(['real']) })
+
+      assertArray(off.expandable, [false, false, false, true, false], '未映射：expandable = hasChildren')
+      assertArray(off.hasChildren, [false, false, false, true, false], '未映射：hasChildren 语义不变')
+
+      // 映射开启：仅 === false 触发；有子级行恒可展开（hasChildren 优先口径不变）
+      const on = buildFlatRows(records, {
+        keyOf, parentKeyOf, expandedKeys: new Set(['real']), isLeafOf: record => record.isLeaf
+      })
+
+      assertArray(on.expandable, [true, false, false, true, false], '映射开启：lazy 真、leafy/plain 假、real 有子级真')
+
+      // expandableAt 共用谓词：新形态直读、旧形态回退 hasChildren、树关恒 false
+      assertEqual(expandableAt(on, 0), true, 'expandableAt 新形态懒节点行')
+      assertEqual(expandableAt(on, 1), false, 'expandableAt 新形态叶行')
+      assertEqual(expandableAt(off, 0), false, 'expandableAt 未映射时懒标记不生效')
+      assertEqual(expandableAt({ levels: [0], hasChildren: [true] }, 0), true, 'expandableAt 旧形态回退 hasChildren（真）')
+      assertEqual(expandableAt({ levels: [0], hasChildren: [false] }, 0), false, 'expandableAt 旧形态回退 hasChildren（假）')
+      assertEqual(expandableAt(null, 0), false, 'expandableAt 树关恒 false')
+
+      // 展开懒节点（无子级）：翻转展开集后平铺行集合不变（回填子级前无子可压）
+      const expandedLazy = buildFlatRows(records, {
+        keyOf, parentKeyOf, expandedKeys: new Set(['lazy', 'real']), isLeafOf: record => record.isLeaf
+      })
+
+      assertArray(expandedLazy.rows.map(keyOf), ['lazy', 'leafy', 'plain', 'real', 'real-child'], '展开懒节点：行集合不变')
+      assertEqual(expandableAt(expandedLazy, 0), true, '展开后仍可展开（收起语义保留）')
+
+      return '未映射关闭；仅 ===false 触发；有子级不变；expandableAt 新旧形态两用；展开懒节点无行变化'
     }
   },
   {

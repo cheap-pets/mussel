@@ -188,10 +188,12 @@ function onCellValue ({ record, column, value }) {
 
 ## 树模式
 
-`tree` 开启后按 `tree-props`（`{ key, parentKey }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }`）从平铺 `records` 构建层级；展开箭头缺省落在首个数据列（`treeNode: true` 显式指定）。展开状态两种控制方式：
+`tree` 开启后按 `tree-props`（`{ key, parentKey, isLeaf }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }`）从平铺 `records` 构建层级；展开箭头缺省落在首个数据列（`treeNode: true` 显式指定）。展开状态两种控制方式：
 
 - `default-expand-level`：初始展开层级（0 基，`level <= 值` 的节点展开，`-1` 全收起），之后由组件内部维护。
 - `tree-expanded-keys` 双向绑定：传入数组即接管展开状态（此时 `default-expand-level` 不生效）。
+
+懒加载（`isLeaf` 映射）：`tree-props` 增配 `isLeaf: '字段名'` 后，该字段为 `false` 且当前无子级的节点视为懒节点——显示展开三角，点击展开时发 `tree-expand` 事件（载荷 `{ key, record, level }`），在事件内异步加载子级；回填方式 = 向 `records` 就地 `push` 子级后递增 `records-version`（不替换数组引用，滚动位置不复位）。`isLeaf` 未映射时该特性不生效（向后兼容）。
 
 <ClientOnly>
   <div class="mu-demo-panel">
@@ -241,7 +243,7 @@ function onCellValue ({ record, column, value }) {
 | `editable` | Boolean | `false` | 表格级编辑开关；列须同时配置 `editor` |
 | `resizable` | Boolean | `false` | 表头拖拽调整列宽；列级 `resizable: false` 可单独禁止 |
 | `tree` | Boolean | `false` | 树模式：按 `tree-props` 从平铺 `records` 构建层级 |
-| `tree-props` | Object | — | `{ key, parentKey }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }` |
+| `tree-props` | Object | — | `{ key, parentKey, isLeaf }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }`；`isLeaf` 映射懒加载字段名（未映射不生效，见「树模式」）|
 | `tree-expanded-keys` | Array | — | 展开节点 key（双向绑定；传入即接管展开状态，`default-expand-level` 不生效）|
 | `default-expand-level` | Number | `0` | 初始展开层级（0 基：`level <= 值` 的节点展开；`-1` 全收起）|
 
@@ -250,6 +252,8 @@ function onCellValue ({ record, column, value }) {
 | `update:order-by` | `orderBy` | 点击可排序表头，`field:asc → field:desc → ''` 循环 |
 | `column-resize` | `{ column, width }` | 拖拽列宽结束 |
 | `update:tree-expanded-keys` | `keys` | 树节点展开 / 收起 |
+| `tree-expand` | `{ key, record, level }` | 展开箭头 toggle 展开（每次展开均发；懒加载在事件内异步取子级，见「树模式」）|
+| `tree-collapse` | `{ key, record, level }` | 展开箭头 toggle 收起 |
 | `update:cell-value` | `{ record, recordIndex, column, value }` | check 翻转与编辑提交（较 MuTable 多 `recordIndex`）|
 | `cell-item-click` | `{ record, recordIndex, column, link/tag/button }` | 条目点击（较 MuTable 多 `recordIndex`；`button` 列载荷为按钮配置项）|
 

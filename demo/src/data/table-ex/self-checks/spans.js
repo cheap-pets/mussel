@@ -122,7 +122,7 @@ export const checks = [
       assert(spans.anchors.get(3)?.get(1) == null, 'undefined 键后新段不与前方合并（小计行隔离）')
       assertEqual(spans.covered.get(1).get(1).row, 0, '函数键段 covered 归一')
 
-      return "group 键 [0,4)；Function 键 [0,2)、行 2 边界、行 3 独立"
+      return 'group 键 [0,4)；Function 键 [0,2)、行 2 边界、行 3 独立'
     }
   },
   {
@@ -256,7 +256,7 @@ export const checks = [
 
       assertEqual(restScroll.colspan, 2, "滚动区 'rest' 展开到总末列")
 
-      return "rest→[0,2)/[3,5)；colspan 9 夹紧为 1 + 警告"
+      return 'rest→[0,2)/[3,5)；colspan 9 夹紧为 1 + 警告'
     }
   },
   {

@@ -114,6 +114,16 @@ export const catalog = [
         desc: '复选、固定列、自定义渲染与分页联动'
       },
       {
+        path: 'data/table-ex-basic',
+        title: 'TableEx 画布表格（基础）',
+        desc: '列类型、排序、固定列与交互'
+      },
+      {
+        path: 'data/table-ex-scene',
+        title: 'TableEx 画布表格（场景）',
+        desc: '编辑、树（含懒加载）、合并单元格与异步数据'
+      },
+      {
         path: 'data/table-ex',
         title: 'TableEx 画布表格',
         desc: 'MuTableEx：canvas 渲染、虚拟滚动与单元格编辑（验证页）'

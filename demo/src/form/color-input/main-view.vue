@@ -81,7 +81,7 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
-  const basicCode = `<mu-color-input v-model="color" />`
+  const basicCode = '<mu-color-input v-model="color" />'
 
   const color = ref('#1C7ED6')
   const paletteColor = ref()

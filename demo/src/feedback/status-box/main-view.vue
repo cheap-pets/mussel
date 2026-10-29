@@ -40,7 +40,9 @@
         title="NOT FOUND !"
         message="Something Wrong Here ! Something Wrong Here ! Something Wrong Here ! Something Wrong Here !">
         <template #icon>
-          <div class="demo-big-icon">!</div>
+          <div class="demo-big-icon">
+            !
+          </div>
         </template>
         <div class="flex mt-auto self-stretch">
           <mu-button caption="Create New ..." round color="primary" />
@@ -74,7 +76,6 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
 
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'

@@ -73,7 +73,7 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
-  const basicCode = `<mu-calendar v-model="date" :week-starts-on="1" />`
+  const basicCode = '<mu-calendar v-model="date" :week-starts-on="1" />'
 
   const date = ref(null)
   const wideDate = ref(null)

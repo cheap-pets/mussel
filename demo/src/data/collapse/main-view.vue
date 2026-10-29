@@ -41,14 +41,26 @@
       note="default-expand 为 all（默认多开）/ first（仅第一个）；accordion 手风琴互斥；面板用 id 标识"
       vertical>
       <mu-collapse-group class="demo-collapse" default-expand="all">
-        <mu-collapse id="a" title="面板 A">A 内容。</mu-collapse>
-        <mu-collapse id="b" title="面板 B">B 内容。</mu-collapse>
-        <mu-collapse id="c" title="面板 C">C 内容。</mu-collapse>
+        <mu-collapse id="a" title="面板 A">
+          A 内容。
+        </mu-collapse>
+        <mu-collapse id="b" title="面板 B">
+          B 内容。
+        </mu-collapse>
+        <mu-collapse id="c" title="面板 C">
+          C 内容。
+        </mu-collapse>
       </mu-collapse-group>
       <mu-collapse-group class="demo-collapse" accordion default-expand="first">
-        <mu-collapse id="x" title="面板 X">X 内容。</mu-collapse>
-        <mu-collapse id="y" title="面板 Y">Y 内容。</mu-collapse>
-        <mu-collapse id="z" title="面板 Z">Z 内容。</mu-collapse>
+        <mu-collapse id="x" title="面板 X">
+          X 内容。
+        </mu-collapse>
+        <mu-collapse id="y" title="面板 Y">
+          Y 内容。
+        </mu-collapse>
+        <mu-collapse id="z" title="面板 Z">
+          Z 内容。
+        </mu-collapse>
       </mu-collapse-group>
     </demo-section>
 
@@ -64,13 +76,23 @@
         <span class="demo-log">model = {{ JSON.stringify(progList) }}；disabled = {{ groupDisabled }}</span>
       </div>
       <mu-collapse-group v-model:expanded="progList" class="demo-collapse">
-        <mu-collapse id="r" title="面板 R">R 内容。</mu-collapse>
-        <mu-collapse id="s" title="面板 S">S 内容。</mu-collapse>
-        <mu-collapse id="t" title="面板 T">T 内容。</mu-collapse>
+        <mu-collapse id="r" title="面板 R">
+          R 内容。
+        </mu-collapse>
+        <mu-collapse id="s" title="面板 S">
+          S 内容。
+        </mu-collapse>
+        <mu-collapse id="t" title="面板 T">
+          T 内容。
+        </mu-collapse>
       </mu-collapse-group>
       <mu-collapse-group :disabled="groupDisabled" class="demo-collapse" default-expand="first">
-        <mu-collapse id="u" title="面板 U">U 内容。</mu-collapse>
-        <mu-collapse id="v" title="面板 V">V 内容。</mu-collapse>
+        <mu-collapse id="u" title="面板 U">
+          U 内容。
+        </mu-collapse>
+        <mu-collapse id="v" title="面板 V">
+          V 内容。
+        </mu-collapse>
       </mu-collapse-group>
     </demo-section>
 
@@ -112,7 +134,9 @@
         <template #header>
           <div>
             <div>第一行标题</div>
-            <div class="demo-log">第二行副标题，header 高度随内容增长</div>
+            <div class="demo-log">
+              第二行副标题，header 高度随内容增长
+            </div>
           </div>
         </template>
         多行 header 内容。
@@ -130,16 +154,28 @@
         </span>
       </div>
       <mu-collapse-group v-model:expanded="accCtrlList" accordion class="demo-collapse" @update:expanded="onAccUpdate">
-        <mu-collapse id="b" title="面板 B">B 内容。</mu-collapse>
-        <mu-collapse id="c" title="面板 C">C 内容。</mu-collapse>
+        <mu-collapse id="b" title="面板 B">
+          B 内容。
+        </mu-collapse>
+        <mu-collapse id="c" title="面板 C">
+          C 内容。
+        </mu-collapse>
       </mu-collapse-group>
       <mu-collapse-group accordion class="demo-collapse" default-expand="all">
-        <mu-collapse id="m" title="面板 M">all 降级为 first（dev 警告）。</mu-collapse>
-        <mu-collapse id="n" title="面板 N">N 内容。</mu-collapse>
+        <mu-collapse id="m" title="面板 M">
+          all 降级为 first（dev 警告）。
+        </mu-collapse>
+        <mu-collapse id="n" title="面板 N">
+          N 内容。
+        </mu-collapse>
       </mu-collapse-group>
       <mu-collapse-group class="demo-collapse">
-        <mu-collapse title="无 id 面板 一">一（兜底 id 独立开合）。</mu-collapse>
-        <mu-collapse title="无 id 面板 二">二。</mu-collapse>
+        <mu-collapse title="无 id 面板 一">
+          一（兜底 id 独立开合）。
+        </mu-collapse>
+        <mu-collapse title="无 id 面板 二">
+          二。
+        </mu-collapse>
       </mu-collapse-group>
       <mu-collapse disabled class="demo-collapse">
         <template #header="{ expanded, disabled: d }">

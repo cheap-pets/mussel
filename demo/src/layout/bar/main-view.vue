@@ -34,7 +34,9 @@
       title="ScrollArea 横向滚动"
       note="内容溢出时两端出现滚动箭头；轻点位移一步，按住连续滚动，到边界自动停">
       <mu-scroll-area class="demo-scroll-area">
-        <div v-for="i in 20" :key="i" class="demo-chip">item {{ i }}</div>
+        <div v-for="i in 20" :key="i" class="demo-chip">
+          item {{ i }}
+        </div>
       </mu-scroll-area>
     </demo-section>
 
@@ -42,7 +44,9 @@
       title="ScrollArea 纵向滚动"
       note="vertical 属性切换为纵向，滚动箭头出现在上下两端">
       <mu-scroll-area vertical class="demo-scroll-area demo-scroll-area--vertical">
-        <div v-for="i in 20" :key="i" class="demo-chip demo-chip--wide">row {{ i }}</div>
+        <div v-for="i in 20" :key="i" class="demo-chip demo-chip--wide">
+          row {{ i }}
+        </div>
       </mu-scroll-area>
     </demo-section>
 
@@ -61,7 +65,9 @@
             :dropdown-items="artists" />
         </mu-toolbar>
         <mu-scroll-area class="demo-scroll-area" style="width: 160px;">
-          <div class="demo-chip">short</div>
+          <div class="demo-chip">
+            short
+          </div>
         </mu-scroll-area>
       </div>
     </demo-section>

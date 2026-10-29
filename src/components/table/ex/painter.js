@@ -4,7 +4,7 @@ import { drawCell, drawTreeArrow, requestIconImage } from './cell-painters.js'
 import { editorRectOf, editorGridlineFlagsOf, editorButtonRectOf } from './editor.js'
 import { createMeasureCache } from './theme.js'
 import { ellipsize } from './text-wrap.js'
-import { isExpandedKey } from './tree.js'
+import { expandableAt, isExpandedKey } from './tree.js'
 import {
   coveredAnchorOf,
   regionAt,
@@ -898,7 +898,7 @@ function paintTreeArrowAccent (ctx, state) {
 
   const column = columns?.[hover.col]
 
-  if (!column?._isTreeColumn || !flatInfo.hasChildren?.[hover.row]) return
+  if (!column?._isTreeColumn || !expandableAt(flatInfo, hover.row)) return
 
   const record = rowsOf(state)?.[hover.row]
 
@@ -1343,7 +1343,7 @@ function prepareSpansRegion (state, region) {
 
 // 有状态绘制器：draw 记录最近 state，invalidate 系列以 rAF 合帧异步重绘（同帧
 // 多区域合并为整幅，正确性优先）；img 加载完成后经 invalidateCell 联动重绘
-//（行已滚出窗口自动跳过）
+// （行已滚出窗口自动跳过）
 
 // - draw(state)：同步整幅，返回 lastPaint；取消挂起中的脏区任务
 // - invalidate(region, { immediate, state })：受理返回 true；immediate 同步重绘，

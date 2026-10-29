@@ -12,7 +12,9 @@
         @contextmenu="onContextMenu">
         在此区域右键打开菜单
       </div>
-      <div class="demo-log">最近选择：{{ lastPicked }}</div>
+      <div class="demo-log">
+        最近选择：{{ lastPicked }}
+      </div>
     </demo-section>
 
     <demo-section

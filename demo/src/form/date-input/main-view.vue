@@ -132,7 +132,7 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
-  const basicCode = `<mu-date-input v-model="date" placeholder="选择日期" />`
+  const basicCode = '<mu-date-input v-model="date" placeholder="选择日期" />'
 
   const date = ref(null)
   const week = ref(null)

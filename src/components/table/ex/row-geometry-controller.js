@@ -346,6 +346,8 @@ export function createRowGeometryController (ctx) {
      * ensureRowMeasured → updateHeight → Δ 累计滚动锚定（scrollTop 一次补偿
      * 写入）→ contentHeight/spacer 同步。uniform 模式零成本跳过。
      */
+    // 每行热路径：拆分会引入参数打包与函数调用开销，复杂度收益低于回归风险（02-optimize A 线裁定 #2②）
+    // eslint-disable-next-line complexity
     remeasureVisibleRows () {
       const cur = ctx.getLayout()
       const el = ctx.getScrollEl()

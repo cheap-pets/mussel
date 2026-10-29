@@ -154,6 +154,8 @@
     'update:order-by',
     'column-resize',
     'update:tree-expanded-keys',
+    'tree-expand',
+    'tree-collapse',
     'cell-item-click'
   ])
 
@@ -390,7 +392,8 @@
       ? {
         levels: flatRows.value.levels,
         hasChildren: flatRows.value.hasChildren,
-        parentKeys: flatRows.value.parentKeys
+        parentKeys: flatRows.value.parentKeys,
+        expandable: flatRows.value.expandable
       }
       : null
     paintState.spans = spans.value
@@ -501,6 +504,13 @@
       yScrolled.value && next.contentHeight - next.scrollTop - next.stickyHeight < 1
 
     syncCanvasSize(next.stickyWidth, next.stickyHeight)
+
+    // relayout 出口统一精算（20261029 问题 2，onThemeChange 先例同款三连）：
+    // 估高对字符串多行列恒取 1 行下界，relayout 尾部只 redraw 会令行高/格线停在
+    // 估高位置；补可视行精算（uniform 模式零成本早退）+ 窗口重算 + 整幅重绘，
+    // 保证一切 relayout 出口的可视行高为真值、格线落在精算位置
+    rowGeometry.remeasureVisibleRows()
+    recomputeViewWindows()
     redraw()
 
     // relayout 计时（getLayoutInfo 暴露：lastPaint 只覆盖 paint()，本字段补齐
@@ -842,7 +852,8 @@
     return true
   }
 
-  /** 树箭头槽 toggle（A4.3 序 2，局部交互）：命中则应用展开态并返回 true */
+  /** 树箭头槽 toggle（A4.3 序 2，局部交互）：命中则应用展开态并返回 true；
+      meta 携带命中行 record/level（问题 3：tree-expand/tree-collapse 载荷） */
   function tryToggleTreeRow (hit, record) {
     if (!props.tree || !flatRows.value) return false
 
@@ -853,7 +864,12 @@
       recordKey: resolveRecordKey(record)
     })
 
-    if (toggle) applyTreeToggle(toggle.key)
+    if (toggle) {
+      applyTreeToggle(toggle.key, {
+        record,
+        level: flatRows.value.levels?.[hit.rowIndex] ?? 0
+      })
+    }
 
     return !!toggle
   }
@@ -1285,31 +1301,41 @@
     invalidate({ cell })
   })
 
-  // records 引用变化：滚动复位 → relayout → 整幅重绘（A2，table.vue 同款 watch）
-  watch(() => props.records, (newValue, oldValue) => {
-    if (newValue === oldValue) return
+  // relayout 源合一（20261030 P1 合帧）：六个源（records / columns / recordsVersion /
+  // spanMethod / orderBy / fixedLeftColumns）合并为单一 watch——同批多源变化（如父级
+  // 一次替换数据与列定义）从「每 watch 各跑一次完整 relayout（估高扫描 + 精算 +
+  // 重绘）」变为一次；回调内按源 diff 执行各自前置副作用，顺序与合并前各 watch
+  // 定义序一致：
+  // - records 引用变化：滚动复位（A2 数据契约，table.vue 同款）
+  // - columns 引用变化：清空拖拽宽度覆盖（G1-b 契约）+ 行高缓存签名置空（列定义
+  //   变化改变行高语义；缓存键为 record 引用，不含列定义维度）
+  // - recordsVersion：异步就地修改 records 后的通知通道 → spans 重算 + relayout
+  //   （§4：合并行高分层随 spans 身份重扫，A3 数据契约②）
+  // - spanMethod / orderBy：spans 重算（orderBy 变化即行序语义变化，合并块随本批重算，§4）
+  // - fixedLeftColumns：固定区宽度 / viewW 口径变化
+  // 之后统一 relayout（含尾部可视行精算与整幅重绘）
+  watch(
+    [
+      () => props.records,
+      () => props.columns,
+      () => props.recordsVersion,
+      () => props.spanMethod,
+      () => props.orderBy,
+      () => props.fixedLeftColumns
+    ],
+    ([records, columns], [prevRecords, prevColumns]) => {
+      if (records !== prevRecords) {
+        scrollEl.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      }
 
-    scrollEl.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-    relayoutAndRedraw()
-  })
+      if (columns !== prevColumns) {
+        resetOverrides()
+        rowGeometry.invalidateMeasureCache()
+      }
 
-  // columns 引用变化：清空拖拽宽度覆盖（G1-b 契约）→ 列准备（computed 依赖）→ relayout；
-  // 列定义变化（maxLines/maxItems/类型）改变行高语义 → 行高缓存签名置空，
-  // 下次 relayout 重建（缓存键为 record 引用，不含列定义维度）
-  watch(() => props.columns, () => {
-    resetOverrides()
-    rowGeometry.invalidateMeasureCache()
-    relayoutAndRedraw()
-  })
-
-  // 数据版本：异步就地修改 records 后的通知通道 → spans 重算 + relayout（§4：
-  // 合并行高分层随 spans 身份重扫）→ 整幅重绘（A3 数据契约②）
-  watch(() => props.recordsVersion, () => relayoutAndRedraw())
-
-  // spanMethod / orderBy 引用变化 → spans 重算 + relayout（§4：与既有 relayout
-  // 触发点同批次；orderBy 变化即行序语义变化，合并块随 recordsVersion/records
-  // 引用/本 watch 重算）
-  watch([() => props.spanMethod, () => props.orderBy], () => relayoutAndRedraw())
+      relayoutAndRedraw()
+    }
+  )
 
   // 渲染 props → 整幅重绘；placeholder 不进列准备（绘制期兜底，见
   // preparedColumns 注释），切换占位文本仅整幅重绘、不触发估高重扫
@@ -1349,9 +1375,6 @@
       }
     }
   })
-
-  // fixedLeftColumns → relayout（固定区宽度 / viewW 口径变化）
-  watch(() => props.fixedLeftColumns, () => relayoutAndRedraw())
 
   // —— 树 watch（tree/treeProps/treeExpandedKeys 三条已随 use-tree-rows 注册） ——
 

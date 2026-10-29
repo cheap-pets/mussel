@@ -29,21 +29,27 @@
       vertical>
       <div class="demo-columns">
         <div class="demo-column">
-          <p class="demo-column__title">隐藏图标</p>
+          <p class="demo-column__title">
+            隐藏图标
+          </p>
           <mu-tree
             :data="treeData"
             :node-icons="false"
             class="demo-tree" />
         </div>
         <div class="demo-column">
-          <p class="demo-column__title">自定义默认图标</p>
+          <p class="demo-column__title">
+            自定义默认图标
+          </p>
           <mu-tree
             :data="treeData"
             :node-icons="{ folder: 'folder', folderOpen: 'folderOpen', leaf: 'file' }"
             class="demo-tree" />
         </div>
         <div class="demo-column">
-          <p class="demo-column__title">自定义展开箭头</p>
+          <p class="demo-column__title">
+            自定义展开箭头
+          </p>
           <mu-tree
             :data="treeData"
             :expand-icons="{ expanded: 'chevronDown', collapsed: 'chevronRight', leaf: 'file' }"
@@ -51,7 +57,9 @@
             class="demo-tree" />
         </div>
         <div class="demo-column">
-          <p class="demo-column__title">隐藏展开箭头</p>
+          <p class="demo-column__title">
+            隐藏展开箭头
+          </p>
           <mu-tree
             :data="treeData"
             :expand-icons="false"
@@ -97,14 +105,18 @@
       vertical>
       <div class="demo-columns">
         <div class="demo-column">
-          <p class="demo-column__title">disabled 节点（id 为 7 的倍数）</p>
+          <p class="demo-column__title">
+            disabled 节点（id 为 7 的倍数）
+          </p>
           <mu-tree
             :data="treeData"
             :active-node="activeNode"
             class="demo-tree demo-tree--short" />
         </div>
         <div class="demo-column">
-          <p class="demo-column__title">深层嵌套</p>
+          <p class="demo-column__title">
+            深层嵌套
+          </p>
           <mu-tree
             :data="deepData"
             :auto-expand-level="2"

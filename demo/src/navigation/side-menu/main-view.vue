@@ -251,7 +251,7 @@ const menus = [
       id: `g${gi}`,
       icon: 'folder',
       label: `分组 ${gi}`,
-      items: Array.from({ length: 3 }, (_, ii) => ({
+      items: Array.from({ length: 3 }, (_unused, ii) => ({
         id: `g${gi}-i${ii}`,
         icon: 'file',
         label: `项目 ${gi}-${ii}`

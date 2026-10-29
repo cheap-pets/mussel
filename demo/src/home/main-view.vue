@@ -2,8 +2,12 @@
   <div class="home">
     <header class="home-hero">
       <div>
-        <h1 class="home-hero__title">Mussel</h1>
-        <p class="home-hero__version">Vue 3 组件库 · v{{ appVersion }}</p>
+        <h1 class="home-hero__title">
+          Mussel
+        </h1>
+        <p class="home-hero__version">
+          Vue 3 组件库 · v{{ appVersion }}
+        </p>
       </div>
       <theme-switch class="home-hero__switch" />
     </header>
@@ -13,8 +17,12 @@
         v-for="cat in catalog"
         :key="cat.category"
         class="home-category">
-        <h2 class="home-category__title">{{ cat.title }}</h2>
-        <p class="home-category__desc">{{ cat.desc }}</p>
+        <h2 class="home-category__title">
+          {{ cat.title }}
+        </h2>
+        <p class="home-category__desc">
+          {{ cat.desc }}
+        </p>
         <div class="home-category__pages">
           <a
             v-for="page in cat.pages"
