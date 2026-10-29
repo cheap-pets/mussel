@@ -21,7 +21,7 @@
   - `src/components/message/status-box.vue` — 空状态默认内容，模板按**全局注册标签** `<mu-status-box>` 使用（`message/index.js:11` 导出 `MuStatusBox`，由 `components/index.js:51` 的 `_install(MessageComponents)` 注册，同 `'mu-input'` 的字符串标签路径）。
   - 输入控件经**字符串标签**引用（`'mu-input'` 等），与 `INPUT_TYPES`（input-types.js）运行时解析方式一致。
 - **type 注册表模式**：`INSPECTOR_FIELD_TYPES` 字符串 type → `{ is, attrs }`，未知 type 回落 `text`——沿用 `ColumnTypes`（column-types/index.js:7-25，`resolveColumnType` 未知回落 text）与 `INPUT_TYPES` 先例。
-- **状态与变更**：控件绑定用 `:model-value` + `@update:model-value`（不用 `v-model` 直写），父同步用 `update:value` 命名事件（table.vue:87-95 先例）。库内（canvas-table 除外）无组件 emit `change`，本组件的 `change` 为需求（ref-inspector.md:51、验收标准 3）驱动的首例，签名保持需求定义。
+- **状态与变更**：控件绑定用 `:model-value` + `@update:model-value`（不用 `v-model` 直写），父同步用 `update:value` 命名事件（table.vue:87-95 先例）。库内（table-ex 除外）无组件 emit `change`，本组件的 `change` 为需求（ref-inspector.md:51、验收标准 3）驱动的首例，签名保持需求定义。
 - **disabled 下发**：`disabled || null` 写法（switch.vue:2 先例）；`disabled` 为控件级 prop（input.js:9-10）。
 - **样式**：BEM + `mu-` 前缀（`.mu-inspector` / `.mu-inspector__group-title`）；scss 就近 import 于 `<script setup>` 首行（switch.vue:9 先例）；间距/高度/文字颜色一律 `--mu-*` 变量，暗色模式随 `.mu-dark` 变量覆盖自动生效，无需额外样式。
 - **空值判定**：`isEmpty`（`@/utils/type`，type.js:60-74）。
@@ -312,4 +312,4 @@ grep -n "isEmpty" src/utils/type.js
 1. **emptyText i18n 遗留**：默认值为中文硬编码（取舍见「被拒绝的备选」5）。后续若接入，需在设计范围中追加 `src/langs/zh.js` / `en.js` 的 `Inspector.EMPTY` 键并将默认值改为 `() => t('Inspector.EMPTY')`。
 2. **文档更新遗留**：按项目约定（实现完成经用户确认后才更新文档），本轮改动清单不含 `skills/mussel-ui/references/`、`docs/quick-reference_*.md`、`docs-site/` 的文档同步；实施验收后需另行派发。
 3. **catalog 分类位置**：新增 `inspector` 单页分类置于 form 之后，属作者裁量；若审核认为应并入 form 分类（`demo/src/form/inspector/`），改动清单步骤 4/5 需相应调整路径。
-4. **canvas-table 空状态参考**：维持不参考限制（派发约束），空状态交互设计（图标/尺寸/居中）仅基于 `mu-status-box` 既有能力；如需对齐 canvas-table 的空状态视觉，须用户解除限制后修订。
+4. **table-ex 空状态参考**：维持不参考限制（派发约束），空状态交互设计（图标/尺寸/居中）仅基于 `mu-status-box` 既有能力；如需对齐 table-ex 的空状态视觉，须用户解除限制后修订。

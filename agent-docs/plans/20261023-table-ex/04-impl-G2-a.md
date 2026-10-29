@@ -4,8 +4,8 @@
 
 | 文件 | 对应设计步骤 | 说明 |
 |------|------------|------|
-| `src/components/canvas-table/painter.js` | G2-a | 绘制管线：`draw(ctx, state)` 整幅入口（设计 `draw(state)` 的 ctx 前置纯函数形式，返回 lastPaint 统计）+ `drawRegion(ctx, state, region)` 脏区入口 + `cellRectAt(layout, row, col)` + `createPainter({ canvas })` 有状态封装。分区顺序严格按 A2：表体滚动区（逐格背景→内容，选中/斑马纹画行背景时直接取值）→ 网格线（gridlines 四模式，末列无线、首行顶线由表头底边框承担）→ 固定左列区（整高不透明重绘 + x-scrolled 强化色分界线，不受 gridlines 约束，对齐 `.mu-table--x-scrolled .last-fixed-col`）→ 表头区（bgFill 底/caption 按 `_align` 锚点/排序图标 asc·desc 主色三角复刻 sort-icon.vue/check 表头 ✓〔table.vue:22 同款条件〕/列分隔线/底边框 soft）→ 覆盖层（hover 五模式 + 调宽参考线 1px 主色）。脏区 clip 调度：`{rows}/{cols}/{cell}/{header}/{colFrom}` 五种 region 各自 save/clip/restore 后走同一分区管线，clip 内先 destination-out 擦除为透明（半透明行底色/覆盖层混色起点与整幅一致）；完全可见格跳过 save/clip/restore（A3 kaka P0），视口边缘部分可见格才 clip。`ctx.setTransform(dpr,0,0,dpr,0,0)` 每次绘制直乘。`lastPaint = { rowStart, rowEnd, rowCount, colStart, colEnd, elapsed }` 每次绘制结束按实际绘制范围写入。`createPainter` 承接 G1-c 遗留 2：`onImageLoad → invalidateCell(row, col)` 自动接管、重绘前 `isRegionPaintable` 校验行仍在窗口/格在可视列空间（滚出即跳过）；invalidate rAF 合帧（同帧多区域合并为整幅）、支持 `{ immediate, state }`（immediate 同步、state 更新基线）、draw 重置挂起队列、dispose 全量清理 |
-| `demo/src/data/canvas-table/self-checks/painter.js` | G2-a | G0 占位填充为 11 条断言（见下「判据对照」），全部同步执行、在位 canvas（挂入文档、断言后移除）+ 固定 rgba 主题夹具 + relayout 真实布局求解，像素采样/区域比对/lastPaint 结构断言 |
+| `src/components/table-ex/painter.js` | G2-a | 绘制管线：`draw(ctx, state)` 整幅入口（设计 `draw(state)` 的 ctx 前置纯函数形式，返回 lastPaint 统计）+ `drawRegion(ctx, state, region)` 脏区入口 + `cellRectAt(layout, row, col)` + `createPainter({ canvas })` 有状态封装。分区顺序严格按 A2：表体滚动区（逐格背景→内容，选中/斑马纹画行背景时直接取值）→ 网格线（gridlines 四模式，末列无线、首行顶线由表头底边框承担）→ 固定左列区（整高不透明重绘 + x-scrolled 强化色分界线，不受 gridlines 约束，对齐 `.mu-table--x-scrolled .last-fixed-col`）→ 表头区（bgFill 底/caption 按 `_align` 锚点/排序图标 asc·desc 主色三角复刻 sort-icon.vue/check 表头 ✓〔table.vue:22 同款条件〕/列分隔线/底边框 soft）→ 覆盖层（hover 五模式 + 调宽参考线 1px 主色）。脏区 clip 调度：`{rows}/{cols}/{cell}/{header}/{colFrom}` 五种 region 各自 save/clip/restore 后走同一分区管线，clip 内先 destination-out 擦除为透明（半透明行底色/覆盖层混色起点与整幅一致）；完全可见格跳过 save/clip/restore（A3 kaka P0），视口边缘部分可见格才 clip。`ctx.setTransform(dpr,0,0,dpr,0,0)` 每次绘制直乘。`lastPaint = { rowStart, rowEnd, rowCount, colStart, colEnd, elapsed }` 每次绘制结束按实际绘制范围写入。`createPainter` 承接 G1-c 遗留 2：`onImageLoad → invalidateCell(row, col)` 自动接管、重绘前 `isRegionPaintable` 校验行仍在窗口/格在可视列空间（滚出即跳过）；invalidate rAF 合帧（同帧多区域合并为整幅）、支持 `{ immediate, state }`（immediate 同步、state 更新基线）、draw 重置挂起队列、dispose 全量清理 |
+| `demo/src/data/table-ex/self-checks/painter.js` | G2-a | G0 占位填充为 11 条断言（见下「判据对照」），全部同步执行、在位 canvas（挂入文档、断言后移除）+ 固定 rgba 主题夹具 + relayout 真实布局求解，像素采样/区域比对/lastPaint 结构断言 |
 
 ### G2-a 判据对照（02-design.md 实施步骤）
 
@@ -37,8 +37,8 @@
 | 检查 | 命令/方式 | 结果 |
 |------|----------|------|
 | 语法 | `node --check` 两文件 | 通过 |
-| 编译校验 | `npx vite build --config vite.demo.config.js`（一次性，按派发约定） | 通过：built in 575ms；`demo/dist/data/canvas-table/main.js` 217.30 kB（含 painter 模块与断言），无报错 |
-| 页面可达 | `curl http://localhost:3000/data/canvas-table/` | 200（期间发现 ：3000 未监听——此前 watch 进程已退出，已重新后台启动 `npm run demo:build`（任务 `exec_ce4be5a2-5a3f-4025-b898-fa4f95feafc5`，结束时保持运行）；与一次性构建并存正常） |
+| 编译校验 | `npx vite build --config vite.demo.config.js`（一次性，按派发约定） | 通过：built in 575ms；`demo/dist/data/table-ex/main.js` 217.30 kB（含 painter 模块与断言），无报错 |
+| 页面可达 | `curl http://localhost:3000/data/table-ex/` | 200（期间发现 ：3000 未监听——此前 watch 进程已退出，已重新后台启动 `npm run demo:build`（任务 `exec_ce4be5a2-5a3f-4025-b898-fa4f95feafc5`，结束时保持运行）；与一次性构建并存正常） |
 | demo 自检区浏览器实测 | playwright 访问页面，读自检面板 DOM（`li.ct-check-item--fail` 精确提取失败条目） | **painter 模块 11/11 全部通过**；整页 **77/77 通过、失败 0**；console 0 errors（18 条 warning 均为 Chrome 对自检高频 getImageData 的 willReadFrequently 性能提示，断言画布读回所致，生产绘制路径无 readback，不处理） |
 | stylelint | — | 不适用：本步骤无 `.scss` 改动 |
 | eslint | — | 项目未安装 eslint（G1-b/G1-c 同结论）；以 node --check + 构建 + 浏览器执行代替 |

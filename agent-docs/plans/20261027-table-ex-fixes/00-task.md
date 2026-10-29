@@ -1,4 +1,4 @@
-# 任务：canvas-table 缺陷修复（impl-verify）
+# 任务：table-ex 缺陷修复（impl-verify）
 
 ## 流水线
 
@@ -6,7 +6,7 @@ impl-verify；单实施者串行，无并行组。
 
 ## 目标
 
-修复 MuCanvasTable 六项缺陷并将 canvas-table 相关目录 eslint 清零。问题清单见 02-design.md。
+修复 MuTableEx 六项缺陷并将 table-ex 相关目录 eslint 清零。问题清单见 02-design.md。
 
 ## 验收标准
 
@@ -19,21 +19,21 @@ impl-verify；单实施者串行，无并行组。
 - R4a 居中对齐单元格的文字几何中心不受格线 1px 影响（与 R3 同源则一并修复）。
 - R4b 多行文本单元格首行文字与其他单行格文字对齐。
 - R5 表格宽度大于列宽总和时，剩余空白区域支持行 hover 高亮与点击选中。
-- R6 `npx eslint src/components/canvas-table/ demo/src/data/canvas-table/` 0 error 0 warning。
+- R6 `npx eslint src/components/table-ex/ demo/src/data/table-ex/` 0 error 0 warning。
 
 ## 验证命令
 
-- lint：`npx eslint src/components/canvas-table/ demo/src/data/canvas-table/`（基线 39 error / 19 warning）
+- lint：`npx eslint src/components/table-ex/ demo/src/data/table-ex/`（基线 39 error / 19 warning）
 - 构建：`npm run build`
 - 浏览器：demo watch 已在 3000 端口运行，实施改动后须等待 watch 重编译完成再验证
-  - 页面与自检面板：http://localhost:3000/data/canvas-table/（自检断言在页面调试面板内）
+  - 页面与自检面板：http://localhost:3000/data/table-ex/（自检断言在页面调试面板内）
 
 ## 基线
 
 - 分支 `mussel-table` @ `b5c43ea`
 - 基线脏文件（属本任务第一步产物，不计为实施阶段设计外改动）：
-  - `demo/src/catalog.js`（M，移除 canvas-table-editable 登记项）
-  - `demo/src/data/canvas-table-editable/`（D，用户指令删除该 demo 模块）
+  - `demo/src/catalog.js`（M，移除 table-ex-editable 登记项）
+  - `demo/src/data/table-ex-editable/`（D，用户指令删除该 demo 模块）
 - 杂散未跟踪文件 `agent-docs/handoff/.!42003!handoff-create-dynamic-component-20261017.md`：与本任务无关，勿动。
 - eslint 基线：两目录 39 error / 19 warning。
 

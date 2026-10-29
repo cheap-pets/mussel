@@ -4,8 +4,8 @@
 
 | 文件 | 对应设计步骤 | 说明 |
 |------|------------|------|
-| `src/components/canvas-table/theme.js` | G1-a | 主题模块：`createProbe`（隐藏探针）、`readVar`/`readPx`/`readFont`/`readInheritedFontSize`（--mu-* 颜色经真实属性求值、字体 token 原读、继承字号）、`readSnapshot`（设计 A7 快照 17 字段）、`resolveObserverRoots`（closest('.mu-root') 与组件根，Set 去重，无祖先兜底 documentElement）、`withAlpha`、`createMeasureCache`（`text+'\u0000'+font` 键，上限 2000 超限清空）、`createThemeWatcher`（探针 + 快照 + MutationObserver rAF 节流〔attributeFilter class/style〕+ window resize 重读 devicePixelRatio + `refresh()` 手动兜底 + `destroy()` 清理） |
-| `demo/src/data/canvas-table/self-checks/theme.js` | G1-a | 自检断言 10 条：探针挂载形态、readVar 颜色格式（11 个变量全量）、相对色变量求值（计算值 ≠ token 串 + alpha < 1）、readPx 内联尺寸变量与嵌套覆盖级联（36/48）、readFont token 原读（含 m1 回归守卫）、readInheritedFontSize（基线 + 18px 父链）、withAlpha 三类输入、readSnapshot 字段齐全与形态、resolveObserverRoots 三场景、createThemeWatcher 接线/refresh 同步通知/destroy 清理、createMeasureCache 命中/换 font/超限清空。尺寸变量全部来自自检容器内联 `style.cssText`（`--row-height: 36px` 等，值同 table.scss 镜像），不依赖 canvas-table.scss |
+| `src/components/table-ex/theme.js` | G1-a | 主题模块：`createProbe`（隐藏探针）、`readVar`/`readPx`/`readFont`/`readInheritedFontSize`（--mu-* 颜色经真实属性求值、字体 token 原读、继承字号）、`readSnapshot`（设计 A7 快照 17 字段）、`resolveObserverRoots`（closest('.mu-root') 与组件根，Set 去重，无祖先兜底 documentElement）、`withAlpha`、`createMeasureCache`（`text+'\u0000'+font` 键，上限 2000 超限清空）、`createThemeWatcher`（探针 + 快照 + MutationObserver rAF 节流〔attributeFilter class/style〕+ window resize 重读 devicePixelRatio + `refresh()` 手动兜底 + `destroy()` 清理） |
+| `demo/src/data/table-ex/self-checks/theme.js` | G1-a | 自检断言 10 条：探针挂载形态、readVar 颜色格式（11 个变量全量）、相对色变量求值（计算值 ≠ token 串 + alpha < 1）、readPx 内联尺寸变量与嵌套覆盖级联（36/48）、readFont token 原读（含 m1 回归守卫）、readInheritedFontSize（基线 + 18px 父链）、withAlpha 三类输入、readSnapshot 字段齐全与形态、resolveObserverRoots 三场景、createThemeWatcher 接线/refresh 同步通知/destroy 清理、createMeasureCache 命中/换 font/超限清空。尺寸变量全部来自自检容器内联 `style.cssText`（`--row-height: 36px` 等，值同 table.scss 镜像），不依赖 table-ex.scss |
 
 与 G0 衔接：`self-checks/index.js` 既有 `import { checks } from './theme.js'` 聚合，本步仅填充该数组，聚合入口与页面面板零改动。
 
@@ -20,8 +20,8 @@
 
 | 检查 | 命令/方式 | 结果 |
 |------|----------|------|
-| eslint | `npx eslint src/components/canvas-table/theme.js demo/src/data/canvas-table/self-checks/theme.js` | 通过（exit 0，无告警） |
-| 编译校验 | `npx vite build --config vite.demo.config.js`（一次性，与 watch 进程并存） | 通过：`demo/dist/data/canvas-table/main.js` 45.61 kB 产出，built in 575ms，无报错。注：一次性构建 emptyOutDir 重建 demo/dist，构建后 `http://localhost:3000/data/canvas-table/` 与 `main.js` 均 curl 200，watch 进程与 ：3000 静态服务保持正常 |
+| eslint | `npx eslint src/components/table-ex/theme.js demo/src/data/table-ex/self-checks/theme.js` | 通过（exit 0，无告警） |
+| 编译校验 | `npx vite build --config vite.demo.config.js`（一次性，与 watch 进程并存） | 通过：`demo/dist/data/table-ex/main.js` 45.61 kB 产出，built in 575ms，无报错。注：一次性构建 emptyOutDir 重建 demo/dist，构建后 `http://localhost:3000/data/table-ex/` 与 `main.js` 均 curl 200，watch 进程与 ：3000 静态服务保持正常 |
 | stylelint | — | 不适用：本步骤无 `.scss` 改动 |
 | demo 自检区 theme 断言 | 浏览器（页面执行） | **UNVERIFIED**：断言代码已写全并经自检区面板执行，但本步骤不做浏览器内运行确认，留验证阶段（见下） |
 
@@ -41,8 +41,8 @@
 
 | 文件 | 说明 |
 |------|------|
-| `src/components/canvas-table/theme.js` | 新增导出 `parseColor(color)`：兼容 `rgb()/rgba()` 与 `color(srgb r g b / a)` 两种形态（sRGB 分量 0-1 → 0-255 四舍五入、alpha 缺省 1，解析失败返回 null）；`withAlpha` 改经 `parseColor`，合法颜色 → `rgba(r, g, b, alpha)`，解析失败原样返回（行为不变） |
-| `demo/src/data/canvas-table/self-checks/theme.js` | 断言口径改为「任一合法 CSS 颜色形态即可」：`assertValidCssColor` = 非空 + 不含 `var(`（排除 token 串）+ `CSS.supports('color', value)`，替换原 `assertColorComputed` 的写死 `^rgba?\(`（readVar/readSnapshot/checkRelativeColorVar 三处调用点同步）；相对色变量 alpha 改经 `parseColor` 提取（顺带覆盖两种形态解析）；withAlpha 检查补 `color(srgb)` 字面用例 2 条（含缺省 alpha）与 parseColor 三态断言；文件头注释同步口径 |
+| `src/components/table-ex/theme.js` | 新增导出 `parseColor(color)`：兼容 `rgb()/rgba()` 与 `color(srgb r g b / a)` 两种形态（sRGB 分量 0-1 → 0-255 四舍五入、alpha 缺省 1，解析失败返回 null）；`withAlpha` 改经 `parseColor`，合法颜色 → `rgba(r, g, b, alpha)`，解析失败原样返回（行为不变） |
+| `demo/src/data/table-ex/self-checks/theme.js` | 断言口径改为「任一合法 CSS 颜色形态即可」：`assertValidCssColor` = 非空 + 不含 `var(`（排除 token 串）+ `CSS.supports('color', value)`，替换原 `assertColorComputed` 的写死 `^rgba?\(`（readVar/readSnapshot/checkRelativeColorVar 三处调用点同步）；相对色变量 alpha 改经 `parseColor` 提取（顺带覆盖两种形态解析）；withAlpha 检查补 `color(srgb)` 字面用例 2 条（含缺省 alpha）与 parseColor 三态断言；文件头注释同步口径 |
 
 自检（补修后）：
 
@@ -50,7 +50,7 @@
 |------|----------|------|
 | eslint | `npx eslint` 两文件 | 通过（exit 0） |
 | 编译校验 | `npx vite build --config vite.demo.config.js`（一次性） | 通过：built in 576ms，页面 :3000 curl 200 |
-| 浏览器实测 | playwright 访问 `http://localhost:3000/data/canvas-table/`，读自检面板 DOM | **theme 模块 11/11 全绿**；面板整体 43/43 通过、失败条目 0。实测 `--mu-gray-translucent` 求值为 `color(srgb 0.482353 0.509804 0.533333 / 0.1)`，parseColor 提取 alpha=0.1，原 2 条失败断言转绿 |
+| 浏览器实测 | playwright 访问 `http://localhost:3000/data/table-ex/`，读自检面板 DOM | **theme 模块 11/11 全绿**；面板整体 43/43 通过、失败条目 0。实测 `--mu-gray-translucent` 求值为 `color(srgb 0.482353 0.509804 0.533333 / 0.1)`，parseColor 提取 alpha=0.1，原 2 条失败断言转绿 |
 
 说明：原记录中「自检断言 10 条」实为 11 条（checks 数组 11 项），随本节更正；自检项从上一版 UNVERIFIED 状态转为浏览器实测通过。
 

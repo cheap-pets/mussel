@@ -1,13 +1,13 @@
 # 实施记录：S4（painter.js）
 
-模式：串行集成步骤 / 步骤 S4。白名单：`src/components/canvas-table/painter.js`（仅此文件）。
+模式：串行集成步骤 / 步骤 S4。白名单：`src/components/table-ex/painter.js`（仅此文件）。
 依赖：G1-a（constants/editor）、G1-b（cell-painters）、G1-c（theme/interactions/scss）已全部合入，按其已落地 API 对接（`drawCell` 新参 `rightInset`/`hoverItem`、`requestIconImage`、`linkHoverColorOf`、`editorRectOf` 恒等、`editorButtonRectOf`、constants 四新常量）。
 
 ## 改动文件
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| src/components/canvas-table/painter.js | S4（问题 1/3/5/6/9） | 见下 |
+| src/components/table-ex/painter.js | S4（问题 1/3/5/6/9） | 见下 |
 
 改动摘要（net +128/−43）：
 
@@ -32,7 +32,7 @@
 
 | 判据 | 方式 | 结果 |
 |---|---|---|
-| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint src/components/canvas-table/painter.js` | 0 error / 0 warning，exit 0 |
+| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint src/components/table-ex/painter.js` | 0 error / 0 warning，exit 0 |
 | paintTreeArrowAccent centerY 与 cell-painters 槽位式逐值相等（r≥1 与 row 0 两态） | esbuild 打包 + stub ctx 直调 `draw`（树夹具：treeNode 列 + flatInfo levels [0,0,1] / hasChildren [true,true,false] + 变高行 [36,60,36]），提取两分区三角形坐标：hover row 1（r≥1，h=60）常态/accent centerY 同为 **90**（= 36+36+1+8+9；旧式 heightAt/2 = 102）；hover row 0（r=0，h=36）同为 **54**（= 36+1+8+9 = 旧式 36+18）；两态 moveTo/lineTo 三点坐标逐值相等，无 0.5px 错位 | PASS（8 断言） |
 | veil（editingCell 跳绘 + 显式清空 itemHits） | 同 harness：预置 (0,0) 命中组含一条假条目 → 整帧绘制后该组 `=== []`；veil 格锚位（y=54）无 fillText；同 row 右格 fillText 照常；行背景带 fillRect(0,36,W,36) 照画 | PASS（4 断言） |
 | rightInset 注入门控 | 3×100 列 center 对齐：all 无空白 → x [49.5, 149.5, 250]；all + blankTail（stickyWidth 400 > contentWidth 300）→ 末列 249.5；row 模式 → 门控归 0 [50, 250]；column 模式 → [49.5, 149.5, 249.5] | PASS（4 断言） |
@@ -47,6 +47,6 @@ harness 合计 **30 passed / 0 failed**（临时文件在 /tmp，已清理，未
 
 ## 遗留
 
-- 页面级验证（A1–A11 全表）不在本组判据：S5（canvas-table.vue 壳接线）与 G2 各组落地后由 V 集成验证执行；`hoverItem`/`editingCell` 两 state 字段当前壳侧尚未接线（S5），painter 侧契约已就绪（缺省 undefined 时行为与现状一致，不影响 G2 前的任何既有路径）。
+- 页面级验证（A1–A11 全表）不在本组判据：S5（table-ex.vue 壳接线）与 G2 各组落地后由 V 集成验证执行；`hoverItem`/`editingCell` 两 state 字段当前壳侧尚未接线（S5），painter 侧契约已就绪（缺省 undefined 时行为与现状一致，不影响 G2 前的任何既有路径）。
 - eslint 需 `NODE_PATH=/usr/local/lib/node_modules` 前缀（沿用 G1 各组环境备注；本地 node_modules 缺 eslint-config-standard）。
 - requestIconImage 的 SVG data URL 浏览器 onload 行为（R5 唯一未验点）归浏览器验证阶段。

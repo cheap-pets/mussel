@@ -1,4 +1,4 @@
-# canvas-table 自检像素断言随锚点口径漂移
+# table-ex 自检像素断言随锚点口径漂移
 
 ## 触发特征
 
@@ -19,4 +19,4 @@
 
 ## 来源
 
-agent-docs/plans/20261027-canvas-table-improve/05-verify-1.md 失败项 1/2；agent-docs/plans/20261028-canvas-table-anchor-rowheight/01-impl.md（painter.js 自检遗漏实例）
+agent-docs/plans/20261027-table-ex-improve/05-verify-1.md 失败项 1/2；agent-docs/plans/20261028-table-ex-anchor-rowheight/01-impl.md（painter.js 自检遗漏实例）

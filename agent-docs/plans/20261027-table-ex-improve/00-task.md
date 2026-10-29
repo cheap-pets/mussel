@@ -1,4 +1,4 @@
-# 任务：canvas-table 改进（dev）
+# 任务：table-ex 改进（dev）
 
 ## 流水线
 
@@ -7,7 +7,7 @@ S1 单 explorer：8 项问题集中在同一组件目录、子域强耦合，不
 
 ## 目标
 
-按下列 8 项问题清单改进 MuCanvasTable（`src/components/canvas-table/`）。
+按下列 8 项问题清单改进 MuTableEx（`src/components/table-ex/`）。
 
 ## 问题清单（用户请求原文转录）
 
@@ -32,15 +32,15 @@ S1 单 explorer：8 项问题集中在同一组件目录、子域强耦合，不
 - A6（问题6）布尔值编辑开关无多余白色背景（融入单元格）；其余编辑用组件同类问题一并核查修复。
 - A7（问题7）按钮、链接 hover 样式核查并按需修改，鼠标光标形状正确。
 - A9 回归：demo 自检面板既有断言全数通过（以运行时面板实际总数为准：上轮记录 144，静态清点 147，运行时口径由 verifier 确认；实施新增断言后为新基线，须全通过）。
-- A10 `npx eslint src/components/canvas-table/ demo/src/data/canvas-table/` 0 error 0 warning；`npm run build` 成功。
+- A10 `npx eslint src/components/table-ex/ demo/src/data/table-ex/` 0 error 0 warning；`npm run build` 成功。
 - A11（问题9）表格宽度 > 列宽总和（存在空白区）时，末列右侧绘制 1px 列边框（含表头），与既有列线同色同口径；无空白区时维持现状（末列右缘不画线）。
 
 ## 验证命令
 
-- lint：`npx eslint src/components/canvas-table/ demo/src/data/canvas-table/`（基线 0 error / 0 warning）
+- lint：`npx eslint src/components/table-ex/ demo/src/data/table-ex/`（基线 0 error / 0 warning）
 - 构建：`npm run build`
 - 浏览器：demo watch 已在 3000 端口运行，改动后须等 watch 重编译完成再验证
-  - 页面与自检面板：http://localhost:3000/data/canvas-table/
+  - 页面与自检面板：http://localhost:3000/data/table-ex/
 
 ## 基线
 
@@ -74,7 +74,7 @@ S1 单 explorer：8 项问题集中在同一组件目录、子域强耦合，不
 
 ## 约束
 
-- 允许改动：`src/components/canvas-table/**`、`demo/src/data/canvas-table/**`；其余源码、文档（skills/、docs-site/、docs/ 未经用户确认）、构建配置、依赖禁改。
+- 允许改动：`src/components/table-ex/**`、`demo/src/data/table-ex/**`；其余源码、文档（skills/、docs-site/、docs/ 未经用户确认）、构建配置、依赖禁改。
 - 不得回退既有性能优化：text-wrap 共享 ellipsize 缓存、hover 脏区去重、paintFixedArea 行区间收敛、估高扫描签名跳过。
 - 纯 JavaScript；BEM、`--mu-*` 变量约定（AGENTS.md）。
 - 角色不执行 git commit / push。
@@ -82,5 +82,5 @@ S1 单 explorer：8 项问题集中在同一组件目录、子域强耦合，不
 ## 背景资料
 
 - `agent-docs/plans/20261025-editable-table/`（可编辑表格功能的设计与实施，`02-design.md` 较大，按需检索）
-- `agent-docs/plans/20261027-canvas-table-fixes/`（上一轮六项缺陷修复 + eslint 清零）
-- `agent-docs/knowledge/patterns/canvas-table-performance-profiling.md`（性能验证方法）
+- `agent-docs/plans/20261027-table-ex-fixes/`（上一轮六项缺陷修复 + eslint 清零）
+- `agent-docs/knowledge/patterns/table-ex-performance-profiling.md`（性能验证方法）

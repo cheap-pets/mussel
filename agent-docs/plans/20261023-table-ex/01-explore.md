@@ -1,6 +1,6 @@
-# 探索报告 — canvas-table 前置探索
+# 探索报告 — table-ex 前置探索
 
-任务：`agent-docs/plans/20261023-canvas-table/00-task.md`。范围：① kaka-grid-next canvas 绘制能力（主）② mussel 现有 table。已读 `decisions.md`（仅两条流程开关，无技术约束）。
+任务：`agent-docs/plans/20261023-table-ex/00-task.md`。范围：① kaka-grid-next canvas 绘制能力（主）② mussel 现有 table。已读 `decisions.md`（仅两条流程开关，无技术约束）。
 
 ---
 
@@ -147,7 +147,7 @@
 - hiDPI 方案依赖劫持 canvas width/height 属性（侵入式 monkey-patch）；mussel 若复刻需决定沿用该方案或用标准 `canvas.width = cssW * dpr` 直乘方案（设计层决策，此处仅记录两种形态均存在于代码中）。
 - kaka 行定位在变高行场景为线性扫描（`HitTest.ts:66-75`），mussel table 现有行高恒定 36px（`--row-height`），等高模型可大幅简化窗口计算。
 - kaka 编辑器 detach 时机绑定 `SCROLL` 事件（滚动即提交+关闭）；`SELECTED_CELL` 也提交。选型 mussel 输入组件为 Vue 组件，kaka 编辑器为原生 input 单例——复用 mussel 组件需要 Vue mount 浮层，不能照抄 kaka 单例 input 模式（事实差异，非建议）。
-- mussel table 的 `update:cell-value` 事件语义已存在（check 列），canvas-table 若新增通用编辑事件需考虑与该命名风格兼容。
+- mussel table 的 `update:cell-value` 事件语义已存在（check 列），table-ex 若新增通用编辑事件需考虑与该命名风格兼容。
 - 浏览器高度上限（`MAX_SCROLL = browser.heightLimit - 1000`，`shared/utils` 的 browser.heightLimit）是 kaka 虚拟滚动的隐式依赖；mussel 侧无对应实现。
 
 ## 验证方式

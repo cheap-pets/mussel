@@ -1,4 +1,4 @@
-# 设计评审记录 — canvas-table（第 1 轮）
+# 设计评审记录 — table-ex（第 1 轮）
 
 VERDICT: REVISE
 
@@ -23,7 +23,7 @@ VERDICT: REVISE
 
 [blocker] `02-design.md:149-159`、`02-design.md:467` — sticky canvas 排在 spacer 之后且 spacer 高度自相矛盾；按此结构 canvas 大部分滚动范围位于视口下方，滚动几何不成立。 — 证据：DOM 骨架 `02-design.md:150` 将 `__spacer` 放在前、`__sticky` 放在后，`:159` 又要求 spacer 高度减去一个视口高；`:467` 的测试断言 spacer 高度 = 表头高 + 100000×36。`position: sticky; top:0` 只会限制元素不越过视口上缘，不会把静态位置在视口下方的元素上拉；spacer 在前时 sticky 层的静态位置≈内容底部。 — 建议：把 `__sticky` 放到 `__spacer` 之前（两者都在流内，spacer 高 = 内容总高 − 视口高），或改为 absolute canvas + 独立 spacer 撑高；同时统一 `:150`/`:159`/`:467` 的高度口径与断言。
 
-[blocker] `02-design.md:54-55`、`02-design.md:461`、`02-design.md:489` — demo 页面路径与 catalog 规则不一致；按文档执行 `npm run demo:build` 会在构建期抛错，测试 URL 404。 — 证据：改动清单写 `demo/src/canvas-table/main-view.vue + main.js`，catalog 写 `data/canvas-table`；`vite.demo.config.js:60-80` 要求入口为 `demo/src/<page.path>/main.js` 且 `page.path` 必须以分类 `data/` 开头（`demo/src/catalog.js:96-107`），产物输出到 `demo/dist/data/canvas-table/`；测试计划 `02-design.md:461` 与 S2 `:489` 使用 `http://localhost:3000/canvas-table/`。 — 建议：目录改为 `demo/src/data/canvas-table/`，URL 改为 `/data/canvas-table/`，并同步改动清单、S2 判据与测试计划。
+[blocker] `02-design.md:54-55`、`02-design.md:461`、`02-design.md:489` — demo 页面路径与 catalog 规则不一致；按文档执行 `npm run demo:build` 会在构建期抛错，测试 URL 404。 — 证据：改动清单写 `demo/src/table-ex/main-view.vue + main.js`，catalog 写 `data/table-ex`；`vite.demo.config.js:60-80` 要求入口为 `demo/src/<page.path>/main.js` 且 `page.path` 必须以分类 `data/` 开头（`demo/src/catalog.js:96-107`），产物输出到 `demo/dist/data/table-ex/`；测试计划 `02-design.md:461` 与 S2 `:489` 使用 `http://localhost:3000/table-ex/`。 — 建议：目录改为 `demo/src/data/table-ex/`，URL 改为 `/data/table-ex/`，并同步改动清单、S2 判据与测试计划。
 
 [blocker] `02-design.md:289-295`、`02-design.md:313-318`、`02-design.md:470` — 编辑浮层只阻止 pointerdown 冒泡，但画布单元格选择/提交走 click；且 `@blur="commitEdit"` 会在点击 `MuSelect`/`MuDateInput` 下拉项时先触发，编辑器先关闭、选项点击丢失，A6 的 enum/date 用例无法通过。 — 证据：设计 `:295` 仅声明“浮层内 pointerdown 阻止冒泡”，而 A5 的单元格交互是 `click`（`:268-270`）；`MuSelect`/`MuDateInput` 内部是可聚焦的 input（`src/components/form/combo-wrapper.vue:9-12`），blur 由 `src/components/form/input.js:65` 转发；下拉项是普通 div、未阻止 mousedown 默认行为（`src/components/dropdown/dropdown-item.vue:1-7`），点击选项先让 input 失焦。 — 建议：在 `__editor`/`__overlay` 同时拦截 `click`/`pointerup`，或在 `editing` 状态下屏蔽画布命中；blur 提交改为延迟判定或外部 pointerdown 判定；select/date 改用 `dropdown:hide`/值变化提交，不把 blur 作为唯一提交源。
 

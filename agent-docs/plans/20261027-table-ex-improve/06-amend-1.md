@@ -2,7 +2,7 @@
 
 VERDICT: OBJECT
 
-对象：`agent-docs/plans/20261027-canvas-table-improve/02-design.md`（已直接修改）
+对象：`agent-docs/plans/20261027-table-ex-improve/02-design.md`（已直接修改）
 基准：00-task.md「约束」+ A1–A10；decisions.md 各口径不动。
 
 ## 上次回应核对（第 2 次起）
@@ -17,7 +17,7 @@ VERDICT: OBJECT
 4. 影响面：补 paintTreeArrowAccent、interactions.resolveItemClick 返回形状、scss textarea 注释、main-view treeRecords 两处 `.value`、recordingCtx 记录面。
 5. 可实施：G1→S4→S5→G2→V 有序；G2 并行组「页面运行通过」判据原状不可执行（见第 8 项），已改。
 6. 风险与回滚：R1–R6 + 回滚单元成立；补 R7（多行编辑态首行位移）。
-7. 范围：改动全在 `src/components/canvas-table/**` 与 `demo/src/data/canvas-table/**`；文档差异已列入未解问题 5。
+7. 范围：改动全在 `src/components/table-ex/**` 与 `demo/src/data/table-ex/**`；文档差异已列入未解问题 5。
 8. 并行组：G1-a/b/c 与 G2 各文件集合两两不相交、无共享文件；但 G2 六组的完成判据「页面运行通过」耦合于整包构建（EDITOR_GAP 具名导入未收口前页面不可 boot）→ 判据已改为「编辑可并行、页面验证整组落地后一次执行」。
 
 ## 改动台账
@@ -33,9 +33,9 @@ VERDICT: OBJECT
 | 7 | 测试计划 A6 | 「editor.border:false 列如备注 validate 列…用金额列对照」→ switch 恒 bordered=false 作 borderless 载体；`border: false` 列 demo 无夹具，按代码层结论 | demo 全仓无 `border: false` 列配置（grep main-view.vue 仅命中 :396 validate），原描述自相矛盾且无夹具可执行 | 是 |
 | 8 | 测试计划 A8 + 问题 8 demo bullet | 「treeOn 关闭后箭头恢复且点击可排序」→ 「箭头恢复 + 点击产生 update:order-by（数据顺序不变）」 | main-view.vue:789-798 `stageRecords` case 'tree' 恒返回 treeRecords，不接 sortedRecords；树关后数据仍不排序 | 是 |
 | 9 | 实施步骤 G2 完成判据 | 「各组：新断言在页面运行通过」→ 「编辑可并行，页面级验证整组落地后一次执行」 | G1-a 删 EDITOR_GAP 后 self-checks/editor.js:27、self-checks/painter.js:20 具名导入使整包构建失败，页面不可 boot，逐组跑页面判据不可执行（并行组判据耦合） | 是 |
-| 10 | 问题 5 契约 onClick | payload 先例「与 update:cell-value 一致」→「对齐 cell-item-click（`_raw ?? col`）」，并注明 update:cell-value 传内部列 | editor.js:669 `context.column` 为已准备内部列，canvas-table.vue:918 传 wiredColumns 项；`_raw` 归一先例在 emitCellItemClick（canvas-table.vue:849-872） | 否 |
+| 10 | 问题 5 契约 onClick | payload 先例「与 update:cell-value 一致」→「对齐 cell-item-click（`_raw ?? col`）」，并注明 update:cell-value 传内部列 | editor.js:669 `context.column` 为已准备内部列，table-ex.vue:918 传 wiredColumns 项；`_raw` 归一先例在 emitCellItemClick（table-ex.vue:849-872） | 否 |
 | 11 | 问题 8 demo 夹具段 | 补 `debugFlatRowsLength` 的 buildChildrenIndex/buildFlatRows 两处 `.value` | main-view.vue:811/816 直接引用 treeRecords，改 ref 后传 Ref 对象会抛 TypeError | 否 |
-| 12 | 问题 1 风险 + 风险与回滚 R7 | 补多行编辑态首行位移说明 | textarea 首行顶仍 = 格顶+padding（canvas-table.scss:136-148）；改后画布 n≥2 首行锚下移 `lineHeight×(n−1)/2` | 否 |
+| 12 | 问题 1 风险 + 风险与回滚 R7 | 补多行编辑态首行位移说明 | textarea 首行顶仍 = 格顶+padding（table-ex.scss:136-148）；改后画布 n≥2 首行锚下移 `lineHeight×(n−1)/2` | 否 |
 | 13 | 问题 3 方案 scss bullet + 改动清单 scss 行 | 补「textarea『首行顶对齐』半句随问题 1 失效，删该半句」 | 原注释主张与改后锚定口径矛盾，留着会误导后续维护 | 否 |
 | 14 | 实施步骤 G1-a / G1-b | `painter.vue` → `painter.js`；G1-a 补两处 self-checks EDITOR_GAP 导入收口说明；G1-b 判据改「gridInset 缺省时单行锚不变、多行首行锚改为格中心（断言同步改写）」 | 原判据「缺省时行为 = 旧锚点」对多行路径不成立（锚随口径改变，与 gridInset 无关），会误导实施者核对 | 否 |
 | 15 | 问题 7 方案 → hoverMode none | 补「hoverMode none 时 hoverItem 置 null」 | 与同节编辑按钮「随 paintHoverOverlay 抑制」及 hoverMode=none 语义对齐，避免 none 下他因重绘仍画条目 hover | 否 |

@@ -1,4 +1,4 @@
-# canvas-table 垂直锚解耦：实施记录（2026-10-28）
+# table-ex 垂直锚解耦：实施记录（2026-10-28）
 
 按 design.md 实施。审阅阶段发现方案 §5 两处遗漏，已在本次一并补齐：
 
@@ -15,19 +15,19 @@
 
 | # | 文件 | 改动 |
 |---|---|---|
-| 1 | src/components/canvas-table/constants.js | 新增 `ROW_HEIGHT_FALLBACK = 36`；ROW_TOP_INSET 注释改新公式 |
-| 2 | src/components/canvas-table/cell-painters.js | drawCell 锚式 `box.y + (rowHeight − ROW_TOP_INSET)/2`；局部 lineHeight 删除；文件头锚描述同步 |
-| 3 | src/components/canvas-table/painter.js | paintTreeArrowAccent / paintEditorButton 同式替换；import 换 ROW_HEIGHT_FALLBACK |
-| 4 | src/components/canvas-table/editor.js | editorButtonRectOf 选项 `lineHeight`→`rowHeight`，JSDoc 同步 |
-| 5 | src/components/canvas-table/canvas-table.vue | isEditorButtonHit 传 `snapshot.rowHeight` |
-| ▲ | src/components/canvas-table/constants.js | 删除死导出 `CELL_LINE_HEIGHT_FALLBACK`（改动后全仓库无消费方） |
+| 1 | src/components/table-ex/constants.js | 新增 `ROW_HEIGHT_FALLBACK = 36`；ROW_TOP_INSET 注释改新公式 |
+| 2 | src/components/table-ex/cell-painters.js | drawCell 锚式 `box.y + (rowHeight − ROW_TOP_INSET)/2`；局部 lineHeight 删除；文件头锚描述同步 |
+| 3 | src/components/table-ex/painter.js | paintTreeArrowAccent / paintEditorButton 同式替换；import 换 ROW_HEIGHT_FALLBACK |
+| 4 | src/components/table-ex/editor.js | editorButtonRectOf 选项 `lineHeight`→`rowHeight`，JSDoc 同步 |
+| 5 | src/components/table-ex/table-ex.vue | isEditorButtonHit 传 `snapshot.rowHeight` |
+| ▲ | src/components/table-ex/constants.js | 删除死导出 `CELL_LINE_HEIGHT_FALLBACK`（改动后全仓库无消费方） |
 | 6 | self-checks/cell-painters.js | THEME 补 rowHeight；fillText y 断言 18→18.5 系 7 处；button 命中 `'8,20'`→`'8.5,20'`；下划线 25→25.5 ×2；:713 零回归注记按新公式重述；槽位锚组名与残差注释改「行线中点」口径 |
 | 7 | self-checks/editor.js | 默认参 y 6→6.5；tall 6→6.5；custom 换 `{ padding:12, rowHeight:44 }` 重算 [204,50.5,24,24]；offset 206→206.5 |
 | ▲ | self-checks/painter.js | （方案遗漏）THEME 补 rowHeight；rowText 54→54.5 ×5 + length 断言 + M1 90→90.5；itemHits 45→45.5、44→44.5；按钮区 42→42.5；import 删 CELL_LINE_HEIGHT_FALLBACK；脏区/树箭头注释口径同步 |
 
 ## 验证（design.md §6）
 
-1. ✅ demo 页自检面板 **163/163 通过**（http://localhost:3000/data/canvas-table/，
+1. ✅ demo 页自检面板 **163/163 通过**（http://localhost:3000/data/table-ex/，
    console 仅存 img 夹具预期加载失败 error，与本改动无关）。
 2. ✅ 默认 36px 行高：首行文字墨迹中心实测 54.25 CSS px，锚 = 行线中点 54.5，
    残差 −0.25px = 方案 §8 已记录的字体固有方差（改前该残差为 −0.75px，其中

@@ -1,8 +1,8 @@
-# 任务：mussel canvas-table 组件设计（design-review 流水线）
+# 任务：mussel table-ex 组件设计（design-review 流水线）
 
 ## 目标
 
-为 mussel 组件库设计新组件 canvas-table（canvas 绘制的高性能表格），产出可独立实施、独立验证的设计文档。本流水线不实施。
+为 mussel 组件库设计新组件 table-ex（canvas 绘制的高性能表格），产出可独立实施、独立验证的设计文档。本流水线不实施。
 
 ## 流水线与角色映射
 
@@ -20,7 +20,7 @@
 3. 性能：参考 kaka-grid-next（`D:\workshop\mctech\components\kaka-grid-next`）的虚拟滚动与绘制方式，仅绘制可视区行，禁止一次绘制全部行。
 4. 列定义参考现有 mussel table；列头支持拖拽调整列宽、排序。
 5. 表格级与列级均可定义只读/可编辑；单元格编辑复用 mussel 现有输入组件（如 input/select 等），可做适配层，不可新写一套输入组件。
-6. 项目代码约定：纯 JavaScript（无 TypeScript）、Vue 3 Composition API `<script setup>`、BEM（`mu-canvas-table__*`）、构建 UMD、Vue 为外部依赖。
+6. 项目代码约定：纯 JavaScript（无 TypeScript）、Vue 3 Composition API `<script setup>`、BEM（`mu-table-ex__*`）、构建 UMD、Vue 为外部依赖。
 
 ## 验收标准（设计文档须可据此逐条核对）
 
@@ -31,7 +31,7 @@
 - [ ] 给出列头拖拽调宽与排序交互设计：命中检测、光标反馈、事件序列、与排序状态的联动。
 - [ ] 给出单元格编辑设计：编辑器以 DOM 浮层复用 mussel 输入组件的具体方式（定位、生命周期、数据流、校验、提交/取消），表格级/列级只读控制。
 - [ ] 给出样式方案：从 `--mu-*` 变量取值的方式（含暗色模式切换的感知时机）、行高/边框/hover/选中态等视觉规格与现有 table 对齐。
-- [ ] 给出文件结构与模块划分（`src/components/canvas-table/` 下文件拆分与职责）。
+- [ ] 给出文件结构与模块划分（`src/components/table-ex/` 下文件拆分与职责）。
 - [ ] 明确范围边界：本期不支持的能力逐条列出。
 
 ## 开关状态
@@ -55,10 +55,10 @@
 
 - 验证命令（取自 package.json 与设计测试计划）：
   - `npm run build`（库构建，dev + prod）
-  - `npx stylelint src/components/canvas-table/*.scss --fix`（样式风格；先 --fix）
+  - `npx stylelint src/components/table-ex/*.scss --fix`（样式风格；先 --fix）
   - demo 页自检区断言 + playwright DOM/像素断言（按 `02-design.md` 测试计划 A1–A9 全表）
 - 验证环境（取自 AGENTS.md）：
-  - demo 站点：`npm run demo:build`（vite watch 模式，含 :3000 端口静态服务）；页面 `http://localhost:3000/data/canvas-table/`；catalog 登记后需重启 watch 进程
+  - demo 站点：`npm run demo:build`（vite watch 模式，含 :3000 端口静态服务）；页面 `http://localhost:3000/data/table-ex/`；catalog 登记后需重启 watch 进程
   - 浏览器手段：playwright mcp，先直接访问；DOM/可访问性快照断言优先；canvas 像素用 `browser_evaluate` getImageData；坐标级交互（列缘拖拽/单元格命中）用 `browser_run_code_unsafe` 的 `page.mouse` 系列 + demo 暴露的坐标辅助
   - 无测试框架，无额外测试数据准备（demo 页自带 10 万行生成器）
 

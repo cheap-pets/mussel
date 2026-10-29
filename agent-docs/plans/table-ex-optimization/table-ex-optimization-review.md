@@ -1,8 +1,8 @@
-# canvas-table 优化方案评估与补充
+# table-ex 优化方案评估与补充
 
-> 评估对象：`agent-docs/plans/canvas-table-optimization/canvas-table-optimization.md`
-> 评估基准：`src/components/canvas-table/` 当前工作区代码（11 文件 6585 行）
-> 方法：全量源码复核 + demo `http://localhost:3000/data/canvas-table/` 前台实测
+> 评估对象：`agent-docs/plans/table-ex-optimization/table-ex-optimization.md`
+> 评估基准：`src/components/table-ex/` 当前工作区代码（11 文件 6585 行）
+> 方法：全量源码复核 + demo `http://localhost:3000/data/table-ex/` 前台实测
 > （Playwright，`lastPaint.elapsed` / `PerformanceObserver('longtask')` /
 > 原型劫持 `measureText`、`setTransform` 计数）。本文不改代码。
 
@@ -115,7 +115,7 @@
 
 方案对 `events` 闭包的风险判断正确（壳传 stable `emit`，缓存后闭包仍指当次 emit）。
 补充一个失效维度：`emitCellItemClick` / check 列点击路径也调 `resolveCellContent`
-（`canvas-table.vue:903`、`:970`），缓存若只装在 painter 侧会出现「同一格两套结果」，
+（`table-ex.vue:903`、`:970`），缓存若只装在 painter 侧会出现「同一格两套结果」，
 建议缓存挂在 `resolveCellContent` 入口而非 `drawCell` 内部。
 
 ### P2-1 估高全量扫描 —— 严重度评低了，应升 P0（本方案最大偏差）
@@ -124,7 +124,7 @@
 单列 400ns/行，主要是 `valueOf` + `columnLineCount` 的函数调用开销）；uniform 模式
 同等条件 1–2ms。
 
-**触发面比方案写的大**，根因在 `canvas-table.vue:502-506`：
+**触发面比方案写的大**，根因在 `table-ex.vue:502-506`：
 
 ```js
 const wantVariable = rowGeometryMode.value === 'variable' || isVariableCandidate()
@@ -171,7 +171,7 @@ variable 模式下列宽变化后全部精算行高丢失 → `contentHeight` �
 
 ### N1 hover 双重重绘（建议随阶段 0 一起改）
 
-`updateHover`（`canvas-table.vue:799-807`）对 `prev` 与 `next` 各调一次
+`updateHover`（`table-ex.vue:799-807`）对 `prev` 与 `next` 各调一次
 `invalidate(...)`，每次 `immediate: true` 同步重绘。row / cross 模式下同行内横向
 移动时两条脏带完全相同。实测：同行内换列 9 次，每次 `setTransform` 调用 **2 次**；
 单行横移 12 步共 14 次重绘（去重后应为 7 次）。
@@ -195,7 +195,7 @@ P0-1 的 9ms 量级。**记录为已排除**，避免后续重复评估。
 
 ### N4 `getBoundingClientRect` 每次 pointermove（P2）
 
-`pointOf`（`canvas-table.vue:747-751`）每次 pointermove 读一次 canvas rect（实测
+`pointOf`（`table-ex.vue:747-751`）每次 pointermove 读一次 canvas rect（实测
 1 次/move，强制同步布局）。canvas 是 sticky、几何只在 relayout 时变，可在
 `relayoutAndRedraw` 末尾缓存 rect、`onResize` 失效。收益 µs 级、风险为零，可选。
 
@@ -240,7 +240,7 @@ grep 确认「仅自检/零消费」的导出与字段：
 | `resolveEditorComponent` | editor:313 | 仅 self-checks |
 | `getImageEntry` | cell-painters:72 | 仅 self-checks |
 | `COL_FALLBACK` | layout:22 | 仅注释引用（已被 `TYPE_DEFAULT_WIDTHS` 取代） |
-| `paintState.tree` | canvas-table.vue:344 | painter 从不读取 |
+| `paintState.tree` | table-ex.vue:344 | painter 从不读取 |
 | `theme` 快照 `controlHeight` | theme.js:118 | 仅 self-checks 断言存在性 |
 
 处置口径沿用方案：连同自检断言一起删，或标注 `self-check only`。

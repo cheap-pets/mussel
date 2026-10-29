@@ -1,13 +1,13 @@
 # 实施记录：G2-4（self-checks/painter.js）
 
-模式：并发（波 2b / 步骤 G2-4）。白名单：`demo/src/data/canvas-table/self-checks/painter.js`（仅此文件）。
+模式：并发（波 2b / 步骤 G2-4）。白名单：`demo/src/data/table-ex/self-checks/painter.js`（仅此文件）。
 依据：02-design.md「测试计划」A1/A3/A5/A6/A9 行与「改动清单」self-checks/painter.js 行、派发追加约束枚举；painter 侧实现形态以 04-impl-S4.md 为准（editorRectOf 恒等、rightInsetOf/veil/paintEditorButton/blankTail 均已合入）。
 
 ## 改动文件
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| demo/src/data/canvas-table/self-checks/painter.js | G2-4（问题 1/3/5/6/9 断言） | 净 +420/−37；检查条目 18 → 23（+5 新增），import 删 `EDITOR_GAP`、增 `editorButtonRectOf`/`CELL_LINE_HEIGHT_FALLBACK`/`requestIconImage`。见下 |
+| demo/src/data/table-ex/self-checks/painter.js | G2-4（问题 1/3/5/6/9 断言） | 净 +420/−37；检查条目 18 → 23（+5 新增），import 删 `EDITOR_GAP`、增 `editorButtonRectOf`/`CELL_LINE_HEIGHT_FALLBACK`/`requestIconImage`。见下 |
 
 改动摘要：
 
@@ -38,7 +38,7 @@
 
 | 判据 | 方式 | 结果 |
 |---|---|---|
-| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/canvas-table/self-checks/painter.js` | **0 error / 0 warning**（初跑 1 warning：colorBoundsOf complexity 12 → 抽 `isPixelNear` 谓词后归 0） |
+| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/table-ex/self-checks/painter.js` | **0 error / 0 warning**（初跑 1 warning：colorBoundsOf complexity 12 → 抽 `isPixelNear` 谓词后归 0） |
 | 直调走查（确定性期望值对真实模块执行） | /tmp esbuild 打包（.vue/.scss stub、alias @→src）+ node 运行复刻 harness：默认夹具 colWidths/blankTail、A3 格矩形、editorButtonRectOf 区矩形、link 条目矩形（10 条/首条 208,45/高 18）、rightInset 四态 center 锚（265/129.5/264.5/265+130）、槽位锚 y 54/90、窄夹具 contentWidth 350 与线位 x=349 | **21 passed / 0 failed**（临时文件已清理，未触碰仓库） |
 | 白名单 | `git status`：本组仅 painter.js 自检文件改动（其余在途改动属并发他组/前序波次，未触碰） | PASS |
 

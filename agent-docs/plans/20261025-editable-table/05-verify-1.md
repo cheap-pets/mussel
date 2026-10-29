@@ -9,9 +9,9 @@ VERDICT: FAIL
 | 命令 | 状态 | 关键输出 |
 |---|---|---|
 | `npm run build` | exit 0 | dev `mussel.js 600.74 kB / css 120.64 kB`；prod `mussel.min.js 282.16 kB / min.css 97.55 kB` |
-| `npx stylelint "src/components/canvas-table/*.scss" src/styles/link.scss` | exit 0 | 无输出无错误 |
-| `ls src/components/canvas-table/` | 12 文件 | canvas-table.vue/.scss/index.js/theme/row-geometry/text-wrap/tree/layout/cell-painters/painter/editor/interactions.js——与设计 A7 一致（#9 PASS） |
-| 自检面板首载（/data/canvas-table/） | 通过 | 「自检结果（142/142 通过）」；分组计数 text-wrap 10 / row-geometry 12 / tree 8 / theme 14 / layout 21 / cell-painters 28 / painter 14 / interactions 18 / editor 13 / data 4 = 142，0 失败 |
+| `npx stylelint "src/components/table-ex/*.scss" src/styles/link.scss` | exit 0 | 无输出无错误 |
+| `ls src/components/table-ex/` | 12 文件 | table-ex.vue/.scss/index.js/theme/row-geometry/text-wrap/tree/layout/cell-painters/painter/editor/interactions.js——与设计 A7 一致（#9 PASS） |
+| 自检面板首载（/data/table-ex/） | 通过 | 「自检结果（142/142 通过）」；分组计数 text-wrap 10 / row-geometry 12 / tree 8 / theme 14 / layout 21 / cell-painters 28 / painter 14 / interactions 18 / editor 13 / data 4 = 142，0 失败 |
 | 自检面板页内重跑 | 通过 | JS 触发「重跑自检」→ 仍 142/142、0 ✗ |
 | 控制台 | 2 error | 均为自检夹具故意 badSrc（`data:image/png;base64,AAAA1/AAAA2`），既有测试行为非缺陷 |
 
@@ -53,12 +53,12 @@ VERDICT: FAIL
 
 ## 范围核对
 
-- 基线排除项（00-task.md 基线已含，不计改动）：`src/components/canvas-table/`（untracked，基线即有）、`src/components/index.js`、`demo/src/catalog.js`、`.gitignore`（前序任务脏文件）、`demo/src/data/canvas-table*/`（untracked 基线即有）。
+- 基线排除项（00-task.md 基线已含，不计改动）：`src/components/table-ex/`（untracked，基线即有）、`src/components/index.js`、`demo/src/catalog.js`、`.gitignore`（前序任务脏文件）、`demo/src/data/table-ex*/`（untracked 基线即有）。
 - 验证产物：`dist/`（npm run build，被 .gitignore 忽略，git status 不可见）；`.playwright-mcp/`（截图/日志，未入 git status 输出）。
 - 无法区分：无（基线脏文件与本任务改动文件不相交）。
 - 设计外改动：
   - `src/components/table/column-types/tag.js`（+5/−1，对象条目保留）——**已记录**（04-impl-集成.md BLOCKED 处置 + decisions.md「[S1 集成]」授权），设计改动清单**未覆盖**（共享文件表仅 link.js/link.scss）。
-  - `demo/src/data/canvas-table/self-checks/cell-painters.js` 的 TagColumn 断言——该文件在 G2/G3 改动清单内（已覆盖）。
+  - `demo/src/data/table-ex/self-checks/cell-painters.js` 的 TagColumn 断言——该文件在 G2/G3 改动清单内（已覆盖）。
 - 并行组白名单核对：G1-a（3 新模块 + 3 自检 + index）、G1-b（theme + 自检）、G2（layout/painter/cell-painters/scss + 共享 2 + 3 自检）、G3（interactions/editor/vue + 2 自检 + 2 demo 页）——各组改动均未越出白名单（tag.js 例外已由 decisions 授权增补）。
 - 结论：无「未记录」改动；1 项「已记录-未覆盖」（tag.js）。
 
@@ -87,14 +87,14 @@ VERDICT: FAIL
 ### 1.【FAIL·测试计划 #15 / 设计 A2.2 单调性 / A2.4 行高缓存承诺】变高行滚动后 contentHeight/scrollHeight 回缩，已精算行高丢失
 
 - 现象：树场景（variable 模式，1 万节点含长文本行）滚动到包含长行的区域后滚离，行高被重置为 36px 估高：row 9998（根 2000，长文本）实测 70 → 滚回中部后 **36**；contentHeight **360178 → 360144**、spacer DOM **359762px → 359728px**、scrollHeight 同步回缩（滚动条变短）。底部↔中部往返 3/3 轮确定性复现（360178↔360144 交替），零交互干净重载后同样复现。
-- 根因链（逐步实证据证）：滚动边界切换根 class（`mu-canvas-table--y-scrolled-end` 等，canvas-table.vue:298-300）→ theme.js:259-262 MutationObserver 观察组件根 `attributeFilter:['class','style']`，将滚动状态 class 翻转误判为主题变更（页面级 MutationObserver 实测捕获两次 class 翻转，与回缩时刻对应）→ `scheduleRefresh('mutation')` → 壳 onThemeChange（canvas-table.vue:1434 一带）→ `relayoutAndRedraw` → `computeRowHeights` 纯估高 + `variableGeometry.rebuild(heights)`（canvas-table.vue:485-506）——**rebuild 无 record 引用级行高缓存，窗外已精算高度全部丢弃**（设计 A2.4「行高缓存按 record 引用为键，未变行复用」「已精算行经 record 引用缓存保留真值」未实现）；随后窗口重精算只恢复当前窗口行。
+- 根因链（逐步实证据证）：滚动边界切换根 class（`mu-table-ex--y-scrolled-end` 等，table-ex.vue:298-300）→ theme.js:259-262 MutationObserver 观察组件根 `attributeFilter:['class','style']`，将滚动状态 class 翻转误判为主题变更（页面级 MutationObserver 实测捕获两次 class 翻转，与回缩时刻对应）→ `scheduleRefresh('mutation')` → 壳 onThemeChange（table-ex.vue:1434 一带）→ `relayoutAndRedraw` → `computeRowHeights` 纯估高 + `variableGeometry.rebuild(heights)`（table-ex.vue:485-506）——**rebuild 无 record 引用级行高缓存，窗外已精算高度全部丢弃**（设计 A2.4「行高缓存按 record 引用为键，未变行复用」「已精算行经 record 引用缓存保留真值」未实现）；随后窗口重精算只恢复当前窗口行。
 - 影响：滚动条在往返滚动中收缩/增长抖动；已访问区域行位置漂移；违反测试计划 #15「滚动条单调不回缩（滚动全程 scrollHeight 只增）」与设计 A2.2「行高只增不减 → totalHeight/spacer 单调增长，无回缩抖动」。
-- 疑似位置：`src/components/canvas-table/theme.js:259-262`（观察器未排除滚动状态 class——触发源过宽）；`src/components/canvas-table/canvas-table.vue:485-506`（估高 rebuild 不保留已精算值）；`src/components/canvas-table/canvas-table.vue:298-300`（滚动状态 class 挂在被观察的根上）。
+- 疑似位置：`src/components/table-ex/theme.js:259-262`（观察器未排除滚动状态 class——触发源过宽）；`src/components/table-ex/table-ex.vue:485-506`（估高 rebuild 不保留已精算值）；`src/components/table-ex/table-ex.vue:298-300`（滚动状态 class 挂在被观察的根上）。
 
 ### 2.【FAIL·测试计划 #14 夹具】固定列组合场景 button 列未接数据，双区命中 e2e 的 button 半边不可执行
 
 - 现象：fixed 场景 button 列（滚动区）画布零绘制（红色像素 0、fillText/roundRect 零调用——fillText 全量日志证实该列 body 无任何绘制调用），点击只发 cell-click 不发 `cell-item-click`。
-- 原因：`demo/src/data/canvas-table/main-view.vue:650` button 列定义缺 `buttons` 配置（items 场景同型列配有 `buttons: record => record.buttons`）——`getButtons(record) ?? []` 得空数组，drawButton 直接返回。文件 mtime 早于本会话，非验证过程改动。
+- 原因：`demo/src/data/table-ex/main-view.vue:650` button 列定义缺 `buttons` 配置（items 场景同型列配有 `buttons: record => record.buttons`）——`getButtons(record) ?? []` 得空数组，drawButton 直接返回。文件 mtime 早于本会话，非验证过程改动。
 - 影响：设计改动清单（demo main-view.vue 行）「固定列组合（fixedLeftColumns ≥ 2 且 item 列分居两区——双 pass 命中 e2e 夹具）」中 button 滚动区夹具失效；测试计划 #14「两区条目均命中」button 半边无法执行。组件双 pass 命中能力本身正常（固定区 link 命中 + 滚动区 tag 命中均实测发事件）。
 - 附带：同场景数量列渲染 "NaN"（itemRecords 无 count 字段）——夹具数据缺陷。
 

@@ -3,7 +3,7 @@
 输入：decisions.md 新增「检查点-A1判据」「检查点-通道」两条终版口径（用户答复「非多行列，按默认行高区域居中」+ 选定「删除简化」）。
 产物：本文件 + 直接修改的 02-design.md。
 范围约束：仅按两条终版口径落稿；不重开其他章节；**不回退 06-amend-2 的 22 项实质改动**（含 ROW_TOP_INSET 常量化——本轮零触碰，仅删其上层的列分类通道）。
-代码现状核对：`git status` 干净、`topAlign` 在 `src/components/canvas-table/`、`demo/src/data/canvas-table/` 0 命中——通道未实施，删除属纯设计层落稿，无源码回退动作。
+代码现状核对：`git status` 干净、`topAlign` 在 `src/components/table-ex/`、`demo/src/data/table-ex/` 0 命中——通道未实施，删除属纯设计层落稿，无源码回退动作。
 
 ## 改动台账（对 02-design.md）
 
@@ -21,10 +21,10 @@
 | 10 | 问题 1「多行锚」bullet | 删尾句「列级 top 对齐的实现边界：topAlign 参数对锚值无影响——保留为 Q1 机制载体，见异议 3」；「不再依赖列分类切换锚点（见异议 3）」→「不依赖列分类（通道已删除，检查点-通道）」 | 检查点-通道 |
 | 11 | 问题 1「列分类谓词」bullet（含「注意（Q1 与 Q2 的交互）」）+「壳接线」bullet | 两个 bullet 删除，合并为单条「列分类通道：不实现」：全链路（row-geometry 导出 / paintState 字段 / drawCell 参数 / 壳 computed）不做；[检查点-Q1] 谓词答复留档要点（选项 1 + SINGLE_LINE_TYPES 恒 false + 数据源 props.records 全量非 displayRows）压缩保留备查；测试计划不以列锚差为判据、A1 只验统一锚 | 检查点-通道（异议 3 销项；留档口径同 decisions 原文） |
 | 12 | 问题 1 尾部三 bullet | 表头居中引用 未解 2→1（随重编号）；「与人工意见 1 字面的对齐」尾句「异议 1，需用户裁决」→「终版口径已裁决」；Q1/Q2 状态句改「垂直锚终版 = 槽位锚；Q1 谓词留档、不实现；无待确认项」 | 检查点-A1判据 / 通道 + 未解问题重编号 |
-| 13 | 问题 1 涉及文件/函数 + 风险句 | 涉及文件删 row-geometry.js 与 canvas-table.vue（topAlignCols computed）条目，补「row-geometry.js 零改动」；风险句删「topAlignCols 分类不改变绘制结果，扫描成本见 R8」尾巴 | 检查点-通道 |
+| 13 | 问题 1 涉及文件/函数 + 风险句 | 涉及文件删 row-geometry.js 与 table-ex.vue（topAlignCols computed）条目，补「row-geometry.js 零改动」；风险句删「topAlignCols 分类不改变绘制结果，扫描成本见 R8」尾巴 | 检查点-通道 |
 | 14 | 问题 7 光标 bullet | 「见未解问题 3」→「见未解问题 2」 | 未解问题重编号（check 条目 3→2） |
 | 15 | 遵循约定与复用 | 模块隔离句删「列分类谓词放 row-geometry.js」；单一事实源句删「多行列分类 = topAlignColumnsOf（paintState.topAlignCols）」；性能优化句删「与 topAlignCols 列分类扫描（R8）」 | 检查点-通道 |
-| 16 | 改动清单表 | cell-painters.js 行删 topAlign；**删 row-geometry.js 整行**；painter.js 行删 topAlign 注入、state 契约去 topAlignCols；canvas-table.vue 行「增 topAlignCols/hoverItem/editingCell + computed」→「增 hoverItem/editingCell（无 topAlignCols 字段）」并删 computed 句；self-checks/cell-painters.js 行删「topAlign true/false 逐值相等」断言项；**删 self-checks/row-geometry.js 整行**；不改动清单改「row-geometry.js 整文件 + self-checks/row-geometry.js（既有断言不改）」 | 检查点-通道 |
+| 16 | 改动清单表 | cell-painters.js 行删 topAlign；**删 row-geometry.js 整行**；painter.js 行删 topAlign 注入、state 契约去 topAlignCols；table-ex.vue 行「增 topAlignCols/hoverItem/editingCell + computed」→「增 hoverItem/editingCell（无 topAlignCols 字段）」并删 computed 句；self-checks/cell-painters.js 行删「topAlign true/false 逐值相等」断言项；**删 self-checks/row-geometry.js 整行**；不改动清单改「row-geometry.js 整文件 + self-checks/row-geometry.js（既有断言不改）」 | 检查点-通道 |
 | 17 | 接口 / 数据结构 | 删 topAlignColumnsOf 代码块 → 改为「row-geometry.js：零改动」注释（含留档答复要点）；drawCell 签名删 topAlign 参数行；删「topAlign 无效参数，保留/简化二选一」块；paintState 契约删 topAlignCols 行、括注补「无 topAlignCols 字段——通道删除」 | 检查点-通道（二选一已裁决为「简化」，不再留选择） |
 | 18 | 被拒绝的备选 | 新增第 11 条「问题 1 保留列分类通道」（死链路，06-amend-2 异议 3；检查点-通道 裁决删除、答复留档）；第 3 条（数据级判定被拒）加注「通道已整体删除，本条留存理由备查供日后加回参照」 | 检查点-通道；保留历史决策依据 |
 | 19 | 风险与回滚 | **删 R8**（topAlignCols 扫描成本——通道删除后成本项不存在）；R9–R11 编号不变（避免 R9/R10 在问题 8/问题 1/方案概述/A1 行的交叉引用漂移；R11 hoverItem 陈旧性与通道无关，保留）；R10 删「若用户改判 +0.5 读法则分类切锚（5 处 + accent + centerY）…异议 O3」备选尾段，判据句改「终版口径（检查点-Q2 + A1判据）的直接结果…超高行只断言跨列首行同高」 | 检查点-通道（分类切锚备选随通道删除失效）+ 检查点-A1判据 |

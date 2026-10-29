@@ -2,11 +2,11 @@
 
 ## 触发特征
 
-断言 canvas-table 滚动阴影「出现/位置」时，getImageData 读 header 下沿区域与未滚动帧无像素差异，疑似功能失效。
+断言 table-ex 滚动阴影「出现/位置」时，getImageData 读 header 下沿区域与未滚动帧无像素差异，疑似功能失效。
 
 ## 根因
 
-顶部滚动阴影是 overlay 层 DOM 元素的 box-shadow（`.mu-canvas-table__header-shadow`），不在 canvas 位图内，getImageData 读不到。
+顶部滚动阴影是 overlay 层 DOM 元素的 box-shadow（`.mu-table-ex__header-shadow`），不在 canvas 位图内，getImageData 读不到。
 
 ## 做法
 
@@ -15,4 +15,4 @@
 
 ## 来源
 
-agent-docs/plans/20261027-canvas-table-improve/05-verify-1.md（A2 行验证手段修正）；src/components/canvas-table/canvas-table.scss
+agent-docs/plans/20261027-table-ex-improve/05-verify-1.md（A2 行验证手段修正）；src/components/table-ex/table-ex.scss

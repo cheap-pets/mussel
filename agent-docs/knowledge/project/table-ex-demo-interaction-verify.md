@@ -1,8 +1,8 @@
-# canvas-table demo 页交互验证（合成点击 + getLayoutInfo + 日志读取）
+# table-ex demo 页交互验证（合成点击 + getLayoutInfo + 日志读取）
 
 ## 结论
 
-- 单元格点击：向 `.mu-canvas-table__sticky` 派发 `PointerEvent('pointerdown'/'pointerup')` + `MouseEvent('click')`，均带 `clientX/clientY`（`pointOf` 按 `clientX − canvas.getBoundingClientRect()` 换算，缺坐标则命中失败）。
+- 单元格点击：向 `.mu-table-ex__sticky` 派发 `PointerEvent('pointerdown'/'pointerup')` + `MouseEvent('click')`，均带 `clientX/clientY`（`pointOf` 按 `clientX − canvas.getBoundingClientRect()` 换算，缺坐标则命中失败）。
 - 坐标计算：`canvas.__vueParentComponent.exposed.getLayoutInfo()` 取 `colWidths`（含首列 48px check 列）前缀和 + 列宽/2，`y = headHeight + 18`（首行）。
 - 断言时机：编辑器浮层 `__editor` 由 v-if 渲染，dispatch 后须 `await ~80ms+` 再查 DOM，同步查询恒为不存在。
 - 事件日志 `.ct-event-log__item` 为 unshift 最新在前：`slice(0, n)` 读最新，`slice(-n)` 读到最旧。
@@ -11,8 +11,8 @@
 
 ## 来源
 
-- demo/src/data/canvas-table/main-view.vue（logEvent unshift、stageColumns 列序）
-- src/components/canvas-table/canvas-table.vue（sticky 监听层、pointOf、getLayoutInfo expose）
+- demo/src/data/table-ex/main-view.vue（logEvent unshift、stageColumns 列序）
+- src/components/table-ex/table-ex.vue（sticky 监听层、pointOf、getLayoutInfo expose）
 - 2026-10-28 编辑态保持改造的 playwright 实测
 
 ## 注意

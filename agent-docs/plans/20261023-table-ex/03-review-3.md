@@ -1,4 +1,4 @@
-# 设计评审记录 — canvas-table（第 3 轮）
+# 设计评审记录 — table-ex（第 3 轮）
 
 VERDICT: REVISE
 
@@ -66,7 +66,7 @@ VERDICT: REVISE
 
 [major] `02-design.md:54`、`:615`（G0 夹具清单）与测试 `:598`、`:600`、`:601`、`:602`、`:603`、`:604` — G0 仍缺新断言依赖的夹具/入口：① columns 引用替换控件（A1）；② `headerChecked` 受控绑定（A1 表头 ✓ 图形变化）；③ `orderBy` 受控绑定（A5 排序图标方向）；④ `update:cell-value` 处理器就地改 record（A3/A6 像素更新）；⑤ 表格 `resizable` 开启（A5 拖拽）；⑥ 同页 DOM 版 `mu-table` 参照（A4/A7 并排比对）。S3 无法按表执行。 — 证据：`:54`/`:615` 清单逐项无上述入口；`:598` 要求"替换 columns 数组后…✓ 立即变化"；`:600`/`:603` 要求"demo 事件处理器内就地改 record"；`:601`/`:604` 要求"DOM 版 table 并排比对"；`:602` 要求图标方向与拖拽。 — 建议：把 6 项写入改动清单 demo 行与 G0 任务/判据（`v-model:header-checked`、`v-model:order-by`、`resizable`、columns 替换按钮、就地改 record 的处理函数、参照 MuTable）。
 
-[major] `02-design.md:598`、`:602`、`:603` — canvas 交互断言指定的 Playwright 手段不可执行：`browser_click`/`browser_drag`/`browser_hover` 只接受元素引用并按元素中心操作，canvas 是单个元素，无法命中表头某列、指定单元格或列右缘 4px 手柄，也无法在拖拽中途采样像素。A1 的"点击表头/单元格"、A5 的"拖非固定列缘 ± / 拖拽中像素采样 / 固定列缘 cursor"、A6 的"dblclick 文本格"按现手段无法验证。 — 证据：设计 `:598`、`:602`、`:603`；playwright MCP 的 `browser_click`/`browser_drag` 参数为 element ref（无坐标入参），`browser_drag` 从起点元素中心拖到终点元素中心。 — 建议：在 demo 暴露坐标辅助（如 `window.__canvasTable.getCellRect(row, col)`，或基于 `getLayoutInfo()` 的 `colWidths/rowHeight/headHeight` + `scrollTop/scrollLeft` 计算），交互与中途采样改用 `browser_run_code_unsafe` 的 `page.mouse.move/down/up`；或给 demo 加调试用 DOM 手柄（列缘绝对定位标记），测试按元素引用拖拽。
+[major] `02-design.md:598`、`:602`、`:603` — canvas 交互断言指定的 Playwright 手段不可执行：`browser_click`/`browser_drag`/`browser_hover` 只接受元素引用并按元素中心操作，canvas 是单个元素，无法命中表头某列、指定单元格或列右缘 4px 手柄，也无法在拖拽中途采样像素。A1 的"点击表头/单元格"、A5 的"拖非固定列缘 ± / 拖拽中像素采样 / 固定列缘 cursor"、A6 的"dblclick 文本格"按现手段无法验证。 — 证据：设计 `:598`、`:602`、`:603`；playwright MCP 的 `browser_click`/`browser_drag` 参数为 element ref（无坐标入参），`browser_drag` 从起点元素中心拖到终点元素中心。 — 建议：在 demo 暴露坐标辅助（如 `window.__tableEx.getCellRect(row, col)`，或基于 `getLayoutInfo()` 的 `colWidths/rowHeight/headHeight` + `scrollTop/scrollLeft` 计算），交互与中途采样改用 `browser_run_code_unsafe` 的 `page.mouse.move/down/up`；或给 demo 加调试用 DOM 手柄（列缘绝对定位标记），测试按元素引用拖拽。
 
 ### Minor
 

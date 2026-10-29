@@ -4,8 +4,8 @@
 
 | 文件 | 对应设计步骤 | 说明 |
 |------|------------|------|
-| `src/components/canvas-table/cell-painters.js` | G1-c | 单元格绘制适配器：`prepareColumn`（列准备，table.vue:164-178 同款：resolveColumnType + `_text/_value` 均 ensureFn + `compile ? compile : render||type` + placeholder 继承）、`resolveCellContent`（取值链 `_text(record)` → `_value(record) ?? record[field]` → `render({ record, recordNumber, value, emit })`，剔除 class/style/title DOM 通道字段）、`drawCell`（text 直绘含省略号截断与列 align；items 落地 check/link/tag/img；未识别 is 且 text != null 按文本绘制=decisions「[I1 前]⑤」；空值落 placeholder，对齐 `??` 语义）、`getImageEntry`（img 缓存读取）。img 经 `Image` + `crossOrigin='anonymous'`，加载中/失败按空格，onload 回调一次由 painter 触发重绘 |
-| `demo/src/data/canvas-table/self-checks/cell-painters.js` | G1-c | G0 占位填充为 14 条断言，覆盖 G1-c 判据全部条目（见下"判据对照"） |
+| `src/components/table-ex/cell-painters.js` | G1-c | 单元格绘制适配器：`prepareColumn`（列准备，table.vue:164-178 同款：resolveColumnType + `_text/_value` 均 ensureFn + `compile ? compile : render||type` + placeholder 继承）、`resolveCellContent`（取值链 `_text(record)` → `_value(record) ?? record[field]` → `render({ record, recordNumber, value, emit })`，剔除 class/style/title DOM 通道字段）、`drawCell`（text 直绘含省略号截断与列 align；items 落地 check/link/tag/img；未识别 is 且 text != null 按文本绘制=decisions「[I1 前]⑤」；空值落 placeholder，对齐 `??` 语义）、`getImageEntry`（img 缓存读取）。img 经 `Image` + `crossOrigin='anonymous'`，加载中/失败按空格，onload 回调一次由 painter 触发重绘 |
+| `demo/src/data/table-ex/self-checks/cell-painters.js` | G1-c | G0 占位填充为 14 条断言，覆盖 G1-c 判据全部条目（见下"判据对照"） |
 
 ### G1-c 判据对照（02-design.md 实施步骤）
 
@@ -45,9 +45,9 @@ multiline/lineClamp 列在 lineClamp>1 时经 TextColumn 返回 `[{ is: 'div', t
 
 | 检查 | 命令/方式 | 结果 |
 |------|----------|------|
-| 编译 | `npx vite build --config vite.demo.config.js`（一次性，与 watch 进程并存） | 通过：✓ built in 575ms，无报错；`demo/dist/data/canvas-table/main.js` 28.43 kB → 100.93 kB（含本模块与列类型管线） |
-| demo 自检执行 | playwright 访问 `http://localhost:3000/data/canvas-table/`，DOM 断言自检面板 | **cell-painters 模块 14/14 全部通过**；整页 43 条中 41 过 2 失败（失败 2 条均为 `[theme]` 模块，属 G1-a 白名单，见"遗留"）；页面 console 0 errors |
-| stylelint | `npx stylelint src/components/canvas-table/*.scss` | 不适用：本步骤无 scss 改动 |
+| 编译 | `npx vite build --config vite.demo.config.js`（一次性，与 watch 进程并存） | 通过：✓ built in 575ms，无报错；`demo/dist/data/table-ex/main.js` 28.43 kB → 100.93 kB（含本模块与列类型管线） |
+| demo 自检执行 | playwright 访问 `http://localhost:3000/data/table-ex/`，DOM 断言自检面板 | **cell-painters 模块 14/14 全部通过**；整页 43 条中 41 过 2 失败（失败 2 条均为 `[theme]` 模块，属 G1-a 白名单，见"遗留"）；页面 console 0 errors |
+| stylelint | `npx stylelint src/components/table-ex/*.scss` | 不适用：本步骤无 scss 改动 |
 | eslint | — | 项目未安装 eslint（package.json 无相关依赖，npx 解析失败），无法执行；以构建 + 浏览器执行代替 |
 | `npm run build` | — | 未执行：全局库构建属 S2 集成步骤（并行组规则：不跑影响全局的命令） |
 
@@ -55,4 +55,4 @@ multiline/lineClamp 列在 lineClamp>1 时经 TextColumn 返回 `[{ is: 'div', t
 
 1. **theme 模块（G1-a）2 条自检失败**（非本组白名单，仅报告不处理）：本机浏览器将 `--mu-gray-translucent`（rgb(from ...) 相对色）求值为 `color(srgb 0.482 0.510 0.533 / 0.1)` 而非 `rgba()`，G1-a 自检断言写死 rgb()/rgba() 形态故失败。连带影响：theme.js `withAlpha` 的 rgba 解析正则同样匹配不到 color(srgb) 串（G2-a painter 覆盖层透明叠加会受影响）。本模块不受影响：drawCell 将颜色串直接透传 canvas fillStyle（canvas 接受 CSS color() 串），断言夹具亦用固定 rgba 串。**建议集成步骤统一裁决 color(srgb) 形态的解析/断言口径**（改 theme.js withAlpha + self-checks/theme.js，均在本组白名单外）。
 2. img onload → 重绘联动、加载完成后像素绘制：留 G2-a（painter invalidateCell）+ S3 验证。
-3. `window.__canvasTable` 仍为 G0 占位、`getLayoutInfo/getThemeSnapshot` 未暴露：S1 契约（04-impl-G0.md 遗留节），与本模块无耦合。
+3. `window.__tableEx` 仍为 G0 占位、`getLayoutInfo/getThemeSnapshot` 未暴露：S1 契约（04-impl-G0.md 遗留节），与本模块无耦合。

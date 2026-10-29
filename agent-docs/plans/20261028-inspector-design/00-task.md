@@ -10,7 +10,7 @@
 
 ## 约束
 
-- 探索范围：`form`、`mu-table` 及各输入组件用法；**不参考 canvas-table**。
+- 探索范围：`form`、`mu-table` 及各输入组件用法；**不参考 table-ex**。
 - 遵循项目代码约定：纯 JavaScript、Composition API `<script setup>`、`Mu` 前缀 kebab-case 注册、BEM + `mu-` 前缀、颜色/间距/z-index 用 `--mu-*` 变量、组件目录 `src/components/<name>/`（xxx.vue + xxx.scss + index.js）经 `src/components/index.js` 统一注册。
 - 无测试框架，通过 demo 页面验证组件行为（`demo/src/<name>/`，访问 `http://localhost:3000/<name>/`）。
 - 不修改源码，不提交仓库。

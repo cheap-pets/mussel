@@ -2,11 +2,11 @@
 
 ## 结论
 
-demo 验证页实际 URL 为 `http://localhost:3000/data/<name>/`（如 `/data/canvas-table/`），非 AGENTS.md 所写 `/<name>/`；页面源码在 `demo/src/data/<name>/`，构建产物落在 serve 根的 `data/` 子目录。
+demo 验证页实际 URL 为 `http://localhost:3000/data/<name>/`（如 `/data/table-ex/`），非 AGENTS.md 所写 `/<name>/`；页面源码在 `demo/src/data/<name>/`，构建产物落在 serve 根的 `data/` 子目录。
 
 ## 来源
 
-demo/vite.config.js outDir 与 demo/dist 目录结构实测（2026-10-28，`/canvas-table/` 404、`/data/canvas-table/` 200）
+demo/vite.config.js outDir 与 demo/dist 目录结构实测（2026-10-28，`/table-ex/` 404、`/data/table-ex/` 200）
 
 ## 注意
 

@@ -1,8 +1,8 @@
-# 任务：canvas-table 优化
+# 任务：table-ex 优化
 
 ## 目标
 
-1. 列定义调整（`src/components/canvas-table/`）：
+1. 列定义调整（`src/components/table-ex/`）：
    - 移除 enum 列类型。
    - 文本（text）、数值（number）列支持 `mappings` 或 `options` 定义：
      - `mappings`：单元格显示内容映射，优先于 `options`。
@@ -20,24 +20,24 @@
 
 ## 验收标准
 
-1. canvas-table 源码中无 enum 类型处理逻辑。
+1. table-ex 源码中无 enum 类型处理逻辑。
 2. text / number 列：`mappings` 显示映射生效且优先；`options` 作为编辑下拉选项生效；仅定义 `options` 时单元格显示按其转换的映射。
 3. `npm run build` 通过。
-4. demo 页 `http://localhost:3000/canvas-table/` 渲染正常：映射列显示映射值；可编辑下拉列编辑态正常。
+4. demo 页 `http://localhost:3000/table-ex/` 渲染正常：映射列显示映射值；可编辑下拉列编辑态正常。
 5. 性能优化点在设计文档中列明度量方式；实施后按该方式复核，无回退。
 6. 改动代码注释每段 ≤ 3 行；复杂度重构点在设计文档有说明。
 
 ## 验证命令
 
 - `npm run build`
-- demo：`http://localhost:3000/canvas-table/`（3000 端口 watch 服务通常已在运行，先直接访问，不重复打包）
-- 验证方法参考：`agent-docs/knowledge/project/canvas-table-performance-profiling.md`、`canvas-table-demo-interaction-verify.md`、`canvas-pixel-assert-anchor-drift.md`
+- demo：`http://localhost:3000/table-ex/`（3000 端口 watch 服务通常已在运行，先直接访问，不重复打包）
+- 验证方法参考：`agent-docs/knowledge/project/table-ex-performance-profiling.md`、`table-ex-demo-interaction-verify.md`、`canvas-pixel-assert-anchor-drift.md`
 
 ## 基线
 
 - 分支 mussel-table，工作区 clean（2026-10-28，HEAD 7113e14）。
-- canvas-table 约 8000 行：canvas-table.vue 1342 / cell-painters.js 1307 / painter.js 1300 / editor.js 831 / interactions.js 482 / layout.js 481 / row-geometry.js 493 / row-geometry-controller.js 399 / theme.js 356 / tree.js 253 / text-wrap.js 296 / use-tree-rows.js 231 / use-column-resize.js 136 / constants.js 48。
-- demo 页：`demo/src/data/canvas-table/`。
+- table-ex 约 8000 行：table-ex.vue 1342 / cell-painters.js 1307 / painter.js 1300 / editor.js 831 / interactions.js 482 / layout.js 481 / row-geometry.js 493 / row-geometry-controller.js 399 / theme.js 356 / tree.js 253 / text-wrap.js 296 / use-tree-rows.js 231 / use-column-resize.js 136 / constants.js 48。
+- demo 页：`demo/src/data/table-ex/`。
 
 ## 验证环境
 

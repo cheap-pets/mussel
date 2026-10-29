@@ -1,12 +1,12 @@
 # 实施记录：G2-6（self-checks/theme.js）
 
-模式：并发（波 2b / 步骤 G2-6）。白名单：`demo/src/data/canvas-table/self-checks/theme.js`（仅此文件）。依赖：G1-c（theme.js hover 落地形态）已合入，按 04-impl-G1-c.md 实际实现写断言。
+模式：并发（波 2b / 步骤 G2-6）。白名单：`demo/src/data/table-ex/self-checks/theme.js`（仅此文件）。依赖：G1-c（theme.js hover 落地形态）已合入，按 04-impl-G1-c.md 实际实现写断言。
 
 ## 改动文件
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| demo/src/data/canvas-table/self-checks/theme.js | G2-6（测试计划 A7 行 + 改动清单 self-checks/theme.js 行） | 见下 |
+| demo/src/data/table-ex/self-checks/theme.js | G2-6（测试计划 A7 行 + 改动清单 self-checks/theme.js 行） | 见下 |
 
 改动摘要（仅新增/改写断言与注释，不改既有断言逻辑）：
 
@@ -32,8 +32,8 @@
 
 | 判据 | 命令 / 方式 | 结果 |
 |---|---|---|
-| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/canvas-table/self-checks/theme.js` → exit 0，无输出 | PASS（0 error / 0 warning） |
-| snapshotsEqual hover 维度（纯函数部分可直调） | `node --input-type=module` 直调 `src/components/canvas-table/theme.js` 的 `snapshotsEqual`：同值浅拷贝 true；单色 hover 改值 false；缺 hover 字段 false（undefined ≠ 值）；单色 color 改值 false | PASS（4 断言） |
+| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/table-ex/self-checks/theme.js` → exit 0，无输出 | PASS（0 error / 0 warning） |
+| snapshotsEqual hover 维度（纯函数部分可直调） | `node --input-type=module` 直调 `src/components/table-ex/theme.js` 的 `snapshotsEqual`：同值浅拷贝 true；单色 hover 改值 false；缺 hover 字段 false（undefined ≠ 值）；单色 color 改值 false | PASS（4 断言） |
 | DOM 绑定断言直调走查（文件依赖 document/CSS.supports，无法 node 直跑；页面级验证按派发不做） | 逐条对照 G1-c 后 theme.js 实现：① 彩色 `hover: color`（theme.js:89）→ 断言 5 逐字成立；② 语义 `hover: getPropertyValue(...).trim() || color`（:95-100）→ 断言 3 与实现同读取方式恒等、断言 4 依赖 -4 谱系浅色 ≠ 基础色（root.scss :23-25 全量定义、src/colors.js palette 产物）；③ `raw || color` 在 raw `''` 时回退 → 断言 6 成立；④ 断言 2 对彩色 hover（readVar 计算值）与语义 hover（具体色值）均通过 assertValidCssColor 两条件 | PASS（走查逐条核对着落点） |
 | 回退夹具平台前提 | playwright（about:blank，未触碰 demo 页面）evaluate：`--x: initial` → `getPropertyValue` 为 `''`；`--x: #419de2` → `'#419de2'` | PASS（guaranteed-invalid 行为实测确认） |
 | 白名单 | 本轮仅改 self-checks/theme.js；self-checks/index.js 已有 `./theme.js` 导入注册（既有机制，无需新注册行） | PASS |

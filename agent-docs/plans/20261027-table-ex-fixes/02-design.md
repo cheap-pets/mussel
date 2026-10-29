@@ -1,4 +1,4 @@
-# 设计输入：canvas-table 六项缺陷
+# 设计输入：table-ex 六项缺陷
 
 > 用户裁决「直接实施」：本文件为用户问题清单的逐字转录 + 范围/验证约束，见 decisions.md。根因定位与修复方案由实施者完成。
 
@@ -13,7 +13,7 @@
 
 ## 改动清单（范围约束）
 
-- 允许改动：`src/components/canvas-table/**`、`demo/src/data/canvas-table/**`
+- 允许改动：`src/components/table-ex/**`、`demo/src/data/table-ex/**`
 - 禁止改动：上述之外的任何源码；文档（skills/、docs-site/、docs/，未经用户确认不更新）；构建配置；依赖
 - 根因预期分布（供定位起点，实施者核实后不受限于此预测，仅受范围约束）：
   - 问题 1 → painter.js 固定区绘制顺序/裁剪（paintFixedArea、表头绘制）
@@ -32,10 +32,10 @@
 | R3 hover 边框等距 | 浏览器/像素：编辑浮层内边框四边与格边框距离相等；self-checks 补断言 |
 | R4 文字居中/多行首行 | 浏览器/像素：居中列文字中心 vs 格中心；多行首行 y 与单行格 y 对齐；self-checks 补断言 |
 | R5 空白区 hover/选中 | 浏览器：表格宽于列宽总和时，鼠标移入/点击空白区，断言 hover 高亮与选中行为；self-checks 补断言 |
-| R6 eslint | 命令：`npx eslint src/components/canvas-table/ demo/src/data/canvas-table/` → 0 error 0 warning |
+| R6 eslint | 命令：`npx eslint src/components/table-ex/ demo/src/data/table-ex/` → 0 error 0 warning |
 | R0 回归 | 浏览器：自检面板全部断言通过 |
 
-- 实施者须为 R1–R5 各补充至少一条 self-checks 断言（目录 `demo/src/data/canvas-table/self-checks/`，项目既有惯例）；新增断言数记入实施记录。
+- 实施者须为 R1–R5 各补充至少一条 self-checks 断言（目录 `demo/src/data/table-ex/self-checks/`，项目既有惯例）；新增断言数记入实施记录。
 - 修复若改变既有断言的像素口径，允许同步修正夹具，须在实施记录「偏离/说明」中写明。
 
 ## 实施步骤
@@ -48,8 +48,8 @@
 
 ## 约束与上下文
 
-- 不得回退既有性能优化：text-wrap 共享 ellipsize 缓存、hover 脏区去重、paintFixedArea 行区间收敛、估高扫描签名跳过（见 `agent-docs/handoff/handoff-canvas-table-optimization-remaining-20261026.md`）。
+- 不得回退既有性能优化：text-wrap 共享 ellipsize 缓存、hover 脏区去重、paintFixedArea 行区间收敛、估高扫描签名跳过（见 `agent-docs/handoff/handoff-table-ex-optimization-remaining-20261026.md`）。
 - EDITOR_GAP 口径先例：`agent-docs/plans/20261025-editable-table/02-design.md`（4px 等距内缩）。
-- 已删除 demo 模块 `demo/src/data/canvas-table-editable/`（本任务第一步，用户指令），相关交接文档中该路径引用已失效；编辑链路验证走 `demo/src/data/canvas-table/` 自身。
+- 已删除 demo 模块 `demo/src/data/table-ex-editable/`（本任务第一步，用户指令），相关交接文档中该路径引用已失效；编辑链路验证走 `demo/src/data/table-ex/` 自身。
 - 纯 JavaScript，无 TypeScript；改动遵循 BEM/`--mu-*` 变量等既有约定（AGENTS.md）。
 - 不执行 git commit/push。

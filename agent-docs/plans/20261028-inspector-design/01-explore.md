@@ -7,7 +7,7 @@
 ### 组件注册与入口
 
 - `src/components/index.js:26-35` — `installComponents` 遍历各模块命名导出，仅注册 `Mu` 开头的键（L31），并调用模块的 `install?.(app, options)`（L34）
-- `src/components/index.js:18-22,54-60` — 独立单文件组件直接 import 后用 `_install({ MuTable, ... })` 挂载（MuTags/MuBadge/MuTable/MuCanvasTable/MuScrollBox 走此路径）
+- `src/components/index.js:18-22,54-60` — 独立单文件组件直接 import 后用 `_install({ MuTable, ... })` 挂载（MuTags/MuBadge/MuTable/MuTableEx/MuScrollBox 走此路径）
 - `src/components/form/index.js:1-21` — form 模块全部组件以命名导出形式注册（`export { default as MuInput } from './input.vue'`），无独立 install
 - `src/index.js:9-13,35-50` — 库入口组装：setupLocale / setupColors / installIcons / installComponents
 
@@ -98,7 +98,7 @@
 
 - **命名**：内部名 `MusselXxx`（`defineOptions({ name })` 或第二 script 块）；注册名 `Mu` 前缀（注册机制按 `Mu` 开头过滤，components/index.js:31）；模板用 kebab-case（`mu-input`）
 - **目录**：与 AGENTS.md「每组件一目录（xxx.vue + xxx.scss + index.js）」的描述不同，V4 实际为**按域聚合目录**：form/ 一个目录装全部输入与表单组件，共享一个 `index.js` 命名导出；table/ 目录无 index.js，由根 index.js 直挂。新组件两种挂载路径均存在先例
-- **状态与变更通知**：输入组件统一 `defineModel()`（v-model），**库内（canvas-table 除外）没有任何组件 emit `change` 事件**（grep `emit('change')`、`'change'` 均为 0 命中）；父子通信用 `update:*` 事件（table.vue:87-95）或 provide/inject 上下文（form.vue:110、table.vue:368）
+- **状态与变更通知**：输入组件统一 `defineModel()`（v-model），**库内（table-ex 除外）没有任何组件 emit `change` 事件**（grep `emit('change')`、`'change'` 均为 0 命中）；父子通信用 `update:*` 事件（table.vue:87-95）或 provide/inject 上下文（form.vue:110、table.vue:368）
 - **disabled/readonly**：控件级 prop（`inputProps.disabled/readonly`，input.js:9-10）；容器级（MuForm/MuFormField）不存在，靠 provide 上下文下发的只有 model/labelWidth/labelAlign/rules
 - **字段描述渲染**：既有方案 = MuForm `items` DSL（items.js）+ `INPUT_TYPES` 映射表（input-types.js），title/hr/row/field 四类布局节点 + `input: { type, options, ...attrs }`
 - **type 注册表模式**：`ColumnTypes`（column-types/index.js）与 `INPUT_TYPES`（input-types.js）两处先例，均「字符串 type → 实现/组件，未知回落默认」
@@ -117,7 +117,7 @@
 - **新增包裹层惯例**：新增包裹层默认 `display: contents` 保扁平布局，`& > *` 子选择器会失效（knowledge：wrapper-display-contents-legacy-layout.md）——inspector 若包裹 mu-form 需注意
 - **同特异性覆盖顺序坑**：跨文件样式覆盖随 import 顺序漂移失效，覆盖规则须与被覆盖选择器同文件置尾（knowledge：css-split-equal-specificity-order.md）
 - **demo 新页面需重启构建**：watch 模式 input 启动时枚举，新增 demo 页后须重启 `npm run demo:build`（vite.demo.config.js:58-83 + knowledge：demo-watch-new-entry-restart.md）
-- **canvas-table 排除**（decisions.md:3）：`src/components/canvas-table/` 与 `demo/src/data/canvas-table/` 全部内容未读取、不作为事实来源；grep 命中的 canvas-table 相关行（含其 emptyText/#empty 空状态实现）均已跳过
+- **table-ex 排除**（decisions.md:3）：`src/components/table-ex/` 与 `demo/src/data/table-ex/` 全部内容未读取、不作为事实来源；grep 命中的 table-ex 相关行（含其 emptyText/#empty 空状态实现）均已跳过
 - **依赖外置仅 vue**：新组件只能 import 库内 `@/utils/*`、`@/langs`、`@/components/*`；`throttle-debounce` 已在库内使用（input.js:4）但为 devDependency（构建打包进产物）
 
 ## 验证方式
@@ -134,5 +134,5 @@
 2. 【设计决策】inspector 基于 MuForm `items` DSL 复用（title/hr 机制现成，但 change 源头定位与全局 disabled 缺失），还是独立渲染循环 + 逐字段 v-model——两方案事实均已列于上文
 3. 【设计决策】`change` 事件与 v-model 协议的关系：是否同时提供 `v-model:value`（table 的 `update:*` 先例存在，table.vue:87-95）
 4. 【用户回答类】emptyText 默认值走 i18n（需在 `src/langs/zh.js`/`en.js` 新增键，当前无空状态文案）还是纯 prop 默认中文字符串（ref-inspector.md:46 默认 `'暂无选中对象'`）
-5. 【范围外，存在性已知】canvas-table 中存在 `emptyText` prop 与 `#empty` 插槽的空状态实现（grep 命中文件行），按约束未读取内容；如设计想参考须用户解除限制
+5. 【范围外，存在性已知】table-ex 中存在 `emptyText` prop 与 `#empty` 插槽的空状态实现（grep 命中文件行），按约束未读取内容；如设计想参考须用户解除限制
 6. 【补探索】`docs-site/components/*.md` 文档页 frontmatter/结构未读取——设计文档若含文档更新清单可能需要；`src/langs/en.js` 未逐键核对（结构与 zh.js 平行为推测）

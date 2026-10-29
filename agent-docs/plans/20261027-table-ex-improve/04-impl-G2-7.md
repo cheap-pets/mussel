@@ -1,10 +1,10 @@
 # 实施记录：G2-7（self-checks/tree.js — A8 平铺排序重组断言）
 
-模式：并发（波 2c / 步骤 G2-7）。白名单：`demo/src/data/canvas-table/self-checks/tree.js`（仅此文件）。依赖：G1-a（tree.js 纯函数为既有源码，本轮零改动，仅消费其导出）；排序比较器口径以 04-impl-G2-1.md 实际形态为准（main-view.vue applyOrder：字符串 → `localeCompare`，desc 取反，main-view.vue:737）。
+模式：并发（波 2c / 步骤 G2-7）。白名单：`demo/src/data/table-ex/self-checks/tree.js`（仅此文件）。依赖：G1-a（tree.js 纯函数为既有源码，本轮零改动，仅消费其导出）；排序比较器口径以 04-impl-G2-1.md 实际形态为准（main-view.vue applyOrder：字符串 → `localeCompare`，desc 取反，main-view.vue:737）。
 
 ## 改动摘要
 
-既有文件上扩展（非新建），净变更 +253/−3，全部在 demo/src/data/canvas-table/self-checks/tree.js，对应 02-design.md 测试计划 A8 行 + 改动清单 self-checks/tree.js 行：
+既有文件上扩展（非新建），净变更 +253/−3，全部在 demo/src/data/table-ex/self-checks/tree.js，对应 02-design.md 测试计划 A8 行 + 改动清单 self-checks/tree.js 行：
 
 - **文件头 docblock**：标注「G2-7 扩 A8 排序重组断言」，记 A8 断言范围（父级 Array.sort 后 childrenIndex 同级收集 + DFS 重组的五项性质）。
 - **A8 夹具与辅助（模块级，`export const checks` 之前）**：
@@ -27,7 +27,7 @@
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| demo/src/data/canvas-table/self-checks/tree.js | G2-7（测试计划 A8 行） | 文件头 docblock 扩注；新增 A8 夹具（SORT_RECORDS 等）+ 4 个断言辅助函数 + checks 追加 4 条断言；组件源码（src/components/canvas-table/tree.js）零改动 |
+| demo/src/data/table-ex/self-checks/tree.js | G2-7（测试计划 A8 行） | 文件头 docblock 扩注；新增 A8 夹具（SORT_RECORDS 等）+ 4 个断言辅助函数 + checks 追加 4 条断言；组件源码（src/components/table-ex/tree.js）零改动 |
 
 ## 偏离
 
@@ -39,9 +39,9 @@
 
 | 判据 | 命令 / 方式 | 结果 |
 |---|---|---|
-| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/canvas-table/self-checks/tree.js` | **0 error / 0 warning**，exit 0（首跑 1 处 spaced-comment error，`eslint --fix` 修复后复跑通过；`.size`→`.length` 修复后三跑通过） |
-| node 直调本文件断言全过 | 临时副本将 `@/components/canvas-table/tree.js` 别名改写为 file:// URL（tree.js 源文件无内部 import，可直跑），node ESM 顺序执行 `checks` 全部 12 条 | **12/12 PASS**，exit 0（既有 8 条不回归 + 新增 4 条全过；临时目录已清理） |
-| 契约边界 | 断言仅 import `@/components/canvas-table/tree.js` 的 buildChildrenIndex/buildFlatRows（与既有 import 块共用），不 import demo main-view.vue；排序动作在夹具侧（Array.sort），组件侧纯函数只验重组性质 | PASS |
+| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/table-ex/self-checks/tree.js` | **0 error / 0 warning**，exit 0（首跑 1 处 spaced-comment error，`eslint --fix` 修复后复跑通过；`.size`→`.length` 修复后三跑通过） |
+| node 直调本文件断言全过 | 临时副本将 `@/components/table-ex/tree.js` 别名改写为 file:// URL（tree.js 源文件无内部 import，可直跑），node ESM 顺序执行 `checks` 全部 12 条 | **12/12 PASS**，exit 0（既有 8 条不回归 + 新增 4 条全过；临时目录已清理） |
+| 契约边界 | 断言仅 import `@/components/table-ex/tree.js` 的 buildChildrenIndex/buildFlatRows（与既有 import 块共用），不 import demo main-view.vue；排序动作在夹具侧（Array.sort），组件侧纯函数只验重组性质 | PASS |
 | 白名单 | 本轮仅改 self-checks/tree.js（git status 中其余 demo/src 文件为 G1/S4/S5/其他 G2 组在途状态，本组未触碰）；未启停服务、未 git commit/push、未做页面级验证（按派发本组不做） | PASS |
 
 ## 遗留

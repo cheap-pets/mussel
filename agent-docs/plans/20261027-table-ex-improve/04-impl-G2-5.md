@@ -1,6 +1,6 @@
 # 实施记录：G2-5（self-checks/interactions.js）
 
-模式：并发（波 2b / 步骤 G2-5）。白名单：`demo/src/data/canvas-table/self-checks/interactions.js`（仅此文件）。
+模式：并发（波 2b / 步骤 G2-5）。白名单：`demo/src/data/table-ex/self-checks/interactions.js`（仅此文件）。
 依赖：按 04-impl-G1-c.md 实际落地形态对齐断言（`findHitItem` 透传 `disabled: entry.disabled === true`、`resolveItemClick` 返回 `{ kind, index, row, col, disabled } | null`、签名不变、无 tree 参数）；itemHits 条目契约按 S4 落地形态 `{ kind, index, rect, disabled }`。
 
 ## 改动摘要
@@ -28,13 +28,13 @@
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| demo/src/data/canvas-table/self-checks/interactions.js | G2-5（02-design.md「测试计划」A7 行 + 改动清单 interactions 行） | resolveItemClick 断言扩 disabled 两态透传（true/false/缺字段 false 三路径） |
+| demo/src/data/table-ex/self-checks/interactions.js | G2-5（02-design.md「测试计划」A7 行 + 改动清单 interactions 行） | resolveItemClick 断言扩 disabled 两态透传（true/false/缺字段 false 三路径） |
 
 ## 自检
 
 | 判据 | 命令 / 方式 | 结果 |
 |---|---|---|
-| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/canvas-table/self-checks/interactions.js` → exit 0，无输出 | PASS（0 error / 0 warning） |
+| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/table-ex/self-checks/interactions.js` → exit 0，无输出 | PASS（0 error / 0 warning） |
 | 直调走查（对齐 G1-c 纯函数直调方式） | esbuild 打包（alias `@` → src，`.scss` empty loader）→ node 运行 `checks` 全量 17 块 | PASS（17/17，0 failed；含改写块内全部断言） |
 | 断言对齐 G1-c 实际形态 | 打包产物直调即对真实 `resolveItemClick` 求值：disabled 条目返回 `disabled: true`、无字段/显式 false 条目返回 `false`、命中形状含 row/col/kind/index | PASS |
 | 白名单 | `git status`：本组改动仅 self-checks/interactions.js（并列出现的 cell-painters.js / editor.js / src interactions.js 为 G2-3 / G2-2 / G1-c 在途状态，未触碰） | PASS |

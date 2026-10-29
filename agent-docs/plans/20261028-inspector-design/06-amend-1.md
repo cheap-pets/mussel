@@ -3,7 +3,7 @@ VERDICT: AMENDED
 # 设计审改记录（第 1 次）
 
 被审对象：`02-design.md`（任务目录 `agent-docs/plans/20261028-inspector-design/`）
-约束核对：`decisions.md` 四条均为已确认约束；设计采用独立渲染循环 + 受控 `update:value` + `change`，复用 `mu-form-field` 与既有输入控件，与「不照搬 ref、遵循 mussel 惯例、复用已有实现、不参考 canvas-table」不冲突。审改过程中未读取、未引用 canvas-table 任何实现。`未解问题` 第 2 项（文档同步不在本轮改动清单）按派发追加约束不作为异议。
+约束核对：`decisions.md` 四条均为已确认约束；设计采用独立渲染循环 + 受控 `update:value` + `change`，复用 `mu-form-field` 与既有输入控件，与「不照搬 ref、遵循 mussel 惯例、复用已有实现、不参考 table-ex」不冲突。审改过程中未读取、未引用 table-ex 任何实现。`未解问题` 第 2 项（文档同步不在本轮改动清单）按派发追加约束不作为异议。
 
 ## 检查项结论
 

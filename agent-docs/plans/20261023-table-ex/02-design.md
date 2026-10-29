@@ -1,10 +1,10 @@
-# 设计 — canvas-table
+# 设计 — table-ex
 
-任务：`agent-docs/plans/20261023-canvas-table/00-task.md`。探索报告：`01-explore.md`。决策：`decisions.md`（仅流程开关，无技术约束）。
+任务：`agent-docs/plans/20261023-table-ex/00-task.md`。探索报告：`01-explore.md`。决策：`decisions.md`（仅流程开关，无技术约束）。
 
 ## 方案概述
 
-新增组件 `MuCanvasTable`（内部名 `MusselCanvasTable`）：单 canvas 分区绘制 + 原生滚动容器（sticky canvas + 尺寸撑高 spacer）承载虚拟滚动，DOM 只负责边框/滚动条/编辑浮层/空态。视觉与 API 对齐现有 `MuTable`；颜色/字体/尺寸全部经隐藏探针元素从 `--mu-*` 计算样式读取，MutationObserver 感知暗色切换；单元格编辑以组件模板内的 Vue 浮层挂载 mussel 输入组件（`MuInput`/`MuSelect`/`MuDateInput`/`MuSwitch`）；列头支持拖拽调宽与展示型排序（沿用 `header-click` 语义，新增 `update:order-by` 便捷事件）。
+新增组件 `MuTableEx`（内部名 `MusselTableEx`）：单 canvas 分区绘制 + 原生滚动容器（sticky canvas + 尺寸撑高 spacer）承载虚拟滚动，DOM 只负责边框/滚动条/编辑浮层/空态。视觉与 API 对齐现有 `MuTable`；颜色/字体/尺寸全部经隐藏探针元素从 `--mu-*` 计算样式读取，MutationObserver 感知暗色切换；单元格编辑以组件模板内的 Vue 浮层挂载 mussel 输入组件（`MuInput`/`MuSelect`/`MuDateInput`/`MuSwitch`）；列头支持拖拽调宽与展示型排序（沿用 `header-click` 语义，新增 `update:order-by` 便捷事件）。
 
 ### 验收标准对照索引
 
@@ -25,8 +25,8 @@
 
 提取自探索报告（`01-explore.md` 两节"现有约定"），并经本次源码核对：
 
-- 命名：注册名 `MuCanvasTable` / `<mu-canvas-table>`，内部名 `MusselCanvasTable`（`defineOptions`）；CSS BEM `mu-canvas-table__*`，修饰符 `--gridlines-*` 等（对齐 `table.scss`）。
-- 文件结构：`src/components/canvas-table/` 下 `canvas-table.vue + canvas-table.scss（就近 import）+ index.js`，在 `src/components/index.js` 注册（现有单组件注册先例：`MuTable` 直接 import 后经 `_install({ MuTags, MuBadge, MuTable, ... })`，`src/components/index.js:18-58`）。
+- 命名：注册名 `MuTableEx` / `<mu-table-ex>`，内部名 `MusselTableEx`（`defineOptions`）；CSS BEM `mu-table-ex__*`，修饰符 `--gridlines-*` 等（对齐 `table.scss`）。
+- 文件结构：`src/components/table-ex/` 下 `table-ex.vue + table-ex.scss（就近 import）+ index.js`，在 `src/components/index.js` 注册（现有单组件注册先例：`MuTable` 直接 import 后经 `_install({ MuTags, MuBadge, MuTable, ... })`，`src/components/index.js:18-58`）。
 - 代码：纯 JS、`<script setup>` Composition API、ref/computed + props/emit、`throttle-debounce` 包（table.vue 已用）。
 - 复用（跨组件 import，路径已核对存在）：
   - `../table/utils.js` 的 `ensureFn / getPixelNumber / getCellAlignClass`
@@ -41,19 +41,19 @@
 
 | 文件 | 改动 | 原因 |
 |------|------|------|
-| `src/components/canvas-table/canvas-table.vue` | 新增 | 组件壳：模板（滚动容器/canvas/sticky 层/编辑浮层/空态/阴影）、props/events/组合各模块 |
-| `src/components/canvas-table/canvas-table.scss` | 新增 | BEM 样式 + 局部尺寸变量（`--row-height` 等，镜像 `table.scss:2-15`） |
-| `src/components/canvas-table/index.js` | 新增 | 组件导出 |
-| `src/components/canvas-table/theme.js` | 新增 | `--mu-*` 探针读取、暗色切换 MutationObserver、缓存与 `withAlpha` |
-| `src/components/canvas-table/layout.js` | 新增 | 列宽解析/前缀和、可视窗口计算、命中检测（行/列/调宽手柄） |
-| `src/components/canvas-table/cell-painters.js` | 新增 | 各列类型 canvas 单元格绘制适配器 |
-| `src/components/canvas-table/painter.js` | 新增 | 绘制管线：分区顺序、网格线、表头、固定列、覆盖层、文本测量缓存 |
-| `src/components/canvas-table/editor.js` | 新增 | 编辑状态机：打开/提交/取消/定位/校验/编辑器组件解析 |
-| `src/components/canvas-table/interactions.js` | 新增 | 指针交互：hover、选中、排序点击、列宽拖拽、check 点击 |
-| `src/components/index.js` | 修改 | import 并注册 `MuCanvasTable`（共享文件 → 集成步骤） |
-| `demo/src/data/canvas-table/main-view.vue` + `main.js` | 新增 | 验证页（测试计划全表断言的夹具来源，逐项列出）：10 万行数据生成器 + 事件日志区 + 调试面板（自检结果区 / 重绘计数与 lastPaint 统计 / 主题快照打印）；数据与状态夹具——空态开关（records=[] / `empty` 插槽 / `emptyText` 三变体）、容器尺寸拖拽手柄（右下角改容器 width/height）、`fixedLeftColumns` 输入框、`editable` 开关（含 false 变体）、validate 列（editor.validate 返回错误文案）、`recordsVersion` 异步按钮（模拟延迟就地改 record 后递增）、`--row-height` 覆盖开关（容器 class 内联覆盖）与根字号覆盖、`mu-dark` 挂组件根变体开关、`scrollToRecord(key)` 输入框+按钮、`refreshTheme` 按钮；`window.__canvasTable = 组件实例`（A1/A2 断言经 `browser_evaluate` 调用方法与 getLayoutInfo） |
-| `demo/src/data/canvas-table/self-checks/`（`index.js` + 按模块一文件） | 新增 | demo 自检断言：G0 建骨架（各模块占位空文件），G1/G2 各步填充对应模块断言（保证各步文件集合不相交、可并行） |
-| `demo/src/catalog.js` | 修改 | `data` 分类登记 `data/canvas-table` 页（增删页面需重启 demo:build；G0 即登记，见实施步骤） |
+| `src/components/table-ex/table-ex.vue` | 新增 | 组件壳：模板（滚动容器/canvas/sticky 层/编辑浮层/空态/阴影）、props/events/组合各模块 |
+| `src/components/table-ex/table-ex.scss` | 新增 | BEM 样式 + 局部尺寸变量（`--row-height` 等，镜像 `table.scss:2-15`） |
+| `src/components/table-ex/index.js` | 新增 | 组件导出 |
+| `src/components/table-ex/theme.js` | 新增 | `--mu-*` 探针读取、暗色切换 MutationObserver、缓存与 `withAlpha` |
+| `src/components/table-ex/layout.js` | 新增 | 列宽解析/前缀和、可视窗口计算、命中检测（行/列/调宽手柄） |
+| `src/components/table-ex/cell-painters.js` | 新增 | 各列类型 canvas 单元格绘制适配器 |
+| `src/components/table-ex/painter.js` | 新增 | 绘制管线：分区顺序、网格线、表头、固定列、覆盖层、文本测量缓存 |
+| `src/components/table-ex/editor.js` | 新增 | 编辑状态机：打开/提交/取消/定位/校验/编辑器组件解析 |
+| `src/components/table-ex/interactions.js` | 新增 | 指针交互：hover、选中、排序点击、列宽拖拽、check 点击 |
+| `src/components/index.js` | 修改 | import 并注册 `MuTableEx`（共享文件 → 集成步骤） |
+| `demo/src/data/table-ex/main-view.vue` + `main.js` | 新增 | 验证页（测试计划全表断言的夹具来源，逐项列出）：10 万行数据生成器 + 事件日志区 + 调试面板（自检结果区 / 重绘计数与 lastPaint 统计 / 主题快照打印）；数据与状态夹具——空态开关（records=[] / `empty` 插槽 / `emptyText` 三变体）、容器尺寸拖拽手柄（右下角改容器 width/height）、`fixedLeftColumns` 输入框、`editable` 开关（含 false 变体）、validate 列（editor.validate 返回错误文案）、`recordsVersion` 异步按钮（模拟延迟就地改 record 后递增）、`--row-height` 覆盖开关（容器 class 内联覆盖）与根字号覆盖、`mu-dark` 挂组件根变体开关、`scrollToRecord(key)` 输入框+按钮、`refreshTheme` 按钮；`window.__tableEx = 组件实例`（A1/A2 断言经 `browser_evaluate` 调用方法与 getLayoutInfo） |
+| `demo/src/data/table-ex/self-checks/`（`index.js` + 按模块一文件） | 新增 | demo 自检断言：G0 建骨架（各模块占位空文件），G1/G2 各步填充对应模块断言（保证各步文件集合不相交、可并行） |
+| `demo/src/catalog.js` | 修改 | `data` 分类登记 `data/table-ex` 页（增删页面需重启 demo:build；G0 即登记，见实施步骤） |
 | `skills/mussel-ui/references/`、`docs/quick-reference_*.md`、`docs-site/` | 修改（延后） | 组件 API 文档同步。按项目 AGENTS.md"完成代码实现后，未经用户确认，不更新文档"，列为实施后经用户确认的独立步骤，不在本流水线 |
 
 无测试框架（package.json 无 test script）；测试文件即 demo 验证页，见测试计划。
@@ -62,7 +62,7 @@
 
 ### A1. API（与现有 mussel table 逐项对照）
 
-组件：`MuCanvasTable` / `<mu-canvas-table>`，`defineOptions({ name: 'MusselCanvasTable' })`。
+组件：`MuTableEx` / `<mu-table-ex>`，`defineOptions({ name: 'MusselTableEx' })`。
 
 #### props 对照
 
@@ -147,7 +147,7 @@
      - 返回 `items` → 按条目 `is` 落地：check（`div`+`✓`）画 ✓ 方框，`attrs.disabled`（ensureFn，check.js:16）置灰且点击不翻转；link（`a`）以 `--mu-primary-color` 绘制各条目 `text`；tag（`span.mu-tag`）绘制灰底 pill（底 `--mu-gray-translucent`、边框 `--mu-border-color-normal`）+ 文本；img（`attrs.src`）异步 Image 绘制（`crossOrigin='anonymous'`，见风险表）；
      - 返回的 `class/style/title` 为 DOM 通道字段，canvas 忽略。
   不支持子集见范围边界 #12（mapping 样式、tag/link 视觉变体等）。
-- 差异 ①：`width` 缺省列的宽度算法——现有 table 靠 `table-layout: fixed` 平分剩余空间；canvas-table 由 `layout.js` 统一求解（见 A3 宽度求解），考虑 `minWidth/maxWidth` 约束。
+- 差异 ①：`width` 缺省列的宽度算法——现有 table 靠 `table-layout: fixed` 平分剩余空间；table-ex 由 `layout.js` 统一求解（见 A3 宽度求解），考虑 `minWidth/maxWidth` 约束。
 - 差异 ②：`class / style / headerClass / headerStyle / title` 为 DOM 通道字段，canvas 单元格绘制不消费（不报错、静默忽略）；`title` 悬浮提示本期不支持（范围边界）。
 - 差异 ③：`multiline / lineClamp` 依赖 DOM 多行截断，canvas 等高行模型下单行省略，本期忽略该配置（范围边界）。
 
@@ -156,17 +156,17 @@
 #### DOM 骨架
 
 ```
-div.mu-canvas-table                 ← 根：外框 1px var(--mu-border-color-normal)、圆角、position:relative
-  div.mu-canvas-table__scroll       ← 原生滚动容器：overflow:auto + v-mu-scrollbar（mussel 滚动条皮肤）
+div.mu-table-ex                 ← 根：外框 1px var(--mu-border-color-normal)、圆角、position:relative
+  div.mu-table-ex__scroll       ← 原生滚动容器：overflow:auto + v-mu-scrollbar（mussel 滚动条皮肤）
     div.mu-scrollbar__tracks        ← v-mu-scrollbar attach 注入（scrollbar.js:105 insertBefore(tracks, el.firstChild)）；
                                       position:sticky !important、0 尺寸（scrollbar.scss:19-31），不参与滚动几何
-    div.mu-canvas-table__sticky     ← 除注入 tracks 外的第一个子元素（静态位置=内容顶部，sticky 才能钉住视口）
-      canvas.mu-canvas-table__canvas
-      div.mu-canvas-table__overlay  ← absolute inset:0; z-index:var(--mu-z-index-above)；编辑浮层/空态/阴影挂这层
-        div.mu-canvas-table__editor       （编辑时存在，见 A6）
-        div.mu-canvas-table__empty        （records 为空时存在）
-        div.mu-canvas-table__header-shadow / __bottom-shadow（y-scrolled/y-overflowed 类控制 box-shadow，复用 table.scss 投影方案）
-    div.mu-canvas-table__spacer     ← __sticky 之后的流内兄弟，撑出剩余滚动范围
+    div.mu-table-ex__sticky     ← 除注入 tracks 外的第一个子元素（静态位置=内容顶部，sticky 才能钉住视口）
+      canvas.mu-table-ex__canvas
+      div.mu-table-ex__overlay  ← absolute inset:0; z-index:var(--mu-z-index-above)；编辑浮层/空态/阴影挂这层
+        div.mu-table-ex__editor       （编辑时存在，见 A6）
+        div.mu-table-ex__empty        （records 为空时存在）
+        div.mu-table-ex__header-shadow / __bottom-shadow（y-scrolled/y-overflowed 类控制 box-shadow，复用 table.scss 投影方案）
+    div.mu-table-ex__spacer     ← __sticky 之后的流内兄弟，撑出剩余滚动范围
 ```
 
 - 滚动几何：`__sticky` 是滚动容器内**除 `v-mu-scrollbar` 注入的 `.mu-scrollbar__tracks` 外的第一个流内子元素**（实际 DOM 顺序 `[.mu-scrollbar__tracks, __sticky, __spacer]`；tracks 为 0 尺寸 sticky 元素，`__sticky` 静态位置仍在内容顶部；`position: sticky; top: 0; left: 0` 双轴钉住视口），`width/height = 容器 clientWidth/Height`；`__spacer` 是其后的流内兄弟，`width = max(列总宽, clientWidth)`，`height = max(0, 内容总高（表头高 + 行数×行高） − 容器视口高)`（clamp 0，records 少于视口时不产生负值）。两元素高度相加 = 内容总高，scrollTop 滚动范围恰为 `表头高 + 总行高 − 视口高`，canvas 视口原点恒对应数据坐标 `(scrollLeft, scrollTop)`。滚轮/触控板/键盘/拖滚动条全部走原生滚动（kaka `Scrollable.ts:9-16` 同结论），无需自实现。
@@ -235,7 +235,7 @@ relayout():
 
 #### 窗口计算（layout.js）
 
-- **等高行模型**：行高取 `.mu-canvas-table` 上的 `--row-height`（探针解析为 px 数，缺省 36px，与 table.scss 一致）。行定位 O(1)：`rowIndex = floor((y - headH + scrollTop) / rowH)`——比 kaka 变高行的线性扫描（`HitTest.ts:66-75`）简化一个量级。变高行本期不支持（范围边界）。
+- **等高行模型**：行高取 `.mu-table-ex` 上的 `--row-height`（探针解析为 px 数，缺省 36px，与 table.scss 一致）。行定位 O(1)：`rowIndex = floor((y - headH + scrollTop) / rowH)`——比 kaka 变高行的线性扫描（`HitTest.ts:66-75`）简化一个量级。变高行本期不支持（范围边界）。
 - **列前缀和**：`layout.js` 维护 `colLefts[]`（每列左缘累计 x）与 `colsWidth`（总宽）；列宽变化（拖拽/容器 resize 重分配）时增量更新受影响下标之后的前缀和。
 - **可视窗口**：
 
@@ -336,10 +336,10 @@ dblclick（可编辑单元格）→ 打开编辑器（A6）
 
 #### 浮层挂载方式（决策：组件模板内渲染，非 createApp/单例 DOM）
 
-编辑器是 `canvas-table.vue` 模板的响应式片段，不是 kaka 的原生 `<input>` 单例 appendChild：
+编辑器是 `table-ex.vue` 模板的响应式片段，不是 kaka 的原生 `<input>` 单例 appendChild：
 
 ```html
-<div class="mu-canvas-table__editor" v-if="editing" :style="editing.style"
+<div class="mu-table-ex__editor" v-if="editing" :style="editing.style"
      tabindex="-1" @pointerdown.stop @click.stop @dblclick.stop
      @keydown.esc="editing.onEsc">
   <!-- 容器级 keydown.esc：switch 无自身 keydown 的专用路径（input/select/date 组件自身 esc 转发优先，容器级兜底不冲突：commit 幂等） -->
@@ -373,10 +373,10 @@ top   = headH + rowIndex * rowH - scrollTop
 width = colWidth；height = rowH
 ```
 
-编辑器控件自身尺寸必须随单元格填充（`.mu-input` 固定 `width: 200px; height: var(--height)=32px`，input.scss:12-13，不覆盖会溢出单元格并拦截相邻格点击），`canvas-table.scss` 补：
+编辑器控件自身尺寸必须随单元格填充（`.mu-input` 固定 `width: 200px; height: var(--height)=32px`，input.scss:12-13，不覆盖会溢出单元格并拦截相邻格点击），`table-ex.scss` 补：
 
 ```scss
-.mu-canvas-table__editor {
+.mu-table-ex__editor {
   display: flex;            // switch 等小控件垂直居中，不强制拉伸
   align-items: center;
   overflow: hidden;         // 控件意外溢出不外泄
@@ -491,7 +491,7 @@ const snapshot = {
 // withAlpha(color, a)：解析 'rgb()/rgba()' → `rgba(r, g, b, a)`，供覆盖层透明度叠加
 ```
 
-局部变量在 `canvas-table.scss` 镜像 `table.scss:2-15`（`--row-height: 36px` 等），用户可用同款方式覆盖。
+局部变量在 `table-ex.scss` 镜像 `table.scss:2-15`（`--row-height: 36px` 等），用户可用同款方式覆盖。
 
 #### 暗色切换感知时机（决策：MutationObserver + 手动 API 双通道）
 
@@ -526,15 +526,15 @@ for (const el of roots) {
 | 选中行 | 底色 `--mu-primary-faint` |
 | hover | `--mu-gray-translucent` 覆盖层 |
 | 固定列分隔 | 横向滚动时右缘 `1px var(--mu-border-color-strong)` |
-| 表头/底部投影 | DOM 阴影条，均取 `var(--mu-shadow-float)`（y-scrolled / y-overflowed 类驱动，canvas 不画）。注：现有 table.scss:155 底部投影为硬编码 rgba 双阴影，违反约束 #2（颜色禁硬编码），canvas-table 不复刻，统一用 `--mu-shadow-float` 单变量（视觉略轻，属对齐差异而非遗漏） |
-| 空态 | `mu-canvas-table--empty` + `empty` 插槽 / `emptyText` prop（`placeholder` 仅用于空单元格占位，不用于空态），居中 `--mu-text-color-subtle` |
+| 表头/底部投影 | DOM 阴影条，均取 `var(--mu-shadow-float)`（y-scrolled / y-overflowed 类驱动，canvas 不画）。注：现有 table.scss:155 底部投影为硬编码 rgba 双阴影，违反约束 #2（颜色禁硬编码），table-ex 不复刻，统一用 `--mu-shadow-float` 单变量（视觉略轻，属对齐差异而非遗漏） |
+| 空态 | `mu-table-ex--empty` + `empty` 插槽 / `emptyText` prop（`placeholder` 仅用于空单元格占位，不用于空态），居中 `--mu-text-color-subtle` |
 
 ### A8. 文件结构
 
 ```
-src/components/canvas-table/
-├── canvas-table.vue    # 组件壳：模板骨架、props/emits/暴露方法、模块组合、watch/onMounted 生命周期
-├── canvas-table.scss   # BEM 样式 + 局部尺寸变量（镜像 table.scss tokens）+ 探针/浮层/阴影样式 + __editor 填充样式（.mu-input 100%/100%）
+src/components/table-ex/
+├── table-ex.vue    # 组件壳：模板骨架、props/emits/暴露方法、模块组合、watch/onMounted 生命周期
+├── table-ex.scss   # BEM 样式 + 局部尺寸变量（镜像 table.scss tokens）+ 探针/浮层/阴影样式 + __editor 填充样式（.mu-input 100%/100%）
 ├── index.js            # export { default } 与组件名导出（对齐其他组件目录惯例）
 ├── theme.js            # 探针读取、主题快照、MutationObserver、withAlpha、文本测量缓存
 ├── layout.js           # relayout() 统一布局重算（sticky/spacer 尺寸、探针尺寸变量重读）、solveWidths 宽度求解（minWidth/maxWidth clamp + 剩余宽迭代分配）、colLefts 前缀和、可视窗口、坐标↔行列换算、调宽手柄检测
@@ -544,7 +544,7 @@ src/components/canvas-table/
 └── interactions.js     # 指针事件绑定：hover/选中/排序（表头点击发 header-click，check ✓ 表头除外）/调宽拖拽（固定列排除；move 脏区自列左缘起，up 后 relayout 重跑宽度求解）/check 点击（disabled 仅跳过翻转，选中与 cell-click 照发，翻转后亦续行）/dblclick 开编辑/editing 中画布 pointerdown 先同步提交再续行命中，rAF 合帧
 ```
 
-模块间通信：`canvas-table.vue` 持有共享 reactive state（scrollTop/scrollLeft、hover 索引、选中 key、editing 状态、layout 数据、theme 快照），以参数传入各模块纯函数；各模块不直接相互 import（除 painter → cell-painters、painter → theme 工具），便于并行实施。
+模块间通信：`table-ex.vue` 持有共享 reactive state（scrollTop/scrollLeft、hover 索引、选中 key、editing 状态、layout 数据、theme 快照），以参数传入各模块纯函数；各模块不直接相互 import（除 painter → cell-painters、painter → theme 工具），便于并行实施。
 
 ### A9. 范围边界（本期不支持）
 
@@ -591,20 +591,20 @@ src/components/canvas-table/
 
 ## 测试计划
 
-无测试框架（AGENTS.md），经 demo 页（`http://localhost:3000/data/canvas-table/`，事件日志区与调试面板为 demo 文件自带，见改动清单与 G0）+ playwright DOM 断言验证。验收标准逐条：
+无测试框架（AGENTS.md），经 demo 页（`http://localhost:3000/data/table-ex/`，事件日志区与调试面板为 demo 文件自带，见改动清单与 G0）+ playwright DOM 断言验证。验收标准逐条：
 
 | 验收标准 | 手段 | 检查方式 |
 |---------|------|---------|
-| A1 API 对照 | `浏览器` | demo 页挂载组件；点击单元格/表头，日志区依次出现 `cell-click`、`update:selected-record-key`、`header-click`（**非排序列**表头点击同样出现）、`update:order-by`、`column-resize`、`update:cell-value`。**check ✓ 表头点击只出现 `update:header-checked`、无 `header-click`**；**check 单元格点击同时出现 `update:cell-value` + `cell-click` + `update:selected-record-key`**；**点击表头 ✓（父级受控更新 headerChecked）后画布表头 ✓ 图形立即变化**（像素采样）；**替换 columns 数组（引用变化）后列头/列宽更新**。方法（经 `window.__canvasTable` 与页面按钮）：`scrollToRecord(某 key)` 后 `browser_evaluate` 断言 scrollTop 对准该行顶部；`refreshTheme()` 调用后画布仍正常重绘且快照打印更新。空态：records=[] 时 `#empty` 插槽内容 DOM 断言可见；无插槽时 `emptyText` 渲染；`placeholder` 传入后空值格呈现占位文本（像素采样） |
+| A1 API 对照 | `浏览器` | demo 页挂载组件；点击单元格/表头，日志区依次出现 `cell-click`、`update:selected-record-key`、`header-click`（**非排序列**表头点击同样出现）、`update:order-by`、`column-resize`、`update:cell-value`。**check ✓ 表头点击只出现 `update:header-checked`、无 `header-click`**；**check 单元格点击同时出现 `update:cell-value` + `cell-click` + `update:selected-record-key`**；**点击表头 ✓（父级受控更新 headerChecked）后画布表头 ✓ 图形立即变化**（像素采样）；**替换 columns 数组（引用变化）后列头/列宽更新**。方法（经 `window.__tableEx` 与页面按钮）：`scrollToRecord(某 key)` 后 `browser_evaluate` 断言 scrollTop 对准该行顶部；`refreshTheme()` 调用后画布仍正常重绘且快照打印更新。空态：records=[] 时 `#empty` 插槽内容 DOM 断言可见；无插槽时 `emptyText` 渲染；`placeholder` 传入后空值格呈现占位文本（像素采样） |
 | A2 渲染架构/DPR | `浏览器` | 浏览器缩放 150%（devicePixelRatio 变化 + window resize 路径）与容器拖拽改尺寸（右下角手柄，含**高度方向**）用例：`browser_evaluate` 读 `canvas.width / getBoundingClientRect().width` 比值 ≈ 1.5；缩放后表格线与文字无模糊（截图人工核对一次）。DOM 快照断言：`__scroll` 子元素顺序为 `[.mu-scrollbar__tracks, __sticky, __spacer]`（即 `__sticky` 是除注入 tracks 外的第一个子元素）。**容器高度经手柄变化后 spacer 高度与 scrollHeight 按 relayout 重算**（`browser_evaluate` 断言 spacer 高 = max(0, contentH − 新视口高)） |
 | A3 虚拟滚动 | `浏览器` | demo 页 10 万行数据；`browser_evaluate` 设 `scrollTop` 跳跃滚动，DOM 断言 spacer 高度 = 表头高 + 100000×行高 − 容器视口高（与 `getLayoutInfo().contentHeight` 互核）；**每帧仅绘制可视区行：滚动后 `getLayoutInfo().lastPaint.rowCount ≤ ceil(视口高/行高) + OVERSCAN(2)`**（10 万行数据下若实现画全量必超）；**少量行（3 行）与空 records 时 spacer 高度 clamp 为 0**。滚动流畅（人工）；hover 变化时仅脏带重绘（demo 调试面板"重绘计数/lastPaint"）。数据契约：demo 事件处理器内就地改 record → 该格即刻更新；异步路径递增 `recordsVersion` 后整幅更新 |
 | A4 列定义 | `浏览器` | demo 页列定义含 width 缺省列/字符串宽度/**minWidth 与 maxWidth 列**/`text` 函数覆盖列/**`value` 传字符串的列**/rec_no 列/check disabled 行/**enum/number/currency/date 列**；`browser_evaluate` 读 `getLayoutInfo().colWidths` 核对宽度求解：未定宽列 ≥ 各自 minWidth、≤ maxWidth、总宽收敛；`value` 字符串列不抛错且取值正确；`text` 覆盖列显示覆盖文本；**enum 列显示 mappings 映射文本、number/currency 显示千分位/货币格式、date 显示格式化文本**（像素采样/DOM 版 table 并排比对）；rec_no 序号含 recordsOffset；disabled check 点击无 `update:cell-value` **但仍有 `cell-click` 与选中**（日志核对） |
 | A5 调宽与排序 | `浏览器` | playwright `browser_drag` 拖非固定列缘 ±：`getLayoutInfo().colWidths` 变化、拖后 click 不触发排序（日志无 header-click）；**拖拽 move 中该列右侧无旧像素残影**（拖拽中像素采样该列右缘外一格区域非上一列内容）；**拖宽/拖窄 up 后其余未定宽列重新分配**（colWidths 再读核对：定宽列=拖后值，未定宽列重新瓜分剩余宽，总宽=容器宽无留白）；固定列区缘拖拽无效果且无 col-resize 光标；点击排序列：图标方向（canvas 像素采样主色三角）与 `update:order-by` 载荷——**连续点击三次依次 `asc` → `desc` → `''`** |
 | A6 编辑 | `浏览器` | dblclick 文本格 → DOM 快照断言 `__editor` 容器出现且 getBoundingClientRect 与单元格重合、**其内 `.mu-input` 尺寸 = 容器尺寸（100% 填充，200×32 固定值被覆盖）**；输入+Enter → `update:cell-value` 载荷正确、浮层消失、demo 就地改 record 后该格像素更新；Esc 取消不发事件；**enum 列开 MuSelect → 下拉面板有可选项（mappings 转换）**，点下拉项 → 提交恰一次且载荷为所选项（blur 不吞点击）；date 列同；**date 列打开面板切换月份（prev/next 按钮）后编辑器不关闭、仍可选日期提交**；bool 列 click 切换即提交、容器 Esc 取消；点击另一单元格一步完成提交+选中新行；点击页面空白（blur 延迟兜底）提交；validate 失败 → `.mu-input[invalid]` 存在且浮层不关闭；表格 `editable=false` 时 dblclick 无浮层；滚动中打开的编辑器自动提交关闭 |
 | A7 样式/暗色 | `浏览器` | demo 页暗色切换按钮（toggle 根节点 mu-dark，含"mu-dark 挂组件根"的变体开关）：切换后 500ms 内 canvas 像素采样背景色变化（`browser_evaluate` getImageData）；表头底/网格线/选中/hover 色值与 DOM 版 table 同页并排人工比对一次；覆盖 `--row-height`（开关切换后 relayout 生效：行高变化、spacer 高度同步）与根字号（字号跟随）的用例生效 |
-| A8 文件结构 | `命令` | `ls src/components/canvas-table/` 与结构一致；`npm run build` 通过 |
+| A8 文件结构 | `命令` | `ls src/components/table-ex/` 与结构一致；`npm run build` 通过 |
 | A9 范围边界 | `人工` | 对照清单逐条确认 demo 与文档无对应实现 |
-| 构建/风格 | `命令` | `npx stylelint src/components/canvas-table/*.scss --fix` 无错误；`npm run build` 通过 |
+| 构建/风格 | `命令` | `npx stylelint src/components/table-ex/*.scss --fix` 无错误；`npm run build` 通过 |
 
 ## 实施步骤
 
@@ -612,17 +612,17 @@ src/components/canvas-table/
 
 | # | 步骤 | 文件集合 | 依赖 | 完成判据 |
 |---|------|---------|------|---------|
-| G0 | demo 骨架：页面（静态结构 + 10 万行数据生成器 + 事件日志区 + 调试面板：自检结果区 / 重绘计数与 lastPaint 统计 / 主题快照打印）+ **全部测试夹具与调试入口（改动清单 demo 行逐项：空态三变体开关、容器尺寸手柄、fixedLeftColumns 输入、editable 开关、validate 列、recordsVersion 异步按钮、--row-height 与根字号覆盖开关、mu-dark 挂组件根变体、scrollToRecord 输入+按钮、refreshTheme 按钮、`window.__canvasTable` 实例句柄）** + 自检骨架（`self-checks/index.js` 引用各模块占位文件，页面渲染断言结果）+ catalog 登记 | `demo/src/data/canvas-table/main-view.vue`、`main.js`、`self-checks/index.js` 与各占位文件、`demo/src/catalog.js` | — | 重启 `npm run demo:build` 后 `http://localhost:3000/data/canvas-table/` 可访问；面板/日志区/全部夹具控件渲染；数据生成器断言通过；`window.__canvasTable` 可访问（值为占位 null 亦可，S1 起为实例） |
-| G1-a | `theme.js` + 对应自检 | `theme.js`、`self-checks/theme.js` | G0 | build 通过；demo 自检区 theme 断言全绿（readVar/readFont/readPx 输出 `rgb()/rgba()` 与 px 数、withAlpha、缓存上限）。**自检的尺寸变量来自自检容器内联声明（如 `style="--row-height: 36px"`），不依赖 S1 的 canvas-table.scss**（该文件此时尚不存在） |
+| G0 | demo 骨架：页面（静态结构 + 10 万行数据生成器 + 事件日志区 + 调试面板：自检结果区 / 重绘计数与 lastPaint 统计 / 主题快照打印）+ **全部测试夹具与调试入口（改动清单 demo 行逐项：空态三变体开关、容器尺寸手柄、fixedLeftColumns 输入、editable 开关、validate 列、recordsVersion 异步按钮、--row-height 与根字号覆盖开关、mu-dark 挂组件根变体、scrollToRecord 输入+按钮、refreshTheme 按钮、`window.__tableEx` 实例句柄）** + 自检骨架（`self-checks/index.js` 引用各模块占位文件，页面渲染断言结果）+ catalog 登记 | `demo/src/data/table-ex/main-view.vue`、`main.js`、`self-checks/index.js` 与各占位文件、`demo/src/catalog.js` | — | 重启 `npm run demo:build` 后 `http://localhost:3000/data/table-ex/` 可访问；面板/日志区/全部夹具控件渲染；数据生成器断言通过；`window.__tableEx` 可访问（值为占位 null 亦可，S1 起为实例） |
+| G1-a | `theme.js` + 对应自检 | `theme.js`、`self-checks/theme.js` | G0 | build 通过；demo 自检区 theme 断言全绿（readVar/readFont/readPx 输出 `rgb()/rgba()` 与 px 数、withAlpha、缓存上限）。**自检的尺寸变量来自自检容器内联声明（如 `style="--row-height: 36px"`），不依赖 S1 的 table-ex.scss**（该文件此时尚不存在） |
 | G1-b | `layout.js` + 对应自检 | `layout.js`、`self-checks/layout.js` | G0 | build 通过；demo 自检区 layout 断言全绿（solveWidths 宽度求解含 min/max clamp 与迭代分配 / 混合列宽前缀和 / 窗口起止索引 / 命中检测 / 手柄检测含固定列排除 / relayout 对外暴露的计算纯函数） |
 | G1-c | `cell-painters.js` + 对应自检 | `cell-painters.js`、`self-checks/cell-painters.js` | G0 | build 通过；demo 自检区断言全绿（离屏 canvas 各类型 painter 非空像素；取值链 text→value→field（含 value 传字符串）、rec_no 的 recordNumber、check disabled；enum mapping 文本、number/currency/date 格式化文本、自定义类型对象 render 返回 text、link/tag/items 落地） |
 | G2-a | `painter.js` + 对应自检（在位 canvas 渲染） | `painter.js`、`self-checks/painter.js` | G1-a/b/c | build 通过；demo 自检 canvas 渲染出完整表格（文字/网格线/表头/固定列/覆盖层）；lastPaint 统计字段有值且 rowCount 与窗口一致 |
 | G2-b | `interactions.js` 纯逻辑 + 自检（DOM 绑定接线留 S1） | `interactions.js`、`self-checks/interactions.js` | G1-b | build 通过；demo 自检区断言全绿（命中检测 / 排序 next / 调宽 clamp 与 move 脏区左界=列左缘 / check disabled 跳过翻转但续行点击流程 / 拖拽误触抑制） |
 | G2-c | `editor.js` 状态机 + 自检 | `editor.js`、`self-checks/editor.js` | G1-b | build 通过；demo 自检区断言全绿（打开 / 分类型提交矩阵 / 取消 / 校验 / 定位计算 / **enum options 由 mappings Object 转换为 `[{value,label}]` Array 且排除 default** / blur 兜底面板判定条件 ③） |
-| S1 | 组件壳与样式 + demo 接入真实组件（替换 G0 占位，接 interactions/editor DOM 绑定）。**main-view.vue 经相对路径本地 `import MusselCanvasTable from '../../../../src/components/canvas-table/index.js'` 使用（`<script setup>` 局部可用），不依赖 S2 的全局注册**（demo app 的 install 来自 `src/index.js` → `components/index.js`，S2 前全局名不存在） | `canvas-table.vue`、`canvas-table.scss`、`index.js`、`main-view.vue` | G2-a/b/c | demo 手工全功能跑通（本地 import 渲染）；stylelint 通过 |
+| S1 | 组件壳与样式 + demo 接入真实组件（替换 G0 占位，接 interactions/editor DOM 绑定）。**main-view.vue 经相对路径本地 `import MusselTableEx from '../../../../src/components/table-ex/index.js'` 使用（`<script setup>` 局部可用），不依赖 S2 的全局注册**（demo app 的 install 来自 `src/index.js` → `components/index.js`，S2 前全局名不存在） | `table-ex.vue`、`table-ex.scss`、`index.js`、`main-view.vue` | G2-a/b/c | demo 手工全功能跑通（本地 import 渲染）；stylelint 通过 |
 | S2（集成） | 组件库注册 | `src/components/index.js` | S1 | `npm run build` 通过；全站其他 demo 页无回归 |
 | S3 | 验证：按测试计划执行 playwright + 像素采样 + `npm run build` | 无新文件 | S2 | 测试计划全表通过 |
-| S4（延后） | 文档同步（需用户确认后执行） | `skills/mussel-ui/references/`、`docs/quick-reference_*.md`、`docs-site/` | S3 | 三处文档含 MuCanvasTable 条目且与实现一致 |
+| S4（延后） | 文档同步（需用户确认后执行） | `skills/mussel-ui/references/`、`docs/quick-reference_*.md`、`docs-site/` | S3 | 三处文档含 MuTableEx 条目且与实现一致 |
 
 ## 未解问题
 
@@ -633,7 +633,7 @@ src/components/canvas-table/
 | 评审条目 | 结论 | 处理 |
 |---------|------|------|
 | B1 sticky/spacer 结构与高度口径矛盾 | 接受 | A2 DOM 骨架重排：`__sticky` 改为 `__scroll` 流内第一个子元素（静态位置=内容顶部），`__spacer` 其后；滚动几何段统一口径——spacer 高 = 内容总高（表头高+行数×行高）− 容器视口高，两元素相加=内容总高；测试计划 A3 断言同步改为该口径，A2 补 DOM 顺序断言；风险表 sticky 行改述（回退方案结构顺序不变） |
-| B2 demo 路径与 catalog/vite 规则冲突 | 接受 | 目录改 `demo/src/data/canvas-table/`，URL 改 `http://localhost:3000/data/canvas-table/`；改动清单、测试计划、实施步骤（G0/S2）已全部同步；经核对 `demo/src/catalog.js`（path 以分类 `data/` 开头）与现有 `demo/src/data/table/` 目录结构属实 |
+| B2 demo 路径与 catalog/vite 规则冲突 | 接受 | 目录改 `demo/src/data/table-ex/`，URL 改 `http://localhost:3000/data/table-ex/`；改动清单、测试计划、实施步骤（G0/S2）已全部同步；经核对 `demo/src/catalog.js`（path 以分类 `data/` 开头）与现有 `demo/src/data/table/` 目录结构属实 |
 | B3 编辑器事件隔离不足 / blur 吞下拉点击 | 接受 | A6 重写：`__editor` 拦截 pointerdown/click/dblclick 三类冒泡（画布交互是 click 语义）；画布侧 editing 中 pointerdown 先同步 commit 再续行命中（点击其他格一步完成提交+选中）；提交改分类型矩阵——input 走 Enter/画布/滚动/blur 延迟兜底，select/date 走值变化即时提交，blur 统一降级为延迟兜底（宏任务，editing 已清空则跳过，commit 幂等），时序论证已写入（点下拉项：blur 排队→click→watch 微任务先提交→延迟任务跳过）；拒绝备选 #9 记录"blur 唯一提交源"被拒理由 |
 | B4 records 就地变更无重绘触发 | 接受 | A3 新增"数据变更重绘契约"小节：①同步就地修改（默认）——emit `update:cell-value` 后 nextTick 重绘该行；②异步就地修改——新增 `recordsVersion` prop（A1 已列），递增整幅重绘；③引用替换——原 watch；不 deep watch 的理由（10 万行）已写明。A1 `update:cell-value` 行、A3 重绘表（补 check 点击/编辑提交行、渲染 props 变化行）、测试计划 A3/A6 补对应用例 |
 | M1 placeholder 语义偏离 | 接受 | `placeholder` 恢复现有语义：空单元格占位文本的表格级缺省（`col.placeholder ??= props.placeholder`，table.vue:195，经核对属实），canvas 对空值格绘制占位文本；空态文案改用新增 `emptyText` prop（现有 table 无空态文案节点，标注为新增能力），优先级 `empty` 插槽 > `emptyText`；插槽表与测试计划 A1 同步 |
@@ -660,21 +660,21 @@ src/components/canvas-table/
 | B2 `__sticky` 首子断言与 `v-mu-scrollbar` 注入 tracks 冲突 | 接受 | A2 DOM 骨架补 `.mu-scrollbar__tracks`（`scrollbar.js:105` insertBefore(tracks, el.firstChild)，0 尺寸 sticky，不参与滚动几何）；滚动几何段与 A2 测试断言改为"`__scroll` 子元素顺序为 `[.mu-scrollbar__tracks, __sticky, __spacer]`"；风险表 sticky 行同步改述 |
 | M1 重绘触发遗漏 columns/headerChecked/recordsOffset/placeholder/keyField | 接受 | A3 重绘表 props watch 行逐项补齐：`columns`（引用变化 → 列准备 + relayout + 整幅）、`headerChecked`（→ 表头区整幅）、`recordsOffset`（→ 整幅）、`placeholder`（→ 整幅）、`keyField`（→ 旧/新选中行横带）；columns 仅 watch 引用不做 deep 的理由已写。A1 测试补"受控 headerChecked 更新后 ✓ 立即变化"与"替换 columns 后列头/列宽更新"断言 |
 | M2 尺寸/主题变化未重算 sticky/spacer/可视窗口 | 接受 | A2 重写为"尺寸响应与 relayout()"：`relayout()` 五步（重读探针尺寸变量 → sticky 尺寸 → 列宽求解/前缀和 → spacer 宽高 → 可视窗口），触发点统一收口（sizechange / window resize / 主题刷新 / records / columns / 拖拽 up / 首帧）；`refreshTheme()` 说明补 relayout；A2 测试补容器高度变化后 spacer/scrollHeight 重算断言；A7 `--row-height` 覆盖用例补"relayout 生效、spacer 同步" |
-| M3 测试计划依赖的 demo 夹具未列入改动清单与 G0 | 接受 | 改动清单 demo 行逐项列出全部夹具与调试入口（空态三变体、容器尺寸手柄、fixedLeftColumns 输入、editable 开关、validate 列、recordsVersion 异步按钮、--row-height/根字号覆盖、mu-dark 挂根变体、scrollToRecord 输入+按钮、refreshTheme 按钮、`window.__canvasTable` 句柄）；G0 步骤任务与判据同步；`refreshTheme` 用例写入 A1（调用后正常重绘+快照更新），纠正上轮回应"经 A7 验证"的失实表述 |
+| M3 测试计划依赖的 demo 夹具未列入改动清单与 G0 | 接受 | 改动清单 demo 行逐项列出全部夹具与调试入口（空态三变体、容器尺寸手柄、fixedLeftColumns 输入、editable 开关、validate 列、recordsVersion 异步按钮、--row-height/根字号覆盖、mu-dark 挂根变体、scrollToRecord 输入+按钮、refreshTheme 按钮、`window.__tableEx` 句柄）；G0 步骤任务与判据同步；`refreshTheme` 用例写入 A1（调用后正常重绘+快照更新），纠正上轮回应"经 A7 验证"的失实表述 |
 | M4 未断言"仅绘制可视区行" | 接受 | A3 性能措施补 `lastPaint` 统计（rowStart/rowEnd/rowCount/colStart/colEnd/elapsed），painter 每次绘制后写入，经 `getLayoutInfo().lastPaint` 与调试面板暴露；A3 测试断言 `rowCount ≤ ceil(视口高/行高) + OVERSCAN(2)`（10 万行下画全量必超）；G2-a 判据补"lastPaint 有值且与窗口一致" |
 | M5 "完全兼容"未覆盖自定义类型/格式化/mapping/tag-link 选项 | 接受 | A4"取值与渲染管线"整段重写：复用 `resolveColumnType + compile/render`（table.vue:164-178 同款，自定义类型对象/函数直接支持），`render({record, recordNumber, value, emit})` 返回 text 直绘（number/currency/date/datetime/enum/bool/rec_no 格式化与 mapping 文本天然覆盖）、返回 items 按 `is` 落地（check/link/tag/img）；class/style/title 忽略。不支持子集（mapping 样式、tag pill/flat/color、link danger/disabled、自定义 items 的其余 is）逐条列入范围边界 #12；"完全兼容"降级为"文本类语义完全兼容"；被拒绝备选 #11 记录"重新实现绘制"被拒理由；G1-c 判据与 A4 测试补对应断言 |
 | M6 宽度求解缺 minWidth/maxWidth；拖拽后未定宽列重分配未定义 | 接受 | A3 新增"宽度求解"小节：定宽列 clamp [minWidth ?? 0, maxWidth ?? ∞]，未定宽列基线 80 clamp 后均摊剩余宽、maxWidth 消耗迭代再摊（上限 3 轮），remain ≤ 0 保持并横向滚动；调用时机仅 relayout 与拖拽 up（拖拽列显式定宽后其余未定宽列重跑求解，保持填满容器不变量；move 中不跑防抖动）；被拒绝备选 #10 记录"up 后不重跑"被拒理由；A4 测试补 min/max 收敛与总宽断言、A5 测试补"up 后未定宽列重新分配、无留白"断言；A8 layout.js 职责同步 |
 | M7 日期/下拉面板 Teleport 使 blur 兜底误提交 | 接受 | A6 blur 兜底判据改为三条，新增 ③：`document.activeElement?.closest('.mu-dropdown-panel')` 为真则不提交（面板根统一 class，dropdown-panel.vue:8；月份切换按钮点击后焦点在面板内，date-input.vue:14-23）；下拉项不可聚焦场景由值变化微任务先提交覆盖（已补充说明）；风险表新增一行；A6 测试补"面板切换月份后编辑器不关闭、仍可选日期" |
 | M8 check 点击未续行单元格点击流程 | 接受 | A5 事件序列重写：check 点击 emit `update:cell-value` 后**继续单元格点击流程**（选中 + cell-click，对齐 check.js click 无 stopPropagation + td @click 冒泡，已核对源码）；disabled 仅跳过翻转，选中/cell-click 照发（DOM 版 `[disabled]` 仅 pointer-events:none）；A1 cell-click 对照行与测试补"check 点击三事件同现"断言；A4 disabled 用例改为"无 update:cell-value 但有 cell-click 与选中" |
 | M9 列宽拖拽 move 脏区留残影 | 接受 | 脏区左界改为**该列左缘**（列宽变化影响该列截断与右侧所有列位置；`min(旧右缘,新右缘)` 仍漏该列自身重绘需求，列左缘一并覆盖）：A3 重绘表、A5 move 事件行同步并写明理由；A5 测试补"拖拽中该列右缘外无旧像素残影"采样断言；G2-b 判据补"move 脏区左界=列左缘" |
-| M10 编辑器控件 200×32 固定尺寸不随单元格填充 | 接受 | A6 定位段补 scss：`__editor` 设 flex/align-items:center/overflow:hidden，子级 `.mu-input`（MuInput 根；MuSelect/MuDateInput 根为 combo-wrapper 同类名，combo-wrapper.vue:4）`width/height: 100%`；A6 测试断言改为"`__editor` 容器 rect 与单元格重合 + 其内 .mu-input 尺寸=容器（100% 填充）"；A8 canvas-table.scss 职责同步 |
+| M10 编辑器控件 200×32 固定尺寸不随单元格填充 | 接受 | A6 定位段补 scss：`__editor` 设 flex/align-items:center/overflow:hidden，子级 `.mu-input`（MuInput 根；MuSelect/MuDateInput 根为 combo-wrapper 同类名，combo-wrapper.vue:4）`width/height: 100%`；A6 测试断言改为"`__editor` 容器 rect 与单元格重合 + 其内 .mu-input 尺寸=容器（100% 填充）"；A8 table-ex.scss 职责同步 |
 | m1 check 表头 header-click 措辞与 `@click.stop` 不符 | 接受 | A1 header-click 对照行、A5 事件序列明确：check ✓ 表头只发 `update:header-checked`（对齐 table.vue:25）；其余表头点击均发 `header-click`；A1 测试补该断言 |
 | m2 spacer 高度未 clamp 负值 | 接受 | A2 滚动几何 spacer 高度改 `max(0, ...)`；A3 测试补"3 行数据与空 records 时 spacer 高 0"用例 |
 | m3 switch 容器级 keydown 未在模板展示 | 接受 | A6 模板片段 `__editor` div 补 `@keydown.esc="editing.onEsc"` 并注明与组件自身 esc 转发的关系（commit 幂等不冲突） |
 | m4 底部投影引用 table.scss:155 硬编码 rgba | 接受 | 不复刻硬编码：A7 视觉规格表底部投影改用 `--mu-shadow-float` 单变量，注明与现有 table 的双阴影存在视觉差异及理由（约束 #2 禁硬编码） |
 | m5 img 跨域污染 canvas 未处理 | 接受 | A3 img 行补 `crossOrigin='anonymous'`；风险表新增跨域图片行（加载失败按空格绘制；demo/自检 img 用例用 data URI/同源，不用 dummyimage.com；像素采样页不含跨域图） |
-| m6 G1-a theme 自检依赖 S1 才创建的局部变量 | 接受 | G1-a 判据写明：自检尺寸变量来自**自检容器内联声明**（`style="--row-height: 36px"`），不依赖 canvas-table.scss（该文件 S1 才创建） |
-| m7 S1 demo 接入先于 S2 全局注册，全局标签解析失败 | 接受 | S1 步骤明确 main-view.vue 经相对路径 `../../../../src/components/canvas-table/index.js` 本地 import 使用（`<script setup>` 局部可用），不依赖全局注册；S2 保持仅注册 + 构建校验 |
+| m6 G1-a theme 自检依赖 S1 才创建的局部变量 | 接受 | G1-a 判据写明：自检尺寸变量来自**自检容器内联声明**（`style="--row-height: 36px"`），不依赖 table-ex.scss（该文件 S1 才创建） |
+| m7 S1 demo 接入先于 S2 全局注册，全局标签解析失败 | 接受 | S1 步骤明确 main-view.vue 经相对路径 `../../../../src/components/table-ex/index.js` 本地 import 使用（`<script setup>` 局部可用），不依赖全局注册；S2 保持仅注册 + 构建校验 |
 | m8 A5 排序循环断言与实现循环不一致 | 接受 | A5 测试改为"连续点击三次依次 `asc` → `desc` → `''`"，与实现的 无→asc→desc→无 循环首态一致 |
 | m9 column.value 未写 ensureFn | 接受 | A4 取值链明确列准备阶段构建 `_text/_value` 均 ensureFn（table.vue:170-171 同款），`value` 传字符串不抛错；A4 测试补"value 传字符串的列"用例；A8 cell-painters 职责同步 |
 | m10 A7 视觉规格空态行仍写 placeholder | 接受 | A7 视觉规格空态行改"`empty` 插槽 / `emptyText` prop"，并注明 placeholder 仅用于空单元格占位 |

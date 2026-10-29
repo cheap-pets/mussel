@@ -1,9 +1,9 @@
-# canvas-table 前台性能验证：原型劫持计数 + props 直替 + lastRelayout
+# table-ex 前台性能验证：原型劫持计数 + props 直替 + lastRelayout
 
 ## 结论
 
 - 计数：劫持 `CanvasRenderingContext2D.prototype.measureText / setTransform`（可写），包 counter 后复原；measureText 计数反映测量缓存真实底层调用（缓存命中不计）。
-- 注入大数据/列：`document.querySelector('.mu-canvas-table').__vueParentComponent.props.records / columns / placeholder / fixedLeftColumns` 直替；props watch 异步 flush，赋值后须 `setTimeout ≥ 60ms` 再读结果。
+- 注入大数据/列：`document.querySelector('.mu-table-ex').__vueParentComponent.props.records / columns / placeholder / fixedLeftColumns` 直替；props watch 异步 flush，赋值后须 `setTimeout ≥ 60ms` 再读结果。
 - 耗时归因：`getLayoutInfo().lastPaint.elapsed` 只覆盖 paint()；relayout 阶段（估高扫描/几何重建）看 `getLayoutInfo().lastRelayout = { elapsed, scanCount, rebuild }`，scanCount 0 = 估高签名命中跳过扫描。
 
 ## 陷阱
@@ -14,4 +14,4 @@
 
 ## 来源
 
-src/components/canvas-table/canvas-table.vue（getLayoutInfo/lastRelayout）、demo/src/data/canvas-table/main-view.vue（调试面板），2026-10-26 canvas-table 优化验证实测。
+src/components/table-ex/table-ex.vue（getLayoutInfo/lastRelayout）、demo/src/data/table-ex/main-view.vue（调试面板），2026-10-26 table-ex 优化验证实测。

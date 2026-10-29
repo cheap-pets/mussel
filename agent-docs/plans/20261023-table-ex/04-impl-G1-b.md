@@ -4,8 +4,8 @@
 
 | 文件 | 对应设计步骤 | 说明 |
 |------|------------|------|
-| `src/components/canvas-table/layout.js` | G1-b | 全部为纯函数（不持状态、不触 DOM、不写回入参）：`OVERSCAN=2 / COL_FALLBACK=80 / RESIZE_HANDLE=4` 契约常量；`solveWidths({ columns, containerWidth, widthOverrides })`（定宽列 `widthOverrides[key] ?? col.width ?? type.width` 经 getPixelNumber + min/max clamp；未定宽列初始 `clamp(80, minWidth ?? 80, maxWidth ?? ∞)`；剩余宽均摊、maxWidth clamp 消耗次轮再摊、上限 3 轮）；`computePrefixSums`（colLefts 前缀和 + colsWidth）；`computeViewRows / computeViewCols`（窗口起止，end 为排他边界；viewCols start ≥ 固定列数、含左缘跨列）；`rowAt / colAt`（坐标↔行列，表头区/越界 -1，固定列区按视口坐标线性查、滚动区按 contentX 二分）；`findResizeColumn`（±4px 手柄，右缘归命中列、左缘归左邻列；命中列或候选列任一 < fixedLeftColumns 即 -1（分界两侧）；列级 `resizable === false` -1）；`relayout(input)` 纯计算输出布局快照（colWidths/colLefts/colsWidth/fixedCount/fixedWidth/contentWidth/contentHeight/rowHeight/headHeight/sticky*/spacer*/viewH/viewW/viewRows/viewCols/scrollTop/scrollLeft），viewH = clientHeight − headHeight、viewW = clientWidth − fixedWidth（decisions「[I1 前]④」口径） |
-| `demo/src/data/canvas-table/self-checks/layout.js` | G1-b | 14 条断言填充（替换 G0 占位空数组）：契约常量；定宽列解析（px 字符串、type.width 缺省）与 clamp；widthOverrides 按列 key 优先（含 `_key` 命中、非法值回退、列定义不被写回）；未定宽列均摊（总宽=容器宽）；maxWidth 消耗迭代再摊收敛；全部触顶留白 + remain≤0 保持初始宽；前缀和；行/列窗口起止（OVERSCAN、跨行、越界 clamp、空数据）；坐标换算边界语义；手柄命中归一；固定列排除（分界两侧、列级/表格级开关）；relayout 全字段与 viewH/viewW 口径 + 入参不被改写；少量行/空 records/空列 spacerHeight=0 等 clamp |
+| `src/components/table-ex/layout.js` | G1-b | 全部为纯函数（不持状态、不触 DOM、不写回入参）：`OVERSCAN=2 / COL_FALLBACK=80 / RESIZE_HANDLE=4` 契约常量；`solveWidths({ columns, containerWidth, widthOverrides })`（定宽列 `widthOverrides[key] ?? col.width ?? type.width` 经 getPixelNumber + min/max clamp；未定宽列初始 `clamp(80, minWidth ?? 80, maxWidth ?? ∞)`；剩余宽均摊、maxWidth clamp 消耗次轮再摊、上限 3 轮）；`computePrefixSums`（colLefts 前缀和 + colsWidth）；`computeViewRows / computeViewCols`（窗口起止，end 为排他边界；viewCols start ≥ 固定列数、含左缘跨列）；`rowAt / colAt`（坐标↔行列，表头区/越界 -1，固定列区按视口坐标线性查、滚动区按 contentX 二分）；`findResizeColumn`（±4px 手柄，右缘归命中列、左缘归左邻列；命中列或候选列任一 < fixedLeftColumns 即 -1（分界两侧）；列级 `resizable === false` -1）；`relayout(input)` 纯计算输出布局快照（colWidths/colLefts/colsWidth/fixedCount/fixedWidth/contentWidth/contentHeight/rowHeight/headHeight/sticky*/spacer*/viewH/viewW/viewRows/viewCols/scrollTop/scrollLeft），viewH = clientHeight − headHeight、viewW = clientWidth − fixedWidth（decisions「[I1 前]④」口径） |
+| `demo/src/data/table-ex/self-checks/layout.js` | G1-b | 14 条断言填充（替换 G0 占位空数组）：契约常量；定宽列解析（px 字符串、type.width 缺省）与 clamp；widthOverrides 按列 key 优先（含 `_key` 命中、非法值回退、列定义不被写回）；未定宽列均摊（总宽=容器宽）；maxWidth 消耗迭代再摊收敛；全部触顶留白 + remain≤0 保持初始宽；前缀和；行/列窗口起止（OVERSCAN、跨行、越界 clamp、空数据）；坐标换算边界语义；手柄命中归一；固定列排除（分界两侧、列级/表格级开关）；relayout 全字段与 viewH/viewW 口径 + 入参不被改写；少量行/空 records/空列 spacerHeight=0 等 clamp |
 
 decisions「[I1 前]」影响本模块的两条已落实：① viewH/viewW 口径在 relayout 内统一计算并输出（viewH/containerHeight−headHeight、viewW/containerWidth−fixedWidth），viewRows/viewCols 均按该口径求解，自检断言同口径（含 lastPaint 断言上界，见「遗留」1）；② solveWidths 接受 widthOverrides 参数、按列 key（`col.key ?? col._key ?? 下标`）优先于列定义 width、不写回 props，纯函数不持状态，overrides 存放/清空（columns 引用替换时清空）归 S1 组件壳——模块头注释与函数 JSDoc 已写明契约，自检断言优先级与不写回。
 
@@ -19,8 +19,8 @@ decisions「[I1 前]」影响本模块的两条已落实：① viewH/viewW 口�
 | 检查 | 命令/方式 | 结果 |
 |------|----------|------|
 | 断言逻辑（Node 预验） | 临时脚本：layout.js 与 self-checks/layout.js 原文（仅剥离 import、注入忠实 getPixelNumber/resolveColumnType stub）在 Node 24 执行全部 14 条 | 14/14 PASS（期间修正 1 条自检预期错误：x=104 距列 1 左缘 4px 应归左邻列 0，非列 1）；临时脚本已删除 |
-| 编译校验 | `npx vite build --config vite.demo.config.js`（一次性；与后台 watch 进程并存，按派发约定） | 通过：built in 579ms，无报错；`demo/dist/data/canvas-table/main.js` 73.88 kB（G0 时 28.43 kB，含 layout 模块与断言）；bundle 内 grep 到 solveWidths/findResizeColumn |
-| 页面可达 | `curl http://localhost:3000/data/canvas-table/` 与 `/main.js` | 均 200 |
+| 编译校验 | `npx vite build --config vite.demo.config.js`（一次性；与后台 watch 进程并存，按派发约定） | 通过：built in 579ms，无报错；`demo/dist/data/table-ex/main.js` 73.88 kB（G0 时 28.43 kB，含 layout 模块与断言）；bundle 内 grep 到 solveWidths/findResizeColumn |
+| 页面可达 | `curl http://localhost:3000/data/table-ex/` 与 `/main.js` | 均 200 |
 | eslint | — | 未安装（node_modules 无 eslint bin，package.json 无 lint script）；已按 standard 风格（无分号/单引号/2 空格/函数名后空格/operator 折行 before-`?`）人工核对 |
 | stylelint | — | 不适用：本步骤无 scss 改动 |
 | 自检区浏览器执行 | demo 页挂载即跑 | UNVERIFIED，留验证阶段（构建产物已含断言代码，Node 预验同码通过） |

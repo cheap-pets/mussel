@@ -1,8 +1,8 @@
-# canvas-table 性能与复杂度优化方案
+# table-ex 性能与复杂度优化方案
 
-> 依据：2026-10-26 对 `src/components/canvas-table/`（11 文件 ~6,600 行）全量源码走查。
+> 依据：2026-10-26 对 `src/components/table-ex/`（11 文件 ~6,600 行）全量源码走查。
 > 基线：`agent-docs/plans/20261025-editable-table/`（02-design.md 为行为权威）、
-> `agent-docs/plans/20261023-canvas-table/02-design.md` 被拒绝备选 #5（滚动自拷贝为 profile 后备选）。
+> `agent-docs/plans/20261023-table-ex/02-design.md` 被拒绝备选 #5（滚动自拷贝为 profile 后备选）。
 > 本文只做评估与方案，未改代码。
 
 ## 总体判断
@@ -33,7 +33,7 @@
   2. 测量改走注入的 `measure(text, font)`（state.measure，theme.js `createMeasureCache`
      实例），与行高精算/折行共用同一缓存。`drawCell` 已接收 measure，透传到 ellipsize 系即可；
   3. `drawTag` 收敛为一次 ellipsize（宽度 = 测量结果 + padding），消除重复测量。
-- 风险：低。纯计算路径替换，demo 自检面板（`/data/canvas-table/` 9 组 144 断言）+
+- 风险：低。纯计算路径替换，demo 自检面板（`/data/table-ex/` 9 组 144 断言）+
   `lastPaint.elapsed` 前后对比即可验证。
 - 备注：缓存 key 含 font，主题切换后旧条目自然失配，无额外失效逻辑。
 
@@ -50,7 +50,7 @@
 
 ### P1-1 滚动整幅重绘 → `drawImage` 自拷贝平移（设计预留备选）
 
-- 现状：`scrollFrame`（canvas-table.vue:634-638）每帧 `redraw()` = clearRect + 五分区全量重绘
+- 现状：`scrollFrame`（table-ex.vue:634-638）每帧 `redraw()` = clearRect + 五分区全量重绘
   （含表头、固定列、overlay）。视口 ≈ 25 行 × 15 列 = 375 格/帧。
 - 设计依据：20261023 02-design.md 被拒绝备选 #5 —— 「v1 不做，列为后续 profile 后的
   性能备选」。启用前置条件：**P0 两项落地后 `lastPaint.elapsed` 仍持续超帧预算**
@@ -76,7 +76,7 @@
 
 ### P2-1 估高全量扫描 O(n×cols) 在 records 替换/树 toggle 时同步执行
 
-- 现状：`relayoutAndRedraw`（canvas-table.vue:506-537）scanDirty 即全量 `computeRowHeights`：
+- 现状：`relayoutAndRedraw`（table-ex.vue:506-537）scanDirty 即全量 `computeRowHeights`：
   100k 行 × 20 列 = 2M 次 `_value(record)`（用户函数）+ link 列 render 计数，
   单次 50–200ms 主线程阻塞。uniform 且输入未变时已跳过（lastScan 比对）。
 - 设计已权衡：全量精算被拒（首屏秒级耗时），现行 = 估高下界 + 进窗精算 + 单调收敛。
@@ -102,7 +102,7 @@
 
 ## 复杂度项
 
-### C1 canvas-table.vue 巨壳拆分（1488 行，11 个 watch）
+### C1 table-ex.vue 巨壳拆分（1488 行，11 个 watch）
 
 壳内三块自洽状态机可抽离，行为不变、自检护航：
 
@@ -131,7 +131,7 @@
 - `interactions.resolveResizeDirty`（L296）、`resolveHoverDirtyRects`（L324）：设计期方案残留，
   壳已改用 painter 带 invalidate，现仅 `demo/.../self-checks/interactions.js` 消费。
 - `tree.buildFlatRows` 的 `parentKeys` 输出（tree.js:102）：壳的 flatInfo 只取
-  levels + hasChildren（canvas-table.vue:388-390），无生产消费方。
+  levels + hasChildren（table-ex.vue:388-390），无生产消费方。
 - 处置：连同对应自检断言一并删除；或如保留自检即标注「self-check only」。
   避免后续维护者误判为活跃 API。
 
@@ -160,8 +160,8 @@ WeakMap 兜底（L154）、`editor.computeEditorStyle` 内联 topAt/heightAt 回
 | 4 | P2-1 分片估高 / P2-2 缓存策略（按痛点） | profile 结论 |
 
 验证手段：
-- `http://localhost:3000/data/canvas-table/` 自检面板 9 组 144 断言全程 PASS；
-  `/data/canvas-table-editable/` 编辑链路手动回归。
+- `http://localhost:3000/data/table-ex/` 自检面板 9 组 144 断言全程 PASS；
+  `/data/table-ex-editable/` 编辑链路手动回归。
 - `getLayoutInfo().lastPaint.elapsed`（demo 调试面板已暴露）做优化前后帧耗时对比。
 - 帧感复核必须前台页（后台页 rAF 停发，知识库已录陷阱
   `agent-docs/knowledge/pitfalls/playwright-hidden-page-resize-observer.md`）。

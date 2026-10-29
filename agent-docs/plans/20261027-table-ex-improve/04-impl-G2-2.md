@@ -1,13 +1,13 @@
 # 实施记录：G2-2（self-checks/editor.js）
 
-模式：并发（波 2a / 步骤 G2-2）。白名单：`demo/src/data/canvas-table/self-checks/editor.js`（仅此文件）。
-依据：`02-design.md` 测试计划 A3/A4/A5 行、「改动清单」self-checks/editor.js 行、问题 3/4/5 节自检改写要点；最终 API 以 `04-impl-G1-a.md` 记录并经当前 `src/components/canvas-table/editor.js` 源码核对（editorRectOf 恒等、editorButtonRectOf 槽位式、NON_EDITABLE_TYPES 含 link/button/progress、resolveEditorType 无 link 分支、computeEditorStyle 无 gridlines/theme 参）。
+模式：并发（波 2a / 步骤 G2-2）。白名单：`demo/src/data/table-ex/self-checks/editor.js`（仅此文件）。
+依据：`02-design.md` 测试计划 A3/A4/A5 行、「改动清单」self-checks/editor.js 行、问题 3/4/5 节自检改写要点；最终 API 以 `04-impl-G1-a.md` 记录并经当前 `src/components/table-ex/editor.js` 源码核对（editorRectOf 恒等、editorButtonRectOf 槽位式、NON_EDITABLE_TYPES 含 link/button/progress、resolveEditorType 无 link 分支、computeEditorStyle 无 gridlines/theme 参）。
 
 ## 改动文件
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| demo/src/data/canvas-table/self-checks/editor.js | G2-2（A3/A4/A5 断言同步） | 整文件改写：删 `EDITOR_GAP` 具名导入（原 :27），新增 `editorButtonRectOf` 导入；模块头 docblock 与各断言组按问题 3/4/5 新口径改写；checks 块 14 → 15（新增 editorButtonRectOf 几何块）。未改源码、未改其他 self-checks 文件 |
+| demo/src/data/table-ex/self-checks/editor.js | G2-2（A3/A4/A5 断言同步） | 整文件改写：删 `EDITOR_GAP` 具名导入（原 :27），新增 `editorButtonRectOf` 导入；模块头 docblock 与各断言组按问题 3/4/5 新口径改写；checks 块 14 → 15（新增 editorButtonRectOf 几何块）。未改源码、未改其他 self-checks 文件 |
 
 改动摘要（按块）：
 
@@ -31,10 +31,10 @@
 
 | 判据 | 方式 | 结果 |
 |---|---|---|
-| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/canvas-table/self-checks/editor.js` | **0 error / 0 warning**，exit 0（沿用 G1/S 各组环境备注：本地 node_modules 缺 eslint-config-standard，经全局 NODE_PATH 解析） |
+| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/table-ex/self-checks/editor.js` | **0 error / 0 warning**，exit 0（沿用 G1/S 各组环境备注：本地 node_modules 缺 eslint-config-standard，经全局 NODE_PATH 解析） |
 | 断言可被 node 直调可行性走查 | /tmp 最小 vite 构建（复用项目 pluginVue/pluginSvg/`@`、`~icons` alias/`$colors` 注入同参，vue 内联，产物写 /tmp 未触碰仓库）→ node 直调 checks 数组 | **14 passed / 0 failed / 1 skipped**。skipped = blur 兜底块（挂真实 DOM 夹具 document/PointerEvent，既有惯例即浏览器面板运行，非本次改动引入）。node 侧需两个环境桩：`window`（控制器 open/teardown 挂 window pointerdown 监听，浏览器既有行为）、`__version__`/`__env__` define（项目 vite.config 同名注入）；均为走查 harness 产物，非代码改动 |
-| 断言对齐 G1-a 实际导出 | 直调结果逐块与 `src/components/canvas-table/editor.js` 当前实现核对：editorRectOf 恒等、editorButtonRectOf 槽位式（centerY 18 不随 rect.height）、NON_EDITABLE_TYPES 八类型、link open 拒绝、computeEditorStyle 整格四值 | PASS（设计测试计划 A3 行的整格期望值 `[0,64,100,36]`/`[50,36,80,36]`/`[100,72,200,100]` 与实测一致） |
-| 白名单 | `git status`：本轮本组仅 `demo/src/data/canvas-table/self-checks/editor.js`；树中 main-view.vue 为 G2-1 并发在途，badge.*/props.js/background.scss 为先前已在途状态，均未触碰 | PASS |
+| 断言对齐 G1-a 实际导出 | 直调结果逐块与 `src/components/table-ex/editor.js` 当前实现核对：editorRectOf 恒等、editorButtonRectOf 槽位式（centerY 18 不随 rect.height）、NON_EDITABLE_TYPES 八类型、link open 拒绝、computeEditorStyle 整格四值 | PASS（设计测试计划 A3 行的整格期望值 `[0,64,100,36]`/`[50,36,80,36]`/`[100,72,200,100]` 与实测一致） |
+| 白名单 | `git status`：本轮本组仅 `demo/src/data/table-ex/self-checks/editor.js`；树中 main-view.vue 为 G2-1 并发在途，badge.*/props.js/background.scss 为先前已在途状态，均未触碰 | PASS |
 
 ## 偏离
 

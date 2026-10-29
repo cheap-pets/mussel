@@ -1,13 +1,13 @@
 # 实施记录：G2-3（self-checks/cell-painters.js）
 
-模式：并发波 2a / 步骤 G2-3。白名单：`demo/src/data/canvas-table/self-checks/cell-painters.js`（仅此文件，未动源码与其他 self-checks）。
+模式：并发波 2a / 步骤 G2-3。白名单：`demo/src/data/table-ex/self-checks/cell-painters.js`（仅此文件，未动源码与其他 self-checks）。
 设计依据：02-design.md「测试计划」A1/A5/A7 行、「改动清单」self-checks/cell-painters.js 行；断言口径对齐 04-impl-G1-b.md 实测（首行恒 18 = ROW_TOP_INSET 1 + padding 8 + lineHeight/2 9，不随行高变；h=36 单行 y=18、h=60 两行 [18,36]、h=80 三行 [18,36,54]、h=88 四行 [18,36,54,72]）。
 
 ## 改动文件
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| demo/src/data/canvas-table/self-checks/cell-painters.js | G2-3（A1/A5/A7） | 净 +235/−16：夹具扩 hover/bgNormal、recordingCtx 增记 fillRect/stroke、锚点断言组按槽位锚改写、新增 5 个检查块、既有 itemHits 断言补 disabled 字段。摘要如下 |
+| demo/src/data/table-ex/self-checks/cell-painters.js | G2-3（A1/A5/A7） | 净 +235/−16：夹具扩 hover/bgNormal、recordingCtx 增记 fillRect/stroke、锚点断言组按槽位锚改写、新增 5 个检查块、既有 itemHits 断言补 disabled 字段。摘要如下 |
 
 ### 改动摘要
 
@@ -50,7 +50,7 @@
 
 | 判据 | 方式 | 结果 |
 |---|---|---|
-| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/canvas-table/self-checks/cell-painters.js` | **0 error / 0 warning**，exit 0 |
+| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint demo/src/data/table-ex/self-checks/cell-painters.js` | **0 error / 0 warning**，exit 0 |
 | 模块图解析（具名导入存在性） | 项目内 esbuild `--bundle --loader:.scss=empty` 打包本文件 | 成功（98.3kb，`requestIconImage`/`linkHoverColorOf` 具名导入解析通过；scss 空加载与 vite 构建同责） |
 | 直调走查（断言实跑） | /tmp harness：stub document/canvas(2d)/Image → esbuild 产物动态加载 → 实跑本组改写/新增的 12 个检查块（多行文本/数组值多行/函数 lineClamp/槽位锚/button 绘制/link 列竖排/link 悬停/button 悬停反转/linkHoverColorOf/requestIconImage/tag 颜色/check disabled 底衬） | **12/12 passed, 0 failed**——槽位锚 y 恒 18（h=36/88）、x=80/79.5/8/152、下划线 y=25、反转三色、disabled 两态、requestIconImage 着色/缓存/直通全部按期望落地（临时文件已清理，未触碰仓库） |
 | 断言对齐 G1-b 实测 | 改写期望值逐项对照 04-impl-G1-b.md 自检节（[18,36]/[18,36,54]/[18,36,54,72]/单行 18/rightInset 79.5/8/152/下划线 25） | 一致 |

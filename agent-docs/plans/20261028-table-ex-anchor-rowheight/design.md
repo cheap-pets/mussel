@@ -1,4 +1,4 @@
-# canvas-table 垂直锚修正：centerY 与 lineHeight 解耦
+# table-ex 垂直锚修正：centerY 与 lineHeight 解耦
 
 状态：已实施（2026-10-28，见 01-impl.md；self-checks 163/163、demo 实测锚 = 行线中点）
 公式决议：`centerY = box.y + (ROW_HEIGHT − ROW_TOP_INSET) / 2`
@@ -14,7 +14,7 @@ const centerY = box.y + padding + lineHeight / 2   // 格顶 + 1 + 8 + 9 = 18
 
 同式消费点：drawTextValue / drawArrayLines / drawLinkItems / drawItems / progress / button
 （cell-painters.js）、树箭头 hover 重绘（painter.js:791）、编辑按钮 editorButtonRectOf
-（editor.js:165，命中判定 canvas-table.vue:739）。现行自检判据显式授权 ≤0.5px 偏差
+（editor.js:165，命中判定 table-ex.vue:739）。现行自检判据显式授权 ≤0.5px 偏差
 （self-checks/cell-painters.js:778-780「终版判据授权 ≤0.5px」）。
 
 ## 2. 修改原因
@@ -74,13 +74,13 @@ R=48 时锚 24.5（旧 18，+6.5——旧值在该配置下本就偏离中点 6.
 | 3 | painter.js:788-791 | paintTreeArrowAccent 同式替换（theme 快照已可得） |
 | 4 | painter.js:890-892 | paintEditorButton 传参 `lineHeight` → `rowHeight` |
 | 5 | editor.js:165-168 | editorButtonRectOf 选项 `lineHeight` → `rowHeight`，默认值换 ROW_HEIGHT_FALLBACK |
-| 6 | canvas-table.vue:739 | isEditorButtonHit 传 `snapshot.rowHeight` |
+| 6 | table-ex.vue:739 | isEditorButtonHit 传 `snapshot.rowHeight` |
 | 7 | self-checks 同步 | 见 §5 |
 
 无文档同步需求：`--cell-line-height` / `--row-height` 对外语义不变，锚公式为实现细节。
 不涉及 mussel-ui skill / docs-site / quick-reference。
 
-## 5. 自检断言同步（demo/src/data/canvas-table/self-checks/）
+## 5. 自检断言同步（demo/src/data/table-ex/self-checks/）
 
 - cell-painters.js：fillText y0 断言 18 → 18.5，顺次行 +0.5：
   :707 `[18.5, 36.5]`、:713、:730 `[18.5, 36.5, 54.5]`、:766、:785、:791、:806、:937

@@ -6,8 +6,8 @@
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| demo/src/data/canvas-table/self-checks/cell-painters.js | 修复 05-verify-2 失败项 1 | L399 期望值 `'1,234.50'` → `'1,234.5'`（NumberColumn `minimumFractionDigits: 0`，src/components/table/column-types/number.js:8）；标签补注口径 |
-| demo/src/data/canvas-table/self-checks/editor.js | 修复 05-verify-2 失败项 2 | L472 断言跨 reactive 边界的引用比较改为 `toRaw(...)` 解代理后 `assertEqual` 比原引用；新增 `import { toRaw } from 'vue'` |
+| demo/src/data/table-ex/self-checks/cell-painters.js | 修复 05-verify-2 失败项 1 | L399 期望值 `'1,234.50'` → `'1,234.5'`（NumberColumn `minimumFractionDigits: 0`，src/components/table/column-types/number.js:8）；标签补注口径 |
+| demo/src/data/table-ex/self-checks/editor.js | 修复 05-verify-2 失败项 2 | L472 断言跨 reactive 边界的引用比较改为 `toRaw(...)` 解代理后 `assertEqual` 比原引用；新增 `import { toRaw } from 'vue'` |
 
 ## 偏离
 

@@ -19,18 +19,18 @@ VERDICT: APPROVE
 5. 可实施 — PASS：G1-a/G1-b 并行（文件集不相交），G2 依赖 G1-a，S1 统一 build + 全量测试；各步有可独立判定的完成判据。问题 5（e2e 像素读取换算）、6（回滚手段）为局部缺口。
 6. 风险与回滚 — PASS：类型漂移、null 清空、enum 相等语义、focusAfterRender 删除、bgStrong 缺失均有对策；`git stash -u` 表述有问题 6，但「目录副本」主路径可用。
 7. 范围 — PASS：三处增量（类型规整/快照补齐/死路径清理）均在既有文件内，无新增文件、未动注册与 catalog；文档三处同步按项目规约延后（A8 #15）。
-8. 并行组 — PASS：G1-a `{editor.js, canvas-table.vue, self-checks/editor.js}`、G1-b `{theme.js, cell-painters.js, self-checks/theme.js, self-checks/cell-painters.js, main-view.vue}`、G2 `{canvas-table-editable/main-view.vue}` 两两不相交；共享 `dist/` 已移入 S1。
+8. 并行组 — PASS：G1-a `{editor.js, table-ex.vue, self-checks/editor.js}`、G1-b `{theme.js, cell-painters.js, self-checks/theme.js, self-checks/cell-painters.js, main-view.vue}`、G2 `{table-ex-editable/main-view.vue}` 两两不相交；共享 `dist/` 已移入 S1。
 
 ## 问题清单
 
 1. [minor] 02-design.md:113（改动清单 cell-painters 行）、:352、:368（A6）与 :432（风险表）、:459（G1-b）— 底衬取色口径不一致：文件级改动与 A6 写成无回退的 `theme.bgStrong`，而风险表与 G1-b 要求 `bgStrong || hoverBg` 回退 — 证据：:113「`theme.hoverBg` → `theme.bgStrong`」、:352「改为 `theme.bgStrong`」 vs :432「check disabled 底衬回退 `bgStrong || hoverBg`」、:459「改 bgStrong（缺省链回退 hoverBg）」；现行 `cell-painters.js:364-371` 为单一 `theme?.hoverBg`，无链式回退可参照 — 建议：二选一统一——改动清单/A6 补 `|| theme?.hoverBg`，或删除风险表/G1-b 的回退要求并说明 `--mu-bg-strong` 在 `.mu-root` 明暗双态恒定义（root.scss:54/:110）故无需回退。
 
-2. [minor] 02-design.md:494（评审回应第 2 轮 #1，未采纳备选的理由）— 事实错误：「DOM table 与 canvas-table 不在同一 demo 页」不成立 — 证据：10 万行页同一页面既挂 canvas-table（demo/src/data/canvas-table/main-view.vue:11-40）又有「DOM 版 mu-table 参照」段（:151-164），本设计 :445/:448 也以「与 DOM 版 table 并排比对」作为检查项 — 建议：改写未采纳理由（跨实现逐像素对齐需处理抗锯齿/尺寸差，合成色口径已直接可查），或采纳该比对；不要保留可被源码推翻的事实陈述。
+2. [minor] 02-design.md:494（评审回应第 2 轮 #1，未采纳备选的理由）— 事实错误：「DOM table 与 table-ex 不在同一 demo 页」不成立 — 证据：10 万行页同一页面既挂 table-ex（demo/src/data/table-ex/main-view.vue:11-40）又有「DOM 版 mu-table 参照」段（:151-164），本设计 :445/:448 也以「与 DOM 版 table 并排比对」作为检查项 — 建议：改写未采纳理由（跨实现逐像素对齐需处理抗锯齿/尺寸差，合成色口径已直接可查），或采纳该比对；不要保留可被源码推翻的事实陈述。
 
 3. [minor] 02-design.md:13、:162 — 概括与 A5 细则矛盾：两处写 number/currency「提交收敛为 number 或 null」，而规则①末支（:331）为「否则保留原字符串（非数值输入交由 validate 拦截）」，自检也断言「非数值串保留」（:115、:458）— 证据：:13、:162、:331 原文 — 建议：两处概括补「；非数值输入保留原字符串、交由 validate」，避免验收按「只能 number/null」误判。
 
-4. [minor] demo/src/data/canvas-table/self-checks/editor.js:363 — 旧口径同步范围不全：设计 :115、:458 只列 :8、:176、:375，但 :363 仍写「值为 mapping key 字符串（decisions⑦）」，引用的正是本期修订的前序决策；G1-a 判据「文件内无『提交值 = mapping key 字符串』旧口径残留」按字面 grep 命不中该行 — 证据：设计 :115/:458 的同步清单 vs 源码 :363 — 建议：把 :363 加入同步清单（改为「字符串原值 → key 字符串；number 原值保持 number」），或把判据改为检索 decisions⑦ 引用。
+4. [minor] demo/src/data/table-ex/self-checks/editor.js:363 — 旧口径同步范围不全：设计 :115、:458 只列 :8、:176、:375，但 :363 仍写「值为 mapping key 字符串（decisions⑦）」，引用的正是本期修订的前序决策；G1-a 判据「文件内无『提交值 = mapping key 字符串』旧口径残留」按字面 grep 命不中该行 — 证据：设计 :115/:458 的同步清单 vs 源码 :363 — 建议：把 :363 加入同步清单（改为「字符串原值 → key 字符串；number 原值保持 number」），或把判据改为检索 decisions⑦ 引用。
 
-5. [minor] 02-design.md:448（测试计划 #8 e2e）— 只规定采样点与期望值，未规定从组件 canvas 读取实际像素的坐标换算：画布后备存储按 dpr 放大（:208「canvas.width = cssW × dpr」），`getCellRect` 返回的是 CSS 坐标（canvas-table.vue:769-776），dpr≠1 时 `getImageData` 会采样错位 — 证据：:448 无读取手段；前序环境为 dpr=1 基线（agent-docs/plans/20261023-canvas-table/05-verify-2.md:57）— 建议：写明 `getImageData(x*dpr, y*dpr)`（dpr = canvas.width / getBoundingClientRect().width），或明确该用例仅在 dpr=1 环境执行。
+5. [minor] 02-design.md:448（测试计划 #8 e2e）— 只规定采样点与期望值，未规定从组件 canvas 读取实际像素的坐标换算：画布后备存储按 dpr 放大（:208「canvas.width = cssW × dpr」），`getCellRect` 返回的是 CSS 坐标（table-ex.vue:769-776），dpr≠1 时 `getImageData` 会采样错位 — 证据：:448 无读取手段；前序环境为 dpr=1 基线（agent-docs/plans/20261023-table-ex/05-verify-2.md:57）— 建议：写明 `getImageData(x*dpr, y*dpr)`（dpr = canvas.width / getBoundingClientRect().width），或明确该用例仅在 dpr=1 环境执行。
 
-6. [minor] 02-design.md:433（风险与回滚）— 回滚手段含「实施前 `git stash -u`」：canvas-table 与两个 demo 数据目录均为 untracked（00-task.md:65、本行自述），`git stash -u` 会把它们从工作区移入 stash，并非「实施前的目录副本」；按字面在实施前执行会使基线目录消失 — 证据：:433 原文 + 00-task.md:65 — 建议：删除 stash 建议，改为实施前用 `cp -r`/`robocopy` 把 `src/components/canvas-table/`、`demo/src/data/canvas-table/`、`demo/src/data/canvas-table-editable/` 复制到 `.pipeline` 外的备份目录。
+6. [minor] 02-design.md:433（风险与回滚）— 回滚手段含「实施前 `git stash -u`」：table-ex 与两个 demo 数据目录均为 untracked（00-task.md:65、本行自述），`git stash -u` 会把它们从工作区移入 stash，并非「实施前的目录副本」；按字面在实施前执行会使基线目录消失 — 证据：:433 原文 + 00-task.md:65 — 建议：删除 stash 建议，改为实施前用 `cp -r`/`robocopy` 把 `src/components/table-ex/`、`demo/src/data/table-ex/`、`demo/src/data/table-ex-editable/` 复制到 `.pipeline` 外的备份目录。

@@ -1,7 +1,7 @@
 # 探索报告 — kaka-grid-next（对比维度补齐）
 
 任务：`agent-docs/plans/20261025-editable-table/00-task.md` 探索范围②。对象：`D:\workshop\mctech\components\kaka-grid-next`（v2.5.0）。
-旧报告 `agent-docs/plans/20261023-canvas-table/01-explore.md` 已覆盖：渲染架构与图层、DPR/resize、虚拟滚动与位移重绘、列宽拖拽/排序命中检测、编辑浮层 DOM 机制（InlineInputElement）、theme 静态色事实、optimization-recommendations.md。本报告不重复，聚焦：API 风格、列定义体系、编辑机制与只读控制链、性能实测数据、可扩展性、代码量与依赖。
+旧报告 `agent-docs/plans/20261023-table-ex/01-explore.md` 已覆盖：渲染架构与图层、DPR/resize、虚拟滚动与位移重绘、列宽拖拽/排序命中检测、编辑浮层 DOM 机制（InlineInputElement）、theme 静态色事实、optimization-recommendations.md。本报告不重复，聚焦：API 风格、列定义体系、编辑机制与只读控制链、性能实测数据、可扩展性、代码量与依赖。
 已读 `decisions.md`（两条流程开关，无技术约束）。
 
 ---

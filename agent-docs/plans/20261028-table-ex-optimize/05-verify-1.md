@@ -11,20 +11,20 @@ VERDICT: PASS
 | 命令 | 状态 | 关键输出（≤15 行） |
 |---|---|---|
 | `npm run build` | PASS (exit 0) | dev：`✓ 297 modules transformed`，`dist/mussel.js 615.79 kB`，`✓ built in 546ms`；prod：`dist/mussel.min.js 294.51 kB`，`✓ built in 542ms` |
-| `grep -rn "enum" src/components/canvas-table/` | PASS (exit 1=无命中) | 0 命中（源码与注释均净，按测试计划大小写敏感口径） |
-| `grep -rn "enum" demo/src/data/canvas-table/` | PASS (exit 1=无命中) | 0 命中（S8 判据） |
+| `grep -rn "enum" src/components/table-ex/` | PASS (exit 1=无命中) | 0 命中（源码与注释均净，按测试计划大小写敏感口径） |
+| `grep -rn "enum" demo/src/data/table-ex/` | PASS (exit 1=无命中) | 0 命中（S8 判据） |
 | `grep -rn "enum"`（-i 变体，补充核对） | 信息 | 仅子串假阳性：`editor.js` 的 `toFiniteNumber`/`normalizeNumericCommit`（finit**eNum**ber/Num**eric**，非 enum 逻辑）；demo 夹具变量名 `numericEnumColumn`（self-checks/editor.js:856，见测试质量） |
-| `grep -rn "onImageLoad" src/ demo/src/data/canvas-table/self-checks/` | PASS（S2/S6 判据） | 闭包仅建于 `cell-painters.js:721`（measureItem img 分支）与 `:1147`（drawCellImage），均为 `() => onImageLoad(row, colIndex)`；`painter.js:358` 直传 `onImageLoad: state.onImageLoad`；`painter.js:799`（hover 图标单次调用）与 `:1124`（withImageRelay 接管，签名不变）；self-checks 为零参回调（天然兼容）+ 新契约断言（cell-painters.js:575-609，断言 `[[3, 5]]`） |
+| `grep -rn "onImageLoad" src/ demo/src/data/table-ex/self-checks/` | PASS（S2/S6 判据） | 闭包仅建于 `cell-painters.js:721`（measureItem img 分支）与 `:1147`（drawCellImage），均为 `() => onImageLoad(row, colIndex)`；`painter.js:358` 直传 `onImageLoad: state.onImageLoad`；`painter.js:799`（hover 图标单次调用）与 `:1124`（withImageRelay 接管，签名不变）；self-checks 为零参回调（天然兼容）+ 新契约断言（cell-painters.js:575-609，断言 `[[3, 5]]`） |
 | `grep -n "recordKeyOf" painter.js` | PASS（P1a） | `painter.js:251` `const recordKey = state.flatInfo ? recordKeyOf(state, record, r) : null`（paintBodyRow 行级一次）；drawCellClipped 不再逐格调 recordKeyOf |
 | 注释扫描（node 内联脚本，7 个源文件，`//` 连续块与 `/* */` 块按物理行 >3 输出） | PASS | `ALL CLEAN`（0 输出） |
 | `node --check` 10 个 self-checks .js | PASS | 全部 OK |
-| demo 服务 + HTTP（本次启动：`node node_modules/vite/bin/vite.js build --config vite.demo.config.js --watch`，PID 1287，日志 `evidence/demo-watch.log`，验证后已 `kill -9 1287`，POST_KILL=000） | PASS（HTTP 部分） | `/data/canvas-table/` → 200，`<title>CanvasTable 画布表格 - Mussel Demo</title>`；`/data/canvas-table/main.js` → 200（323404 bytes，含 56 处 `mappings`）；`style.css` → 200（3041 bytes）。首次启动（PID 22）因服务先于构建完成监听、旧 index.html 污染判定，已终止并以 main.js 200 为就绪判据重测 |
+| demo 服务 + HTTP（本次启动：`node node_modules/vite/bin/vite.js build --config vite.demo.config.js --watch`，PID 1287，日志 `evidence/demo-watch.log`，验证后已 `kill -9 1287`，POST_KILL=000） | PASS（HTTP 部分） | `/data/table-ex/` → 200，`<title>TableEx 画布表格 - Mussel Demo</title>`；`/data/table-ex/main.js` → 200（323404 bytes，含 56 处 `mappings`）；`style.css` → 200（3041 bytes）。首次启动（PID 22）因服务先于构建完成监听、旧 index.html 污染判定，已终止并以 main.js 200 为就绪判据重测 |
 
 ## 验收标准核对
 
 | 标准 | 手段 | 证据 | 结果 |
 |---|---|---|---|
-| 1. canvas-table 源码无 enum 处理逻辑 | 命令 | `grep -rn "enum" src/components/canvas-table/` 0 命中；`COLUMN_TYPE_EDITORS`（editor.js:97-104）无 enum 条目；layout.js `TYPE_DEFAULT_WIDTHS` 断言表已删 enum 行（13 条目）；`table/column-types/` 未动（设计既定，DOM 版 mu-table 保留） | PASS |
+| 1. table-ex 源码无 enum 处理逻辑 | 命令 | `grep -rn "enum" src/components/table-ex/` 0 命中；`COLUMN_TYPE_EDITORS`（editor.js:97-104）无 enum 条目；layout.js `TYPE_DEFAULT_WIDTHS` 断言表已删 enum 行（13 条目）；`table/column-types/` 未动（设计既定，DOM 版 mu-table 保留） | PASS |
 | 2. text/number 列 mappings 显示映射生效且优先；options 编辑下拉；仅 options 显示按转换映射 | 浏览器 + demo 自检 | 无 playwright mcp（00-task.md 环境豁免裁定）。代码级补充证据（不替代手段）：`mappings.js:48-59` createDisplayMapper 固化 mappings 优先；`cell-painters.js:176-180` `_mapText`/`_plainText` 挂载；`resolveCellContent:189-211` 短路与映射分支；`editor.js:136-153` resolveEditorType 三来源 → select；`editor.js:231-241` resolveSelectOptions 三级优先；`row-geometry.js:58-69` valueOf 应用映射；demo 载体 `main-view.vue:427` 等级列（number+options，记录取值 `main-view.vue:364` `level: (i % 3) + 1` 全覆盖）、`:390` 状态列 text+mappings；自检断言就位（cell-painters.js:351/370/407/575、editor.js:369/418/451、row-geometry.js:443、layout.js:177），断言精确值非仅不抛错 | UNVERIFIED（环境豁免 → 需人工） |
 | 3. `npm run build` 通过 | 命令 | exit 0，dev + prod 两次 `✓ built` | PASS |
 | 4. demo 页渲染正常：映射列显示映射值、编辑下拉编辑态正常 | 浏览器 | 无 playwright mcp（环境豁免）。HTTP 补充：页面与构建产物可服务（index/main.js/style.css 均 200，bundle 含映射逻辑）；渲染与像素采样（暗像素 >30/<10 口径）、自检面板 0 failed 无法执行 | UNVERIFIED（环境豁免 → 需人工） |
@@ -35,12 +35,12 @@ VERDICT: PASS
 
 - 基线：mussel-table @ 7113e14，工作区 clean（本轮 `git log` 确认 HEAD 仍为 7113e14，未提交）。无"基线已有脏文件"、"无法区分"项。
 - 改动（12 修改 + 1 新增）与 02-design.md 改动清单逐一对应，无多无少：
-  - src 7：`mappings.js`（新增）、`cell-painters.js`、`editor.js`、`layout.js`、`painter.js`、`row-geometry.js`、`canvas-table.vue`
+  - src 7：`mappings.js`（新增）、`cell-painters.js`、`editor.js`、`layout.js`、`painter.js`、`row-geometry.js`、`table-ex.vue`
   - demo 6：`main-view.vue`、`self-checks/{cell-painters,editor,layout,painter,row-geometry}.js`
   - `git diff --stat` 合计 757 insertions / 1239 deletions
 - 未改动清单核对：`theme.js`/`text-wrap.js`/`tree.js`/`interactions.js`/`row-geometry-controller.js`/`use-tree-rows.js`/`use-column-resize.js`/`constants.js`/`index.js`/`table/`/`self-checks/index.js` 等 0 改动（git status 确认）。
 - 验证产物：`dist/`、`demo/dist/`（.gitignore:15 `dist/` 已忽略）；demo watch 重建曾清空 demo/dist 后重写（knowledge `demo-watch-wipes-dist`，属预期）。
-- 任务产物：`agent-docs/plans/20261028-canvas-table-optimize/`（未跟踪，流水线输出目录，排除）。
+- 任务产物：`agent-docs/plans/20261028-table-ex-optimize/`（未跟踪，流水线输出目录，排除）。
 - 设计外改动：无。并行实施：无（串行）。
 
 ## 测试质量问题
@@ -51,7 +51,7 @@ VERDICT: PASS
 
 ## 需人工检查
 
-1. **验收 #2②（等级列交互）**：`http://localhost:3000/data/canvas-table/` 复位 scrollTop=0 → 按 `getLayoutInfo().colWidths` 前缀和求等级列（colIndex 9）左缘 → 设 `.mu-canvas-table__scroll` scrollLeft 使其可见（等 ≥80ms，`getCellRect(0,9).x ∈ [0, canvas.clientWidth)`）→ 格中心派发带 clientX 的 pointerdown/pointerup/click → 等 ≥80ms → `.mu-canvas-table__editor` 内 `.mu-select` 存在 → 展开后 `.mu-dropdown-panel .mu-option` = 低/中/高 → 点"中" → 事件日志 `.ct-event-log__item` 首条含 `"value":2` → 点名称列提交关闭。
+1. **验收 #2②（等级列交互）**：`http://localhost:3000/data/table-ex/` 复位 scrollTop=0 → 按 `getLayoutInfo().colWidths` 前缀和求等级列（colIndex 9）左缘 → 设 `.mu-table-ex__scroll` scrollLeft 使其可见（等 ≥80ms，`getCellRect(0,9).x ∈ [0, canvas.clientWidth)`）→ 格中心派发带 clientX 的 pointerdown/pointerup/click → 等 ≥80ms → `.mu-table-ex__editor` 内 `.mu-select` 存在 → 展开后 `.mu-dropdown-panel .mu-option` = 低/中/高 → 点"中" → 事件日志 `.ct-event-log__item` 首条含 `"value":2` → 点名称列提交关闭。
 2. **验收 #2③（状态列 mappings 派生下拉）**：复位 scrollLeft=0 → 状态列（colIndex 3）同法开下拉 → 选项 = 启用/待处理/已归档（无 default）。
 3. **验收 #4（渲染与像素采样）**：自检面板 0 failed；`getCellRect(0,3)`（'启用'）格内暗像素（lum<100）> 30；横滚至 colIndex 9 可见后 `getCellRect(0,9)`（'低'）> 30；colIndex 13（空值占位列）对照格 < 10。
 4. **验收 #5（性能复测）**：按 02-design.md 测试计划 #5 口径执行 M1/M2 采样；因 S0 基线缺失（decisions.md 裁定），需先定补采方式（如 git worktree 检出 7113e14 起临时服务采基线）或按"无基线单侧复测"豁免——此为调度者决策项。

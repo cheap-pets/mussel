@@ -4,7 +4,7 @@ VERDICT: OBJECT
 
 实质改动 22 项、非实质 6 项；异议 3 条（3 条均为争议，需用户裁决）。
 
-对象：`agent-docs/plans/20261027-canvas-table-improve/02-design.md`（已直接修改）
+对象：`agent-docs/plans/20261027-table-ex-improve/02-design.md`（已直接修改）
 判读基准：decisions.md（含「检查点-Q1/Q2」两条用户答复）+ 00-task.md A1–A11 + 03-human-1.md 三条人工意见 + 追加约束（Q1=选项 1、Q2=首行槽位锚）。
 
 ## 上次回应核对（06-amend-1 九项实质改动 + 人工意见）
@@ -37,8 +37,8 @@ VERDICT: OBJECT
 4. 影响面：补 veil 的 itemHits 清空、onPointerLeave 清理、hoverItem 求值位置、cursor 覆盖顺序、`--row-height` 覆盖后果、textarea 超高行编辑态差异。
 5. 可实施：G1→S4/S5→G2→V 有序；中间态（含 S4 前的水平锚回退）已逐条写明。
 6. 风险与回滚：R1–R11 均有对策；R10 纠正为「锚与 gridlines 解耦」后新增覆盖行高的说明。
-7. 范围：改动全在 `src/components/canvas-table/**`、`demo/src/data/canvas-table/**`；文档差异在未解问题 5。
-8. 并行组：G1-a/b/c/d 与 G2-1..8 文件集合两两不相交；S4 依赖 G1-a/b/c/d、S5 依赖 S4 与 G1（顺序成立）；G2 各组仅依赖 S5 后的 API；共享文件（cell-painters/painter/canvas-table.vue）都在 G1/S 阶段，未落入并行组。
+7. 范围：改动全在 `src/components/table-ex/**`、`demo/src/data/table-ex/**`；文档差异在未解问题 5。
+8. 并行组：G1-a/b/c/d 与 G2-1..8 文件集合两两不相交；S4 依赖 G1-a/b/c/d、S5 依赖 S4 与 G1（顺序成立）；G2 各组仅依赖 S5 后的 API；共享文件（cell-painters/painter/table-ex.vue）都在 G1/S 阶段，未落入并行组。
 
 ## 改动台账
 
@@ -56,7 +56,7 @@ VERDICT: OBJECT
 | 10 | A5 自检 | 「未 onload 前与无 hover 帧像素一致」→ 「与同 hover 态的无 editorButton 列帧像素一致」 | hover 高亮本身改变该区像素，原比较对象不可比 | 是 |
 | 11 | 问题 7 接线 / A7 | 补 hoverItem 必须在 `updateHover` 之外求值（`:627-640` 同格早退）、`syncPaintState` 按 hoverMode=none 归一、`onPointerLeave` 清理、cursor 覆盖顺序 | 同格内条目间移动不触发 updateHover；离开画布不清理会永久残留 hover 色 | 是 |
 | 12 | 问题 7 hover 取色 | `readVar(probe,'--mu-{name}-color-4')` → `getComputedStyle(probe).getPropertyValue(...).trim()` + `raw \|\| colors[name].color` 回退 | theme.js:34-37 `readVar` 是「赋 color 后读计算值」，变量缺失时返回继承色（合法色串），无法判「未定义」→ 自定义主题下 hover 变黑 | 是 |
-| 13 | 问题 8 成本夹具 | 「applyOrder(treeRecords) 计时 → 设 orderBy → nextTick → 读 lastRelayout」→ 加复位、两次 tick、**以舞台数据已排序为有效性判据**，并注明不可用 `lastRelayout` 引用判新 | `getLayoutInfo` 每次 `{...lastRelayout}` 展开（canvas-table.vue:1054），引用判据恒真；`orderBy` 已是 asc 时不重算 | 是 |
+| 13 | 问题 8 成本夹具 | 「applyOrder(treeRecords) 计时 → 设 orderBy → nextTick → 读 lastRelayout」→ 加复位、两次 tick、**以舞台数据已排序为有效性判据**，并注明不可用 `lastRelayout` 引用判新 | `getLayoutInfo` 每次 `{...lastRelayout}` 展开（table-ex.vue:1054），引用判据恒真；`orderBy` 已是 asc 时不重算 | 是 |
 | 14 | 问题 8 / A8 / 改动清单 | 新增 `window.__ctStage = () => ({records, treeProps})`；A8 断言改用它读行序 | 既有调试句柄只有 `getTreeExpandedKeys()`（key 数组，无行序），A8「同级有序/不跨节点」页面侧不可验证 | 是 |
 | 15 | 问题 8 applyOrder | `applyOrder(list)` → `applyOrder(list, order = orderBy.value)` | 夹具第 1 步复位 orderBy 后计时会变成空排序（恒 0ms） | 是 |
 | 16 | 问题 3 scss | 补 `border-radius: 0`（.mu-input 基础 4px） | form/input.scss:181 边框 + root.scss:166 `box-sizing:border-box`；圆角使边框四角内缩，与「与格边框重叠」不符 | 是 |
@@ -64,8 +64,8 @@ VERDICT: OBJECT
 | 18 | R7 / 问题 3 | 「相差上格线 1px（r=0 行一致）」→ 「相差 `ROW_TOP_INSET`（恒 1px，含 r=0）」 | ROW_TOP_INSET 对所有行取 1，r=0 不再特殊 | 否 |
 | 19 | R10 | 删「gridlines none/column 时整体上移 1px」，改为「无此变化」；补 `--row-height`=48 时偏上 6.5px | 台账 3 的连带；demo:14 有 48px 覆盖开关 | 是 |
 | 20 | A1 前置 / 未解问题 6 | 新增「行高覆盖开关须关闭」「行高覆盖下锚不随行高变」两条 | 同上 | 是 |
-| 21 | 问题 5 onClick 插入点 | 「树槽判定之前」→ 「`!col` 早退之后、树槽之前」 | canvas-table.vue:765-796 的实际顺序 | 是 |
-| 22 | 多处行号 | editor.js:92/:98/:117；canvas-table.vue:642/:765/:658-661/:809/:870；interactions.js:351-359；cell-painters.js:752/:844/:882-889；painter.js:329/:584-587/:615-626/:1110-1116；tree.js:41-64/:107-136；demo :583-593；`computeEditorStyle` 调用 :885-899 | 逐处 Grep 核对 | 否 |
+| 21 | 问题 5 onClick 插入点 | 「树槽判定之前」→ 「`!col` 早退之后、树槽之前」 | table-ex.vue:765-796 的实际顺序 | 是 |
+| 22 | 多处行号 | editor.js:92/:98/:117；table-ex.vue:642/:765/:658-661/:809/:870；interactions.js:351-359；cell-painters.js:752/:844/:882-889；painter.js:329/:584-587/:615-626/:1110-1116；tree.js:41-64/:107-136；demo :583-593；`computeEditorStyle` 调用 :885-899 | 逐处 Grep 核对 | 否 |
 | 23 | A9 | 「面板显示模块数 9」→ DOM 去重校验；总数改为「运行时实际值即基线，不预设」 | main-view.vue:228 只渲染 `passed/total`，无模块计数 | 是 |
 | 24 | 接口/改动清单 | 新增 `requestIconImage` 返回缓存条目、SVG 串须每次运行唯一 | imageCache 为模块级 Map（cell-painters.js:70），固定串二次运行命中 loaded，`loading` 断言假红 | 否 |
 | 25 | A11 | 补「既有 :305 末列无线断言用默认夹具（Σ=600=W），问题 9 后仍成立」，复用窄列夹具（:800-808） | 避免实施者误改既有绿断言 | 否 |
@@ -78,7 +78,7 @@ VERDICT: OBJECT
 1. **争议 — 00-task A1 的两条主句在 Q2 槽位锚下不能字面成立（需用户裁决以哪句为准）**
    位置：`02-design.md` 问题 1「A1 判据的残差」/ 未解问题 1；基准 `00-task.md:26`、`03-human-1.md:3`、decisions 检查点-人工1 与 Q2。
    问题：A1 写「单行文本视觉中心 = 内容区（不含边线）几何中心」+「其余列按内容区中心垂直居中」。Q2 的槽位锚 `格顶+18` 与 r≥1 真实内容区中心 `格顶+18.5` 恒差 0.5px（算术必然：`padding + lineHeight/2 = h/2`），**不消除**；超高行中所有列贴行顶，与内容区中心相差可达十几 px。两条主句因此无法逐像素通过。
-   证据：`--cell-padding:8` / `--cell-line-height:18` / `--row-height:36`（canvas-table.scss:4-6）；槽位锚 = `1 + 8 + 9 = 18`，r≥1 真实内容区中心 = `1 + 35/2 = 18.5` → 差 0.5px；decisions:18「默认行高时与内容区几何中心差 ≤0.5px，A1 断言公式随此口径收敛」。
+   证据：`--cell-padding:8` / `--cell-line-height:18` / `--row-height:36`（table-ex.scss:4-6）；槽位锚 = `1 + 8 + 9 = 18`，r≥1 真实内容区中心 = `1 + 35/2 = 18.5` → 差 0.5px；decisions:18「默认行高时与内容区几何中心差 ≤0.5px，A1 断言公式随此口径收敛」。
    建议修法：本设计已按 decisions Q2 落为「垂直残差 0（r=0 或 gridlines 不含 row）/≤0.5px（r≥1 且含 row）+ 超高行只验跨列同高」，**verifier 据此判 A1**；若用户要求严格「= 内容区中心」，则须改锚为 `rect.y + ROW_TOP_INSET + (rowHeight − ROW_TOP_INSET)/2`（默认同为 18，超高行仍不居中 → 仍不能完全满足「其余列按内容区中心」），或回到 decisions 检查点-人工1 的分列锚（放弃 Q2 的跨列严格对齐）。
 
 2. **争议 — decisions 内部两条口径互斥（检查点-人工1「垂直 +0.5 修正不变」vs 检查点-Q2 槽位锚）**
@@ -88,7 +88,7 @@ VERDICT: OBJECT
    建议修法：本设计取 Q2（后出、更具体、且为答疑直接结论）并在文中标注；建议用户在 decisions.md 中把「格线修正口径（垂直 +0.5）不变」限定为「仅行线占用扣除口径不变」，以消除互斥。
 
 3. **争议 — Q1 选定的 `topAlignColumnsOf` 在 Q2 槽位锚下无任何绘制作用（保留与否需用户定）**
-   位置：`02-design.md` 问题 1「注意（Q1 与 Q2 的交互）」、R8、改动清单 row-geometry / canvas-table.vue。
+   位置：`02-design.md` 问题 1「注意（Q1 与 Q2 的交互）」、R8、改动清单 row-geometry / table-ex.vue。
    问题：所有列锚式相同 → `topAlign` true/false 输出逐值相等，分类不产生任何绘制差异 —— Q1 的谓词变成「算出 `Boolean[]` → 经 paintState 透传 → 参数在 drawCell 内不被使用」的空链路（一个语义空洞的死参数，后续维护者容易误以为切它有效）。
    证据：Q2 槽位锚与列分类无关（问题 1 公式）；decisions:17 仍要求 Q1 谓词。
    建议修法：二选一——(a) **保留**（按 decisions Q1 原样实现 `topAlignColumnsOf` + paintState 透传，作为后续切换点，不作为任何断言判据）；(b) **简化**：删 `topAlignColumnsOf` 与 `topAlignCols`/`topAlign` 通道（组件、painter、row-geometry 各减一块），A1 只验统一锚。当前设计取 (a)，实施按 (b) 亦可，但须先由用户拍板（否则可能出现「实现了但永远不生效」的死代码）。

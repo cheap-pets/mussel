@@ -10,7 +10,7 @@ VERDICT: PASS
 
 | 命令 | 状态 | 关键输出（≤15 行） |
 |---|---|---|
-| `npx eslint src/components/canvas-table/ demo/src/data/canvas-table/` | 退出 0 | 无任何 error/warning 输出（基线 39 error / 19 warning → 0/0） |
+| `npx eslint src/components/table-ex/ demo/src/data/table-ex/` | 退出 0 | 无任何 error/warning 输出（基线 39 error / 19 warning → 0/0） |
 | `npm run build` | 退出 0 | dev + prod 两次 vite build 均 ✓（mussel.js 642.55 kB / mussel.min.js 289.44 kB，✓ built in 588ms/530ms） |
 | demo 产物一致性抽查 | — | `grep -rl "beyondCols\|editorRectOf" demo/dist/assets/` 命中 `\catalog.js`：3000 端口服务的产物包含本轮新符号，与当前源码一致（未启停任何服务） |
 
@@ -24,7 +24,7 @@ VERDICT: PASS
 | R3 hover 内边框四周等距 | 浏览器 + 像素断言 | default 场景 row2/col3（状态列，非首行非末列）：hover 描边差分包围盒 `[268,359)×[113,140)`，四边距最近格线内缘空白 **left 4 / top 4 / right 4 / bottom 4（差 0px）**；点击开编辑浮层 DOM 盒 (268,113,91,27) 与描边**逐边相等**，Esc 正常关闭；自检面板 `editorRectOf` 四边等距断言通过（evidence/r3-hover-editor.json） | PASS |
 | R4a/R4b 文字居中/多行首行 | 浏览器 + 像素断言 | multiline 场景 row 1（h=52）：四列（单行省略 / wrap 单行 / 数组单元素 / lineClamp 单行）文字墨迹均 `[251,263)`、centerY=257 **全等（差 0px ≤1px）**；R4a 单行列墨迹中心 257 vs 格几何中心 258，偏移 -1px，为字体 middle 基线与墨迹固有差（±2px 容差内），非格线 1px 系统性偏移；自检面板 R4a/R4b 断言通过（evidence/r4-multiline.json） | PASS |
 | R5 空白区 hover/选中 | 浏览器交互 + 像素/事件断言 | narrow 场景（Σ=576 < 画布 956）：空白区 (700,54) hover 前 [255,255,255] → hover 后 **[242,242,243] 与列区内 (300,54) 同色**（行高亮满宽）；点击空白区仅发 `update:selected-record-key=1` → `update:selected-record #1`，**无 cell-click**，选中底色 [225,236,243] 满宽覆盖；回归：点击列区内普通格 cell-click 正常发出（record #1, column name）；自检面板 R5 beyondCols 六态断言通过（evidence/r5-blank-area.json） | PASS |
-| R6 eslint 清零 | 命令 | `npx eslint src/components/canvas-table/ demo/src/data/canvas-table/` 退出 0，0 error 0 warning | PASS |
+| R6 eslint 清零 | 命令 | `npx eslint src/components/table-ex/ demo/src/data/table-ex/` 退出 0，0 error 0 warning | PASS |
 
 console 检查：全程仅 1 个既有错误 `ERR_INVALID_URL @ data:image/png;base64,AAAA1:0`（demo 夹具非法 img src，实施记录已注明任务前存在，与改动无关），验证期间未新增错误。
 
@@ -32,9 +32,9 @@ console 检查：全程仅 1 个既有错误 `ERR_INVALID_URL @ data:image/png;b
 
 基线 `mussel-table @ b5c43ea`。`git status --short` / `git diff --stat` 结果：
 
-- 基线排除项（第一步产物，不计）：`demo/src/catalog.js` (M)、`demo/src/data/canvas-table-editable/` (D)。
-- 设计改动清单内（允许范围 `src/components/canvas-table/**`、`demo/src/data/canvas-table/**`，共 16 文件）：painter.js、cell-painters.js、editor.js、interactions.js、canvas-table.vue、row-geometry.js、use-column-resize.js；demo 侧 main-view.vue + self-checks 8 文件。与 04-impl.md 改动文件表逐项一致，无范围外源码改动。
-- 未跟踪：`agent-docs/plans/20261027-canvas-table-fixes/`（任务目录，decisions 已记录保持未跟踪）；`agent-docs/handoff/.!42003!handoff-create-dynamic-component-20261017.md`（基线杂散文件，未动）。
+- 基线排除项（第一步产物，不计）：`demo/src/catalog.js` (M)、`demo/src/data/table-ex-editable/` (D)。
+- 设计改动清单内（允许范围 `src/components/table-ex/**`、`demo/src/data/table-ex/**`，共 16 文件）：painter.js、cell-painters.js、editor.js、interactions.js、table-ex.vue、row-geometry.js、use-column-resize.js；demo 侧 main-view.vue + self-checks 8 文件。与 04-impl.md 改动文件表逐项一致，无范围外源码改动。
+- 未跟踪：`agent-docs/plans/20261027-table-ex-fixes/`（任务目录，decisions 已记录保持未跟踪）；`agent-docs/handoff/.!42003!handoff-create-dynamic-component-20261017.md`（基线杂散文件，未动）。
 - 验证产物（单列）：`dist/`（npm run build 产物，已 gitignored）；`.playwright-mcp/`（playwright 会话目录，未出现在 git status，已按规范补 .gitignore）；`evidence/` 下 6 个 JSON（本报告证据）。
 - 无法区分：无。设计外改动（未记录/已记录-未覆盖）：无。
 

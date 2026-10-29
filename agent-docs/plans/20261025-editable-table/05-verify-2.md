@@ -19,8 +19,8 @@ VERDICT: PASS
 | 命令 | 状态 | 关键输出（≤15 行） |
 |---|---|---|
 | `npm run build` | exit 0 | dev `mussel.js 603.46 kB / mussel.css 120.64 kB`；prod `mussel.min.js 282.95 kB / min.css 97.55 kB`；两次 `✓ built in`。日志：`evidence/build-r2.log`。备注：首轮后台执行因 evidence/ 目录不存在重定向失败实际未跑（EXIT=1），建目录后复跑成功，以复跑为准 |
-| `npx stylelint "src/components/canvas-table/*.scss" src/styles/link.scss` | exit 0 | 无输出无错误（不含 --fix，验证态；上轮同命令已过） |
-| 自检面板首载 ×2 次（/data/canvas-table/） | 通过 | 两次独立导航均「自检结果（143/143 通过）」，0 ✗；分组 text-wrap 10 / row-geometry 12 / tree 8 / theme 15（新增 snapshotsEqual 1）/ layout 21 / cell-painters 28 / painter 14 / interactions 18 / editor 13 / data 4 = 143 |
+| `npx stylelint "src/components/table-ex/*.scss" src/styles/link.scss` | exit 0 | 无输出无错误（不含 --fix，验证态；上轮同命令已过） |
+| 自检面板首载 ×2 次（/data/table-ex/） | 通过 | 两次独立导航均「自检结果（143/143 通过）」，0 ✗；分组 text-wrap 10 / row-geometry 12 / tree 8 / theme 15（新增 snapshotsEqual 1）/ layout 21 / cell-painters 28 / painter 14 / interactions 18 / editor 13 / data 4 = 143 |
 | 自检面板页内重跑 | 通过 | 合成 click「重跑自检」→ 仍 143/143、0 ✗ |
 | 控制台 | 2 error | 均为自检夹具故意 badSrc（`data:image/png;base64,AAAA1/AAAA2`），既有测试行为非缺陷 |
 
@@ -30,8 +30,8 @@ VERDICT: PASS
 |---|---|---|---|
 | 1a 单调不回缩（树场景 variable，1 万节点） | 浏览器 | 底部↔中部 3 轮往返 + 终回中部（M350000 ↔ B 最大）+ 第二中部位置（354200/352800）往返：scrollHeight 序列 `360144(初始估高) → 360178(B1 精算 row9998) → 360178×5 腿(M2/B2/M3/B3/M4) → 360212(352800 精算 row9798) → 360212(B6 往返后)`，全程单调不回缩；旧行为 360178↔360144 交替未复现 | PASS |
 | 1b 长行滚离再滚回高度不重置 | 浏览器 | row 9998（根 2000，长文本 maxLines 3）：36（估）→ 70（B1 精算）→ 滚离（M2）再滚回（B2/M3/B3/M4/B5/B6）7 次读数恒 70；row 9798（根 1960）：精算 70 后 B6 往返恒 70 | PASS |
-| 1c 快照门控不误伤真实主题变更 | 浏览器 | 门控生效侧：11 条滚动腿（含 `mu-canvas-table--y-scrolled-end` class 增删翻转，读数中 rootClass 交替可见）`getThemeSnapshot()` 对象引用全程不变（旧行为 class 翻转即换快照对象）。不误伤侧：暗色切换（demo「mu-dark 挂组件根」开关，生产路径）→ 引用更新 + bgNormal `rgb(255,255,255)`↔`rgb(7,8,8)` + 画布像素 `246,246,246`↔`19,21,23`↔还原，且切换中 contentHeight 360212 / h9998=70 不变（色变不触发行高缓存失效，签名设计正确）；`refreshTheme()` → 引用更新（manual 不抑制，theme.js:290 仅抑制 `reason === 'mutation'`），刷新后 contentHeight 仍 360212 不回缩、h9998 仍 70（rebuild 缓存保留） | PASS |
-| 1d rebuild 路径缓存保留（树 toggle） | 浏览器 | 同场景内滚底精算（360178/70）→ 收起根 1（359926，7 行移除）→ 重展开：**精确恢复 360178 / row9998=70**（未回退估高基线 360144）——record 引用级 WeakMap 缓存跨 toggle rebuild 复用（canvas-table.vue:273/:457-471/:527-533/:610/:723） | PASS |
+| 1c 快照门控不误伤真实主题变更 | 浏览器 | 门控生效侧：11 条滚动腿（含 `mu-table-ex--y-scrolled-end` class 增删翻转，读数中 rootClass 交替可见）`getThemeSnapshot()` 对象引用全程不变（旧行为 class 翻转即换快照对象）。不误伤侧：暗色切换（demo「mu-dark 挂组件根」开关，生产路径）→ 引用更新 + bgNormal `rgb(255,255,255)`↔`rgb(7,8,8)` + 画布像素 `246,246,246`↔`19,21,23`↔还原，且切换中 contentHeight 360212 / h9998=70 不变（色变不触发行高缓存失效，签名设计正确）；`refreshTheme()` → 引用更新（manual 不抑制，theme.js:290 仅抑制 `reason === 'mutation'`），刷新后 contentHeight 仍 360212 不回缩、h9998 仍 70（rebuild 缓存保留） | PASS |
+| 1d rebuild 路径缓存保留（树 toggle） | 浏览器 | 同场景内滚底精算（360178/70）→ 收起根 1（359926，7 行移除）→ 重展开：**精确恢复 360178 / row9998=70**（未回退估高基线 360144）——record 引用级 WeakMap 缓存跨 toggle rebuild 复用（table-ex.vue:273/:457-471/:527-533/:610/:723） | PASS |
 | 2a fixed 场景 button 列绘制 + 双区命中 | 浏览器 | fillText 探针（refreshTheme 整幅重绘采样）：button 文本（『编辑』『删除』等）在列，数量值 120/456/789/24 在列。合成点击（pointerdown→pointerup→click）：滚动区 button（col 5）→ `cell-item-click {"record":"#1","column":"buttons","button":{"caption":"编辑"},"recordIndex":0}` + 选中链（update:selected-record-key/-record、cell-click column buttons）；固定区 link（col 1）→ `cell-item-click {"column":"links","link":{"caption":"Mussel 文档"},"recordIndex":0}` + cell-click——双区命中均发事件 | PASS |
 | 2b 数量列无 NaN | 浏览器 | fillText 全量采样 0 条含 'NaN' 文本（上轮 NaN 已消除；夹具 itemRecords 补 count 字段生效，main-view.vue:648-649 注释与数据核对一致） | PASS |
 | 3 02-design.md 补记 tag.js | 人工（文档核对） | 四处补记齐全：:152「共享文件（3…tag.js 为 S1 实施期裁决修复后的文档补记行」；:158 tag.js 完整行（valueToTags 对象条目原样保留 + 原因列含「补记说明（I2-1 裁决）…仅补记不改变技术内容」）；:185 cell-painters 行 TagColumn compile 断言（27→28 条，S1 补记归属）；:191 汇总段列 tag.js 三文件 | PASS |
@@ -60,7 +60,7 @@ VERDICT: PASS
 
 ## 范围核对
 
-- 基线排除项（00-task.md 基线已含，不计改动）：`.gitignore`、`demo/src/catalog.js`、`src/components/index.js`（M，前序任务脏文件）；`src/components/canvas-table/`、`demo/src/data/canvas-table*/`、`.pipeline/`（untracked，基线即有）。
+- 基线排除项（00-task.md 基线已含，不计改动）：`.gitignore`、`demo/src/catalog.js`、`src/components/index.js`（M，前序任务脏文件）；`src/components/table-ex/`、`demo/src/data/table-ex*/`、`.pipeline/`（untracked，基线即有）。
 - 验证产物：`dist/`（npm run build，被 .gitignore 忽略，git status 不可见）；`evidence/build-r2.log`（.pipeline 内）；`.playwright-mcp/`（仓库根，已按规约写入 `.gitignore` 含 `*` / `!.gitignore`）。
 - 无法区分：无（基线脏列表与本任务改动文件不相交）。
 - 设计外改动：无。`link.js`/`link.scss` 在改动清单（共享文件表）；`tag.js`（+5/−1）上轮「已记录-未覆盖」，本轮设计共享文件表已补记（:158）→ 转为**已覆盖**；demo 两 main-view 与 self-checks theme.js 均在改动清单（demo 表 + 修复记录白名单内）。

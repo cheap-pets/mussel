@@ -1,4 +1,4 @@
-# 设计评审记录 — canvas-table（第 2 轮）
+# 设计评审记录 — table-ex（第 2 轮）
 
 VERDICT: REVISE
 
@@ -7,12 +7,12 @@ VERDICT: REVISE
 | 条目 | 状态 | 核对 |
 |------|------|------|
 | B1 sticky/spacer 结构与高度口径 | 已解决（主体），但 A2 首子断言与新发现冲突 | `__sticky` 置前、`__spacer` 后置，spacer 高 = 内容总高 − 视口高（`02-design.md:154-163`），A3 断言同口径（`:514`）。但 A2 的“`__sticky` 是 `__scroll` 第一个子元素”与 `v-mu-scrollbar` 注入 `.mu-scrollbar__tracks` 冲突，见 Blocker 2。 |
-| B2 demo 路径与 catalog/vite 规则 | 已解决 | 目录/URL 已改 `demo/src/data/canvas-table/`、`/data/canvas-table/`（`02-design.md:54`、`:508`、`:529`）；`vite.demo.config.js:57-80` 要求 `page.path` 以分类 `data/` 开头，`demo/src/catalog.js` 的 `data` 分类存在，核对通过。 |
+| B2 demo 路径与 catalog/vite 规则 | 已解决 | 目录/URL 已改 `demo/src/data/table-ex/`、`/data/table-ex/`（`02-design.md:54`、`:508`、`:529`）；`vite.demo.config.js:57-80` 要求 `page.path` 以分类 `data/` 开头，`demo/src/catalog.js` 的 `data` 分类存在，核对通过。 |
 | B3 编辑器事件隔离 / blur 吞下拉点击 | 部分解决 | `__editor` 拦截 pointerdown/click/dblclick，画布 pointerdown 先同步提交，分类型提交矩阵（`02-design.md:314-346`）覆盖了“点下拉项”的时序；但 Teleport 的日期面板月份切换仍触发 blur 兜底提交（Major 7）。 |
 | B4 records 就地变更无重绘 | 已解决（records 范围） | `recordsVersion`（`:85`）、emit 后 nextTick 行重绘（`:233`）、引用 watch（`:239-245`）已形成三条通道；但 `columns`/`headerChecked` 等渲染 props 仍未加重绘触发（Major 1）。 |
 | M1 placeholder 语义 | 已解决 | `placeholder` 恢复为空单元格占位（`:83`、`:115`），空态改用 `emptyText`/`empty`（`:84`）。但 A7 视觉规格的空态行仍写“placeholder/empty 插槽”（`:449`），与 M1 结论矛盾（Minor 10）。 |
 | M2 测试依赖未暴露接口/调试开关 | 部分解决 | `getLayoutInfo()`（`:109`）、事件日志/自检/重绘计数面板（`:54`、`:529`）已加入；但 `refreshTheme()` 仍无验证（M2 回应称经 A7 验证，`:554`，实际 A7 `:518` 无调用），方法调用入口与多数测试夹具未列入 demo 任务（Major 3）。 |
-| M3 G1/G2 依赖后置 demo | 基本解决 | G0 先行 + `self-checks`（`:525-536`），G1/G2 文件集合不相交并各自带自检；但 G1-a 的 theme 自检依赖的 `--row-height` 等局部变量在 S1 的 `canvas-table.scss` 才出现（Minor 6），S1 的 demo 注册时序（Minor 7）。 |
+| M3 G1/G2 依赖后置 demo | 基本解决 | G0 先行 + `self-checks`（`:525-536`），G1/G2 文件集合不相交并各自带自检；但 G1-a 的 theme 自检依赖的 `--row-height` 等局部变量在 S1 的 `table-ex.scss` 才出现（Minor 6），S1 的 demo 注册时序（Minor 7）。 |
 | M4 MuSwitch 无 focus/blur/keydown | 已解决（文字/矩阵），模板待补 | `__editor` 容器 `tabindex=-1`、打开聚焦、Esc 取消、值变化提交（`:337-343`、`:364`）；但 A6 模板片段未展示容器级 `keydown`，只写“esc 挂在上方容器”（Minor 3）。 |
 | M5 cell-painters 未覆盖 text/rec_no/check disabled | 已解决（指定项） | 取值链、`rec_no` 的 `render({ recordNumber })`、check `disabled` 已补齐（`:142`、`:460`）；A4 “完全兼容”的自定义类型/格式化/mapping/tag-link 仍未覆盖（Major 5）。 |
 | m1 fontFamily 误用 readVar | 已解决 | `readFont(name)`（`:385-387`），快照 `fontFamily: readFont('--mu-font-sans')`（`:406`）。 |
@@ -46,7 +46,7 @@ VERDICT: REVISE
 | A5 列头调宽/排序 | 部分 | 命中/光标/事件序列/固定列排除有；resize 脏区右侧起算会留残影（Major 9）；列宽后未定宽列重排未定义（Major 6）；固定列用例的 demo 夹具未列（Major 3）。 |
 | A6 单元格编辑 | 部分 | 浮层/生命周期/提交矩阵/只读有；enum options 接线错误（Blocker 1）；日期面板导航触发 blur 兜底（Major 7）；编辑器控件 200×32 不随单元格填充（Major 10）；check 点击（Major 8）；switch 容器 keydown 模板（Minor 3）。 |
 | A7 样式与主题 | 部分 | 探针/变量/暗色观察/视觉规格齐全；`--row-height` 覆盖未重算 layout/spacer（Major 2）；底部投影硬编码（Minor 4）；空态仍写 placeholder（Minor 10）。 |
-| A8 文件结构 | 通过 | `canvas-table.vue/.scss/index.js/theme.js/layout.js/cell-painters.js/painter.js/editor.js/interactions.js` 与改动清单、步骤一致；`index.js` 用命名导出即可。 |
+| A8 文件结构 | 通过 | `table-ex.vue/.scss/index.js/theme.js/layout.js/cell-painters.js/painter.js/editor.js/interactions.js` 与改动清单、步骤一致；`index.js` 用命名导出即可。 |
 | A9 范围边界 | 部分 | 11 条边界清晰；但 tag-link 的视觉选项、enum mapping 样式、自定义列类型未列入（与 Major 5 同源）。 |
 
 ## 问题清单
@@ -63,7 +63,7 @@ VERDICT: REVISE
 
 [major] `02-design.md:203-204`、`:160-163`、`:424` — 尺寸/主题变化只更新 canvas 物理尺寸与未定宽列分配；未重算 `__sticky` 尺寸、spacer 高度/宽度与可视窗口。容器高度变化或 `--row-height` 覆盖后，滚动范围与行定位不一致。 — 证据：spacer 高 = `内容总高 − 容器视口高`（`:160-163`）；A2 尺寸响应只写“重读 clientWidth/Height → 更新 canvas 物理尺寸与未定宽列分配 → 整幅重绘”（`:203`）；A7 覆盖 `--row-height` 的用例（`:518`）依赖该重算；A7 主题刷新只写“重读 snapshot → 整幅重绘”（`:424`）。 — 建议：抽出 `relayout()`（sticky 尺寸、spacer 宽高、列前缀和、rowHeight/headHeight），在 sizechange、window resize、theme 刷新、records/columns 变化、列宽 up 后统一调用；A2 补容器高度变化后的 spacer/scrollHeight 断言。
 
-[major] `02-design.md:54`、`:529`、`:512-518` — 测试计划的多数断言依赖 demo 控件/夹具，但 demo 任务未列：空态/`empty` 插槽/`emptyText`、容器尺寸手柄、`fixedLeftColumns`、`editable=false` 变体、validate 列、`recordsVersion` 异步按钮、`--row-height`/根字号覆盖、`mu-dark` 挂组件根变体、`scrollToRecord`/`refreshTheme` 调用入口。S3 无法按表执行。 — 证据：A1 `:512` 要 `#empty` 插槽与方法；A2 `:513` 要右侧手柄；A4 `:515` 要 `recordsOffset`/check disabled；A5 `:516` 要固定列；A6 `:517` 要 validate/editable=false/滚动；A7 `:518` 要变体与覆盖；G0 `:529` 只列静态结构/10 万行/日志/面板。`refreshTheme` 在 M2 回应 `:554` 声称经 A7 验证，但 A7 `:518` 无该调用。 — 建议：在 G0 的 demo 文件任务中逐项列出上述夹具与调试入口（含 `window.__canvasTable` 或按钮），并把 `refreshTheme` 用例写入 A1/A7；否则 S3 不可执行。
+[major] `02-design.md:54`、`:529`、`:512-518` — 测试计划的多数断言依赖 demo 控件/夹具，但 demo 任务未列：空态/`empty` 插槽/`emptyText`、容器尺寸手柄、`fixedLeftColumns`、`editable=false` 变体、validate 列、`recordsVersion` 异步按钮、`--row-height`/根字号覆盖、`mu-dark` 挂组件根变体、`scrollToRecord`/`refreshTheme` 调用入口。S3 无法按表执行。 — 证据：A1 `:512` 要 `#empty` 插槽与方法；A2 `:513` 要右侧手柄；A4 `:515` 要 `recordsOffset`/check disabled；A5 `:516` 要固定列；A6 `:517` 要 validate/editable=false/滚动；A7 `:518` 要变体与覆盖；G0 `:529` 只列静态结构/10 万行/日志/面板。`refreshTheme` 在 M2 回应 `:554` 声称经 A7 验证，但 A7 `:518` 无该调用。 — 建议：在 G0 的 demo 文件任务中逐项列出上述夹具与调试入口（含 `window.__tableEx` 或按钮），并把 `refreshTheme` 用例写入 A1/A7；否则 S3 不可执行。
 
 [major] `02-design.md:514`、`:223` — 验收 #3 要求“仅绘制可视区行，禁止一次绘制全部行”，A3 测试只验 spacer 高度、人工流畅与重绘计数，未断言每帧绘制行数/列数；实现画全量行也可能通过。 — 证据：`00-task.md:18`；设计 A3 声称 rAF 整幅约 20-30 行（`:223`）；A3 测试 `:514`；调试面板仅“重绘计数”（`:54`）。 — 建议：painter 暴露 `lastPaint` 统计（`rowStart/rowEnd/绘制行数/耗时`）到 `getLayoutInfo()` 或调试面板；A3 断言绘制行数 ≤ 可视行 + `OVERSCAN`。
 
@@ -77,7 +77,7 @@ VERDICT: REVISE
 
 [major] `02-design.md:234` — 列宽拖拽 move 的脏区从“该列右缘”到视口右端；加宽时新暴露的 `[旧右缘, 新右缘]` 区不在脏区，保留旧像素（下一列内容），拖拽中显示残影。 — 证据：`:234` 明确“该列右缘至视口右端的竖带”；`:276-278` 更新宽度/前缀和后才重绘该带；只有 up 的整幅重绘纠正。 — 建议：脏区左界取 `min(旧右缘, 新右缘)` 或直接取该列左缘；A5 补拖拽中的像素/截图断言（或至少检查重绘区）。
 
-[major] `02-design.md:321-328`、`:517` — `__editor` 只设 `left/top/width/height`，编辑器组件自身 `.mu-input` 固定 `width: 200px` / `height: 32px`，不随单元格宽度/行高填充；浮层会超出单元格，A6 的“`.mu-input` 与单元格重合”断言无法通过，且溢出的输入框会拦截相邻单元格点击。 — 证据：`src/components/form/input.scss:12-13` `width: 200px; height: var(--height)`（`--height: var(--mu-control-height-normal)` = 32px，`src/styles/root.scss:141`）；设计 `:321-328` 无内部尺寸覆盖；A6 测试 `:517` 断言 `.mu-input` 的 `getBoundingClientRect`。 — 建议：`canvas-table.scss` 对编辑器内 `.mu-input` 设 `width: 100%; height: 100%`（或按行高垂直居中），必要时 `overflow: hidden`；A6 断言改到 `__editor` 容器或明确检查控件填充。
+[major] `02-design.md:321-328`、`:517` — `__editor` 只设 `left/top/width/height`，编辑器组件自身 `.mu-input` 固定 `width: 200px` / `height: 32px`，不随单元格宽度/行高填充；浮层会超出单元格，A6 的“`.mu-input` 与单元格重合”断言无法通过，且溢出的输入框会拦截相邻单元格点击。 — 证据：`src/components/form/input.scss:12-13` `width: 200px; height: var(--height)`（`--height: var(--mu-control-height-normal)` = 32px，`src/styles/root.scss:141`）；设计 `:321-328` 无内部尺寸覆盖；A6 测试 `:517` 断言 `.mu-input` 的 `getBoundingClientRect`。 — 建议：`table-ex.scss` 对编辑器内 `.mu-input` 设 `width: 100%; height: 100%`（或按行高垂直居中），必要时 `overflow: hidden`；A6 断言改到 `__editor` 容器或明确检查控件填充。
 
 ### Minor
 
@@ -91,15 +91,15 @@ VERDICT: REVISE
 
 [minor] `02-design.md:237`、`:460`、`:516-518` — img 异步绘制未说明跨域/CORS；若 demo 或自检使用跨域图片（现有 table demo 用 dummyimage.com），canvas 被污染，`getImageData` 断言抛 `SecurityError`。 — 证据：`demo/src/data/table/main-view.vue:98-102` 使用 `https://dummyimage.com`；A8 `:460` 支持 img；A5/A6/A7 测试用 `getImageData`。 — 建议：图片设 `crossOrigin = 'anonymous'` 或测试用同源/data URI；在风险表补该风险。
 
-[minor] `02-design.md:530`、`:536` — G1-a 的 theme 自检要读 `--row-height`/`--head-row-height` 等局部变量，但定义这些变量的 `canvas-table.scss` 在 S1 才创建；G1-a 在当前顺序下读到 0/无效值。 — 建议：把局部变量声明提前到 G0 的 demo 主题层，或 theme 自检使用测试内联变量；判据写明变量来源。
+[minor] `02-design.md:530`、`:536` — G1-a 的 theme 自检要读 `--row-height`/`--head-row-height` 等局部变量，但定义这些变量的 `table-ex.scss` 在 S1 才创建；G1-a 在当前顺序下读到 0/无效值。 — 建议：把局部变量声明提前到 G0 的 demo 主题层，或 theme 自检使用测试内联变量；判据写明变量来源。
 
-[minor] `02-design.md:536-537` — S1 的 demo 接入发生在 `src/components/index.js` 注册（S2）之前；demo 的 app 只安装 `src/index.js`，若 `main-view.vue` 使用全局 `<mu-canvas-table>` 会解析失败。 — 证据：`demo/src/common/app.js` 的 `install(app)` 来自 `mussel`（`vite.demo.config.js:213` alias 到 `src/index.js`）；`src/components/index.js` 在 S2 才注册新组件。 — 建议：S1 明确 `main-view.vue` 本地 import 组件，或把注册提前到 S1（S2 只剩构建校验）。
+[minor] `02-design.md:536-537` — S1 的 demo 接入发生在 `src/components/index.js` 注册（S2）之前；demo 的 app 只安装 `src/index.js`，若 `main-view.vue` 使用全局 `<mu-table-ex>` 会解析失败。 — 证据：`demo/src/common/app.js` 的 `install(app)` 来自 `mussel`（`vite.demo.config.js:213` alias 到 `src/index.js`）；`src/components/index.js` 在 S2 才注册新组件。 — 建议：S1 明确 `main-view.vue` 本地 import 组件，或把注册提前到 S1（S2 只剩构建校验）。
 
 [minor] `02-design.md:516` — A5 断言 `update:order-by` 循环“asc→desc→''”，设计 `:99` 的循环是“无→asc→desc→无”；首次点击应发 `asc`，测试措辞与实现不一致。 — 建议：改为连续点击三次的完整断言（`asc`/`desc`/`''`）。
 
 [minor] `02-design.md:142` — `column.value(record)` 的取值链未写 `ensureFn`；现有实现对 `value` 也先 `ensureFn`（`src/components/table/table.vue:170-171`、`table-row.vue:55-56`）。当 `value` 为 String（文档 `docs-site/components/table.md:256` 允许 String|Function）时按设计字面调用会抛错。 — 建议：A4/A8 明确 `text/value` 均 `ensureFn` 化。
 
-[minor] `02-design.md:449` — A7 视觉规格的空态行仍写“`mu-canvas-table--empty` + placeholder/empty 插槽”，与 `:83`/`:115`（`placeholder` 仅用于空单元格）矛盾；M1 的修订未同步到该行。 — 建议：改为“`empty` 插槽 / `emptyText`”。
+[minor] `02-design.md:449` — A7 视觉规格的空态行仍写“`mu-table-ex--empty` + placeholder/empty 插槽”，与 `:83`/`:115`（`placeholder` 仅用于空单元格）矛盾；M1 的修订未同步到该行。 — 建议：改为“`empty` 插槽 / `emptyText`”。
 
 ---
 

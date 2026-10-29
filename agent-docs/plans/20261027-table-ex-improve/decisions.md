@@ -1,6 +1,6 @@
 # Decisions
 
-- [前置] .pipeline/ 在本仓库有已跟踪先例，不提示 gitignore；本次任务目录保持未跟踪，是否收录由用户决定 — 沿用 20261027-canvas-table-fixes 前例
+- [前置] .pipeline/ 在本仓库有已跟踪先例，不提示 gitignore；本次任务目录保持未跟踪，是否收录由用户决定 — 沿用 20261027-table-ex-fixes 前例
 - [前置] 评审方式：交叉审改（design-amender deepseek 直接改设计文档）；修订轮数 1（初始设计 + C 审改 1 次） — 用户选项答复
 - [前置] A（pipeline-designer，GLM-5.3）与 C（pipeline-design-amender，deepseek-flash）模型不同已在评审方式选项中向用户确认
 - [S1] 问题4：link 列恢复不可编辑，推翻 20261025 任务人工决定「link 本期起可编辑」（editor.js:60 注释、demo 链接列 editable 夹具）；demo 夹具同步摘除编辑配置 — 用户本次清单明确将链接列入不可编辑类型

@@ -1,11 +1,11 @@
-# 实施记录：S5（canvas-table.vue 壳接线）
+# 实施记录：S5（table-ex.vue 壳接线）
 
-模式：串行集成步骤 / 步骤 S5。白名单：`src/components/canvas-table/canvas-table.vue`（仅此文件）。
+模式：串行集成步骤 / 步骤 S5。白名单：`src/components/table-ex/table-ex.vue`（仅此文件）。
 依赖：G1-a（constants/editor）、G1-b（cell-painters）、G1-c（theme/interactions/scss）、S4（painter）已全部合入，按其已落地 API 对接（`editorButtonRectOf`、`cellRectAt`、`resolveItemClick` 返回含 `disabled`、painter state 契约 `hoverItem`/`editingCell`、`computeEditorStyle` 新签名无 gridlines/theme）。
 
 ## 改动摘要
 
-净变更 +164/−3，全部在 canvas-table.vue，对应设计问题 3/5/6/7：
+净变更 +164/−3，全部在 table-ex.vue，对应设计问题 3/5/6/7：
 
 - **import**：`./editor` 增具名导入 `editorButtonRectOf`（painter 已 import 同一函数，壳命中判定共用单一事实源）；`cellRectAt` 沿用既有 `./painter` 导入。
 - **问题 7（hoverItem 状态接线）**：
@@ -37,13 +37,13 @@
 
 | 判据 | 方式 | 结果 |
 |---|---|---|
-| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint src/components/canvas-table/canvas-table.vue` | **0 error / 0 warning**，exit 0（中途修复：editor import 块 vue/script-indent 7 处、onClick complexity 11→抽 `tryEditorButtonClick` 后 9） |
-| SFC 编译 + 模块图解析 | /tmp 最小 vite 构建（复用项目 pluginVue/pluginSvg/alias/$colors 注入同参，产物写 /tmp 未触碰仓库）：canvas-table.vue 单入口 → 150 modules transformed，built 成功（`editorButtonRectOf`/`cellRectAt` 具名导入、`./editor`/`./painter` 图解析均验证） | PASS（临时文件已清理） |
+| eslint 单文件通过 | `NODE_PATH=/usr/local/lib/node_modules npx eslint src/components/table-ex/table-ex.vue` | **0 error / 0 warning**，exit 0（中途修复：editor import 块 vue/script-indent 7 处、onClick complexity 11→抽 `tryEditorButtonClick` 后 9） |
+| SFC 编译 + 模块图解析 | /tmp 最小 vite 构建（复用项目 pluginVue/pluginSvg/alias/$colors 注入同参，产物写 /tmp 未触碰仓库）：table-ex.vue 单入口 → 150 modules transformed，built 成功（`editorButtonRectOf`/`cellRectAt` 具名导入、`./editor`/`./painter` 图解析均验证） | PASS（临时文件已清理） |
 | paintState 两新字段（无 tree/topAlignCols） | 静态核对：paintState 字面量与 syncPaintState 仅增 `hoverItem`/`editingCell`；全文 grep 无 tree/topAlignCols 新字段 | PASS |
 | computeEditorStyle 调用删参 | 全文 grep：`gridlines: props.gridlines` 仅剩 paintState 字面量一处（既有字段）；:1010 调用点无 gridlines/theme 实参 | PASS |
 | onPointerMove/onClick 新命中路径 | 静态核对：onPointerMove = resolveCursor → updateHoverItem → updateHover → applyItemCursor（条目 pointer / 编辑按钮区 pointer，col-resize 与表头不覆盖）；onClick = `!col` 早退之后、`tryToggleTreeRow` 之前插 `tryEditorButtonClick` → return，payload `{ record, recordIndex: hit.rowIndex, column: col._raw ?? col }` | PASS |
 | veil 开关接线时序推演 | 逐路径走查：① Esc/commit/blur 兜底/滚动提交 → editing=null → watch 仅 null 时清 editingCellRef + invalidate（恢复渲染）；② 同 tick commit+open：watcher 单次 flush old/new 均非 null → 不清，旧格由 openEditorAt 失效恢复、新格置 veil；③ open 失败（validate 拦截）：opened=false 不动 veil，旧格编辑态保持；④ 卸载：watch 内 `!painter` 防护 | PASS |
-| 白名单 | `git status`：本轮仅 canvas-table.vue 增改（树中 badge.*/props.js 等为前序既有在途状态，未触碰；G1/S4 各文件本轮未动） | PASS |
+| 白名单 | `git status`：本轮仅 table-ex.vue 增改（树中 badge.*/props.js 等为前序既有在途状态，未触碰；G1/S4 各文件本轮未动） | PASS |
 
 ## 遗留
 

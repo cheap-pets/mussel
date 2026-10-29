@@ -4,19 +4,19 @@
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| `src/components/canvas-table/painter.js` | 步骤 2（问题 1/2/3） | P1：`paintHeaderCells`/`paintHeaderColLines` 重构，滚动列表头文字与分隔线在 `[fixedWidth, W)` clip 内绘制（paintHeader/paintHeaderPass 两入口共活）；P2：`drawHeaderCell` check 表头内容组（✓ + 可选 caption）按列 align 整体分布（对齐 DOM th text-align 语义）；P3：`paintHoverEditorStroke` 改用 `editorRectOf`（格线内缘等距） |
-| `src/components/canvas-table/editor.js` | 步骤 2（问题 3） | 新增导出 `editorRectOf(rect, { topGridline, rightGridline })`：四周内缩 EDITOR_GAP，上/右格线占用本格矩形的 1px 从 top/height、width 扣除；`computeEditorStyle` 增加 `gridlines` 入参并消费同一函数（浮层盒缘与描边外缘逐边相等） |
-| `src/components/canvas-table/cell-painters.js` | 步骤 2（问题 4） | 新增 `multilineBlockTop`：`drawTextValue` wrap 路径、`drawArrayLines`、`drawLinkItems` 三处多行块改为整体垂直居中（n=1 时首行锚 = 单行省略路径 h/2 锚）；`drawArrayLines` 调用补传 measure（走缓存） |
-| `src/components/canvas-table/interactions.js` | 步骤 2（问题 5） | `hitTest` 新增 `beyondCols` 输出：表体行有效 + colIndex −1 + x ≥ 内容右缘（colLefts 末列右缘 − scrollLeft） |
-| `src/components/canvas-table/canvas-table.vue` | 步骤 2（问题 3/5） | `hoverCellOf` 放行空白区命中（col 保持 −1，行带高亮生效、列高亮/编辑描边/树箭头按 col 无效跳过）；`onClick` 空白区分支 `selectRowOnly`（仅发选中事件序，不发 cell-click）；`bandRegionsOf` 过滤负列号；`computeEditorStyle` 调用传 `gridlines: props.gridlines` |
-| `src/components/canvas-table/use-column-resize.js` | 步骤 3（问题 6） | 删除未使用的 props 解构（lint） |
-| `src/components/canvas-table/row-geometry.js` | 步骤 3（问题 6） | eslint --fix（prefer-const，无行为变化） |
-| `demo/src/data/canvas-table/self-checks/painter.js` | 步骤 4 | 新增 3 条断言：R1 固定表头无残影、R2 check 表头 ✓ 中心 = 格几何中心（±0.5px）、R4a/R4b 单行锚与块居中对齐（±1px/±2px）；新增 `darkBoundsOf` 工具；清理未用 import/函数 |
-| `demo/src/data/canvas-table/self-checks/editor.js` | 步骤 4 | 既有 computeEditorStyle 期望值按 R3 口径同步更新；新增 1 条 `editorRectOf` 四边等距断言（含 gridlines none 分支） |
-| `demo/src/data/canvas-table/self-checks/interactions.js` | 步骤 4 | 新增 1 条 R5 断言：beyondCols 放行/列区/表头/行越界/右缘边界/scrollLeft 六态 |
-| `demo/src/data/canvas-table/self-checks/cell-painters.js` | 步骤 4 | 三处多行 y 期望由顶对齐改为块居中口径（60→[21,39]、80→[22,40,58]、60→[21,39]）；lint 修复 |
-| `demo/src/data/canvas-table/self-checks/{layout,row-geometry,tree}.js` | 步骤 3（问题 6） | eslint --fix 与未用常量清理（无断言增删） |
-| `demo/src/data/canvas-table/main-view.vue` | 步骤 3（问题 6） | eslint --fix 模板格式（无逻辑变化） |
+| `src/components/table-ex/painter.js` | 步骤 2（问题 1/2/3） | P1：`paintHeaderCells`/`paintHeaderColLines` 重构，滚动列表头文字与分隔线在 `[fixedWidth, W)` clip 内绘制（paintHeader/paintHeaderPass 两入口共活）；P2：`drawHeaderCell` check 表头内容组（✓ + 可选 caption）按列 align 整体分布（对齐 DOM th text-align 语义）；P3：`paintHoverEditorStroke` 改用 `editorRectOf`（格线内缘等距） |
+| `src/components/table-ex/editor.js` | 步骤 2（问题 3） | 新增导出 `editorRectOf(rect, { topGridline, rightGridline })`：四周内缩 EDITOR_GAP，上/右格线占用本格矩形的 1px 从 top/height、width 扣除；`computeEditorStyle` 增加 `gridlines` 入参并消费同一函数（浮层盒缘与描边外缘逐边相等） |
+| `src/components/table-ex/cell-painters.js` | 步骤 2（问题 4） | 新增 `multilineBlockTop`：`drawTextValue` wrap 路径、`drawArrayLines`、`drawLinkItems` 三处多行块改为整体垂直居中（n=1 时首行锚 = 单行省略路径 h/2 锚）；`drawArrayLines` 调用补传 measure（走缓存） |
+| `src/components/table-ex/interactions.js` | 步骤 2（问题 5） | `hitTest` 新增 `beyondCols` 输出：表体行有效 + colIndex −1 + x ≥ 内容右缘（colLefts 末列右缘 − scrollLeft） |
+| `src/components/table-ex/table-ex.vue` | 步骤 2（问题 3/5） | `hoverCellOf` 放行空白区命中（col 保持 −1，行带高亮生效、列高亮/编辑描边/树箭头按 col 无效跳过）；`onClick` 空白区分支 `selectRowOnly`（仅发选中事件序，不发 cell-click）；`bandRegionsOf` 过滤负列号；`computeEditorStyle` 调用传 `gridlines: props.gridlines` |
+| `src/components/table-ex/use-column-resize.js` | 步骤 3（问题 6） | 删除未使用的 props 解构（lint） |
+| `src/components/table-ex/row-geometry.js` | 步骤 3（问题 6） | eslint --fix（prefer-const，无行为变化） |
+| `demo/src/data/table-ex/self-checks/painter.js` | 步骤 4 | 新增 3 条断言：R1 固定表头无残影、R2 check 表头 ✓ 中心 = 格几何中心（±0.5px）、R4a/R4b 单行锚与块居中对齐（±1px/±2px）；新增 `darkBoundsOf` 工具；清理未用 import/函数 |
+| `demo/src/data/table-ex/self-checks/editor.js` | 步骤 4 | 既有 computeEditorStyle 期望值按 R3 口径同步更新；新增 1 条 `editorRectOf` 四边等距断言（含 gridlines none 分支） |
+| `demo/src/data/table-ex/self-checks/interactions.js` | 步骤 4 | 新增 1 条 R5 断言：beyondCols 放行/列区/表头/行越界/右缘边界/scrollLeft 六态 |
+| `demo/src/data/table-ex/self-checks/cell-painters.js` | 步骤 4 | 三处多行 y 期望由顶对齐改为块居中口径（60→[21,39]、80→[22,40,58]、60→[21,39]）；lint 修复 |
+| `demo/src/data/table-ex/self-checks/{layout,row-geometry,tree}.js` | 步骤 3（问题 6） | eslint --fix 与未用常量清理（无断言增删） |
+| `demo/src/data/table-ex/main-view.vue` | 步骤 3（问题 6） | eslint --fix 模板格式（无逻辑变化） |
 
 新增 self-checks 断言数：5（painter +3 / interactions +1 / editor +1）。
 
@@ -36,7 +36,7 @@
 
 | 项 | 命令/手段 | 结果 |
 |---|---|---|
-| R6 lint | `npx eslint src/components/canvas-table/ demo/src/data/canvas-table/` | 0 error / 0 warning（基线 39 error / 19 warning） |
+| R6 lint | `npx eslint src/components/table-ex/ demo/src/data/table-ex/` | 0 error / 0 warning（基线 39 error / 19 warning） |
 | 构建 | `npm run build` | ✓ built in 495ms |
 | demo 产物 | `npx vite build --config vite.demo.config.js` | ✓（watch 僵死后的替代刷新，见偏离 4） |
 | R0 回归 | demo 自检面板 | **147/147 通过**（0 fail） |

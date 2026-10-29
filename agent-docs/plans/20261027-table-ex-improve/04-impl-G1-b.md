@@ -1,13 +1,13 @@
 # 实施记录：G1-b（cell-painters.js）
 
-模式：并发波 1 / 步骤 G1-b。白名单：`src/components/canvas-table/cell-painters.js`（仅此文件）。
+模式：并发波 1 / 步骤 G1-b。白名单：`src/components/table-ex/cell-painters.js`（仅此文件）。
 设计依据：02-design.md 问题 1（槽位锚终版）、问题 5（requestIconImage）、问题 7（linkHoverColorOf/悬停下划线/按钮反转/itemHits disabled）及「接口 / 数据结构」节。
 
 ## 改动文件
 
 | 文件 | 对应设计步骤 | 说明 |
 |---|---|---|
-| src/components/canvas-table/cell-painters.js | G1-b（问题 1/5/7） | 见下 |
+| src/components/table-ex/cell-painters.js | G1-b（问题 1/5/7） | 见下 |
 
 改动摘要（296+/97−）：
 
@@ -32,7 +32,7 @@
 
 ## 自检
 
-- `NODE_PATH=/usr/local/lib/node_modules npx eslint src/components/canvas-table/cell-painters.js` → **0 error / 0 warning**（本地 node_modules 不含 eslint-config-standard，ESLint 配置经全局 NODE_PATH 解析；初跑 8 warning 已全部修复：6 处长行折行、drawLinkItems 复杂度 13→9）。
+- `NODE_PATH=/usr/local/lib/node_modules npx eslint src/components/table-ex/cell-painters.js` → **0 error / 0 warning**（本地 node_modules 不含 eslint-config-standard，ESLint 配置经全局 NODE_PATH 解析；初跑 8 warning 已全部修复：6 处长行折行、drawLinkItems 复杂度 13→9）。
 - 直调观察 harness（esbuild bundle + stub ctx，已清理临时文件），**52 项断言全部通过**，覆盖 G1-b 完成判据：
   - 单行 h=36：y=18（= 改前 `rect.y+h/2` 逐值，零回归）；rightInset 1 → center x=79.5、left x=8、right x=152（left/right 不受影响）。
   - wrap 多行：h=60 两行 [18,36]、h=80 三行 [18,36,54]；数组路径 h=88 三行 [18,36,54]；link 竖排 h=88 四行 **[18,36,54,72]**——首行恒 18，不随行高变。
