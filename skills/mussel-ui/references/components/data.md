@@ -109,6 +109,8 @@
 
 ### MuTable
 
+DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列宽拖拽场景使用 `MuTableEx`（见下节，props / 事件 / 列配置与本组件同源）。
+
 | 属性 | 类型 | 默认 | 说明 |
 |------|------|------|------|
 | `records` | Array | — | 数据列表 |
@@ -142,25 +144,26 @@
 | `field` | String | 数据字段名 |
 | `key` | String | 列标识（缺省自动生成） |
 | `caption` | String | 列标题 |
-| `type` | String | 列类型（见下表）|
+| `type` | String\|Object | 列类型名（见下表，缺省 `text`）；也可传自定义类型对象 `{ align, width, compile: column => ({ record, value, recordNumber, emit }) => ({ text } \| { items }) }` |
 | `width` / `minWidth` / `maxWidth` | String\|Number | 列宽 |
 | `align` | String | `left` \| `center` \| `right` |
 | `sortable` | Boolean | 是否可排序 |
-| `text` | String\|Function | 单元格显示文本（可覆盖默认值）|
+| `text` | String\|Function | 单元格显示文本（可覆盖默认值，优先于 `mappings` / `options`）|
 | `value` | String\|Function | 单元格值（可覆盖 field）|
 | `title` | String\|Function | 单元格 title（`true` 时为 link/tag 类型开启省略项的 title 提示）|
 | `class` / `style` | String\|Function | 单元格 class / 样式 |
 | `headerClass` / `headerStyle` | String\|Function | 表头 class / 样式 |
+| `mappings` | Object | 显示映射（`text` / `number` / `bool` 列及未指定 `type` 的列）：`{ 值: 文本 }`，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值（`number` 列此时不再格式化）；空值（`null` / `undefined`）显示 `placeholder` |
+| `options` | Array | 选项数组自动转换为显示映射，格式同 `MuSelect` 的 `options`（`[{ value, label }]` 或字符串数组）；与 `mappings` 同时存在时 `mappings` 优先 |
 | `multiline` | Boolean | 多行文本（`text` 类型）|
 | `lineClamp` | Number\|Function | 行数限制（`text` 类型）|
-| `mappings` | Object | 值映射（`enum` / `bool` 类型）；未命中时回退 `default` 键的映射 |
 | `format` | String | 日期格式（`date` / `datetime` 类型）|
 | `formatter` | Function | 日期格式化函数 `(value, format) => text`（`date` / `datetime` 类型，默认内置 `toDateString`）|
 | `formatOption` | Object | `Intl.NumberFormat` 选项（`number` / `currency` 类型）|
 | `locale` | String | 数字格式化 locale（`number` 类型，默认 `'zh-CN'`）|
 | `locales` | String | 货币格式化 locale（`currency` 类型，默认 `'zh-CN'`）|
-| `links` | Function | 链接生成函数 `(record, value) => 链接数组`（`link` 类型）；不传时按字段值转换（数组逐项、单值单个）|
-| `linkOption` | Object | `{ max, class, style, danger, disabled }` |
+| `links` | Function | 链接生成函数 `(record, value) => 链接数组`（`link` 类型），链接项 `{ caption, color, danger, disabled }`；不传时按字段值转换（数组逐项、单值单个，对象元素原样保留）|
+| `linkOption` | Object | `{ max, class, style, color, danger, disabled }`，为全部链接项设置缺省值 |
 | `tags` | Function | 标签生成函数 `(record, value) => 标签数组`（`tag` 类型）；不传时按字段值转换 |
 | `tagOption` | Object | `{ max, class, style, pill, flat, color }` |
 | `disabled` | Function | 禁用函数（`check` 类型）|
@@ -170,18 +173,18 @@
 
 | 类型 | 说明 | 默认对齐 | 默认宽度 |
 |------|------|---------|---------|
-| `text` | 文本 | left | — |
+| `text` | 文本（缺省类型），可配 `mappings` / `options` | left | — |
 | `rec_no` | 自动行号 | center | 50px |
 | `check` | 复选勾选 | center | 50px |
-| `bool` | 布尔（是/否），配合 `mappings` | center | — |
-| `enum` | 枚举值映射，配合 `mappings` | center | — |
+| `bool` | 布尔，缺省显示 是 / 否；可配 `mappings: { true: '…', false: '…' }` | center | — |
 | `date` | 日期格式化 | right | — |
 | `datetime` | 日期时间格式化 | right | — |
-| `number` | 数字格式化 | right | — |
+| `number` | 数字格式化，可配 `mappings` / `options` | right | — |
 | `currency` | 货币格式化 | right | — |
 | `link` | 链接，配合 `links` 函数 | left | — |
 | `tag` | 标签，配合 `tags` 函数 | left | — |
 | `img` / `image` | 图片缩略图 | left | — |
+| `enum` | **已废弃**（使用时控制台告警），改用 `text` + `mappings` / `options`；兼容期内映射值仍可为 `{ text, class, style }` 对象 | center | — |
 
 #### 完整示例
 
@@ -206,12 +209,13 @@ const columns = [
   { type: 'check', field: 'checked', headerCheckbox: true },
   { field: 'name',    caption: '姓名',   type: 'text', sortable: true },
   { field: 'amount',  caption: '金额',   type: 'currency' },
-  { field: 'status',  caption: '状态',   type: 'enum',
-    mappings: {
-      active:   { text: '启用', class: 'mu-tag--success' },
-      inactive: { text: '停用', class: 'mu-tag--danger' }
-    }
+  { field: 'status',  caption: '状态',
+    mappings: { active: '启用', inactive: '停用', default: '未知' }
   },
+  { field: 'level',   caption: '等级',   type: 'number',
+    options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }]
+  },
+  { field: 'enabled', caption: '启用',   type: 'bool', mappings: { true: '是', false: '否' } },
   { field: 'created', caption: '创建时间', type: 'date', format: 'yyyy-MM-dd' },
   { field: 'actions', caption: '操作',   type: 'link',
     linkOption: { max: 3 },
@@ -221,6 +225,152 @@ const columns = [
     ]
   }
 ]
+</script>
+```
+
+---
+
+### MuTableEx
+
+canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；props / 事件 / 列配置与 `MuTable` 完全同源（上节全部适用），并扩展单元格编辑、列宽拖拽、树形展示及 `progress` / `button` 列类型。
+
+> 仅 `mussel.ex` 版本包含此组件（`dist/mussel.ex.js` + `dist/mussel.ex.css`，基础版 `mussel.js` 不含）；`install` 用法与基础版相同，额外注册 `MuTableEx`。
+
+与 `MuTable` 的差异：
+
+- 组件自身 `width: 100%; height: 100%`，高度须由容器确定（flex 子项 / 固定高），内容区虚拟滚动。
+- 列配置 `class` / `style` / `headerClass` / `headerStyle` / `title` 为 DOM 通道字段，不生效；`link` / `tag` 条目的 `class` / `style` 亦不生效，颜色经色名（`linkOption` / `tagOption` 及条目的 `color` / `danger`）生效。
+- 点击可排序表头自动发 `update:order-by`（`field:asc → field:desc → ''` 循环），可 `v-model:order-by`。
+- 组件不修改数据：勾选翻转与编辑提交均经 `update:cell-value` 通知，需由外部写回 `record`（写回后自动重绘该行）。
+
+#### 扩展属性
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `empty-text` | String | `''` | 无数据占位文本（也可用 `empty` 插槽）|
+| `records-version` | Number | `0` | 就地修改 `records` 内容（引用未变）后递增，触发整幅重绘 |
+| `editable` | Boolean | `false` | 表格级编辑开关；列须同时配置 `editor` |
+| `resizable` | Boolean | `false` | 表头拖拽调整列宽；列级 `resizable: false` 可单独禁止 |
+| `tree` | Boolean | `false` | 树模式：按 `tree-props` 从平铺 `records` 构建层级 |
+| `tree-props` | Object | — | `{ key, parentKey }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }` |
+| `tree-expanded-keys` | Array | — | 展开节点 key（双向绑定；传入即接管展开状态，`default-expand-level` 不生效）|
+| `default-expand-level` | Number | `0` | 初始展开层级（0 基：`level <= 值` 的节点展开；`-1` 全收起）|
+
+#### 扩展事件
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `update:order-by` | `orderBy` | 点击可排序表头，`field:asc → field:desc → ''` 循环 |
+| `column-resize` | `{ column, width }` | 拖拽列宽结束 |
+| `update:tree-expanded-keys` | `keys` | 树节点展开 / 收起 |
+| `update:cell-value` | `{ record, recordIndex, column, value }` | check 翻转与编辑提交（较 `MuTable` 多 `recordIndex`）|
+| `cell-item-click` | `{ record, recordIndex, column, link/tag/button }` | 条目点击（较 `MuTable` 多 `recordIndex`；`button` 列载荷为按钮配置项）|
+
+| 插槽 | 说明 |
+|------|------|
+| `empty` | 无数据占位内容（缺省显示 `empty-text`）|
+
+**方法（通过 ref 调用）：**
+
+| 方法 | 说明 |
+|------|------|
+| `scrollToRecord(keyOrIndex)` | 滚动到指定行（优先按 key 匹配，其次行号），返回是否成功 |
+| `expandAll()` / `collapseAll()` | 树模式全部展开 / 收起 |
+| `getTreeExpandedKeys()` | 当前展开 key 数组 |
+| `refreshTheme()` | 重读 `--mu-*` 变量并重绘（运行时覆盖主题 / 尺寸变量后调用）|
+| `getCellRect(row, col)` | 单元格矩形（视口坐标），自动化测试用 |
+| `getLayoutInfo()` / `getThemeSnapshot()` | 布局 / 主题快照，调试用 |
+
+#### 扩展列配置
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `editable` | Boolean | 列级编辑开关，`false` 关闭 |
+| `editor` | Boolean\|Object | 编辑器配置：`true` 按列类型自动选择；对象 `{ type, props, validate, border }`，见下方「单元格编辑」|
+| `editorButton` | Object | `{ icon, onClick }`：hover 时单元格右侧显示图标按钮（`icon` 为 SVG 字符串或图片 URL），点击回调 `({ record, recordIndex, column })`，不触发选中 / 编辑 |
+| `maxLines` | Number | 文本最大行数（1–10）：`> 1` 时自动折行，超出省略；替代 `multiline` + `lineClamp`（两者仍兼容）|
+| `maxItems` | Number | `link` / `tag` / `button` 条目最大显示数（1–10，默认 10），超出以 `...` 省略 |
+| `resizable` | Boolean | `false` 禁止拖拽该列宽；`minWidth`（缺省 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |
+| `treeNode` | Boolean | 树模式下显示展开箭头与缩进的列，缺省为首个非 `check` / `rec_no` 列 |
+| `progressOption` | Object\|Function | `progress` 列：`{ color, showText }`，`color` 为主题色名（缺省 `primary`），`showText: false` 隐藏百分比；可为 `record => option` |
+| `buttons` | Array\|Function | `button` 列：`[{ caption, color, disabled }]` 或 `record => 数组`，`color` 为主题色名 |
+
+#### 扩展列类型
+
+| 类型 | 说明 | 默认对齐 |
+|------|------|---------|
+| `progress` | 进度条，值 0–100，配合 `progressOption` | left |
+| `button` | 轻量按钮组，配合 `buttons`；点击发 `cell-item-click`（载荷 `button`）| left |
+
+#### 单元格编辑
+
+- 开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `tag` / `img` / `button` / `progress` 列不可编辑。单击单元格进入编辑。
+- 编辑器类型（`editor.type` 显式指定优先，可选 `input` / `select` / `date` / `switch` / `textarea`）：
+
+| 列类型 | 缺省编辑器 |
+|------|------|
+| `text`（含未指定 `type`）| `input`；配置了 `mappings` / `options` 时为 `select`；值为数组或 `maxLines > 1` 时为 `textarea` |
+| `number` / `currency` | `input`（`type="number"`）；配置了 `mappings` / `options` 时为 `select` |
+| `date` / `datetime` | `date` |
+| `bool` | `switch` |
+
+- `editor.props`：透传给编辑器组件（`MuInput` / `MuSelect` / `MuDateInput` / `MuSwitch` / 原生 `textarea`）。`select` 的选项来源优先级：`editor.props.options` > 列 `options` > 由 `mappings` 派生（排除 `default`）。
+- `editor.validate(value, { record, column })`：返回 `true` 通过；返回字符串作为错误提示，编辑器标红且不关闭。
+- `editor.border: false`：无边框编辑器。
+- 提交：`input` 按 Enter；`textarea` 按 Ctrl/Cmd+Enter（Enter 换行）；`select` / `date` / `switch` 值变化即提交；失焦、滚动、点击其他单元格自动提交；Esc 取消。
+- 提交值规整：`number` / `currency` 收敛为 number（空值 → `null`）；`textarea` 原值为数组时按换行拆分回数组。
+
+#### 示例
+
+```vue
+<template>
+  <div class="flex-1" style="min-height: 0;">
+    <mu-table-ex
+      ref="tableRef"
+      :records="records"
+      :columns="columns"
+      key-field="id"
+      editable
+      resizable
+      tree
+      :tree-props="{ key: 'id', parentKey: 'parentId' }"
+      :default-expand-level="1"
+      v-model:order-by="orderBy"
+      v-model:selected-record-key="selectedKey"
+      empty-text="暂无数据"
+      @update:cell-value="onCellValue"
+      @cell-item-click="onItemClick" />
+  </div>
+</template>
+
+<script setup>
+const columns = [
+  { type: 'rec_no' },
+  { field: 'name',   caption: '名称', sortable: true, minWidth: 120, editor: true },
+  { field: 'status', caption: '状态', width: 100,
+    mappings: { active: '启用', archived: '归档', default: '未知' }, editor: true },
+  { field: 'count',  caption: '数量', type: 'number', width: 100,
+    editor: { validate: v => (v >= 0 ? true : '不能为负数') } },
+  { field: 'date',   caption: '日期', type: 'date', width: 120, editor: true },
+  { field: 'memo',   caption: '备注', width: 200, maxLines: 3, editor: true },
+  { field: 'rate',   caption: '进度', type: 'progress', width: 140,
+    progressOption: { color: 'success' } },
+  { caption: '操作', type: 'button', width: 160, resizable: false,
+    buttons: record => [
+      { caption: '编辑', color: 'primary' },
+      { caption: '删除', color: 'danger', disabled: record.locked }
+    ]
+  }
+]
+
+// 组件不改数据：提交后由外部写回
+function onCellValue ({ record, column, value }) {
+  record[column.field] = value
+}
+
+function onItemClick ({ record, button }) {
+  if (button?.caption === '删除') remove(record)
+}
 </script>
 ```
 

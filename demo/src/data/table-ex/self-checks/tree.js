@@ -18,7 +18,7 @@ import {
   buildFlatRows,
   resolveInitialExpandedKeys,
   toggleKey
-} from '@/components/table-ex/tree.js'
+} from '@/components/table/ex/tree.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)
@@ -337,6 +337,26 @@ export const checks = [
       )
 
       return "受控 ['x','y'] 直返；深链 b 层级 BFS 可得；childrenIndex 复用一致"
+    }
+  },
+  {
+    name: 'buildFlatRows：parentKeys 平行数组（根行 null、子行父 key，与 rows/levels 同序）',
+    fn: () => {
+      const { rows, levels, parentKeys } = buildFlatRows(RECORDS, {
+        keyOf,
+        parentKeyOf,
+        expandedKeys: new Set([1, 11])
+      })
+
+      assertArray(rows.map(keyOf), [1, 11, 111, 12, 2, 99], 'DFS 展开序')
+      assertArray(levels, [0, 1, 2, 1, 0, 0], '层级数组')
+      assertArray(parentKeys, [null, 1, 11, 1, null, null], 'parentKeys：根行/孤儿 null、子行父 key')
+
+      const collapsed = buildFlatRows(RECORDS, { keyOf, parentKeyOf, expandedKeys: new Set() })
+
+      assertArray(collapsed.parentKeys, [null, null, null], '全收起仅根 → 全 null')
+
+      return 'parentKeys [null,1,11,1,null,null]（spans 树父链切断数据源）'
     }
   },
   {

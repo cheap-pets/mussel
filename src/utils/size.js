@@ -21,37 +21,8 @@ export function resolveSize (s) {
   }
 }
 
-export function measureTextWidths (computedStyle, texts) {
-  const { font, letterSpacing, wordSpacing } = computedStyle
-
-  const ruler = document.createElement('span')
-
-  Object.assign(ruler.style, {
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    overflow: 'visible',
-    visibility: 'hidden',
-    whiteSpace: 'nowrap',
-    font,
-    letterSpacing,
-    wordSpacing
-  })
-
-  const nodes = texts.map(text => {
-    const el = document.createElement('span')
-
-    el.textContent = text
-    ruler.appendChild(el)
-
-    return el
-  })
-
-  document.body.appendChild(ruler)
-
-  const widths = nodes.map(node => node.getBoundingClientRect().width)
-
-  document.body.removeChild(ruler)
-
-  return widths
+export function getPixelNumber (value) {
+  if (value == null) return
+  const v = String(value).match(/^(\d+(\.\d+)?)(px)?$/)?.[1]
+  return v && Number(v)
 }

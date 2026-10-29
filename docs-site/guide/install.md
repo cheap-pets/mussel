@@ -23,6 +23,20 @@ install(app, {
 }).mount('#app')
 ```
 
+## 构建版本
+
+| 版本 | 文件 | 内容 |
+| ---- | ---- | ---- |
+| 基础版 | `dist/mussel.js` + `dist/mussel.css` | 全部常规组件；`package.json` 的 `main` 指向此版本 |
+| ex 版 | `dist/mussel.ex.js` + `dist/mussel.ex.css` | 基础版全部内容 + [MuTableEx](../components/table-ex)（canvas 高性能表格） |
+
+两者均为 UMD 产物（`.min.*` 为压缩版，Vue 为外部依赖），`install` 用法相同。需要 `<mu-table-ex>` 时引入 ex 版：
+
+```javascript
+import { install } from 'mussel/dist/mussel.ex.js'
+import 'mussel/dist/mussel.ex.css'
+```
+
 ## install(app, options)
 
 | 参数 | 类型 | 说明 |

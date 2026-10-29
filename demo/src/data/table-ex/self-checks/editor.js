@@ -46,8 +46,8 @@ import {
   isInDropdownPanel,
   resolveBlurFallback,
   createEditorController
-} from '@/components/table-ex/editor.js'
-import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table-ex/row-geometry.js'
+} from '@/components/table/ex/editor.js'
+import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table/ex/row-geometry.js'
 import { MuInput, MuSelect, MuDateInput, MuSwitch } from '@/components/form/index.js'
 
 function assert (cond, message) {
@@ -128,6 +128,7 @@ export const checks = [
       assertEqual(componentOf({ type: 'date', editor: true }), EDITOR_COMPONENTS.date, 'date → MuDateInput')
       assertEqual(componentOf({ type: 'datetime', editor: true }), EDITOR_COMPONENTS.date, 'datetime → MuDateInput')
       assertEqual(componentOf({ type: 'bool', editor: true }), EDITOR_COMPONENTS.switch, 'bool → MuSwitch')
+      assertEqual(componentOf({ type: 'enum', editor: true, mappings: { a: '甲' } }), EDITOR_COMPONENTS.select, 'enum+mappings → MuSelect（废弃兼容）')
       assertEqual(componentOf({ field: 'x', editor: true }), EDITOR_COMPONENTS.input, '未知列类型回退 input')
 
       // 显式指定优先；非法显式类型回退列类型映射
@@ -410,6 +411,13 @@ export const checks = [
         [{ value: '1', label: '低' }, { value: '2', label: '高' }],
         '数字键字符串化')
 
+      // enum 废弃兼容同走 mappings 派生
+      assertArray(
+        resolveSelectOptions({ type: 'enum', editor: true, mappings: { a: '甲', default: '未知' } }),
+        [{ value: 'a', label: '甲' }],
+        'enum 列 mappings 派生（废弃兼容）'
+      )
+
       assertArray(resolveSelectOptions({ editor: true }), [], '全部缺省返回空数组（编辑器照开、下拉为空）')
 
       return '三级来源 / default 排除 / 对象取 text / 数字键字符串化 / 空数组兜底'
@@ -438,14 +446,28 @@ export const checks = [
       // 无来源保持原判定：number → input、text 数组开值 → textarea
       assertEqual(resolveEditorType({ type: 'number', editor: true }, { rawValue: 5 }), 'input', 'number 无来源仍 input')
       assertEqual(resolveEditorType({ type: 'text', editor: true }, { rawValue: ['a'] }), 'textarea', 'text 无来源按形态判定')
-      // 其余类型列带 mappings/options 不改缺省映射（可映射类型限定 text/number）
+      // 其余类型列带 mappings/options 不改缺省映射（编辑器 select 来源限定 text/number；
+      // bool 显示映射已统一 mappable 但编辑器恒 switch——select 派生 value 为字符串键会破坏 boolean 提交类型）
       assertEqual(
         resolveEditorType({ type: 'currency', editor: true, mappings: { a: '甲' } }),
         'input',
         'currency 带 mappings 仍 input'
       )
+      assertEqual(
+        resolveEditorType({ type: 'bool', editor: true, mappings: { true: '启用', false: '停用' } }),
+        'switch',
+        'bool 带 mappings 仍 switch'
+      )
 
-      return '三来源 → select / 优先形态判定 / 无来源保持缺省 / 范围限定 text+number'
+      // enum 废弃兼容：恒 select（恢复移除前行为，不依赖下拉来源）
+      assertEqual(
+        resolveEditorType({ type: 'enum', editor: true, mappings: { a: '甲' } }),
+        'select',
+        'enum + mappings → select'
+      )
+      assertEqual(resolveEditorType({ type: 'enum', editor: true }), 'select', 'enum 缺 mappings 亦 select（空下拉）')
+
+      return '三来源 → select / 优先形态判定 / 无来源保持缺省 / select 来源限定 text+number；enum 恒 select、bool 恒 switch'
     }
   },
   {

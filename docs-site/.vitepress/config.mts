@@ -146,6 +146,7 @@ export default defineConfig({
             { text: '浮动通知 Notifier', link: '/components/notifier' },
             { text: '状态占位 MuStatusBox', link: '/components/status-box' },
             { text: '表格 MuTable', link: '/components/table' },
+            { text: '高性能表格 MuTableEx', link: '/components/table-ex' },
             { text: '分页 MuPagination', link: '/components/pagination' },
             { text: '树 MuTree', link: '/components/tree' },
             { text: '标签组 MuTags', link: '/components/tags' },
@@ -205,6 +206,8 @@ export default defineConfig({
     resolve: {
       alias: {
         mussel: resolve(rootDir, 'src/index.js'),
+        // ex 版组件注册表（同 vite.config.js 的 ex 构建约定）：文档站安装含 MuTableEx 的完整组件集
+        './components/index.js': resolve(rootDir, 'src/components/index.ex.js'),
         '@': resolve(rootDir, 'src'),
         '~icons': resolve(rootDir, 'node_modules/@tabler/icons/icons')
       }

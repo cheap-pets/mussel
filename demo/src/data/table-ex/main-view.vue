@@ -29,6 +29,8 @@
           :tree-props="treePropsBind"
           :tree-expanded-keys="treeExpandedKeys"
           :default-expand-level="defaultExpandLevel"
+          :hover-mode="hoverMode"
+          :span-method="stageSpanMethod"
           striped
           @header-click="onHeaderClick"
           @cell-click="onCellClick"
@@ -69,7 +71,21 @@
               { value: 'items', label: '条目/新列型' },
               { value: 'widths', label: '全类型默认宽' },
               { value: 'fixed', label: '固定列组合' },
-              { value: 'narrow', label: '窄列' }
+              { value: 'narrow', label: '窄列' },
+              { value: 'spans', label: '合并单元格' }
+            ]" />
+        </div>
+
+        <div class="ct-control">
+          <span>hoverMode</span>
+          <mu-radio-group
+            v-model="hoverMode"
+            :options="[
+              { value: 'row', label: 'row' },
+              { value: 'cell', label: 'cell' },
+              { value: 'column', label: 'column' },
+              { value: 'cross', label: 'cross' },
+              { value: 'none', label: 'none' }
             ]" />
         </div>
 
@@ -175,6 +191,10 @@
 
         <div class="ct-control">
           <mu-button caption="替换 columns（引用变化）" @click="onReplaceColumns" />
+          <mu-button
+            v-if="scene === 'spans'"
+            caption="选中覆盖行（受控警告）"
+            @click="onSelectCoveredRow" />
         </div>
 
         <div class="ct-control">
@@ -305,9 +325,9 @@
   import pencilIcon from '~icons/outline/pencil.svg'
 
   // S1：真实组件本地接入（相对路径，不依赖 S2 全局注册；见 02-design.md S1 行）
-  import { MuTableEx } from '../../../../src/components/table-ex/index.js'
+  import { MuTableEx } from '../../../../src/components/table/ex/index.js'
   // 调试句柄用：与组件同参重算平铺行数（树场景状态展示/e2e 断言入口）
-  import { buildChildrenIndex, buildFlatRows } from '../../../../src/components/table-ex/tree.js'
+  import { buildChildrenIndex, buildFlatRows } from '../../../../src/components/table/ex/tree.js'
 
   // ---------- 调试句柄（契约见 02-design.md 改动清单 demo 行） ----------
   // 组件挂载前为占位对象（getCellRect 返回 null 防误用抛错）；onMounted 起替换为
@@ -450,6 +470,15 @@
     columnsReplaced.value = !columnsReplaced.value
   }
 
+  /** 合并场景夹具（demo 16）：受控把选中 key 写到覆盖行上——区域无选中反馈，
+      组件侧 dev 警告一次（§5.8） */
+  function onSelectCoveredRow () {
+    const target = spanRecords[1]
+
+    selectedKey.value = target.id
+    logEvent('受控选中覆盖行（合并区域无反馈）', { id: target.id, name: target.name })
+  }
+
   // ---------- 夹具场景数据（G3：树 / 多行 / 条目新列型 / 全类型默认宽 / 固定列组合） ----------
 
   const LONG_TEXT =
@@ -502,7 +531,9 @@
     { caption: '名称（树形列）', field: 'name', treeNode: true, width: 240, sortable: true },
     // 树形列长文本组合：树缩进扣减内容宽后折行（行高 e2e，实施约束 6）
     { caption: '长文本', field: 'memo', maxLines: 3, width: 220, editable: true, editor: true },
-    { caption: '数量', field: 'count', type: 'number', width: 100 },
+    // 合并单元格组合（02-design.md §9 demo 19）：数量列 autoRowSpan，跨父不合并
+    // （parentKeys 父链切断）、同父连续同值合并；展开收起后随平铺重算
+    { caption: '数量', field: 'count', type: 'number', width: 100, autoRowSpan: true },
     { caption: '日期', field: 'date', type: 'date', width: 110 }
   ]
 
@@ -700,6 +731,74 @@
     { caption: '数量', field: 'count', type: 'number', width: 240 }
   ]
 
+  // 合并单元格场景（02-design.md §9 demo 14–20）：三级分组（分类/子类/名称）全开
+  // autoRowSpan + 组内小计行（spanMethod + colspan 'rest'）+ 首列固定。每组 7 条目
+  // + 1 小计（组高 8 行 ≈ 288px > 半个舞台高，锚行可滚出窗口）：验证 hover cell
+  // 残影、锚行滚出后条目/img 链路、覆盖行选中底色随动、事件载荷主行、排序重算。
+  // 小计行 cat/sub 置空（空值分段边界，把小计行从 autoRowSpan 分组中隔离，§2.2 规则 2）
+  const SPAN_IMG =
+    'data:image/svg+xml;charset=utf-8,' +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="28">' +
+      '<rect width="48" height="28" rx="4" fill="#409eff"/>' +
+      '<text x="24" y="18" font-size="12" text-anchor="middle" fill="#fff">IMG</text></svg>'
+    )
+
+  function createSpanRecords () {
+    const records = []
+    let id = 0
+
+    for (const cat of ['数码', '家居']) {
+      for (const sub of ['电脑', '配件']) {
+        for (let i = 0; i < 7; i++) {
+          records.push({
+            id: ++id,
+            cat,
+            sub,
+            name: `${cat}-${sub}-item-${i + 1}`,
+            tags: i % 2 ? [{ caption: '热卖', color: 'red' }] : ['新品'],
+            count: i + 1,
+            img: SPAN_IMG,
+            links: [{ caption: `链接 ${i + 1}`, color: 'primary' }]
+          })
+        }
+
+        records.push({
+          id: ++id,
+          cat: null,
+          sub: null,
+          name: `${cat}/${sub} 小计`,
+          count: 28,
+          summary: `${cat}/${sub} 小计`,
+          isTotal: true
+        })
+      }
+    }
+
+    return records
+  }
+
+  const spanRecords = createSpanRecords()
+
+  const spanColumns = [
+    { caption: '分类', field: 'cat', width: 100, autoRowSpan: true },
+    { caption: '子类', field: 'sub', width: 100, autoRowSpan: true },
+    // 名称列 sortable（demo 20：打开排序合并随行序重算 + dev 警告）、可编辑（demo 18 主行载荷）
+    { caption: '名称', field: 'name', width: 170, autoRowSpan: true, sortable: true, editable: true, editor: true },
+    // 标签列 autoRowSpan: true（图形列 true 形态不合并的 dev 警告演示，§2.2 规则 1）
+    { caption: '标签', field: 'tags', type: 'tag', width: 130, autoRowSpan: true },
+    { caption: '数量', field: 'count', type: 'number', width: 80, editable: true, editor: true },
+    // 小计列 = spanMethod 'rest' 主格（demo 17），'rest' 展开到本行末列（图片/链接）
+    { caption: '小计', key: 'summary', field: 'summary', width: 130 },
+    { caption: '图片', field: 'img', type: 'img', width: 90 },
+    { caption: '链接', field: 'links', type: 'link', width: 130 }
+  ]
+
+  /** 小计行跨列声明（§2.4 示例同构）：isTotal 行 summary 'rest'，其余行 null */
+  function spanSpanMethod ({ record }) {
+    return record?.isTotal ? { summary: { colspan: 'rest' } } : null
+  }
+
   // DOM 版 link 对象数组 + color 回归段（link.js/link.scss 改动的 DOM 侧 e2e，评审 6 P1）
   const linkReferenceColumns = [
     { caption: '名称', field: 'name', width: 130 },
@@ -758,7 +857,7 @@
 
   // ---------- 夹具状态 ----------
   const dataScale = ref('full') // full | few | empty
-  const scene = ref('default') // default | tree | multiline | items | widths | fixed
+  const scene = ref('default') // default | tree | multiline | items | widths | fixed | spans
   const emptyVariant = ref('none') // none | slot | text
   const editable = ref(true)
   const resizable = ref(true)
@@ -770,6 +869,8 @@
   const recordsOffsetInput = ref('0')
   const scrollToInput = ref('')
   const recordsVersion = ref(0)
+  // hover 模式（合并单元格 demo 14：cell 模式区域高亮/移出无残影；其余场景默认 row）
+  const hoverMode = ref('row')
 
   // 树场景受控状态（A2.4）：treeExpandedKeys 初始 null = 非受控（组件按
   // defaultExpandLevel 首开解析）；箭头点击后进入受控
@@ -813,6 +914,7 @@
       case 'widths': return widthColumns
       case 'fixed': return fixedColumns
       case 'narrow': return narrowColumns
+      case 'spans': return spanColumns
       default: return columns.value
     }
   })
@@ -824,14 +926,22 @@
       case 'items':
       case 'fixed': return itemRecords
       case 'widths': return widthRecords
+      case 'spans': return applyOrder(spanRecords)
       default: return displayRecords.value
     }
   })
 
-  // 固定列组合场景强制固定区 ≥ 2（link 在固定区、button 在滚动区）
-  const stageFixedColumns = computed(() =>
-    scene.value === 'fixed' ? Math.max(2, fixedLeftColumns.value) : fixedLeftColumns.value
-  )
+  // spanMethod 仅合并场景注入（其余场景 prop 恒 undefined，走无合并路径）
+  const stageSpanMethod = computed(() => (scene.value === 'spans' ? spanSpanMethod : undefined))
+
+  // 固定列组合场景强制固定区 ≥ 2（link 在固定区、button 在滚动区）；
+  // 合并场景强制 ≥ 1（demo 17 首列固定，固定区 region pass 两遍式）
+  const stageFixedColumns = computed(() => {
+    if (scene.value === 'fixed') return Math.max(2, fixedLeftColumns.value)
+    if (scene.value === 'spans') return Math.max(1, fixedLeftColumns.value)
+
+    return fixedLeftColumns.value
+  })
 
   // 平铺行数（调试/e2e）：与组件同参重算（展开集优先取组件实例受控回读）
   const debugFlatRowsLength = computed(() => {

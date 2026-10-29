@@ -3,8 +3,17 @@
 }
 
 @each $v in ('normal', 'strong', 'fill', 'disabled', 'overlay', 'mask') {
-  .bg-#{$v},
-  .mu-bg-#{$v} {
+  .bg-#{$v}, .mu-bg-#{$v} {
     background-color: var(--mu-bg-#{$v});
+  }
+}
+
+@each $v in ('primary', 'secondary', 'success', 'warning', 'danger') {
+  .bg-#{$v}, .mu-bg-#{$v} {
+    background-color: var(--mu-#{$v}-color);
+  }
+
+  .bg-#{$v}-translucent, .mu-bg-#{$v}-translucent {
+    background-color: var(--mu-#{$v}-translucent);
   }
 }

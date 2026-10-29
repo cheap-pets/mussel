@@ -14,10 +14,15 @@
 
   font-size: var(--mu-badge_font-size);
   font-weight: 400;
+  line-height: 1;
   color: #fff;
   white-space: nowrap;
 
   background: var(--mu-gray);
+
+  &--circle {
+    padding: 0;
+  }
 
   &:empty {
     width: var(--mu-badge_dot-size);
@@ -26,26 +31,6 @@
     padding: 0;
     border-radius: calc(var(--mu-badge_dot-size) / 2);
 
-    background: var(--mu-danger-color);
-  }
-
-  &[primary] {
-    background: var(--mu-primary-color);
-  }
-
-  &[secondary] {
-    background: var(--mu-secondary-color);
-  }
-
-  &[success] {
-    background: var(--mu-success-color);
-  }
-
-  &[warning] {
-    background: var(--mu-warning-color);
-  }
-
-  &[danger] {
     background: var(--mu-danger-color);
   }
 }

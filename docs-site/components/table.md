@@ -6,11 +6,11 @@
   const orderBy = ref('name')
 
   const records = [
-    { id: 1, checked: true, name: 'Ada Lovelace', city: 'London', amount: 1280.5, status: 'active', createdAt: '2026-01-12T08:30:00' },
-    { id: 2, checked: false, name: 'Alan Turing', city: 'Wilmslow', amount: 6400, status: 'inactive', createdAt: '2026-02-03T14:20:00' },
-    { id: 3, checked: false, name: 'Grace Hopper', city: 'New York', amount: 920.75, status: 'active', createdAt: '2026-03-21T09:00:00' },
-    { id: 4, checked: false, name: 'Linus Torvalds', city: 'Portland', amount: 15800, status: 'active', createdAt: '2026-04-18T16:45:00' },
-    { id: 5, checked: false, name: 'Margaret Hamilton', city: 'Boston', amount: 23300.1, status: 'inactive', createdAt: '2026-05-30T11:15:00' }
+    { id: 1, checked: true, name: 'Ada Lovelace', city: 'London', amount: 1280.5, status: 'active', level: 3, createdAt: '2026-01-12T08:30:00' },
+    { id: 2, checked: false, name: 'Alan Turing', city: 'Wilmslow', amount: 6400, status: 'inactive', level: 1, createdAt: '2026-02-03T14:20:00' },
+    { id: 3, checked: false, name: 'Grace Hopper', city: 'New York', amount: 920.75, status: 'active', level: 2, createdAt: '2026-03-21T09:00:00' },
+    { id: 4, checked: false, name: 'Linus Torvalds', city: 'Portland', amount: 15800, status: 'pending', level: 2, createdAt: '2026-04-18T16:45:00' },
+    { id: 5, checked: false, name: 'Margaret Hamilton', city: 'Boston', amount: 23300.1, status: 'inactive', level: 3, createdAt: '2026-05-30T11:15:00' }
   ]
 
   const baseColumns = [
@@ -19,19 +19,31 @@
     { field: 'amount', caption: '金额', type: 'currency', width: 120 }
   ]
 
+  const mappingColumns = [
+    {
+      field: 'status',
+      caption: '状态',
+      width: 100,
+      mappings: { active: '启用', inactive: '停用', default: '未知' }
+    },
+    {
+      field: 'level',
+      caption: '等级',
+      type: 'number',
+      width: 90,
+      options: [
+        { value: 1, label: '低' },
+        { value: 2, label: '中' },
+        { value: 3, label: '高' }
+      ]
+    }
+  ]
+
   const columns = [
     { type: 'rec_no' },
     { type: 'check', field: 'checked', width: '50px', headerCheckbox: true },
     ...baseColumns,
-    {
-      field: 'status',
-      caption: '状态',
-      type: 'enum',
-      mappings: {
-        active: { text: '启用', class: 'mu-tag--success' },
-        inactive: { text: '停用', class: 'mu-tag--danger' }
-      }
-    },
+    ...mappingColumns,
     { field: 'createdAt', caption: '创建时间', type: 'date', format: 'yyyy-MM-dd' },
     {
       field: 'actions',
@@ -66,6 +78,8 @@
 
 数据驱动的表格组件：通过 `columns` 配置列（12 种列类型）、`records` 传入数据，内置单选、勾选、排序、斑马纹、hover 高亮、固定列等能力。
 
+大数据量、单元格编辑、树形展示、列宽拖拽场景请使用 [MuTableEx](./table-ex)（canvas 渲染，属性 / 事件 / 列配置与本组件同源）。
+
 ## 基础用法
 
 <div class="mu-demo mu-demo-col" style="align-items: stretch;">
@@ -93,18 +107,46 @@
 
 | 类型 | 说明 | 默认对齐 |
 |------|------|---------|
-| `text` | 文本（支持 `multiline` / `lineClamp`） | left |
+| `text` | 文本（缺省类型，支持 `multiline` / `lineClamp` / `mappings` / `options`） | left |
 | `rec_no` | 自动行号（配合 `records-offset` 计算分页行号） | center |
 | `check` | 复选勾选 | center |
-| `bool` | 布尔（是/否），配合 `mappings` | center |
-| `enum` | 枚举值映射，配合 `mappings` | center |
+| `bool` | 布尔，缺省显示 是 / 否；可配 `mappings: { true: '是', false: '否' }` | center |
 | `date` / `datetime` | 日期（时间）格式化，配合 `format` / `formatter` | right |
-| `number` / `currency` | 数字 / 货币格式化，配合 `formatOption` / `locale` | right |
+| `number` / `currency` | 数字 / 货币格式化，配合 `formatOption` / `locale`，亦可配 `mappings` / `options` | right |
 | `link` | 链接，配合 `links` 函数或字段值 | left |
 | `tag` | 标签，配合 `tags` 函数或字段值 | left |
 | `img` / `image` | 图片缩略图 | left |
+| `enum` | **已废弃**（使用时控制台告警），改用 `text` + `mappings` / `options` | center |
 
-### 完整列配置示例
+`type` 也可直接传自定义类型对象 `{ align, width, compile: column => ({ record, value, recordNumber, emit }) => ({ text } | { items }) }`。
+
+## 显示映射 `mappings` / `options`
+
+`text` / `number` / `bool` 列（含未指定 `type` 的列）可配置显示映射，把存储值映射为显示文本：
+
+- `mappings`：`{ 值: 文本 }` 对象，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值；空值（`null` / `undefined`）显示 `placeholder`。
+- `options`：`mu-select` 同格式选项数组（`[{ value, label }]` 或字符串数组），自动转换为映射；与 `mappings` 同时存在时 `mappings` 优先。
+- 列配置 `text` 显示优先，不参与映射。
+
+<ClientOnly>
+  <div class="mu-demo mu-demo-col" style="align-items: stretch;">
+    <mu-table :records="records" :columns="mappingColumns" key-field="id" />
+    <span class="text-subtle">状态列 mappings 映射（未命中落 default）；等级列 number + options 映射</span>
+  </div>
+</ClientOnly>
+
+```javascript
+const columns = [
+  { field: 'status', caption: '状态', width: 100,
+    mappings: { active: '启用', inactive: '停用', default: '未知' } },
+  { field: 'enabled', caption: '启用', type: 'bool', width: 80,
+    mappings: { true: '是', false: '否' } },
+  { field: 'level', caption: '等级', type: 'number', width: 90,
+    options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }] }
+]
+```
+
+## 完整列配置示例
 
 ```javascript
 const columns = [
@@ -112,12 +154,8 @@ const columns = [
   { type: 'check', field: 'checked', headerCheckbox: true },       // 勾选列 + 表头全选
   { field: 'name', caption: '姓名', type: 'text', sortable: true },
   { field: 'amount', caption: '金额', type: 'currency' },
-  { field: 'status', caption: '状态', type: 'enum',
-    mappings: {
-      active:   { text: '启用', class: 'mu-tag--success' },
-      inactive: { text: '停用', class: 'mu-tag--danger' }
-    }
-  },
+  { field: 'status', caption: '状态',
+    mappings: { active: '启用', inactive: '停用', default: '未知' } },
   { field: 'created', caption: '创建时间', type: 'date', format: 'yyyy-MM-dd' },
   { field: 'actions', caption: '操作', type: 'link',
     linkOption: { max: 3 },
@@ -201,14 +239,13 @@ function onHeaderClick (column) {
 
 ## 固定列 `fixed-left-columns`
 
-横向滚动时固定左侧 N 列（需配合较宽的表格内容）：
+横向滚动时固定左侧 N 列（需配合较宽的固定列宽）：
 
 ```html
 <mu-table
   :records="records"
   :columns="columns"
-  :fixed-left-columns="2"
-  table-min-width="1200px" />
+  :fixed-left-columns="2" />
 ```
 
 ## 事件
@@ -248,24 +285,25 @@ function onHeaderClick (column) {
 | `field` | String | 数据字段名 |
 | `key` | String | 列标识（缺省自动生成） |
 | `caption` | String | 列标题 |
-| `type` | String | 列类型（见上表）|
+| `type` | String\|Object | 列类型（见上表，缺省 `text`）或自定义类型对象 |
 | `width` / `minWidth` / `maxWidth` | String\|Number | 列宽 |
 | `align` | String | `left` \| `center` \| `right` |
 | `sortable` | Boolean | 是否可排序 |
-| `text` | String\|Function | 单元格显示文本（可覆盖默认值）|
+| `text` | String\|Function | 单元格显示文本（可覆盖默认值，优先于 `mappings` / `options`）|
 | `value` | String\|Function | 单元格值（可覆盖 field）|
 | `title` | String\|Function | 单元格 title（`true` 时为 link/tag 类型开启省略项的 title 提示）|
 | `class` / `style` | String\|Function | 单元格 class / 样式 |
 | `headerClass` / `headerStyle` | String\|Function | 表头 class / 样式 |
+| `mappings` | Object | 显示映射（`text` / `number` / `bool` 列及未指定 type 的列），见「显示映射」|
+| `options` | Array | 选项数组自动转换为显示映射（格式同 `mu-select`），`mappings` 优先 |
 | `multiline` | Boolean | 多行文本（`text` 类型）|
 | `lineClamp` | Number\|Function | 行数限制（`text` 类型）|
-| `mappings` | Object | 值映射（`enum` / `bool` 类型）；未命中时回退 `default` 键的映射 |
 | `format` | String | 日期格式（`date` / `datetime` 类型）|
 | `formatter` | Function | 日期格式化函数 `(value, format) => text` |
 | `formatOption` | Object | `Intl.NumberFormat` 选项（`number` / `currency` 类型）|
 | `locale` / `locales` | String | 数字 / 货币格式化 locale（默认 `'zh-CN'`）|
-| `links` | Function | 链接生成函数 `(record, value) => 链接数组`（`link` 类型）|
-| `linkOption` | Object | `{ max, class, style, danger, disabled }` |
+| `links` | Function | 链接生成函数 `(record, value) => 链接数组`（`link` 类型），链接项 `{ caption, color, danger, disabled }`；不传时按字段值转换 |
+| `linkOption` | Object | `{ max, class, style, color, danger, disabled }`，为全部链接项设置缺省值 |
 | `tags` | Function | 标签生成函数 `(record, value) => 标签数组`（`tag` 类型）|
 | `tagOption` | Object | `{ max, class, style, pill, flat, color }` |
 | `disabled` | Function | 禁用函数（`check` 类型）|

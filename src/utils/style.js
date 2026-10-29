@@ -15,3 +15,9 @@ export function getTransitionDuration (element) {
     ? Math.max(...duration.split(',').map(el => getDuration(el)))
     : 0
 }
+
+export function getCellAlignClass (align) {
+  return ['left', 'center', 'right'].includes(align)
+    ? `text-${align}`
+    : undefined
+}

@@ -111,5 +111,10 @@ export default {
     CURRENT: '第 {0} 页',
     CURRENT_AND_TOTAL: '第 {0} 页，共 {1} 页',
     CURRENT_AND_SIZE: '第 {0} 页，{1} / 页'
+  },
+
+  Table: {
+    BOOL_TRUE: '是',
+    BOOL_FALSE: '否'
   }
 }

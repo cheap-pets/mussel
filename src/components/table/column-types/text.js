@@ -1,4 +1,4 @@
-import { ensureFn } from '../utils'
+import { ensureFn } from '@/utils/type'
 
 export const TextColumn = {
   compile: column => {

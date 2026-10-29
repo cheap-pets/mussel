@@ -2,8 +2,8 @@
   import { ref } from 'vue'
 
   const tags = ref([
-    { label: '重要', color: 'danger' },
-    { label: '进行中', color: 'primary' },
+    { label: '重要' },
+    { label: '进行中' },
     { label: '已排期' },
     { label: '前端' },
     { label: '后端' },
@@ -18,8 +18,6 @@
 # 标签组 MuTags
 
 标签组组件，批量展示标签。支持删除、超出合并省略与下拉展开全部，常用于记录的标签字段展示、筛选条件回显等场景。
-
-标签颜色使用语义色名（`primary` / `success` / `warning` / `danger` 等）。
 
 ## 基础用法
 

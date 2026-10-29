@@ -37,24 +37,20 @@ installIcons({ refresh: RefreshIcon })
 
 ### MuBadge
 
-徽章，用于状态标签或角标。无 `defineProps`，颜色变体通过 HTML attribute（非 prop）控制，直接写在标签上即可。
+徽章，用于状态标签或角标，实底胶囊造型（灰底白字）。
 
-| Attribute | 颜色 |
-|-----------|------|
-| （无） | 默认灰色（`--mu-gray`） |
-| `primary` | 主色 |
-| `secondary` | 次要色 |
-| `success` | 成功色 |
-| `warning` | 警告色 |
-| `danger` | 危险色 |
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `color` | String | — | 语义色名：`primary` / `secondary` / `success` / `warning` / `danger` |
+| `value` | String \| Number | — | 徽标内容，未使用默认插槽时显示；为单个数字时呈等宽圆形 |
+| `primary` / `secondary` / `success` / `warning` / `danger` | Boolean | `false` | 弃用。等同 `color="…"`，输出弃用警告 |
 
-> 空内容时渲染为小圆点（`8px`），背景自动使用 `--mu-danger-color`。
+> 无插槽且无 `value` 时渲染为 `8px` 圆点（danger 底）。
 
 ```html
-<mu-badge primary>主要</mu-badge>
-<mu-badge success>已完成</mu-badge>
-<mu-badge danger>异常</mu-badge>
-<mu-badge />               <!-- 小红点 -->
+<mu-badge color="primary">主要</mu-badge>
+<mu-badge value="6" color="danger" />   <!-- 单数字 → 圆形数字角标 -->
+<mu-badge />                            <!-- 小红点 -->
 ```
 
 ---

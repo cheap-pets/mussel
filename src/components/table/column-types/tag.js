@@ -1,4 +1,4 @@
-import { ensureFn } from '../utils'
+import { ensureFn } from '@/utils/type'
 
 function isValidTag (tag) {
   return tag.caption != null && tag.caption !== ''
@@ -54,14 +54,14 @@ export const TagColumn = {
           item.text = caption
           item.title = showTitle && caption
 
+          if (color) {
+            // 着色与 table-ex 画布取色共用（tag.scss .mu-tag--{color}）；
+            // colorClassOf 取首个 mu-tag--* 匹配，色类须先于 pill/flat 落 class
+            itemClass.push(`mu-tag--${color}`)
+          }
+
           if (pill) itemClass.push('mu-tag--pill')
           if (flat) itemClass.push('mu-tag--flat')
-          if (color) {
-            // mu-tag--{color} 仅供 table-ex 从 class 解析色名绘制；
-            // DOM 着色走 tones 淡底类（视觉与旧 mu-tag--{color} 一致）
-            itemClass.push(`mu-tag--${color}`)
-            itemClass.push(`mu-faint-${color}`)
-          }
         }
 
         item.events.click =

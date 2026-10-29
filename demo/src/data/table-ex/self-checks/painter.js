@@ -20,11 +20,11 @@
  * 主题夹具字段名对齐 theme.js readSnapshot（值用固定 rgba 串）；行高经 layout.js
  * relayout 入参与 THEME.rowHeight 双通道传入（20261028 起垂直锚消费快照 rowHeight）。
  */
-import { drawRegion, cellRectAt, createPainter } from '@/components/table-ex/painter.js'
-import { editorButtonRectOf } from '@/components/table-ex/editor.js'
-import { relayout } from '@/components/table-ex/layout.js'
-import { prepareColumn, requestIconImage } from '@/components/table-ex/cell-painters.js'
-import { createVariableRowGeometry, createUniformRowGeometry } from '@/components/table-ex/row-geometry.js'
+import { drawRegion, cellRectAt, createPainter } from '@/components/table/ex/painter.js'
+import { editorButtonRectOf } from '@/components/table/ex/editor.js'
+import { relayout } from '@/components/table/ex/layout.js'
+import { prepareColumn, requestIconImage } from '@/components/table/ex/cell-painters.js'
+import { createVariableRowGeometry, createUniformRowGeometry } from '@/components/table/ex/row-geometry.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)

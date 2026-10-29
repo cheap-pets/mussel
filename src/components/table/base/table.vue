@@ -1,0 +1,391 @@
+<template>
+  <div
+    ref="wrapEl"
+    v-mu-scrollbar
+    class="mu-table"
+    :class="wrapClass"
+    @scroll="onScroll"
+    @sizechange="onResize">
+    <table ref="tableEl" cellspacing="0" @sizechange="onResize">
+      <colgroup>
+        <col v-for="col in internalColumns" :key="col._key" :style="col._colStyle">
+      </colgroup>
+      <thead>
+        <tr>
+          <th
+            v-for="col in internalColumns"
+            :key="col._key"
+            :class="['mu-table__th', col.sortable && 'mu-table__th--sortable', col._ctrlClass, col.headerClass]"
+            :style="[col._ctrlStyle, col.headerStyle]"
+            @click="onHeaderClick(col)">
+            <div
+              v-if="col.type === 'check' && col.field && col.headerCheckbox && headerChecked"
+              class="mu-table__cell-check"
+              :data-checked="headerChecked[col.field] || null"
+              @click.stop="onHeaderCheckChange(col, !headerChecked[col.field])">
+              ✓
+            </div>
+            {{ col.caption }}
+            <mu-sort-icon v-if="col.sortable" :direction="sortDirection[col.field]" />
+          </th>
+        </tr>
+      </thead>
+      <tbody ref="tableBodyEl" @mouseleave="setHoverIndicator()">
+        <table-row
+          v-for="(rec, recIdx) in records"
+          :key="getRecordKey(rec)"
+          :columns="internalColumns"
+          :record="rec"
+          :record-index="recIdx"
+          :record-number="recordsOffset + recIdx + 1"
+          :class="(selectedRecKey != null && getRecordKey(rec) === selectedRecKey) ? 'mu-table__tr--selected' : null" />
+      </tbody>
+    </table>
+    <div class="mu-table__bottom-shadow" />
+    <div
+      v-if="!scrolling"
+      class="mu-table__hover-indicator"
+      :class="`mu-table__hover-indicator--${hoverMode}`"
+      :style="hoverStyle" />
+  </div>
+</template>
+
+<script setup>
+  import { ref, shallowRef, reactive, computed, watch, provide, onBeforeUnmount } from 'vue'
+  import { throttle, debounce } from 'throttle-debounce'
+  import { autoIncrementKeyBuilder } from '@/utils/key-builder'
+
+  import { ensureFn } from '@/utils/type'
+  import { getPixelNumber } from '@/utils/size'
+  import { getCellAlignClass } from '@/utils/style'
+
+  import { resolveSelectedKey } from '../utils'
+  import { resolveColumnType } from '../column-types'
+  import { isMappableColumnType, createDisplayMapper } from '../mappings'
+
+  import TableRow from './table-row.vue'
+
+  import './table.scss'
+
+  const props = defineProps({
+    keyField: String,
+    records: { type: Array, default: () => [] },
+    columns: { type: Array, default: () => [] },
+    selectedRecord: Object,
+    selectedRecordKey: [String, Number],
+    headerChecked: Object,
+    orderBy: String,
+    recordsOffset: { type: Number, default: 0 },
+    fixedLeftColumns: Number,
+    gridlines: {
+      default: 'all',
+      validator: v => ['none', 'all', 'row', 'column'].includes(v)
+    },
+    hoverMode: {
+      default: 'row',
+      validator: v => ['none', 'row', 'column', 'cross', 'cell'].includes(v)
+    },
+    striped: Boolean,
+    placeholder: String
+  })
+
+  const emit = defineEmits([
+    'header-click',
+    'cell-click',
+    'cell-item-click',
+    'update:header-checked',
+    'update:cell-value',
+    'update:selected-record',
+    'update:selected-record-key'
+  ])
+
+  const wrapEl = shallowRef()
+  const tableEl = shallowRef()
+  const tableBodyEl = shallowRef()
+
+  const fixedColumnsWidth = ref(0)
+
+  const scrolling = ref(false)
+  const xScrolled = ref(false)
+  const yScrolled = ref(false)
+  const yScrolledEnd = ref(false)
+
+  const xOverflowed = ref(false)
+  const yOverflowed = ref(false)
+
+  const hoverStyle = reactive({
+    '--hover-row-left': 0,
+    '--hover-row-top': 0,
+    '--hover-row-width': 0,
+    '--hover-row-height': 0,
+    '--hover-col-top': 0,
+    '--hover-col-left': 0,
+    '--hover-col-width': 0,
+    '--hover-col-height': 0
+  })
+
+  const genRecordKey = autoIncrementKeyBuilder()
+  const genColumnKey = autoIncrementKeyBuilder()
+
+  function getRecordKey (rec) {
+    return props.keyField ? rec[props.keyField] : genRecordKey(rec)
+  }
+
+  const isEmpty = computed(() => !props.records?.length)
+
+  const wrapClass = computed(() => {
+    return {
+      [`mu-table--gridlines-${props.gridlines}`]: true,
+      'mu-table--striped': props.striped,
+      'mu-table--empty': isEmpty.value,
+      'mu-table--x-overflowed': xOverflowed.value,
+      'mu-table--y-overflowed': yOverflowed.value,
+      'mu-table--x-scrolled': xScrolled.value,
+      'mu-table--y-scrolled': yScrolled.value,
+      'mu-table--y-scrolled-end': yScrolledEnd.value
+    }
+  })
+
+  const sortDirection = computed(() => {
+    if (!props.orderBy) return {}
+
+    const [field, direction] =
+      props.orderBy.replace(':', ' ').split(' ')
+
+    return {
+      [field]: direction === 'desc' ? 'down' : 'up'
+    }
+  })
+
+  const selectedRecKey = computed(() => resolveSelectedKey(props))
+
+  const internalColumns = computed(() => {
+    const fixed = props.fixedLeftColumns
+
+    let left = fixed ? 0 : null
+
+    const columns = props.columns.map((el, idx) => {
+      const col = { ...el, _raw: el, _key: el.key ?? genColumnKey(el) }
+      const type = resolveColumnType(el.type)
+
+      const { width = type.width, align = type.align } = el
+
+      col._text = ensureFn(el.text)
+      col._value = ensureFn(el.value)
+      col._title = ensureFn(el.title)
+      col._class = ensureFn(el.class)
+      col._style = ensureFn(el.style)
+
+      col._colStyle = { width, minWidth: el.minWidth, maxWidth: el.maxWidth }
+      col._ctrlClass = [getCellAlignClass(align)]
+      col._render = type.compile ? type.compile(el) : (type.render || type)
+
+      // 显示映射（mappings 优先，仅 options 时由其转换；column.text 显示优先不参与
+      // 映射——与 table-ex prepareColumn 同语义、table/mappings.js 单一事实源）
+      col._mapText = !el.text && isMappableColumnType(el.type) ? createDisplayMapper(el) : null
+
+      if (left != null) {
+        const widthPx = getPixelNumber(width)
+
+        col._fixed = true
+        col._ctrlStyle = { left: `${left}px` }
+        col._ctrlClass.push('fixed-col')
+
+        if (widthPx && idx < fixed) {
+          left += widthPx
+        } else {
+          left = null
+          col._ctrlClass.push('last-fixed-col')
+        }
+      }
+
+      col.placeholder ??= props.placeholder
+
+      return col
+    })
+
+    columns.at(-1)._ctrlClass.push('last-col')
+
+    return columns
+  })
+
+  let hoveringRow, hoveringCol
+
+  function hideHoverIndicator () {
+    hoveringCol = null
+    hoveringRow = null
+    hoverStyle['--hover-col-width'] = 0
+    hoverStyle['--hover-row-height'] = 0
+  }
+
+  const setHoverSize = debounce(100, () => {
+    const table = tableEl.value
+    if (!table) return
+
+    hoverStyle['--hover-row-width'] = `${table.offsetWidth}px`
+    hoverStyle['--hover-col-height'] = `${table.offsetHeight}px`
+
+    hideHoverIndicator()
+  })
+
+  // 指示条以 wrap 定位，但 tr 的 offsetParent 是 table（offsetTop 不含 table 自身偏移），
+  // 而 th/td 带 position:relative，offsetParent 跳过 table 直指 wrap（已含偏移）。
+  // 统一换算成 wrap 坐标，兼容 table 被外部加 margin 的场景及两种 offsetParent 行为。
+  function offsetToWrap (el) {
+    const table = tableEl.value
+
+    return el.offsetParent === table
+      ? { left: el.offsetLeft + table.offsetLeft, top: el.offsetTop + table.offsetTop }
+      : { left: el.offsetLeft, top: el.offsetTop }
+  }
+
+  function setRowHoverIndicator (row) {
+    if (hoveringRow?.deref() === row) return
+    else hoveringRow = new WeakRef(row)
+
+    const total = internalColumns.value.length
+
+    let prev = row
+
+    while (prev && prev.childElementCount !== total) {
+      prev = prev.previousElementSibling
+    }
+
+    const first = prev || row
+
+    let next = row.nextElementSibling
+    let last = row
+
+    while (next && next.childElementCount !== total) {
+      last = next
+      next = next.nextElementSibling
+    }
+
+    const firstPos = offsetToWrap(first)
+    const lastPos = offsetToWrap(last)
+
+    hoverStyle['--hover-row-left'] = `${firstPos.left}px`
+    hoverStyle['--hover-row-top'] = `${firstPos.top}px`
+    hoverStyle['--hover-row-height'] = `${lastPos.top - firstPos.top + last.offsetHeight}px`
+  }
+
+  function setColHoverIndicator (cell, column) {
+    if (props.hoverMode !== 'cell' && hoveringCol?.deref() === column) return
+
+    const pos = offsetToWrap(cell)
+    const cellLeft = cell.offsetLeft
+    const fixedWidth = fixedColumnsWidth.value
+    const scrollLeft = tableEl.value.parentNode.scrollLeft
+
+    const offset = column._fixed || cellLeft >= fixedWidth + scrollLeft
+      ? 0
+      : scrollLeft
+
+    hoverStyle['--hover-col-left'] = `${pos.left + offset}px`
+    hoverStyle['--hover-col-width'] = `${cell.offsetWidth - offset}px`
+
+    if (props.hoverMode === 'cell') {
+      hoverStyle['--hover-col-top'] = `${pos.top}px`
+      hoverStyle['--hover-col-height'] = `${cell.offsetHeight}px`
+    } else {
+      hoverStyle['--hover-col-top'] = `${tableEl.value.offsetTop}px`
+      hoveringCol = new WeakRef(column)
+    }
+  }
+
+  const setHoverIndicator = throttle(30, (cell, column) => {
+    const mode = props.hoverMode
+
+    if (mode === 'none') return
+    if (!cell) return hideHoverIndicator()
+
+    if (mode === 'row' || mode === 'cross') setRowHoverIndicator(cell.parentNode)
+    if (mode !== 'row') setColHoverIndicator(cell, column)
+  }, { noLeading: true })
+
+  const onResize = throttle(100, () => {
+    const el = wrapEl.value
+    if (!el) return
+
+    const table = tableEl.value
+    const th = table.querySelector('th.last-fixed-col')
+
+    const x = table.offsetWidth - el.clientWidth
+    const y = table.offsetHeight - el.clientHeight
+
+    xOverflowed.value = x > 0.5
+    yOverflowed.value = y > 0.5
+
+    if (th) {
+      fixedColumnsWidth.value = th.offsetLeft + th.offsetWidth
+    }
+
+    setHoverSize()
+  }, { noLeading: true })
+
+  const cancelScrolling = debounce(300, () => {
+    scrolling.value = false
+  })
+
+  const onScroll = throttle(16, () => {
+    if (!wrapEl.value) return
+
+    const { scrollTop, scrollLeft, scrollHeight, clientHeight } = wrapEl.value
+
+    scrolling.value = true
+    xScrolled.value = scrollLeft > 0.5
+    yScrolled.value = scrollTop > 0.5
+    yScrolledEnd.value = yScrolled.value && (scrollHeight - scrollTop - clientHeight < 1)
+
+    cancelScrolling()
+  }, { noLeading: true })
+
+  function onHeaderClick (column) {
+    emit('header-click', column._raw)
+  }
+
+  function onHeaderCheckChange (column, value) {
+    emit('update:header-checked', column._raw, value)
+  }
+
+  function onCellClick (record, column, recordIndex) {
+    const key = getRecordKey(record)
+
+    if (key !== props.selectedRecordKey) {
+      emit('update:selected-record-key', key)
+    }
+
+    if (record !== props.selectedRecord) {
+      emit('update:selected-record', record)
+    }
+
+    emit('cell-click', { record, recordIndex, column })
+  }
+
+  watch(
+    () => props.records,
+    (newValue, oldValue) => {
+      if (newValue !== oldValue) {
+        wrapEl.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+        scrolling.value = false
+      }
+    }
+  )
+
+  provide('table', {
+    setHoverIndicator,
+    onCellClick,
+    emit
+  })
+
+  onBeforeUnmount(() => {
+    onResize.cancel()
+    onScroll.cancel()
+    setHoverSize.cancel()
+    setHoverIndicator.cancel()
+  })
+</script>
+
+<script>
+  export default { name: 'MusselTable' }
+</script>

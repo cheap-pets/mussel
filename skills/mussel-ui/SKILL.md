@@ -1,7 +1,7 @@
 ---
 name: mussel-ui
 author: Scrollbar.W
-date: 2026-10-13
+date: 2026-10-29
 description: >
   编写、修改、Review 使用 MUSSEL 4 组件库的 Vue 界面代码时使用。
   用户明确要求将旧版 Mussel（Mussel 3，或 Mussel 1 / @mctech/mussel）升级到 Mussel 4 时也需使用，
@@ -158,7 +158,8 @@ description: >
 
 | 组件 | 用途 |
 |------|------|
-| `<mu-table>` | 数据表格；列类型丰富（text/enum/link/tag/check/date 等） |
+| `<mu-table>` | DOM 数据表格；列类型丰富（text/number/bool/link/tag/check/date 等），`mappings` / `options` 显示映射 |
+| `<mu-table-ex>` | canvas 高性能表格，仅 `mussel.ex` 版本含；API 与 `mu-table` 同源，扩展单元格编辑、列宽拖拽、树形、`progress` / `button` 列 |
 | `<mu-list-item>` + `<mu-list-divider>` | 列表项与分隔线（需自行用容器包裹渲染） |
 | `<mu-tree>` + `<mu-tree-node>` | 树形结构；支持勾选、懒加载、节点按钮 |
 | `<mu-tags>` | 标签组；`removable` 可删除，`max` 截断省略 |

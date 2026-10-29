@@ -15,7 +15,7 @@ import {
   wrapLines,
   createWrapCache,
   WRAP_CACHE_LIMIT
-} from '@/components/table-ex/text-wrap.js'
+} from '@/components/table/ex/text-wrap.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)

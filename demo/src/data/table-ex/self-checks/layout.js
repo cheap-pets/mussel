@@ -24,8 +24,8 @@ import {
   colAt,
   findResizeColumn,
   relayout
-} from '@/components/table-ex/layout.js'
-import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table-ex/row-geometry.js'
+} from '@/components/table/ex/layout.js'
+import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table/ex/row-geometry.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)
@@ -174,12 +174,13 @@ export const checks = [
     }
   },
   {
-    name: 'TYPE_DEFAULT_WIDTHS：双值表形态齐全（13 条目，宽/最小宽均为正数）',
+    name: 'TYPE_DEFAULT_WIDTHS：双值表形态齐全（14 条目，宽/最小宽均为正数）',
     fn: () => {
       const expected = {
         text: [160, 80],
         number: [100, 60],
         currency: [110, 60],
+        enum: [100, 60],
         date: [125, 80],
         datetime: [160, 100],
         bool: [60, 40],
@@ -203,7 +204,7 @@ export const checks = [
         assert(typeof entry.width === 'number' && typeof entry.minWidth === 'number', `${name} 应为 number 双值`)
       }
 
-      return '13 条目双值齐全（check/rec_no 不在表内——type.width 定宽）'
+      return '14 条目双值齐全（check/rec_no 不在表内——type.width 定宽；enum 为废弃兼容条目）'
     }
   },
   {

@@ -21,8 +21,8 @@ import {
   computeAnchorShift,
   computeRowHeights,
   ensureRowMeasured
-} from '@/components/table-ex/row-geometry.js'
-import { OVERSCAN, computeViewRows } from '@/components/table-ex/layout.js'
+} from '@/components/table/ex/row-geometry.js'
+import { OVERSCAN, computeViewRows } from '@/components/table/ex/layout.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)
@@ -271,7 +271,7 @@ export const checks = [
     }
   },
   {
-    name: 'computeRowHeights：全量快速估高零测量；字符串估 1 行下界；数组值 min(length, maxItems) 真值',
+    name: 'computeRowHeights：全量快速估高零测量；字符串估 1 行下界；文本列数组值 min(length, maxItems) 真值',
     fn: () => {
       const counter = { calls: 0 }
       const columns = [
@@ -297,7 +297,7 @@ export const checks = [
       assertEqual(heights[0], 70, 'row0：tags min(5,3)=3 行 → 16+54=70（主导列）')
       assertEqual(heights[1], 36, 'row1：tags 1 行、items 0 行 → 基线 36')
 
-      return 'measure 0 次；heights=[70, 36]；数组值按 min(length, maxItems) 真值计高'
+      return 'measure 0 次；heights=[70, 36]；文本列数组值按 min(length, maxItems) 真值计高'
     }
   },
   {
@@ -354,7 +354,17 @@ export const checks = [
       assertEqual(withLinkSingle.hasArrayValues, false, 'link 单条 → false')
       assertEqual(withLinkSingle.heights[0], 36, 'link 单条 → 基线行高')
 
-      return '数组值/link 多条 → true；纯字符串/单条 link → false；render 每格 1 次'
+      // 图形/条目列数组值横排呈现：恒 1 行（不再按元素数计高）、不触发变高模式
+      const tagArray = computeRowHeights({
+        records: [{ tags: ['a', 'b', 'c'] }],
+        columns: [{ field: 'tags', type: 'tag' }],
+        ...base
+      })
+
+      assertEqual(tagArray.hasArrayValues, false, '图形/条目列（tag）数组值不触发变高')
+      assertEqual(tagArray.heights[0], 36, 'tag 数组横排呈现恒 1 行 → 基线行高')
+
+      return '文本列数组/link 多条 → true；图形列数组/纯字符串/单条 link → false；render 每格 1 次'
     }
   },
   {
@@ -379,7 +389,20 @@ export const checks = [
 
       assertEqual(uncapped.heights[0], 16 + 6 * 18, '未配 maxItems → 缺省 10 → 6 行')
 
-      return 'min(render 计数, maxItems)：6→4 / 6→6（缺省 10）'
+      // 数组值 link 同走 render 计数（render 内已按 linkOption.max 截断，不按数组长度计）
+      const maxed = computeRowHeights({
+        records: [{ links: ['a', 'b', 'c', 'd', 'e'] }],
+        columns: [{
+          type: 'link',
+          field: 'links',
+          _render: ({ value }) => ({ items: value.slice(0, 2).map(el => ({ text: el })) })
+        }],
+        ...base
+      })
+
+      assertEqual(maxed.heights[0], 16 + 2 * 18, 'link 数组值经 render 计数（max 截断后 2 条 → 2 行）')
+
+      return 'min(render 计数, maxItems)：6→4 / 6→6（缺省 10）；数组值同样经 render'
     }
   },
   {

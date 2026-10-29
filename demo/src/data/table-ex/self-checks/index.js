@@ -6,6 +6,7 @@
  * - theme.js          → G1-b（主题快照扩容 + colors 17 色 + createTextMeasurer）
  * - layout.js / painter.js / cell-painters.js → G2（布局与绘制管线接入）
  * - interactions.js / editor.js → G3（交互与组件壳）
+ * - spans.js          → 合并单元格（02-design.md cell spans §9 自检 1–13）
  *
  * runChecks(extraChecks) 返回逐条结果数组，由页面"自检结果"面板渲染；
  * extraChecks 为页面自带的夹具级断言（如数据生成器检查）。
@@ -13,6 +14,7 @@
 import { checks as textWrapChecks } from './text-wrap.js'
 import { checks as rowGeometryChecks } from './row-geometry.js'
 import { checks as treeChecks } from './tree.js'
+import { checks as spansChecks } from './spans.js'
 import { checks as themeChecks } from './theme.js'
 import { checks as layoutChecks } from './layout.js'
 import { checks as cellPaintersChecks } from './cell-painters.js'
@@ -24,6 +26,7 @@ export const moduleChecks = [
   { module: 'text-wrap', checks: textWrapChecks },
   { module: 'row-geometry', checks: rowGeometryChecks },
   { module: 'tree', checks: treeChecks },
+  { module: 'spans', checks: spansChecks },
   { module: 'theme', checks: themeChecks },
   { module: 'layout', checks: layoutChecks },
   { module: 'cell-painters', checks: cellPaintersChecks },

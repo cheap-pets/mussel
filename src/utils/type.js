@@ -76,3 +76,9 @@ export function isEmpty (value, options = {}) {
 export function isHtmlElement (value) {
   return value instanceof HTMLElement
 }
+
+export function ensureFn (value, defaultFn) {
+  return isFunction(value)
+    ? value
+    : defaultFn || (() => value)
+}

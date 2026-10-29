@@ -32,7 +32,7 @@ import {
   resolveObserverRoots,
   snapshotsEqual,
   withAlpha
-} from '../../../../../src/components/table-ex/theme.js'
+} from '../../../../../src/components/table/ex/theme.js'
 
 // G1-a 阶段 scss 未创建，四个尺寸变量由自检容器内联声明（值与 table.scss 镜像一致）
 const SIZE_VARS =

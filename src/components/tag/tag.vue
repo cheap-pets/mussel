@@ -8,18 +8,19 @@
   import { computed } from 'vue'
   import { colorProp } from '../common/props'
 
+  import './tag.scss'
+
   defineOptions({ name: 'MusselTag' })
 
   const props = defineProps({
     color: colorProp,
-    faint: Boolean,
-    pill: Boolean,
-    flat: Boolean
+    flat: Boolean,
+    pill: Boolean
   })
 
   const extraClass = computed(() => [
-    props.color && (props.faint ? `mu-faint-${props.color}` : `mu-solid-${props.color}`),
-    props.pill && 'mu-tag--pill',
-    props.flat && 'mu-tag--flat'
+    props.color && `mu-tag--${props.color}`,
+    props.flat && 'mu-tag--flat',
+    props.pill && 'mu-tag--pill'
   ])
 </script>

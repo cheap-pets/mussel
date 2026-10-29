@@ -29,10 +29,10 @@ import {
   resolveTreeToggle,
   createClickGuard,
   createFrameScheduler
-} from '@/components/table-ex/interactions.js'
-import { resolveTypeMinWidth } from '@/components/table-ex/layout.js'
-import { createUniformRowGeometry } from '@/components/table-ex/row-geometry.js'
-import { getPixelNumber } from '@/components/table/utils'
+} from '@/components/table/ex/interactions.js'
+import { resolveTypeMinWidth } from '@/components/table/ex/layout.js'
+import { createUniformRowGeometry } from '@/components/table/ex/row-geometry.js'
+import { getPixelNumber } from '@/utils/size'
 
 function assertEqual (actual, expected, label) {
   if (actual !== expected) {

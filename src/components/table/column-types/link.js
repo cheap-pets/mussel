@@ -1,4 +1,4 @@
-import { ensureFn } from '../utils'
+import { ensureFn } from '@/utils/type'
 
 function isValidLink (link) {
   return link.caption != null && link.caption !== ''

@@ -33,9 +33,10 @@ import {
   getImageEntry,
   requestIconImage,
   linkHoverColorOf
-} from '../../../../../src/components/table-ex/cell-painters.js'
+} from '../../../../../src/components/table/ex/cell-painters.js'
 import { LinkColumn } from '../../../../../src/components/table/column-types/link.js'
 import { TagColumn } from '../../../../../src/components/table/column-types/tag.js'
+import { t } from '../../../../../src/langs/index.js'
 
 // 主题夹具：字段名对齐 theme.js readSnapshot（值用固定 rgba 串，与探针无关）；
 // colors 固定 17 色形态 = 12 彩色 + 5 语义，gray 不入（A6.1；全量读取断言在 theme 组）
@@ -401,6 +402,74 @@ export const checks = [
       )
 
       return 'mappings 优先 / options 转换 / 原值回退 / number 命中终结'
+    }
+  },
+  {
+    name: 'enum 废弃兼容：经 EnumColumn render 渲染，缺 mappings 不抛、命中/default/原值回退',
+    fn: () => {
+      const col = prepareColumn({
+        field: 's',
+        type: 'enum',
+        mappings: { a: { text: '甲' }, b: '乙', default: '未知' }
+      })
+
+      assert(col._mapText === null, 'enum 不走 mappable 短路（_mapText null，经 EnumColumn render）')
+      assert(content(col, { s: 'a' }).text === '甲', '对象映射取 text')
+      assert(content(col, { s: 'b' }).text === '乙', '字符串映射直接显示')
+      assert(content(col, { s: 'zz' }).text === '未知', '未命中落 default（与 mappings 语义统一）')
+      assert(content(col, { s: null }).text === '未知', '空值落 default（enum 兼容语义，保留移除前行为）')
+
+      // 缺 mappings：原值回退，不再抛 Cannot convert undefined or null to object
+      const bare = prepareColumn({ field: 's', type: 'enum' })
+
+      assert(content(bare, { s: 'x' }).text === 'x', '缺 mappings 未命中原值显示')
+      assert(content(bare, { s: null }).text == null, '缺 mappings 空值落占位链')
+
+      return '命中/default/原值回退；缺 mappings 不抛（align 保持 center）'
+    }
+  },
+  {
+    name: 'bool 统一 mappable：mappings/options 显示映射（String 精确键）、无映射缺省 locale 文案',
+    fn: () => {
+      const mapped = prepareColumn({
+        field: 'b',
+        type: 'bool',
+        mappings: { true: '启用', false: '停用', default: '未知' }
+      })
+
+      assert(typeof mapped._mapText === 'function', 'bool + mappings 挂 _mapText（统一 mappable）')
+      assert(content(mapped, { b: true }).text === '启用', 'true 键命中')
+      assert(content(mapped, { b: false }).text === '停用', 'false 键命中')
+      assert(content(mapped, { b: null }).text == null, '空值不映射落占位链')
+      assert(content(mapped, { b: 1 }).text === '未知', '非 true/false 值未命中落 default')
+
+      // 无 default 时未命中原值回退（不再按真值取 trueText）
+      const noDefault = prepareColumn({ field: 'b', type: 'bool', mappings: { true: '启用', false: '停用' } })
+      assert(content(noDefault, { b: 1 }).text === 1, '未命中且无 default 原值回退')
+
+      // options 数组同口径转换（Boolean 项 → 'true'/'false' 键）
+      const fromOptions = prepareColumn({
+        field: 'b',
+        type: 'bool',
+        options: [{ value: true, label: '开' }, { value: false, label: '关' }]
+      })
+
+      assert(content(fromOptions, { b: true }).text === '开', 'options 布尔项命中')
+      assert(content(fromOptions, { b: false }).text === '关', 'options 布尔项命中 false')
+
+      // 无映射：缺省渲染 locale 文案（Table.BOOL_TRUE/FALSE，与 t() 同源断言——
+      // 无头浏览器多为 en，不可硬编码 是/否）；null 落占位链
+      const plain = prepareColumn({ field: 'b', type: 'bool' })
+      const trueText = t('Table.BOOL_TRUE')
+      const falseText = t('Table.BOOL_FALSE')
+
+      assert(trueText !== 'Table.BOOL_TRUE' && falseText !== 'Table.BOOL_FALSE', 'BOOL_TRUE/FALSE 词条存在（非 path 回退）')
+      assert(plain._mapText === null, '无映射 bool 不挂 _mapText')
+      assert(content(plain, { b: true }).text === trueText, '缺省 true → locale 文案')
+      assert(content(plain, { b: false }).text === falseText, '缺省 false → locale 文案')
+      assert(content(plain, { b: null }).text == null, '缺省空值落占位链')
+
+      return 'bool 命中/原值回退/缺省 locale 文案；空值统一占位链'
     }
   },
   {

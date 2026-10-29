@@ -164,19 +164,32 @@
       title="按钮内徽标"
       note="mu-badge 样式类嵌在按钮内容中使用">
       <mu-button>
-        badge<span class="mu-badge">Default</span>
+        badge
+        <mu-badge>Default</mu-badge>
       </mu-button>
       <mu-button>
-        badge<span class="mu-badge" primary>Primary</span>
+        badge
+        <mu-badge primary>
+          Primary
+        </mu-badge>
       </mu-button>
       <mu-button>
-        badge<span class="mu-badge" secondary>SECONDARY</span>
+        badge
+        <mu-badge secondary>
+          SECONDARY
+        </mu-badge>
       </mu-button>
       <mu-button>
-        badge<span class="mu-badge" warning>Warning</span>
+        badge
+        <mu-badge warning>
+          Warning
+        </mu-badge>
       </mu-button>
       <mu-button>
-        badge<span class="mu-badge" danger>Danger</span>
+        badge
+        <mu-badge danger>
+          Danger
+        </mu-badge>
       </mu-button>
     </demo-section>
   </demo-page>

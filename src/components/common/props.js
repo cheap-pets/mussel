@@ -8,5 +8,5 @@ export const autoOrBool = {
 
 export const colorProp = {
   type: String,
-  validator: v => [...baseColorNames, specColorNames].includes(v)
+  validator: v => [...baseColorNames, ...specColorNames].includes(v)
 }

@@ -110,5 +110,10 @@ export default {
     CURRENT: 'Page {0}',
     CURRENT_AND_TOTAL: 'Page {0} of {1}',
     CURRENT_AND_SIZE: 'Page {0}, {1} / page'
+  },
+
+  Table: {
+    BOOL_TRUE: 'Yes',
+    BOOL_FALSE: 'No'
   }
 }

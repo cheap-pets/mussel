@@ -35,7 +35,7 @@
       title="圆点徽标"
       note="内容为空时收缩为圆点（默认 danger 色），用于消息提醒">
       <mu-button>
-        消息<mu-badge>6</mu-badge>
+        消息<mu-badge value="6" color="danger" />
       </mu-button>
       <mu-button>
         通知<mu-badge />
@@ -44,20 +44,20 @@
 
     <demo-section
       title="Tag 基础用法"
-      note="MuTag 组件，默认灰底描边；color 走 tones（faint 淡底 / solid 实底）；pill 全圆角、flat 去描边">
+      note="MuTag 组件，默认灰底描边；color 按色名着色（淡底 + 描边 + 文字同色）；pill 全圆角、flat 去描边">
       <mu-tag>Default</mu-tag>
       <mu-tag color="success">
         Success
       </mu-tag>
       <mu-tag
-        color="success"
-        faint>
-        Success faint
-      </mu-tag>
-      <mu-tag
         color="pink"
         pill>
         Pink pill
+      </mu-tag>
+      <mu-tag
+        color="success"
+        flat>
+        Success flat
       </mu-tag>
       <mu-tag flat>
         Flat

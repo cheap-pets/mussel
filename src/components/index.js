@@ -18,7 +18,7 @@ import * as CollapseComponents from './collapse'
 import MuTag from './tag/tag.vue'
 import MuTags from './tag/tags.vue'
 import MuBadge from './badge/badge.vue'
-import MuTable from './table/table.vue'
+import MuTable from './table/base/table.vue'
 import MuScrollBox from './scrollbar/scroll-box.vue'
 
 import { install as installScrollbarDirective } from './scrollbar/directive'

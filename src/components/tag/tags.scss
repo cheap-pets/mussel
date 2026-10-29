@@ -34,7 +34,6 @@
   flex-wrap: nowrap;
 }
 
-// 形态（高/padding/圆角/灰底/描边）复用全局 .mu-tag 基类（styles/tag.scss）
 .mu-tags__tag,
 .mu-tags__more {
   outline: none;
@@ -50,11 +49,8 @@
 }
 
 .mu-tag.mu-tags__tag {
-  display: inline-flex;
   flex: none;
   gap: var(--mu-half-spacing);
-  align-items: center;
-
   min-width: 40px;
   max-width: 100%;
 

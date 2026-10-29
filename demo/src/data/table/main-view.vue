@@ -13,10 +13,21 @@
 
     <demo-section
       title="列类型"
-      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / tag / img；enum/bool 用 mappings 映射显示"
+      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / tag / img；enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes"
       wide>
       <mu-table
         :columns="typeColumns"
+        :records="records"
+        key-field="id" />
+    </demo-section>
+
+    <demo-section
+      title="显示映射 mappings / options"
+      note="text / number / bool 列 mappings 映射显示（未命中落 default 再回退原值），options 数组自动转换为映射，与 mu-table-ex 同语义"
+      :code="mappingCode"
+      wide>
+      <mu-table
+        :columns="mappingColumns"
         :records="records"
         key-field="id" />
     </demo-section>
@@ -91,6 +102,17 @@ const columns = [
   { caption: '数量', field: 'count', width: '80px' }
 ]`
 
+  const mappingCode = `<mu-table :columns="columns" :records="records" key-field="id" />
+
+const columns = [
+  // mappings：值 → 显示文本，未命中落 default 再回退原值
+  { caption: '性别', field: 'gender', mappings: { male: '男', female: '女', default: '未知' } },
+  // bool 列同样支持（键为 'true' / 'false'）
+  { caption: '状态', field: 'active', type: 'bool', mappings: { true: '启用', false: '停用' } },
+  // options 数组自动转换为映射（与 mu-select 同口径），未命中原值显示
+  { caption: '数量', field: 'count', type: 'number', options: [{ value: 30, label: '高' }, { value: 12, label: '低' }] }
+]`
+
   const selectedId = ref(null)
   const orderBy = ref('')
 
@@ -120,6 +142,13 @@ const columns = [
     { caption: '标签', field: 'tags', width: '160px', type: 'tag', tagOption: { pill: true, flat: true } },
     { caption: '图像', field: 'avatar', width: '64px', type: 'img' },
     { caption: '空值', field: 'missing', width: '90px', placeholder: '-' }
+  ]
+
+  const mappingColumns = [
+    { caption: '名称', field: 'name', width: '130px' },
+    { caption: '性别', field: 'gender', width: '90px', mappings: { male: '男', female: '女', default: '未知' } },
+    { caption: '状态', field: 'active', width: '100px', type: 'bool', mappings: { true: '启用', false: '停用' } },
+    { caption: '数量', field: 'count', width: '110px', type: 'number', options: [{ value: 30, label: '高' }, { value: 12, label: '低' }] }
   ]
 
   const sortColumns = [

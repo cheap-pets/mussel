@@ -1174,7 +1174,7 @@ Mussel 4 新增 `buttonStyle` 属性：`'normal' | 'outline' | 'text' | 'link'`�
 
 #### MuBadge
 
-V3 仅有 `.mu-badge` CSS 类（无组件，`secondary` / `danger` 属性选择器变体）。V4 新增 `<mu-badge>` 组件（API 见 `references/components/basic.md`），无属性迁移。
+V3 仅有 `.mu-badge` CSS 类（无组件，`secondary` / `danger` 属性选择器变体）。V4 新增 `<mu-badge>` 组件（API 见 `references/components/basic.md`），颜色用 `color="secondary/danger/…"` 属性；V3 的属性写法仍兼容但已弃用。
 
 #### MuIcon
 

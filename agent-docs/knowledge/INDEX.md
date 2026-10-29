@@ -29,10 +29,13 @@
 - [demo 页 URL 前缀 /data/](./project/demo-page-url-data-prefix.md) `fact` `code@worktree(2026-10-28)`：验证页在 `http://localhost:3000/data/<name>/`，AGENTS.md 的 `/<name>/` 表述已过时。
 - [overlay DOM 阴影 canvas getImageData 不可见](./project/dom-shadow-canvas-imagedata-invisible.md) `pitfall`：getImageData 读不到滚动阴影——overlay 阴影是 DOM box-shadow；断言 DOM 或截图合成像素。
 - [table-ex demo 页交互验证](./project/table-ex-demo-interaction-verify.md) `convention` `code@worktree(2026-10-28)`：单元格点击向 sticky 派发带 clientX 的 pointer/click，坐标经 getLayoutInfo 前缀和；浮层断言等 80ms+；事件日志 unshift 最新在前；条目命中区=pill 绘制区非整格，多 pill 探针勿取联合包围盒中点（8px 间隙）。
-- TagColumn mu-tag--{color} 色名解析协议 `convention` `code@worktree(2026-10-28)`：TagColumn 输出的 mu-tag--{color} class 不可删——table-ex colorClassOf 靠它取色、self-checks 断言它；DOM 着色另走 mu-faint-{color}。
+- TagColumn mu-tag--{color} 色名解析协议 `convention` `code@worktree(2026-10-29)`：mu-tag--{color} 兼管 DOM 着色与画布取色（faint 类已废弃）；colorClassOf 取首个 mu-tag--*，色类须先于 pill/flat 落 class。
+- table 列 mappings/options 显示映射单一事实源 `convention` `code@worktree(2026-10-29)`：table/mappings.js 由 mu-table 与 table-ex 同源共用（base 不得反向 import ex/）；可映射类型 text/number/bool。
+- bool 列统一 mappable 但编辑器恒 switch `convention` `code@worktree(2026-10-29)`：bool 显示映射走 String 精确键（'true'/'false'），不再按真值取 trueText/nullText；编辑器不入选 select 派生（value 字符串键破坏 boolean 提交类型）。
+- enum 列废弃但两组件兼容保留 `convention` `code@worktree(2026-10-29)`：type:'enum' 照常渲染并 dev 警告一次；缺 mappings 不抛（default ?? 原值回退）；table-ex 编辑恒 select、默认宽 100/60。
 - mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
+- table 列 items 协议 events 可选 `pitfall` `code@worktree(2026-10-29)`：控制台 `v-on with no argument expects an object value`——text/image 等产物无 events；消费端 `table-row.vue` 须 `v-on="item.events ?? {}"` 兜底，生产端不必强加。
 - mu-dialog / mu-drawer 的 dismissible 无默认值 `pitfall` `code@9517eb6`：不传 dismissible 时 ESC 与遮罩点击均不关闭；需此交互须显式传 dismissible。
-- Cannot convert undefined or null to object（列夹具） `pitfall` `code@worktree(2026-10-28)`：mu-table {type:'enum'} 缺 mappings 即抛——EnumColumn.compile 无守卫 entries(column.mappings)（column-types/enum.js），夹具须带 mappings；table-ex 侧 enum 已移除。
 
 ## Global
 
