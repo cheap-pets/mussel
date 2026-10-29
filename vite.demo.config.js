@@ -209,12 +209,14 @@ export default {
   },
   plugins: [pluginSvg(), pluginVue(), copyHtmlFiles(), serveDemoDist()],
   resolve: {
-    alias: {
-      mussel: resolve(__dirname, 'src/index.js'),
-      vue: resolve(__dirname, 'node_modules/vue/dist/vue.esm-browser.js'),
-      '~icons': resolve(__dirname, 'node_modules/@tabler/icons/icons'),
-      '@': resolve(__dirname, 'src')
-    }
+    alias: [
+      // ex 版 registry 换表：demo 始终用含 ex 组件的版本
+      { find: 'mussel', replacement: resolve(__dirname, 'src/index.js') },
+      { find: './components/index.js', replacement: resolve(__dirname, 'src/components/index.ex.js') },
+      { find: 'vue', replacement: resolve(__dirname, 'node_modules/vue/dist/vue.esm-browser.js') },
+      { find: '~icons', replacement: resolve(__dirname, 'node_modules/@tabler/icons/icons') },
+      { find: '@', replacement: resolve(__dirname, 'src') }
+    ]
   },
   css: {
     transformer: 'lightningcss',

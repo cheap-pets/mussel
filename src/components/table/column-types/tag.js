@@ -57,7 +57,7 @@ export const TagColumn = {
           if (pill) itemClass.push('mu-tag--pill')
           if (flat) itemClass.push('mu-tag--flat')
           if (color) {
-            // mu-tag--{color} 仅供 canvas-table 从 class 解析色名绘制；
+            // mu-tag--{color} 仅供 table-ex 从 class 解析色名绘制；
             // DOM 着色走 tones 淡底类（视觉与旧 mu-tag--{color} 一致）
             itemClass.push(`mu-tag--${color}`)
             itemClass.push(`mu-faint-${color}`)

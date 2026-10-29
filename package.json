@@ -8,7 +8,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build --mode development && vite build --mode production",
+    "build": "npm run build:base && npm run build:ex",
+    "build:base": "vite build --mode development && vite build --mode production",
+    "build:ex": "vite build --mode ex-development && vite build --mode ex-production",
     "demo:build": "vite build --config vite.demo.config.js --watch",
     "docs:dev": "vitepress dev docs-site",
     "docs:build": "vitepress build docs-site",

@@ -44,9 +44,12 @@ function pluginSvg () {
   }
 }
 
+// mode 约定：development / production，加 ex- 前缀（ex-development / ex-production）则构建含 ex 组件的版本
 export default defineConfig(({ mode }) => {
-  const isDev = mode === 'development'
+  const isEx = mode.startsWith('ex-')
+  const isDev = mode.endsWith('development')
   const isWatch = process.argv.includes('--watch')
+  const suffix = isEx ? '.ex' : ''
 
   return {
     define: {
@@ -58,10 +61,15 @@ export default defineConfig(({ mode }) => {
       pluginVue()
     ],
     resolve: {
-      alias: {
-        '~icons': resolve(__dirname, 'node_modules/@tabler/icons/icons'),
-        '@': resolve(__dirname, 'src')
-      }
+      alias: [
+        // ex 版换组件注册表：匹配原始 import 说明符（仅 src/index.js 一处引用）
+        isEx && {
+          find: './components/index.js',
+          replacement: resolve(__dirname, 'src/components/index.ex.js')
+        },
+        { find: '~icons', replacement: resolve(__dirname, 'node_modules/@tabler/icons/icons') },
+        { find: '@', replacement: resolve(__dirname, 'src') }
+      ].filter(Boolean)
     },
     css: {
       transformer: 'lightningcss',
@@ -92,8 +100,8 @@ export default defineConfig(({ mode }) => {
           globals: {
             vue: 'Vue'
           },
-          assetFileNames: isDev ? '[name].[ext]' : '[name].min.[ext]',
-          entryFileNames: isDev ? 'mussel.js' : 'mussel.min.js'
+          assetFileNames: isDev ? `mussel${suffix}.[ext]` : `mussel${suffix}.min.[ext]`,
+          entryFileNames: isDev ? `mussel${suffix}.js` : `mussel${suffix}.min.js`
         },
         onwarn (warning, warn) {
           if (!isWatch || warning.code !== 'FILE_NAME_CONFLICT') {

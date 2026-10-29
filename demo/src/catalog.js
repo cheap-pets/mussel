@@ -114,9 +114,9 @@ export const catalog = [
         desc: '复选、固定列、自定义渲染与分页联动'
       },
       {
-        path: 'data/canvas-table',
-        title: 'CanvasTable 画布表格',
-        desc: 'MuCanvasTable：canvas 渲染、虚拟滚动与单元格编辑（验证页）'
+        path: 'data/table-ex',
+        title: 'TableEx 画布表格',
+        desc: 'MuTableEx：canvas 渲染、虚拟滚动与单元格编辑（验证页）'
       },
       {
         path: 'data/tree',
