@@ -1012,7 +1012,10 @@ function paintEditorButton (ctx, state, hover) {
   ctx.drawImage(entry.image, rect.x + inset, rect.y + inset, size, size)
 }
 
-/** hover 叠加：高亮底色 → 可编辑格描边 → 树箭头主色 → 编辑按钮（顺序固定） */
+/** hover 叠加：高亮底色 → 可编辑格描边 → 树箭头主色 → 编辑按钮（顺序固定）。
+    统一裁剪到表体区：高亮矩形按视口 y 起画，行滚入表头后整幅绘制无外层收敛，
+    半透明 hover 底色会叠上表头底色形成变色带（行带/列带/单格脏区路径外层 clip
+    已收敛到表体区，此处裁剪对它们为冗余交集）；调宽参考线不在此函数，全高不受影响 */
 function paintHoverOverlay (ctx, state, hover, mode) {
   const { layout, theme } = state
   const rowCount = rowsOf(state)?.length ?? 0
@@ -1021,15 +1024,17 @@ function paintHoverOverlay (ctx, state, hover, mode) {
 
   ctx.fillStyle = theme.hoverBg
 
-  paintHoverHighlight(ctx, layout, hover, mode, rowValid, colValid, state.spans)
+  withClip(ctx, [0, layout.headHeight, layout.stickyWidth, layout.stickyHeight - layout.headHeight], () => {
+    paintHoverHighlight(ctx, layout, hover, mode, rowValid, colValid, state.spans)
 
-  if (rowValid && colValid) {
-    paintHoverEditorStroke(ctx, state, hover)
+    if (rowValid && colValid) {
+      paintHoverEditorStroke(ctx, state, hover)
 
-    paintTreeArrowAccent(ctx, state)
+      paintTreeArrowAccent(ctx, state)
 
-    paintEditorButton(ctx, state, hover)
-  }
+      paintEditorButton(ctx, state, hover)
+    }
+  })
 }
 
 function paintOverlay (ctx, state) {
