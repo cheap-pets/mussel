@@ -41,7 +41,8 @@ import {
 // painter.drawHeaderCheck 同规格，规格变更两处同步）
 
 // tag pill / button —— components/tag/tag.scss .mu-tag（height 20 / padding 0 8 /
-// font-size 12 / 圆角 4px）；button 为 tag 同构轻量按钮（A3.3）
+// font-size 12 / 圆角 4px）；button 为 tag 同构轻量按钮（A3.3），column.link = true
+// 时整列改纯文字链形态（正文字体、无 pill 内边距）
 const TAG_HEIGHT = 20
 const TAG_PADDING_X = 8
 const TAG_FONT_SIZE = 12
@@ -135,7 +136,12 @@ function createColumnRender (column, type, canvasOnlyKind) {
   if (canvasOnlyKind === 'button') {
     const getButtons = ensureFn(column.buttons)
 
-    return ({ record }) => ({ canvasKind: 'button', buttons: getButtons(record) ?? [] })
+    // link 形态标志列级声明（column.link），整列统一生效不落单条 button
+    return ({ record }) => ({
+      canvasKind: 'button',
+      buttons: getButtons(record) ?? [],
+      link: column.link === true || null
+    })
   }
 
   return type.compile ? type.compile(column) : (type.render || type)
@@ -344,7 +350,7 @@ function drawCanvasKindContent (
   }
 
   if (content.canvasKind === 'button') {
-    drawButton(ctx, rect, content.buttons, {
+    drawButton(ctx, rect, content, {
       padding,
       theme,
       record,
@@ -1153,11 +1159,20 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure, ce
   }
 }
 
+/** button 条目悬停判定（drawButton 循环内两形态共用，isLinkEntryHovered 同款模式） */
+function isButtonHovered (hoverItem, index) {
+  return hoverItem?.kind === 'button' && hoverItem.index === index
+}
+
 // button 组（tag 同构轻量按钮）：横排，底 translucent + 边框/文字 colors[color].color；
-// disabled 置灰；超宽丢弃；条目矩形回报 itemHits（kind 'button'，命中区 = pill 区）
-function drawButton (ctx, rect, buttons, {
+// disabled 置灰；超宽丢弃；条目矩形回报 itemHits（kind 'button'，命中区 = pill 区）。
+// link 形态（column.link）改走正文字体纯文字链，宽度/字体随之切换
+function drawButton (ctx, rect, content, {
   padding, theme, record, onItemRect, measure, centerY, hoverItem
 }) {
+  const buttons = content.buttons
+  const link = content.link === true
+
   if (!Array.isArray(buttons) || !buttons.length) return
 
   const contentWidth = rect.width - padding * 2
@@ -1165,7 +1180,7 @@ function drawButton (ctx, rect, buttons, {
   if (contentWidth <= 0) return
 
   const rightBound = rect.x + rect.width - padding
-  const font = tagFontOf(theme)
+  const font = link ? cellFontOf(theme) : tagFontOf(theme)
   const measureFn = measureOf(ctx, measure)
 
   let x = rect.x + padding
@@ -1174,13 +1189,19 @@ function drawButton (ctx, rect, buttons, {
     if (x >= rightBound) break
 
     const button = buttons[i] ?? EMPTY_BUTTON
-    const width = drawButtonPill(
-      ctx, button, x, centerY, rightBound, record, theme, font, measureFn,
-      hoverItem?.kind === 'button' && hoverItem.index === i
-    )
+    const hovered = isButtonHovered(hoverItem, i)
+    const ellipsized = ellipsizeButton(button, x, rightBound, font, measureFn, link)
 
-    // ellipsize 空文本 → -1 哨兵，停止绘制后续按钮
-    if (width < 0) break
+    // ellipsize 空文本 → null 哨兵（原 -1 同义），停止绘制后续按钮
+    if (!ellipsized) break
+
+    const { text, width } = ellipsized
+
+    if (link) {
+      drawButtonLink(ctx, button, text, width, x, centerY, record, theme, font, hovered)
+    } else {
+      drawButtonPill(ctx, button, text, width, x, centerY, record, theme, font, hovered)
+    }
 
     onItemRect?.({
       kind: 'button',
@@ -1210,22 +1231,52 @@ function buttonTextOf (theme, colored, disabled) {
     : (colored?.color ?? theme?.textColor)
 }
 
-// 单个 button pill 绘制：返回占用宽度；空文本返回 -1 哨兵不绘制；hovered 且非
-// disabled 时反转（底/边框 = colors[name].color、文字 = bgNormal）；disabled 置灰
-function drawButtonPill (ctx, button, x, centerY, rightBound, record, theme, font, measureFn, hovered) {
+/** caption 省略与占用宽预处理（pill/link 两形态共用）：padX = pill 内边距（link
+    形态 0）；空文本返回 null 哨兵不绘制且终止后续按钮；占用宽 = min(全宽, 右缘剩余) */
+function ellipsizeButton (button, x, rightBound, font, measureFn, link) {
+  const padX = link ? 0 : TAG_PADDING_X
   const { text, width: textWidth } = ellipsize({
     text: String(button.caption ?? ''),
     font,
-    maxWidth: Math.max(0, rightBound - x - TAG_PADDING_X * 2),
+    maxWidth: Math.max(0, rightBound - x - padX * 2),
     measure: measureFn
   })
 
-  if (!text) return -1
+  if (!text) return null
 
+  return { text, width: Math.min(textWidth + padX * 2, rightBound - x) }
+}
+
+/** link 形态单条按钮（列级 column.link）：无底无边框纯文字链，常态
+    colors[name].color、hover 变 colors[name].hover 谱系 + 1px 下划线（下划线式与
+    link 条目同源）；disabled 恒置灰不悬停 */
+function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, font, hovered) {
   const disabled = isTruthyAttr(button.disabled)
-  const colorName = colorNameOf(button.color, record)
-  const colored = theme?.colors?.[colorName]
-  const width = Math.min(textWidth + TAG_PADDING_X * 2, rightBound - x)
+  const colored = theme?.colors?.[colorNameOf(button.color, record)]
+
+  ctx.font = font
+  ctx.fillStyle = disabled
+    ? (theme?.textColorMuted || theme?.gray)
+    : (hovered
+        ? (colored?.hover ?? colored?.color ?? theme?.primaryColor)
+        : (colored?.color ?? theme?.primaryColor))
+  ctx.textAlign = 'left'
+
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+  ctx.fillText(text, x, anchor.y)
+
+  if (hovered && !disabled) {
+    ctx.fillRect(x, linkUnderlineY(anchor.y), width, 1)
+  }
+}
+
+// 单个 button pill 绘制（省略预处理产物入参）：hovered 且非 disabled 时反转
+// （底/边框 = colors[name].color、文字 = bgNormal）；disabled 置灰
+function drawButtonPill (ctx, button, text, width, x, centerY, record, theme, font, hovered) {
+  const disabled = isTruthyAttr(button.disabled)
+  const colored = theme?.colors?.[colorNameOf(button.color, record)]
   const y = centerY - TAG_HEIGHT / 2
   const inverted = hovered && !disabled
 
@@ -1249,8 +1300,6 @@ function drawButtonPill (ctx, button, x, centerY, rightBound, record, theme, fon
 
   ctx.textBaseline = anchor.baseline
   ctx.fillText(text, x + TAG_PADDING_X, anchor.y)
-
-  return width
 }
 
 /** 图片等比布局尺寸：不放大，clamp 到 maxH × maxW 内 */
@@ -1339,9 +1388,11 @@ function horizontalItemsOverflowOf (items, params) {
 }
 
 /** button 组溢出（drawButton 逐 pill 累加等价式）：x 越右缘 break / 空 caption 哨兵
-    终止（其后仍有按钮 = 内容被丢弃）/ pill 文本区放不下整体不绘制 / pill 截断均计溢出 */
-function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure }) {
-  const font = tagFontOf(theme)
+    终止（其后仍有按钮 = 内容被丢弃）/ pill 文本区放不下整体不绘制 / pill 截断均计
+    溢出；link 形态无 pill 内边距、字体取正文（drawButton 同式切换） */
+function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, link }) {
+  const font = link ? cellFontOf(theme) : tagFontOf(theme)
+  const padX = link ? 0 : TAG_PADDING_X
   let consumed = 0
 
   for (let i = 0; i < buttons.length; i++) {
@@ -1355,10 +1406,10 @@ function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure }) 
     const remaining = contentWidth - consumed
 
     // pill 文本区放不下（maxWidth ≤ 0 → ellipsize 空文本 → -1 → break）：该按钮整体不绘制
-    if (remaining - TAG_PADDING_X * 2 <= 0) return true
+    if (remaining - padX * 2 <= 0) return true
 
     // pill 宽 = min(全宽, 右缘剩余)：全宽超剩余即截断（caption 部分丢失）→ 溢出
-    const width = measure(caption, font) + TAG_PADDING_X * 2
+    const width = measure(caption, font) + padX * 2
 
     if (width > remaining) return true
 
@@ -1409,9 +1460,10 @@ function resolveTooltipText (col, record, source, {
   return { content: text, overflowOnly: true, overflow }
 }
 
-/** true 形态 canvasKind button：全文 = caption join，溢出 = buttonsOverflowOf 逐 pill 累加式 */
-function resolveTooltipButtons (buttons, params) {
-  const list = Array.isArray(buttons) ? buttons : []
+/** true 形态 canvasKind button：全文 = caption join，溢出 = buttonsOverflowOf 逐 pill
+    累加式（link 形态计宽随 content.link 切换） */
+function resolveTooltipButtons (content, params) {
+  const list = Array.isArray(content.buttons) ? content.buttons : []
   const text = joinTooltipText(list.map(button => button?.caption))
 
   if (text === '') return null
@@ -1419,7 +1471,7 @@ function resolveTooltipButtons (buttons, params) {
   return {
     content: text,
     overflowOnly: true,
-    overflow: buttonsOverflowOf(list, params)
+    overflow: buttonsOverflowOf(list, { ...params, link: content.link === true })
   }
 }
 
@@ -1503,7 +1555,7 @@ export function resolveCellTooltip (
   const overflowParams = { contentWidth, contentHeight, padding, theme, measure }
 
   if (content.canvasKind === 'button') {
-    return resolveTooltipButtons(content.buttons, overflowParams)
+    return resolveTooltipButtons(content, overflowParams)
   }
 
   if (Array.isArray(content.items) && content.items.length) {

@@ -665,7 +665,9 @@
       width: 130,
       progressOption: record => ({ color: record.progressColor, showText: true })
     },
-    { caption: '按钮', field: 'buttons', type: 'button', width: 180, buttons: record => record.buttons }
+    { caption: '按钮', field: 'buttons', type: 'button', width: 180, buttons: record => record.buttons },
+    // link 形态按钮（column.link）：整列纯文字链渲染，数据与 pill 按钮同源对照
+    { caption: '链接按钮', field: 'buttons', type: 'button', link: true, width: 180, buttons: record => record.buttons }
   ]
 
   // 全类型默认宽场景：全部列不配 width（A3.2 类型感知双值基线，含 bool 与无 type 列）

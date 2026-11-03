@@ -11,7 +11,8 @@
  * 数组值 maxItems dots '...'、line-clamp item 改道）；link 列竖排（恒两色
  * primary/danger，平铺 danger/disabled 直取）+ LinkColumn/TagColumn 双通道
  * compile 产物断言（canvas 平铺 kind 条目 / dom DOM 形态条目）；tag 17 色、
- * button/disabled、树形列缩进箭头。
+ * button/disabled、树形列缩进箭头；button link 形态（column.link 列级声明：纯文字链
+ * 取色/正文字体/hover 下划线/命中宽度/tooltip 计宽切换）。
  *
  * 问题 1/5/7（G2-3，A1/A5/A7）：槽位锚断言组（首行 y = Math.round(ROW_TOP_INSET +
  * (rowHeight − ROW_TOP_INSET)/2) 不随行高变、水平 center 扣 rightInset、超高行跨列首行同高——
@@ -144,7 +145,7 @@ function recordingCtx (canvas) {
     get (target, prop) {
       if (prop === 'fillText') {
         return (text, x, y) => {
-          calls.fillText.push({ text: String(text), x, y, fillStyle: target.fillStyle })
+          calls.fillText.push({ text: String(text), x, y, fillStyle: target.fillStyle, font: target.font })
           return target.fillText(text, x, y)
         }
       }
@@ -1424,6 +1425,81 @@ export const checks = [
       assertEqual(disabledHover.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled 文字常态 muted')
 
       return '反转三色（底/边框 = danger.color、文字 = bgNormal）；disabled 保持置灰'
+    }
+  },
+  {
+    name: 'button link 形态（column.link）：纯文字链取色/正文字体/hover 下划线/disabled 不悬停/命中宽度/tooltip 计宽',
+    fn: () => {
+      const column = {
+        field: 'v',
+        type: 'button',
+        link: true,
+        buttons: [{ caption: '编辑', color: 'danger' }, { caption: '删除', disabled: true }]
+      }
+      const col = prepareColumn(column)
+
+      // 产物链：canvasKind 仍 button（hover/点击/光标链路不变）+ 列级 link 标志平铺
+      const produced = content(col, {})
+
+      assertEqual(produced.canvasKind, 'button', 'canvasKind 仍为 button（itemHits 命中链路不变）')
+      assertEqual(produced.link, true, 'column.link 平铺进 render 产物（不落单条 button）')
+      assertEqual(content(prepareColumn({ ...column, link: false }), {}).link, null, 'link 缺省/假值产物不带该字段')
+
+      const rects = []
+      const normal = drawRecorded(col, {}, { width: 220, measure: fakeMeasure, onItemRect: r => rects.push(r) })
+
+      assertEqual(normal.calls.fill.length, 0, 'link 形态无 pill 底色 fill')
+      assertEqual(normal.calls.stroke.length, 0, 'link 形态无边框 stroke')
+      assertEqual(normal.calls.fillText[0].font, CELL_FONT, '字体取正文 cellFontOf（非 tag 12px）')
+      assertEqual(normal.calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.danger.color), '常态文字色 = colors.danger.color')
+      assertEqual(normal.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled 文字色 muted')
+
+      // 命中宽度 = 文本宽（无 pill 内边距）：'编辑' fakeMeasure 18；pill 对照 = 18 + 16
+      assertEqual(rects[0].kind, 'button', '命中条目 kind 仍为 button')
+      assertEqual(rects[0].rect.width, 18, 'link 条目矩形宽 = 文本宽（无 TAG_PADDING_X）')
+
+      const pillRects = []
+
+      drawRecorded(
+        prepareColumn({ ...column, link: false }),
+        {},
+        { width: 220, measure: fakeMeasure, onItemRect: r => pillRects.push(r) }
+      )
+      assertEqual(pillRects[0].rect.width, 34, 'pill 对照矩形宽 = 文本宽 + 2×TAG_PADDING_X')
+
+      // hover：hover 谱系 + 1px 下划线（y 与 link 条目同式：光学锚 + 2）
+      const hovered = drawRecorded(col, {}, { width: 220, hoverItem: { kind: 'button', index: 0 } })
+
+      assertEqual(hovered.calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.danger.hover), 'hover 文字色 = colors.danger.hover')
+      assertEqual(hovered.calls.fillRect.length, 1, 'hover 画 1 条下划线')
+      assertEqual(hovered.calls.fillRect[0].y, 19 + TEXT_ANCHOR_OFF + 2, '下划线 y = 光学锚 + 2（link 条目同式）')
+
+      // disabled 被 hover：恒置灰不悬停、不画下划线
+      const disabledHover = drawRecorded(col, {}, { width: 220, hoverItem: { kind: 'button', index: 1 } })
+
+      assertEqual(disabledHover.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled 被 hover 仍 muted')
+      assertEqual(disabledHover.calls.fillRect.length, 0, 'disabled 被 hover 不画下划线')
+
+      // tooltip 溢出计宽随 link 切换：15 字 = 135，pill 135+16 = 151 > 144 溢出、link 135 ≤ 144 不溢出
+      const CAPTION15 = '一二三四五六七八九十壹贰叁肆伍'
+
+      assertEqual(
+        tooltipOf({ field: 'b', type: 'button', buttons: [{ caption: CAPTION15 }], title: true }, { b: 1 }).overflow,
+        true,
+        'pill 形态 151 > 144 截断溢出（对照）'
+      )
+      assertEqual(
+        tooltipOf({ field: 'b', type: 'button', link: true, buttons: [{ caption: CAPTION15 }], title: true }, { b: 1 }).overflow,
+        false,
+        'link 形态 135 ≤ 144 不溢出（无 pill 内边距计宽）'
+      )
+      assertEqual(
+        tooltipOf({ field: 'b', type: 'button', link: true, buttons: [{ caption: '一二三四五六七八九十'.repeat(2) }], title: true }, { b: 1 }).overflow,
+        true,
+        'link 形态 180 > 144 截断溢出'
+      )
+
+      return '无底无边框 + danger.color/正文 14px + hover 谱系下划线 + 宽 18 vs 34 + tooltip 计宽切换'
     }
   },
   {
