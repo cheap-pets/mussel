@@ -21,6 +21,10 @@
  * fillRect 下划线（recordingCtx 增记 fillRect/stroke）；button pill 悬停反转三色；
  * itemHits 条目 disabled 字段。
  *
+ * resolveCellTooltip（title 列协议，20261030-table-ex-cell-tooltip）：falsy 门控、
+ * 自定义 String/Function title、true 形态文本/数组/横排条目（check/img/tag 计宽）/
+ * link 竖排/button 组溢出判定矩阵、maxLines 与 regionHeight 钳制、line-clamp 改道。
+ *
  * 断言全部同步执行（runChecks 不支持异步）；img 加载完成后的重绘联动属 painter
  * 集成行为，此处只断言加载状态、crossOrigin 与未加载前空格（data URI 每次运行
  * 生成不同像素，规避页内重跑时序竞争——G1-b 遗留；requestIconImage 的 SVG 串
@@ -29,11 +33,13 @@
 import {
   prepareColumn,
   resolveCellContent,
+  resolveCellTooltip,
   drawCell,
   getImageEntry,
   requestIconImage,
   linkHoverColorOf
 } from '../../../../../src/components/table/ex/cell-painters.js'
+import { createWrapCache } from '../../../../../src/components/table/ex/text-wrap.js'
 import { LinkColumn } from '../../../../../src/components/table/column-types/link.js'
 import { TagColumn } from '../../../../../src/components/table/column-types/tag.js'
 import { t } from '../../../../../src/langs/index.js'
@@ -256,6 +262,23 @@ function tinyPngDataUri () {
  *  持存，固定串在页内重跑时会直接命中已加载条目，「loading」断言假红（同
  *  tinyPngDataUri 的重跑时序规避，A5 行） */
 let iconSeed = 0
+
+// —— resolveCellTooltip 夹具（title 列协议，20261030-table-ex-cell-tooltip）： ——
+// stub measure（fakeMeasure，CJK 每字符 9px）+ 固定 theme；contentWidth =
+// CELL_WIDTH − padding×2 = 144、contentHeight = CELL_HEIGHT − ROW_TOP_INSET = 35
+// （壳预算同式：格宽 − padding×2 − 树缩进 / 格高 − 1）
+function tooltipOf (column, record, extra = {}) {
+  return resolveCellTooltip(prepareColumn(column), {
+    record,
+    recordNumber: RECORD_NUMBER,
+    contentWidth: extra.contentWidth ?? CELL_WIDTH - THEME.cellPadding * 2,
+    contentHeight: extra.contentHeight ?? CELL_HEIGHT - 1,
+    regionHeight: extra.regionHeight ?? null,
+    theme: THEME,
+    measure: fakeMeasure,
+    wrapCache: createWrapCache()
+  })
+}
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)
@@ -1377,6 +1400,238 @@ export const checks = [
       assertEqual(off.calls.fillText[0].x, 8, '树关无缩进（内容区不扣 inset）')
 
       return '缩进 x=24/40、父行箭头/叶行空槽、展开/收起方向、树关回退'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：falsy 门控与无文本源类型（title:false/无 title/空串/0/check/progress/img/null 文本）',
+    fn: () => {
+      // falsy 不生效（对齐 DOM 版 title 只对 truthy 生效，不得被 String(false) 成 'false'）
+      assert(tooltipOf({ field: 'v', title: false }, { v: '甲' }) === null, 'title:false 应不生效（不得 String(false)）')
+      assert(tooltipOf({ field: 'v' }, { v: '甲' }) === null, '无 title 应返回 null')
+      assert(tooltipOf({ field: 'v', title: '' }, { v: '甲' }) === null, 'title 空串应不生效')
+      assert(tooltipOf({ field: 'v', title: 0 }, { v: 1 }) === null, 'title 0 应不生效')
+      assert(tooltipOf({ field: 'v', title: () => '' }, { v: '甲' }) === null, '_title 返回空串应返回 null')
+
+      // true 形态无可提示文本源的类型
+      assert(tooltipOf({ field: 'v', type: 'check', title: true }, { v: true }) === null, 'check 列 title:true 无可提示文本 → null')
+      assert(tooltipOf({ field: 'p', type: 'progress', title: true }, { p: 60 }) === null, 'progress 列 title:true 无文本源 → null')
+      assert(
+        tooltipOf({ field: 'img', type: 'img', title: true }, { img: 'data:image/png;base64,AAAA' }) === null,
+        'img 列（未加载单条目无文本）→ null'
+      )
+      assert(tooltipOf({ field: 'empty', title: true }, { empty: null }) === null, '文本源 null → null')
+
+      return 'title:false/无 title/空串/0/空串返回/check/progress/img/null 文本源均返回 null'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：自定义 String/Function title 恒显示（overflowOnly:false、content 恒 String）',
+    fn: () => {
+      const stringTip = tooltipOf({ field: 'v', title: '固定提示' }, { v: '甲' })
+
+      assertEqual(stringTip.content, '固定提示', 'String title 恒显示（不判溢出）')
+      assertEqual(stringTip.overflowOnly, false, '自定义 title 不判溢出')
+      assertEqual(typeof stringTip.content, 'string', 'content 恒为 String')
+
+      const fnTip = tooltipOf({ field: 'status', title: r => `状态码：${r.status}` }, { status: 'active' })
+
+      assertEqual(fnTip.content, '状态码：active', 'Function title 按 record 求值')
+      assertEqual(fnTip.overflowOnly, false, 'Function title 不判溢出')
+      assertEqual(tooltipOf({ field: 'v', title: 123 }, { v: 1 }).content, '123', 'truthy 数字 title String 化')
+
+      return 'String/Function/数字 title 恒显示；overflowOnly=false；content 为 String'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：单行文本溢出判定（截断/未截断/contentWidth≤0 按溢出）',
+    fn: () => {
+      // fakeMeasure CJK 9px/字符：20 字 = 180 > 内容宽 144 → 溢出
+      const long = '一二三四五六七八九十'.repeat(2)
+      const overflowed = tooltipOf({ field: 'v', title: true }, { v: long })
+
+      assertEqual(overflowed.overflow, true, '超宽单行应判溢出')
+      assertEqual(overflowed.content, long, 'content = 全文（不含省略号）')
+      assertEqual(overflowed.overflowOnly, true, 'title:true 为 overflowOnly 形态')
+
+      assertEqual(tooltipOf({ field: 'v', title: true }, { v: '甲' }).overflow, false, '未截断不显示（overflow false，壳据此收起）')
+      assertEqual(
+        tooltipOf({ field: 'v', title: true }, { v: '甲' }, { contentWidth: 0 }).overflow,
+        true,
+        'contentWidth ≤ 0 按溢出返回（绘制层不画的格子允许提示）'
+      )
+
+      return '180>144 溢出 / 未截断 false / contentWidth=0 溢出；content 为全文'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：maxLines 多行 wrapLines clamped 与 regionHeight 钳制（capMaxLinesOf 同式）',
+    fn: () => {
+      const col = { field: 'v', maxLines: 3, title: true }
+      const fourLines = '一二三四五六七八九十'.repeat(6) // 60 字 ×9 = 540 → 16 字/行 → 4 行 > 3
+
+      assertEqual(tooltipOf(col, { v: fourLines }).overflow, true, '折 4 行 > maxLines 3 → clamped 溢出')
+      assertEqual(
+        tooltipOf(col, { v: '一二三四五六七八九十'.repeat(2) }).overflow,
+        false,
+        '折 2 行 ≤ maxLines 3 不溢出'
+      )
+
+      // regionHeight 36：floor((36 − 8×2)/18) = 1 → maxLines 3 钳为 1 → 单行 measure 口径 → 溢出
+      assertEqual(
+        tooltipOf(col, { v: '一二三四五六七八九十'.repeat(2) }, { regionHeight: 36 }).overflow,
+        true,
+        'regionHeight 钳 maxLines=1 后 180 > 144 溢出'
+      )
+
+      // regionHeight 80：floor((80 − 16)/18) = 3 不钳 → 折 2 行仍不溢出
+      assertEqual(
+        tooltipOf(col, { v: '一二三四五六七八九十'.repeat(2) }, { regionHeight: 80 }).overflow,
+        false,
+        'regionHeight 宽绰（钳后仍 3 行）不改变判定'
+      )
+
+      return '折 4 行 clamped / 2 行不溢出 / regionHeight 钳 1 行溢出 / 宽绰区域不钳'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：数组值 drawArrayLines 口径（超 maxItems dots / 单元素超宽 / 空串过滤 join）',
+    fn: () => {
+      const over = tooltipOf({ field: 'v', maxItems: 3, title: true }, { v: [1, '二', 3, 4] })
+
+      assertEqual(over.overflow, true, '4 元素 > maxItems 3 应溢出（绘制为 dots）')
+      assertEqual(over.content, '1；二；3；4', '全文 = 逐元素 String 化 join \'；\'（不含 dots 行）')
+      assertEqual(
+        tooltipOf({ field: 'v', maxItems: 3, title: true }, { v: ['一二三四五六七八九十'.repeat(2), '甲'] }).overflow,
+        true,
+        '任一元素超宽（180 > 144）应溢出'
+      )
+      assertEqual(
+        tooltipOf({ field: 'v', maxItems: 3, title: true }, { v: ['甲', '乙'] }).overflow,
+        false,
+        '窄数组不溢出'
+      )
+      assertEqual(
+        tooltipOf({ field: 'v', title: true }, { v: ['甲', '', '乙'] }).content,
+        '甲；乙',
+        '空串元素过滤后 join'
+      )
+
+      return '超 maxItems dots / 单元素超宽 / 窄数组不溢出 / 空串过滤 join'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：line-clamp 单条目改道文本路径（drawContentItems 同分支）',
+    fn: () => {
+      const col = { field: 'memo', multiline: true, lineClamp: 2, title: true }
+      const long = '一二三四五六七八九十'.repeat(6)
+      const tip = tooltipOf(col, { memo: long })
+
+      assertEqual(tip.content, long, '改道后全文 = 条目 text 原文')
+      assertEqual(tip.overflow, true, '折 4 行 > lineClamp 2（_resolveMaxLines 行级求值）→ clamped 溢出')
+      assertEqual(tooltipOf(col, { memo: '甲' }).overflow, false, '短文本不溢出')
+
+      return '单条 line-clamp 条目按文本求值：clamped/短文本两态正确'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：横排条目 drawItems 口径（check 计 CHECK_SIZE、img 未加载零占位、tag 计 pill）',
+    fn: () => {
+      // 夹具基线：两条 63px 文本（7 字 ×9）→ Σ126 + 1×8 gap = 134 ≤ 144 不溢出
+      const itemsColumn = items => ({
+        field: 'v',
+        title: true,
+        type: { render: () => ({ items: [{ is: 'span', text: '一二三四五六七' }, ...items] }) }
+      })
+      const TEXT63 = '一二三四五六七'
+
+      // + check（CHECK_SIZE 16）：Σ(63+16+63)=142 + 2×8 gap = 158 > 144 → 溢出翻转，证明 check 计入
+      const withCheck = tooltipOf(
+        itemsColumn([{ is: 'span', text: '', attrs: { class: 'mu-table__cell-check' } }, { is: 'span', text: TEXT63 }]),
+        { v: 1 }
+      )
+
+      assertEqual(withCheck.overflow, true, 'check 计 CHECK_SIZE：142 + 16 = 158 > 144 溢出')
+      assertEqual(withCheck.content, `${TEXT63}；${TEXT63}`, 'check 条目无文本，全文 = 文本条目 join')
+
+      const withoutCheck = tooltipOf(itemsColumn([{ is: 'span', text: TEXT63 }]), { v: 1 })
+
+      assertEqual(withoutCheck.overflow, false, '去 check 后 126 + 8 = 134 ≤ 144 不溢出')
+
+      // img 未加载：不计宽也不计间隙（可见数不含）——[63, img, 63] 仍 = 126 + 8 = 134 不溢出
+      assertEqual(
+        tooltipOf(
+          itemsColumn([{ is: 'img', attrs: { src: 'data:image/png;base64,AAAA' } }, { is: 'span', text: TEXT63 }]),
+          { v: 1 }
+        ).overflow,
+        false,
+        'img 未加载不计宽不计间隙（与判定期不发起加载同口径）'
+      )
+
+      // tag pill：文本宽 + 2×TAG_PADDING_X = 79 → 79 + 63 + 8 = 150 > 144 溢出
+      assertEqual(
+        tooltipOf(itemsColumn([{ is: 'span', text: TEXT63, attrs: { class: 'mu-tag' } }]), { v: 1 }).overflow,
+        true,
+        'tag pill +16 内边距：150 > 144 溢出'
+      )
+
+      return 'check 计 CHECK_SIZE 翻转溢出 / img 未加载零占位 / tag 计 pill 内边距；全文 join 正确'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：link 列竖排（超 maxItems dots / 单条超宽 / 全文 join）',
+    fn: () => {
+      const over = tooltipOf({ field: 'v', type: 'link', maxItems: 3, title: true }, { v: ['甲', '乙', '丙', '丁', '戊'] })
+
+      assertEqual(over.overflow, true, '5 条 > maxItems 3 → dots 溢出')
+      assertEqual(over.content, '甲；乙；丙；丁；戊', '全文 = 全部条目（含被 dots 截断的）join')
+      assertEqual(
+        tooltipOf({ field: 'v', type: 'link', maxItems: 3, title: true }, { v: ['一二三四五六七八九十'.repeat(2), '甲'] }).overflow,
+        true,
+        '任一条目超宽（180 > 144，逐条独立省略）→ 溢出'
+      )
+      assertEqual(
+        tooltipOf({ field: 'v', type: 'link', title: true }, { v: ['甲', '乙'] }).overflow,
+        false,
+        '短条目竖排不溢出'
+      )
+
+      return '5>3 dots / 单条超宽 / 短条目不溢出；全文 join 正确'
+    }
+  },
+  {
+    name: 'resolveCellTooltip：button 组（pill 累加溢出 / 空 caption 哨兵终止 / 末位空 caption 不溢出）',
+    fn: () => {
+      // 单 pill 20 字 ×9 = 180 + 16 = 196 > 右缘剩余 144 → 截断溢出
+      const truncated = tooltipOf(
+        { field: 'b', type: 'button', buttons: [{ caption: '一二三四五六七八九十'.repeat(2) }], title: true },
+        { b: 1 }
+      )
+
+      assertEqual(truncated.overflow, true, '单 pill 全宽超右缘剩余 → 截断溢出')
+      assertEqual(truncated.content, '一二三四五六七八九十'.repeat(2), '全文 = 完整 caption')
+
+      assertEqual(
+        tooltipOf({ field: 'b', type: 'button', buttons: [{ caption: '一二三四五六七八九' }], title: true }, { b: 1 }).overflow,
+        false,
+        '单 pill 81 + 16 = 97 ≤ 144 不溢出'
+      )
+
+      // 空 caption 中位：其后仍有按钮 → drawButtonPill -1 哨兵终止 → 内容被丢弃 → 溢出
+      const emptyMid = tooltipOf(
+        { field: 'b', type: 'button', buttons: [{ caption: '甲' }, { caption: '' }, { caption: '乙' }], title: true },
+        { b: 1 }
+      )
+
+      assertEqual(emptyMid.overflow, true, '空 caption 后仍有按钮 → 终止绘制 → 溢出')
+      assertEqual(emptyMid.content, '甲；乙', '全文仍含后续按钮 caption')
+
+      assertEqual(
+        tooltipOf({ field: 'b', type: 'button', buttons: [{ caption: '甲' }, { caption: '' }], title: true }, { b: 1 }).overflow,
+        false,
+        '末位空 caption 不构成溢出（无后续内容被丢弃）'
+      )
+
+      return '截断溢出 / 97px 不溢出 / 空 caption 中位溢出末位不溢出；全文 join 正确'
     }
   }
 ]

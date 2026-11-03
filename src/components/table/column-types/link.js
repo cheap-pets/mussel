@@ -18,7 +18,7 @@ export const LinkColumn = {
     }
 
     const { linkOption = {} } = column
-    const { max, danger: _danger, disabled: _disabled, color: _color } = linkOption
+    const { max, danger: _danger, disabled: _disabled } = linkOption
 
     const getLinks = ensureFn(column.links || valueToLinks)
     const getLinkClass = ensureFn(linkOption.class)
@@ -50,13 +50,12 @@ export const LinkColumn = {
           item.text = link = '...'
           item.title = showTitle && links.slice(idx).map(el => el.caption).join('\n\n')
         } else {
-          const { caption, disabled = _disabled, danger = _danger, color = _color } = link
+          const { caption, disabled = _disabled, danger = _danger } = link
 
           item.text = caption
           item.title = showTitle && caption
 
           if (disabled) item.attrs.disabled = ''
-          if (color) itemClass.push(`mu-link--${color}`)
           if (danger) itemClass.push('mu-link--danger')
         }
 

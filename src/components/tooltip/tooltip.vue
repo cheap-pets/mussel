@@ -1,8 +1,6 @@
 <script>
-  // 无渲染组件：render fn 克隆唯一子节点并链式合并锚点事件
-  // 无模板形态，不用 <script setup>
-
   import { inject, watch, cloneVNode, onBeforeUnmount, onUpdated } from 'vue'
+
   import { warn } from '@/utils/warn'
   import { ANCHOR_EVENTS, SYNC_FIELDS, createTooltipAnchorHandlers } from './tooltip-core'
 

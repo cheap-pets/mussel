@@ -1,16 +1,3 @@
-@each $v in ('strong', 'normal', 'subtle', 'soft', 'muted') {
-  .text-#{$v},
-  .mu-text-#{$v} {
-    color: var(--mu-text-color-#{$v});
-  }
-}
-
-@each $v in ('primary', 'secondary', 'success', 'warning', 'danger') {
-  .text-#{$v}, .mu-text-#{$v} {
-    color: var(--mu-#{$v}-color);
-  }
-}
-
 @each $v in ('left', 'center', 'right') {
   .text-#{$v} {
     text-align: #{$v};
@@ -35,8 +22,6 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--line-clamp, 2);
-
-  white-space: pre-line;
 }
 
 .leading-none {
@@ -46,5 +31,27 @@
 @each $v in ('uppercase', 'lowercase', 'capitalize') {
   .#{$v} {
     text-transform: #{$v};
+  }
+}
+
+@each $v in ('strong', 'normal', 'subtle', 'soft', 'muted') {
+  .text-#{$v},
+  .mu-text-#{$v} {
+    color: var(--mu-text-color-#{$v});
+  }
+}
+
+@each $v in ('primary', 'secondary', 'success', 'warning', 'danger') {
+  .text-#{$v}, .mu-text-#{$v} {
+    color: var(--mu-#{$v}-color);
+  }
+}
+
+@each $v in (
+  "red", "pink", "grape", "violet", "indigo", "blue",
+  "cyan", "teal", "green", "lime", "yellow", "orange"
+) {
+  .text-#{$v}, .mu-text-#{$v} {
+    color: var(--mu-#{$v});
   }
 }

@@ -396,6 +396,40 @@ export function resolveCellClickOpen ({ hit, cellEditable = false } = {}) {
   }
 }
 
+/** 表体有效格命中（表头/行列越界之外，含 beyondCols 的 col=-1） */
+function isBodyCellHit (hit) {
+  return Boolean(hit) && !hit.isHeader && hit.colIndex >= 0 && hit.rowIndex >= 0
+}
+
+/** 格编辑中判定（editingCell 为壳持有的编辑格行列 { row, col }） */
+function isEditingCell (editingCell, hit) {
+  return Boolean(editingCell) &&
+    editingCell.row === hit.rowIndex &&
+    editingCell.col === hit.colIndex
+}
+
+/**
+ * tooltip 触发门控（title 列协议，20261030-table-ex-cell-tooltip）：hoverMode
+ * 'none' / 拖拽中 / 表头 / 行列越界（含 beyondCols 的 col=-1）/ 命中列无 truthy
+ * title / 编辑中格 → null；否则 { row, col }（hit 已经 resolveSpanCell 归一，
+ * 合并区域即锚格）。读取 wiredColumns 副本上的原始 title（prepareColumn 的
+ * {...column} 保留该字段）；真值判定与 resolveCellTooltip 的 falsy 门控同口径。
+ *
+ * @param {Object} params.hit hitTest 产出（hitAt 出口归一后的 hit）
+ * @param {Array} params.columns 已准备内部列（wiredColumns，读取列级 title）
+ * @param {String} [params.hoverMode] hoverMode prop（'none' 时 hover 通道同门控抑制）
+ * @param {Object|null} [params.editingCell] 编辑中格 { row, col }（编辑格不提示）
+ * @param {Boolean} [params.resizing=false] 列宽拖拽中（resizeGuideX 非 null）
+ * @returns {{ row: Number, col: Number } | null}
+ */
+export function resolveTooltipTarget ({ hit, columns, hoverMode, editingCell, resizing = false } = {}) {
+  if (!isBodyCellHit(hit) || hoverMode === 'none' || resizing) return null
+  if (isEditingCell(editingCell, hit)) return null
+  if (!columns?.[hit.colIndex]?.title) return null
+
+  return { row: hit.rowIndex, col: hit.colIndex }
+}
+
 /**
  * 拖拽误触抑制（02-design.md A5「up 后的 click 丢弃」；decisions「[I1 前]⑧」）：
  * 拖拽开始 arm()；click 处理器内 consume() 返回 true 并立即解除（消费即清除，

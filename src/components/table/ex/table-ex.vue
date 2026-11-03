@@ -56,6 +56,10 @@
               v-bind="editor.state.editing.props"
               v-on="editor.state.editing.events" />
           </div>
+          <!-- tooltip 合成锚点（title 列协议）：常驻透明元素，不参与空态/编辑分支；
+               矩形 = 命中格视口矩形（showCellTooltip 命令式写 style，__overlay 原点 =
+               canvas 视口原点），mu-tooltip 全局面板以其为定位锚 -->
+          <div ref="tooltipAnchorEl" class="mu-table-ex__tooltip-anchor" />
         </div>
       </div>
       <div ref="spacerEl" class="mu-table-ex__spacer" :style="spacerStyle" />
@@ -64,11 +68,12 @@
 </template>
 
 <script setup>
-  import { computed, nextTick, onMounted, onUnmounted, shallowRef, watch, ref } from 'vue'
+  import { computed, inject, nextTick, onMounted, onUnmounted, shallowRef, watch, ref } from 'vue'
   import { throttle } from 'throttle-debounce'
 
   import { autoIncrementKeyBuilder } from '@/utils/key-builder'
   import { warn } from '@/utils/warn'
+  import { TOOLTIP_SHOW_DELAY } from '@/components/tooltip/tooltip-core'
 
   import { resolveSelectedKey } from '../utils'
 
@@ -79,7 +84,8 @@
   import { useColumnResize } from './use-column-resize'
   import { buildSpans, regionAt, resolveSpanCell, spanRectOf } from './spans'
   import { computeViewCols, computeViewRows, relayout as computeLayout } from './layout'
-  import { prepareColumn, resolveCellContent } from './cell-painters'
+  import { CELL_PADDING_FALLBACK, ROW_TOP_INSET, TREE_INDENT } from './constants'
+  import { prepareColumn, resolveCellContent, resolveCellTooltip } from './cell-painters'
   import { cellRectAt, createPainter } from './painter'
 
   import {
@@ -91,6 +97,7 @@
     resolveHeaderClick,
     resolveItemClick,
     resolvePointerdown,
+    resolveTooltipTarget,
     resolveTreeToggle
   } from './interactions'
 
@@ -183,6 +190,20 @@
   )
 
   const layout = shallowRef(null)
+
+  // —— 单元格 tooltip 状态（title 列协议，20261030-table-ex-cell-tooltip）——
+  // 必须声明于 useTreeRows() 之前：其 immediate tree watch 在 setup 期同步执行
+  // relayoutAndRedraw → hideCellTooltip（读 tooltipShowTimer/tooltipCell/
+  // tooltipController），晚于此处的 let/const 即触发 TDZ（knowledge
+  // watch-immediate-callback-tdz）。tooltipEnabled/watch 依赖 wiredColumns，
+  // 留在下方 tooltip 编排段 ——
+  const $mussel = inject('$mussel', null)
+  // 控制器缺失（宿主未走完整 install / SSR）→ 优雅降级为无 tooltip（调度短路）
+  const tooltipController = $mussel?.tooltip
+  const tooltipAnchorEl = shallowRef()
+  // 当前去重键 { row, col } | null（格身份比较，与 hover 同式）
+  let tooltipCell = null
+  let tooltipShowTimer = 0
 
   // —— 树接线（A2.4，C1 拆出 use-tree-rows）：childrenIndex/flatRows/displayRows/
   // wiredColumns/缩进回调/toggle + 三条树 watch。
@@ -467,6 +488,9 @@
       重建/升级 → sticky/spacer 尺寸 → 列宽求解 → canvas 物理尺寸 → 可视窗口 → 整幅重绘。
       估高需 contentWidth（列宽），先按首过几何解一次列宽再带几何重算（纯函数，成本可忽略） */
   function relayoutAndRedraw () {
+    // tooltip 收起（状态失效类）：数据/几何变化即旧格提示过期（含 recordsVersion 通道）
+    hideCellTooltip()
+
     const el = scrollEl.value
 
     if (!el || !themeWatcher) return
@@ -562,6 +586,9 @@
     // 滚动即提交（A6，kaka SELECTED_CELL/SCROLL 同语义）
     editor.commit()
 
+    // tooltip 收起（壳统一收起：锚点在 sticky 层内不随内容滚动，面板会停在旧视觉位置）
+    hideCellTooltip()
+
     yScrolled.value = el.scrollTop > 0.5
     yScrolledEnd.value =
       yScrolled.value && el.scrollHeight - el.scrollTop - el.clientHeight < 1
@@ -588,6 +615,163 @@
       })
     }
   })
+
+  // —— 单元格 tooltip（title 列协议，20261030-table-ex-cell-tooltip）：壳级编排 ——
+  // 决策纯函数在 interactions.resolveTooltipTarget / cell-painters.resolveCellTooltip，
+  // 本壳持有显示定时器与合成锚点：pointermove 格身份去重 + TOOLTIP_SHOW_DELAY 延迟调度
+  // （move 内不求值内容）；滚动/拖拽/编辑/relayout/重绘 watch/卸载经 hideCellTooltip
+  // 收起并同步清去重键（不清则回到同格被去重跳过，该格再无 tooltip）。
+  // 状态声明（$mussel/tooltipController/tooltipAnchorEl/tooltipCell/tooltipShowTimer）
+  // 前置于 useTreeRows() 之前——immediate watch 同步经 relayout 触达 hideCellTooltip
+
+  const tooltipEnabled = computed(() => wiredColumns.value.some(col => Boolean(col?.title)))
+
+  // 控制器缺失的降级提示（utils/warn once 去重）
+  watch(tooltipEnabled, enabled => {
+    if (enabled && !tooltipController) {
+      devWarn('列配置了 title，但 $mussel.tooltip 控制器不存在（宿主未安装 mussel 或未走完整 install），单元格 tooltip 功能关闭')
+    }
+  }, { immediate: true })
+
+  function isSameCell (prev, next) {
+    if (prev == null || next == null) return (prev == null) === (next == null)
+
+    return prev.row === next.row && prev.col === next.col
+  }
+
+  function clearTooltipTimer () {
+    clearTimeout(tooltipShowTimer)
+    tooltipShowTimer = 0
+  }
+
+  /** pointermove 尾部调度：格身份（{row, col}）去重，同格内移动零开销；换格才
+      重排定时器。无 title 目标（表头/越界/编辑中/none）→ 延迟收起（300ms 宽限，
+      同 v-mu-tooltip mouseleave 语义）；有目标格 → 清面板挂起的 hide 计时器
+      （先排定的 hide 会先于 show 触发 = 退出动画 + 再入场闪一次），不主动 hide，
+      面板保持可见由下一次 showCellTooltip 写锚点 + updatePosition 重定向 */
+  function scheduleCellTooltip (hit) {
+    if (!tooltipController) return
+
+    const next = resolveTooltipTarget({
+      hit,
+      columns: wiredColumns.value,
+      hoverMode: props.hoverMode,
+      editingCell: editingCellRef,
+      resizing: resizeGuideX.value != null
+    })
+
+    if (isSameCell(next, tooltipCell)) return
+
+    clearTooltipTimer()
+    tooltipCell = next
+
+    if (next == null) {
+      if (tooltipController.isAnchorIn(rootEl.value)) tooltipController.delayHide()
+
+      return
+    }
+
+    tooltipController.clearHideTimer()
+    tooltipShowTimer = setTimeout(() => showCellTooltip(next), TOOLTIP_SHOW_DELAY)
+  }
+
+  /** 树形列内容区缩进（drawTreeAffordance 同式）：level×16 + 16px 箭头槽；非树列/树关 0 */
+  function tooltipTreeInsetOf (col, row) {
+    if (!col._isTreeColumn || !flatRows.value) return 0
+
+    return (flatRows.value.levels?.[row] ?? 0) * TREE_INDENT + TREE_INDENT
+  }
+
+  /** tooltip 求值上下文：layout/主题/测量/折行缓存/列/行记录任一缺失 → null（失效）；
+      params 按 drawCell box 同式预算内容区宽高（格宽 − padding×2 − 树缩进 /
+      格高 − ROW_TOP_INSET），rect = 命中格（合并区域）视口矩形 */
+  function tooltipContextOf (cell) {
+    const cur = layout.value
+    const col = wiredColumns.value[cell.col]
+    const record = displayRows.value?.[cell.row]
+
+    if (!cur || !themeWatcher || !measureFn || !wrapCacheObj || !col || record == null) return null
+
+    const snapshot = themeWatcher.snapshot
+    const padding = snapshot?.cellPadding || CELL_PADDING_FALLBACK
+    const rect = spanRectOf(cur, cell.row, cell.col, spans.value)
+
+    return {
+      col,
+      rect,
+      params: {
+        record,
+        recordNumber: (props.recordsOffset || 0) + cell.row + 1,
+        contentWidth: rect.width - padding * 2 - tooltipTreeInsetOf(col, cell.row),
+        contentHeight: rect.height - ROW_TOP_INSET,
+        regionHeight: regionAt(spans.value, cell.row, cell.col) ? rect.height : null,
+        theme: snapshot,
+        measure: measureFn,
+        wrapCache: wrapCacheObj
+      }
+    }
+  }
+
+  /** 命令式写锚点矩形（不经 Vue patch，规避 show 时序耦合） */
+  function placeTooltipAnchor (rect) {
+    const style = tooltipAnchorEl.value.style
+
+    style.left = `${rect.x}px`
+    style.top = `${rect.y}px`
+    style.width = `${rect.width}px`
+    style.height = `${rect.height}px`
+  }
+
+  /** TOOLTIP_SHOW_DELAY 到期：resolveCellTooltip 解析内容与溢出态（复用绘制同源测量
+      缓存），命令式定位锚点到命中格视口矩形，show + 显式 updatePosition——
+      锚点元素单例复用，state.anchor 引用不变，面板字段 watch 不触发，不显式
+      重定位则面板停在上一格；首次 show 面板未 ready 时空转，由面板内部
+      runPopupSequence 的 updatePosition 完成定位 */
+  function showCellTooltip (cell) {
+    if (!tooltipController || !tooltipAnchorEl.value) return
+    // 过期守卫：定时器触发时去重键已变化（换格/收起）则放弃本次显示
+    if (!isSameCell(tooltipCell, cell)) return
+
+    const context = tooltipContextOf(cell)
+
+    if (!context) {
+      hideTooltip()
+
+      return
+    }
+
+    const tip = resolveCellTooltip(context.col, context.params)
+
+    // 无可显示内容（无 title / 无文本源 / 未溢出 / 空串）：收起上一格残留。
+    // 只用 hideTooltip 不清 tooltipCell——保留去重键，否则同格内每次 pointermove
+    // 都会重排 300ms 定时器并重复求值（本格确无提示）
+    if (!tip || tip.content === '' || (tip.overflowOnly && !tip.overflow)) {
+      hideTooltip()
+
+      return
+    }
+
+    placeTooltipAnchor(context.rect)
+    tooltipController.show(tooltipAnchorEl.value, {
+      content: tip.content,
+      placement: 'top',
+      trigger: 'hover'
+    })
+    tooltipController.updatePosition()
+  }
+
+  /** 仅收面板，不动去重键；isAnchorIn 守卫不误杀他组件的 tooltip */
+  function hideTooltip () {
+    if (tooltipController?.isAnchorIn(rootEl.value)) tooltipController.hide()
+  }
+
+  /** 状态失效类收起点（滚动/拖拽/编辑/relayout/重绘 watch/卸载）：收面板 +
+      清去重键 + 清显示定时器 */
+  function hideCellTooltip () {
+    clearTooltipTimer()
+    tooltipCell = null
+    hideTooltip()
+  }
 
   // —— 指针交互（A5；决策函数来自 interactions.js，本壳执行 emit 与状态更新；
   //     clickGuard/startResize 来自 use-column-resize） ——
@@ -759,12 +943,21 @@
 
     // 光标覆盖（问题 5/7）：resolveCursor 结果先落位，条目 / 编辑按钮区再覆盖
     applyItemCursor(result.hit)
+
+    // tooltip 调度（title 列协议）：格身份去重 + TOOLTIP_SHOW_DELAY 延迟，move 内不求值内容
+    if (tooltipEnabled.value) scheduleCellTooltip(result.hit)
   }
 
   function onPointerLeave () {
     cursor.value = 'default'
     updateHoverItem(null)
     updateHover(null)
+
+    // tooltip：清调度与去重键；面板仍归属本组件锚点时延迟收起（isAnchorIn
+    // 守卫，不误杀他组件 tooltip）
+    clearTooltipTimer()
+    tooltipCell = null
+    if (tooltipController?.isAnchorIn(rootEl.value)) tooltipController.delayHide()
   }
 
   /** 编辑按钮命中判定（20261027 问题 5）：列配 editorButton.icon 且指针落在
@@ -817,7 +1010,12 @@
     // editing 中画布 pointerdown 先同步提交再续行命中（A6 画布侧隔离：
     // 点击其他单元格一步完成「提交 + 选中新行」）
     if (decision.commitEditing) editor.commit()
-    if (decision.startResize) startResize(event, result.hit)
+
+    // 拖拽收起 tooltip（状态失效类：手柄拖宽即列几何失效，去重键同步清空）
+    if (decision.startResize) {
+      hideCellTooltip()
+      startResize(event, result.hit)
+    }
   }
 
   function runEvents (events) {
@@ -1042,6 +1240,9 @@
       合并区域（§5.5）：cellRect 经 spanRectOf 取区域矩形（浮层覆盖整个合并区域），
       rowFrom/colTo 供格线内缩按区域外缘判定 */
   function openEditorAt (hit, record, col) {
+    // 编辑浮层打开即收起 tooltip（互不干扰：veil 遮蔽编辑格内容，提示无意义）
+    hideCellTooltip()
+
     const cur = layout.value
 
     if (!cur) return
@@ -1347,7 +1548,11 @@
       props.recordsOffset,
       props.placeholder
     ],
-    () => redraw()
+    () => {
+      // hoverMode 切换等重绘路径同步收起 tooltip（去重键同步清空）
+      hideCellTooltip()
+      redraw()
+    }
   )
 
   // headerChecked 受控变化 → 表头区整幅（受控 ✓ 状态变化即重绘）
@@ -1401,6 +1606,7 @@
   })
 
   onUnmounted(() => {
+    hideCellTooltip()
     editor.destroy()
     themeWatcher?.destroy()
     painter?.dispose()

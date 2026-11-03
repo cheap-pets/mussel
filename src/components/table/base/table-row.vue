@@ -57,20 +57,13 @@
         const value =
           col._value(record) ?? (col.field ? record[col.field] : undefined)
 
-        // 显示映射命中 / default / 原值回退非 null 即终结（与 table-ex resolveCellContent 同语义）
-        const mapped = col._mapText?.(value)
+        const { class: rClass, style: rStyle, ...params } =
+          col._render({ record, recordNumber, value, emit }) || {}
 
-        if (mapped != null) {
-          cell.text = mapped
-        } else {
-          const { class: rClass, rStyle, ...params } =
-            col._render({ record, recordNumber, value, emit }) || {}
+        cell.class.push(rClass)
+        cell.style.push(rStyle)
 
-          cell.class.push(rClass)
-          cell.style.push(rStyle)
-
-          Object.assign(cell, params)
-        }
+        Object.assign(cell, params)
       } else {
         cell.text = text
       }

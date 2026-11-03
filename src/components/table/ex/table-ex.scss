@@ -9,8 +9,12 @@
 
   position: relative;
 
+  overflow: clip;
+
   width: 100%;
+  min-width: 0;
   height: 100%;
+  min-height: 0;
   border: 1px solid var(--mu-border-color-normal);
   border-radius: 1px;
 
@@ -161,4 +165,20 @@
 .mu-table-ex__editor--borderless > .mu-input {
   border-color: transparent;
   background: none;
+}
+
+// tooltip 合成锚点（title 列协议，20261030-table-ex-cell-tooltip）：常驻透明元素，
+// 不拦截指针（指针监听在 __sticky，overlay 整层本就 pointer-events: none，双保险）；
+// 矩形由壳 showCellTooltip 命令式写 style = 命中格视口矩形（__overlay 原点 =
+// canvas 视口原点，无需坐标换算），mu-tooltip 全局面板定位读取其 rect；
+// 本元素自身零视觉，不新增颜色/间距/z-index（浮层视觉全由 .mu-tooltip-panel 承担）
+.mu-table-ex__tooltip-anchor {
+  pointer-events: none;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 0;
+  height: 0;
 }

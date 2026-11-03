@@ -54,12 +54,7 @@ export const TagColumn = {
           item.text = caption
           item.title = showTitle && caption
 
-          if (color) {
-            // 着色与 table-ex 画布取色共用（tag.scss .mu-tag--{color}）；
-            // colorClassOf 取首个 mu-tag--* 匹配，色类须先于 pill/flat 落 class
-            itemClass.push(`mu-tag--${color}`)
-          }
-
+          if (color) itemClass.push(`text-${color}`, `bg-${color}-translucent`)
           if (pill) itemClass.push('mu-tag--pill')
           if (flat) itemClass.push('mu-tag--flat')
         }

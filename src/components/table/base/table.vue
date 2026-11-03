@@ -61,7 +61,6 @@
 
   import { resolveSelectedKey } from '../utils'
   import { resolveColumnType } from '../column-types'
-  import { isMappableColumnType, createDisplayMapper } from '../mappings'
 
   import TableRow from './table-row.vue'
 
@@ -178,11 +177,7 @@
 
       col._colStyle = { width, minWidth: el.minWidth, maxWidth: el.maxWidth }
       col._ctrlClass = [getCellAlignClass(align)]
-      col._render = type.compile ? type.compile(el) : (type.render || type)
-
-      // 显示映射（mappings 优先，仅 options 时由其转换；column.text 显示优先不参与
-      // 映射——与 table-ex prepareColumn 同语义、table/mappings.js 单一事实源）
-      col._mapText = !el.text && isMappableColumnType(el.type) ? createDisplayMapper(el) : null
+      col._render = type.compile ? type.compile(el, true) : (type.render || type)
 
       if (left != null) {
         const widthPx = getPixelNumber(width)

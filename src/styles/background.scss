@@ -17,3 +17,16 @@
     background-color: var(--mu-#{$v}-translucent);
   }
 }
+
+@each $v in (
+  "red", "pink", "grape", "violet", "indigo", "blue",
+  "cyan", "teal", "green", "lime", "yellow", "orange"
+) {
+  .bg-#{$v}, .mu-bg-#{$v} {
+    background-color: var(--mu-#{$v}-color);
+  }
+
+  .bg-#{$v}-translucent, .mu-bg-#{$v}-translucent {
+    background-color: var(--mu-#{$v}-translucent);
+  }
+}

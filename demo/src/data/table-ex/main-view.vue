@@ -406,7 +406,9 @@
         disabled: record => record.id % 10 === 0
       },
       { caption: '#', type: 'rec_no', width: '56px' },
-      { caption: '名称', field: 'name', sortable: true, minWidth: 80 },
+      // tooltip 夹具（20261030）：title:true 溢出才显示——160px 列宽下「记录 000001」
+      // 不截断 → 不显示用例；DOM 版参照表同名列原生 title 无条件设置（对照时勿比可见性）
+      { caption: '名称', field: 'name', sortable: true, minWidth: 80, title: true },
       {
         caption: '状态',
         field: 'status',
@@ -415,7 +417,9 @@
         sortable: true,
         mappings: STATUS_MAPPINGS,
         editable: true,
-        editor: true
+        editor: true,
+        // tooltip 夹具（20261030）：函数 title 恒显示（ex 侧与 DOM 版原生 title 文案对照）
+        title: record => `状态码：${record.status}`
       },
       {
         caption: '数量',
@@ -587,9 +591,11 @@
 
   const multilineColumns = [
     { caption: '名称', field: 'name', width: 130 },
-    { caption: 'maxLines=3', field: 'long3', maxLines: 3, width: 220, editable: true, editor: true },
+    // tooltip 夹具（20261030）：LONG_TEXT 必 clamped → 溢出显示全文用例
+    { caption: 'maxLines=3', field: 'long3', maxLines: 3, width: 220, editable: true, editor: true, title: true },
     { caption: 'maxLines=10', field: 'long10', maxLines: 10, width: 220 },
-    { caption: '字符串数组 maxItems=3', field: 'strings', maxItems: 3, width: 140 },
+    // tooltip 夹具（20261030）：第 3 行 12 元素 > maxItems 3 → 数组溢出用例
+    { caption: '字符串数组 maxItems=3', field: 'strings', maxItems: 3, width: 140, title: true },
     { caption: '数字数组', field: 'nums', width: 110 },
     {
       caption: 'multiline+lineClamp(函数)',
@@ -652,8 +658,9 @@
 
   const itemColumns = [
     { caption: '名称', field: 'name', width: 120 },
-    // link 恢复不可编辑（问题 4，decisions [S1]）：摘除原 editable/editor 配置
-    { caption: '链接（三态）', field: 'links', type: 'link', width: 170 },
+    // link 恢复不可编辑（问题 4，decisions [S1]）：摘除原 editable/editor 配置；
+    // tooltip 夹具（20261030）：第 4 行 12 条 > maxItems 10 → dots 溢出用例
+    { caption: '链接（三态）', field: 'links', type: 'link', width: 170, title: true },
     { caption: '标签（彩色）', field: 'tags', type: 'tag', width: 210 },
     {
       caption: '进度',

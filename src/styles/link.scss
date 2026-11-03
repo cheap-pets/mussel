@@ -32,20 +32,6 @@
   }
 }
 
-// 12 彩色无数字变体（仅色值 + translucent），hover 同色（下划线由 .mu-link:hover 提供）
-@each $v in (
-  "red", "pink", "grape", "violet", "indigo", "blue",
-  "cyan", "teal", "green", "lime", "yellow", "orange"
-) {
-  .mu-link--#{$v} {
-    color: var(--mu-#{$v});
-
-    &:hover {
-      color: var(--mu-#{$v});
-    }
-  }
-}
-
 .mu-link[disabled] {
   pointer-events: none;
   color: var(--mu-text-color-muted);

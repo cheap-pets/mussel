@@ -13,6 +13,9 @@
  * resolveCursor 三参 context（树槽 pointer / 叶行 default / 可编辑格 text /
  * context 缺省回归）、拖拽误触抑制（pointerup 后延时清除）、
  * editing 中 pointerdown 先提交再续命中、光标决策与 rAF 合帧。
+ *
+ * resolveTooltipTarget（title 列协议门控，20261030-table-ex-cell-tooltip）：
+ * none/拖拽/表头/行列越界/无 title 列/编辑中格 → null，正常格 → { row, col }。
  */
 import {
   RESIZE_MIN_WIDTH,
@@ -24,6 +27,7 @@ import {
   resolveCellClick,
   resolveItemClick,
   resolveCellClickOpen,
+  resolveTooltipTarget,
   resolveResizeWidth,
   resolvePointerdown,
   resolveTreeToggle,
@@ -769,6 +773,46 @@ export const checks = [
       assertEqual(typeof fallback.schedule, 'function', '缺省 raf 可创建')
 
       return '同帧合并 / 帧边界重置 / cancel 屏蔽 / 缺省 raf 容错'
+    }
+  },
+  {
+    name: 'resolveTooltipTarget：门控（none/拖拽/表头/越界/编辑格/无 title 列 → null；正常格 → {row,col}）',
+    fn: () => {
+      const columns = [{}, { title: true }, { title: '提示' }, { title: false }]
+      const bodyHit = { isHeader: false, colIndex: 1, rowIndex: 3 }
+      const base = { hit: bodyHit, columns, hoverMode: 'row', editingCell: null, resizing: false }
+      const target = resolveTooltipTarget(base)
+
+      assertArray([target.row, target.col], [3, 1], '正常 title 列返回格坐标')
+      assertEqual(resolveTooltipTarget({ ...base, hit: { isHeader: true, colIndex: 1, rowIndex: -1 } }), null, '表头不触发')
+      assertEqual(resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: -1, rowIndex: 3 } }), null, '列越界（含 beyondCols col=-1）不触发')
+      assertEqual(resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 1, rowIndex: -1 } }), null, '行越界不触发')
+      assertEqual(resolveTooltipTarget({ ...base, hoverMode: 'none' }), null, 'hoverMode none 不触发（与 hover 通道同门控）')
+      assertEqual(resolveTooltipTarget({ ...base, resizing: true }), null, '列宽拖拽中不触发')
+      assertEqual(resolveTooltipTarget({ ...base, editingCell: { row: 3, col: 1 } }), null, '编辑中格不触发')
+      assertArray(
+        (() => {
+          const t = resolveTooltipTarget({ ...base, editingCell: { row: 0, col: 0 } })
+
+          return [t.row, t.col]
+        })(),
+        [3, 1],
+        '编辑其他格不抑制本格'
+      )
+      assertEqual(resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 0, rowIndex: 3 } }), null, '无 title 列不触发')
+      assertEqual(resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 3, rowIndex: 3 } }), null, 'title:false 列不触发（falsy 同口径）')
+      assertArray(
+        (() => {
+          const t = resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 2, rowIndex: 0 } })
+
+          return [t.row, t.col]
+        })(),
+        [0, 2],
+        'String title 列正常触发'
+      )
+      assertEqual(resolveTooltipTarget({ ...base, hit: null }), null, 'hit 缺失安全')
+
+      return '正常格 {row,col}；表头/越界/none/拖拽/编辑格/无 title/false 列均 null'
     }
   }
 ]

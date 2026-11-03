@@ -5,8 +5,9 @@ import { HIDE_DELAY } from '@/components/common/popup'
 
 import TooltipPanel from './tooltip-panel.vue'
 
-// 防扫过误触的显示延迟（隐藏延迟与 dropdown 共用 common/popup 的 HIDE_DELAY）
-const SHOW_DELAY = 300
+// 防扫过误触的显示延迟（隐藏延迟与 dropdown 共用 common/popup 的 HIDE_DELAY）；
+// table-ex 单元格 tooltip（title 列协议）复用同一延迟值（单一事实源，防漂移）
+export const TOOLTIP_SHOW_DELAY = 300
 
 // 锚点事件清单：指令形态 addEventListener 与组件形态 vnode props（onMouseenter…）共用
 export const ANCHOR_EVENTS = ['mouseenter', 'mouseleave', 'focusin', 'focusout', 'click']
@@ -169,7 +170,7 @@ export function createTooltipAnchorHandlers (controller, getAnchor, getOptions) 
 
   function delayedShow () {
     clearShowTimer()
-    showTimer = setTimeout(showNow, SHOW_DELAY)
+    showTimer = setTimeout(showNow, TOOLTIP_SHOW_DELAY)
   }
 
   return {

@@ -19,7 +19,7 @@
   })
 
   const extraClass = computed(() => [
-    props.color && `mu-tag--${props.color}`,
+    ...(props.color ? [`text-${props.color}`, `bg-${props.color}-translucent`] : []),
     props.flat && 'mu-tag--flat',
     props.pill && 'mu-tag--pill'
   ])

@@ -21,7 +21,8 @@ import {
 //   另挂 _maxLines/_maxItems/_resolveMaxLines/_isTreeColumn/_mapText/_plainText
 
 // - 取值：_text(record) 非 null 直接作为显示文本；否则 value = _value(record) ?? record[field]，
-//   映射列经 _mapText 求显示文本，其余调 _render；class/style/title 为 DOM 通道字段忽略
+//   映射列经 _mapText 求显示文本，其余调 _render；class/style 为 DOM 通道字段忽略
+//   （column.title 经 _title 由 resolveCellTooltip 消费，tooltip 求值见模块尾）
 
 // 绘制锚（Q2 统一垂直锚，与 lineHeight 解耦）：centerY = Math.round(rect.y +
 // ROW_TOP_INSET + (rowHeight − ROW_TOP_INSET)/2 + 0.01)（行线间空白中点四舍五入，
@@ -169,6 +170,9 @@ export function prepareColumn (column, { placeholder } = {}) {
   col._align = align ?? 'left'
   col._text = ensureFn(column.text)
   col._value = ensureFn(column.value)
+  // title 列协议（tooltip 求值闭包，base/table.vue internalColumns 的 _title 同款；
+  // 原始字段经 {...column} 保留，resolveTooltipTarget 按其真值做门控）
+  col._title = ensureFn(column.title)
 
   // 多行/条目上限（clampLimit 钳制 1–10，非法值回退）
   col._maxLines = column.maxLines != null ? clampLimit(column.maxLines, null) : null
@@ -1282,4 +1286,234 @@ function drawCellImage (
   ctx.drawImage(entry.image, x, centerY - height / 2, width, height)
 
   return width
+}
+
+// —— 单元格 tooltip 求值（title 列协议，02-design.md 20261030-table-ex-cell-tooltip） ——
+//
+// 触发期惰性求值（绘制热路径零改动）：组件壳在 TOOLTIP_SHOW_DELAY 定时器内调用
+// resolveCellTooltip，复用与绘制同一套原语（resolveCellContent / wrapLines /
+// capMaxLinesOf / 测量与 wrapCache），溢出判定与绘制行为逐项等价（矩阵口径见
+// 02-design.md 接口节，不引入第二套测量式）；img 条目只读缓存条目（getImageEntry），
+// 判定期不调用 requestImage、不发起加载。
+
+const TOOLTIP_NOOP = () => {}
+
+/** tooltip 全文串：逐项 String 化、过滤空串后 '；' 连接（文本路径直接 String 化） */
+function joinTooltipText (parts) {
+  return parts.map(part => String(part ?? '')).filter(part => part !== '').join('；')
+}
+
+/** 条目宽（tooltip 只读口径，与 measureItem 同式）：check 计 CHECK_SIZE、tag 计
+    pill 内边距、img 仅已加载计宽（未加载/失败/无 src 为 null，不计宽不计间隙）、
+    未知条目为 null 不占位；每项 min(宽, contentWidth) */
+function tooltipItemWidthOf (item, { contentWidth, contentHeight, padding, theme, measure }) {
+  const kind = resolveItemKind(item)
+
+  if (kind === 'check') return CHECK_SIZE
+
+  if (kind === 'img') {
+    const entry = getImageEntry(item.attrs?.src)
+
+    return entry && entry.status === 'loaded'
+      ? imageLayoutSize(entry.image, contentHeight - padding, contentWidth).width
+      : null
+  }
+
+  if (kind == null) return null
+
+  const text = String(item.text ?? '')
+  const width =
+    measure(text, kind === 'tag' ? tagFontOf(theme) : cellFontOf(theme)) +
+    (kind === 'tag' ? TAG_PADDING_X * 2 : 0)
+
+  return Math.min(width, contentWidth)
+}
+
+/** 横排条目溢出（drawItems 丢弃/截断行为等价式）：Σ 可见条目宽 +
+    (可见条目数 − 1) × padding > 内容宽 */
+function horizontalItemsOverflowOf (items, params) {
+  const widths = items
+    .map(item => tooltipItemWidthOf(item, params))
+    .filter(width => width != null)
+  const total =
+    widths.reduce((sum, width) => sum + width, 0) +
+    (widths.length > 1 ? (widths.length - 1) * params.padding : 0)
+
+  return total > params.contentWidth
+}
+
+/** button 组溢出（drawButton 逐 pill 累加等价式）：x 越右缘 break / 空 caption 哨兵
+    终止（其后仍有按钮 = 内容被丢弃）/ pill 文本区放不下整体不绘制 / pill 截断均计溢出 */
+function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure }) {
+  const font = tagFontOf(theme)
+  let consumed = 0
+
+  for (let i = 0; i < buttons.length; i++) {
+    const caption = String(buttons[i]?.caption ?? '')
+
+    if (consumed >= contentWidth) return true
+
+    // ellipsize 空文本 → -1 哨兵（drawButtonPill 同式）：该按钮不绘制且终止后续
+    if (caption === '') return i < buttons.length - 1
+
+    const remaining = contentWidth - consumed
+
+    // pill 文本区放不下（maxWidth ≤ 0 → ellipsize 空文本 → -1 → break）：该按钮整体不绘制
+    if (remaining - TAG_PADDING_X * 2 <= 0) return true
+
+    // pill 宽 = min(全宽, 右缘剩余)：全宽超剩余即截断（caption 部分丢失）→ 溢出
+    const width = measure(caption, font) + TAG_PADDING_X * 2
+
+    if (width > remaining) return true
+
+    consumed += width + padding
+  }
+
+  return false
+}
+
+/** 文本路径全文与溢出判定（drawTextValue/drawArrayLines 同式）：数组值 = 逐元素
+    一行（超 maxItems dots / 任一元素超宽）；字符串按 maxLines 分多行 wrapLines
+    clamped / 单行 measure 对比（contentWidth ≤ 0 按溢出返回，绘制层不画的格子允许提示） */
+function resolveTooltipText (col, record, source, {
+  contentWidth, regionHeight, padding, theme, measure, wrapCache
+}) {
+  if (source == null) return null
+
+  if (Array.isArray(source)) {
+    const text = joinTooltipText(source)
+
+    if (text === '') return null
+
+    return {
+      content: text,
+      overflowOnly: true,
+      overflow:
+        source.length > col._maxItems ||
+        source.some(element => measure(String(element ?? ''), cellFontOf(theme)) > contentWidth)
+    }
+  }
+
+  const text = String(source)
+
+  if (text === '') return null
+
+  const maxLines = capMaxLinesOf(col, record, regionHeight, padding, theme)
+  const overflow = maxLines > 1
+    ? wrapLines({
+      text,
+      font: cellFontOf(theme),
+      maxWidth: contentWidth,
+      measure,
+      cache: wrapCache,
+      maxLines
+    }).clamped
+    : measure(text, cellFontOf(theme)) > contentWidth
+
+  return { content: text, overflowOnly: true, overflow }
+}
+
+/** true 形态 canvasKind button：全文 = caption join，溢出 = buttonsOverflowOf 逐 pill 累加式 */
+function resolveTooltipButtons (buttons, params) {
+  const list = Array.isArray(buttons) ? buttons : []
+  const text = joinTooltipText(list.map(button => button?.caption))
+
+  if (text === '') return null
+
+  return {
+    content: text,
+    overflowOnly: true,
+    overflow: buttonsOverflowOf(list, params)
+  }
+}
+
+/** true 形态条目路径（drawContentItems 同分支序）：单条 line-clamp 改道文本 →
+    link 列竖排 → 条目横排 */
+function resolveTooltipItems (col, record, items, params) {
+  const only = items[0]
+
+  // 单 item + line-clamp 形态改道 drawText 多行 → 按文本求值
+  if (items.length === 1 && itemClassOf(only).includes('line-clamp') && only.text != null) {
+    return resolveTooltipText(col, record, only.text, params)
+  }
+
+  const text = joinTooltipText(items.map(item => item?.text))
+
+  if (text === '') return null
+
+  if (col.type === 'link') {
+    return {
+      content: text,
+      overflowOnly: true,
+      overflow:
+        items.length > col._maxItems ||
+        items.some(item => params.measure(String(item?.text ?? ''), cellFontOf(params.theme)) > params.contentWidth)
+    }
+  }
+
+  return {
+    content: text,
+    overflowOnly: true,
+    overflow: horizontalItemsOverflowOf(items, params)
+  }
+}
+
+/** String | Function title：hover 即显示该文本（空串不显示，恒不判溢出） */
+function resolveTooltipCustomTitle (col, record) {
+  const text = String(col._title(record) ?? '')
+
+  return text === '' ? null : { content: text, overflowOnly: false }
+}
+
+/**
+ * 单元格 tooltip 求值（title 列协议）。内部先 resolveCellContent（只读，emit 传 noop）。
+ * @param {Object} col prepareColumn 产物（读 col.title / col._title / col._maxItems /
+ *   col._maxLines / col._resolveMaxLines / col.type）
+ * @param {Object} params
+ * @param {*} params.record 命中行记录（合并区域 = 锚行记录，hit 已归一）
+ * @param {Number} params.recordNumber 含 recordsOffset 的显示行号
+ * @param {Number} params.contentWidth 内容区宽（格宽 − padding×2 − 树列缩进，壳预算）
+ * @param {Number} params.contentHeight 内容区高（格矩形高 − ROW_TOP_INSET，drawCell box 同式；
+ *   仅 img 条目宽 imageLayoutSize 消费）
+ * @param {Number|null} [params.regionHeight] 合并区域矩形高（钳制 maxLines，与绘制同式）
+ * @param {Object} params.theme 主题快照（themeWatcher.snapshot）
+ * @param {Function} params.measure 测量回调（measureFn，走缓存）
+ * @param {Object} params.wrapCache 折行缓存
+ * @returns {{ content: String, overflowOnly: Boolean, overflow: Boolean } | null}
+ *   无 title 配置 / progress・check・img / 全文为空 → null
+ */
+export function resolveCellTooltip (
+  col,
+  { record, recordNumber, contentWidth, contentHeight, regionHeight, theme, measure, wrapCache }
+) {
+  const raw = col.title
+
+  // falsy（false/''/0/null/undefined）不生效（对齐 DOM 版 title 只对 truthy 生效，
+  // 不得被 String(false) 成 'false'）
+  if (!raw) return null
+
+  // String | Function：hover 即显示该文本（空串不显示）
+  if (raw !== true) return resolveTooltipCustomTitle(col, record)
+
+  // true = 溢出才显示单元格全文：无可提示文本源的类型直接排除
+  if (col.type === 'check') return null
+
+  const content = resolveCellContent(col, { record, recordNumber, emit: TOOLTIP_NOOP })
+
+  // 进度条无文本源（button 另行归一）
+  if (content.canvasKind === 'progress') return null
+
+  const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
+  const overflowParams = { contentWidth, contentHeight, padding, theme, measure }
+
+  if (content.canvasKind === 'button') {
+    return resolveTooltipButtons(content.buttons, overflowParams)
+  }
+
+  if (Array.isArray(content.items) && content.items.length) {
+    return resolveTooltipItems(col, record, content.items, { ...overflowParams, regionHeight, wrapCache })
+  }
+
+  // 文本路径（content.text 数组 → drawArrayLines 口径；null/undefined 无文本源 → null）
+  return resolveTooltipText(col, record, content.text, { ...overflowParams, regionHeight, wrapCache })
 }

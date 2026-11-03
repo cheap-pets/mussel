@@ -1,7 +1,7 @@
 export const NumberColumn = {
   align: 'right',
   compile (column) {
-    const { locale = 'zh-CN' } = column
+    const { locales = 'zh-CN' } = column
 
     const formatOption = {
       style: 'decimal',
@@ -11,7 +11,7 @@ export const NumberColumn = {
       ...column.formatOption
     }
 
-    const formatter = new Intl.NumberFormat(locale, formatOption)
+    const formatter = new Intl.NumberFormat(locales, formatOption)
 
     return ({ value }) => ({ text: formatter.format(value) })
   }

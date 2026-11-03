@@ -19,10 +19,10 @@
   import './tooltip-panel.scss'
 
   import { ref, shallowRef, computed, watch } from 'vue'
-  import { usePopupManager, usePopupRunner } from '@/components/common/popup'
-  import { isFunction } from '@/utils/type'
 
+  import { isFunction } from '@/utils/type'
   import { isElementInViewport } from '@/utils/dom'
+  import { usePopupManager, usePopupRunner } from '@/components/common/popup'
 
   defineOptions({ name: 'MusselTooltipPanel' })
 
