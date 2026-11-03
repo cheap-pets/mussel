@@ -3,15 +3,15 @@
  *
  * 覆盖（02-design.md G2 判据 + 既有取值链回归）：
  * 取值链 text→value→field（含 value 传字符串）、rec_no 的 recordNumber、check disabled
- * （底衬 bgStrong 回退链）、mappings/options 显示映射（mappings 优先、仅 options
- * 转换、未命中原值回退、number 列命中终结）、number/currency/date 格式化、
+ * （底衬 bgStrong 回退链）、mappings/options 显示映射（mappings 特性 text 独有，
+ * 20261103：mappings 优先、仅 options 转换、未命中原值回退）、number/currency/date
+ * 格式化与 color 双通道（canvas 平铺色名直取 / dom text-{c} class）、
  * 自定义类型 render、link/tag/items 落地；canvas 类型分发（progress/button 产 canvasKind，03-review-5
  * 问题 6）；多行文本（maxLines 常量与函数形态 lineClamp 行级求值——评审 6 P6、
- * 数组值 maxItems dots '...'、line-clamp item 改道）；link 列竖排 + 对象数组颜色
- * （mu-link--{color} class → theme.colors 取色，评审 6 P1）+ LinkColumn compile
- * 产物断言（DOM 版回归，评审 6 P1）+ TagColumn compile 产物断言（对象数组
- * color/pill/flat 落 class，DOM 版回归，S1 续做）；tag 17 色、button/disabled、
- * 树形列缩进箭头。
+ * 数组值 maxItems dots '...'、line-clamp item 改道）；link 列竖排（恒两色
+ * primary/danger，平铺 danger/disabled 直取）+ LinkColumn/TagColumn 双通道
+ * compile 产物断言（canvas 平铺 kind 条目 / dom DOM 形态条目）；tag 17 色、
+ * button/disabled、树形列缩进箭头。
  *
  * 问题 1/5/7（G2-3，A1/A5/A7）：槽位锚断言组（首行 y = Math.round(ROW_TOP_INSET +
  * (rowHeight − ROW_TOP_INSET)/2) 不随行高变、水平 center 扣 rightInset、超高行跨列首行同高——
@@ -42,6 +42,8 @@ import {
 import { createWrapCache } from '../../../../../src/components/table/ex/text-wrap.js'
 import { LinkColumn } from '../../../../../src/components/table/column-types/link.js'
 import { TagColumn } from '../../../../../src/components/table/column-types/tag.js'
+import { BoolColumn } from '../../../../../src/components/table/column-types/bool.js'
+import { NumberColumn } from '../../../../../src/components/table/column-types/number.js'
 import { t } from '../../../../../src/langs/index.js'
 
 // 主题夹具：字段名对齐 theme.js readSnapshot（值用固定 rgba 串，与探针无关）；
@@ -410,7 +412,7 @@ export const checks = [
     }
   },
   {
-    name: 'mappings/options 优先级：mappings 优先、仅 options 转换、未命中原值回退',
+    name: 'mappings/options 优先级：mappings 优先、仅 options 转换、未命中原值回退（text 独有）',
     fn: () => {
       // mappings 与 options 同时定义时显示映射只取 mappings
       const both = prepareColumn({
@@ -433,72 +435,23 @@ export const checks = [
       assert(content(onlyOptions, { v: 'x' }).text === 'x', '纯字符串项缺省 label 取 value')
       assert(content(onlyOptions, { v: 5 }).text === 5, '未命中回退原值（number 原样，绘制经 String 化）')
 
-      // number 列映射：命中终结不走 Intl；未命中回退原值（不再格式化）
-      const numberCol = prepareColumn({ field: 'v', type: 'number', mappings: { 2: '中' } })
-
-      assert(content(numberCol, { v: 2 }).text === '中', 'number 列映射命中')
-      assert(content(numberCol, { v: 1234.5 }).text === 1234.5, 'number 未命中回退原值（不走 Intl）')
+      // number 列不再支持映射（mappings 特性 text 独有，20261103）：options/mappings
+      // 不参与显示，文本保持 Intl 格式化
+      assert(
+        content(prepareColumn({ field: 'v', type: 'number', mappings: { 2: '中' } }), { v: 2 }).text === '2',
+        'number+mappings 不再映射（2 → Intl 文本）'
+      )
       assert(
         content(prepareColumn({ field: 'v', type: 'number' }), { v: 1234.5 }).text === '1,234.5',
-        '无映射 number 列保持 Intl 格式化（minimumFractionDigits: 0）'
+        'number 保持 Intl 格式化（minimumFractionDigits: 0）'
       )
 
-      return 'mappings 优先 / options 转换 / 原值回退 / number 命中终结'
+      return 'mappings 优先 / options 转换 / 原值回退；number 不再映射'
     }
   },
   {
-    name: 'enum 废弃兼容：经 EnumColumn render 渲染，缺 mappings 不抛、命中/default/原值回退',
+    name: 'bool：缺省 locale 文案、mappings 不再生效、color 双通道（字符串/函数色名）',
     fn: () => {
-      const col = prepareColumn({
-        field: 's',
-        type: 'enum',
-        mappings: { a: { text: '甲' }, b: '乙', default: '未知' }
-      })
-
-      assert(col._mapText === null, 'enum 不走 mappable 短路（_mapText null，经 EnumColumn render）')
-      assert(content(col, { s: 'a' }).text === '甲', '对象映射取 text')
-      assert(content(col, { s: 'b' }).text === '乙', '字符串映射直接显示')
-      assert(content(col, { s: 'zz' }).text === '未知', '未命中落 default（与 mappings 语义统一）')
-      assert(content(col, { s: null }).text === '未知', '空值落 default（enum 兼容语义，保留移除前行为）')
-
-      // 缺 mappings：原值回退，不再抛 Cannot convert undefined or null to object
-      const bare = prepareColumn({ field: 's', type: 'enum' })
-
-      assert(content(bare, { s: 'x' }).text === 'x', '缺 mappings 未命中原值显示')
-      assert(content(bare, { s: null }).text == null, '缺 mappings 空值落占位链')
-
-      return '命中/default/原值回退；缺 mappings 不抛（align 保持 center）'
-    }
-  },
-  {
-    name: 'bool 统一 mappable：mappings/options 显示映射（String 精确键）、无映射缺省 locale 文案',
-    fn: () => {
-      const mapped = prepareColumn({
-        field: 'b',
-        type: 'bool',
-        mappings: { true: '启用', false: '停用', default: '未知' }
-      })
-
-      assert(typeof mapped._mapText === 'function', 'bool + mappings 挂 _mapText（统一 mappable）')
-      assert(content(mapped, { b: true }).text === '启用', 'true 键命中')
-      assert(content(mapped, { b: false }).text === '停用', 'false 键命中')
-      assert(content(mapped, { b: null }).text == null, '空值不映射落占位链')
-      assert(content(mapped, { b: 1 }).text === '未知', '非 true/false 值未命中落 default')
-
-      // 无 default 时未命中原值回退（不再按真值取 trueText）
-      const noDefault = prepareColumn({ field: 'b', type: 'bool', mappings: { true: '启用', false: '停用' } })
-      assert(content(noDefault, { b: 1 }).text === 1, '未命中且无 default 原值回退')
-
-      // options 数组同口径转换（Boolean 项 → 'true'/'false' 键）
-      const fromOptions = prepareColumn({
-        field: 'b',
-        type: 'bool',
-        options: [{ value: true, label: '开' }, { value: false, label: '关' }]
-      })
-
-      assert(content(fromOptions, { b: true }).text === '开', 'options 布尔项命中')
-      assert(content(fromOptions, { b: false }).text === '关', 'options 布尔项命中 false')
-
       // 无映射：缺省渲染 locale 文案（Table.BOOL_TRUE/FALSE，与 t() 同源断言——
       // 无头浏览器多为 en，不可硬编码 是/否）；null 落占位链
       const plain = prepareColumn({ field: 'b', type: 'bool' })
@@ -506,32 +459,64 @@ export const checks = [
       const falseText = t('Table.BOOL_FALSE')
 
       assert(trueText !== 'Table.BOOL_TRUE' && falseText !== 'Table.BOOL_FALSE', 'BOOL_TRUE/FALSE 词条存在（非 path 回退）')
-      assert(plain._mapText === null, '无映射 bool 不挂 _mapText')
+      assert(plain._mapText === null, 'bool 不挂 _mapText（mappings 特性 text 独有）')
       assert(content(plain, { b: true }).text === trueText, '缺省 true → locale 文案')
       assert(content(plain, { b: false }).text === falseText, '缺省 false → locale 文案')
       assert(content(plain, { b: null }).text == null, '缺省空值落占位链')
 
-      return 'bool 命中/原值回退/缺省 locale 文案；空值统一占位链'
+      // bool + mappings 不再映射（映射通道已删，仍走缺省文案）
+      const mapped = prepareColumn({ field: 'b', type: 'bool', mappings: { true: '启用', false: '停用' } })
+
+      assert(mapped._mapText === null, 'bool+mappings 不挂 _mapText')
+      assert(content(mapped, { b: true }).text === trueText, 'bool+mappings 不再映射（true → locale 文案）')
+
+      // color 字符串色名：canvas 通道平铺 color 色名
+      const colored = prepareColumn({ field: 'b', type: 'bool', color: 'success' })
+      const c1 = content(colored, { b: true })
+
+      assert(c1.text === trueText && c1.color === 'success', 'color 字符串色名 → canvas 产物 { text, color }')
+
+      // color 函数色名：(record, value) => 色名；null 无色
+      const fnColored = prepareColumn({ field: 'b', type: 'bool', color: (r, v) => (v ? 'danger' : null) })
+      const c2 = content(fnColored, { b: true })
+      const c3 = content(fnColored, { b: false })
+
+      assert(c2.text === trueText && c2.color === 'danger', 'color 函数按值取色（true → danger）')
+      assert(c3.color === null, 'color 函数返回 null 无色')
+
+      // dom 通道（compile(column, true) 直调，resolveCellContent 链会剔除 DOM 通道字段）：
+      // color 落 text-{c} class；无色 class null
+      const domColored = BoolColumn.compile({ color: 'success' }, true)({ record: {}, value: true })
+
+      assert(domColored.text === trueText && domColored.class[0] === 'text-success', 'dom 通道 color 落 text-{c} class')
+      assert(BoolColumn.compile({}, true)({ record: {}, value: true }).class === null, 'dom 通道无 color class 为 null')
+
+      return '缺省 locale 文案 / mappings 不再生效 / color 双通道（canvas 平铺 + dom text-{c}）'
     }
   },
   {
-    name: 'prepareColumn：_mapText/_plainText 判定（类型门控 / column.text / multiline）',
+    name: 'prepareColumn：_mapText/_plainText 判定（text 独有挂载 / 映射列不短路——P2 修复）',
     fn: () => {
       const mapped = prepareColumn({ field: 'v', type: 'text', mappings: { a: '甲' } })
 
-      assert(typeof mapped._mapText === 'function', 'text + mappings 挂 _mapText')
-      assert(mapped._plainText === true, '原生 text 列挂 _plainText 直渲短路')
+      assert(typeof mapped._mapText === 'function', 'text + mappings 挂 _mapText（估高用）')
+      assert(mapped._plainText === false, 'text+mappings 不短路（走 compile 内 mapper——P2 短路修复核心）')
+      assert(content(mapped, { v: 'a' }).text === '甲', 'text+mappings 经 render 映射显示（映射不丢）')
 
-      const numberMapped = prepareColumn({ field: 'v', type: 'number', options: [{ value: 1, label: '低' }] })
+      const fromOptions = prepareColumn({ field: 'v', type: 'text', options: [{ value: 1, label: '低' }] })
 
-      assert(typeof numberMapped._mapText === 'function', 'number + options 挂 _mapText（options 转换）')
-      assert(numberMapped._plainText === false, 'number 列不走纯文本短路')
+      assert(typeof fromOptions._mapText === 'function', 'text + options 挂 _mapText（options 转换）')
+      assert(fromOptions._plainText === false, 'text+options 不短路')
 
-      assert(prepareColumn({ field: 'v' })._mapText === null, '无映射列 _mapText null')
-      assert(prepareColumn({ field: 'v', options: [] })._mapText === null, '空 options 不产映射')
+      assert(
+        prepareColumn({ field: 'v', type: 'number', options: [{ value: 1, label: '低' }] })._mapText === null,
+        'number+options 不挂 _mapText（number 不可映射）'
+      )
+      assert(prepareColumn({ field: 'v' })._mapText === null, '无映射源 text 列 _mapText null')
+      assert(prepareColumn({ field: 'v' })._plainText === true, '无映射源 text 列 _plainText 直渲短路')
       assert(
         prepareColumn({ field: 'v', type: 'currency', mappings: { a: '甲' } })._mapText === null,
-        '非 text/number 类型不可映射'
+        'currency+mappings 不可映射'
       )
       assert(
         prepareColumn({ field: 'v', type: 'text', text: r => 'T', mappings: { a: '甲' } })._mapText === null,
@@ -546,7 +531,7 @@ export const checks = [
         'number 列不走短路（经 render 分支）'
       )
 
-      return '类型门控 / options 转换 / column.text 门控 / multiline 语义正确'
+      return 'text 独有挂载 / number、currency 不挂 / 映射列不短路 / 无源短路全正确'
     }
   },
   {
@@ -578,6 +563,41 @@ export const checks = [
       assert(datetimeText === '2026-01-09 13:05', `datetime 缺省格式应为 yyyy-MM-dd hh:mm，实际 ${datetimeText}`)
 
       return `date=${dateText}，datetime=${datetimeText}`
+    }
+  },
+  {
+    name: 'number/date color：canvas 平铺色名、绘制层直取取色、dom 通道 text-{c} class',
+    fn: () => {
+      // color 函数色名（number 列）：canvas 产物平铺 color，绘制层经 colors 查表直取
+      const col = prepareColumn({ field: 'v', type: 'number', color: r => (r.v > 0 ? 'success' : 'danger') })
+      const c = content(col, { v: 1234.5 })
+
+      assertEqual(c.text, '1,234.5', 'number 文本仍 Intl 格式化')
+      assertEqual(c.color, 'success', 'color 函数 → canvas 平铺色名')
+
+      const { calls } = drawRecorded(col, { v: 1234.5 })
+
+      assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.success.color), '绘制层 color 直取（colors 查表，不走 class 解析）')
+
+      // 未知色名回退 textColor
+      const bad = drawRecorded(prepareColumn({ field: 'v', type: 'number', color: 'ghost' }), { v: 1 })
+
+      assertEqual(bad.calls.fillText[0].fillStyle, cssColorOf(THEME.textColor), '未知色名回退 textColor')
+
+      // 字符串色名（date 列）
+      const dateCol = prepareColumn({ field: 'd', type: 'date', color: 'primary' })
+      const dc = content(dateCol, { d: new Date(2026, 0, 9) })
+
+      assertEqual(dc.text, '2026-01-09', 'date 文本仍格式化')
+      assertEqual(dc.color, 'primary', 'date 字符串色名平铺')
+
+      // dom 通道（compile(column, true) 直调）：color 落 text-{c} class
+      const dom = NumberColumn.compile({ color: r => (r.v > 0 ? 'success' : 'danger') }, true)({ record: { v: 1234.5 }, value: 1234.5 })
+
+      assertEqual(dom.class[0], 'text-success', 'dom 通道 color 落 text-{c} class')
+      assert(NumberColumn.compile({}, true)({ record: {}, value: 1 }).class === null, 'dom 通道无 color class 为 null')
+
+      return 'number/date color 平铺 + 绘制直取；未知名回退；dom text-{c}'
     }
   },
   {
@@ -634,7 +654,7 @@ export const checks = [
       const linkContent = content(linkCol, { v: ['甲', '乙'] })
 
       assert(Array.isArray(linkContent.items) && linkContent.items.length === 2, 'link 数组值应产出 2 个条目')
-      assert(linkContent.items[0].is === 'a', 'link 条目 is 应为 a')
+      assert(linkContent.items[0].kind === 'link', 'canvas link 条目自带 kind: link（无 is/attrs）')
 
       const linkCanvas = drawToCanvas(linkCol, { v: ['甲', '乙'] })
       assert(countPaintedPixels(linkCanvas) > 0, 'link 文本应有非空像素')
@@ -727,26 +747,25 @@ export const checks = [
     }
   },
   {
-    name: 'multiline/lineClamp：div items 按文本落地不空白（decisions ⑤）',
+    name: 'multiline/lineClamp：canvas 通道产 text（无 items）、按文本落地不空白',
     fn: () => {
       const col = prepareColumn({ field: 'memo', multiline: true, lineClamp: 2 })
       const record = { memo: '多行内容' }
 
       const result = content(col, record)
 
-      assert(Array.isArray(result.items) && result.items.length === 1, 'lineClamp>1 应返回 div items')
-      assert(result.items[0].is === 'div' && result.items[0].text === '多行内容', 'div 条目应携带文本')
+      assert(result.text === '多行内容' && !result.items, 'canvas 通道 lineClamp>1 产 text（div items 为 dom 通道形态）')
 
       const canvas = drawToCanvas(col, record)
       const pixels = countPaintedPixels(canvas)
 
-      assert(pixels > 0, `div items 按文本落地应有非空像素，实际 ${pixels}（若 is 未识别被忽略则为 0）`)
+      assert(pixels > 0, `canvas 文本落地应有非空像素，实际 ${pixels}`)
 
       const single = content(prepareColumn({ field: 'memo', multiline: true, lineClamp: 1 }), record)
 
-      assert(single.text === '多行内容' && !single.items, 'lineClamp=1 应走 text 直绘')
+      assert(single.text === '多行内容' && !single.items, 'lineClamp=1 同产 text')
 
-      return `div 条目落地为文本（${pixels} 像素）；lineClamp=1 走 text`
+      return `canvas 通道 text 直绘（${pixels} 像素）；lineClamp=1 同产 text`
     }
   },
   {
@@ -993,8 +1012,14 @@ export const checks = [
 
       assertEqual(shallow.calls.fillText.length, 1, '非 deep record 应按求值 1 行（同列分 record 求值）')
 
-      // line-clamp item 改道：TextColumn multiline+lineClamp 产单 div item → drawText 多行
-      const clampedCol = prepareColumn({ field: 'memo', multiline: true, lineClamp: 2 })
+      // line-clamp item 改道（DOM 形态条目回退路径保留）：自定义类型产单 line-clamp
+      // div item → drawText 多行（TextColumn canvas 通道产 text 无 items，改道仅剩此路径）
+      const clampedCol = prepareColumn({
+        field: 'memo',
+        multiline: true,
+        lineClamp: 2,
+        type: { render: ({ value }) => ({ items: [{ is: 'div', text: value, attrs: { class: 'line-clamp' } }] }) }
+      })
       const raw = content(clampedCol, { memo: long })
 
       assert(Array.isArray(raw.items) && raw.items.length === 1 && raw.items[0].attrs.class === 'line-clamp', '前置：render 产单 line-clamp item')
@@ -1050,29 +1075,132 @@ export const checks = [
     }
   },
   {
-    name: 'LinkColumn compile 产物：对象数组 caption/color class、字符串数组不变、dots \'...\'、danger/disabled（DOM 版回归，评审 6 P1）',
+    name: 'link/tag 双通道条目结构：canvas 平铺 kind 条目 + onItemClick、dom 保持 DOM 形态',
     fn: () => {
-      // 对象数组：对象元素原样保留；linkOption.color 缺省落 class；条目级 color 覆盖
-      const withOption = LinkColumn.compile({ linkOption: { color: 'warning' } })
-      const out = withOption({ record: {}, value: [{ caption: 'A', color: 'success' }, { caption: 'B' }, 3], emit: () => {} })
+      const calls = []
+      const captureEmit = (name, payload) => calls.push([name, payload])
+
+      // link canvas 通道（compile 不传 dom）：平铺数据字段 + onItemClick 事件句柄
+      const linkRender = LinkColumn.compile({ title: true })
+      const lc = linkRender({
+        record: { id: 1 },
+        value: [{ caption: 'A', danger: true }, { caption: 'B', disabled: true }, 'C'],
+        emit: captureEmit
+      })
+
+      assertEqual(lc.items.length, 3, 'link 3 条目')
+      assert(lc.items.every(i => i.kind === 'link'), 'canvas 条目恒带 kind: link')
+      assertArray(lc.items.map(i => i.text), ['A', 'B', 'C'], '条目文本')
+      assert(lc.items.every(i => i.title === i.text), 'title:true 时 title = caption')
+      assertEqual(lc.items[0].danger, true, 'danger 平铺（truthy 原样）')
+      assertEqual(lc.items[1].disabled, true, 'disabled 平铺')
+      assertEqual(lc.items[2].danger, null, '无 danger 平铺 null')
+      assert(
+        lc.items.every(i => i.is === undefined && i.attrs === undefined && i.events === undefined),
+        'canvas 条目不含 is/attrs/events（DOM 通道字段）'
+      )
+      assert(lc.class === undefined && lc.text === undefined, 'canvas 通道产物仅 items（无外层 DOM class）')
+      assert(lc.items.every(i => typeof i.onItemClick === 'function'), 'canvas 条目自持 onItemClick')
+
+      lc.items[0].onItemClick()
+
+      assertEqual(calls[0][0], 'cell-item-click', 'onItemClick 派发 cell-item-click')
+      assertEqual(calls[0][1].link.caption, 'A', 'payload.link = 条目对象原引用')
+      assertEqual(calls[0][1].record.id, 1, 'payload.record = 行记录')
+
+      // link canvas dots：'...' 字面 + title join + onItemClick payload 值 '...'
+      const linkDots = LinkColumn.compile({ title: true, linkOption: { max: 2 } })(
+        { record: {}, value: ['a', 'b', 'c'], emit: captureEmit }
+      )
+
+      assertEqual(linkDots.items[1].text, '...', 'canvas dots 条目 \'...\'')
+      assertEqual(linkDots.items[1].title, 'b\n\nc', 'canvas dots title = 截断条目 caption join')
+
+      linkDots.items[1].onItemClick()
+
+      assertEqual(calls.at(-1)[1].link, '...', 'canvas dots onItemClick payload 值 \'...\'（与 DOM 版 events.click 同构）')
+
+      // link dom 通道（compile(column, true)）：DOM 形态条目
+      const ld = LinkColumn.compile({ linkOption: { max: 2 } }, true)({
+        record: {},
+        value: [{ caption: 'A', danger: true }, 'B', 'C'],
+        emit: () => {}
+      })
+
+      assertEqual(ld.class, 'mu-table__link-cell', 'dom 外层 class')
+      assert(ld.items.every(i => i.is === 'a' && i.attrs && i.events), 'dom 条目含 is/attrs/events')
+      assert(ld.items[0].attrs.class.includes('mu-link--danger'), 'dom danger 落 mu-link--danger')
+      assertEqual(ld.items[1].text, '...', 'dom max dots')
+      assert(typeof ld.items[1].events.click === 'function', 'dom 条目绑定 events.click')
+
+      // tag canvas 通道：color 平铺（tagOption.color 缺省 / 条目覆盖 / 无色 null）+ onItemClick
+      const tagRender = TagColumn.compile({ tagOption: { color: 'warning' } })
+      const tc = tagRender({ record: { id: 2 }, value: [{ caption: 'T1', color: 'success' }, 'T2'], emit: captureEmit })
+
+      assertEqual(tc.items.length, 2, 'tag 2 条目')
+      assert(tc.items.every(i => i.kind === 'tag'), 'canvas 条目恒带 kind: tag')
+      assertEqual(tc.items[0].color, 'success', '条目级 color 平铺')
+      assertEqual(tc.items[1].color, 'warning', 'tagOption.color 缺省平铺')
+      assert(
+        tc.items.every(i => i.is === undefined && i.attrs === undefined && i.events === undefined),
+        'canvas 条目不含 is/attrs/events'
+      )
+      assert(tc.items.every(i => typeof i.onItemClick === 'function'), 'canvas 条目自持 onItemClick')
+
+      tc.items[0].onItemClick()
+
+      assertEqual(calls.at(-1)[1].tag.caption, 'T1', 'onItemClick payload.tag = 条目对象原引用')
+
+      // tag canvas dots（tagOption.max）：onItemClick payload 值 '...'
+      const tagDots = TagColumn.compile({ tagOption: { max: 1 } })(
+        { record: {}, value: ['t1', 't2'], emit: captureEmit }
+      )
+
+      tagDots.items[0].onItemClick()
+
+      assertEqual(calls.at(-1)[1].tag, '...', 'tag dots onItemClick payload 值 \'...\'')
+
+      const tc2 = TagColumn.compile({})({ record: {}, value: ['x'], emit: () => {} })
+
+      assertEqual(tc2.items[0].color, null, '无色条目 color null（绘制缺省 gray）')
+
+      // tag dom 通道：颜色类恒落地（无色默认 gray）
+      const td = TagColumn.compile({}, true)({ record: {}, value: ['x'], emit: () => {} })
+
+      assert(
+        td.items[0].attrs.class.includes('text-gray') && td.items[0].attrs.class.includes('bg-gray-translucent'),
+        'dom 无色 tag 恒落 gray 类'
+      )
+
+      const td2 = TagColumn.compile({}, true)({ record: {}, value: [{ caption: 'y', color: 'success' }], emit: () => {} })
+
+      assert(td2.items[0].attrs.class.includes('text-success'), 'dom 条目级 color 落 text-{c}')
+
+      return 'link/tag canvas 平铺（kind/text/title/danger/disabled/color/onItemClick）+ dom DOM 形态；tag 颜色类恒落地'
+    }
+  },
+  {
+    name: 'LinkColumn compile 产物（dom 通道）：caption 生效、color 不消费、dots payload、danger/disabled、过滤',
+    fn: () => {
+      const render = LinkColumn.compile({}, true)
+
+      // 对象数组：对象元素原样保留；color 字段不消费（link 恒两色 primary/danger，20261103）
+      const out = render({ record: {}, value: [{ caption: 'A', color: 'success' }, { caption: 'B' }, 3], emit: () => {} })
 
       assertEqual(out.items.length, 3, '3 个条目')
       assertEqual(out.items[0].text, 'A', '对象元素 caption 文本（非 [object Object]）')
-      assert(out.items[0].attrs.class.includes('mu-link--success'), '条目级 color 落 class')
-      assert(!out.items[0].attrs.class.includes('mu-link--warning'), '条目级 color 覆盖 linkOption.color')
-      assert(out.items[1].attrs.class.includes('mu-link--warning'), 'linkOption.color 缺省落全部条目 class')
+      assert(!out.items[0].attrs.class.join(' ').includes('mu-link--'), 'color 字段不消费（不落 mu-link--{color}）')
       assertEqual(out.items[2].text, 3, '数字元素仍包 { caption: el } 行为不变（text 保持原始 number）')
 
-      // 字符串数组：包裹行为不变、无 color class（itemClass 现状含 linkOption.class 占位位）
-      const plain = LinkColumn.compile({})
-      const out2 = plain({ record: {}, value: ['x', 'y'], emit: () => {} })
+      // 字符串数组：包裹行为不变、无 danger 不落色类
+      const out2 = render({ record: {}, value: ['x', 'y'], emit: () => {} })
 
       assertArray(out2.items.map(i => i.text), ['x', 'y'], '字符串数组文本')
       assertEqual(out2.items[0].attrs.class[0], 'mu-link', '基础 mu-link class 保留')
-      assert(!out2.items[0].attrs.class.join(' ').includes('mu-link--'), '无 color 不落色类')
+      assert(!out2.items[0].attrs.class.join(' ').includes('mu-link--'), '无 danger 不落色类')
 
-      // max 超限 dots：'...' 字面值 + events.click 绑定（DOM link.js:47/:59-60 字面）
-      const dots = LinkColumn.compile({ linkOption: { max: 2 } })
+      // max 超限 dots：'...' 字面值 + events.click 绑定（DOM link.js dots 字面）
+      const dots = LinkColumn.compile({ linkOption: { max: 2 } }, true)
       const dotEvents = []
       const out3 = dots({ record: {}, value: ['a', 'b', 'c', 'd'], emit: (type, payload) => dotEvents.push([type, payload]) })
 
@@ -1085,7 +1213,7 @@ export const checks = [
       // 常规条目 payload link = 条目原对象（对象数组元素即 { caption, color, ... }）
       const target = { caption: 'P', color: 'blue' }
       let captured = null
-      const out4 = LinkColumn.compile({})(
+      const out4 = LinkColumn.compile({}, true)(
         { record: {}, value: [target], emit: (type, payload) => { captured = payload.link } }
       )
 
@@ -1093,51 +1221,63 @@ export const checks = [
       assert(captured === target, 'payload link 应为条目原对象（A1 对齐 DOM 版）')
 
       // danger/disabled 路径不变；缺 caption 对象被 isValidLink 过滤
-      const out5 = LinkColumn.compile({})({ record: {}, value: [{ caption: 'D', danger: true }, { caption: 'E', disabled: true }], emit: () => {} })
+      const out5 = render({ record: {}, value: [{ caption: 'D', danger: true }, { caption: 'E', disabled: true }], emit: () => {} })
 
       assert(out5.items[0].attrs.class.includes('mu-link--danger'), 'danger 落 class')
       assertEqual(out5.items[1].attrs.disabled, '', 'disabled 落 attrs')
 
-      const out6 = LinkColumn.compile({})({ record: {}, value: [{ color: 'red' }, { caption: 'ok' }], emit: () => {} })
+      const out6 = render({ record: {}, value: [{ color: 'red' }, { caption: 'ok' }], emit: () => {} })
 
       assertEqual(out6.items.length, 1, '缺 caption 对象被 isValidLink 过滤')
       assertEqual(out6.items[0].text, 'ok', '有效条目保留')
 
-      return '对象 caption/class、字符串不变、dots click、payload 原对象、danger/disabled/过滤全通过'
+      return 'color 不消费、字符串不变、dots click、payload 原对象、danger/disabled/过滤全通过'
     }
   },
   {
-    name: 'TagColumn compile 产物：对象数组 caption/color/pill/flat 落 class、字符串数组不变、dots \'...\'、payload 原对象（DOM 版回归，S1 续做）',
+    name: 'TagColumn compile 产物（dom 通道）：颜色类恒落地（text-{c}+bg-{c}-translucent）、pill/flat、dots、payload 原对象',
     fn: () => {
-      // 对象数组：对象元素原样保留；tagOption.color 缺省落 class；条目级 color 覆盖
-      const withOption = TagColumn.compile({ tagOption: { color: 'warning' } })
-      const out = withOption({ record: {}, value: [{ caption: 'A', color: 'success' }, { caption: 'B' }, 3], emit: () => {} })
+      const render = TagColumn.compile({}, true)
+
+      // 对象数组：对象元素原样保留；颜色类恒落地（无色默认 gray，20261103）
+      const out = render({ record: {}, value: [{ caption: 'A', color: 'success' }, { caption: 'B' }, 3], emit: () => {} })
 
       assertEqual(out.items.length, 3, '3 个条目')
       assertEqual(out.items[0].text, 'A', '对象元素 caption 文本（非 [object Object]）')
-      assert(out.items[0].attrs.class.includes('mu-tag--success'), '条目级 color 落 class')
-      assert(!out.items[0].attrs.class.includes('mu-tag--warning'), '条目级 color 覆盖 tagOption.color')
-      assert(out.items[1].attrs.class.includes('mu-tag--warning'), 'tagOption.color 缺省落全部条目 class')
+      assert(
+        out.items[0].attrs.class.includes('text-success') && out.items[0].attrs.class.includes('bg-success-translucent'),
+        '条目级 color 落 text-{c}+bg-{c}-translucent'
+      )
+      assert(
+        out.items[1].attrs.class.includes('text-gray') && out.items[1].attrs.class.includes('bg-gray-translucent'),
+        '无色条目恒落 gray 类（默认 gray）'
+      )
       assertEqual(out.items[2].text, 3, '数字元素仍包 { caption: el } 行为不变（text 保持原始 number）')
 
+      // tagOption.color 缺省与条目级覆盖
+      const withOption = TagColumn.compile({ tagOption: { color: 'warning' } }, true)
+      const outOpt = withOption({ record: {}, value: [{ caption: 'A' }, { caption: 'B', color: 'success' }], emit: () => {} })
+
+      assert(outOpt.items[0].attrs.class.includes('text-warning'), 'tagOption.color 缺省落 class')
+      assert(!outOpt.items[1].attrs.class.includes('text-warning') && outOpt.items[1].attrs.class.includes('text-success'), '条目级 color 覆盖 tagOption.color')
+
       // pill/flat：条目级生效（pill:false 覆盖缺省）与 tagOption 缺省落 class
-      const pillFlat = TagColumn.compile({ tagOption: { pill: true } })
+      const pillFlat = TagColumn.compile({ tagOption: { pill: true } }, true)
       const outPf = pillFlat({ record: {}, value: [{ caption: 'P', pill: false }, { caption: 'F', pill: true, flat: true }, { caption: 'N' }], emit: () => {} })
 
       assert(!outPf.items[0].attrs.class.includes('mu-tag--pill'), '条目级 pill:false 覆盖 tagOption.pill')
       assert(outPf.items[1].attrs.class.includes('mu-tag--pill') && outPf.items[1].attrs.class.includes('mu-tag--flat'), '条目级 pill/flat 落 class')
       assert(outPf.items[2].attrs.class.includes('mu-tag--pill'), 'tagOption.pill 缺省落全部条目 class')
 
-      // 字符串数组：包裹行为不变、无 color class（itemClass 现状含 tagOption.class 占位位）
-      const plain = TagColumn.compile({})
-      const out2 = plain({ record: {}, value: ['x', 'y'], emit: () => {} })
+      // 字符串数组：包裹行为不变、色类体系为 text-{c}（无 mu-tag--{c}）
+      const out2 = render({ record: {}, value: ['x', 'y'], emit: () => {} })
 
       assertArray(out2.items.map(i => i.text), ['x', 'y'], '字符串数组文本')
       assertEqual(out2.items[0].attrs.class[0], 'mu-tag', '基础 mu-tag class 保留')
-      assert(!out2.items[0].attrs.class.join(' ').includes('mu-tag--'), '无 color 不落色类')
+      assert(!out2.items[0].attrs.class.join(' ').includes('mu-tag--'), '色类体系 text-{c}（无 mu-tag--{c}）')
 
-      // max 超限 dots：'...' 字面值 + events.click 绑定（DOM tag.js:45/:59-60 字面）
-      const dots = TagColumn.compile({ tagOption: { max: 2 } })
+      // max 超限 dots：'...' 字面值 + events.click 绑定（DOM tag.js dots 字面）
+      const dots = TagColumn.compile({ tagOption: { max: 2 } }, true)
       const dotEvents = []
       const out3 = dots({ record: {}, value: ['a', 'b', 'c', 'd'], emit: (type, payload) => dotEvents.push([type, payload]) })
 
@@ -1150,7 +1290,7 @@ export const checks = [
       // 常规条目 payload tag = 条目原对象（对象数组元素即 { caption, color, ... }）
       const target = { caption: 'T', color: 'blue' }
       let captured = null
-      const out4 = TagColumn.compile({})(
+      const out4 = TagColumn.compile({}, true)(
         { record: {}, value: [target], emit: (type, payload) => { captured = payload.tag } }
       )
 
@@ -1158,16 +1298,16 @@ export const checks = [
       assert(captured === target, 'payload tag 应为条目原对象（与 LinkColumn 对齐）')
 
       // 缺 caption 对象被 isValidTag 过滤
-      const out5 = TagColumn.compile({})({ record: {}, value: [{ color: 'red' }, { caption: 'ok' }], emit: () => {} })
+      const out5 = render({ record: {}, value: [{ color: 'red' }, { caption: 'ok' }], emit: () => {} })
 
       assertEqual(out5.items.length, 1, '缺 caption 对象被 isValidTag 过滤')
       assertEqual(out5.items[0].text, 'ok', '有效条目保留')
 
-      return '对象 caption/color/pill/flat、字符串不变、dots click、payload 原对象、过滤全通过'
+      return '颜色类恒落地、pill/flat、字符串不变、dots click、payload 原对象、过滤全通过'
     }
   },
   {
-    name: 'link 列竖排：数组每条一行、对象颜色三态取色、超限 dots \'...\'、条目矩形回报',
+    name: 'link 列竖排：数组每条一行、恒两色三态取色、超限 dots \'...\'、条目矩形回报',
     fn: () => {
       const col = prepareColumn({ field: 'v', type: 'link', maxItems: 4 })
       const record = { v: [{ caption: 'A', color: 'success' }, { caption: 'B', disabled: true }, { caption: 'C', danger: true }, 'D', 'E'] }
@@ -1181,9 +1321,9 @@ export const checks = [
         `竖排每条一行（首行光学居中锚 19 + 偏移 ${TEXT_ANCHOR_OFF}；+18 顺排）`
       )
       assertArray(calls.fillText.map(c => c.x), [8, 8, 8, 8], '左缘对齐内容区')
-      assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.success.color), 'mu-link--success class → colors 查表')
+      assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME.primaryColor), '条目 color 字段不消费（恒两色）→ primary')
       assertEqual(calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled（存在性判定）→ textColorMuted')
-      assertEqual(calls.fillText[2].fillStyle, cssColorOf(THEME_COLORS.danger.color), 'mu-link--danger → colors.danger')
+      assertEqual(calls.fillText[2].fillStyle, cssColorOf(THEME_COLORS.danger.color), 'danger 平铺 → colors.danger')
       assertEqual(calls.fillText[3].fillStyle, cssColorOf(THEME.primaryColor), 'dots 条目回退主色（mu-link 缺省）')
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['link:0', 'link:1', 'link:2', 'link:3'], '条目矩形（含 dots）回报')
       assertArray(rects.map(r => r.disabled), [false, true, false, false], '条目 disabled 字段（B disabled=true、dots false）')
@@ -1206,16 +1346,16 @@ export const checks = [
       const col = prepareColumn({ field: 'v', type: 'link', maxItems: 4 })
       const record = { v: [{ caption: 'A', color: 'success' }, { caption: 'B', disabled: true }, { caption: 'C', danger: true }, 'D', 'E'] }
 
-      // 竖排路径（drawLinkItems）：hover 第 0 条（success 语义色）→ hover 谱系 + 下划线
+      // 竖排路径（drawLinkItems）：hover 第 0 条（color 不消费、默认色）→ primary hover 谱系 + 下划线
       const vertical = drawRecorded(col, record, { height: 88, hoverItem: { kind: 'link', index: 0 } })
-      const successHover = cssColorOf(THEME_COLORS.success.hover)
+      const primaryHover = cssColorOf(THEME_COLORS.primary.hover)
 
-      assertEqual(vertical.calls.fillText[0].fillStyle, successHover, '竖排 hover 条目 fillStyle = colors.success.hover')
+      assertEqual(vertical.calls.fillText[0].fillStyle, primaryHover, '竖排 hover 条目 fillStyle = colors.primary.hover（默认色）')
       assertEqual(vertical.calls.fillRect.length, 1, '竖排仅 hover 条目画下划线')
       assertEqual(vertical.calls.fillRect[0].y, 19 + TEXT_ANCHOR_OFF + 2, `下划线 y = 光学锚(${19 + TEXT_ANCHOR_OFF}) + 2（基线下 2px，20261029 问题 1）`)
       assertEqual(vertical.calls.fillRect[0].x, 8, '下划线 x = 条目起点（内容区左缘）')
       assert(vertical.calls.fillRect[0].width > 0 && vertical.calls.fillRect[0].height === 1, '下划线 1px 高、宽 = 实绘文本宽')
-      assertEqual(vertical.calls.fillRect[0].fillStyle, successHover, '下划线 fillStyle = hover 色')
+      assertEqual(vertical.calls.fillRect[0].fillStyle, primaryHover, '下划线 fillStyle = hover 色')
 
       // 竖排 disabled 条目被 hover：不悬停（常态 muted、无下划线）
       const verticalDisabled = drawRecorded(col, record, { height: 88, hoverItem: { kind: 'link', index: 1 } })
@@ -1223,14 +1363,14 @@ export const checks = [
       assertEqual(verticalDisabled.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), '竖排 disabled 被 hover 仍为常态 muted')
       assertEqual(verticalDisabled.calls.fillRect.length, 0, '竖排 disabled 被 hover 不画下划线')
 
-      // 横排路径（drawItemText）：自定义类型产 is:'a' 条目（col.type 非 link → 横排）
+      // 横排路径（drawItemText）：自定义类型产平铺 kind:'link' 条目（col.type 非 link → 横排）
       const hCol = prepareColumn({
         field: 'v',
         type: {
           render: () => ({
             items: [
-              { is: 'a', text: '甲', attrs: { class: 'mu-link--danger' } },
-              { is: 'a', text: '乙', attrs: { class: 'mu-link--blue', disabled: true } }
+              { kind: 'link', text: '甲', danger: true },
+              { kind: 'link', text: '乙', disabled: true }
             ]
           })
         }
@@ -1287,21 +1427,21 @@ export const checks = [
     }
   },
   {
-    name: 'linkHoverColorOf：语义 hover / 彩色同色 / hover 缺失回退 color / disabled muted / 未知名 primary（A7）',
+    name: 'linkHoverColorOf：danger hover / 默认 primary hover / hover 缺失回退 color / disabled muted（A7）',
     fn: () => {
       assert(THEME_COLORS.danger.hover !== THEME_COLORS.danger.color, '前置：夹具语义色 hover 与 color 可区分')
-      assertEqual(linkHoverColorOf({ attrs: { class: 'mu-link--danger' } }, THEME), THEME_COLORS.danger.hover, '语义色 → colors[name].hover')
-      assertEqual(linkHoverColorOf({ attrs: { class: 'mu-link--red' } }, THEME), THEME_COLORS.red.hover, '彩色 → hover === color（同色）')
+      assert(THEME_COLORS.primary.hover !== THEME_COLORS.primary.color, '前置：primary hover 与 color 可区分')
+      assertEqual(linkHoverColorOf({ danger: true }, THEME), THEME_COLORS.danger.hover, 'danger → colors.danger.hover')
+      assertEqual(linkHoverColorOf({}, THEME), THEME_COLORS.primary.hover, '默认 → colors.primary.hover')
       assertEqual(
-        linkHoverColorOf({ attrs: { class: 'mu-link--warning' } }, { ...THEME, colors: { warning: { color: '#123456' } } }),
+        linkHoverColorOf({ danger: true }, { ...THEME, colors: { danger: { color: '#123456' } } }),
         '#123456',
         'hover 字段缺失回退 color（自定义主题裁剪变量场景）'
       )
-      assertEqual(linkHoverColorOf({ attrs: { class: 'mu-link--danger', disabled: true } }, THEME), THEME.textColorMuted, 'disabled → textColorMuted')
-      assertEqual(linkHoverColorOf({ attrs: { class: 'mu-link--ghost' } }, THEME), THEME.primaryColor, '未知名 → primaryColor')
-      assertEqual(linkHoverColorOf({}, THEME), THEME.primaryColor, '无 class → primaryColor')
+      assertEqual(linkHoverColorOf({ disabled: true }, THEME), THEME.textColorMuted, 'disabled → textColorMuted')
+      assertEqual(linkHoverColorOf({ danger: false }, THEME), THEME_COLORS.primary.hover, 'danger 假值 → 默认 primary hover')
 
-      return 'danger.hover / red 同色 / 缺失回退 / muted / primary 五分支'
+      return 'danger.hover / primary.hover / 缺失回退 / muted 四分支'
     }
   },
   {
@@ -1337,7 +1477,7 @@ export const checks = [
     }
   },
   {
-    name: 'tag 颜色：mu-tag--{color} class → colors 查表（底 translucent + 文字色），条目矩形回报',
+    name: 'tag 颜色：条目 color 直取 colors 查表（底 translucent、边框与文字同色），无色恒 gray',
     fn: () => {
       const col = prepareColumn({ field: 'v', type: 'tag', tags: r => r.list })
       const rects = []
@@ -1345,13 +1485,15 @@ export const checks = [
 
       assertArray(calls.fillText.map(c => c.text), ['紧急', '普通'], '两条 tag')
       assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.success.color), '彩色 tag 文字色')
-      assertEqual(calls.fillText[1].fillStyle, cssColorOf(THEME.textColor), '无色类 tag 回退现状文字色')
+      assertEqual(calls.fillText[1].fillStyle, cssColorOf(THEME.gray), '无色 tag 恒 gray（colors 无 gray 键走快照）')
       assertEqual(calls.fill[0].fillStyle, cssColorOf(THEME_COLORS.success.translucent), '彩色 tag 底 translucent')
-      assertEqual(calls.fill[1].fillStyle, cssColorOf(THEME.hoverBg), '无色类 tag 回退现状灰底')
+      assertEqual(calls.fill[1].fillStyle, cssColorOf(THEME.hoverBg), '无色 tag 底回退 hoverBg（gray translucent 等价）')
+      assertEqual(calls.stroke[0].strokeStyle, cssColorOf(THEME_COLORS.success.color), '彩色 tag 边框与文字同色（对齐 dom currentColor）')
+      assertEqual(calls.stroke[1].strokeStyle, cssColorOf(THEME.gray), '无色 tag 边框与文字同色 gray')
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['tag:0', 'tag:1'], 'tag 条目矩形回报（可点击命中）')
       assert(rects.every(r => r.disabled === false), 'tag 条目 disabled 缺省 false（横排 reportHitRect 路径）')
 
-      return 'success 色查表 + gray 回退；kind=tag 回报'
+      return 'success 色查表 + gray 恒定；边框与文字同色；kind=tag 回报'
     }
   },
   {

@@ -55,7 +55,7 @@ function resolveMaxLinesOf (col, record) {
 }
 
 /** 字段取值（resolveCellContent 同款链），映射列经 _mapText 按显示文本取值
-    （估高/精算与绘制同源）；数组原值穿透，数组路径不受影响 */
+    （mapper 返回对象取 .text；估高/精算与绘制同源）；数组原值穿透，数组路径不受影响 */
 function valueOf (col, record) {
   const fromFn = typeof col._value === 'function' ? col._value(record) : undefined
   const value = fromFn ?? (col.field ? record?.[col.field] : undefined)
@@ -63,7 +63,7 @@ function valueOf (col, record) {
   if (col._mapText) {
     const mapped = col._mapText(value)
 
-    if (mapped != null) return mapped
+    if (mapped != null) return mapped.text
   }
 
   return value

@@ -1,7 +1,10 @@
+import { ensureFn } from '@/utils/type'
+
 export const NumberColumn = {
   align: 'right',
-  compile (column) {
-    const { locales = 'zh-CN' } = column
+  compile: (column, dom = false) => {
+    const { locales = 'zh-CN', color } = column
+    const getColor = ensureFn(color)
 
     const formatOption = {
       style: 'decimal',
@@ -13,14 +16,22 @@ export const NumberColumn = {
 
     const formatter = new Intl.NumberFormat(locales, formatOption)
 
-    return ({ value }) => ({ text: formatter.format(value) })
+    return ({ record, value }) => {
+      const text = formatter.format(value)
+      const c = getColor(record, value)
+
+      return dom
+        ? { text, class: c ? [`text-${c}`] : null }
+        : { text, color: c || null }
+    }
   }
 }
 
 export const CurrencyColumn = {
   align: 'right',
-  compile (column) {
-    const { locales = 'zh-CN' } = column
+  compile: (column, dom = false) => {
+    const { locales = 'zh-CN', color } = column
+    const getColor = ensureFn(color)
 
     const formatOption = {
       style: 'currency',
@@ -32,10 +43,13 @@ export const CurrencyColumn = {
 
     const formatter = new Intl.NumberFormat(locales, formatOption)
 
-    return ({ value }) => (
-      {
-        text: formatter.format(value)
-      }
-    )
+    return ({ record, value }) => {
+      const text = formatter.format(value)
+      const c = getColor(record, value)
+
+      return dom
+        ? { text, class: c ? [`text-${c}`] : null }
+        : { text, color: c || null }
+    }
   }
 }

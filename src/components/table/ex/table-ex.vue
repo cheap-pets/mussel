@@ -1195,8 +1195,9 @@
     }
   }
 
-  /** link/tag 条目派发：经列类型 render 产物的 events.click 取 DOM 版同源 payload
-      （常规条目 = 条目对象，link 对象数组元素即原引用），外包 recordIndex */
+  /** link/tag 条目派发：canvas 通道 render 产物自持 onItemClick（payload 与 DOM 版
+      events.click 同构——常规条目 = 条目对象原引用，linkOption.max dots 的 payload
+      值 '...'），外包 recordIndex；disabled 条目只续链不发 */
   function emitDomItemClick (item, record, col, raw, recordNumber, row) {
     const wrappedEmit = (name, payload) => {
       if (name === 'cell-item-click') {
@@ -1208,26 +1209,26 @@
 
     const content = resolveCellContent(col, { record, recordNumber, emit: wrappedEmit })
     const items = Array.isArray(content.items) ? content.items : null
-    const domItem = items?.[item.index]
+    const canvasItem = items?.[item.index]
 
-    if (domItem && !isDisabledAttr(domItem.attrs?.disabled)) {
-      // dots payload（A1/A3.3）：DOM render 自产 dots（item.text === '...'）与
-      // canvas 侧 _maxItems 截断 dots 的 payload 值同为 '...'；
-      // 常规条目 = 条目对象（link 对象数组元素即原引用）
-      if (isDotsItem(item, domItem, items, col)) {
-        emit('cell-item-click', { record, column: raw, [item.kind]: '...', recordIndex: row })
-      } else {
-        domItem.events?.click?.()
-      }
+    if (!canvasItem || isDisabledAttr(canvasItem.disabled)) return
+
+    // canvas 侧 _maxItems 截断省略条目（绘制层 dots，render 产物内无对应条目）：
+    // payload 值 '...'（A1/A3.3）
+    if (isCappedDotsItem(item, items, col)) {
+      emit('cell-item-click', { record, column: raw, [item.kind]: '...', recordIndex: row })
+      return
     }
+
+    canvasItem.onItemClick?.()
   }
 
-  /** dots 条目判定：DOM render 自产 '...' 或 canvas 侧 _maxItems 截断省略条目 */
-  function isDotsItem (item, domItem, items, col) {
+  /** _maxItems 截断省略条目判定（绘制层 dots；render 内 linkOption.max dots 经
+      onItemClick 自持 '...' payload，不在此判） */
+  function isCappedDotsItem (item, items, col) {
     const maxItems = col._maxItems ?? 10
-    const canvasCappedDots = items.length > maxItems && item.index === maxItems - 1
 
-    return canvasCappedDots || domItem.text === '...'
+    return items.length > maxItems && item.index === maxItems - 1
   }
 
   /** disabled 存在性判定（实施约束 7：与 G2 绘制侧 linkTextColorOf 同一谓词） */

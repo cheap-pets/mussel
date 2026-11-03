@@ -5,7 +5,7 @@ function isValidLink (link) {
 }
 
 export const LinkColumn = {
-  compile: column => {
+  compile: (column, dom = false) => {
     function valueToLinks (record, value) {
       if (value != null) {
         return Array.isArray(value)
@@ -31,10 +31,40 @@ export const LinkColumn = {
 
       if (!links?.length) return
 
+      const dotsIndex = max > 0 && links.length > max ? max - 1 : null
+
+      // canvas 通道：平铺数据字段（danger/disabled）+ onItemClick 事件句柄，
+      // payload 与 dom 通道 events.click 同构（dots 条目 payload 值 '...'）；
+      // 恒两色不引入 color 参数
+      if (!dom) {
+        return {
+          items: (max ? links.slice(0, max) : links).map((link, idx) => {
+            if (idx === dotsIndex) {
+              return {
+                kind: 'link',
+                text: '...',
+                title: showTitle && links.slice(idx).map(el => el.caption).join('\n\n'),
+                onItemClick: () => emit('cell-item-click', { record, column, link: '...' })
+              }
+            }
+
+            const { caption, disabled = _disabled, danger = _danger } = link
+
+            return {
+              kind: 'link',
+              text: caption,
+              title: showTitle && caption,
+              danger: danger || null,
+              disabled: disabled || null,
+              onItemClick: () => emit('cell-item-click', { record, column, link })
+            }
+          })
+        }
+      }
+
+      // dom 通道：DOM 形态条目（is/class/style/events/attrs）
       const _class = getLinkClass(record)
       const _style = getLinkStyle(record)
-
-      const dotsIndex = max > 0 && links.length > max ? max - 1 : null
 
       const items = (max ? links.slice(0, max) : links).map((link, idx) => {
         const itemClass = ['mu-link', _class]

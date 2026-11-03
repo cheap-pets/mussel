@@ -362,13 +362,6 @@
   }
   const STATUS_KEYS = ['active', 'pending', 'archived']
 
-  // 等级列 options（mu-select options 格式：数值 value + label，兼作单元格显示映射）
-  const LEVEL_OPTIONS = [
-    { value: 1, label: '低' },
-    { value: 2, label: '中' },
-    { value: 3, label: '高' }
-  ]
-
   function createRecords (count = RECORD_COUNT) {
     const records = new Array(count)
 
@@ -430,8 +423,10 @@
         editable: true,
         editor: { type: 'input', props: { type: 'number' } }
       },
-      { caption: '金额', field: 'amount', type: 'currency', width: 120, editable: true, editor: true },
-      { caption: '日期', field: 'date', type: 'date', width: 120, editable: true, editor: true },
+      // color 夹具（20261103 双通道）：currency/date/bool 列色名——canvas 端 color 直取，
+      // DOM 端落 text-{c} class（函数形态 amount / 字符串形态 date / null 回退 active）
+      { caption: '金额', field: 'amount', type: 'currency', width: 120, color: r => (r.amount > 0 ? 'success' : 'danger'), editable: true, editor: true },
+      { caption: '日期', field: 'date', type: 'date', width: 120, color: 'primary', editable: true, editor: true },
       {
         caption: '备注',
         field: 'memo',
@@ -449,9 +444,10 @@
           onClick: payload => logEvent('editorButton 点击', payload)
         }
       },
-      { caption: '启用', field: 'active', type: 'bool', width: 80, editable: true, editor: true },
-      // 等级列（type number + options 数值选项）：仅定义 options 的显示映射与编辑下拉载体
-      { caption: '等级', field: 'level', type: 'number', width: 90, options: LEVEL_OPTIONS, editable: true, editor: true },
+      { caption: '启用', field: 'active', type: 'bool', width: 80, color: (r, v) => (v ? 'success' : null), editable: true, editor: true },
+      // 等级列：mappings 特性收敛为 text 类型独有（20261103），number 不再支持 options
+      // 显示映射与编辑下拉派生，纯数值列展示
+      { caption: '等级', field: 'level', type: 'number', width: 90, editable: true, editor: true },
       { caption: '锁定宽', field: 'level', width: 90, resizable: false },
       { caption: '覆盖文本', field: 'name', width: 150, text: record => `文本:${record.name}` },
       { caption: 'value 字符串', field: 'extra', width: 110, value: '固定值' },

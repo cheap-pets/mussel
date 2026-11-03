@@ -5,7 +5,7 @@ function isValidTag (tag) {
 }
 
 export const TagColumn = {
-  compile: column => {
+  compile: (column, dom = false) => {
     function valueToTags (record, value) {
       if (value != null) {
         return Array.isArray(value)
@@ -31,10 +31,38 @@ export const TagColumn = {
 
       if (!tags?.length) return
 
+      const dotsIndex = max > 0 && tags.length > max ? max - 1 : null
+
+      // canvas 通道：平铺数据字段（color）+ onItemClick 事件句柄，
+      // payload 与 dom 通道 events.click 同构（dots 条目 payload 值 '...'）
+      if (!dom) {
+        return {
+          items: (max ? tags.slice(0, max) : tags).map((tag, idx) => {
+            if (idx === dotsIndex) {
+              return {
+                kind: 'tag',
+                text: '...',
+                title: showTitle && tags.slice(idx).map(el => el.caption).join('\n\n'),
+                onItemClick: () => emit('cell-item-click', { record, column, tag: '...' })
+              }
+            }
+
+            const { caption, color = _color } = tag
+
+            return {
+              kind: 'tag',
+              text: caption,
+              title: showTitle && caption,
+              color: color || null,
+              onItemClick: () => emit('cell-item-click', { record, column, tag })
+            }
+          })
+        }
+      }
+
+      // dom 通道：DOM 形态条目（is/class/style/events/attrs）
       const _class = getItemClass(record)
       const _style = getItemStyle(record)
-
-      const dotsIndex = max > 0 && tags.length > max ? max - 1 : null
 
       const items = (max ? tags.slice(0, max) : tags).map((tag, idx) => {
         const itemClass = ['mu-tag', _class]
@@ -54,7 +82,9 @@ export const TagColumn = {
           item.text = caption
           item.title = showTitle && caption
 
-          if (color) itemClass.push(`text-${color}`, `bg-${color}-translucent`)
+          const name = color || 'gray'
+
+          itemClass.push(`text-${name}`, `bg-${name}-translucent`)
           if (pill) itemClass.push('mu-tag--pill')
           if (flat) itemClass.push('mu-tag--flat')
         }

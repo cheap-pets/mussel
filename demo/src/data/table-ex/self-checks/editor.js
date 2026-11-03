@@ -4,7 +4,8 @@
  * 覆盖（02-design.md G3 判据 + decisions「[I1 前]①」+ A5.5 规整层 + 评审 6 P6
  * + 20261027 问题 3/4/5 断言同步）：
  * 打开（只读判定、value 取值链、编辑器组装、textarea/数组开值）/ 编辑器类型
- * 解析（text/number 列带 mappings/options 下拉来源缺省 select；text 列按开值
+ * 解析（text 列带 mappings/options 下拉来源缺省 select（mappings 收敛 text 独有，
+ * 20261103）；text 列按开值
  * 形态与 _resolveMaxLines(record) 行级求值判定 textarea；link 分支已删、直调
  * 回退 input 且实际被只读判定拦截）/ 值类型规整层
  * （usesDerivedOptions / normalizeEditorOpenValue / normalizeCommitValue：
@@ -124,11 +125,11 @@ export const checks = [
       assertEqual(componentOf({ type: 'number', editor: true }), EDITOR_COMPONENTS.input, 'number → MuInput')
       assertEqual(componentOf({ type: 'currency', editor: true }), EDITOR_COMPONENTS.input, 'currency → MuInput')
       assertEqual(componentOf({ type: 'text', editor: true, mappings: { a: '甲' } }), EDITOR_COMPONENTS.select, 'text+mappings → MuSelect')
-      assertEqual(componentOf({ type: 'number', editor: true, options: [{ value: 1, label: '低' }] }), EDITOR_COMPONENTS.select, 'number+options → MuSelect')
+      assertEqual(componentOf({ type: 'number', editor: true, options: [{ value: 1, label: '低' }] }), EDITOR_COMPONENTS.input, 'number+options 不再派生 select（mappings 收敛 text 独有，20261103）')
       assertEqual(componentOf({ type: 'date', editor: true }), EDITOR_COMPONENTS.date, 'date → MuDateInput')
       assertEqual(componentOf({ type: 'datetime', editor: true }), EDITOR_COMPONENTS.date, 'datetime → MuDateInput')
       assertEqual(componentOf({ type: 'bool', editor: true }), EDITOR_COMPONENTS.switch, 'bool → MuSwitch')
-      assertEqual(componentOf({ type: 'enum', editor: true, mappings: { a: '甲' } }), EDITOR_COMPONENTS.select, 'enum+mappings → MuSelect（废弃兼容）')
+      assertEqual(componentOf({ type: 'enum', editor: true, mappings: { a: '甲' } }), EDITOR_COMPONENTS.input, 'enum 废弃兼容已删 → 回退 input')
       assertEqual(componentOf({ field: 'x', editor: true }), EDITOR_COMPONENTS.input, '未知列类型回退 input')
 
       // 显式指定优先；非法显式类型回退列类型映射
@@ -411,11 +412,11 @@ export const checks = [
         [{ value: '1', label: '低' }, { value: '2', label: '高' }],
         '数字键字符串化')
 
-      // enum 废弃兼容同走 mappings 派生
+      // mappings 派生与列 type 无关（select 接线只看三级来源）
       assertArray(
-        resolveSelectOptions({ type: 'enum', editor: true, mappings: { a: '甲', default: '未知' } }),
+        resolveSelectOptions({ editor: true, mappings: { a: '甲', default: '未知' } }),
         [{ value: 'a', label: '甲' }],
-        'enum 列 mappings 派生（废弃兼容）'
+        'mappings 派生（与列 type 无关）'
       )
 
       assertArray(resolveSelectOptions({ editor: true }), [], '全部缺省返回空数组（编辑器照开、下拉为空）')
@@ -424,11 +425,11 @@ export const checks = [
     }
   },
   {
-    name: 'resolveEditorType：text/number 列三下拉来源缺省 select，优先于形态判定',
+    name: 'resolveEditorType：text 列三下拉来源缺省 select（mappings 收敛 text 独有），优先于形态判定',
     fn: () => {
       assertEqual(resolveEditorType({ type: 'text', editor: true, mappings: { a: '甲' } }), 'select', 'text + mappings')
-      assertEqual(resolveEditorType({ type: 'number', editor: true, mappings: { 1: '低' } }), 'select', 'number + mappings')
-      assertEqual(resolveEditorType({ type: 'number', editor: true, options: [{ value: 1, label: '低' }] }), 'select', 'number + options')
+      assertEqual(resolveEditorType({ type: 'number', editor: true, mappings: { 1: '低' } }), 'input', 'number + mappings 不再派生 select')
+      assertEqual(resolveEditorType({ type: 'number', editor: true, options: [{ value: 1, label: '低' }] }), 'input', 'number + options 不再派生 select')
       assertEqual(resolveEditorType({ field: 'x', editor: true, options: [{ value: 1 }] }), 'select', '无 type + options（缺省按 text）')
       assertEqual(
         resolveEditorType({ type: 'text', editor: { props: { options: [{ value: 'a' }] } } }),
@@ -446,8 +447,8 @@ export const checks = [
       // 无来源保持原判定：number → input、text 数组开值 → textarea
       assertEqual(resolveEditorType({ type: 'number', editor: true }, { rawValue: 5 }), 'input', 'number 无来源仍 input')
       assertEqual(resolveEditorType({ type: 'text', editor: true }, { rawValue: ['a'] }), 'textarea', 'text 无来源按形态判定')
-      // 其余类型列带 mappings/options 不改缺省映射（编辑器 select 来源限定 text/number；
-      // bool 显示映射已统一 mappable 但编辑器恒 switch——select 派生 value 为字符串键会破坏 boolean 提交类型）
+      // 其余类型列带 mappings/options 不改缺省映射（编辑器 select 来源限定 text；
+      // bool 编辑器恒 switch——select 派生 value 为字符串键会破坏 boolean 提交类型）
       assertEqual(
         resolveEditorType({ type: 'currency', editor: true, mappings: { a: '甲' } }),
         'input',
@@ -459,28 +460,24 @@ export const checks = [
         'bool 带 mappings 仍 switch'
       )
 
-      // enum 废弃兼容：恒 select（恢复移除前行为，不依赖下拉来源）
-      assertEqual(
-        resolveEditorType({ type: 'enum', editor: true, mappings: { a: '甲' } }),
-        'select',
-        'enum + mappings → select'
-      )
-      assertEqual(resolveEditorType({ type: 'enum', editor: true }), 'select', 'enum 缺 mappings 亦 select（空下拉）')
+      // enum 废弃兼容已删（20261103）：未知类型回退 input
+      assertEqual(resolveEditorType({ type: 'enum', editor: true, mappings: { a: '甲' } }), 'input', 'enum 回退 input（不再恒 select）')
 
-      return '三来源 → select / 优先形态判定 / 无来源保持缺省 / select 来源限定 text+number；enum 恒 select、bool 恒 switch'
+      return 'text 三来源 → select / 优先形态判定 / 无来源保持缺省 / number、enum 不再派生；bool 恒 switch'
     }
   },
   {
     name: '仅 options 的 select：column.options 原样下拉、开值不字符串化、数值提交类型保持',
     fn: () => {
+      // text 列 + options（mappings 收敛 text 独有后 number 不再派生 select，20261103）
       const column = {
         field: 'level',
-        type: 'number',
+        type: 'text',
         editor: true,
         options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }]
       }
 
-      assertEqual(resolveEditorType(column), 'select', 'number + options → select')
+      assertEqual(resolveEditorType(column), 'select', 'text + options → select')
       assert(!usesDerivedOptions(column, 'select'), 'column.options 非派生（值携带原类型直通）')
       assertEqual(resolveSelectOptions(column), column.options, 'options 原样透传')
       assertEqual(normalizeEditorOpenValue({ column, editorType: 'select', value: 2 }), 2, '开值保持 number（不字符串化）')
@@ -875,9 +872,9 @@ export const checks = [
         assertEqual(commits[4].value, true, '布尔提交值原样')
         assert(controller.state.editing != null, 'switch 值变化后保持编辑态')
 
-        // 数值原值派生 select：open 字符串化进下拉、提交按原值类型回写 number；
-        // 会话内连续换选均按 open 原值锚定规整、逐次 emit
-        const numericEnumColumn = { field: 'level', type: 'number', editor: true, mappings: { 1: '低', 2: '高', default: '未知' } }
+        // 数值原值 mappings 派生 select（text 列）：open 字符串化进下拉、提交按
+        // 原值类型回写 number；会话内连续换选均按 open 原值锚定规整、逐次 emit
+        const numericEnumColumn = { field: 'level', type: 'text', editor: true, mappings: { 1: '低', 2: '高', default: '未知' } }
 
         controller.open({ column: numericEnumColumn, record: { level: 2 }, recordIndex: 4, editable: true })
         assertEqual(controller.state.editing.value, '2', '数值派生 select open 字符串化')

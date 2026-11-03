@@ -56,6 +56,15 @@ const THEME = {
   hoverBg: 'rgba(0, 0, 0, 0.04)',
   primaryColor: 'rgba(0, 102, 255, 1)',
   gray: 'rgba(153, 153, 153, 1)',
+  // colors 色板（生产快照必含 readColors；tag 条目直取取色消费——缺板全回退
+  // gray(lum 153) 会使暗像素断言失效，夹具补条目用到的 success）
+  colors: {
+    success: {
+      color: 'rgba(34, 154, 22, 1)',
+      translucent: 'rgba(34, 154, 22, 0.1)',
+      hover: 'rgba(34, 154, 22, 1)'
+    }
+  },
   fontSize: 14,
   fontFamily: 'sans-serif',
   rowHeight: 36,

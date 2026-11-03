@@ -467,10 +467,11 @@ export const checks = [
     name: '映射文本参与精算行高：_mapText 显示文本进 ensureRowMeasured 折行（估高恒 1 行下界）',
     fn: () => {
       // 手写 _mapText（约束 2：夹具不依赖 prepareColumn）：命中返回长标签，未命中返回原值
+      // （mapper 产物为对象取 .text，20261103 与 createDisplayMapper 同协议）
       const col = {
         field: 'status',
         _maxLines: 2,
-        _mapText: value => (value === 'long' ? '标'.repeat(20) : value)
+        _mapText: value => ({ text: value === 'long' ? '标'.repeat(20) : value })
       }
       const base = { columns: [col], colWidths: [100], theme: THEME, measure: plainMeasure }
 

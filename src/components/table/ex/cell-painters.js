@@ -2,7 +2,8 @@
 import { ensureFn } from '@/utils/type'
 import { resolveColumnType } from '../column-types'
 import { wrapLines, ellipsize, cellFontOf, MAX_LINES_LIMIT } from './text-wrap'
-import { isMappableColumnType, createDisplayMapper } from '../mappings'
+import { createDisplayMapper } from '../mappings'
+import { TextColumn } from '../column-types/text'
 import { expandableAt, isExpandedKey } from './tree'
 import {
   TREE_INDENT,
@@ -21,8 +22,12 @@ import {
 //   另挂 _maxLines/_maxItems/_resolveMaxLines/_isTreeColumn/_mapText/_plainText
 
 // - 取值：_text(record) 非 null 直接作为显示文本；否则 value = _value(record) ?? record[field]，
-//   映射列经 _mapText 求显示文本，其余调 _render；class/style 为 DOM 通道字段忽略
+//   纯文本列短路免 render，其余调 _render；class/style 为 DOM 通道字段忽略，canvas 通道
+//   条目自带 kind 协议字段（link/tag），颜色经平铺 color/danger 直取不走 class 解析
 //   （column.title 经 _title 由 resolveCellTooltip 消费，tooltip 求值见模块尾）
+
+// - _mapText 为 text 类型独有（compile 内 mapper 为双端单一事实源，此处仅供
+//   row-geometry 估高取显示文本，不参与绘制取值）
 
 // 绘制锚（Q2 统一垂直锚，与 lineHeight 解耦）：centerY = Math.round(rect.y +
 // ROW_TOP_INSET + (rowHeight − ROW_TOP_INSET)/2 + 0.01)（行线间空白中点四舍五入，
@@ -151,10 +156,11 @@ function resolveMaxLinesBuilder (column, maxLines) {
   return () => 1
 }
 
-/** 纯文本直渲短路判定（P2）：非 multiline 原生 text 列，compile 产物恒
-    ({value}) => ({text: value})，可跳过 render 调用 */
+/** 纯文本直渲短路判定（P2）：非 multiline 原生 text 列且无映射源（text+mappings/
+    options 列必须走 compile 内 mapper，映射列不得短路） */
 function isPlainTextColumn (column, canvasOnlyKind) {
   return !column.text && !column.multiline && !canvasOnlyKind &&
+    column.mappings == null && column.options == null &&
     (column.type == null || column.type === '' || column.type === 'text')
 }
 
@@ -187,9 +193,12 @@ export function prepareColumn (column, { placeholder } = {}) {
 
   col._render = createColumnRender(column, type, canvasOnlyKind)
 
-  // 显示映射（mappings 优先，仅 options 时由其转换；column.text 显示优先不参与
-  // 映射——valueOf 无 _text 分支，挂映射会行高与文本分裂）
-  col._mapText = !column.text && isMappableColumnType(column.type) ? createDisplayMapper(column) : null
+  // 显示映射 text 类型独有（TextColumn.compile 内 mapper 为双端单一事实源，此处仅供
+  // row-geometry 估高取显示文本）；无映射源不挂恒等 mapper
+  col._mapText = !column.text && type === TextColumn &&
+    (column.mappings != null || column.options != null)
+    ? createDisplayMapper(column)
+    : null
   col._plainText = isPlainTextColumn(column, canvasOnlyKind)
 
   col.placeholder ??= placeholder
@@ -207,15 +216,8 @@ export function resolveCellContent (col, { record, recordNumber, emit }) {
   // value 传字符串等非函数值经 ensureFn 包装后恒为函数，不会抛错
   const value = col._value(record) ?? (col.field ? record[col.field] : undefined)
 
-  // P2 短路：纯文本列免 render 调用与中间对象（映射命中/未命中均终结于此）
-  if (col._plainText) return { text: col._mapText ? col._mapText(value) : value }
-
-  // 映射器返回非 null（命中 / default / 原值回退）即终结，number 列不再走 Intl
-  if (col._mapText) {
-    const mapped = col._mapText(value)
-
-    if (mapped != null) return { text: mapped }
-  }
+  // P2 短路：纯文本列免 render 调用与中间对象（无映射源才短路，映射列走 compile 内 mapper）
+  if (col._plainText) return { text: value }
 
   const { class: _class, style: _style, title: _title, ...params } =
     col._render({ record, recordNumber, value, emit }) || {}
@@ -420,9 +422,13 @@ function drawDisplayText (
   const display = content.text ?? col.placeholder ?? placeholder
 
   if (display != null) {
+    // canvas 通道 color 直取（17 色板名 → colors 查表）；未知名/缺省回退 textColor
+    const color = content.color && theme?.colors?.[content.color]?.color
+
     drawTextValue(ctx, rect, display, col._align, {
       padding,
       theme,
+      color,
       measure,
       wrapCache,
       maxLines,
@@ -525,11 +531,12 @@ function textAnchorX (rect, align, padding, rightInset) {
 // - 字符串 + maxLines>1 → wrapLines 多行（与 row-geometry 同一函数与缓存；
 //   measure 未注入时回退单行省略），首行槽位锚起排
 // - 其余 → 单行省略（垂直锚 = 槽位中心 centerY，与多行首行同式）
+// color 为 canvas 通道色名查表产物（drawDisplayText 直取 content.color）
 function drawTextValue (ctx, rect, display, align, {
-  padding, theme, measure, wrapCache, maxLines, maxItems, centerY, rightInset
+  padding, theme, color, measure, wrapCache, maxLines, maxItems, centerY, rightInset
 }) {
   if (Array.isArray(display)) {
-    drawArrayLines(ctx, rect, display, align, { padding, theme, maxItems, measure, centerY, rightInset })
+    drawArrayLines(ctx, rect, display, align, { padding, theme, color, maxItems, measure, centerY, rightInset })
     return
   }
 
@@ -545,7 +552,7 @@ function drawTextValue (ctx, rect, display, align, {
       text, font: cellFontOf(theme), maxWidth: contentWidth, measure, cache: wrapCache, maxLines
     })
 
-    ctx.fillStyle = theme?.textColor
+    ctx.fillStyle = color || theme?.textColor
     ctx.textAlign = align
 
     // 首行光学居中锚（问题 1），后续行 += lineHeight
@@ -573,7 +580,7 @@ function drawTextValue (ctx, rect, display, align, {
 
   if (!single) return
 
-  ctx.fillStyle = theme?.textColor
+  ctx.fillStyle = color || theme?.textColor
   ctx.textAlign = align
 
   const anchor = centeredTextAnchor(ctx, centerY)
@@ -583,7 +590,7 @@ function drawTextValue (ctx, rect, display, align, {
 }
 
 /** 数组值多行（文本呈现列）：每元素一行、首行槽位锚、超限第 maxItems 行 '...' */
-function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, measure, centerY, rightInset }) {
+function drawArrayLines (ctx, rect, values, align, { padding, theme, color, maxItems, measure, centerY, rightInset }) {
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0 || !values.length) return
@@ -595,7 +602,7 @@ function drawArrayLines (ctx, rect, values, align, { padding, theme, maxItems, m
   const font = cellFontOf(theme)
   const measureFn = measureOf(ctx, measure)
 
-  ctx.fillStyle = theme?.textColor
+  ctx.fillStyle = color || theme?.textColor
   ctx.textAlign = align
 
   // 首行光学居中锚（问题 1），后续行 += lineHeight
@@ -666,8 +673,11 @@ function itemClassOf (item) {
   return Array.isArray(cls) ? cls.join(' ') : String(cls ?? '')
 }
 
-/** 条目落地类别：以列类型写入的 DOM class 标记区分（mu-table__cell-check / mu-tag / line-clamp） */
+/** 条目落地类别：canvas 通道产物自带 kind（link/tag）；check/img 无 dom 参数改造，
+    走 is/class 回退；未识别 is 且 text != null 的条目按文本绘制；无文本的未知条目忽略 */
 function resolveItemKind (item) {
+  if (item.kind) return item.kind
+
   const cls = itemClassOf(item)
 
   if (cls.includes('mu-table__cell-check')) return 'check'
@@ -675,43 +685,25 @@ function resolveItemKind (item) {
   if (item.is === 'a') return 'link'
   if (cls.includes('mu-tag')) return 'tag'
 
-  // 未识别 is 且 text != null 的条目按文本绘制；无文本的未知条目忽略
   return item.text != null ? 'text' : null
 }
 
-/** mu-{tag|link}--{color} class 色名解析（17 色板名；无 class/未知名返回 null） */
-function colorClassOf (item, prefix) {
-  const match = new RegExp(`mu-${prefix}--(\\S+)`).exec(itemClassOf(item))
-
-  return match?.[1] ?? null
-}
-
-/** link 条目文本色：disabled → textColorMuted；mu-link--{color} → colors[name].color；未知名 → primaryColor */
+/** link 条目文本色：disabled → muted；danger → colors.danger.color；默认 primaryColor */
 function linkTextColorOf (item, theme) {
-  const attrs = item.attrs ?? {}
+  if (isTruthyAttr(item.disabled)) return theme?.textColorMuted || theme?.gray
 
-  if (attrs.disabled != null && attrs.disabled !== false) {
-    return theme?.textColorMuted || theme?.gray
-  }
+  const palette = item.danger ? theme?.colors?.danger : null
 
-  const name = colorClassOf(item, 'link')
-  const colored = name && theme?.colors?.[name]?.color
-
-  return colored || theme?.primaryColor
+  return palette?.color || theme?.primaryColor
 }
 
-/** link 条目悬停色（问题 7）：语义色名 → colors[name].hover（缺字段回退 color）；彩色名同色；disabled muted */
+/** link 条目悬停色：danger → colors.danger.hover（danger-4）；默认 colors.primary.hover（primary-4）；disabled muted */
 export function linkHoverColorOf (item, theme) {
-  const attrs = item.attrs ?? {}
+  if (isTruthyAttr(item.disabled)) return theme?.textColorMuted || theme?.gray
 
-  if (attrs.disabled != null && attrs.disabled !== false) {
-    return theme?.textColorMuted || theme?.gray
-  }
+  const palette = item.danger ? theme?.colors?.danger : theme?.colors?.primary
 
-  const name = colorClassOf(item, 'link')
-  const colored = name ? theme?.colors?.[name] : null
-
-  return colored?.hover ?? colored?.color ?? theme?.primaryColor
+  return palette?.hover ?? palette?.color ?? theme?.primaryColor
 }
 
 // items 行绘制：先测各条目宽度，按列 align 分布整体起点，再逐条目绘制；超出右缘
@@ -811,7 +803,7 @@ function reportHitRect (onItemRect, item, index, x, width, centerY, theme) {
       kind,
       index,
       rect,
-      disabled: isTruthyAttr(item.attrs?.disabled)
+      disabled: isTruthyAttr(item.disabled)
     })
   }
 }
@@ -863,7 +855,7 @@ function drawItem (ctx, item, x, centerY, {
   // link 条目悬停（问题 7）：命中 hoverItem 时色变 hover 谱系 + 下划线
   const hovered = kind === 'link' && isLinkEntryHovered(hoverItem, item, index)
 
-  // link 条目色经 class 解析（mu-link--{color} → theme.colors 查表）
+  // link 条目色经平铺 danger/disabled 直取（恒两色：primary / danger）
   drawItemText(ctx, item, x, centerY, {
     maxWidth,
     theme,
@@ -890,7 +882,7 @@ function cellLineHeightOf (theme) {
 function isLinkEntryHovered (hoverItem, item, index) {
   return hoverItem?.kind === 'link' &&
     hoverItem.index === index &&
-    !isTruthyAttr(item.attrs?.disabled)
+    !isTruthyAttr(item.disabled)
 }
 
 function drawItemText (ctx, item, x, centerY, { maxWidth, theme, measure, color, hovered }) {
@@ -973,7 +965,8 @@ function tagFontOf (theme) {
   return `${TAG_FONT_SIZE}px ${fontFamilyOf(theme)}`
 }
 
-/** tag pill 落地：mu-tag--{color} class → 底 translucent + 边框/文字 color（缺省灰底） */
+/** tag pill 落地：直读条目 color（17 色板名）→ 底 translucent + 边框/文字同色
+    （对齐 dom currentColor）；缺省 gray（colors 无 gray 键，走快照 gray/hoverBg） */
 function drawTag (ctx, item, x, centerY, { maxWidth, theme, measure }) {
   const font = tagFontOf(theme)
   const { text, width: textWidth } = ellipsize({
@@ -986,20 +979,23 @@ function drawTag (ctx, item, x, centerY, { maxWidth, theme, measure }) {
 
   if (!text) return width
 
-  const name = colorClassOf(item, 'tag')
-  const colored = name ? theme?.colors?.[name] : null
+  const name = item.color || 'gray'
+  const palette = name === 'gray' ? null : theme?.colors?.[name]
+  const borderColor = palette?.color ?? theme?.gray
+  const fillColor = palette?.color ?? theme?.gray
+  const trackFill = palette?.translucent ?? theme?.hoverBg
   const y = centerY - TAG_HEIGHT / 2
 
   ctx.font = font
   ctx.beginPath()
   ctx.roundRect(x + 0.5, y + 0.5, width - 1, TAG_HEIGHT - 1, TAG_RADIUS)
-  ctx.fillStyle = colored?.translucent ?? theme?.hoverBg
+  ctx.fillStyle = trackFill
   ctx.fill()
-  ctx.strokeStyle = colored?.color ?? theme?.borderColor
+  ctx.strokeStyle = borderColor
   ctx.lineWidth = 1
   ctx.stroke()
 
-  ctx.fillStyle = colored?.color ?? theme?.textColor
+  ctx.fillStyle = fillColor
   ctx.textAlign = 'left'
 
   const anchor = centeredTextAnchor(ctx, centerY)
@@ -1079,7 +1075,7 @@ function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect
       hovered
     )
 
-    if (width > 0) report(i, width, isTruthyAttr(item.attrs?.disabled))
+    if (width > 0) report(i, width, isTruthyAttr(item.disabled))
 
     y += lineHeight
   }

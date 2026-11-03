@@ -132,9 +132,9 @@ function hasSelectSource (column) {
     column?.mappings != null
 }
 
-// 编辑器类型解析（A5.5）：① editor.type 显式合法直取；② enum 为废弃兼容类型恒 select
-// （恢复移除前行为：mappings 派生 options，缺映射空下拉）；text/number 列（type 缺省
-// 按 text）带下拉来源 → 'select'；③ text 列按开值形态与 maxLines 判定（行级求值）；
+// 编辑器类型解析（A5.5）：① editor.type 显式合法直取；② text 列（type 缺省按 text）
+// 带下拉来源 → 'select'（mappings 派生 options，缺映射空下拉；number 不再支持
+// mappings/options 派生）；③ text 列按开值形态与 maxLines 判定（行级求值）；
 // ④ 其余按类型映射，未知列类型回退 input
 export function resolveEditorType (column, { rawValue, record } = {}) {
   const explicit = column?.editor?.type
@@ -144,9 +144,7 @@ export function resolveEditorType (column, { rawValue, record } = {}) {
   // 无 type 列回退 text（resolveColumnType(undefined) 同回退 TextColumn）
   const typeName = column?.type == null ? 'text' : column.type
 
-  if (typeName === 'enum' || ((typeName === 'text' || typeName === 'number') && hasSelectSource(column))) {
-    return 'select'
-  }
+  if (typeName === 'text' && hasSelectSource(column)) return 'select'
 
   if (typeName === 'text') {
     return resolveTextLikeEditorType(column, rawValue, record)

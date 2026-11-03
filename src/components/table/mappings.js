@@ -1,9 +1,5 @@
 import { isObject } from '@/utils/type'
 
-export function isMappableColumnType () {
-  return false
-}
-
 export function mappingsFromOptions (options) {
   if (!Array.isArray(options)) return null
 
