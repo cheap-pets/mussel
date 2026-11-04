@@ -267,6 +267,8 @@
     getColumns: () => wiredColumns.value,
     getTreeIndents: () => treeIndentsOf(),
     getRecordsOffset: () => props.recordsOffset,
+    // P1 精算快照失效维度：records 就地改值通知版本（合并 watch 不改）
+    getRecordsVersion: () => props.recordsVersion,
     getTheme: () => themeWatcher?.snapshot,
     getMeasure: () => measureFn,
     getWrapCache: () => wrapCacheObj,

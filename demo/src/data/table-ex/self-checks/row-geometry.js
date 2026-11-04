@@ -588,7 +588,7 @@ export const checks = [
     }
   },
   {
-    name: 'computeRowHeights：treeIndents 估高路径可用（无测量、行高下界）；lineClamp 常量与函数同表混排取最大',
+    name: 'computeRowHeights：估高免 treeIndents 求值（P2-3 后回调不再被调用）；行高下界与零测量判据不变；lineClamp 常量与函数同表混排取最大',
     fn: () => {
       const counter = { calls: 0 }
       const { heights } = computeRowHeights({
@@ -610,6 +610,120 @@ export const checks = [
       assertEqual(heights[1], 36, '估高：字符串恒 1 行下界（deep=true，进窗后精算 52）')
 
       return '估高 [36, 36] 下界 + treeIndents 透传不抛错（精算差异归进窗 ensureRowMeasured）'
+    }
+  },
+  {
+    name: 'computeRowHeights：图形列估高免 valueOf（P2-1：六类图形列 _value 零调用，行高与模式判定不变）',
+    fn: () => {
+      const valueCalls = { count: 0 }
+      const measureCalls = { calls: 0 }
+      const graphicColumns = ['tag', 'check', 'img', 'image', 'progress', 'button'].map(type => ({
+        type,
+        field: 'v',
+        _value: record => {
+          valueCalls.count++
+
+          return record.v
+        }
+      }))
+      const { heights, hasArrayValues } = computeRowHeights({
+        records: [
+          { v: ['a', 'b'] }, // 数组值（横排呈现恒 1 行）
+          { v: '单值' },
+          { v: null },
+          { v: undefined }
+        ],
+        columns: graphicColumns,
+        colWidths: graphicColumns.map(() => 100),
+        theme: THEME,
+        measure: countingMeasure(measureCalls)
+      })
+
+      assertEqual(valueCalls.count, 0, '图形列 _value 估高零调用（P2-1）')
+      assertEqual(measureCalls.calls, 0, '估高零测量')
+      assertEqual(hasArrayValues, false, '图形列（含数组值）不触发变高模式')
+      assertEqual(heights[0], 36, '数组值行恒基线 36')
+      assertEqual(heights[3], 36, '空值行基线 36（默认主题 36 ≥ 34，与空值计数 0 等价）')
+
+      return '6 类图形列 × 4 行：_value/measure 0 次；heights 全 36；hasArrayValues false'
+    }
+  },
+  {
+    name: 'computeRowHeights：P2-1 的 0/1 行边界（低 rowHeight 主题：空图形格恒 1 行 → 34；空文本格仍 0 行 → 30）',
+    fn: () => {
+      const lowTheme = { rowHeight: 30, cellPadding: 8, cellLineHeight: 18, fontSize: 14, fontFamily: 'test-font' }
+
+      const { heights } = computeRowHeights({
+        records: [{ v: undefined, note: '' }],
+        columns: [{ type: 'tag', field: 'v' }, { field: 'note' }],
+        colWidths: [100, 100],
+        theme: lowTheme
+      })
+
+      assertEqual(heights[0], 34, '空图形格恒 1 行 → 8×2+18=34（P2-1 唯一行为差异，设计 §3 P2）')
+
+      const textOnly = computeRowHeights({
+        records: [{ note: '' }],
+        columns: [{ field: 'note' }],
+        colWidths: [100],
+        theme: lowTheme
+      })
+
+      assertEqual(textOnly.heights[0], 30, '空文本格仍 0 行 → 16（P2-1 不影响文本空值语义）')
+
+      return '低 rowHeight=30：tag 空值行 34 / 纯文本空值行 30（默认主题下两者同为 36）'
+    }
+  },
+  {
+    name: 'computeRowHeights：估高期零用户回调（P2-2/P2-4 _resolveMaxLines 不调用；P2-3 treeIndents 不调用）；条目列 render 计数不受 P2-4 影响',
+    fn: () => {
+      const maxLinesCalls = { count: 0 }
+      const renderCalls = { count: 0 }
+      let treeIndentsCalls = 0
+      const columns = [
+        {
+          field: 'note',
+          _maxLines: 3,
+          _resolveMaxLines: record => {
+            maxLinesCalls.count++
+
+            return record.deep ? 3 : 1
+          }
+        },
+        {
+          type: 'list',
+          field: 'tags',
+          _render: ({ value }) => {
+            renderCalls.count++
+
+            return listRenderOf({ value })
+          }
+        }
+      ]
+      const { heights, hasArrayValues } = computeRowHeights({
+        records: [
+          { note: 'x'.repeat(30), tags: ['a', 'b', 'c'] },
+          { note: 'y'.repeat(30), tags: ['a'] }
+        ],
+        columns,
+        colWidths: [100, 100],
+        theme: THEME,
+        measure: plainMeasure,
+        treeIndents: (colIndex, row) => {
+          treeIndentsCalls++
+
+          return colIndex === 0 ? 16 : 0
+        }
+      })
+
+      assertEqual(maxLinesCalls.count, 0, '_resolveMaxLines 估高不调用（P2-2 提前 + P2-4 内联）')
+      assertEqual(treeIndentsCalls, 0, 'treeIndents 估高不调用（P2-3 免 inset）')
+      assertEqual(renderCalls.count, 2, 'list render 每格 1 次（P2-4 条目列分支保持）')
+      assertEqual(hasArrayValues, true, 'list 条目 > 1 触发变高')
+      assertEqual(heights[0], 70, 'list 3 条 → 3 行 70')
+      assertEqual(heights[1], 36, 'list 1 条 → 基线 36')
+
+      return '_resolveMaxLines/treeIndents 0 次；render 每格 1 次；heights [70, 36]'
     }
   }
 ]

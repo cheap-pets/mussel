@@ -41,6 +41,8 @@ function autoRowSpanMarkOf (value) {
  * - getColumns ()                 → 已接线内部列（wiredColumns）
  * - getTreeIndents ()             → 树形列缩进回调 (colIndex, row) => px | null
  * - getRecordsOffset ()           → rec_no 序号偏移
+ * - getRecordsVersion ()          → records 就地修改通知版本（P1 精算快照失效
+ *                                   维度；缺省/缺方法视同 0）
  * - getTheme ()                   → 主题快照（themeWatcher.snapshot）
  * - getMeasure () / getWrapCache()→ 文本测量/折行缓存实例（onMounted 创建）
  * - getColumnKey (rawColumn)      → 原始列引用 → 稳定 key（估高列签名用）
@@ -61,7 +63,10 @@ export function createRowGeometryController (ctx) {
   let uniformSig = null
 
   // A2.4 record 引用级行高缓存：进窗精算真值按 record 引用留存，估高 rebuild
-  // 前混入；失效维度 = measureSignature（列宽或高度相关主题维度变化）
+  // 前混入（P1 起取条目 .height，max 语义不变）；失效维度 = measureSignature
+  // （列宽或高度相关主题维度变化）。P1 起条目为快照 { height, indent,
+  // recordsVersion }——精算值具粘性：缓存不再按滚动帧刷新，records 就地改值
+  // 必须 bump recordsVersion（唯一通知通道），树层级变化经 indent 快照失配暴露
   let measuredRowHeights = new WeakMap()
   let measuredHeightsSig = null
 
@@ -109,12 +114,14 @@ export function createRowGeometryController (ctx) {
   }
 
   /** 估高结果混入已精算真值（估高 = 下界 ≤ 精算）：rebuild 后未变行保持精确
-      高度，totalHeight 不因 rebuild 回缩（#15 单调性） */
+      高度，totalHeight 不因 rebuild 回缩（#15 单调性）。P1：条目为快照对象，
+      取 .height，max 混入语义不变——几何值高于缓存真值时（条目列 render 计数
+      漂移等）该行随后经跳过判据失配（heightAt ≠ cached.height）重算修正 */
   function mergeMeasuredHeights (heights, rows) {
     for (let i = 0; i < heights.length; i++) {
       const measured = measuredRowHeights.get(rows[i])
 
-      if (measured > heights[i]) heights[i] = measured
+      if (measured?.height > heights[i]) heights[i] = measured.height
     }
   }
 
@@ -254,6 +261,23 @@ export function createRowGeometryController (ctx) {
     })
   }
 
+  /** P1 精算快照条目：{ height, indent, recordsVersion }。树缩进维度仅在树开
+      且存在变高候选列时求值（条目列行数来自 render 计数、与宽度无关，其余场景
+      恒 0）；低频路径（单行重估）独立解析树形列下标，与 remeasureVisibleRows
+      的循环外提口径同一规则 */
+  function measuredSnapshot (row, height) {
+    const treeIndents = ctx.getTreeIndents()
+    let indent = 0
+
+    if (treeIndents && isVariableCandidate()) {
+      const treeColIndex = ctx.getColumns().findIndex(col => col._isTreeColumn)
+
+      if (treeColIndex >= 0) indent = treeIndents(treeColIndex, row) || 0
+    }
+
+    return { height, indent, recordsVersion: ctx.getRecordsVersion?.() ?? 0 }
+  }
+
   /** variable 单行精算 + updateHeight（Δ 非零才同步锚定与布局） */
   function remeasureVariableRow (row, cur, rows) {
     const el = ctx.getScrollEl()
@@ -272,8 +296,8 @@ export function createRowGeometryController (ctx) {
       spans: ctx.getSpans?.() ?? null
     })
 
-    // 精算真值入缓存（A2.4，按 record 引用为键）
-    measuredRowHeights.set(rows[row], height)
+    // 精算真值入缓存（A2.4 → P1 快照条目，按 record 引用为键）
+    measuredRowHeights.set(rows[row], measuredSnapshot(row, height))
 
     if (!geometry.updateHeight(row, height)) return
 
@@ -342,9 +366,13 @@ export function createRowGeometryController (ctx) {
     },
 
     /**
-     * 进窗精算（A2.2 管线 2，滚动帧调用）：可视窗口 ±OVERSCAN 逐行
-     * ensureRowMeasured → updateHeight → Δ 累计滚动锚定（scrollTop 一次补偿
-     * 写入）→ contentHeight/spacer 同步。uniform 模式零成本跳过。
+     * 进窗精算（A2.2 管线 2，滚动帧调用）：可视窗口 ±OVERSCAN 逐行处理——
+     * P1 起命中精算缓存快照（几何值 + recordsVersion + 树缩进全匹配）的行
+     * 直接跳过（测量侧零重算；跳过等价性：此时 updateHeight(row, cached.height)
+     * 恒返回 0），未命中行 ensureRowMeasured → 写快照 → updateHeight → Δ 累计
+     * 滚动锚定（scrollTop 一次补偿写入）→ contentHeight/spacer 同步。
+     * uniform 模式零成本跳过。粘性契约：本缓存不再按帧刷新，records 就地改值
+     * 必须 bump recordsVersion（快照失配 → 重算）。
      */
     // 每行热路径：拆分会引入参数打包与函数调用开销，复杂度收益低于回归风险（02-optimize A 线裁定 #2②）
     // eslint-disable-next-line complexity
@@ -359,20 +387,44 @@ export function createRowGeometryController (ctx) {
       const anchorRow = variableGeometry.offsetToRow(el.scrollTop)
       const prevTopAtAnchor = variableGeometry.topAt(anchorRow)
       const base = measureContext()
+      // P5：循环不变量提循环外（每帧窗口内每行各一次 getter 求值 → 各一次）
+      const spans = ctx.getSpans?.() ?? null
+      const recordsOffset = ctx.getRecordsOffset() || 0
+      // P1 快照失效维度（循环外求值一次）：records 就地修改通知版本 + 树缩进
+      const version = ctx.getRecordsVersion?.() ?? 0
+      const { columns, treeIndents } = base
+      const needIndent = !!treeIndents && isVariableCandidate()
+      const treeColIndex = needIndent
+        ? columns.findIndex(col => col._isTreeColumn)
+        : -1
+      const indentOf = row =>
+        needIndent && treeColIndex >= 0 ? treeIndents(treeColIndex, row) || 0 : 0
       let delta = 0
 
       for (let row = start; row < end; row++) {
+        const cached = measuredRowHeights.get(rows[row])
+        const indent = indentOf(row)
+
+        // 三条件快照全匹配才跳过：几何值、recordsVersion、树缩进——此时
+        // updateHeight(row, cached.height) 恒返回 0，不存在"少算行高"
+        if (
+          cached &&
+          variableGeometry.heightAt(row) === cached.height &&
+          cached.recordsVersion === version &&
+          cached.indent === indent
+        ) continue
+
         const height = ensureRowMeasured({
           record: rows[row],
-          recordNumber: (ctx.getRecordsOffset() || 0) + row + 1,
+          recordNumber: recordsOffset + row + 1,
           colWidths: cur.colWidths,
           ...base,
           row,
-          spans: ctx.getSpans?.() ?? null
+          spans
         })
 
-        // 精算真值入缓存（A2.4，按 record 引用为键）
-        measuredRowHeights.set(rows[row], height)
+        // 精算真值入缓存（A2.4 → P1 快照条目，按 record 引用为键）
+        measuredRowHeights.set(rows[row], { height, indent, recordsVersion: version })
         delta += variableGeometry.updateHeight(row, height)
       }
 

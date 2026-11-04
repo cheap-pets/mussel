@@ -193,6 +193,89 @@ export const checks = [
     }
   },
   {
+    name: 'tokenize：码点边界空白（NBSP/BOM/行分隔符/OGM/全角空格）并入词首；全角标点 CJK 单字；U+3000 空白优先',
+    fn: () => {
+      // P4 码点判定等价集：逐类边界码点分词与原正则实现逐字一致
+      assertArray(tokenize('a\u00A0b'), ['a', '\u00A0b'], 'NBSP(0xA0) 空白并入词首')
+      assertArray(tokenize('\uFEFFab'), ['\uFEFFab'], 'BOM(0xFEFF) 空白暂存并入词首')
+      assertArray(tokenize('x\u2028y'), ['x', '\u2028y'], '行分隔符(0x2028) 空白并入词首')
+      assertArray(tokenize('文\u1680字'), ['文', '\u1680', '字'], 'OGM(0x1680) 空白独立成词')
+      assertArray(tokenize('中\u2005东'), ['中', '\u2005', '东'], 'U+2005(0x2000 段) 空白独立成词')
+      assertArray(tokenize('a（b！'), ['a', '（', 'b', '！'], '全角标点(0xFF00 段) CJK 单字逐字断')
+      assertArray(tokenize('한국어'), ['한', '국', '어'], '谚文(0xAC00 段) CJK 单字逐字断')
+
+      // 判定顺序锚点：U+3000 同落空白与 CJK 区间，必须按空白处理并入后续词
+      // （若换序为 CJK 优先，会得 ['一', '\u3000', 'b']）
+      assertArray(tokenize('一\u3000b'), ['一', '\u3000b'], 'U+3000 空白优先并入词首')
+
+      return 'NBSP/BOM/行分隔符/OGM/U+2005/全角标点/谚文分词等价；U+3000 空白优先'
+    }
+  },
+  {
+    name: 'wrapLines：码点空白参与断行（NBSP 词首并入断行；全角空格占宽可断行；行分隔符/BOM 并入不强制断行）',
+    fn: () => {
+      // NBSP 处为合法断点，行首空白并入次行词首
+      const nbsp = wrapLines({ text: 'abc\u00A0def', font: FONT, maxWidth: 60, measure: plainMeasure })
+
+      assertArray(nbsp.lines, ['abc', '\u00A0def'], 'NBSP 断行')
+      assertEqual(nbsp.lineCount, 2, 'NBSP lineCount')
+
+      // 全角空格占一个字符宽参与贪心填行（宽 30px 处断行）
+      const ideographic = wrapLines({ text: '甲乙\u3000丙', font: FONT, maxWidth: 30, measure: plainMeasure })
+
+      assertArray(ideographic.lines, ['甲乙\u3000', '丙'], '全角空格占宽断行')
+
+      // 行分隔符/BOM 均并入词首，宽度足够时不断行
+      const ls = wrapLines({ text: 'x\u2028z', font: FONT, maxWidth: 30, measure: plainMeasure })
+
+      assertArray(ls.lines, ['x\u2028z'], '行分隔符不断行')
+
+      const bom = wrapLines({ text: 'ab\uFEFFcdef', font: FONT, maxWidth: 50, measure: plainMeasure })
+
+      assertArray(bom.lines, ['ab', '\uFEFFcdef'], 'BOM 断行并词首')
+
+      return '["abc","\\u00A0def"] / ["甲乙\\u3000","丙"] / ["x\\u2028z"] / ["ab","\\uFEFFcdef"]'
+    }
+  },
+  {
+    name: 'wrapLines：超长词逐字断（全角标点边界不拆词）',
+    fn: () => {
+      // 10 字拉丁词 @35px 逐字断为三行 + 余量 'a'，后续全角标点（CJK 单字）
+      // 与余量合并成行（词原子不拆）
+      const result = wrapLines({ text: 'aaaaaaaaaa！', font: FONT, maxWidth: 35, measure: plainMeasure })
+
+      assertArray(result.lines, ['aaa', 'aaa', 'aaa', 'a！'], '超长词逐字断 + 全角标点并入')
+      assertEqual(result.lineCount, 4, 'lineCount')
+      assertEqual(result.clamped, false, '不钳制')
+
+      return '@35px：["aaa","aaa","aaa","a！"]（逐字断路径，全角标点 CJK 单字边界）'
+    }
+  },
+  {
+    name: 'wrapLines：钳制末行收缩与 maxLines=1 单行省略逐字一致；极端窄列退化为空串',
+    fn: () => {
+      // 同文本同宽度（@45px 折 3 行：["一二三四","五六七八","九十"]）：maxLines=1
+      // 与 maxLines=2 的收缩产物同为「最大可容纳前缀 + '...'」
+      const single = wrapLines({ text: '一二三四五六七八九十', font: FONT, maxWidth: 45, measure: plainMeasure, maxLines: 1 })
+      const clamped = wrapLines({ text: '一二三四五六七八九十', font: FONT, maxWidth: 45, measure: plainMeasure, maxLines: 2 })
+
+      assertEqual(single.lineCount, 1, 'maxLines=1 行数')
+      assertEqual(single.lines[0], '一...', 'maxLines=1 收缩结果逐字')
+      assertEqual(clamped.clamped, true, 'maxLines=2 clamped')
+      assertEqual(clamped.lines.length, 2, '钳制后行数')
+      assertEqual(clamped.lines[1], '五...', '钳制末行收缩逐字')
+      assert(plainMeasure(clamped.lines[1]) <= 45, '末行适配 maxWidth')
+
+      // 极端窄列：任何前缀 + '...' 均超宽且 '...' 本身超宽 → 退化空串（绘制层兜底）
+      const degenerated = wrapLines({ text: '一一一一', font: FONT, maxWidth: 20, measure: plainMeasure, maxLines: 1 })
+
+      assertEqual(degenerated.clamped, true, '窄列 clamped')
+      assertEqual(degenerated.lines[0], '', 'ELLIPSIS 超宽 → 空串')
+
+      return 'maxLines=1 → "一..."；maxLines=2 末行 → "五..."；@20px → ""'
+    }
+  },
+  {
     name: 'createWrapCache：容量上限整体清空（WRAP_CACHE_LIMIT）',
     fn: () => {
       assertEqual(WRAP_CACHE_LIMIT, 2000, '缓存上限常量')

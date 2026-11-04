@@ -67,6 +67,22 @@ function linkItemCountOf (col, record, recordNumber, value, emit, maxItems) {
   return Math.min(count, maxItems)
 }
 
+// P2-1 图形列清单（估高阶段行数恒 1，免 valueOf）：tag/check/img 走横排
+// drawItems、progress/button 走 canvas 专属 drawCanvasKindContent，均单行垂直
+// 居中不折行；不含条目列 link/list（行数来自 render 计数）；数组值横排呈现恒
+// 1 行（与 A9 非条目列口径一致），不参与变高模式判定
+const GRAPHIC_ITEM_TYPES = new Set(['tag', 'button', 'check', 'img', 'image', 'progress'])
+
+/** 列级估高描述表（P2-4，循环前预计算）：isEntry = link/list 条目列；
+    graphicItem = 图形呈现列（估高行数恒 1，免 valueOf）；maxItems 仅条目列消费 */
+function estimateColumnDescOf (col) {
+  const isEntry = isLinkColumn(col)
+  const graphicItem =
+    !isEntry && typeof col.type === 'string' && GRAPHIC_ITEM_TYPES.has(col.type)
+
+  return { isEntry, graphicItem, maxItems: col._maxItems ?? DEFAULT_MAX_ITEMS }
+}
+
 /** 文本精算行数：estimateLineCount 短路（len × fontSize ≤ width → 1，无测量） */
 function measuredLineCountOf (text, width, font, fontSize, measure, wrapCache, maxLines) {
   if (estimateLineCount({ text, fontSize, maxWidth: width }) === 1) return 1
@@ -75,19 +91,22 @@ function measuredLineCountOf (text, width, font, fontSize, measure, wrapCache, m
   return wrapLines({ text, font, maxWidth: width, measure, cache: wrapCache, maxLines }).lineCount
 }
 
-/** 文本列行数：空值 0；单行省略与估高恒 1 行（下界），precise 时走精算 */
+/** 文本列行数：空值 0；单行省略与估高恒 1 行（下界），precise 时走精算。
+    !precise 提前于 resolveMaxLinesOf（P2-2）：估高阶段 maxLines 求值结果
+    （_resolveMaxLines/lineClamp 回调）不被消费，逐字等价改写（仅省回调次数）；
+    条目列与数组路径不经本函数（columnLineCount 先行返回） */
 function textLineCountOf (col, record, value, width, precise, font, fontSize, measure, wrapCache) {
   const text = value == null ? '' : String(value)
 
   if (!text) return 0
 
+  // 估高：字符串一律估 1 行（下界），标记待精
+  if (!precise) return 1
+
   const maxLines = resolveMaxLinesOf(col, record)
 
   // 单行省略（含 maxLines == 1）：恒 1 行，不参与变高
   if (!(maxLines > 1)) return 1
-
-  // 估高：字符串一律估 1 行（下界），标记待精
-  if (!precise) return 1
 
   return measuredLineCountOf(text, width, font, fontSize, measure, wrapCache, maxLines)
 }
@@ -291,11 +310,17 @@ export function createVariableRowGeometry ({ initialHeights } = {}) {
       const first = fenwick.findRowAtOffset(y)
       const start = clamp(first - overscan, 0, n)
 
-      // 从窗口首行累加至覆盖 viewH（end = 第一个 topAt ≥ scrollTop + viewH 的行）
+      // 从窗口首行按 heights 直加至覆盖 viewH（end = 第一个 topAt ≥ scrollTop +
+      // viewH 的行；P5：每行一次 Fenwick prefix O(log n) → O(window) 直加，与
+      // 分组求和仅存在 ~1e-15 量级末位浮点差，整数高度精确一致）
       let end = first
       const target = y + Math.max(0, viewH ?? 0)
+      let acc = geometry.topAt(first)
 
-      while (end < n && geometry.topAt(end) < target) end++
+      while (end < n && acc < target) {
+        acc += heights[end]
+        end++
+      }
 
       end = clamp(end + overscan, start, n)
 
@@ -353,9 +378,12 @@ function regionWidthOf (region, widths) {
 /** 全量快速估高（A2.2 管线 1，O(n) 纯算术无测量）：link/list 条目列取真值
     （其余列数组值恒 1 行，A9），字符串列估 1 行下界；同时产出 hasArrayValues
     （模式判定输入，语义收窄 = 存在 link/list 多条目格；row-geometry-controller
-    消费点不改名）。spans（§5.6 分层数据链，缺省 null 零成本）：
+    消费点不改名）。P2 估高免无效求值：图形列免 valueOf（P2-1）、列级描述表
+    预计算 + 非条目列内联三分支（P2-4）、宽/inset 免算（P2-3）——估高对文本
+    内容与宽度零消费，measure/wrapCache/colWidths/treeIndents 仅保留入参兼容
+    （precise 精算路径不经此处）。spans（§5.6 分层数据链，缺省 null 零成本）：
     covered 格与 rowspan>1 主格整格排除（不参与行高，也不得触发 hasArrayValues
-    变高模式升级），rowspan===1 的 colspan 主格按区域宽参与 */
+    变高模式升级） */
 // 每行热路径：拆分会引入参数打包与函数调用开销，复杂度收益低于回归风险（02-optimize A 线裁定 #2②）
 // eslint-disable-next-line complexity
 export function computeRowHeights ({
@@ -370,10 +398,8 @@ export function computeRowHeights ({
 } = {}) {
   const list = records ?? []
   const cols = columns ?? []
-  const widths = colWidths ?? []
   const metrics = rowMetricsOf(theme)
-  const font = cellFontOf(theme)
-  const fontSize = cellFontSizeOf(theme)
+  const descs = cols.map(estimateColumnDescOf)
   const heights = new Array(list.length)
   let hasArrayValues = false
 
@@ -385,34 +411,39 @@ export function computeRowHeights ({
       const col = columnAt(cols, i)
 
       // 合并分层（§5.6）：'excluded'（covered 格 / rowspan>1 主格）整格跳过——
-      // 不参与行高、其数组值也不得触发变高模式升级；region（rowspan===1 的
-      // colspan 主格）按区域宽参与
+      // 不参与行高、其数组值也不得触发变高模式升级（P2-3：估高路径不消费宽，
+      // region 求宽 / treeIndents 求 inset 一并免除，分层数据链判定保留）
       const spanRole = spans ? spanHeightRoleOf(spans, row, i) : null
 
       if (spanRole === 'excluded') continue
 
-      const value = valueOf(col, record)
-      const count = columnLineCount({
-        col,
-        record,
-        recordNumber: row,
-        value,
-        width: contentWidthOf(
-          spanRole ? regionWidthOf(spanRole, widths) : widths[i],
-          metrics.padding,
-          insetOf(treeIndents, i, row)
-        ),
-        precise: false,
-        font,
-        fontSize,
-        measure,
-        wrapCache,
-        emit: undefined
-      })
+      const desc = descs[i]
+      let count
+      let value
+
+      if (desc.graphicItem) {
+        // P2-1：图形列估高行数恒 1（与空值计数 0 在 rowHeight ≥ 2×padding +
+        // lineHeight 的配置下等价，默认主题 36 ≥ 34），免 valueOf（_value 回调
+        // 不执行）
+        count = 1
+      } else if (desc.isEntry) {
+        // 条目列：render 计数真值（估高/精算同路径，不折行）
+        value = valueOf(col, record)
+        count = linkItemCountOf(col, record, row, value, undefined, desc.maxItems)
+      } else {
+        // 非条目列内联三分支（P2-4，与 columnLineCount !precise 路径逐字等价，
+        // 免 textLineCountOf/resolveMaxLinesOf 求值）：数组恒 1 行（A9）、空值 0、
+        // 非空 1（估高下界）；文本列 _value 仍必须执行（数组占位与空值判定）
+        value = valueOf(col, record)
+        count = Array.isArray(value)
+          ? 1
+          : (value == null || String(value) === '' ? 0 : 1)
+      }
 
       if (count > lines) lines = count
 
-      // 模式判定输入（命中后不再重复判定）
+      // 模式判定输入（命中后不再重复判定；图形列不取值、value undefined 不
+      // 参与判定——indicatesVariableMode 已收窄为条目列计数 > 1）
       if (!hasArrayValues) hasArrayValues = indicatesVariableMode(col, value, count)
     }
 

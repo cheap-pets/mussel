@@ -31,12 +31,36 @@ export function cellFontOf (theme) {
 }
 
 // CJK 字符判定：CJK 部首/符号/统一表意文字、日文假名、韩文谚文、全角形态
-const CJK_PATTERN =
-  /[\u2E80-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF\uAC00-\uD7AF]/
+// （P4 码点化：原 CJK_PATTERN 正则逐字 test 换 charCodeAt 范围比较，等价集合，
+// 全部 BMP——surrogate 对与现行为一致，落入原子词段）
 
-/** CJK 单字（含全角标点）：逐字可断 */
-function isCjkChar (ch) {
-  return CJK_PATTERN.test(ch)
+/** 空白判定（JS \s 全集，BMP）：0x09-0x0D、0x20、0xA0、0x1680、0x2000-0x200A、
+    0x2028、0x2029、0x202F、0x205F、0x3000、0xFEFF。
+    热路径（tokenize 每字符调用）：范围链直接展开最快，复杂度豁免口径同
+    row-geometry 每行热路径（拆查表/函数反而引入遍历开销） */
+// eslint-disable-next-line complexity
+function isWhitespaceCode (code) {
+  return code === 0x20 ||
+    (code >= 0x09 && code <= 0x0D) ||
+    code === 0xA0 ||
+    code === 0x1680 ||
+    (code >= 0x2000 && code <= 0x200A) ||
+    code === 0x2028 ||
+    code === 0x2029 ||
+    code === 0x202F ||
+    code === 0x205F ||
+    code === 0x3000 ||
+    code === 0xFEFF
+}
+
+/** CJK 单字判定（含全角标点）：0x2E80-0x9FFF、0xF900-0xFAFF、0xFF00-0xFFEF、
+    0xAC00-0xD7AF（原 CJK_PATTERN 四段）。与空白集合重叠（U+3000 等同落两段），
+    调用方必须保持空白优先判定顺序 */
+function isCjkCode (code) {
+  return (code >= 0x2E80 && code <= 0x9FFF) ||
+    (code >= 0xF900 && code <= 0xFAFF) ||
+    (code >= 0xFF00 && code <= 0xFFEF) ||
+    (code >= 0xAC00 && code <= 0xD7AF)
 }
 
 /**
@@ -60,15 +84,20 @@ export function tokenize (text) {
   while (index < source.length) {
     const ch = source[index]
 
-    if (/\s/.test(ch)) {
+    // P4 码点判定（原两次正则 test 换 charCodeAt 范围比较）；空白与 CJK 集合
+    // 重叠（如 U+3000 同落 CJK 区间），必须保持空白优先的同序 if/else-if
+    const code = source.charCodeAt(index)
+
+    if (isWhitespaceCode(code)) {
       // 空白并入当前 token（无当前 token 时暂存，与后续词合并）
       current += ch
-    } else if (isCjkChar(ch)) {
+    } else if (isCjkCode(code)) {
       push()
       tokens.push(ch)
     } else {
       // 拉丁/数字/半角符号连续段为原子词；此前暂存的行首空白并入词首
-      if (current && !/\S/.test(current)) {
+      // （current 在该点只可能是空串或纯空白累积，判首字符码点即可）
+      if (current && isWhitespaceCode(current.charCodeAt(0))) {
         // current 仅含空白：作为词首前缀保留
       } else {
         push()
@@ -77,10 +106,10 @@ export function tokenize (text) {
       current = ''
 
       while (index < source.length) {
-        const wch = source[index]
+        const wcode = source.charCodeAt(index)
 
-        if (/\s/.test(wch) || isCjkChar(wch)) break
-        word += wch
+        if (isWhitespaceCode(wcode) || isCjkCode(wcode)) break
+        word += source[index]
         index++
       }
 
@@ -113,16 +142,25 @@ export function estimateLineCount ({ text, fontSize, maxWidth }) {
 }
 
 /**
- * 逐字符收缩：使 content + ELLIPSIS 适配 maxWidth（末行自尾部退格并复测）。
- * measure 走上游测量缓存（createMeasureCache），同一文本重复收缩零成本。
+ * 收缩适配：使 content + ELLIPSIS 适配 maxWidth。
+ * 前缀宽度随字符数单调（与 ellipsize 同一假设）⇒ 二分定位最大可容纳前缀
+ * （P4：O(n) 次测量 → O(log n)；measure 走上游测量缓存，重复测量零成本）。
+ * 边界与线性回退一致：无前缀可容纳时先测空前缀，ELLIPSIS 本身超宽返回 ''
+ * （退化空内容，由绘制层兜底），否则返回 ELLIPSIS。
  */
 function shrinkToFit (content, font, maxWidth, measure) {
-  let last = content
+  let lo = 0
+  let hi = content.length
 
-  while (last && measure(last + ELLIPSIS, font) > maxWidth) last = last.slice(0, -1)
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1
+
+    if (measure(content.slice(0, mid) + ELLIPSIS, font) <= maxWidth) lo = mid
+    else hi = mid - 1
+  }
 
   // 极端窄列：ELLIPSIS 本身超宽时丢弃点号（退化为空内容，由绘制层兜底）
-  return measure(last + ELLIPSIS, font) > maxWidth ? '' : last + ELLIPSIS
+  return measure(content.slice(0, lo) + ELLIPSIS, font) > maxWidth ? '' : content.slice(0, lo) + ELLIPSIS
 }
 
 /**

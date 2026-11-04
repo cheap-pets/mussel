@@ -201,7 +201,13 @@
         </div>
 
         <div class="ct-control">
+          <span>性能计数列（默认场景，初始水平视口外）</span>
+          <mu-switch v-model="perfColumnOn" />
+        </div>
+
+        <div class="ct-control">
           <mu-button caption="异步改 records[0].memo + recordsVersion++" @click="onAsyncMutate" />
+          <mu-button caption="recordsVersion++（仅通知）" @click="onNotifyRecordsVersion" />
         </div>
 
         <div class="ct-control">
@@ -500,6 +506,20 @@
 
   const columns = ref(createDefaultColumns())
   const columnsReplaced = ref(false)
+
+  // 性能计数列夹具（20261105-measure-perf-apply B4，默认关闭）：列尾追加、
+  // width 4000 → 左缘 ≈ 1944px 初始水平视口外（舞台 960，scrollLeft=0 不进
+  // viewCols，绘制侧不消费），_value 求值计数落 window.__valueCalls——稳态
+  // 滚动帧增量 = 测量侧（ensureRowMeasured）调用数；仅默认场景接线
+  const perfColumn = {
+    caption: '__perf',
+    value: record => {
+      window.__valueCalls = (window.__valueCalls || 0) + 1
+
+      return record.name
+    },
+    width: 4000
+  }
 
   function onReplaceColumns () {
     columns.value = columnsReplaced.value ? createDefaultColumns() : createAlternateColumns()
@@ -955,6 +975,8 @@
   const recordsOffsetInput = ref('0')
   const scrollToInput = ref('')
   const recordsVersion = ref(0)
+  // 性能计数列开关（B4 采样夹具，默认关闭）
+  const perfColumnOn = ref(false)
   // hover 模式（合并单元格 demo 14：cell 模式区域高亮/移出无残影；其余场景默认 row）
   const hoverMode = ref('row')
 
@@ -1005,7 +1027,9 @@
       case 'fixed': return fixedColumns
       case 'narrow': return narrowColumns
       case 'spans': return spanColumns
-      default: return columns.value
+      // 性能夹具仅默认场景列尾追加（B4 采样开关，默认关闭）；DOM 参照表用
+      // columns 原引用，不受影响
+      default: return perfColumnOn.value ? [...columns.value, perfColumn] : columns.value
     }
   })
 
@@ -1228,6 +1252,14 @@
         recordsVersion: recordsVersion.value
       })
     }, 300)
+  }
+
+  // recordsVersion 仅通知（20261105-measure-perf-apply B3 夹具）：不改数据，
+  // 配合外部就地改值（如 multiline 场景 __ctStage().records[1].long10）观察
+  // 行高是否随通知重估
+  function onNotifyRecordsVersion () {
+    recordsVersion.value++
+    logEvent('recordsVersion++（仅通知，不改数据）', { recordsVersion: recordsVersion.value })
   }
 
   // ---------- 实例方法调试入口 ----------

@@ -13,6 +13,7 @@
  */
 import { checks as textWrapChecks } from './text-wrap.js'
 import { checks as rowGeometryChecks } from './row-geometry.js'
+import { checks as rowGeometryControllerChecks } from './row-geometry-controller.js'
 import { checks as treeChecks } from './tree.js'
 import { checks as spansChecks } from './spans.js'
 import { checks as themeChecks } from './theme.js'
@@ -25,6 +26,7 @@ import { checks as editorChecks } from './editor.js'
 export const moduleChecks = [
   { module: 'text-wrap', checks: textWrapChecks },
   { module: 'row-geometry', checks: rowGeometryChecks },
+  { module: 'row-geometry-controller', checks: rowGeometryControllerChecks },
   { module: 'tree', checks: treeChecks },
   { module: 'spans', checks: spansChecks },
   { module: 'theme', checks: themeChecks },
