@@ -65,13 +65,12 @@ export function attach (el) {
   }
 
   function createMutationObserver () {
-    const onChange = createThrottle(30, mutations => {
+    // 滚动条自身在 thumb/track 上写的 style 不是内容变化，跳过以免回流噪音。
+    // 守卫须在 observer 回调里逐批次判定：throttle 的 trailing 只保留最后一次
+    // 调用的参数，若放在节流回调内，滚动到底部内容变矮时同帧 scroll 写入的
+    // tracks 批次会覆盖内容批次参数，导致内容变化被整体丢弃、收尾刷新不执行
+    const onChange = createThrottle(30, () => {
       if (!ctx.ready) return
-
-      // 滚动条自身在 thumb/track 上写的 style 不是内容变化，跳过以免回流噪音
-      const { tracks } = ctx.elements
-
-      if (tracks && mutations.every(m => tracks.contains(m.target))) return
 
       if (isScrollSizeChanged()) {
         refreshTracks()
@@ -80,7 +79,14 @@ export function attach (el) {
       }
     })
 
-    ctx.mutationObserver = new window.MutationObserver(onChange)
+    ctx.mutationObserver = new window.MutationObserver(mutations => {
+      const { tracks } = ctx.elements
+
+      if (tracks && mutations.every(m => tracks.contains(m.target))) return
+
+      onChange()
+    })
+
     ctx.mutationObserver.observe(el, {
       characterData: true,
       attributes: true,

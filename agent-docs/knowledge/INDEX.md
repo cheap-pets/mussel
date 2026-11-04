@@ -43,9 +43,11 @@
 - [eslint 报错爆量 13 万：demo/dist 被拾取](./project/eslint-demo-dist-false-positives.md) `pitfall` `code@worktree(2026-10-30)`：`demo/**` glob 拾取 demo/dist 产物假报错；项目用全局 eslint 8.57.0，.eslintignore 须含 demo/dist，口径限 src 与 demo/src。
 - [table-ex 重构行为冻结：探针基线逐字比对](./project/table-ex-refactor-frozen-probe.md) `convention` `code@worktree(2026-10-30)`：重构前采集行为快照（警告原文序列/构建序）为冻结基线，重构后逐字比对 + 自检双安全网；探针交付前删除。
 - [table-ex 覆盖层绘制须裁剪到表体区](./project/table-ex-overlay-clip-body-area.md) `convention` `code@worktree(2026-10-31)`：分区 5 hover 绘制统一 withClip 表体区——行滚入表头后半透明 hoverBg 溢入表头叠色；仅 paintFull 无外层收敛。
+- [table-ex 条目列对齐协议](./project/table-ex-item-column-align.md) `convention` `code@worktree(2026-11-04)`：button 组两遍式平移、link 竖排每条各自对齐、tag 横排 itemsStartX；命中矩形 x 随对齐同步。
 
 ## Global
 
+- [throttle-debounce trailing 参数覆盖丢批次](./global/throttle-debounce-trailing-args.md) `pitfall` `doc@5.0.2`：节流回调依赖入参过滤事件源时 trailing 只带最后一次调用参数，前序批次被静默丢弃；过滤须移到节流前逐批判定。
 - [Playwright 验证 watch 驱动路径：经组件实例替换 props](./global/playwright-props-swap-verification.md) `convention`：watch 身份路径 UI 不可达时，经 `el.__vueParentComponent.props` 直替触发；替换后勿触发父重渲。
 - [Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流，transition 不启动](./global/playwright-hidden-page-resize-observer.md) `pitfall`：页面 hidden 时 rAF/RO 停发、定时器节流、transition 永停旧值；手动派发 / page.clock 驱动，canvas 帧依赖用截图强制 BeginFrame。
 - [grid-template-rows 展开动画期间执行 scrollIntoView 会错位](./global/scroll-during-grid-rows-animation.md) `pitfall`：展开动画中滚动落点错位——nextTick 后仍按中间态计算；等动画时长结束后再滚。

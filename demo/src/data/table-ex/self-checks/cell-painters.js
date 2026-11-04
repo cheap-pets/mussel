@@ -13,7 +13,9 @@
  * primary/danger，平铺 danger/disabled 直取）+ LinkColumn/TagColumn 双通道
  * compile 产物断言（canvas 平铺 kind 条目 / dom DOM 形态条目）；tag 17 色、
  * button/disabled、树形列缩进箭头；button link 形态（column.link 列级声明：纯文字链
- * 取色/正文字体/hover 下划线/命中宽度/tooltip 计宽切换）。
+ * 取色/正文字体/hover 下划线/命中宽度/tooltip 计宽切换）；
+ * button 组与 link 竖排对齐（20261104 修复：两遍式测宽按列 align 分布、center 扣
+ * rightInset、命中矩形 x 随对齐同步；link 竖排每条各自对齐）。
  *
  * 问题 1/5/7（G2-3，A1/A5/A7）：槽位锚断言组（首行 y = Math.round(ROW_TOP_INSET +
  * (rowHeight − ROW_TOP_INSET)/2) 不随行高变、水平 center 扣 rightInset、超高行跨列首行同高——
@@ -991,7 +993,40 @@ export const checks = [
         'button 命中矩形 = pill 绘制区（centerY 19 ± TAG_HEIGHT/2，非整格）'
       )
 
-      return '编辑/删除两按钮取色与回报正确（kind=button，含 disabled 字段）'
+      // 对齐（20261104 修复）：两遍式测宽后按列 align 分布——pill 34×2 + gap 8 = 76
+      // ≤ 144，center 起点 = (160−76)/2 = 42、right = 160−8−76 = 76；命中矩形随平移
+      const centeredButtons = [{ caption: '编辑', color: 'danger' }, { caption: '删除' }]
+      const centeredRects = []
+      const centered = drawRecorded(
+        prepareColumn({ field: 'v', type: 'button', align: 'center', buttons: centeredButtons }),
+        {},
+        { measure: fakeMeasure, onItemRect: r => centeredRects.push(r) }
+      )
+
+      assertArray(centeredRects.map(r => r.rect.x), [42, 84], 'center 两 pill 起点 42/84（左基线 8/50 整体平移）')
+      assertEqual(centered.calls.fillText[0].x, 50, 'center pill 文字 x = 起点 + TAG_PADDING_X')
+
+      const rightRects = []
+
+      drawRecorded(
+        prepareColumn({ field: 'v', type: 'button', align: 'right', buttons: centeredButtons }),
+        {},
+        { measure: fakeMeasure, onItemRect: r => rightRects.push(r) }
+      )
+      assertEqual(rightRects[0].rect.x, 76, 'right 起点 = 右缘 padding − 总宽（不受 rightInset 影响）')
+
+      // 窄列（width=100 → 内容宽 84）：两条 76 ≤ 84 仍居中，起点 = (100−76)/2 = 12
+      // 注：末条宽被 min(全宽, 右缘剩余) 封顶 ⇒ 组总宽恒 ≤ 内容宽−gap，回退分支不可达
+      const narrowRects = []
+
+      drawRecorded(
+        prepareColumn({ field: 'v', type: 'button', align: 'center', buttons: centeredButtons }),
+        {},
+        { width: 100, measure: fakeMeasure, onItemRect: r => narrowRects.push(r) }
+      )
+      assertArray(narrowRects.map(r => r.rect.x), [12, 54], '窄列 center 起点 12/54（平移随内容宽收缩）')
+
+      return '编辑/删除两按钮取色与回报正确（kind=button，含 disabled 字段）；center/right 分布 + 窄列平移'
     }
   },
   {
@@ -1386,7 +1421,32 @@ export const checks = [
 
       assertArray(single.calls.fillText.map(c => c.text), ['9'], '单值数字 String 化')
 
-      return `竖排 y=${[19, 37, 55, 73].map(y => y + TEXT_ANCHOR_OFF).join('/')}；success/muted/danger/primary 四态取色正确`
+      // 对齐（20261104 修复）：竖排每条独占一行、各自按列 align 定位（对齐 DOM 版
+      // td text-{align} 作用于每行 inline 条目）；fakeMeasure 'A'=9、'AB'=18
+      const centeredCol = prepareColumn({ field: 'v', type: 'link', align: 'center' })
+      const centered = drawRecorded(centeredCol, { v: ['A', 'AB'] }, { height: 60, measure: fakeMeasure })
+
+      assertArray(centered.calls.fillText.map(c => c.x), [75.5, 71], 'center 每条各自居中（(160−宽)/2：9→75.5、18→71）')
+
+      const centeredInset = drawRecorded(centeredCol, { v: ['A'] }, { measure: fakeMeasure, rightInset: 1 })
+
+      assertEqual(centeredInset.calls.fillText[0].x, 75, 'center 扣 rightInset（本格右缘列线占用）→ 75')
+
+      const rightAligned = drawRecorded(
+        prepareColumn({ field: 'v', type: 'link', align: 'right' }),
+        { v: ['A', 'AB'] },
+        { height: 60, measure: fakeMeasure }
+      )
+
+      assertArray(rightAligned.calls.fillText.map(c => c.x), [143, 134], 'right 各条右缘贴 padding（160−8−宽）')
+
+      // 命中矩形 x 随对齐同步（hover/点击 itemHits 命中链路）
+      const centeredRects = []
+
+      drawRecorded(centeredCol, { v: ['A'] }, { measure: fakeMeasure, onItemRect: r => centeredRects.push(r) })
+      assertEqual(centeredRects[0].rect.x, 75.5, '条目矩形 x = 对齐后起点（itemHits 命中同步）')
+
+      return `竖排 y=${[19, 37, 55, 73].map(y => y + TEXT_ANCHOR_OFF).join('/')}；success/muted/danger/primary 四态取色正确；center/right 各自对齐`
     }
   },
   {
@@ -1527,6 +1587,17 @@ export const checks = [
 
       assertEqual(disabledHover.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled 被 hover 仍 muted')
       assertEqual(disabledHover.calls.fillRect.length, 0, 'disabled 被 hover 不画下划线')
+
+      // 对齐（20261104 修复）与 pill 形态同源：18+8+18 = 44 → center 起点 (160−44)/2 = 58
+      const linkCenteredRects = []
+      const linkCentered = drawRecorded(
+        prepareColumn({ ...column, align: 'center' }),
+        {},
+        { measure: fakeMeasure, onItemRect: r => linkCenteredRects.push(r) }
+      )
+
+      assertArray(linkCentered.calls.fillText.map(c => c.x), [58, 84], 'link 形态 center 文字 x = 58/84（无 pill 内边距）')
+      assertArray(linkCenteredRects.map(r => r.rect.x), [58, 84], '命中矩形 x 随对齐同步（itemHits 命中链路）')
 
       // tooltip 溢出计宽随 link 切换：15 字 = 135，pill 135+16 = 151 > 144 溢出、link 135 ≤ 144 不溢出
       const CAPTION15 = '一二三四五六七八九十壹贰叁肆伍'

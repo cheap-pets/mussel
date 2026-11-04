@@ -303,7 +303,7 @@ export function drawCell (ctx, {
 
   // canvas 专属分发（A3.3）：progress / button 真实绘制，非 items 产物
   if (drawCanvasKindContent(
-    ctx, contentRect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
+    ctx, contentRect, content, col, padding, theme, record, measure, onItemRect, centerY, hoverItem, rightInset
   )) {
     return content
   }
@@ -342,7 +342,7 @@ function isSkippableRect (rect) {
 }
 
 function drawCanvasKindContent (
-  ctx, rect, content, padding, theme, record, measure, onItemRect, centerY, hoverItem
+  ctx, rect, content, col, padding, theme, record, measure, onItemRect, centerY, hoverItem, rightInset
 ) {
   if (content.canvasKind === 'progress') {
     drawProgress(ctx, rect, content, { padding, theme, record, measure, centerY })
@@ -351,13 +351,15 @@ function drawCanvasKindContent (
 
   if (content.canvasKind === 'button') {
     drawButton(ctx, rect, content, {
+      align: col._align,
       padding,
       theme,
       record,
       onItemRect,
       measure,
       centerY,
-      hoverItem
+      hoverItem,
+      rightInset
     })
     return true
   }
@@ -394,13 +396,15 @@ function drawContentItems (
 
   if (col.type === 'link') {
     drawLinkItems(ctx, rect, content.items, {
+      align: col._align,
       padding,
       theme,
       maxItems: col._maxItems,
       onItemRect,
       measure,
       centerY,
-      hoverItem
+      hoverItem,
+      rightInset
     })
 
     return
@@ -1014,16 +1018,21 @@ function drawTag (ctx, item, x, centerY, { maxWidth, theme, measure }) {
 
 // —— link 列竖排（条目列，A3.5） ——
 
-/** 单条 link 文本绘制：单行省略，返回绘制宽度；hovered 时补画 1px 下划线 */
-function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure, hovered) {
-  const { text: display, width } = ellipsize({
-    text,
-    font: cellFontOf(theme),
-    maxWidth: Math.max(0, maxWidth),
-    measure: measureOf(ctx, measure)
-  })
+/** 竖排单条起点：按列 align 各自对齐（center 扣 rightInset、right 缘贴 padding，
+    与 textAnchorX 同口径；对齐语义对齐 DOM 版 td 的 text-{align} 作用于每行
+    inline 条目） */
+function alignedEntryX (rect, align, width, padding, rightInset) {
+  if (align === 'center') return rect.x + (rect.width - rightInset - width) / 2
+  if (align === 'right') return rect.x + rect.width - padding - width
+  return rect.x + padding
+}
 
+/** 单条 link 文本绘制（省略预处理产物入参，x 由调用方按 align 定位）：返回绘制
+    宽度；hovered 时补画 1px 下划线 */
+function drawLinkEntry (ctx, display, width, x, y, maxWidth, theme, color, hovered) {
   if (!display) return 0
+
+  const drawn = Math.min(width, Math.max(0, maxWidth))
 
   ctx.font = cellFontOf(theme)
   ctx.fillStyle = color
@@ -1035,28 +1044,30 @@ function drawLinkEntry (ctx, text, x, y, maxWidth, theme, color, measure, hovere
   ctx.fillText(display, x, anchor.y)
 
   if (hovered) {
-    ctx.fillRect(x, linkUnderlineY(anchor.y), Math.min(width, Math.max(0, maxWidth)), 1)
+    ctx.fillRect(x, linkUnderlineY(anchor.y), drawn, 1)
   }
 
-  return Math.min(width, maxWidth)
+  return drawn
 }
 
 // link 列竖排（数组每条一行）：单条超宽省略；条目数 > maxItems 时第 maxItems 条
-// 显示 '...'；首行槽位锚 + 后续行 += lineHeight；条目矩形（含 dots）经 onItemRect
-// 回报（kind 'link'，携带 disabled）
-function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect, measure, centerY, hoverItem }) {
+// 显示 '...'；首行槽位锚 + 后续行 += lineHeight；每条按列 align 各自对齐；
+// 条目矩形（含 dots）经 onItemRect 回报（kind 'link'，携带 disabled）
+function drawLinkItems (ctx, rect, items, {
+  align, padding, theme, maxItems, onItemRect, measure, centerY, hoverItem, rightInset
+}) {
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0 || !items.length) return
 
   const lineHeight = cellLineHeightOf(theme)
-  const x = rect.x + padding
+  const measureFn = measureOf(ctx, measure)
   const overflow = items.length > maxItems
   const shown = overflow ? items.slice(0, maxItems - 1) : items
 
   let y = centerY
 
-  const report = (index, width, disabled) => {
+  const report = (index, x, width, disabled) => {
     onItemRect?.({
       kind: 'link',
       index,
@@ -1065,31 +1076,40 @@ function drawLinkItems (ctx, rect, items, { padding, theme, maxItems, onItemRect
     })
   }
 
+  // 单条绘制：先省略测宽再按 align 定位（对齐需实宽参与），命中矩形 x 随对齐
+  const drawEntry = (text, index, color, hovered, disabled) => {
+    const { text: display, width } = ellipsize({
+      text,
+      font: cellFontOf(theme),
+      maxWidth: contentWidth,
+      measure: measureFn
+    })
+
+    if (!display) return
+
+    const x = alignedEntryX(rect, align, Math.min(width, contentWidth), padding, rightInset)
+    const drawn = drawLinkEntry(ctx, display, width, x, y, contentWidth, theme, color, hovered)
+
+    if (drawn > 0) report(index, x, drawn, disabled)
+  }
+
   for (let i = 0; i < shown.length; i++) {
     const item = shown[i]
     const hovered = isLinkEntryHovered(hoverItem, item, i)
 
-    const width = drawLinkEntry(
-      ctx,
+    drawEntry(
       String(item.text ?? ''),
-      x,
-      y,
-      contentWidth,
-      theme,
+      i,
       hovered ? linkHoverColorOf(item, theme) : linkTextColorOf(item, theme),
-      measure,
-      hovered
+      hovered,
+      isTruthyAttr(item.disabled)
     )
-
-    if (width > 0) report(i, width, isTruthyAttr(item.disabled))
 
     y += lineHeight
   }
 
   if (overflow) {
-    const width = drawLinkEntry(ctx, ELLIPSIS, x, y, contentWidth, theme, theme?.primaryColor, measure)
-
-    if (width > 0) report(maxItems - 1, width, false)
+    drawEntry(ELLIPSIS, maxItems - 1, theme?.primaryColor, false, false)
   }
 }
 
@@ -1164,11 +1184,36 @@ function isButtonHovered (hoverItem, index) {
   return hoverItem?.kind === 'button' && hoverItem.index === index
 }
 
+/** button 组第一遍测宽（对齐布局前置）：x 恒从左缘起逐条省略计宽（截断/哨兵
+    行为与左对齐基线一致——对齐平移仅发生在未超宽时，全宽条目平移后仍放得下，
+    不改变截断结果）；返回绘制条目（含原始 index 与省略产物）与累计偏移
+    （含尾随 gap，计入对齐总宽前扣除，itemsStartX 口径） */
+function layoutButtonEntries (buttons, rect, rightBound, padding, font, measureFn, link) {
+  const entries = []
+  let offset = 0
+
+  for (let i = 0, x = rect.x + padding; i < buttons.length && x < rightBound; i++) {
+    const button = buttons[i] ?? EMPTY_BUTTON
+    const ellipsized = ellipsizeButton(button, x, rightBound, font, measureFn, link)
+
+    // ellipsize 空文本 → null 哨兵（原 -1 同义），停止绘制后续按钮
+    if (!ellipsized) break
+
+    entries.push({ button, index: i, ...ellipsized })
+    offset += ellipsized.width + padding
+    x += ellipsized.width + padding
+  }
+
+  return { entries, offset }
+}
+
 // button 组（tag 同构轻量按钮）：横排，底 translucent + 边框/文字 colors[color].color；
 // disabled 置灰；超宽丢弃；条目矩形回报 itemHits（kind 'button'，命中区 = pill 区）。
-// link 形态（column.link）改走正文字体纯文字链，宽度/字体随之切换
+// link 形态（column.link）改走正文字体纯文字链，宽度/字体随之切换。
+// 对齐两遍式（drawItems 同构）：测宽后按列 align 平移起点（center 扣 rightInset，
+// 超宽回退左对齐）
 function drawButton (ctx, rect, content, {
-  padding, theme, record, onItemRect, measure, centerY, hoverItem
+  align, padding, theme, record, onItemRect, measure, centerY, hoverItem, rightInset
 }) {
   const buttons = content.buttons
   const link = content.link === true
@@ -1182,20 +1227,14 @@ function drawButton (ctx, rect, content, {
   const rightBound = rect.x + rect.width - padding
   const font = link ? cellFontOf(theme) : tagFontOf(theme)
   const measureFn = measureOf(ctx, measure)
+  const { entries, offset } = layoutButtonEntries(buttons, rect, rightBound, padding, font, measureFn, link)
 
-  let x = rect.x + padding
+  if (!entries.length) return
 
-  for (let i = 0; i < buttons.length; i++) {
-    if (x >= rightBound) break
+  let x = itemsStartX(rect, align, padding, offset - padding, true, contentWidth, rightInset)
 
-    const button = buttons[i] ?? EMPTY_BUTTON
-    const hovered = isButtonHovered(hoverItem, i)
-    const ellipsized = ellipsizeButton(button, x, rightBound, font, measureFn, link)
-
-    // ellipsize 空文本 → null 哨兵（原 -1 同义），停止绘制后续按钮
-    if (!ellipsized) break
-
-    const { text, width } = ellipsized
+  for (const { button, index, text, width } of entries) {
+    const hovered = isButtonHovered(hoverItem, index)
 
     if (link) {
       drawButtonLink(ctx, button, text, width, x, centerY, record, theme, font, hovered)
@@ -1205,7 +1244,7 @@ function drawButton (ctx, rect, content, {
 
     onItemRect?.({
       kind: 'button',
-      index: i,
+      index,
       rect: { x, y: centerY - TAG_HEIGHT / 2, width, height: TAG_HEIGHT },
       disabled: isTruthyAttr(button.disabled)
     })
