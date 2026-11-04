@@ -1,6 +1,7 @@
 import { isString } from '@/utils/type'
 
 import { TextColumn } from './text'
+import { EnumColumn } from './enum'
 import { RecordNumberColumn } from './record-number'
 import { CheckColumn } from './check'
 import { BoolColumn } from './bool'
@@ -14,6 +15,7 @@ import './style.scss'
 
 const ColumnTypes = {
   text: TextColumn,
+  enum: EnumColumn,
   rec_no: RecordNumberColumn,
   check: CheckColumn,
   bool: BoolColumn,

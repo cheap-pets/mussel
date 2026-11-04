@@ -1,39 +1,30 @@
 import { ensureFn } from '@/utils/type'
-import { createDisplayMapper } from '../mappings'
 
 export const TextColumn = {
   compile: (column, dom = false) => {
     const getLineClamp = ensureFn(column.multiline ? column.lineClamp : 1)
     const showTitle = column.title === true || null
-    const mapper = createDisplayMapper(column)
+    const getColor = ensureFn(column.color)
 
     return ({ record, value }) => {
-      const mapped = mapper(value)
+      // 空文本落占位链（falsy 值与映射期 !mapped?.text 门控同式）
+      if (!value) return null
 
-      if (!mapped?.text) return null
-
-      const {
-        text,
-        color,
-        class: mClass,
-        style: mStyle,
-        title = showTitle && mapped.text,
-        ...attrs
-      } = mapped
-
+      const text = value
+      const color = getColor(record, value) || null
+      const title = showTitle && text
       const lineClamp = getLineClamp(record, value)
 
       if (!dom) {
         return {
           text,
           color,
-          title,
-          ...attrs
+          title
         }
       }
 
-      const itemClass = [mClass]
-      const itemStyle = [mStyle]
+      const itemClass = []
+      const itemStyle = []
 
       if (color) itemClass.push(`text-${color}`)
       if (lineClamp !== 1) itemClass.push('pre-line')
@@ -48,7 +39,7 @@ export const TextColumn = {
               is: 'div',
               text,
               title,
-              attrs: { class: itemClass, style: itemStyle, ...attrs }
+              attrs: { class: itemClass, style: itemStyle }
             }
           ]
         }
@@ -56,8 +47,7 @@ export const TextColumn = {
         return {
           text,
           class: itemClass,
-          style: itemStyle,
-          ...attrs
+          style: itemStyle
         }
       }
     }

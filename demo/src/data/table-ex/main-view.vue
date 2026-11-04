@@ -405,7 +405,7 @@
       {
         caption: '状态',
         field: 'status',
-        type: 'text',
+        type: 'enum',
         width: 100,
         sortable: true,
         mappings: STATUS_MAPPINGS,
@@ -430,6 +430,9 @@
       {
         caption: '备注',
         field: 'memo',
+        // text 列 color 夹具（mappings 收敛 enum 独有后 text 的染色能力，20261104）：
+        // 非空值染 primary，空值无色
+        color: (r, v) => (v ? 'primary' : null),
         width: 180,
         minWidth: 120,
         maxWidth: 260,
@@ -445,9 +448,17 @@
         }
       },
       { caption: '启用', field: 'active', type: 'bool', width: 80, color: (r, v) => (v ? 'success' : null), editable: true, editor: true },
-      // 等级列：mappings 特性收敛为 text 类型独有（20261103），number 不再支持 options
-      // 显示映射与编辑下拉派生，纯数值列展示
-      { caption: '等级', field: 'level', type: 'number', width: 90, editable: true, editor: true },
+      // 等级列：enum 类型（20261104）——options 显示映射（显示 label）+ 编辑 select
+      // 下拉（column.options 原样通道，提交 number）；number 纯数值演示由数量列覆盖
+      {
+        caption: '等级',
+        field: 'level',
+        type: 'enum',
+        width: 90,
+        editable: true,
+        editor: true,
+        options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }]
+      },
       { caption: '锁定宽', field: 'level', width: 90, resizable: false },
       { caption: '覆盖文本', field: 'name', width: 150, text: record => `文本:${record.name}` },
       { caption: 'value 字符串', field: 'extra', width: 110, value: '固定值' },

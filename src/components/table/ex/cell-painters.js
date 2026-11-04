@@ -3,7 +3,7 @@ import { ensureFn } from '@/utils/type'
 import { resolveColumnType } from '../column-types'
 import { wrapLines, ellipsize, cellFontOf, MAX_LINES_LIMIT } from './text-wrap'
 import { createDisplayMapper } from '../mappings'
-import { TextColumn } from '../column-types/text'
+import { EnumColumn } from '../column-types/enum'
 import { expandableAt, isExpandedKey } from './tree'
 import {
   TREE_INDENT,
@@ -26,7 +26,7 @@ import {
 //   条目自带 kind 协议字段（link/tag），颜色经平铺 color/danger 直取不走 class 解析
 //   （column.title 经 _title 由 resolveCellTooltip 消费，tooltip 求值见模块尾）
 
-// - _mapText 为 text 类型独有（compile 内 mapper 为双端单一事实源，此处仅供
+// - _mapText 为 enum 类型独有（EnumColumn.compile 内 mapper 为双端单一事实源，此处仅供
 //   row-geometry 估高取显示文本，不参与绘制取值）
 
 // 绘制锚（Q2 统一垂直锚，与 lineHeight 解耦）：centerY = Math.round(rect.y +
@@ -162,11 +162,11 @@ function resolveMaxLinesBuilder (column, maxLines) {
   return () => 1
 }
 
-/** 纯文本直渲短路判定（P2）：非 multiline 原生 text 列且无映射源（text+mappings/
-    options 列必须走 compile 内 mapper，映射列不得短路） */
+/** 纯文本直渲短路判定（P2）：非 multiline 原生 text 列且无 color（带 color 列必须
+    走 compile 产 color，短路直渲产物只有 { text }，染色会丢失） */
 function isPlainTextColumn (column, canvasOnlyKind) {
   return !column.text && !column.multiline && !canvasOnlyKind &&
-    column.mappings == null && column.options == null &&
+    column.color == null &&
     (column.type == null || column.type === '' || column.type === 'text')
 }
 
@@ -199,9 +199,9 @@ export function prepareColumn (column, { placeholder } = {}) {
 
   col._render = createColumnRender(column, type, canvasOnlyKind)
 
-  // 显示映射 text 类型独有（TextColumn.compile 内 mapper 为双端单一事实源，此处仅供
+  // 显示映射 enum 类型独有（EnumColumn.compile 内 mapper 为双端单一事实源，此处仅供
   // row-geometry 估高取显示文本）；无映射源不挂恒等 mapper
-  col._mapText = !column.text && type === TextColumn &&
+  col._mapText = !column.text && type === EnumColumn &&
     (column.mappings != null || column.options != null)
     ? createDisplayMapper(column)
     : null
@@ -222,7 +222,7 @@ export function resolveCellContent (col, { record, recordNumber, emit }) {
   // value 传字符串等非函数值经 ensureFn 包装后恒为函数，不会抛错
   const value = col._value(record) ?? (col.field ? record[col.field] : undefined)
 
-  // P2 短路：纯文本列免 render 调用与中间对象（无映射源才短路，映射列走 compile 内 mapper）
+  // P2 短路：纯文本列免 render 调用与中间对象（无 color 才短路，染色列走 compile 产 color）
   if (col._plainText) return { text: value }
 
   const { class: _class, style: _style, title: _title, ...params } =

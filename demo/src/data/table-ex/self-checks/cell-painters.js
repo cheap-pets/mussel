@@ -3,8 +3,9 @@
  *
  * 覆盖（02-design.md G2 判据 + 既有取值链回归）：
  * 取值链 text→value→field（含 value 传字符串）、rec_no 的 recordNumber、check disabled
- * （底衬 bgStrong 回退链）、mappings/options 显示映射（mappings 特性 text 独有，
- * 20261103：mappings 优先、仅 options 转换、未命中原值回退）、number/currency/date
+ * （底衬 bgStrong 回退链）、mappings/options 显示映射（mappings 特性 enum 独有，
+ * 20261104：mappings 优先、仅 options 转换、未命中原值回退；text 列不走映射、
+ * 改挂 column.color 染色）、number/currency/date
  * 格式化与 color 双通道（canvas 平铺色名直取 / dom text-{c} class）、
  * 自定义类型 render、link/tag/items 落地；canvas 类型分发（progress/button 产 canvasKind，03-review-5
  * 问题 6）；多行文本（maxLines 常量与函数形态 lineClamp 行级求值——评审 6 P6、
@@ -45,6 +46,9 @@ import { LinkColumn } from '../../../../../src/components/table/column-types/lin
 import { TagColumn } from '../../../../../src/components/table/column-types/tag.js'
 import { BoolColumn } from '../../../../../src/components/table/column-types/bool.js'
 import { NumberColumn } from '../../../../../src/components/table/column-types/number.js'
+import { TextColumn } from '../../../../../src/components/table/column-types/text.js'
+import { EnumColumn } from '../../../../../src/components/table/column-types/enum.js'
+import { resolveColumnType } from '../../../../../src/components/table/column-types/index.js'
 import { t } from '../../../../../src/langs/index.js'
 
 // 主题夹具：字段名对齐 theme.js readSnapshot（值用固定 rgba 串，与探针无关）；
@@ -394,11 +398,18 @@ export const checks = [
     }
   },
   {
-    name: 'mappings 显示映射：文本、对象形式与 default 兜底（text 列）',
+    name: 'enum 注册与 mappings 显示映射：文本、对象形式与 default 兜底（enum 独有）',
     fn: () => {
+      // enum 恢复一级列类型（20261104）：注册表命中 + 类型缺省 align center
+      assert(resolveColumnType('enum') === EnumColumn, "resolveColumnType('enum') 应命中 EnumColumn")
+      assert(prepareColumn({ type: 'enum' })._align === 'center', 'enum 类型缺省 align 应为 center')
+
+      // 无映射源 enum：mapper 恒等，原值显示
+      assert(content(prepareColumn({ field: 's', type: 'enum' }), { s: 'raw' }).text === 'raw', '无映射源 enum 原值显示')
+
       const col = prepareColumn({
         field: 's',
-        type: 'text',
+        type: 'enum',
         mappings: { a: '甲', b: { text: '乙' }, default: '未知' }
       })
 
@@ -406,19 +417,19 @@ export const checks = [
       assert(content(col, { s: 'b' }).text === '乙', 'mapping 对象形式应取 text 字段')
       assert(content(col, { s: 'zz' }).text === '未知', '未匹配应落 default 兜底映射')
 
-      // 空值不映射：null 经 _plainText 短路直出 null（落占位链，不走 default）
+      // 空值不映射：enum 经 compile 内 mapper，v == null → null（落占位链，不走 default）
       assert(content(col, { s: null }).text == null, '空值不映射（不走 default，落占位链）')
 
-      return '甲 / 乙 / default 未知；空值不映射'
+      return '注册命中 + align center + 甲 / 乙 / default 未知；空值不映射'
     }
   },
   {
-    name: 'mappings/options 优先级：mappings 优先、仅 options 转换、未命中原值回退（text 独有）',
+    name: 'mappings/options 优先级：mappings 优先、仅 options 转换、未命中原值回退（enum 独有）',
     fn: () => {
       // mappings 与 options 同时定义时显示映射只取 mappings
       const both = prepareColumn({
         field: 'v',
-        type: 'text',
+        type: 'enum',
         mappings: { a: '甲' },
         options: [{ value: 'a', label: '乙' }]
       })
@@ -428,7 +439,7 @@ export const checks = [
       // 仅 options：转换为显示映射（mu-select options 口径，'-' 分隔项跳过）
       const onlyOptions = prepareColumn({
         field: 'v',
-        type: 'text',
+        type: 'enum',
         options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, '-', { value: 'x' }]
       })
 
@@ -436,7 +447,7 @@ export const checks = [
       assert(content(onlyOptions, { v: 'x' }).text === 'x', '纯字符串项缺省 label 取 value')
       assert(content(onlyOptions, { v: 5 }).text === 5, '未命中回退原值（number 原样，绘制经 String 化）')
 
-      // number 列不再支持映射（mappings 特性 text 独有，20261103）：options/mappings
+      // number 列不支持映射（mappings 特性 enum 独有，20261104）：options/mappings
       // 不参与显示，文本保持 Intl 格式化
       assert(
         content(prepareColumn({ field: 'v', type: 'number', mappings: { 2: '中' } }), { v: 2 }).text === '2',
@@ -460,7 +471,7 @@ export const checks = [
       const falseText = t('Table.BOOL_FALSE')
 
       assert(trueText !== 'Table.BOOL_TRUE' && falseText !== 'Table.BOOL_FALSE', 'BOOL_TRUE/FALSE 词条存在（非 path 回退）')
-      assert(plain._mapText === null, 'bool 不挂 _mapText（mappings 特性 text 独有）')
+      assert(plain._mapText === null, 'bool 不挂 _mapText（mappings 特性 enum 独有）')
       assert(content(plain, { b: true }).text === trueText, '缺省 true → locale 文案')
       assert(content(plain, { b: false }).text === falseText, '缺省 false → locale 文案')
       assert(content(plain, { b: null }).text == null, '缺省空值落占位链')
@@ -496,31 +507,43 @@ export const checks = [
     }
   },
   {
-    name: 'prepareColumn：_mapText/_plainText 判定（text 独有挂载 / 映射列不短路——P2 修复）',
+    name: 'prepareColumn：_mapText/_plainText 判定（enum 独有挂载 / text 忽略映射源短路 / 带色不短路——P2 修复）',
     fn: () => {
+      // text 列不再走映射（20261104）：mappings/options 被忽略，回归直渲短路显示原值
       const mapped = prepareColumn({ field: 'v', type: 'text', mappings: { a: '甲' } })
 
-      assert(typeof mapped._mapText === 'function', 'text + mappings 挂 _mapText（估高用）')
-      assert(mapped._plainText === false, 'text+mappings 不短路（走 compile 内 mapper——P2 短路修复核心）')
-      assert(content(mapped, { v: 'a' }).text === '甲', 'text+mappings 经 render 映射显示（映射不丢）')
+      assert(mapped._mapText === null, 'text + mappings 不挂 _mapText（映射收敛 enum 独有）')
+      assert(mapped._plainText === true, 'text+mappings 短路直渲（映射源对 text 不产生效果）')
+      assert(content(mapped, { v: 'a' }).text === 'a', 'text+mappings 显示原值（不走映射）')
 
       const fromOptions = prepareColumn({ field: 'v', type: 'text', options: [{ value: 1, label: '低' }] })
 
-      assert(typeof fromOptions._mapText === 'function', 'text + options 挂 _mapText（options 转换）')
-      assert(fromOptions._plainText === false, 'text+options 不短路')
+      assert(fromOptions._mapText === null, 'text + options 不挂 _mapText')
+      assert(fromOptions._plainText === true, 'text+options 短路直渲（显示原值）')
+
+      // enum 挂载与不短路（估高与显示同源，映射不丢）
+      const enumMapped = prepareColumn({ field: 'v', type: 'enum', mappings: { a: '甲' } })
+
+      assert(typeof enumMapped._mapText === 'function', 'enum + mappings 挂 _mapText（估高用）')
+      assert(enumMapped._plainText === false, 'enum+mappings 不短路（走 compile 内 mapper）')
+      assert(content(enumMapped, { v: 'a' }).text === '甲', 'enum+mappings 经 render 映射显示（映射不丢）')
+
+      const enumFromOptions = prepareColumn({ field: 'v', type: 'enum', options: [{ value: 1, label: '低' }] })
+
+      assert(typeof enumFromOptions._mapText === 'function', 'enum + options 挂 _mapText（options 转换）')
+      assert(enumFromOptions._plainText === false, 'enum+options 不短路')
 
       assert(
         prepareColumn({ field: 'v', type: 'number', options: [{ value: 1, label: '低' }] })._mapText === null,
         'number+options 不挂 _mapText（number 不可映射）'
       )
-      assert(prepareColumn({ field: 'v' })._mapText === null, '无映射源 text 列 _mapText null')
-      assert(prepareColumn({ field: 'v' })._plainText === true, '无映射源 text 列 _plainText 直渲短路')
+      assert(prepareColumn({ field: 'v', type: 'enum' })._mapText === null, '无映射源 enum 列 _mapText null（不挂恒等 mapper）')
       assert(
         prepareColumn({ field: 'v', type: 'currency', mappings: { a: '甲' } })._mapText === null,
         'currency+mappings 不可映射'
       )
       assert(
-        prepareColumn({ field: 'v', type: 'text', text: r => 'T', mappings: { a: '甲' } })._mapText === null,
+        prepareColumn({ field: 'v', type: 'enum', text: r => 'T', mappings: { a: '甲' } })._mapText === null,
         'column.text 优先显示不挂映射（估高与显示同源）'
       )
       assert(
@@ -532,7 +555,32 @@ export const checks = [
         'number 列不走短路（经 render 分支）'
       )
 
-      return 'text 独有挂载 / number、currency 不挂 / 映射列不短路 / 无源短路全正确'
+      return 'enum 独有挂载 / text 忽略映射源短路 / number、currency 不挂全正确'
+    }
+  },
+  {
+    name: 'text color：canvas 平铺色名、dom text-{c} class（字符串与函数色名两形态）',
+    fn: () => {
+      // 字符串色名：canvas 通道平铺 color
+      const colored = content(prepareColumn({ field: 'v', color: 'success' }), { v: '文本' })
+
+      assert(colored.text === '文本' && colored.color === 'success', 'color 字符串色名 → canvas 产物 { text, color }')
+
+      // 函数色名：(record, value) => 色名；返回 null 无色
+      const fnColor = (r, v) => (v === '甲' ? 'primary' : null)
+      const fnColored = content(prepareColumn({ field: 'v', color: fnColor }), { v: '甲' })
+
+      assert(fnColored.text === '甲' && fnColored.color === 'primary', 'color 函数按值取色（甲 → primary）')
+      assert(content(prepareColumn({ field: 'v', color: fnColor }), { v: '乙' }).color === null, 'color 函数返回 null 无色')
+
+      // dom 通道（compile(column, true) 直调，resolveCellContent 链会剔除 DOM 通道字段）：
+      // color 落 text-{c} class
+      const dom = TextColumn.compile({ color: 'success' }, true)({ record: {}, value: '文本' })
+
+      assert(dom.text === '文本' && dom.class[0] === 'text-success', 'dom 通道 color 落 text-{c} class')
+      assert(TextColumn.compile({}, true)({ record: {}, value: '文本' }).class.length === 0, 'dom 通道无 color class 为空数组')
+
+      return '字符串/函数色名 canvas 平铺 + dom text-{c}'
     }
   },
   {
@@ -770,12 +818,12 @@ export const checks = [
     }
   },
   {
-    name: '各类型离屏绘制非空像素（text/bool/text+mappings/number/currency/date/rec_no/check/link/tag）',
+    name: '各类型离屏绘制非空像素（text/bool/enum+mappings/number/currency/date/rec_no/check/link/tag）',
     fn: () => {
       const cases = [
         ['text', prepareColumn({ field: 'v' }), { v: '文本' }],
         ['bool', prepareColumn({ field: 'v', type: 'bool' }), { v: true }],
-        ['text+mappings', prepareColumn({ field: 'v', type: 'text', mappings: { a: '甲' } }), { v: 'a' }],
+        ['enum+mappings', prepareColumn({ field: 'v', type: 'enum', mappings: { a: '甲' } }), { v: 'a' }],
         ['number', prepareColumn({ field: 'v', type: 'number' }), { v: 1234.5 }],
         ['currency', prepareColumn({ field: 'v', type: 'currency' }), { v: 1234.5 }],
         ['date', prepareColumn({ field: 'v', type: 'date' }), { v: new Date(2026, 0, 9) }],

@@ -1,30 +1,29 @@
-import { isObject } from '@/utils/type'
-import { warnDeprecated } from '@/utils/warn'
+import { createDisplayMapper } from '../mappings'
 
-// enum 为废弃兼容类型：显示映射与回退链统一走 mappings 语义（table/mappings.js），
-// 新用法请改用 text/number/bool 列 + mappings/options
+// enum 列类型：显示映射独占 mappings/options（经 createDisplayMapper，mappings 优先、
+// 仅 options 时转换为显示映射）；编辑态由 ex/editor.js COLUMN_TYPE_EDITORS 映射为 select
 export const EnumColumn = {
   align: 'center',
-  compile (column) {
-    warnDeprecated({
-      component: 'Table',
-      deprecated: 'column type "enum"',
-      alternative: 'mappings/options on text/number/bool columns'
-    })
+  compile: (column, dom = false) => {
+    const mapper = createDisplayMapper(column)
 
-    const enumMap = Object.fromEntries(
-      Object
-        .entries(column.mappings || {})
-        .map(([
-          key,
-          value
-        ]) => ([
-          key,
-          isObject(value) ? { ...value } : { text: value }
-        ]))
-    )
+    return ({ value }) => {
+      const mapped = mapper(value)
 
-    // 未命中回退链与 mappings 统一：default ?? 原值（value == null 落占位链）
-    return ({ value }) => enumMap[value] ?? enumMap.default ?? { text: value }
+      // 空文本落占位链（与 text 列 !mapped?.text 门控同式；value == null 有映射时 mapper 产 null）
+      if (!mapped?.text) return null
+
+      const {
+        text,
+        color,
+        class: mClass,
+        style: mStyle,
+        ...attrs
+      } = mapped
+
+      return dom
+        ? { text, class: [mClass, color && `text-${color}`], style: [mStyle], ...attrs }
+        : { text, color, ...attrs }
+    }
   }
 }
