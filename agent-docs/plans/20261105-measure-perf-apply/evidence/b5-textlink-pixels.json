@@ -1,0 +1,14 @@
+{
+  "textLinkRow0_primary": 109,
+  "listAllLinkRow0": {
+    "primary": 258,
+    "teal": 74
+  },
+  "listAllTextRow0_primary": 0,
+  "textLinkRow1_primary": 93,
+  "listAllLinkRow1": {
+    "danger": 161,
+    "disabledGray": 319
+  },
+  "note": "items scene canvas pixel counts, tol 24"
+}

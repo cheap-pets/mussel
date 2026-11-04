@@ -11,7 +11,7 @@
 ## Project
 
 - [sizechange 事件：监听元素尺寸变化](./project/sizechange-event.md) `convention`：监听元素尺寸变化统一 `@sizechange`，禁止直接 new ResizeObserver；首挂即触发一次、不冒泡、卸载不解绑。
-- [table-ex 前台性能验证：原型劫持计数 + props 直替 + lastRelayout](./project/table-ex-performance-profiling.md) `convention`：劫持 measureText/setTransform 计数 + props 直替注入 + `lastRelayout` 归因 relayout 耗时。
+- [table-ex 前台性能验证：原型劫持计数 + props 直替 + lastRelayout](./project/table-ex-performance-profiling.md) `convention`：劫持 measureText/setTransform 计数 + props 直替注入 + `lastRelayout` 归因；精算跳过用视口外计数列。
 - [headless Edge 做 DOM/控制台断言（无 playwright 时）](./project/headless-edge-dom-verification.md) `convention`：无 playwright 时用 Edge `--dump-dom` 断言 DOM 与 console 输出，脚本走 dist/mussel.js dev 构建。
 - [包裹层 display: contents 兼容既有扁平布局](./project/wrapper-display-contents-legacy-layout.md) `convention`：新增包裹层默认 display: contents 保扁平布局；`& > *` 不再命中孙元素，overflow/max-width 须下放。
 - [桌面环境下触摸手势的运行时验证](./project/touch-gesture-runtime-verification.md) `convention`：桌面无 ontouchstart 手势拦截器不注册；addInitScript 伪造门槛 + 合成触摸事件 + page.clock 驱动长按。
@@ -32,7 +32,7 @@
 - TagColumn 颜色协议 color 直取 `convention` `code@worktree(2026-11-03)`：tag 颜色 = color 属性；DOM 恒落 text-{c}+bg-{c}-translucent（缺省 gray），画布 item.color 查 colors（gray 走快照 gray/hoverBg）；mu-tag--{color} 色类已废弃。
 - table 列 mappings enum 类型独占 `convention` `code@worktree(2026-11-04)`：mappings/options 仅 enum 列生效（EnumColumn.compile 内 createDisplayMapper，双端同源）；text 不读映射；编辑器 select 仅 enum。
 - table 列 color 参数 `convention` `code@worktree(2026-11-04)`：text/bool/number/currency/date/datetime 支持 color（色名 | (record,value)=>色名）；dom 通道落 text-{c}，canvas 通道 color 属性直出。
-- table 列 compile(column, dom) 双通道协议 `convention` `code@worktree(2026-11-03)`：dom=true 产 is/class/style/events，否则产 color 等数据属性；link/tag canvas 条目平铺 { kind, text, onItemClick }（识别 kind 优先，onItemClick 自持 cell-item-click 派发、payload 与 DOM 版同构），check/img 未改造仍走 is/class；link 恒两色 primary/danger。
+- table 列 compile(column, dom) 双通道协议 `convention` `code@worktree(2026-11-03)`：dom=true 产 is/class/style/events，否则产 color 等数据属性；link/tag canvas 条目平铺 { kind, text, onItemClick }（识别 kind 优先，onItemClick 自持 cell-item-click 派发、payload 与 DOM 版同构），check/img 未改造仍走 is/class；link 颜色已并入 list 体系（见列类型体系 v2）。
 - enum 列恢复：显示映射独占 + 编辑 select `convention` `code@worktree(2026-11-04)`：type:'enum' 已注册（无废弃警告），align 缺省 center；mappings 优先、options 转换、default 键回退；table-ex 编辑 select。
 - mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
 - table 列 items 协议 events 可选 `pitfall` `code@worktree(2026-10-29)`：控制台 `v-on with no argument expects an object value`——text/image 等产物无 events；消费端 `table-row.vue` 须 `v-on="item.events ?? {}"` 兜底，生产端不必强加。
@@ -44,6 +44,8 @@
 - [table-ex 重构行为冻结：探针基线逐字比对](./project/table-ex-refactor-frozen-probe.md) `convention` `code@worktree(2026-10-30)`：重构前采集行为快照（警告原文序列/构建序）为冻结基线，重构后逐字比对 + 自检双安全网；探针交付前删除。
 - [table-ex 覆盖层绘制须裁剪到表体区](./project/table-ex-overlay-clip-body-area.md) `convention` `code@worktree(2026-10-31)`：分区 5 hover 绘制统一 withClip 表体区——行滚入表头后半透明 hoverBg 溢入表头叠色；仅 paintFull 无外层收敛。
 - [table-ex 条目列对齐协议](./project/table-ex-item-column-align.md) `convention` `code@worktree(2026-11-04)`：button 组两遍式平移、link 竖排每条各自对齐、tag 横排 itemsStartX；命中矩形 x 随对齐同步。
+- [table 列类型体系 v2：list/link 兼容壳/text.link](./project/table-column-types-v2.md) `convention` `code@b3528d7`：text.link 链色单行、list 条目列 column 级 link + label 键、link 兼容壳委托 list、双端数组仅 list 支持。
+- [table-ex recordsVersion 行高粘性契约](./project/table-ex-recordsversion-height-contract.md) `convention` `code@worktree(2026-11-05)`：精算缓存按行快照跳过；就地改 records 须 bump recordsVersion，否则行高不更新。
 
 ## Global
 

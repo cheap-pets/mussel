@@ -5,6 +5,8 @@
 - 计数：劫持 `CanvasRenderingContext2D.prototype.measureText / setTransform`（可写），包 counter 后复原；measureText 计数反映测量缓存真实底层调用（缓存命中不计）。
 - 注入大数据/列：`document.querySelector('.mu-table-ex').__vueParentComponent.props.records / columns / placeholder / fixedLeftColumns` 直替；props watch 异步 flush，赋值后须 `setTimeout ≥ 60ms` 再读结果。
 - 耗时归因：`getLayoutInfo().lastPaint.elapsed` 只覆盖 paint()；relayout 阶段（估高扫描/几何重建）看 `getLayoutInfo().lastRelayout = { elapsed, scanCount, rebuild }`，scanCount 0 = 估高签名命中跳过扫描。
+- 精算跳过验证（P1 后）：计数列 `value: r => { window.__valueCalls++; return r.f }` 须放**视口外**列——视口内列会被绘制侧 resolveCellContent 每帧调用，帧增量不可能为 0；已见区域稳态滚动帧增量应为 0。
+- `measureText` 计数不能判断精算跳过（wrapCache 命中后本就接近 0，无区分度）；确定性覆盖走 `self-checks/row-geometry-controller.js` 断言。
 
 ## 陷阱
 

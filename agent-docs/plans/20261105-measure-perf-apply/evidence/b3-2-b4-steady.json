@@ -1,0 +1,38 @@
+{
+  "viewUnchanged": true,
+  "scrollTopConstant": true,
+  "contentHeights": [
+    3600206
+  ],
+  "allDeltasZero": true,
+  "deltas": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "paintMedian": 0.9,
+  "paintValues": [
+    1.8,
+    0.9,
+    0.9,
+    1.1,
+    0.9,
+    0.8,
+    1.1,
+    0.9,
+    1.1,
+    0.6,
+    0.7,
+    0.9
+  ],
+  "paintRows": "5548-5564"
+}

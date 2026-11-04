@@ -1,0 +1,55 @@
+{
+  "head": "自检结果（self-checks 各模块断言 + 数据生成器断言）/ 重绘计数与 lastPaint 统计 / 主题快照；实例接入（S1）前统计显示为占位",
+  "total": 216,
+  "pass": 216,
+  "fail": 0,
+  "fails": [],
+  "modules": {
+    "text-wrap": 14,
+    "row-geometry": 16,
+    "row-geometry-controller": 8,
+    "tree": 14,
+    "spans": 13,
+    "theme": 16,
+    "layout": 21,
+    "cell-painters": 51,
+    "painter": 23,
+    "interactions": 19,
+    "editor": 17,
+    "data": 4
+  },
+  "controller": [
+    {
+      "ok": true,
+      "title": "[row-geometry-controller]P1 跳过：首次进窗精算计数列求值 = 窗口行数；稳态再次调用增量 0首扫 10 次求值；稳态帧 +0（几何值"
+    },
+    {
+      "ok": true,
+      "title": "[row-geometry-controller]recordsVersion 快照失配：版本 bump 后重算（增量恢复 = 窗口行数），rows 引用不变不"
+    },
+    {
+      "ok": true,
+      "title": "[row-geometry-controller]列宽签名漂移：resolveForRelayout 清空精算缓存 → 重算（syncMeasuredHeigh"
+    },
+    {
+      "ok": true,
+      "title": "[row-geometry-controller]spans 身份变化：buildSpans 新 SpansIndex → resolveForRelayout"
+    },
+    {
+      "ok": true,
+      "title": "[row-geometry-controller]几何值高于缓存真值：直接抬高后不跳过、重算并回落（merge max 命中路径）heightAt ≠ cach"
+    },
+    {
+      "ok": true,
+      "title": "[row-geometry-controller]条目列粘性契约：render 计数漂移不 bump 版本不重算；bump 后重算反映新计数不 bump → 7"
+    },
+    {
+      "ok": true,
+      "title": "[row-geometry-controller]树缩进快照失配：levels 变化（rows 引用/版本不变）→ 重算且高度 36 → 52行 1 失配重算："
+    },
+    {
+      "ok": true,
+      "title": "[row-geometry-controller]重扫 rebuild：rows 引用替换（同 record 对象）→ 重扫 + merge 混入真值 tota"
+    }
+  ]
+}

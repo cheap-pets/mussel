@@ -1,0 +1,18 @@
+{
+  "page": "/data/table/",
+  "consoleErrors": 0,
+  "rows": 46,
+  "linkAnchors": 28,
+  "listCells": 16,
+  "firstLinks": [
+    {
+      "text": "alice@example.com",
+      "cls": "text-primary"
+    },
+    {
+      "text": "文本项也整列成链",
+      "cls": "text-primary"
+    }
+  ],
+  "note": "DOM 版 mu-table link/list 渲染抽测"
+}
