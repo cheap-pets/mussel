@@ -7,8 +7,8 @@ import { spanHeightRoleOf } from './spans'
 // uniform：O(1) 算式（topAt = i×h、visibleRange 与 layout.computeViewRows 恒等）；
 // variable：Float64Array + 内部 Fenwick 树（前缀和/单点加/偏移定位 O(log n)）
 
-// 行高来源 = 主动计算（A2.2）：computeRowHeights 全量快速估高（O(n) 纯算术，文本列
-// 数组值 /link 条目计数真值、字符串估 1 行下界）+ ensureRowMeasured 进窗精算（wrapLines
+// 行高来源 = 主动计算（A2.2）：computeRowHeights 全量快速估高（O(n) 纯算术，link/list
+// 条目计数真值、字符串估 1 行下界）+ ensureRowMeasured 进窗精算（wrapLines
 // 折行 + maxLines 钳制）；measure/wrapCache 经参数注入，与绘制折行同函数同缓存
 
 /** 主题快照缺字段时的容错回退（与 --row-height / --cell-line-height 缺省一致） */
@@ -18,25 +18,14 @@ const FONT_SIZE_FALLBACK = 14
 
 const DEFAULT_MAX_ITEMS = 10
 
-/** 图形/条目列类型（pill/方块/图片/轨道，不产生可折行文本；数组值横排呈现不触发
-    变高模式）。成员按渲染形态判定而非实际行数——文本输出列（text/number/bool/
-    date/rec_no/...）即使缺省单行也不入此表，其数组值按每元素一行呈现、可触发变高 */
-const GRAPHIC_ITEM_TYPES = new Set(['tag', 'button', 'check', 'img', 'image', 'progress'])
-
 function clamp (value, min, max) {
   return Math.min(Math.max(value, min), max)
 }
 
-/** link 条目列判定（render 产物计数决定行数） */
+/** link/list 条目列判定（render 产物计数决定行数；20261104-table-column-type：
+    list 为新增条目列类型，link 为委托 list 的兼容壳，col.type 字符串保持不变） */
 function isLinkColumn (col) {
-  return col.type === 'link'
-}
-
-/** 文本呈现列判定（text/date/bool/.../无 type/自定义 text 输出，不含 link 与图形/条目列） */
-function isTextPresentingColumn (col) {
-  if (isLinkColumn(col)) return false
-
-  return typeof col.type === 'string' ? !GRAPHIC_ITEM_TYPES.has(col.type) : true
+  return col.type === 'link' || col.type === 'list'
 }
 
 function cellFontSizeOf (theme) {
@@ -103,10 +92,9 @@ function textLineCountOf (col, record, value, width, precise, font, fontSize, me
   return measuredLineCountOf(text, width, font, fontSize, measure, wrapCache, maxLines)
 }
 
-/** 单列行数求值（A2.2 列级展开）：link 条目列 render 计数（数组值同样经 render，
-    与绘制及 linkOption.max 截断同口径）；文本呈现列数组值按每元素一行
-    （min(length, maxItems)，与 drawArrayLines 同口径）；图形/条目列数组值横排
-    呈现恒 1 行（drawItems 不换行，超出右缘丢弃）；其余走 textLineCountOf */
+/** 单列行数求值（A2.2 列级展开）：link/list 条目列 render 计数（数组值同样经 render，
+    与绘制及 listOption.max 截断同口径）；其余列数组值恒 1 行（A9：数组值渲染门控
+    落占位，渲染链路不再逐元素拆行）；其余走 textLineCountOf */
 function columnLineCount ({
   col,
   record,
@@ -124,9 +112,8 @@ function columnLineCount ({
 
   if (isLinkColumn(col)) return linkItemCountOf(col, record, recordNumber, value, emit, maxItems)
 
-  if (Array.isArray(value)) {
-    return isTextPresentingColumn(col) ? Math.min(value.length, maxItems) : 1
-  }
+  // A9：非条目列数组值恒 1 行（渲染门控落占位，不再逐元素拆行/按元素数计高）
+  if (Array.isArray(value)) return 1
 
   return textLineCountOf(col, record, value, width, precise, font, fontSize, measure, wrapCache)
 }
@@ -348,9 +335,10 @@ function columnAt (cols, i) {
   return cols[i] ?? {}
 }
 
-/** 模式判定输入（A2.2）：文本呈现列数组值 / link 条目数 > 1（计数结果复用） */
+/** 模式判定输入（A2.2；A9 后仅剩 link/list 条目数 > 1——文本列数组值不再拆行，
+    计数结果复用。hasArrayValues 语义随之收窄：true = 存在 link/list 多条目格） */
 function indicatesVariableMode (col, value, count) {
-  return (Array.isArray(value) && isTextPresentingColumn(col)) || (isLinkColumn(col) && count > 1)
+  return isLinkColumn(col) && count > 1
 }
 
 /** 区域宽（rowspan === 1 的 colspan 主格按区域宽参与本行，§5.6） */
@@ -362,9 +350,10 @@ function regionWidthOf (region, widths) {
   return sum
 }
 
-/** 全量快速估高（A2.2 管线 1，O(n) 纯算术无测量）：文本列数组值/link 条目列取
-    真值（图形/条目列数组值恒 1 行），字符串列估 1 行下界；同时产出
-    hasArrayValues（模式判定输入）。spans（§5.6 分层数据链，缺省 null 零成本）：
+/** 全量快速估高（A2.2 管线 1，O(n) 纯算术无测量）：link/list 条目列取真值
+    （其余列数组值恒 1 行，A9），字符串列估 1 行下界；同时产出 hasArrayValues
+    （模式判定输入，语义收窄 = 存在 link/list 多条目格；row-geometry-controller
+    消费点不改名）。spans（§5.6 分层数据链，缺省 null 零成本）：
     covered 格与 rowspan>1 主格整格排除（不参与行高，也不得触发 hasArrayValues
     变高模式升级），rowspan===1 的 colspan 主格按区域宽参与 */
 // 每行热路径：拆分会引入参数打包与函数调用开销，复杂度收益低于回归风险（02-optimize A 线裁定 #2②）

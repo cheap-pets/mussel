@@ -163,10 +163,11 @@ function resolveMaxLinesBuilder (column, maxLines) {
 }
 
 /** 纯文本直渲短路判定（P2）：非 multiline 原生 text 列且无 color（带 color 列必须
-    走 compile 产 color，短路直渲产物只有 { text }，染色会丢失） */
+    走 compile 产 color，短路直渲产物只有 { text }，染色会丢失）；text.link 列
+    （column.link === true）同样排除——链色需 compile 产 color，直渲会丢 */
 function isPlainTextColumn (column, canvasOnlyKind) {
   return !column.text && !column.multiline && !canvasOnlyKind &&
-    column.color == null &&
+    column.color == null && column.link !== true &&
     (column.type == null || column.type === '' || column.type === 'text')
 }
 
@@ -212,6 +213,18 @@ export function prepareColumn (column, { placeholder } = {}) {
   return col
 }
 
+/** A9 统一数组门控（decisions）：数组值仅条目列（link/list/tag/button——tag/button
+    的值本身即条目数组）与非字符串 type 自定义列消费；其余列（type null/''/其他
+    字符串：text/number/date/bool/enum/check/img/progress 等）落空内容 → 占位链 */
+function isArrayValueRejected (col, value) {
+  if (!Array.isArray(value)) return false
+
+  const t = col.type
+
+  return (t == null || t === '' || typeof t === 'string') &&
+    t !== 'link' && t !== 'list' && t !== 'tag' && t !== 'button'
+}
+
 // 单元格内容解析（table-row.vue cells computed 的纯函数等价物）：返回 { text } /
 // { items } / { canvasKind, ... }（皆空 = 空内容，绘制落 placeholder）
 export function resolveCellContent (col, { record, recordNumber, emit }) {
@@ -221,6 +234,9 @@ export function resolveCellContent (col, { record, recordNumber, emit }) {
 
   // value 传字符串等非函数值经 ensureFn 包装后恒为函数，不会抛错
   const value = col._value(record) ?? (col.field ? record[col.field] : undefined)
+
+  // A9 门控置于 _plainText 短路之前，直渲路径一并覆盖
+  if (isArrayValueRejected(col, value)) return {}
 
   // P2 短路：纯文本列免 render 调用与中间对象（无 color 才短路，染色列走 compile 产 color）
   if (col._plainText) return { text: value }
@@ -385,7 +401,6 @@ function drawContentItems (
         measure,
         wrapCache,
         maxLines,
-        maxItems: col._maxItems,
         centerY,
         rightInset
       })
@@ -394,7 +409,8 @@ function drawContentItems (
     }
   }
 
-  if (col.type === 'link') {
+  // link/list 条目列竖排（list 兼容链路：canvas 产物 kind 恒 'link'，绘制零新增分支）
+  if (col.type === 'link' || col.type === 'list') {
     drawLinkItems(ctx, rect, content.items, {
       align: col._align,
       padding,
@@ -442,7 +458,6 @@ function drawDisplayText (
       measure,
       wrapCache,
       maxLines,
-      maxItems: col._maxItems,
       centerY,
       rightInset
     })
@@ -534,22 +549,15 @@ function textAnchorX (rect, align, padding, rightInset) {
       : rect.x + padding
 }
 
-// 文本取值落地（A3.5 统一规则）：
-// - 数组值 → 每元素一行（逐元素 String 化）、首行槽位锚，行数 > maxItems 时
-//   第 maxItems 行显示 '...'（dots 字面，DOM link.js:47/tag.js:46 同款）
-
+// 文本取值落地（A3.5 统一规则；A9 后无数组形态——数组值在 resolveCellContent
+// 门控落占位，不会进入本函数）：
 // - 字符串 + maxLines>1 → wrapLines 多行（与 row-geometry 同一函数与缓存；
 //   measure 未注入时回退单行省略），首行槽位锚起排
 // - 其余 → 单行省略（垂直锚 = 槽位中心 centerY，与多行首行同式）
 // color 为 canvas 通道色名查表产物（drawDisplayText 直取 content.color）
 function drawTextValue (ctx, rect, display, align, {
-  padding, theme, color, measure, wrapCache, maxLines, maxItems, centerY, rightInset
+  padding, theme, color, measure, wrapCache, maxLines, centerY, rightInset
 }) {
-  if (Array.isArray(display)) {
-    drawArrayLines(ctx, rect, display, align, { padding, theme, color, maxItems, measure, centerY, rightInset })
-    return
-  }
-
   const contentWidth = rect.width - padding * 2
 
   if (contentWidth <= 0) return
@@ -597,38 +605,6 @@ function drawTextValue (ctx, rect, display, align, {
 
   ctx.textBaseline = anchor.baseline
   ctx.fillText(single, textAnchorX(rect, align, padding, rightInset), anchor.y)
-}
-
-/** 数组值多行（文本呈现列）：每元素一行、首行槽位锚、超限第 maxItems 行 '...' */
-function drawArrayLines (ctx, rect, values, align, { padding, theme, color, maxItems, measure, centerY, rightInset }) {
-  const contentWidth = rect.width - padding * 2
-
-  if (contentWidth <= 0 || !values.length) return
-
-  const lineHeight = cellLineHeightOf(theme)
-  const shown = values.length > maxItems
-    ? values.slice(0, maxItems - 1).concat(ELLIPSIS)
-    : values
-  const font = cellFontOf(theme)
-  const measureFn = measureOf(ctx, measure)
-
-  ctx.fillStyle = color || theme?.textColor
-  ctx.textAlign = align
-
-  // 首行光学居中锚（问题 1），后续行 += lineHeight
-  const anchor = centeredTextAnchor(ctx, centerY)
-
-  ctx.textBaseline = anchor.baseline
-
-  let y = anchor.y
-
-  for (const element of shown) {
-    const { text: line } = ellipsize({ text: String(element ?? ''), font, maxWidth: contentWidth, measure: measureFn })
-
-    if (line) ctx.fillText(line, textAnchorX(rect, align, padding, rightInset), y)
-
-    y += lineHeight
-  }
 }
 
 // —— 树形列（A2.4/A3.4） ——
@@ -698,20 +674,39 @@ function resolveItemKind (item) {
   return item.text != null ? 'text' : null
 }
 
-/** link 条目文本色：disabled → muted；danger → colors.danger.color；默认 primaryColor */
+/** link 条目色板解析：color 色名查表优先（list/link 条目平铺色名），
+    item.danger 回退保留（老式自定义 kind:'link' 条目）；无 color/danger 返回 null */
+function linkPaletteOf (item, theme) {
+  const palette = item.color ? theme?.colors?.[item.color] : null
+
+  if (palette) return palette
+
+  return item.danger ? theme?.colors?.danger : null
+}
+
+/** link 条目文本色：disabled → muted；color 色名查表（danger 回退保留）；无 color
+    时非 link 项（list 纯文本条目 link:false）正文色 textColor、其余（含老式自定义
+    kind:'link' 条目）colors.primary 谱系（R1-1b：谱系回退与真实主题同源） */
 function linkTextColorOf (item, theme) {
   if (isTruthyAttr(item.disabled)) return theme?.textColorMuted || theme?.gray
 
-  const palette = item.danger ? theme?.colors?.danger : null
+  if (item.link === false) return theme?.textColor
 
-  return palette?.color || theme?.primaryColor
+  const palette = linkPaletteOf(item, theme) ?? theme?.colors?.primary
+
+  return palette?.color ?? theme?.primaryColor
 }
 
-/** link 条目悬停色：danger → colors.danger.hover（danger-4）；默认 colors.primary.hover（primary-4）；disabled muted */
+/** link 条目悬停色：disabled → muted；color 色名查表 hover 谱系（danger 回退
+    保留）；无 color 时非 link 项 textColor（hover 门控下不达，防御回退）、其余
+    colors.primary 谱系 hover ?? color ?? primaryColor（R1-1b：恢复 HEAD 老式
+    自定义 kind:'link' 条目悬停谱系，丢失 .hover 层属实现回归） */
 export function linkHoverColorOf (item, theme) {
   if (isTruthyAttr(item.disabled)) return theme?.textColorMuted || theme?.gray
 
-  const palette = item.danger ? theme?.colors?.danger : theme?.colors?.primary
+  if (item.link === false) return theme?.textColor
+
+  const palette = linkPaletteOf(item, theme) ?? theme?.colors?.primary
 
   return palette?.hover ?? palette?.color ?? theme?.primaryColor
 }
@@ -795,7 +790,9 @@ function itemsStartX (rect, align, padding, offset, visible, contentWidth, right
 }
 
 // tag/link 条目命中矩形回报（其余类别不回报）。命中区 = 绘制区域：tag 为 pill
-// 绘制区，link 为首行行框；disabled 随条目回报（与取色/点击同口径 isTruthyAttr）
+// 绘制区，link 为首行行框；disabled 随条目回报（与取色/点击同口径 isTruthyAttr）；
+// link 条目附 link 门控布尔（item.link !== false，interactions 光标/悬停消费——
+// list 非 link 列条目无指针反馈，与 isLinkEntryHovered 同谓词）
 function reportHitRect (onItemRect, item, index, x, width, centerY, theme) {
   const kind = resolveItemKind(item)
   let rect = null
@@ -813,7 +810,8 @@ function reportHitRect (onItemRect, item, index, x, width, centerY, theme) {
       kind,
       index,
       rect,
-      disabled: isTruthyAttr(item.disabled)
+      disabled: isTruthyAttr(item.disabled),
+      ...(kind === 'link' ? { link: item.link !== false } : null)
     })
   }
 }
@@ -888,10 +886,13 @@ function cellLineHeightOf (theme) {
   return theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
 }
 
-/** link 条目悬停判定（横排 drawItem 与竖排 drawLinkItems 共用防口径漂移） */
+/** link 条目悬停判定（横排 drawItem 与竖排 drawLinkItems 共用防口径漂移）：
+    item.link !== false 门控——list 纯文本条目（link:false）可点击不悬停（A6）；
+    老式自定义 kind:'link' 条目无 link 字段（undefined ≠ false）行为不变 */
 function isLinkEntryHovered (hoverItem, item, index) {
   return hoverItem?.kind === 'link' &&
     hoverItem.index === index &&
+    item.link !== false &&
     !isTruthyAttr(item.disabled)
 }
 
@@ -1067,17 +1068,23 @@ function drawLinkItems (ctx, rect, items, {
 
   let y = centerY
 
-  const report = (index, x, width, disabled) => {
+  // 列内条目 link 门控基线（列级 column.link 语义：整列同值）；绘制层 dots 条目
+  // 无 item，随列取首条目值（空集缺省 true，老式自定义条目集行为不变）
+  const columnEntryLink = items.length ? items[0].link !== false : true
+
+  const report = (index, x, width, disabled, entryLink) => {
     onItemRect?.({
       kind: 'link',
       index,
       rect: { x, y: y - lineHeight / 2, width, height: lineHeight },
-      disabled
+      disabled,
+      // link 门控布尔（item.link !== false 同 isLinkEntryHovered 谓词，光标/悬停消费）
+      link: entryLink
     })
   }
 
   // 单条绘制：先省略测宽再按 align 定位（对齐需实宽参与），命中矩形 x 随对齐
-  const drawEntry = (text, index, color, hovered, disabled) => {
+  const drawEntry = (text, index, color, hovered, disabled, entryLink) => {
     const { text: display, width } = ellipsize({
       text,
       font: cellFontOf(theme),
@@ -1090,7 +1097,7 @@ function drawLinkItems (ctx, rect, items, {
     const x = alignedEntryX(rect, align, Math.min(width, contentWidth), padding, rightInset)
     const drawn = drawLinkEntry(ctx, display, width, x, y, contentWidth, theme, color, hovered)
 
-    if (drawn > 0) report(index, x, drawn, disabled)
+    if (drawn > 0) report(index, x, drawn, disabled, entryLink)
   }
 
   for (let i = 0; i < shown.length; i++) {
@@ -1102,14 +1109,15 @@ function drawLinkItems (ctx, rect, items, {
       i,
       hovered ? linkHoverColorOf(item, theme) : linkTextColorOf(item, theme),
       hovered,
-      isTruthyAttr(item.disabled)
+      isTruthyAttr(item.disabled),
+      item.link !== false
     )
 
     y += lineHeight
   }
 
   if (overflow) {
-    drawEntry(ELLIPSIS, maxItems - 1, theme?.primaryColor, false, false)
+    drawEntry(ELLIPSIS, maxItems - 1, theme?.primaryColor, false, false, columnEntryLink)
   }
 }
 
@@ -1458,27 +1466,13 @@ function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, li
   return false
 }
 
-/** 文本路径全文与溢出判定（drawTextValue/drawArrayLines 同式）：数组值 = 逐元素
-    一行（超 maxItems dots / 任一元素超宽）；字符串按 maxLines 分多行 wrapLines
+/** 文本路径全文与溢出判定（drawTextValue 同式；A9 后无数组形态——数组值在
+    resolveCellContent 门控落占位，source 恒为字符串）：按 maxLines 分多行 wrapLines
     clamped / 单行 measure 对比（contentWidth ≤ 0 按溢出返回，绘制层不画的格子允许提示） */
 function resolveTooltipText (col, record, source, {
   contentWidth, regionHeight, padding, theme, measure, wrapCache
 }) {
   if (source == null) return null
-
-  if (Array.isArray(source)) {
-    const text = joinTooltipText(source)
-
-    if (text === '') return null
-
-    return {
-      content: text,
-      overflowOnly: true,
-      overflow:
-        source.length > col._maxItems ||
-        source.some(element => measure(String(element ?? ''), cellFontOf(theme)) > contentWidth)
-    }
-  }
 
   const text = String(source)
 
@@ -1528,7 +1522,8 @@ function resolveTooltipItems (col, record, items, params) {
 
   if (text === '') return null
 
-  if (col.type === 'link') {
+  // link/list 条目列竖排口径（list 与 link 共用，20261104-table-column-type）
+  if (col.type === 'link' || col.type === 'list') {
     return {
       content: text,
       overflowOnly: true,
@@ -1601,6 +1596,6 @@ export function resolveCellTooltip (
     return resolveTooltipItems(col, record, content.items, { ...overflowParams, regionHeight, wrapCache })
   }
 
-  // 文本路径（content.text 数组 → drawArrayLines 口径；null/undefined 无文本源 → null）
+  // 文本路径（A9 后 content.text 恒为字符串或缺失；null/undefined 无文本源 → null）
   return resolveTooltipText(col, record, content.text, { ...overflowParams, regionHeight, wrapCache })
 }

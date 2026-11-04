@@ -38,15 +38,48 @@
   vertical-align: middle;
 }
 
-.mu-table__link-cell,
+.mu-table__list-cell,
 .mu-table__tag-cell {
   padding: calc(var(--cell-padding) - 2px);
 }
 
-.mu-table__link-cell > .mu-link,
 .mu-table__tag-cell > .mu-tag {
   overflow: hidden;
   max-width: calc(100% - 4px);
   margin: 2px;
   vertical-align: middle;
+}
+
+// list 列（含 link 兼容列）：竖排每项单行、超长省略；link 项 a 元素常态无下划线、
+// hover 下划线；disabled 条目置灰并拦截点击。条目不复用 .mu-link（atomic 导入序下
+// 其 color: var(--mu-primary-color) 会覆盖 text-{color} 染色），颜色走 text-{color} 类
+.mu-table__list-cell > span,
+.mu-table__list-cell > a {
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mu-table__list-cell > a {
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.mu-table__list-cell [disabled] {
+  pointer-events: none;
+  color: var(--mu-text-color-muted);
+}
+
+// text 列 link 选项（text.link）：链色文本（text-{color} 染色）+ hover 下划线
+.mu-table__cell-link {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

@@ -13,12 +13,48 @@
 
     <demo-section
       title="列类型"
-      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / tag / img；enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes"
+      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / list / tag / img；enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes"
       wide>
       <mu-table
         :columns="typeColumns"
         :records="records"
         key-field="id" />
+    </demo-section>
+
+    <demo-section
+      title="list 列 / text.link"
+      note="list 列仅接受数组值：元素按文本行渲染、全条目可点击；column 级 link:true 整列 link 渲染（全 text 或全 link）；text 列 link:true 链色渲染"
+      :code="listCode"
+      wide>
+      <mu-table
+        :columns="listColumns"
+        :records="listRecords"
+        key-field="id"
+        placeholder="-"
+        @cell-item-click="logItemClick('list 全 text 列')($event)" />
+      <span class="demo-log">cell-item-click 日志：{{ listClickLog || '（点击 list 条目后记录）' }}</span>
+
+      <mu-table
+        :columns="listLinkColumns"
+        :records="listLinkRecords"
+        key-field="id"
+        style="margin-top: 12px"
+        @cell-item-click="logItemClick('list 全 link 列')($event)" />
+      <span class="demo-log">list 全 link 列点击日志：{{ listLinkClickLog || '（点击 list 条目后记录）' }}</span>
+
+      <mu-table
+        :columns="textLinkColumns"
+        :records="textLinkRecords"
+        key-field="id"
+        style="margin-top: 12px" />
+
+      <mu-table
+        :columns="compatColumns"
+        :records="compatRecords"
+        key-field="id"
+        style="margin-top: 12px"
+        @cell-item-click="logItemClick('link 兼容列')($event)" />
+      <span class="demo-log">link 兼容列点击日志：{{ compatClickLog || '（点击 link 条目后记录）' }}</span>
     </demo-section>
 
     <demo-section
@@ -72,7 +108,7 @@
 
     <demo-section
       title="边界与回归"
-      note="空数据显示占位、placeholder 替换空值、disabled 链接不可点"
+      note="空数据显示占位、placeholder 替换空值、disabled 链接不可点、text 列数组值落占位（不再按元素拆行/序列化）"
       regression
       vertical>
       <mu-table
@@ -85,6 +121,12 @@
         key-field="id"
         placeholder="-"
         style="max-height: 240px" />
+      <mu-table
+        :columns="arrayTextColumns"
+        :records="arrayTextRecords"
+        key-field="id"
+        placeholder="-"
+        style="max-height: 160px" />
     </demo-section>
   </demo-page>
 </template>
@@ -169,6 +211,150 @@ const columns = [
         { caption: 'REMOVE' }
       ]
     }
+  ]
+
+  // —— list 列 / text.link（20261104-table-column-type） ——
+
+  const listCode = `<mu-table :columns="columns" :records="records" key-field="id" @cell-item-click="..." />
+
+const columns = [
+  // list 列仅接受数组值，元素默认按文本行渲染（整列全 text）
+  { caption: '条目', field: 'items', type: 'list', listOption: { max: 6 } },
+  // 列级 link: true 整列 link 渲染（条目色 color 控制，缺省 primary）
+  { caption: '链接', field: 'links', type: 'list', link: true },
+  // text 列 link:true 按链色渲染，颜色由 color 控制（缺省 primary）
+  { caption: '链接', field: 'url', link: true, color: 'teal' }
+]`
+
+  // 全 text 列（无 column.link）：遗留条目级 link 键夹具验证其不参与渲染
+  // （人工-1 [1-1] 负向断言：{ label, link: true } 条目仍渲染 span、可点击、无色类）
+  const listRecords = [
+    {
+      id: 1,
+      name: '混合条目',
+      items: [
+        '纯文本项',
+        { label: '遗留 link 键项', link: true },
+        { label: '附加键项', id: 42, link: true }
+      ]
+    },
+    {
+      id: 2,
+      name: 'caption 兼容',
+      items: [{ caption: '旧键条目' }, { caption: '旧键链接', link: true }]
+    },
+    {
+      id: 3,
+      name: '标量值',
+      items: '不是数组（落占位）'
+    },
+    {
+      id: 4,
+      name: '超限 dots',
+      items: Array.from({ length: 12 }, (_, i) => `条目 ${i + 1}`)
+    }
+  ]
+
+  const listColumns = [
+    { caption: '名称', field: 'name', width: '120px' },
+    { caption: 'list 全 text 列（max=6）', field: 'items', type: 'list', listOption: { max: 6 }, width: '200px', title: true }
+  ]
+
+  // 全 link 列（column 级 link: true，R1 语义迁移）：整列条目 a + text-{color}
+  // （缺省 primary、条目 color 覆盖、disabled 置灰、附加键保留）
+  const listLinkRecords = [
+    {
+      id: 1,
+      name: '缺省/变体',
+      links: [
+        '文本项也整列成链',
+        { label: '附加键链接', id: 42 },
+        { label: 'teal 变体', color: 'teal' },
+        { label: '禁用项', disabled: true },
+        { label: '危险项', color: 'danger' }
+      ]
+    },
+    {
+      id: 2,
+      name: 'caption 兼容',
+      links: [{ caption: '旧键链接' }]
+    },
+    {
+      id: 3,
+      name: '超限 dots',
+      links: Array.from({ length: 12 }, (_, i) => ({ label: `链接 ${i + 1}`, color: i % 3 === 0 ? 'teal' : undefined }))
+    }
+  ]
+
+  const listLinkColumns = [
+    { caption: '名称', field: 'name', width: '120px' },
+    { caption: 'list 全 link 列（column.link，max=6）', field: 'links', type: 'list', link: true, listOption: { max: 6 }, width: '220px', title: true }
+  ]
+
+  const textLinkRecords = [
+    { id: 1, name: '缺省 primary', url: '主色链接文本' },
+    { id: 2, name: 'color teal', site: '青色链接文本' },
+    {
+      id: 3,
+      name: 'multiline+lineClamp',
+      long: '多行链色文本：link 选项与 multiline、lineClamp 组合时逐行保留链色与下划线交互，超出钳制行数末行收缩省略。'.repeat(3)
+    }
+  ]
+
+  const textLinkColumns = [
+    { caption: '名称', field: 'name', width: '140px' },
+    { caption: 'text.link（缺省 primary）', field: 'url', link: true, width: '160px' },
+    { caption: 'text.link（color teal）', field: 'site', link: true, color: 'teal', width: '160px' },
+    { caption: 'multiline link（danger）', field: 'long', link: true, color: 'danger', multiline: true, lineClamp: 2, width: '240px' }
+  ]
+
+  // link 兼容列（A7）：type:'link' 内部转换为 list 渲染（共用同一实现代码）；
+  // danger:true → color danger、对象 color 键激活、disabled 置灰不可点
+  const compatRecords = [
+    {
+      id: 1,
+      name: '混合形态',
+      links: [
+        { caption: '普通链接' },
+        { caption: '危险链接', danger: true },
+        { caption: '青色链接', color: 'teal' },
+        { caption: '禁用链接', disabled: true }
+      ]
+    },
+    { id: 2, name: '单值', links: 12345 }
+  ]
+
+  const compatColumns = [
+    { caption: '名称', field: 'name', width: '120px' },
+    { caption: 'link 兼容列', field: 'links', type: 'link', width: '240px' }
+  ]
+
+  const listClickLog = ref('')
+  const listLinkClickLog = ref('')
+  const compatClickLog = ref('')
+
+  function logItemClick (source) {
+    return payload => {
+      const text =
+        `${source} record.id=${payload.record?.id}` +
+        ` column.field=${payload.column?.field}` +
+        ` column.caption=${payload.column?.caption}` +
+        ` item=${JSON.stringify(payload.item)}`
+
+      if (source === 'list 全 text 列') listClickLog.value = text
+      else if (source === 'list 全 link 列') listLinkClickLog.value = text
+      else compatClickLog.value = text
+    }
+  }
+
+  // text 列数组值回归夹具（A9）：不再按元素拆行/序列化，落占位
+  const arrayTextRecords = [
+    { id: 1, name: ['数组一', '数组二'], count: [1, 2, 3] }
+  ]
+
+  const arrayTextColumns = [
+    { caption: '名称（text 数组值）', field: 'name', width: '160px' },
+    { caption: '数量（无 type 数组值）', field: 'count', width: '160px' }
   ]
 
   const sparseRecords = [

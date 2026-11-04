@@ -378,6 +378,14 @@
         active: i % 2 === 0,
         checked: false,
         level: (i % 3) + 1,
+        // list/text.link/A9 占位夹具（20261104-table-column-type，R1 列级 link）：
+        // 仅前几行配值（undefined 落占位）；list 列为全 text 列（无 column.link），
+        // 条目遗留 link 键不参与渲染（负向夹具：仍渲染为纯文本条目）
+        list: i < 5
+          ? [`条目 ${n}`, { label: '遗留 link 键条目', link: true, id: n }, { label: '附加键条目', id: n + 1000 }]
+          : undefined,
+        textLink: i < 5 ? `链接 ${n}` : undefined,
+        legacyArray: i < 3 ? ['甲', '乙'] : undefined,
         empty: null
       }
     }
@@ -462,6 +470,20 @@
       { caption: '锁定宽', field: 'level', width: 90, resizable: false },
       { caption: '覆盖文本', field: 'name', width: 150, text: record => `文本:${record.name}` },
       { caption: 'value 字符串', field: 'extra', width: 110, value: '固定值' },
+      // list 列 / text.link 夹具（20261104-table-column-type）：仅前 5 行配数据
+      // （其余 undefined 落占位，避免 10 万行性能夹具承压）；DOM 参照表与默认
+      // 场景舞台同源（columns ref），canvas/DOM 并排比对载体（A1/A4）
+      {
+        caption: 'list 列',
+        field: 'list',
+        type: 'list',
+        listOption: { max: 4 },
+        width: 160,
+        title: true
+      },
+      { caption: 'text.link', field: 'textLink', link: true, width: 110 },
+      // A9 占位夹具：text 列数组值不再拆行，落占位（DOM 参照断言用）
+      { caption: 'text 数组值（占位）', field: 'legacyArray', width: 150 },
       { caption: '空值占位', field: 'empty', width: 120 }
     ]
   }
@@ -561,8 +583,9 @@
     { caption: '日期', field: 'date', type: 'date', width: 110 }
   ]
 
-  // 多行文本场景：maxLines 变体 / 数组值（数字与字符串）/ maxItems / DOM 风格
-  // multiline+lineClamp 兼容（含函数形态，评审 6 P6）
+  // 多行文本场景：maxLines 变体 / list 列（原数组拆行列，20261104 A9 后文本列
+  // 不再消费数组值）/ text 列数组值占位夹具 / DOM 风格 multiline+lineClamp 兼容
+  // （含函数形态，评审 6 P6）
   const multilineRecords = [
     {
       id: 1,
@@ -572,7 +595,8 @@
       long10: LONG_TEXT,
       strings: ['甲', '乙', '丙', '丁', '戊'],
       nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      legacy: '函数 lineClamp 按 record 求值：deep 记录显示三行，超出部分末行收缩省略。'.repeat(4)
+      legacy: '函数 lineClamp 按 record 求值：deep 记录显示三行，超出部分末行收缩省略。'.repeat(4),
+      legacyArray: ['拆行已移除', '数组落占位']
     },
     {
       id: 2,
@@ -582,7 +606,8 @@
       long10: '短文本单行',
       strings: ['只有一行'],
       nums: [3.14, 42],
-      legacy: 'shallow 记录按求值仅一行（单行省略）。'
+      legacy: 'shallow 记录按求值仅一行（单行省略）。',
+      legacyArray: ['占位']
     },
     {
       id: 3,
@@ -592,7 +617,8 @@
       long10: LONG_TEXT,
       strings: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'],
       nums: [1, 2],
-      legacy: '常量 multiline（lineClamp 缺省 10 行上限）。'.repeat(10)
+      legacy: '常量 multiline（lineClamp 缺省 10 行上限）。'.repeat(10),
+      legacyArray: ['甲', '乙', '丙']
     }
   ]
 
@@ -601,9 +627,12 @@
     // tooltip 夹具（20261030）：LONG_TEXT 必 clamped → 溢出显示全文用例
     { caption: 'maxLines=3', field: 'long3', maxLines: 3, width: 220, editable: true, editor: true, title: true },
     { caption: 'maxLines=10', field: 'long10', maxLines: 10, width: 220 },
-    // tooltip 夹具（20261030）：第 3 行 12 元素 > maxItems 3 → 数组溢出用例
-    { caption: '字符串数组 maxItems=3', field: 'strings', maxItems: 3, width: 140, title: true },
-    { caption: '数字数组', field: 'nums', width: 110 },
+    // 原字符串数组拆行列改 list 列（20261104 A9）；tooltip 夹具：第 3 行 12 条目
+    // > listOption.max 3 → dots 溢出用例（compile 内截断，DOM/canvas 同）
+    { caption: '字符串 list（max=3）', field: 'strings', type: 'list', listOption: { max: 3 }, width: 140, title: true },
+    { caption: '数字 list', field: 'nums', type: 'list', width: 110 },
+    // A9 占位夹具：text 列数组值不再逐元素拆行，落占位（placeholder 开启时显示占位文本）
+    { caption: 'text 数组值（占位）', field: 'legacyArray', width: 150 },
     {
       caption: 'multiline+lineClamp(函数)',
       field: 'legacy',
@@ -614,13 +643,18 @@
   ]
 
   // 条目/新列型场景：link 三态（字符串数组/对象数组/单值数字）+ 超限 dots、
-  // 彩色 tag、progress（记录级色）、button（彩色/disabled）
+  // list 全 text 列与全 link 列（R1 列级 link：column.link 整列、条目级 link 键
+  // 为负向夹具不参与渲染）、text.link 链色文本、彩色 tag、progress（记录级色）、
+  // button（彩色/disabled）
   const itemRecords = [
     {
       id: 1,
       name: '字符串数组',
       count: 120,
       links: ['Mussel 文档', 'GitHub 仓库', '更新日志'],
+      list: ['纯文本项', { label: '遗留 link 键项', link: true }, { label: '附加键', id: 101 }],
+      listLink: ['整列成链', { label: '附加键链接', id: 201 }, { label: 'teal 变体', color: 'teal' }],
+      textLink: '链色文本',
       tags: [{ caption: '新品', color: 'green' }, '热门', { caption: '置顶', color: 'blue' }],
       progress: 30,
       progressColor: 'success',
@@ -636,6 +670,13 @@
         { caption: '禁用链接', disabled: true },
         { caption: '青色链接', color: 'teal' }
       ],
+      list: [{ label: '禁用项', disabled: true }, '纯文本项'],
+      listLink: [
+        { label: '危险链接项', color: 'danger' },
+        { label: '禁用链接项', disabled: true },
+        { caption: '旧键链接' }
+      ],
+      textLink: '危险文本',
       tags: [{ caption: 'V4', color: 'violet' }, { caption: 'LTS', color: 'orange' }],
       progress: 75,
       progressColor: 'warning',
@@ -646,6 +687,9 @@
       name: '单值数字',
       count: 789,
       links: 12345,
+      list: '标量（落占位）',
+      listLink: 456,
+      textLink: '主色文本',
       tags: '单标签',
       progress: 100,
       progressColor: 'primary',
@@ -656,6 +700,9 @@
       name: '超限 dots',
       count: 24,
       links: Array.from({ length: 12 }, (_, i) => `链接 ${i + 1}`),
+      list: Array.from({ length: 12 }, (_, i) => `条目 ${i + 1}`),
+      listLink: Array.from({ length: 12 }, (_, i) => ({ label: `链接条目 ${i + 1}`, color: i % 3 === 0 ? 'teal' : undefined })),
+      textLink: '链色文本',
       tags: Array.from({ length: 12 }, (_, i) => `标签 ${i + 1}`),
       progress: 50,
       progressColor: 'danger',
@@ -668,6 +715,15 @@
     // link 恢复不可编辑（问题 4，decisions [S1]）：摘除原 editable/editor 配置；
     // tooltip 夹具（20261030）：第 4 行 12 条 > maxItems 10 → dots 溢出用例
     { caption: '链接（三态）', field: 'links', type: 'link', width: 170, title: true },
+    // list 全 text 列（20261104，R1 列级 link）：仅接受数组值、每项单行省略、
+    // 全条目可点击；条目遗留 link 键不参与渲染（负向夹具）；
+    // 第 4 行 12 条目 > maxItems 10 → canvas dots；第 3 行标量落占位（A4）
+    { caption: 'list 全 text 列', field: 'list', type: 'list', width: 170, title: true },
+    // list 全 link 列（column.link 列级，R1 语义迁移）：整列条目链色渲染
+    // （缺省 primary、条目 color 覆盖、disabled 置灰拦截）；第 3 行标量落占位
+    { caption: 'list 全 link 列', field: 'listLink', type: 'list', link: true, width: 170, title: true },
+    // text.link（decisions 第 8 条：canvas 仅链色文本，无 hover 下划线/条目命中）
+    { caption: 'text.link', field: 'textLink', link: true, width: 110 },
     { caption: '标签（彩色）', field: 'tags', type: 'tag', width: 210 },
     {
       caption: '进度',
@@ -678,6 +734,7 @@
     },
     { caption: '按钮', field: 'buttons', type: 'button', width: 180, buttons: record => record.buttons },
     // link 形态按钮（column.link）：整列纯文字链渲染，数据与 pill 按钮同源对照
+    // （同名键注记：button 列 column.link 为「链接形态按钮」，与 text 列 link 选项同名不同义）
     { caption: '链接按钮', field: 'buttons', type: 'button', link: true, width: 180, buttons: record => record.buttons }
   ]
 

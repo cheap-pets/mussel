@@ -983,13 +983,16 @@
 
   /** 光标覆盖（问题 5/7）：resolveCursor 结果之后追加判定，仅覆盖表体
       text/default——条目（link/button 且非禁用）与编辑按钮区为 pointer；
-      col-resize 手柄与表头 pointer 不覆盖 */
+      link 条目以 item.link !== false 门控（list 非 link 列条目无指针反馈，
+      R1 列级语义，与 isLinkEntryHovered 同谓词）；col-resize 手柄与表头
+      pointer 不覆盖 */
   function applyItemCursor (hit) {
     if (hit.resizeCol >= 0 || hit.isHeader) return
 
     const item = hoverItem.value
 
-    if (item && !item.disabled && (item.kind === 'link' || item.kind === 'button')) {
+    if (item && !item.disabled && item.link !== false &&
+      (item.kind === 'link' || item.kind === 'button')) {
       cursor.value = 'pointer'
 
       return
@@ -1214,9 +1217,15 @@
     if (!canvasItem || isDisabledAttr(canvasItem.disabled)) return
 
     // canvas 侧 _maxItems 截断省略条目（绘制层 dots，render 产物内无对应条目）：
-    // payload 值 '...'（A1/A3.3）
+    // payload 值 '...'（A1/A3.3）；link/list 条目 payload 键统一 item
+    // （decisions 第 5 条，20261104-table-column-type），tag/button 键不变
     if (isCappedDotsItem(item, items, col)) {
-      emit('cell-item-click', { record, column: raw, [item.kind]: '...', recordIndex: row })
+      emit('cell-item-click', {
+        record,
+        column: raw,
+        [item.kind === 'link' ? 'item' : item.kind]: '...',
+        recordIndex: row
+      })
       return
     }
 

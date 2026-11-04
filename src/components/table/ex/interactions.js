@@ -338,7 +338,9 @@ function isItemRectHit (hit, rect) {
   )
 }
 
-/** 返回首个命中条目的结果对象（disabled 随条目透传，缺字段时为 false），无命中 null */
+/** 返回首个命中条目的结果对象（disabled 随条目透传，缺字段时为 false；link 为
+    条目 hover/pointer 门控布尔，entry.link !== false 同 cell-painters
+    isLinkEntryHovered 谓词——list 非 link 列条目 link:false 无指针反馈），无命中 null */
 function findHitItem (hit, rects) {
   for (const entry of rects) {
     if (isItemRectHit(hit, entry.rect)) {
@@ -347,7 +349,8 @@ function findHitItem (hit, rects) {
         index: entry.index,
         row: hit.rowIndex,
         col: hit.colIndex,
-        disabled: entry.disabled === true
+        disabled: entry.disabled === true,
+        link: entry.link !== false
       }
     }
   }
@@ -357,16 +360,17 @@ function findHitItem (hit, rects) {
 
 /**
  * 条目点击命中（02-design.md A3.3/A4.3 序 3 / 评审 6 P4）：hit.x/hit.y 对
- * painter itemHits（Map<row, Map<col, Array<{ kind, index, rect, disabled }>>>，
+ * painter itemHits（Map<row, Map<col, Array<{ kind, index, rect, disabled, link? }>>>，
  * 视口坐标）反查命中条目；dots '...' 超限省略条目同样命中（对齐 DOM 版 dots 绑定
  * events.click）；窗口外行不在集合内 → null。link/tag/button 命中，progress/img
  * 不回报矩形（DOM 版无对应事件）。disabled 随命中条目透传（条目禁用态，
- * hover 取色/光标与点击侧同口径消费），条目缺该字段时为 false。
+ * hover 取色/光标与点击侧同口径消费），条目缺该字段时为 false；link 透传
+ * entry.link !== false（list 非 link 列条目无指针反馈，与 isLinkEntryHovered 同谓词）。
  *
  * @param {Object} params.hit hitTest 产出（消费 x/y/rowIndex/colIndex）
  * @param {Map} [params.itemHits] painter 收集的条目命中矩形集合
  * @returns {{ kind: String, index: Number, row: Number, col: Number,
- *   disabled: Boolean } | null}
+ *   disabled: Boolean, link: Boolean } | null}
  */
 export function resolveItemClick ({ hit, itemHits } = {}) {
   if (!isItemClickable(itemHits, hit)) return null

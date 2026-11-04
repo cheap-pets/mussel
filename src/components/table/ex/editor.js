@@ -34,8 +34,8 @@ import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../../form/index.js'
 // - 画布 pointerdown（editing 中先提交再续行）与容器滚动：调 editor.commit()
 // - 卸载：editor.destroy()（onUnmounted）
 
-/** 不可编辑的列类型（A6）；link 不可编辑（decisions [S1]）；button/progress 为 canvas 专属展示类型；image 为 img 别名 */
-export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check', 'link', 'button', 'progress']
+/** 不可编辑的列类型（A6）；link/list 条目列不可编辑（list 对齐 link，link 为其兼容壳）；button/progress 为 canvas 专属展示类型；image 为 img 别名 */
+export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check', 'link', 'list', 'button', 'progress']
 
 /** 编辑器类型 → mussel 输入组件；textarea 为原生元素 tag（INPUT_TYPES.memo 约定） */
 export const EDITOR_COMPONENTS = {

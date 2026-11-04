@@ -1,104 +1,60 @@
 import { ensureFn } from '@/utils/type'
+import { ListColumn } from './list'
 
-function isValidLink (link) {
-  return link.caption != null && link.caption !== ''
+// link 列兼容壳（20261104-table-column-type，A7）：内部构造 list 语义列对象后
+// 委托 ListColumn.compile（共用 list 实现代码，无自有渲染逻辑）；col.type 保持
+// 'link'（注册表层转换，canvas 侧 4 处 type 字符串分发无感）。
+// 兼容映射（decisions 已裁决）：danger:true → color 'danger'；disabled 原样保留；
+// link 对象既有 color 键顺势激活；caption 键经 ListColumn 兼容读取（开发期警告一次）
+
+function valueToLinks (record, value) {
+  if (value != null) {
+    return Array.isArray(value)
+      // 对象元素原样保留（{ caption, color, danger, disabled }），字符串/数字元素
+      // 仍包 { caption: el }（单值 → 单元素数组的包装同样保留，links: 12345 夹具）
+      ? value.map(el => (el != null && typeof el === 'object' ? el : { caption: el }))
+      : [{ caption: value }]
+  }
 }
 
 export const LinkColumn = {
   compile: (column, dom = false) => {
-    function valueToLinks (record, value) {
-      if (value != null) {
-        return Array.isArray(value)
-          // 对象元素原样保留（{ caption, color, danger, disabled }——对象用于设置
-          // 链接颜色等；现状被包成 { caption: 对象 } 渲染为 [object Object]），
-          // 字符串/数字元素仍包 { caption: el }
-          ? value.map(el => (el != null && typeof el === 'object' ? el : { caption: el }))
-          : [{ caption: value }]
-      }
-    }
-
     const { linkOption = {} } = column
-    const { max, danger: _danger, disabled: _disabled } = linkOption
+    const { max, danger, disabled, class: linkClass, style: linkStyle } = linkOption
 
     const getLinks = ensureFn(column.links || valueToLinks)
-    const getLinkClass = ensureFn(linkOption.class)
-    const getLinkStyle = ensureFn(linkOption.style)
 
-    const showTitle = column.title === true || null
+    // listItems 透传 (record, value)（缺省 valueToLinks 依赖 field 值）：
+    // danger 条目映射为含 color 的派生对象（payload 为映射对象，其余属性保留），
+    // 其余对象原引用保留、primitive 包 { label: el }
+    const listItems = (record, value) => {
+      const links = getLinks(record, value)
 
-    return ({ record, value, emit }) => {
-      const links = getLinks(record, value)?.filter(isValidLink)
+      if (!Array.isArray(links)) return links
 
-      if (!links?.length) return
-
-      const dotsIndex = max > 0 && links.length > max ? max - 1 : null
-
-      // canvas 通道：平铺数据字段（danger/disabled）+ onItemClick 事件句柄，
-      // payload 与 dom 通道 events.click 同构（dots 条目 payload 值 '...'）；
-      // 恒两色不引入 color 参数
-      if (!dom) {
-        return {
-          items: (max ? links.slice(0, max) : links).map((link, idx) => {
-            if (idx === dotsIndex) {
-              return {
-                kind: 'link',
-                text: '...',
-                title: showTitle && links.slice(idx).map(el => el.caption).join('\n\n'),
-                onItemClick: () => emit('cell-item-click', { record, column, link: '...' })
-              }
-            }
-
-            const { caption, disabled = _disabled, danger = _danger } = link
-
-            return {
-              kind: 'link',
-              text: caption,
-              title: showTitle && caption,
-              danger: danger || null,
-              disabled: disabled || null,
-              onItemClick: () => emit('cell-item-click', { record, column, link })
-            }
-          })
-        }
-      }
-
-      // dom 通道：DOM 形态条目（is/class/style/events/attrs）
-      const _class = getLinkClass(record)
-      const _style = getLinkStyle(record)
-
-      const items = (max ? links.slice(0, max) : links).map((link, idx) => {
-        const itemClass = ['mu-link', _class]
-        const events = {}
-
-        const item = {
-          is: 'a',
-          attrs: { class: itemClass, style: _style },
-          events
+      return links.map(el => {
+        if (el != null && typeof el === 'object') {
+          return el.danger === true ? { ...el, color: el.color ?? 'danger' } : el
         }
 
-        if (idx === dotsIndex) {
-          item.text = link = '...'
-          item.title = showTitle && links.slice(idx).map(el => el.caption).join('\n\n')
-        } else {
-          const { caption, disabled = _disabled, danger = _danger } = link
-
-          item.text = caption
-          item.title = showTitle && caption
-
-          if (disabled) item.attrs.disabled = ''
-          if (danger) itemClass.push('mu-link--danger')
-        }
-
-        events.click =
-          () => emit('cell-item-click', { record, column, link })
-
-        return item
+        return { label: el }
       })
-
-      return {
-        class: 'mu-table__link-cell',
-        items
-      }
     }
+
+    return ListColumn.compile({
+      ...column,
+      type: 'list',
+      // 列级 link（人工-1 [1-1]）：整列 link 渲染；{...column} 展开后显式覆盖
+      link: true,
+      _raw: column,
+      listOption: {
+        max,
+        disabled,
+        color: danger === true ? 'danger' : undefined,
+        class: linkClass,
+        style: linkStyle
+      },
+      listItems
+    }, dom)
   }
 }

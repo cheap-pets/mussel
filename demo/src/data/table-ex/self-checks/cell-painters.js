@@ -7,11 +7,15 @@
  * 20261104：mappings 优先、仅 options 转换、未命中原值回退；text 列不走映射、
  * 改挂 column.color 染色）、number/currency/date
  * 格式化与 color 双通道（canvas 平铺色名直取 / dom text-{c} class）、
- * 自定义类型 render、link/tag/items 落地；canvas 类型分发（progress/button 产 canvasKind，03-review-5
+ * 自定义类型 render、link/list/tag/items 落地；canvas 类型分发（progress/button 产 canvasKind，03-review-5
  * 问题 6）；多行文本（maxLines 常量与函数形态 lineClamp 行级求值——评审 6 P6、
- * 数组值 maxItems dots '...'、line-clamp item 改道）；link 列竖排（恒两色
- * primary/danger，平铺 danger/disabled 直取）+ LinkColumn/TagColumn 双通道
- * compile 产物断言（canvas 平铺 kind 条目 / dom DOM 形态条目）；tag 17 色、
+ * line-clamp item 改道；A9（20261104-table-column-type）后文本列数组值在
+ * resolveCellContent 统一门控落占位，不再逐元素拆行）；link/list 列竖排
+ * （list 共用 kind 'link' 命中/hover 链：link 列（column.link 列级，R1）条目
+ * item.color 色名查表、非 link 列条目 textColor、disabled muted、hover 按
+ * item.link !== false 门控——link 字段 = 列级 column.link）+ ListColumn /
+ * LinkColumn（兼容壳委托 list）/ TagColumn 双通道 compile 产物断言
+ * （canvas 平铺 kind 条目 / dom DOM 形态条目；payload 键统一 item）；tag 17 色、
  * button/disabled、树形列缩进箭头；button link 形态（column.link 列级声明：纯文字链
  * 取色/正文字体/hover 下划线/命中宽度/tooltip 计宽切换）；
  * button 组与 link 竖排对齐（20261104 修复：两遍式测宽按列 align 分布、center 扣
@@ -26,8 +30,9 @@
  * itemHits 条目 disabled 字段。
  *
  * resolveCellTooltip（title 列协议，20261030-table-ex-cell-tooltip）：falsy 门控、
- * 自定义 String/Function title、true 形态文本/数组/横排条目（check/img/tag 计宽）/
- * link 竖排/button 组溢出判定矩阵、maxLines 与 regionHeight 钳制、line-clamp 改道。
+ * 自定义 String/Function title、true 形态文本/横排条目（check/img/tag 计宽）/
+ * link·list 竖排/button 组溢出判定矩阵、maxLines 与 regionHeight 钳制、line-clamp 改道
+ * （A9 后无数组文本形态）。
  *
  * 断言全部同步执行（runChecks 不支持异步）；img 加载完成后的重绘联动属 painter
  * 集成行为，此处只断言加载状态、crossOrigin 与未加载前空格（data URI 每次运行
@@ -45,6 +50,7 @@ import {
 } from '../../../../../src/components/table/ex/cell-painters.js'
 import { createWrapCache } from '../../../../../src/components/table/ex/text-wrap.js'
 import { LinkColumn } from '../../../../../src/components/table/column-types/link.js'
+import { ListColumn } from '../../../../../src/components/table/column-types/list.js'
 import { TagColumn } from '../../../../../src/components/table/column-types/tag.js'
 import { BoolColumn } from '../../../../../src/components/table/column-types/bool.js'
 import { NumberColumn } from '../../../../../src/components/table/column-types/number.js'
@@ -58,19 +64,27 @@ import { t } from '../../../../../src/langs/index.js'
 const BASE_COLOR_NAMES = ['red', 'pink', 'grape', 'violet', 'indigo', 'blue', 'cyan', 'teal', 'green', 'lime', 'yellow', 'orange']
 const SEMANTIC_COLOR_NAMES = ['primary', 'secondary', 'success', 'warning', 'danger']
 
+// R1-2（20261104-table-column-type 修复轮）：primary 语义色与 primaryColor 同源同值
+// —— theme.js readColors 语义色读 --mu-{name}-color，真实主题两者恒等；旧 stub 按
+// 17 色位置公式两值分离，属夹具口径缺陷（verify-1 失败项 1a），hover 仍保持可区分
+const PRIMARY_COLOR = 'rgba(0, 102, 255, 1)'
+const PRIMARY_HOVER = 'rgba(0, 130, 245, 0.85)'
+
 const THEME_COLORS = {}
 
 for (const [index, name] of [...BASE_COLOR_NAMES, ...SEMANTIC_COLOR_NAMES].entries()) {
   const semantic = index >= BASE_COLOR_NAMES.length
+  const sameSourcePrimary = name === 'primary'
+  const color = sameSourcePrimary ? PRIMARY_COLOR : `rgba(${20 + index * 10}, 60, 200, 1)`
 
   THEME_COLORS[name] = {
-    color: `rgba(${20 + index * 10}, 60, 200, 1)`,
-    translucent: `rgba(${20 + index * 10}, 60, 200, 0.1)`,
+    color,
+    translucent: sameSourcePrimary ? 'rgba(0, 102, 255, 0.1)' : `rgba(${20 + index * 10}, 60, 200, 0.1)`,
     // hover（问题 7 谱系）：语义色 = --mu-{name}-color-4 等价的可区分配色
     // （断言 hover ≠ color 才有效）；彩色 hover === color（DOM 版 hover 基准）
     hover: semantic
-      ? `rgba(${20 + index * 10}, 130, 245, 0.85)`
-      : `rgba(${20 + index * 10}, 60, 200, 1)`
+      ? (sameSourcePrimary ? PRIMARY_HOVER : `rgba(${20 + index * 10}, 130, 245, 0.85)`)
+      : color
   }
 }
 
@@ -84,7 +98,7 @@ const THEME = {
   bgNormal: 'rgba(255, 255, 255, 1)',
   bgStrong: 'rgba(0, 0, 0, 0.08)',
   bgDisabled: 'rgba(0, 0, 0, 0.12)',
-  primaryColor: 'rgba(0, 102, 255, 1)',
+  primaryColor: PRIMARY_COLOR,
   gray: 'rgba(153, 153, 153, 1)',
   fontSize: 14,
   fontFamily: 'sans-serif',
@@ -1064,21 +1078,38 @@ export const checks = [
     }
   },
   {
-    name: '数组值多行：每元素一行、超限第 maxItems 行 \'...\'（dots 字面三点）',
+    name: 'A9 数组门控：文本/无 type 列数组值落占位（resolveCellContent 统一门控），list 条目列数组照常',
     fn: () => {
-      const col = prepareColumn({ field: 'v', maxItems: 3 })
-      const { calls } = drawRecorded(col, { v: [1, '二', 3, 4, 5] }, { height: 80 })
+      // 文本列数组值 → 门控落空内容 → 无文本绘制（占位链）
+      const plain = drawRecorded(prepareColumn({ field: 'v', maxItems: 3 }), { v: [1, '二', 3, 4, 5] }, { height: 80 })
 
-      assertArray(calls.fillText.map(c => c.text), ['1', '二', '...'], '前 maxItems−1 项 + dots 行')
-      assertArray(calls.fillText.map(c => c.y), [19 + TEXT_ANCHOR_OFF, 37 + TEXT_ANCHOR_OFF, 55 + TEXT_ANCHOR_OFF], `首行光学居中锚逐行（槽位 19 + 偏移 ${TEXT_ANCHOR_OFF}，不随行高变；顺次 +18）`)
-      assertEqual(calls.fillText[0].text, '1', '数字元素应 String 化')
+      assertEqual(plain.calls.fillText.length, 0, '文本列数组值不再逐元素拆行（无 fillText）')
 
-      // 缺省 maxItems=10：不超限全量显示
-      const full = drawRecorded(prepareColumn({ field: 'v' }), { v: [1, 2, 3] }, { height: 80 })
+      // 占位注入时绘制占位文本（placeholder 通道）
+      const withPlaceholder = drawRecorded(prepareColumn({ field: 'v' }), { v: ['甲', '乙'] }, { placeholder: '-' })
 
-      assertArray(full.calls.fillText.map(c => c.text), ['1', '2', '3'], '不超限逐元素显示')
+      assertArray(withPlaceholder.calls.fillText.map(c => c.text), ['-'], '文本列数组值 → placeholder 文本')
 
-      return '[\'1\',\'二\',\'...\']（maxItems=3）；数字 String 化'
+      // number 列数组值同样门控（非条目字符串 type 一律落占位，A9）
+      const numberCol = drawRecorded(prepareColumn({ field: 'v', type: 'number' }), { v: [1, 2] }, { placeholder: '-' })
+
+      assertArray(numberCol.calls.fillText.map(c => c.text), ['-'], 'number 列数组值 → placeholder')
+
+      // 非字符串 type 自定义列豁免门控：render 自行消费数组
+      const custom = prepareColumn({
+        field: 'v',
+        type: { render: ({ value }) => ({ text: Array.isArray(value) ? value.join('|') : String(value) }) }
+      })
+
+      assertEqual(content(custom, { v: [1, 2, 3] }).text, '1|2|3', '非字符串 type 自定义列豁免门控')
+
+      // list 条目列数组值照常消费（竖排 dots 口径）
+      const list = drawRecorded(prepareColumn({ field: 'v', type: 'list', listOption: { max: 3 } }), { v: [1, '二', 3, 4, 5] }, { height: 80 })
+
+      assertArray(list.calls.fillText.map(c => c.text), ['1', '二', '...'], 'list 列前 maxItems−1 条 + dots 行')
+      assertArray(list.calls.fillText.map(c => c.y), [19 + TEXT_ANCHOR_OFF, 37 + TEXT_ANCHOR_OFF, 55 + TEXT_ANCHOR_OFF], `list 竖排首行光学居中锚逐行（槽位 19 + 偏移 ${TEXT_ANCHOR_OFF}；顺次 +18）`)
+
+      return '文本/number 数组 → 占位；自定义列豁免；list 数组照常（dots 截断）'
     }
   },
   {
@@ -1159,13 +1190,15 @@ export const checks = [
     }
   },
   {
-    name: 'link/tag 双通道条目结构：canvas 平铺 kind 条目 + onItemClick、dom 保持 DOM 形态',
+    name: 'link（list 兼容壳）/tag 双通道条目结构：canvas 平铺 kind 条目 + onItemClick、dom 保持 DOM 形态',
     fn: () => {
       const calls = []
       const captureEmit = (name, payload) => calls.push([name, payload])
 
-      // link canvas 通道（compile 不传 dom）：平铺数据字段 + onItemClick 事件句柄
-      const linkRender = LinkColumn.compile({ title: true })
+      // link canvas 通道（兼容壳委托 ListColumn，compile 不传 dom）：
+      // 平铺 kind:'link' + link/color 字段 + onItemClick；danger:true → color 'danger' 映射
+      const columnDef = { title: true }
+      const linkRender = LinkColumn.compile(columnDef)
       const lc = linkRender({
         record: { id: 1 },
         value: [{ caption: 'A', danger: true }, { caption: 'B', disabled: true }, 'C'],
@@ -1174,11 +1207,12 @@ export const checks = [
 
       assertEqual(lc.items.length, 3, 'link 3 条目')
       assert(lc.items.every(i => i.kind === 'link'), 'canvas 条目恒带 kind: link')
+      assert(lc.items.every(i => i.link === true), 'link 列条目 link:true（列级 column.link，兼容壳顶层 link:true）')
       assertArray(lc.items.map(i => i.text), ['A', 'B', 'C'], '条目文本')
       assert(lc.items.every(i => i.title === i.text), 'title:true 时 title = caption')
-      assertEqual(lc.items[0].danger, true, 'danger 平铺（truthy 原样）')
+      assertEqual(lc.items[0].color, 'danger', 'danger:true → color danger（兼容映射）')
       assertEqual(lc.items[1].disabled, true, 'disabled 平铺')
-      assertEqual(lc.items[2].danger, null, '无 danger 平铺 null')
+      assertEqual(lc.items[2].color, 'primary', '无 color 条目缺省 primary')
       assert(
         lc.items.every(i => i.is === undefined && i.attrs === undefined && i.events === undefined),
         'canvas 条目不含 is/attrs/events（DOM 通道字段）'
@@ -1189,8 +1223,9 @@ export const checks = [
       lc.items[0].onItemClick()
 
       assertEqual(calls[0][0], 'cell-item-click', 'onItemClick 派发 cell-item-click')
-      assertEqual(calls[0][1].link.caption, 'A', 'payload.link = 条目对象原引用')
+      assertEqual(calls[0][1].item.caption, 'A', 'payload.item = 条目对象原引用')
       assertEqual(calls[0][1].record.id, 1, 'payload.record = 行记录')
+      assert(calls[0][1].column === columnDef, 'payload.column = 原始列引用（compile 入参，_raw 回指）')
 
       // link canvas dots：'...' 字面 + title join + onItemClick payload 值 '...'
       const linkDots = LinkColumn.compile({ title: true, linkOption: { max: 2 } })(
@@ -1202,18 +1237,19 @@ export const checks = [
 
       linkDots.items[1].onItemClick()
 
-      assertEqual(calls.at(-1)[1].link, '...', 'canvas dots onItemClick payload 值 \'...\'（与 DOM 版 events.click 同构）')
+      assertEqual(calls.at(-1)[1].item, '...', 'canvas dots onItemClick payload 值 \'...\'（键 item，decisions 第 5 条）')
 
-      // link dom 通道（compile(column, true)）：DOM 形态条目
+      // link dom 通道（compile(column, true)）：共用 list 实现——list-cell + a + text-{color}
       const ld = LinkColumn.compile({ linkOption: { max: 2 } }, true)({
         record: {},
         value: [{ caption: 'A', danger: true }, 'B', 'C'],
         emit: () => {}
       })
 
-      assertEqual(ld.class, 'mu-table__link-cell', 'dom 外层 class')
-      assert(ld.items.every(i => i.is === 'a' && i.attrs && i.events), 'dom 条目含 is/attrs/events')
-      assert(ld.items[0].attrs.class.includes('mu-link--danger'), 'dom danger 落 mu-link--danger')
+      assertEqual(ld.class, 'mu-table__list-cell', 'dom 外层 class = list-cell（A7 共用 list 实现）')
+      assert(ld.items.every(i => i.is === 'a' && i.attrs && i.events), 'dom link 列条目恒 is a')
+      assert(ld.items[0].attrs.class.includes('text-danger'), 'dom danger 落 text-danger')
+      assert(!ld.items[0].attrs.class.join(' ').includes('mu-link'), 'dom 条目不复用 mu-link 类')
       assertEqual(ld.items[1].text, '...', 'dom max dots')
       assert(typeof ld.items[1].events.click === 'function', 'dom 条目绑定 events.click')
 
@@ -1260,30 +1296,30 @@ export const checks = [
 
       assert(td2.items[0].attrs.class.includes('text-success'), 'dom 条目级 color 落 text-{c}')
 
-      return 'link/tag canvas 平铺（kind/text/title/danger/disabled/color/onItemClick）+ dom DOM 形态；tag 颜色类恒落地'
+      return 'link/tag canvas 平铺（kind/link/color/onItemClick/payload item）+ dom list-cell/a/text-{color}；tag 颜色类恒落地'
     }
   },
   {
-    name: 'LinkColumn compile 产物（dom 通道）：caption 生效、color 不消费、dots payload、danger/disabled、过滤',
+    name: 'LinkColumn compile 产物（dom 通道，兼容壳委托 list）：caption/color 激活、dots payload item、danger→color、disabled、过滤',
     fn: () => {
       const render = LinkColumn.compile({}, true)
 
-      // 对象数组：对象元素原样保留；color 字段不消费（link 恒两色 primary/danger，20261103）
+      // 对象数组：对象元素原样保留；color 键激活（decisions 第 4 条，20261103 版「不消费」已推翻）
       const out = render({ record: {}, value: [{ caption: 'A', color: 'success' }, { caption: 'B' }, 3], emit: () => {} })
 
       assertEqual(out.items.length, 3, '3 个条目')
       assertEqual(out.items[0].text, 'A', '对象元素 caption 文本（非 [object Object]）')
-      assert(!out.items[0].attrs.class.join(' ').includes('mu-link--'), 'color 字段不消费（不落 mu-link--{color}）')
+      assert(out.items[0].attrs.class.includes('text-success'), 'color 键激活 → text-{color}')
+      assert(!out.items[0].attrs.class.join(' ').includes('mu-link'), '不复用 mu-link 类（list-cell 样式通道）')
       assertEqual(out.items[2].text, 3, '数字元素仍包 { caption: el } 行为不变（text 保持原始 number）')
 
-      // 字符串数组：包裹行为不变、无 danger 不落色类
+      // 字符串数组：包裹行为不变、link 列缺省 primary 色类
       const out2 = render({ record: {}, value: ['x', 'y'], emit: () => {} })
 
       assertArray(out2.items.map(i => i.text), ['x', 'y'], '字符串数组文本')
-      assertEqual(out2.items[0].attrs.class[0], 'mu-link', '基础 mu-link class 保留')
-      assert(!out2.items[0].attrs.class.join(' ').includes('mu-link--'), '无 danger 不落色类')
+      assertEqual(out2.items[0].attrs.class[0], 'text-primary', '无 color 条目缺省 text-primary')
 
-      // max 超限 dots：'...' 字面值 + events.click 绑定（DOM link.js dots 字面）
+      // max 超限 dots：'...' 字面值 + events.click 绑定（payload 键 item，值 '...'）
       const dots = LinkColumn.compile({ linkOption: { max: 2 } }, true)
       const dotEvents = []
       const out3 = dots({ record: {}, value: ['a', 'b', 'c', 'd'], emit: (type, payload) => dotEvents.push([type, payload]) })
@@ -1292,30 +1328,124 @@ export const checks = [
       assertEqual(out3.items[1].text, '...', '超限条目 \'...\' 三点字面')
       out3.items[1].events.click()
       assertEqual(dotEvents[0][0], 'cell-item-click', 'dots 条目绑定 click')
-      assertEqual(dotEvents[0][1].link, '...', 'dots payload 值 = \'...\' 非省略号字符')
+      assertEqual(dotEvents[0][1].item, '...', 'dots payload 键 item 值 = \'...\'（decisions 第 5 条）')
 
-      // 常规条目 payload link = 条目原对象（对象数组元素即 { caption, color, ... }）
+      // 常规条目 payload item = 条目原对象、payload column = 原始列引用
       const target = { caption: 'P', color: 'blue' }
+      const columnDef = { caption: '兼容列' }
       let captured = null
-      const out4 = LinkColumn.compile({}, true)(
-        { record: {}, value: [target], emit: (type, payload) => { captured = payload.link } }
+      const out4 = LinkColumn.compile(columnDef, true)(
+        { record: {}, value: [target], emit: (type, payload) => { captured = payload } }
       )
 
       out4.items[0].events.click()
-      assert(captured === target, 'payload link 应为条目原对象（A1 对齐 DOM 版）')
+      assert(captured.item === target, 'payload item 应为条目原对象（对象数组元素原引用）')
+      assert(captured.column === columnDef, 'payload column 应为原始列引用（_raw 回指）')
 
-      // danger/disabled 路径不变；缺 caption 对象被 isValidLink 过滤
+      // danger 映射（壳内 danger:true → { ...el, color: el.color ?? 'danger' }）与 disabled
       const out5 = render({ record: {}, value: [{ caption: 'D', danger: true }, { caption: 'E', disabled: true }], emit: () => {} })
 
-      assert(out5.items[0].attrs.class.includes('mu-link--danger'), 'danger 落 class')
+      assert(out5.items[0].attrs.class.includes('text-danger'), 'danger:true 落 text-danger')
       assertEqual(out5.items[1].attrs.disabled, '', 'disabled 落 attrs')
 
       const out6 = render({ record: {}, value: [{ color: 'red' }, { caption: 'ok' }], emit: () => {} })
 
-      assertEqual(out6.items.length, 1, '缺 caption 对象被 isValidLink 过滤')
+      assertEqual(out6.items.length, 1, '缺 caption 对象被过滤')
       assertEqual(out6.items[0].text, 'ok', '有效条目保留')
 
-      return 'color 不消费、字符串不变、dots click、payload 原对象、danger/disabled/过滤全通过'
+      return 'color 激活、字符串不变、dots click 键 item、payload 原对象/原列、danger→color/disabled/过滤全通过'
+    }
+  },
+  {
+    name: 'ListColumn compile 产物（20261104 list 列双通道，R1 列级 link）：仅数组值、列级 link 整列、非 link 列正文色、payload item、caption 兼容、过滤',
+    fn: () => {
+      // 非数组（标量）→ 空产物落占位（A4）；listItems 自定义取值同门控
+      assertEqual(ListColumn.compile({}, true)({ record: {}, value: '标量', emit: () => {} }), undefined, '标量值 → undefined（占位链）')
+      assertEqual(ListColumn.compile({}, true)({ record: {}, value: { label: '对象' }, emit: () => {} }), undefined, '对象值 → undefined（占位链）')
+      assertEqual(
+        ListColumn.compile({ listItems: () => '不是数组' }, true)({ record: {}, value: [1], emit: () => {} }),
+        undefined,
+        'listItems 返回非数组同样落占位'
+      )
+
+      // dom 通道全 text 列（无 column.link）：条目对象遗留 link 键不参与渲染
+      // （人工-1 [1-1] 负向断言：{ label, link: true } 条目仍渲染 span、无色类）
+      const domText = ListColumn.compile({ listOption: { max: 3 } }, true)({
+        record: {},
+        value: ['文本项', { label: '链接项', link: true }, { label: '覆盖项', id: 42, link: true, color: 'danger' }, '第4项'],
+        emit: () => {}
+      })
+
+      assertEqual(domText.class, 'mu-table__list-cell', 'dom 外层 class')
+      assertEqual(domText.items.length, 3, 'listOption.max=3 截断（第 3 条 dots）')
+      assert(domText.items.every(i => i.is === 'span'), '全 text 列条目恒 span（条目 link 键不参与渲染）')
+      assert(domText.items.every(i => i.attrs.class.filter(Boolean).length === 0), '全 text 列不落 text-{color}（正文色，条目 color 键不消费）')
+      assertEqual(domText.items[2].text, '...', 'dots 条目')
+
+      // dom 通道全 link 列（column.link: true 列级单点）：整列 a + text-{color}
+      const domLink = ListColumn.compile({ link: true, listOption: { max: 3, color: 'teal', disabled: false } }, true)({
+        record: {},
+        value: ['文本项', { label: '覆盖项', id: 42, color: 'danger' }, '第3项', '第4项'],
+        emit: () => {}
+      })
+
+      assert(domLink.items.every(i => i.is === 'a'), '全 link 列条目恒 a（列级单点）')
+      assert(domLink.items[0].attrs.class.includes('text-teal'), 'listOption.color 缺省色 → text-teal')
+      assert(domLink.items[1].attrs.class.includes('text-danger'), '条目 color 覆盖 listOption.color')
+      assert(domLink.items.every(i => typeof i.events.click === 'function'), '全 link 列条目绑定 click')
+
+      // 常规条目 payload item = 条目原对象（含 id 附加键，遗留 link 键原样传出）、column = 原列引用
+      const target = { label: '附加键', id: 42, link: true, color: 'danger' }
+      const columnDef = { field: 'items', type: 'list' }
+      let captured = null
+
+      ListColumn.compile(columnDef, true)(
+        { record: { id: 1 }, value: ['文本项', target], emit: (type, payload) => { captured = payload } }
+      ).items[1].events.click()
+
+      assertEqual(captured.record.id, 1, 'payload.record = 行记录')
+      assert(captured.column === columnDef, 'payload.column = 原始列引用')
+      assert(captured.item === target, 'payload.item = 条目原引用（id/link 附加键不丢）')
+
+      // canvas 通道：link 字段 = 列级 column.link（整列同值）、color 仅 link 列消费
+      const canvasLink = ListColumn.compile({ link: true, title: true })({
+        record: {},
+        value: [{ label: '甲', color: 'danger' }, '乙'],
+        emit: () => {}
+      })
+
+      assertEqual(canvasLink.items[0].kind, 'link', 'canvas 条目复用 kind link 命中链')
+      assert(canvasLink.items.every(i => i.link === true), '全 link 列条目 link:true（列级来源）')
+      assertEqual(canvasLink.items[0].color, 'danger', 'link 列条目 color 查表名')
+      assertEqual(canvasLink.items[1].color, 'primary', 'link 列无 color 条目缺省 primary')
+      assertEqual(canvasLink.items[0].title, '甲', 'title:true 生效')
+
+      const canvasText = ListColumn.compile({ title: true })({
+        record: {},
+        value: [{ label: '甲', link: true, color: 'danger' }, '乙'],
+        emit: () => {}
+      })
+
+      assert(canvasText.items.every(i => i.link === false), '全 text 列条目恒 link:false（条目 link 键不参与）')
+      assertEqual(canvasText.items[0].color, null, '非 link 列条目 color null（绘制正文色）')
+
+      // 全条目点击派发（A6：含纯文本条目，两形态列同）
+      const events = []
+
+      ListColumn.compile({})({ record: {}, value: [{ label: '甲', link: true }, '乙'], emit: (type, payload) => events.push(payload) })
+        .items.forEach(item => item.onItemClick())
+
+      assertEqual(events.length, 2, '所有条目绑定 onItemClick（A6）')
+      assertEqual(events[0].item.label, '甲', 'link 项 payload item')
+      assertEqual(events[1].item.label, '乙', '纯文本项 payload item = primitive 包装对象 { label }')
+
+      // caption 兼容读取 + 空条目过滤
+      const legacy = ListColumn.compile({}, true)({ record: {}, value: [{ caption: '旧键' }, { label: '' }, 'ok'], emit: () => {} })
+
+      assertEqual(legacy.items.length, 2, '空 label 条目过滤、caption 条目保留')
+      assertEqual(legacy.items[0].text, '旧键', 'caption 键兼容读取（开发期警告一次）')
+
+      return '标量/对象落占位、列级 link 整列 span/a、非 link 列正文色、payload item/column、caption 兼容、过滤全通过'
     }
   },
   {
@@ -1391,7 +1521,7 @@ export const checks = [
     }
   },
   {
-    name: 'link 列竖排：数组每条一行、恒两色三态取色、超限 dots \'...\'、条目矩形回报',
+    name: 'link 列竖排：数组每条一行、color 查表/danger 映射/disabled 取色、超限 dots \'...\'、条目矩形回报',
     fn: () => {
       const col = prepareColumn({ field: 'v', type: 'link', maxItems: 4 })
       const record = { v: [{ caption: 'A', color: 'success' }, { caption: 'B', disabled: true }, { caption: 'C', danger: true }, 'D', 'E'] }
@@ -1405,12 +1535,27 @@ export const checks = [
         `竖排每条一行（首行光学居中锚 19 + 偏移 ${TEXT_ANCHOR_OFF}；+18 顺排）`
       )
       assertArray(calls.fillText.map(c => c.x), [8, 8, 8, 8], '左缘对齐内容区')
-      assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME.primaryColor), '条目 color 字段不消费（恒两色）→ primary')
+      assertEqual(calls.fillText[0].fillStyle, cssColorOf(THEME_COLORS.success.color), '条目 color 色名查表 → colors.success.color（20261104 color 激活）')
       assertEqual(calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), 'disabled（存在性判定）→ textColorMuted')
-      assertEqual(calls.fillText[2].fillStyle, cssColorOf(THEME_COLORS.danger.color), 'danger 平铺 → colors.danger')
+      assertEqual(calls.fillText[2].fillStyle, cssColorOf(THEME_COLORS.danger.color), 'danger:true → color danger 映射 → colors.danger')
       assertEqual(calls.fillText[3].fillStyle, cssColorOf(THEME.primaryColor), 'dots 条目回退主色（mu-link 缺省）')
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['link:0', 'link:1', 'link:2', 'link:3'], '条目矩形（含 dots）回报')
       assertArray(rects.map(r => r.disabled), [false, true, false, false], '条目 disabled 字段（B disabled=true、dots false）')
+
+      // list 列（R1 列级 link）：全 text 列条目恒正文色（条目遗留 link 键不参与渲染）；
+      // 全 link 列（column.link）缺省 primary（colors.primary 与 primaryColor 同源）、条目 color 查表
+      const listCol = prepareColumn({ field: 'v', type: 'list' })
+      const listDraw = drawRecorded(listCol, { v: ['甲', { label: '链接乙', link: true }] }, { height: 60 })
+
+      assertArray(listDraw.calls.fillText.map(c => c.text), ['甲', '链接乙'], 'list 列竖排文本')
+      assertEqual(listDraw.calls.fillText[0].fillStyle, cssColorOf(THEME.textColor), '全 text 列条目正文色 textColor')
+      assertEqual(listDraw.calls.fillText[1].fillStyle, cssColorOf(THEME.textColor), '条目遗留 link 键不参与渲染（仍正文色，R1 列级口径）')
+
+      const listLinkCol = prepareColumn({ field: 'v', type: 'list', link: true })
+      const listLinkDraw = drawRecorded(listLinkCol, { v: [{ label: '甲' }, { label: '乙', color: 'danger' }] }, { height: 60 })
+
+      assertEqual(listLinkDraw.calls.fillText[0].fillStyle, cssColorOf(THEME.primaryColor), '全 link 列条目缺省 primary（colors.primary 与 primaryColor 同源，R1-2 夹具）')
+      assertEqual(listLinkDraw.calls.fillText[1].fillStyle, cssColorOf(THEME_COLORS.danger.color), '全 link 列条目 color 查表')
 
       // 字符串数组竖排 + 数字单值 String 化
       const strings = drawRecorded(col, { v: ['甲', '乙'] }, { height: 60 })
@@ -1450,21 +1595,21 @@ export const checks = [
     }
   },
   {
-    name: 'link 悬停（问题 7/A7）：竖排与横排两路径色变 + 1px 下划线、disabled 不悬停、条目 disabled 字段',
+    name: 'link 悬停（问题 7/A7）：竖排与横排两路径色变 + 1px 下划线、disabled 不悬停、list 非 link 条目不悬停',
     fn: () => {
       const col = prepareColumn({ field: 'v', type: 'link', maxItems: 4 })
       const record = { v: [{ caption: 'A', color: 'success' }, { caption: 'B', disabled: true }, { caption: 'C', danger: true }, 'D', 'E'] }
 
-      // 竖排路径（drawLinkItems）：hover 第 0 条（color 不消费、默认色）→ primary hover 谱系 + 下划线
+      // 竖排路径（drawLinkItems）：hover 第 0 条（color success 查表，彩色 hover === color）
       const vertical = drawRecorded(col, record, { height: 88, hoverItem: { kind: 'link', index: 0 } })
-      const primaryHover = cssColorOf(THEME_COLORS.primary.hover)
+      const successHover = cssColorOf(THEME_COLORS.success.hover)
 
-      assertEqual(vertical.calls.fillText[0].fillStyle, primaryHover, '竖排 hover 条目 fillStyle = colors.primary.hover（默认色）')
+      assertEqual(vertical.calls.fillText[0].fillStyle, successHover, '竖排 hover 条目 fillStyle = item.color 查表 hover 谱系（success）')
       assertEqual(vertical.calls.fillRect.length, 1, '竖排仅 hover 条目画下划线')
       assertEqual(vertical.calls.fillRect[0].y, 19 + TEXT_ANCHOR_OFF + 2, `下划线 y = 光学锚(${19 + TEXT_ANCHOR_OFF}) + 2（基线下 2px，20261029 问题 1）`)
       assertEqual(vertical.calls.fillRect[0].x, 8, '下划线 x = 条目起点（内容区左缘）')
       assert(vertical.calls.fillRect[0].width > 0 && vertical.calls.fillRect[0].height === 1, '下划线 1px 高、宽 = 实绘文本宽')
-      assertEqual(vertical.calls.fillRect[0].fillStyle, primaryHover, '下划线 fillStyle = hover 色')
+      assertEqual(vertical.calls.fillRect[0].fillStyle, successHover, '下划线 fillStyle = hover 色')
 
       // 竖排 disabled 条目被 hover：不悬停（常态 muted、无下划线）
       const verticalDisabled = drawRecorded(col, record, { height: 88, hoverItem: { kind: 'link', index: 1 } })
@@ -1472,7 +1617,15 @@ export const checks = [
       assertEqual(verticalDisabled.calls.fillText[1].fillStyle, cssColorOf(THEME.textColorMuted), '竖排 disabled 被 hover 仍为常态 muted')
       assertEqual(verticalDisabled.calls.fillRect.length, 0, '竖排 disabled 被 hover 不画下划线')
 
-      // 横排路径（drawItemText）：自定义类型产平铺 kind:'link' 条目（col.type 非 link → 横排）
+      // list 列（非 link 条目 link:false）被 hover：不悬停（正文色、无下划线，A6 门控）
+      const listCol = prepareColumn({ field: 'v', type: 'list' })
+      const listHover = drawRecorded(listCol, { v: ['甲', '乙'] }, { height: 60, hoverItem: { kind: 'link', index: 0 } })
+
+      assertEqual(listHover.calls.fillText[0].fillStyle, cssColorOf(THEME.textColor), 'list 非 link 条目被 hover 保持正文色（item.link !== false 门控）')
+      assertEqual(listHover.calls.fillRect.length, 0, 'list 非 link 条目被 hover 不画下划线')
+
+      // 横排路径（drawItemText）：自定义类型产平铺 kind:'link' 条目（col.type 非 link → 横排；
+      // 老式条目无 link 字段 → link !== false 视为 link，danger 回退保留）
       const hCol = prepareColumn({
         field: 'v',
         type: {
@@ -1504,7 +1657,7 @@ export const checks = [
       assertArray(rects.map(r => `${r.kind}:${r.index}`), ['link:0', 'link:1'], '横排条目回报')
       assertArray(rects.map(r => r.disabled), [false, true], '横排条目携带 disabled 布尔')
 
-      return `两路径 hover 色变 + 下划线 y=${19 + TEXT_ANCHOR_OFF + 2}；disabled 两态不悬停；横排 disabled=[false,true]`
+      return `两路径 hover 色变 + 下划线 y=${19 + TEXT_ANCHOR_OFF + 2}；disabled 两态不悬停；list 非 link 不悬停；横排 disabled=[false,true]`
     }
   },
   {
@@ -1636,7 +1789,12 @@ export const checks = [
       assertEqual(linkHoverColorOf({ disabled: true }, THEME), THEME.textColorMuted, 'disabled → textColorMuted')
       assertEqual(linkHoverColorOf({ danger: false }, THEME), THEME_COLORS.primary.hover, 'danger 假值 → 默认 primary hover')
 
-      return 'danger.hover / primary.hover / 缺失回退 / muted 四分支'
+      // 20261104 color 色名维度：查表优先、非 link 条目（link:false）正文色
+      assertEqual(linkHoverColorOf({ color: 'success' }, THEME), THEME_COLORS.success.hover, 'color 色名 → colors.success.hover')
+      assertEqual(linkHoverColorOf({ color: 'success', danger: true }, THEME), THEME_COLORS.success.hover, 'color 查表优先于 danger 回退')
+      assertEqual(linkHoverColorOf({ link: false }, THEME), THEME.textColor, '非 link 条目 → 正文色（hover 门控不达，防御回退）')
+
+      return 'danger.hover / primary.hover / 缺失回退 / muted / color 查表 / 非 link 正文色 分支'
     }
   },
   {
@@ -1831,29 +1989,37 @@ export const checks = [
     }
   },
   {
-    name: 'resolveCellTooltip：数组值 drawArrayLines 口径（超 maxItems dots / 单元素超宽 / 空串过滤 join）',
+    name: 'resolveCellTooltip：文本数组无 tooltip（A9 占位）+ link/list 条目竖排通道（超 maxItems dots / 单条超宽）',
     fn: () => {
-      const over = tooltipOf({ field: 'v', maxItems: 3, title: true }, { v: [1, '二', 3, 4] })
-
-      assertEqual(over.overflow, true, '4 元素 > maxItems 3 应溢出（绘制为 dots）')
-      assertEqual(over.content, '1；二；3；4', '全文 = 逐元素 String 化 join \'；\'（不含 dots 行）')
+      // A9：文本列数组值 → resolveCellContent 门控落 {} → 无可提示文本源
       assertEqual(
-        tooltipOf({ field: 'v', maxItems: 3, title: true }, { v: ['一二三四五六七八九十'.repeat(2), '甲'] }).overflow,
+        tooltipOf({ field: 'v', maxItems: 3, title: true }, { v: [1, '二', 3, 4] }),
+        null,
+        '文本列数组值落占位 → 无 tooltip'
+      )
+
+      // list 列走 link/list 竖排口径（resolveTooltipItems link 分支，col.type === 'list'）
+      const over = tooltipOf({ field: 'v', type: 'list', maxItems: 3, title: true }, { v: ['a', 'b', 'c', 'd'] })
+
+      assertEqual(over.overflow, true, '4 条目 > maxItems 3 应溢出（绘制为 dots）')
+      assertEqual(over.content, 'a；b；c；d', '全文 = 条目 text join \'；\'（不含 dots 行）')
+      assertEqual(
+        tooltipOf({ field: 'v', type: 'list', maxItems: 3, title: true }, { v: ['一二三四五六七八九十'.repeat(2), '甲'] }).overflow,
         true,
-        '任一元素超宽（180 > 144）应溢出'
+        '任一条目超宽（180 > 144）应溢出'
       )
       assertEqual(
-        tooltipOf({ field: 'v', maxItems: 3, title: true }, { v: ['甲', '乙'] }).overflow,
+        tooltipOf({ field: 'v', type: 'list', maxItems: 3, title: true }, { v: ['甲', '乙'] }).overflow,
         false,
-        '窄数组不溢出'
+        '窄条目集不溢出'
       )
       assertEqual(
-        tooltipOf({ field: 'v', title: true }, { v: ['甲', '', '乙'] }).content,
-        '甲；乙',
-        '空串元素过滤后 join'
+        tooltipOf({ field: 'links', type: 'link', maxItems: 3, title: true }, { links: ['a', 'b', 'c', 'd'] }).overflow,
+        true,
+        'link 兼容列同口径（col.type === link 分发保留）'
       )
 
-      return '超 maxItems dots / 单元素超宽 / 窄数组不溢出 / 空串过滤 join'
+      return '文本数组无 tooltip；list/link 竖排口径：超 maxItems dots / 单条超宽 / 窄集不溢出'
     }
   },
   {

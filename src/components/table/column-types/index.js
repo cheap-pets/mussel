@@ -8,6 +8,7 @@ import { BoolColumn } from './bool'
 import { DateColumn, DateTimeColumn } from './date'
 import { NumberColumn, CurrencyColumn } from './number'
 import { LinkColumn } from './link'
+import { ListColumn } from './list'
 import { TagColumn } from './tag'
 import { ImageColumn } from './image'
 
@@ -24,6 +25,7 @@ const ColumnTypes = {
   number: NumberColumn,
   currency: CurrencyColumn,
   link: LinkColumn,
+  list: ListColumn,
   tag: TagColumn,
   img: ImageColumn,
   image: ImageColumn

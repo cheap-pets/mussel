@@ -403,14 +403,15 @@ export const checks = [
   {
     name: '行高分层：rowspan>1 主格与 covered 格不计入且不触发 hasArrayValues；colspan 主格按区域宽',
     fn: () => {
-      // ① rowspan>1 主格持数组值：不参与行高、hasArrayValues 恒 false
+      // ① rowspan>1 主格持 list 多条目（会触发变高的值）：不参与行高、hasArrayValues 恒 false
+      // （20261104-table-column-type：A9 后文本列数组不再触发变高，对照组改用 list 条目计数）
       const defsA = prep([
-        { caption: 'a', field: 'a' },
-        { caption: 'arr', field: 'arr', maxLines: 3 }
+        { caption: 'a', field: 'a', type: 'list' },
+        { caption: 'note', field: 'note' }
       ])
       const recordsA = [
-        { a: ['x', 'y', 'z'], arr: 'plain' },
-        { a: ['x', 'y', 'z'], arr: 'plain' }
+        { a: ['x', 'y', 'z'], note: 'plain' },
+        { a: ['x', 'y', 'z'], note: 'plain' }
       ]
       const spansA = buildSpans({
         records: recordsA,
@@ -425,13 +426,13 @@ export const checks = [
         spans: spansA
       })
 
-      assertEqual(outA.heights[0], 36, 'rowspan>1 主格排除（数组值不计行高）')
+      assertEqual(outA.heights[0], 36, 'rowspan>1 主格排除（list 条目不计行高）')
       assertEqual(outA.heights[1], 36, 'covered 格排除')
-      assertEqual(outA.hasArrayValues, false, '被排除格数组值不触发变高模式升级')
+      assertEqual(outA.hasArrayValues, false, '被排除格多条目不触发变高模式升级')
       assertEqual(
         computeRowHeights({ records: recordsA, columns: defsA, colWidths: [100, 100], theme: THEME }).hasArrayValues,
         true,
-        '对照组：无 spans 时数组值触发（排除确由分层产生）'
+        '对照组：无 spans 时 list 条目 > 1 触发（排除确由分层产生）'
       )
 
       // ② rowspan===1 的 colspan 主格按区域宽折行（precise 精算）

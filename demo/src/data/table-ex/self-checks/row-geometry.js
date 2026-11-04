@@ -9,10 +9,10 @@
  * - variable 模式 topAt/totalHeight/updateHeight Δ/offsetToRow/visibleRange
  *   与测试内朴素参考实现（O(n²) 逐行累加，随机整数高度 1000 行）一致；
  * - Fenwick rebuild 后一致；computeAnchorShift 锚定补偿值；
- * - computeRowHeights 全量快速估高（零测量、数组值/link 条目计数真值、
- *   hasArrayValues 模式判定输入）、ensureRowMeasured 进窗精算
- *   （短路零测量、maxLines 钳制、函数形态 _resolveMaxLines 行级求值、
- *   treeIndents(colIndex, row) 仅扣树形列 contentWidth）。
+ * - computeRowHeights 全量快速估高（零测量、link/list 条目计数真值、文本列数组值
+ *   恒 1 行——20261104-table-column-type A9、hasArrayValues 模式判定输入）、
+ *   ensureRowMeasured 进窗精算（短路零测量、maxLines 钳制、函数形态
+ *   _resolveMaxLines 行级求值、treeIndents(colIndex, row) 仅扣树形列 contentWidth）。
  * measure 为注入参数（等宽假测量），模块级零 canvas 依赖。
  */
 import {
@@ -46,6 +46,11 @@ function countingMeasure (counter) {
     counter.calls++
     return plainMeasure(text)
   }
+}
+
+/** list/link 条目列 render 夹具（手写内部字段风格）：数组值逐条目产 items */
+function listRenderOf ({ value }) {
+  return { items: (Array.isArray(value) ? value : []).map(el => ({ text: el })) }
 }
 
 function assertArrayEqual (actual, expected, label) {
@@ -271,18 +276,20 @@ export const checks = [
     }
   },
   {
-    name: 'computeRowHeights：全量快速估高零测量；字符串估 1 行下界；文本列数组值 min(length, maxItems) 真值',
+    name: 'computeRowHeights：全量快速估高零测量；字符串估 1 行下界；list 条目计数真值、文本列数组值恒 1 行（A9）',
     fn: () => {
       const counter = { calls: 0 }
       const columns = [
         { field: 'name' }, // 短字符串 → 1 行真值
         { field: 'note', _maxLines: 3 }, // 长字符串 → 估 1 行下界（待精）
-        { field: 'tags', _maxItems: 3 }, // 数组超限 → min(5, 3) = 3 行真值
-        { field: 'items' } // 数组未配 maxItems → 缺省 10
+        // list 条目列（手写 _render 内部字段）：条目计数真值 min(5, maxItems 3) = 3 行
+        { field: 'tags', type: 'list', _maxItems: 3, _render: listRenderOf },
+        // 文本列数组值（A9）：恒 1 行，不再按元素数计高
+        { field: 'plain', _maxItems: 3 }
       ]
       const records = [
-        { name: 'ab', note: 'x'.repeat(30), tags: ['a', 'b', 'c', 'd', 'e'], items: ['i', 'j'] },
-        { name: 'cd', note: 'y'.repeat(30), tags: ['a'], items: [] }
+        { name: 'ab', note: 'x'.repeat(30), tags: ['a', 'b', 'c', 'd', 'e'], plain: ['p', 'q'] },
+        { name: 'cd', note: 'y'.repeat(30), tags: ['a'], plain: [] }
       ]
       const { heights, hasArrayValues } = computeRowHeights({
         records,
@@ -293,25 +300,27 @@ export const checks = [
       })
 
       assertEqual(counter.calls, 0, '估高路径零测量')
-      assertEqual(hasArrayValues, true, 'hasArrayValues')
-      assertEqual(heights[0], 70, 'row0：tags min(5,3)=3 行 → 16+54=70（主导列）')
-      assertEqual(heights[1], 36, 'row1：tags 1 行、items 0 行 → 基线 36')
+      assertEqual(hasArrayValues, true, 'hasArrayValues（list 条目 > 1 触发）')
+      assertEqual(heights[0], 70, 'row0：tags(list) min(5,3)=3 行 → 16+54=70（主导列）')
+      assertEqual(heights[1], 36, 'row1：list 1 条、plain 数组恒 1 行 → 基线 36')
 
-      return 'measure 0 次；heights=[70, 36]；文本列数组值按 min(length, maxItems) 真值计高'
+      return 'measure 0 次；heights=[70, 36]；list 条目计数真值、文本列数组值恒 1 行'
     }
   },
   {
-    name: 'computeRowHeights：hasArrayValues 判定（文本列数组 / link 条目 > 1 / 单条 link 不升级）',
+    name: 'computeRowHeights：hasArrayValues 判定（list/link 条目 > 1；文本列数组不触发——A9）',
     fn: () => {
       const base = { colWidths: [100], theme: THEME }
 
+      // A9：文本列数组值不再逐元素拆行 → 不触发变高、恒 1 行
       const withArray = computeRowHeights({
         records: [{ v: ['a', 'b'] }],
         columns: [{ field: 'v' }],
         ...base
       })
 
-      assertEqual(withArray.hasArrayValues, true, '文本呈现列数组值 → true')
+      assertEqual(withArray.hasArrayValues, false, '文本列数组值不再触发变高（A9）')
+      assertEqual(withArray.heights[0], 36, '文本列数组值恒 1 行 → 基线行高')
 
       const stringsOnly = computeRowHeights({
         records: [{ v: 'abc' }, { v: 'def' }],
@@ -322,6 +331,26 @@ export const checks = [
       assertEqual(stringsOnly.hasArrayValues, false, '纯字符串 → false')
 
       let renderCalls = 0
+
+      const listMulti = {
+        type: 'list',
+        field: 'items',
+        _render: ({ value }) => {
+          renderCalls++
+
+          return { items: [1, 2, 3].map(n => ({ text: value + n })) }
+        }
+      }
+
+      const withListMulti = computeRowHeights({
+        records: [{ items: 'L' }, { items: 'M' }],
+        columns: [listMulti],
+        ...base
+      })
+
+      assertEqual(withListMulti.hasArrayValues, true, 'list 条目数 > 1 → true')
+      assertEqual(renderCalls, 2, 'list 列每格仅调用一次 render（估高计数复用，不重复求值）')
+      assertEqual(withListMulti.heights[0], 16 + 3 * 18, 'list 3 条 → 3 行高')
 
       const linkMulti = {
         type: 'link',
@@ -334,13 +363,12 @@ export const checks = [
       }
 
       const withLinkMulti = computeRowHeights({
-        records: [{ links: 'L' }, { links: 'M' }],
+        records: [{ links: 'L' }],
         columns: [linkMulti],
         ...base
       })
 
-      assertEqual(withLinkMulti.hasArrayValues, true, 'link 条目数 > 1 → true')
-      assertEqual(renderCalls, 2, 'link 列每格仅调用一次 render（估高计数复用，不重复求值）')
+      assertEqual(withLinkMulti.hasArrayValues, true, 'link 条目数 > 1 → true（兼容列同判）')
       assertEqual(withLinkMulti.heights[0], 16 + 3 * 18, 'link 3 条 → 3 行高')
 
       renderCalls = 0
@@ -364,7 +392,7 @@ export const checks = [
       assertEqual(tagArray.hasArrayValues, false, '图形/条目列（tag）数组值不触发变高')
       assertEqual(tagArray.heights[0], 36, 'tag 数组横排呈现恒 1 行 → 基线行高')
 
-      return '文本列数组/link 多条 → true；图形列数组/纯字符串/单条 link → false；render 每格 1 次'
+      return 'list/link 多条 → true；文本列数组/图形列数组/纯字符串/单条 link → false；render 每格 1 次'
     }
   },
   {
