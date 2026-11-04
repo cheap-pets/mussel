@@ -23,13 +23,14 @@
     {
       field: 'status',
       caption: '状态',
+      type: 'enum',
       width: 100,
       mappings: { active: '启用', inactive: '停用', default: '未知' }
     },
     {
       field: 'level',
       caption: '等级',
-      type: 'number',
+      type: 'enum',
       width: 90,
       options: [
         { value: 1, label: '低' },
@@ -107,41 +108,39 @@
 
 | 类型 | 说明 | 默认对齐 |
 |------|------|---------|
-| `text` | 文本（缺省类型，支持 `multiline` / `lineClamp` / `mappings` / `options`） | left |
+| `text` | 文本（缺省类型，支持 `multiline` / `lineClamp` / `color` 染色） | left |
 | `rec_no` | 自动行号（配合 `records-offset` 计算分页行号） | center |
 | `check` | 复选勾选 | center |
-| `bool` | 布尔，缺省显示 是 / 否；可配 `mappings: { true: '是', false: '否' }` | center |
+| `bool` | 布尔，缺省显示 是 / 否，可配 `trueText` / `falseText` | center |
 | `date` / `datetime` | 日期（时间）格式化，配合 `format` / `formatter` | right |
-| `number` / `currency` | 数字 / 货币格式化，配合 `formatOption` / `locale`，亦可配 `mappings` / `options` | right |
+| `number` / `currency` | 数字 / 货币格式化，配合 `formatOption` / `locale` | right |
 | `link` | 链接，配合 `links` 函数或字段值 | left |
 | `tag` | 标签，配合 `tags` 函数或字段值 | left |
 | `img` / `image` | 图片缩略图 | left |
-| `enum` | **已废弃**（使用时控制台告警），改用 `text` + `mappings` / `options` | center |
+| `enum` | 枚举显示映射，独占 `mappings` / `options`；映射值可为 `{ text, color, class, style }` 对象 | center |
 
 `type` 也可直接传自定义类型对象 `{ align, width, compile: column => ({ record, value, recordNumber, emit }) => ({ text } | { items }) }`。
 
 ## 显示映射 `mappings` / `options`
 
-`text` / `number` / `bool` 列（含未指定 `type` 的列）可配置显示映射，把存储值映射为显示文本：
+`enum` 列可配置显示映射，把存储值映射为显示文本：
 
-- `mappings`：`{ 值: 文本 }` 对象，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值；空值（`null` / `undefined`）显示 `placeholder`。
+- `mappings`：`{ 值: 文本 }` 对象，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值；空值（`null` / `undefined`）显示 `placeholder`；映射值可为 `{ text, color, class, style }` 对象。
 - `options`：`mu-select` 同格式选项数组（`[{ value, label }]` 或字符串数组），自动转换为映射；与 `mappings` 同时存在时 `mappings` 优先。
 - 列配置 `text` 显示优先，不参与映射。
 
 <ClientOnly>
   <div class="mu-demo mu-demo-col" style="align-items: stretch;">
     <mu-table :records="records" :columns="mappingColumns" key-field="id" />
-    <span class="text-subtle">状态列 mappings 映射（未命中落 default）；等级列 number + options 映射</span>
+    <span class="text-subtle">状态列 mappings 映射（未命中落 default）；等级列 enum + options 映射</span>
   </div>
 </ClientOnly>
 
 ```javascript
 const columns = [
-  { field: 'status', caption: '状态', width: 100,
+  { field: 'status', caption: '状态', type: 'enum', width: 100,
     mappings: { active: '启用', inactive: '停用', default: '未知' } },
-  { field: 'enabled', caption: '启用', type: 'bool', width: 80,
-    mappings: { true: '是', false: '否' } },
-  { field: 'level', caption: '等级', type: 'number', width: 90,
+  { field: 'level', caption: '等级', type: 'enum', width: 90,
     options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }] }
 ]
 ```
@@ -154,7 +153,7 @@ const columns = [
   { type: 'check', field: 'checked', headerCheckbox: true },       // 勾选列 + 表头全选
   { field: 'name', caption: '姓名', type: 'text', sortable: true },
   { field: 'amount', caption: '金额', type: 'currency' },
-  { field: 'status', caption: '状态',
+  { field: 'status', caption: '状态', type: 'enum',
     mappings: { active: '启用', inactive: '停用', default: '未知' } },
   { field: 'created', caption: '创建时间', type: 'date', format: 'yyyy-MM-dd' },
   { field: 'actions', caption: '操作', type: 'link',
@@ -294,10 +293,11 @@ function onHeaderClick (column) {
 | `title` | String\|Function | 单元格 title（`true` 时为 link/tag 类型开启省略项的 title 提示）|
 | `class` / `style` | String\|Function | 单元格 class / 样式 |
 | `headerClass` / `headerStyle` | String\|Function | 表头 class / 样式 |
-| `mappings` | Object | 显示映射（`text` / `number` / `bool` 列及未指定 type 的列），见「显示映射」|
-| `options` | Array | 选项数组自动转换为显示映射（格式同 `mu-select`），`mappings` 优先 |
+| `mappings` | Object | 显示映射（`enum` 列），见「显示映射」；映射值可为 `{ text, color, class, style }` 对象 |
+| `options` | Array | 选项数组自动转换为显示映射（`enum` 列，格式同 `mu-select`），`mappings` 优先 |
 | `multiline` | Boolean | 多行文本（`text` 类型）|
 | `lineClamp` | Number\|Function | 行数限制（`text` 类型）|
+| `color` | String\|Function | 单元格文本色（主题色名），可为 `(record, value) => 色名`（`text` / `bool` / `date` / `datetime` / `number` / `currency` 类型）|
 | `format` | String | 日期格式（`date` / `datetime` 类型）|
 | `formatter` | Function | 日期格式化函数 `(value, format) => text` |
 | `formatOption` | Object | `Intl.NumberFormat` 选项（`number` / `currency` 类型）|

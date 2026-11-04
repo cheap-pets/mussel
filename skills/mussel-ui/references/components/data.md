@@ -153,10 +153,11 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 | `title` | String\|Function | 单元格 title（`true` 时为 link/tag 类型开启省略项的 title 提示）|
 | `class` / `style` | String\|Function | 单元格 class / 样式 |
 | `headerClass` / `headerStyle` | String\|Function | 表头 class / 样式 |
-| `mappings` | Object | 显示映射（`text` / `number` / `bool` 列及未指定 `type` 的列）：`{ 值: 文本 }`，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值（`number` 列此时不再格式化）；空值（`null` / `undefined`）显示 `placeholder` |
-| `options` | Array | 选项数组自动转换为显示映射，格式同 `MuSelect` 的 `options`（`[{ value, label }]` 或字符串数组）；与 `mappings` 同时存在时 `mappings` 优先 |
+| `mappings` | Object | 显示映射（`enum` 列）：`{ 值: 文本 }`，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值；空值（`null` / `undefined`）显示 `placeholder`；映射值可为 `{ text, color, class, style }` 对象 |
+| `options` | Array | 选项数组自动转换为显示映射（`enum` 列），格式同 `MuSelect` 的 `options`（`[{ value, label }]` 或字符串数组）；与 `mappings` 同时存在时 `mappings` 优先 |
 | `multiline` | Boolean | 多行文本（`text` 类型）|
 | `lineClamp` | Number\|Function | 行数限制（`text` 类型）|
+| `color` | String\|Function | 单元格文本色（主题色名），可为 `(record, value) => 色名`（`text` / `bool` / `date` / `datetime` / `number` / `currency` 类型）|
 | `format` | String | 日期格式（`date` / `datetime` 类型）|
 | `formatter` | Function | 日期格式化函数 `(value, format) => text`（`date` / `datetime` 类型，默认内置 `toDateString`）|
 | `formatOption` | Object | `Intl.NumberFormat` 选项（`number` / `currency` 类型）|
@@ -173,18 +174,18 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 
 | 类型 | 说明 | 默认对齐 | 默认宽度 |
 |------|------|---------|---------|
-| `text` | 文本（缺省类型），可配 `mappings` / `options` | left | — |
+| `text` | 文本（缺省类型），支持 `multiline` / `lineClamp` / `color` 染色 | left | — |
 | `rec_no` | 自动行号 | center | 50px |
 | `check` | 复选勾选 | center | 50px |
-| `bool` | 布尔，缺省显示 是 / 否；可配 `mappings: { true: '…', false: '…' }` | center | — |
+| `bool` | 布尔，缺省显示 是 / 否，可配 `trueText` / `falseText` | center | — |
 | `date` | 日期格式化 | right | — |
 | `datetime` | 日期时间格式化 | right | — |
-| `number` | 数字格式化，可配 `mappings` / `options` | right | — |
+| `number` | 数字格式化 | right | — |
 | `currency` | 货币格式化 | right | — |
 | `link` | 链接，配合 `links` 函数 | left | — |
 | `tag` | 标签，配合 `tags` 函数 | left | — |
 | `img` / `image` | 图片缩略图 | left | — |
-| `enum` | **已废弃**（使用时控制台告警），改用 `text` + `mappings` / `options`；兼容期内映射值仍可为 `{ text, class, style }` 对象 | center | — |
+| `enum` | 枚举显示映射，独占 `mappings` / `options`；映射值可为 `{ text, color, class, style }` 对象 | center | — |
 
 #### 完整示例
 
@@ -209,13 +210,13 @@ const columns = [
   { type: 'check', field: 'checked', headerCheckbox: true },
   { field: 'name',    caption: '姓名',   type: 'text', sortable: true },
   { field: 'amount',  caption: '金额',   type: 'currency' },
-  { field: 'status',  caption: '状态',
+  { field: 'status',  caption: '状态',  type: 'enum',
     mappings: { active: '启用', inactive: '停用', default: '未知' }
   },
-  { field: 'level',   caption: '等级',   type: 'number',
+  { field: 'level',   caption: '等级',   type: 'enum',
     options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }]
   },
-  { field: 'enabled', caption: '启用',   type: 'bool', mappings: { true: '是', false: '否' } },
+  { field: 'enabled', caption: '启用',   type: 'bool' },
   { field: 'created', caption: '创建时间', type: 'date', format: 'yyyy-MM-dd' },
   { field: 'actions', caption: '操作',   type: 'link',
     linkOption: { max: 3 },
@@ -311,8 +312,9 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；p
 
 | 列类型 | 缺省编辑器 |
 |------|------|
-| `text`（含未指定 `type`）| `input`；配置了 `mappings` / `options` 时为 `select`；值为数组或 `maxLines > 1` 时为 `textarea` |
-| `number` / `currency` | `input`（`type="number"`）；配置了 `mappings` / `options` 时为 `select` |
+| `text`（含未指定 `type`）| `input`；值为数组或 `maxLines > 1` 时为 `textarea` |
+| `enum` | `select`（无 `mappings` / `options` 时下拉为空）|
+| `number` / `currency` | `input`（`type="number"`）|
 | `date` / `datetime` | `date` |
 | `bool` | `switch` |
 
@@ -349,7 +351,7 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；p
 const columns = [
   { type: 'rec_no' },
   { field: 'name',   caption: '名称', sortable: true, minWidth: 120, editor: true },
-  { field: 'status', caption: '状态', width: 100,
+  { field: 'status', caption: '状态', width: 100, type: 'enum',
     mappings: { active: '启用', archived: '归档', default: '未知' }, editor: true },
   { field: 'count',  caption: '数量', type: 'number', width: 100,
     editor: { validate: v => (v >= 0 ? true : '不能为负数') } },

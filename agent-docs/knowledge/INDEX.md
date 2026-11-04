@@ -30,10 +30,10 @@
 - [overlay DOM 阴影 canvas getImageData 不可见](./project/dom-shadow-canvas-imagedata-invisible.md) `pitfall`：getImageData 读不到滚动阴影——overlay 阴影是 DOM box-shadow；断言 DOM 或截图合成像素。
 - [table-ex demo 页交互验证](./project/table-ex-demo-interaction-verify.md) `convention` `code@worktree(2026-10-28)`：单元格点击向 sticky 派发带 clientX 的 pointer/click，坐标经 getLayoutInfo 前缀和；浮层断言等 80ms+；事件日志 unshift 最新在前；条目命中区=pill 绘制区非整格，多 pill 探针勿取联合包围盒中点（8px 间隙）。
 - TagColumn 颜色协议 color 直取 `convention` `code@worktree(2026-11-03)`：tag 颜色 = color 属性；DOM 恒落 text-{c}+bg-{c}-translucent（缺省 gray），画布 item.color 查 colors（gray 走快照 gray/hoverBg）；mu-tag--{color} 色类已废弃。
-- table 列 mappings text 类型独占 `convention` `code@worktree(2026-11-03)`：mappings/options 仅 text 列生效（TextColumn.compile 内 mapper，双端同源）；number/bool 不可映射，编辑器 select 派生亦仅 text。
-- table 列 color 参数 `convention` `code@worktree(2026-11-03)`：bool/number/currency/date/datetime 支持 color（色名 | (record,value)=>色名）；dom 通道落 text-{c}，canvas 通道 color 属性直出。
+- table 列 mappings enum 类型独占 `convention` `code@worktree(2026-11-04)`：mappings/options 仅 enum 列生效（EnumColumn.compile 内 createDisplayMapper，双端同源）；text 不读映射；编辑器 select 仅 enum。
+- table 列 color 参数 `convention` `code@worktree(2026-11-04)`：text/bool/number/currency/date/datetime 支持 color（色名 | (record,value)=>色名）；dom 通道落 text-{c}，canvas 通道 color 属性直出。
 - table 列 compile(column, dom) 双通道协议 `convention` `code@worktree(2026-11-03)`：dom=true 产 is/class/style/events，否则产 color 等数据属性；link/tag canvas 条目平铺 { kind, text, onItemClick }（识别 kind 优先，onItemClick 自持 cell-item-click 派发、payload 与 DOM 版同构），check/img 未改造仍走 is/class；link 恒两色 primary/danger。
-- enum 列废弃但两组件兼容保留 `convention` `code@worktree(2026-10-29)`：type:'enum' 照常渲染并 dev 警告一次；缺 mappings 不抛（default ?? 原值回退）；table-ex 编辑恒 select、默认宽 100/60。
+- enum 列恢复：显示映射独占 + 编辑 select `convention` `code@worktree(2026-11-04)`：type:'enum' 已注册（无废弃警告），align 缺省 center；mappings 优先、options 转换、default 键回退；table-ex 编辑 select。
 - mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
 - table 列 items 协议 events 可选 `pitfall` `code@worktree(2026-10-29)`：控制台 `v-on with no argument expects an object value`——text/image 等产物无 events；消费端 `table-row.vue` 须 `v-on="item.events ?? {}"` 兜底，生产端不必强加。
 - mu-dialog / mu-drawer 的 dismissible 无默认值 `pitfall` `code@9517eb6`：不传 dismissible 时 ESC 与遮罩点击均不关闭；需此交互须显式传 dismissible。

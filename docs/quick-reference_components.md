@@ -1657,10 +1657,11 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 | style          | String \| Function  | 单元格样式                                 |
 | headerClass    | String \| Function  | 表头 class                                 |
 | headerStyle    | String \| Function  | 表头样式                                   |
-| mappings       | Object              | 显示映射（`text` / `number` / `bool` 列及未指定 type 的列）：`{ 值: 文本 }`，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值；空值显示 `placeholder` |
-| options        | Array               | 选项数组自动转换为显示映射，格式同 `MuSelect` 的 `options`（`[{ value, label }]` 或字符串数组）；与 `mappings` 同时存在时 `mappings` 优先 |
+| mappings       | Object              | 显示映射（`enum` 列）：`{ 值: 文本 }`，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值；空值显示 `placeholder`；映射值可为 `{ text, color, class, style }` 对象 |
+| options        | Array               | 选项数组自动转换为显示映射（`enum` 列），格式同 `MuSelect` 的 `options`（`[{ value, label }]` 或字符串数组）；与 `mappings` 同时存在时 `mappings` 优先 |
 | multiline      | Boolean             | 多行文本（text 类型）                      |
 | lineClamp      | Number \| Function  | 文本行数限制（text 类型）                  |
+| color          | String \| Function  | 单元格文本色（主题色名），可为 `(record, value) => 色名`（`text` / `bool` / `date` / `datetime` / `number` / `currency` 类型） |
 | format         | String              | 日期格式（`date` / `datetime` 类型）       |
 | formatter      | Function            | 日期格式化函数 `(value, format) => text`（`date` / `datetime` 类型） |
 | formatOption   | Object              | `Intl.NumberFormat` 选项（`number` / `currency` 类型） |
@@ -1676,10 +1677,10 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 
 | 类型      | 说明                | 默认对齐 | 默认宽度 |
 | --------- | ------------------- | -------- | -------- |
-| text      | 文本列（缺省类型），可配 `mappings` / `options` | left     | -        |
+| text      | 文本列（缺省类型），支持 `multiline` / `lineClamp` / `color` 染色 | left     | -        |
 | rec_no    | 行号列              | center   | 50px     |
 | check     | 复选勾选列          | center   | 50px     |
-| bool      | 布尔值，缺省显示 是 / 否；可配 `mappings: { true: '…', false: '…' }` | center | - |
+| bool      | 布尔值，缺省显示 是 / 否，可配 `trueText` / `falseText` | center | - |
 | date      | 日期                | right    | -        |
 | datetime  | 日期时间            | right    | -        |
 | number    | 数字                | right    | -        |
@@ -1687,20 +1688,20 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 | link      | 链接                | left     | -        |
 | tag       | 标签                | left     | -        |
 | img/image | 图片                | left     | -        |
-| enum      | **已废弃**（使用时控制台告警），改用 `text` + `mappings` / `options` | center | - |
+| enum      | 枚举显示映射，独占 `mappings` / `options`；映射值可为 `{ text, color, class, style }` 对象 | center | - |
 
 **列类型详细说明：**
 
-- **text**：文本列，支持 `multiline` 多行显示和 `lineClamp` 行数限制
+- **text**：文本列，支持 `multiline` 多行显示、`lineClamp` 行数限制和 `color` 染色
 - **rec_no**：自动显示行号，从 `records-offset + 1` 开始
 - **check**：复选列，支持单个勾选和头部全选，通过 `update:cell-value` 事件获取变更
-- **bool**：布尔值，缺省显示 是 / 否；通过 `mappings` 配置显示文本（键为 `'true'` / `'false'`）
+- **bool**：布尔值，缺省显示 是 / 否，可配 `trueText` / `falseText` 自定义显示文本
 - **date/datetime**：日期格式化，通过 `format` 指定格式，默认 `yyyy-MM-dd` / `yyyy-MM-dd hh:mm`
-- **number/currency**：数字格式化，使用 `Intl.NumberFormat`，支持 `formatOption` 配置；亦可配 `mappings` / `options` 做值映射
+- **number/currency**：数字格式化，使用 `Intl.NumberFormat`，支持 `formatOption` 配置
 - **link**：链接列，通过 `links` 函数生成链接数组，支持 `max` 限制显示数量
 - **tag**：标签列，通过 `tags` 函数生成标签数组，支持 `max` 限制显示数量
 - **img/image**：图片列，显示图片缩略图
-- **enum**：已废弃，改用 `text` + `mappings` / `options`；兼容期内映射值仍可为 `{ text, class, style }` 对象
+- **enum**：枚举显示映射列，独占 `mappings` / `options`（`mappings` 优先）；映射值可为 `{ text, color, class, style }` 对象
 
 **示例：**
 
@@ -1726,10 +1727,10 @@ const columns = [
   { type: 'check', field: 'checked', headerCheckbox: true },
   { field: 'name',    caption: '姓名',   type: 'text', sortable: true },
   { field: 'amount',  caption: '金额',   type: 'currency' },
-  { field: 'status',  caption: '状态',
+  { field: 'status',  caption: '状态',  type: 'enum',
     mappings: { active: '启用', inactive: '停用', default: '未知' } },
-  { field: 'enabled', caption: '启用',   type: 'bool', mappings: { true: '是', false: '否' } },
-  { field: 'level',   caption: '等级',   type: 'number',
+  { field: 'enabled', caption: '启用',   type: 'bool' },
+  { field: 'level',   caption: '等级',   type: 'enum',
     options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }] },
   { field: 'created', caption: '创建时间', type: 'date', format: 'yyyy-MM-dd' },
   { field: 'actions', caption: '操作',   type: 'link',
@@ -1826,8 +1827,9 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；�
 
 | 列类型                          | 缺省编辑器                                                 |
 | ------------------------------- | ---------------------------------------------------------- |
-| text（含未指定 type）           | `input`；配置了 `mappings` / `options` 时为 `select`；值为数组或 `maxLines > 1` 时为 `textarea` |
-| number / currency               | `input`（`type="number"`）；配置了 `mappings` / `options` 时为 `select` |
+| text（含未指定 type）           | `input`；值为数组或 `maxLines > 1` 时为 `textarea` |
+| enum                            | `select`（无 `mappings` / `options` 时下拉为空） |
+| number / currency               | `input`（`type="number"`） |
 | date / datetime                 | `date`                                                     |
 | bool                            | `switch`                                                   |
 
@@ -1867,7 +1869,7 @@ import { ref } from 'vue'
 const columns = [
   { type: 'rec_no' },
   { field: 'name',   caption: '名称', sortable: true, minWidth: 120, editor: true },
-  { field: 'status', caption: '状态', width: 100,
+  { field: 'status', caption: '状态', width: 100, type: 'enum',
     mappings: { active: '启用', archived: '归档', default: '未知' }, editor: true },
   { field: 'count',  caption: '数量', type: 'number', width: 100,
     editor: { validate: v => (v >= 0 ? true : '不能为负数') } },

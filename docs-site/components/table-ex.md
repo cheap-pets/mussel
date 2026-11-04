@@ -23,7 +23,7 @@
     { type: 'rec_no', width: 56 },
     { field: 'name', caption: '名称', sortable: true, minWidth: 140 },
     { field: 'owner', caption: '负责人', width: 100 },
-    { field: 'status', caption: '状态', width: 90, mappings: STATUS },
+    { field: 'status', caption: '状态', type: 'enum', width: 90, mappings: STATUS },
     { field: 'progress', caption: '进度', type: 'progress', width: 150 },
     { field: 'updatedAt', caption: '更新日期', type: 'date', width: 110 }
   ]
@@ -37,7 +37,7 @@
 
   const editColumns = [
     { field: 'name', caption: '名称', sortable: true, minWidth: 120, editor: true },
-    { field: 'status', caption: '状态', width: 110, mappings: STATUS, editor: true },
+    { field: 'status', caption: '状态', type: 'enum', width: 110, mappings: STATUS, editor: true },
     {
       field: 'count',
       caption: '数量',
@@ -136,7 +136,7 @@ const columns = [
   { type: 'rec_no', width: 56 },
   { field: 'name', caption: '名称', sortable: true, minWidth: 140 },
   { field: 'owner', caption: '负责人', width: 100 },
-  { field: 'status', caption: '状态', width: 90,
+  { field: 'status', caption: '状态', type: 'enum', width: 90,
     mappings: { active: '进行中', pending: '待处理', archived: '已归档' } },
   { field: 'progress', caption: '进度', type: 'progress', width: 150 },
   { field: 'updatedAt', caption: '更新日期', type: 'date', width: 110 }
@@ -148,7 +148,7 @@ const columns = [
 
 ## 单元格编辑
 
-表格 `editable` + 列 `editor` 开启编辑，单击单元格进入。编辑器按列类型自动选择（`text` → `input`、配 `mappings` / `options` → `select`、`date` → `date`、`bool` → `switch`、`maxLines > 1` → `textarea`），也可经 `editor.type` / `editor.props` 定制。
+表格 `editable` + 列 `editor` 开启编辑，单击单元格进入。编辑器按列类型自动选择（`text` → `input`、`enum` → `select`、`date` → `date`、`bool` → `switch`、`maxLines > 1` → `textarea`），也可经 `editor.type` / `editor.props` 定制。
 
 组件不修改数据：提交经 `update:cell-value` 通知，外部写回 `record` 后自动重绘该行。
 
@@ -166,7 +166,7 @@ const columns = [
 ```javascript
 const columns = [
   { field: 'name', caption: '名称', editor: true },
-  { field: 'status', caption: '状态', width: 110,
+  { field: 'status', caption: '状态', type: 'enum', width: 110,
     mappings: { active: '进行中', pending: '待处理' }, editor: true },   // select 编辑器
   { field: 'count', caption: '数量', type: 'number', width: 100,
     editor: { validate: v => (v >= 0 ? true : '不能为负数') } },          // 校验失败标红不关闭
@@ -301,8 +301,9 @@ function onCellValue ({ record, column, value }) {
 
 | 列类型 | 缺省编辑器 |
 |------|------|
-| `text`（含未指定 type）| `input`；配置了 `mappings` / `options` 时为 `select`；值为数组或 `maxLines > 1` 时为 `textarea` |
-| `number` / `currency` | `input`（`type="number"`）；配置了 `mappings` / `options` 时为 `select` |
+| `text`（含未指定 type）| `input`；值为数组或 `maxLines > 1` 时为 `textarea` |
+| `enum` | `select`（无 `mappings` / `options` 时下拉为空）|
+| `number` / `currency` | `input`（`type="number"`）|
 | `date` / `datetime` | `date` |
 | `bool` | `switch` |
 
