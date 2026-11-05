@@ -46,11 +46,13 @@
 - [table-ex 条目列对齐协议](./project/table-ex-item-column-align.md) `convention` `code@worktree(2026-11-04)`：button 组两遍式平移、link 竖排每条各自对齐、tag 横排 itemsStartX；命中矩形 x 随对齐同步。
 - [table 列类型体系 v2：list/link 兼容壳/text.link](./project/table-column-types-v2.md) `convention` `code@b3528d7`：text.link 链色单行、list 条目列 column 级 link + label 键、link 兼容壳委托 list、双端数组仅 list 支持。
 - [table-ex recordsVersion 行高粘性契约](./project/table-ex-recordsversion-height-contract.md) `convention` `code@worktree(2026-11-05)`：精算缓存按行快照跳过；就地改 records 须 bump recordsVersion，否则行高不更新。
+- table-ex 新增绘制特征同步自检断言 `convention` `code@worktree(2026-11-06)`：新增/改变画布绘制须同批改写 demo self-checks/painter.js 像素断言，否则恒败。
 
 ## Global
 
 - [throttle-debounce trailing 参数覆盖丢批次](./global/throttle-debounce-trailing-args.md) `pitfall` `doc@5.0.2`：节流回调依赖入参过滤事件源时 trailing 只带最后一次调用参数，前序批次被静默丢弃；过滤须移到节流前逐批判定。
 - [Playwright 验证 watch 驱动路径：经组件实例替换 props](./global/playwright-props-swap-verification.md) `convention`：watch 身份路径 UI 不可达时，经 `el.__vueParentComponent.props` 直替触发；替换后勿触发父重渲。
+- [Vue production 构建 setupState 为空](./global/vue-prod-build-setupstate-empty.md) `pitfall` `code@worktree(2026-11-06)`：production 产物无组件内部态，headless 断言改走页面真实 UI 控件驱动。
 - [Playwright 后台页面：rAF / ResizeObserver 停发，定时器节流，transition 不启动](./global/playwright-hidden-page-resize-observer.md) `pitfall`：页面 hidden 时 rAF/RO 停发、定时器节流、transition 永停旧值；手动派发 / page.clock 驱动，canvas 帧依赖用截图强制 BeginFrame。
 - [grid-template-rows 展开动画期间执行 scrollIntoView 会错位](./global/scroll-during-grid-rows-animation.md) `pitfall`：展开动画中滚动落点错位——nextTick 后仍按中间态计算；等动画时长结束后再滚。
 - [Vue 卸载元素不会移除模板事件监听](./global/vue-unmount-no-listener-removal.md) `pitfall`：依赖卸载自动解绑的记账不归零——Vue 3 卸载只 hostRemove；需确定性释放须显式 removeEventListener。
