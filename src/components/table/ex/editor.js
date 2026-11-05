@@ -6,7 +6,7 @@ import {
   CELL_PADDING_FALLBACK,
   ROW_TOP_INSET,
   ROW_HEIGHT_FALLBACK,
-  EDITOR_BUTTON_AREA
+  EDIT_BUTTON_AREA
 } from './constants'
 import { selectOptionsFromMappings } from '../mappings'
 import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../../form/index.js'
@@ -34,8 +34,8 @@ import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../../form/index.js'
 // - 画布 pointerdown（editing 中先提交再续行）与容器滚动：调 editor.commit()
 // - 卸载：editor.destroy()（onUnmounted）
 
-/** 不可编辑的列类型（A6）；link/list 条目列不可编辑（list 对齐 link，link 为其兼容壳）；button/progress 为 canvas 专属展示类型；image 为 img 别名 */
-export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check', 'link', 'list', 'button', 'progress']
+/** 不可编辑的列类型（A6）；link/list 条目列不可编辑（list 对齐 link，link 为其兼容壳）；button/progress 为 canvas 专属展示类型；image 为 img 别名；icon 为纯展示类型（20261105-table-ex-icon-column） */
+export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check', 'link', 'list', 'button', 'progress', 'icon']
 
 /** 编辑器类型 → mussel 输入组件；textarea 为原生元素 tag（INPUT_TYPES.memo 约定） */
 export const EDITOR_COMPONENTS = {
@@ -84,17 +84,17 @@ export function editorGridlineFlagsOf ({
 
 /** 编辑按钮区矩形（单一事实源：painter 绘制与壳命中共用）。右缘贴格内容区右缘，
     垂直中心 = 行线间空白中点原式（与单元格文字垂直锚同一槽位公式，不使用 rect.height） */
-export function editorButtonRectOf (
+export function editButtonRectOf (
   rect,
   { padding = CELL_PADDING_FALLBACK, rowHeight = ROW_HEIGHT_FALLBACK } = {}
 ) {
   const centerY = rect.y + ROW_TOP_INSET + (rowHeight - ROW_TOP_INSET) / 2
 
   return {
-    x: rect.x + rect.width - padding - EDITOR_BUTTON_AREA,
-    y: centerY - EDITOR_BUTTON_AREA / 2,
-    width: EDITOR_BUTTON_AREA,
-    height: EDITOR_BUTTON_AREA
+    x: rect.x + rect.width - padding - EDIT_BUTTON_AREA,
+    y: centerY - EDIT_BUTTON_AREA / 2,
+    width: EDIT_BUTTON_AREA,
+    height: EDIT_BUTTON_AREA
   }
 }
 

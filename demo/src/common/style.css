@@ -339,3 +339,14 @@ h3 {
   font-size: var(--mu-font-size-small);
   color: var(--mu-text-color-subtle);
 }
+
+/* ===== icon 列 cls 夹具（20261105-table-ex-icon-column）：注入 class 码点解析，
+   不引入字体文件；转义与字面两种 content 形态各占一档 ===== */
+
+.mu-demo-glyph-a::before {
+  content: '\25CF';
+}
+
+.mu-demo-glyph-b::before {
+  content: '●';
+}

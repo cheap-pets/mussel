@@ -104,10 +104,12 @@
   import {
     computeEditorStyle,
     createEditorController,
-    editorButtonRectOf,
+    editButtonRectOf,
     isCellEditable,
     resolveEditorType
   } from './editor'
+
+  import { resolveIconEntry } from '../column-types/icon'
 
   import './table-ex.scss'
 
@@ -163,7 +165,8 @@
     'update:tree-expanded-keys',
     'tree-expand',
     'tree-collapse',
-    'cell-item-click'
+    'cell-item-click',
+    'edit-button-click'
   ])
 
   const rootEl = shallowRef()
@@ -807,8 +810,8 @@
 
     // 合并命中归一（§5.4 单一接入点）：covered 格 → 主格坐标（浅拷贝仅改
     // rowIndex/colIndex，cellX/x/y 原样）。归一后 hit 供 resolveCursor /
-    // updateHover / updateHoverItem / applyItemCursor / isEditorButtonHit /
-    // tryEditorButtonClick / finishCellClick / openEditorAt / resolveItemClick；
+    // updateHover / updateHoverItem / applyItemCursor / isEditButtonHit /
+    // tryEditButtonClick / finishCellClick / openEditorAt / resolveItemClick；
     // rawHit 供 resolveTreeToggle（树槽判定用原始 hit，树列不参与归一改写）
     return {
       point: { x, y },
@@ -962,14 +965,15 @@
     if (tooltipController?.isAnchorIn(rootEl.value)) tooltipController.delayHide()
   }
 
-  /** 编辑按钮命中判定（20261027 问题 5）：列配 editorButton.icon 且指针落在
-      editorButtonRectOf 区矩形内（半开区间，与 interactions.isItemRectHit 同口径）；
-      区矩形 = spanRectOf（合并区域为区域矩形，§5.3），为 painter 绘制与壳命中共用
-      的单一事实源 */
-  function isEditorButtonHit (hit, col) {
-    if (!col?.editorButton?.icon) return false
+  /** 编辑按钮命中判定（20261027 问题 5，20261105 收敛注册名图标）：列配
+      editButton.icon 且 resolveIconEntry 查表命中（未注册名两边一致判失败——
+      不绘制、不命中）且指针落在 editButtonRectOf 区矩形内（半开区间，与
+      interactions.isItemRectHit 同口径）；区矩形 = spanRectOf（合并区域为区域
+      矩形，§5.3），为 painter 绘制与壳命中共用的单一事实源 */
+  function isEditButtonHit (hit, col) {
+    if (!resolveIconEntry(col?.editButton?.icon)) return false
 
-    const rect = editorButtonRectOf(
+    const rect = editButtonRectOf(
       spanRectOf(layout.value, hit.rowIndex, hit.colIndex, spans.value),
       {
         padding: themeWatcher?.snapshot?.cellPadding,
@@ -1002,7 +1006,7 @@
 
     const col = hit.colIndex >= 0 ? wiredColumns.value[hit.colIndex] : null
 
-    if (isEditorButtonHit(hit, col)) cursor.value = 'pointer'
+    if (isEditButtonHit(hit, col)) cursor.value = 'pointer'
   }
 
   function onPointerDown (event) {
@@ -1041,12 +1045,13 @@
   }
 
   /** 编辑按钮派发（20261027 问题 5，局部交互——对齐树槽先例：不选中行、不发
-      cell-click、不开编辑，点击行为由用户 editorButton.onClick 定义，column 传
-      原始列引用）；命中并派发返回 true */
-  function tryEditorButtonClick (hit, record, col) {
-    if (!isEditorButtonHit(hit, col)) return false
+      cell-click、不开编辑；20261105 onClick 属性移除，改组件 emit
+      'edit-button-click'（与 links item click 同构：走组件 emit 而非属性回调；
+      payload 形状不变），column 传原始列引用）；命中并派发返回 true */
+  function tryEditButtonClick (hit, record, col) {
+    if (!isEditButtonHit(hit, col)) return false
 
-    col.editorButton.onClick?.({
+    emit('edit-button-click', {
       record,
       recordIndex: hit.rowIndex,
       column: col._raw ?? col
@@ -1163,7 +1168,7 @@
 
     // 编辑按钮命中（20261027 问题 5）：局部交互，不选中行、不发 cell-click、
     // 不开编辑；判定在树槽之前（A4.3 序 2 前置）
-    if (tryEditorButtonClick(hit, record, col)) return
+    if (tryEditButtonClick(hit, record, col)) return
 
     // A4.3 序 2：树箭头槽 toggle（局部交互，不选中行、不发 cell-click）；
     // 树槽判定消费原始 hit（§5.4）

@@ -1,6 +1,8 @@
 /** table-ex 单元格绘制适配器：复用 table 列类型体系，把列类型 render 产物（text / items）落地为 canvas 绘制 */
 import { ensureFn } from '@/utils/type'
+import { whenGlyphReady } from '@/icons'
 import { resolveColumnType } from '../column-types'
+import { resolveIconEntry } from '../column-types/icon'
 import { wrapLines, ellipsize, cellFontOf, MAX_LINES_LIMIT } from './text-wrap'
 import { createDisplayMapper } from '../mappings'
 import { EnumColumn } from '../column-types/enum'
@@ -10,6 +12,7 @@ import {
   CELL_PADDING_FALLBACK,
   ROW_TOP_INSET,
   ROW_HEIGHT_FALLBACK,
+  CONTROL_HEIGHT_SMALL_FALLBACK,
   CHECK_SIZE,
   CHECK_RADIUS,
   CHECK_FONT_SIZE,
@@ -40,13 +43,19 @@ import {
 // check 方框 —— column-types/style.scss .mu-table__cell-check（与表头
 // painter.drawHeaderCheck 同规格，规格变更两处同步）
 
-// tag pill / button —— components/tag/tag.scss .mu-tag（height 20 / padding 0 8 /
-// font-size 12 / 圆角 4px）；button 为 tag 同构轻量按钮（A3.3），column.link = true
-// 时整列改纯文字链形态（正文字体、无 pill 内边距）
+// tag pill —— components/tag/tag.scss .mu-tag（height 20 / padding 0 8 /
+// font-size 12 / 圆角 4px）。TAG_HEIGHT / TAG_PADDING_X 为 tag 绘制链专用
+// （drawTag、items 命中矩形）；button 不再与 tag 同构（20261105 二轮）——
+// pill 高度经 buttonHeightOf 取 controlHeightSmall 快照，仅 link 形态命中框
+// 沿用 TAG_HEIGHT（column.link = true 时整列改纯文字链形态，无 pill 内边距）
 const TAG_HEIGHT = 20
 const TAG_PADDING_X = 8
 const TAG_FONT_SIZE = 12
 const TAG_RADIUS = 4
+// button 图标（20261105-table-ex-icon-column）：12px 同 TAG_FONT_SIZE 档；
+// caption 与 icon 互斥、有文本 icon 忽略（不解析不绘制），icon-only pill
+// 宽 = 高 = controlHeightSmall 快照（图标水平垂直居中）、link 形态宽 = 图标本体
+const BUTTON_ICON_SIZE = 12
 const PROGRESS_TRACK_HEIGHT = 8
 const PROGRESS_RADIUS = 4
 const PROGRESS_FONT_SIZE = 12
@@ -81,22 +90,33 @@ function requestImage (src, onLoad) {
 
     const image = new Image()
 
-    entry = { image, status: 'loading' }
+    entry = { image, status: 'loading', listeners: onLoad ? [onLoad] : [] }
     imageCache.set(src, entry)
 
     // crossOrigin=anonymous：跨域无 CORS 头的图加载失败，避免污染画布
     image.crossOrigin = 'anonymous'
     image.onload = () => {
       entry.status = 'loaded'
-      // 同一 src 只回调一次；重绘范围由 painter 侧回调决定
-      onLoad?.()
+      // 多监听 flush（20261105：icon 列 N 行共用同 src 时仅首格收到回调的缺陷
+      // 修正——加载完成一次 flush 全部监听，painter 逐格 invalidate、rAF 合帧为
+      // 一次整幅重绘）；单 listener 场景「恰回调一次」语义不变
+      const listeners = entry.listeners
+
+      entry.listeners = []
+
+      for (const listener of listeners) listener()
     }
     image.onerror = () => {
       entry.status = 'failed'
+      entry.listeners = []
     }
     image.src = src
+  } else if (entry.status === 'loading' && onLoad) {
+    // 缓存命中且加载中：累积登记（同格重复登记至多多一次 invalidate，无需去重）
+    entry.listeners.push(onLoad)
   }
 
+  // 命中已 loaded / failed：不回调（调用方以 status 判定，既有行为不变）
   return entry
 }
 
@@ -108,6 +128,45 @@ export function requestIconImage (icon, color, onLoad) {
     : icon
 
   return requestImage(src, onLoad)
+}
+
+/** 图标字形绘制（icon 列 drawItem / button 图标 / painter.paintEditButton 三处共用）：
+    icon = 注册表项原引用（resolveIconEntry 查表产物，非注册表形态不入此函数）。
+    svg 路径复用 requestIconImage 缓存管线（loaded 才 drawImage）；cls 路径直读
+    注册表项（码点解析已由 icons 模块 install 时完成，本模块无解析状态机）——
+    ready 才 fillText（iconfont fillStyle 直传色，无按色分键，D2）；pending 静默
+    不绘 + whenGlyphReady 登记重绘回调（解析/字体就绪后一次性回调 → invalidateCell）；
+    failed 不绘不登记（install 侧已 dev warn）。统一 textAlign = 'left'，x 为条目
+    起点，垂直锚 = centeredTextAnchor（与文本绘制同槽位式） */
+export function drawIconGlyph (ctx, icon, { x, centerY, size, color, onLoad }) {
+  if (!icon || !(size > 0)) return
+
+  if (icon.svg) {
+    const entry = requestIconImage(icon.svg, color, onLoad)
+
+    if (entry.status === 'loaded') {
+      ctx.drawImage(entry.image, Math.round(x), Math.round(centerY - size / 2), size, size)
+    }
+
+    return
+  }
+
+  if (icon.glyphStatus === 'ready') {
+    ctx.font = `${size}px ${icon.fontFamily}`
+    ctx.fillStyle = color
+    ctx.textAlign = 'left'
+
+    const anchor = centeredTextAnchor(ctx, centerY)
+
+    ctx.textBaseline = anchor.baseline
+    ctx.fillText(icon.glyph, x, anchor.y)
+
+    return
+  }
+
+  if (icon.glyphStatus === 'pending') {
+    whenGlyphReady(icon, onLoad)
+  }
 }
 
 // —— 列准备（table.vue internalColumns 的 canvas 等价物，仅保留绘制所需字段） ——
@@ -319,7 +378,8 @@ export function drawCell (ctx, {
 
   // canvas 专属分发（A3.3）：progress / button 真实绘制，非 items 产物
   if (drawCanvasKindContent(
-    ctx, contentRect, content, col, padding, theme, record, measure, onItemRect, centerY, hoverItem, rightInset
+    ctx, contentRect, content, col, padding, theme, record, measure, onItemRect, centerY, hoverItem, rightInset,
+    onImageLoad, row, colIndex
   )) {
     return content
   }
@@ -358,7 +418,8 @@ function isSkippableRect (rect) {
 }
 
 function drawCanvasKindContent (
-  ctx, rect, content, col, padding, theme, record, measure, onItemRect, centerY, hoverItem, rightInset
+  ctx, rect, content, col, padding, theme, record, measure, onItemRect, centerY, hoverItem, rightInset,
+  onImageLoad, row, colIndex
 ) {
   if (content.canvasKind === 'progress') {
     drawProgress(ctx, rect, content, { padding, theme, record, measure, centerY })
@@ -375,7 +436,11 @@ function drawCanvasKindContent (
       measure,
       centerY,
       hoverItem,
-      rightInset
+      rightInset,
+      // svg 图标异步加载后 invalidate 该格（与 drawItems 同款钩子透传）
+      onImageLoad,
+      row,
+      colIndex
     })
     return true
   }
@@ -836,6 +901,12 @@ function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, 
     return imageLayoutSize(entry.image, contentHeight - padding, contentWidth).width
   }
 
+  if (kind === 'icon') {
+    // 方形宽 = 高 = min(size, contentWidth)；加载中仍占位（不返回 null，避免
+    // 加载完成后横向跳动）
+    return Math.min(item.size, contentWidth)
+  }
+
   if (kind == null) return null
 
   const text = String(item.text ?? '')
@@ -857,6 +928,22 @@ function drawItem (ctx, item, x, centerY, {
   }
 
   if (kind === 'tag') return drawTag(ctx, item, x, centerY, { maxWidth, theme, measure })
+
+  if (kind === 'icon') {
+    // 窄格防御：maxWidth ≤ 0 直接 return；size 收进右缘剩余（measureItem 同式）
+    if (maxWidth <= 0) return
+
+    drawIconGlyph(ctx, item.icon, {
+      x,
+      centerY,
+      size: Math.min(item.size, maxWidth),
+      // 色名查表，缺省/未知回退 textColor（drawDisplayText 同口径）
+      color: (item.color && theme?.colors?.[item.color]?.color) || theme?.textColor,
+      onLoad: onImageLoad ? () => onImageLoad(row, colIndex) : undefined
+    })
+
+    return
+  }
 
   if (kind == null) return
 
@@ -1192,17 +1279,23 @@ function isButtonHovered (hoverItem, index) {
   return hoverItem?.kind === 'button' && hoverItem.index === index
 }
 
+/** button pill 高度（20261105 二轮，--mu-control-height-small）：主题快照读取、
+    缺字段容错回退镜像常量（快照消费侧回退，与 rowHeight 同模式） */
+function buttonHeightOf (theme) {
+  return theme?.controlHeightSmall || CONTROL_HEIGHT_SMALL_FALLBACK
+}
+
 /** button 组第一遍测宽（对齐布局前置）：x 恒从左缘起逐条省略计宽（截断/哨兵
     行为与左对齐基线一致——对齐平移仅发生在未超宽时，全宽条目平移后仍放得下，
     不改变截断结果）；返回绘制条目（含原始 index 与省略产物）与累计偏移
     （含尾随 gap，计入对齐总宽前扣除，itemsStartX 口径） */
-function layoutButtonEntries (buttons, rect, rightBound, padding, font, measureFn, link) {
+function layoutButtonEntries (buttons, rect, rightBound, padding, font, measureFn, link, buttonHeight) {
   const entries = []
   let offset = 0
 
   for (let i = 0, x = rect.x + padding; i < buttons.length && x < rightBound; i++) {
     const button = buttons[i] ?? EMPTY_BUTTON
-    const ellipsized = ellipsizeButton(button, x, rightBound, font, measureFn, link)
+    const ellipsized = ellipsizeButton(button, x, rightBound, font, measureFn, link, buttonHeight)
 
     // ellipsize 空文本 → null 哨兵（原 -1 同义），停止绘制后续按钮
     if (!ellipsized) break
@@ -1215,13 +1308,14 @@ function layoutButtonEntries (buttons, rect, rightBound, padding, font, measureF
   return { entries, offset }
 }
 
-// button 组（tag 同构轻量按钮）：横排，底 translucent + 边框/文字 colors[color].color；
-// disabled 置灰；超宽丢弃；条目矩形回报 itemHits（kind 'button'，命中区 = pill 区）。
-// link 形态（column.link）改走正文字体纯文字链，宽度/字体随之切换。
-// 对齐两遍式（drawItems 同构）：测宽后按列 align 平移起点（center 扣 rightInset，
-// 超宽回退左对齐）
+// button 组轻量按钮：横排，底 translucent + 边框/文字 colors[color].color；
+// disabled 置灰；超宽丢弃；条目矩形回报 itemHits（kind 'button'，命中区 = pill 区，
+// 高 = controlHeightSmall 快照）。link 形态（column.link）改走正文字体纯文字链，
+// 宽度/字体随之切换。对齐两遍式（drawItems 同构）：测宽后按列 align 平移起点
+// （center 扣 rightInset，超宽回退左对齐）
 function drawButton (ctx, rect, content, {
-  align, padding, theme, record, onItemRect, measure, centerY, hoverItem, rightInset
+  align, padding, theme, record, onItemRect, measure, centerY, hoverItem, rightInset,
+  onImageLoad, row, colIndex
 }) {
   const buttons = content.buttons
   const link = content.link === true
@@ -1235,25 +1329,33 @@ function drawButton (ctx, rect, content, {
   const rightBound = rect.x + rect.width - padding
   const font = link ? cellFontOf(theme) : tagFontOf(theme)
   const measureFn = measureOf(ctx, measure)
-  const { entries, offset } = layoutButtonEntries(buttons, rect, rightBound, padding, font, measureFn, link)
+  const buttonHeight = buttonHeightOf(theme)
+  const { entries, offset } = layoutButtonEntries(buttons, rect, rightBound, padding, font, measureFn, link, buttonHeight)
 
   if (!entries.length) return
 
   let x = itemsStartX(rect, align, padding, offset - padding, true, contentWidth, rightInset)
 
-  for (const { button, index, text, width } of entries) {
+  // svg 图标异步加载后 invalidate 该格（drawItems 同款钩子闭包）
+  const onLoad = onImageLoad ? () => onImageLoad(row, colIndex) : undefined
+
+  for (const { button, index, text, width, icon } of entries) {
     const hovered = isButtonHovered(hoverItem, index)
 
     if (link) {
-      drawButtonLink(ctx, button, text, width, x, centerY, record, theme, font, hovered)
+      drawButtonLink(ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad)
     } else {
-      drawButtonPill(ctx, button, text, width, x, centerY, record, theme, font, hovered)
+      drawButtonPill(ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad, buttonHeight)
     }
+
+    // 命中矩形：pill 形态高 = 快照值（y = centerY − h/2）；link 形态无 pill 几何，
+    // 沿用 TAG_HEIGHT 高度框现状（与 caption-only link 同口径）
+    const hitHeight = link ? TAG_HEIGHT : buttonHeight
 
     onItemRect?.({
       kind: 'button',
       index,
-      rect: { x, y: centerY - TAG_HEIGHT / 2, width, height: TAG_HEIGHT },
+      rect: { x, y: centerY - hitHeight / 2, width, height: hitHeight },
       disabled: isTruthyAttr(button.disabled)
     })
 
@@ -1278,41 +1380,73 @@ function buttonTextOf (theme, colored, disabled) {
     : (colored?.color ?? theme?.textColor)
 }
 
-/** caption 省略与占用宽预处理（pill/link 两形态共用）：padX = pill 内边距（link
-    形态 0）；空文本返回 null 哨兵不绘制且终止后续按钮；占用宽 = min(全宽, 右缘剩余) */
-function ellipsizeButton (button, x, rightBound, font, measureFn, link) {
+/** caption 省略与占用宽预处理（pill/link 两形态共用；20261105 二轮形态互斥）：
+    源头判定（互斥短路）——caption 非空 → caption-only（icon 键完全忽略：不解析、
+    不绘制、不 warn，ellipsize 只作用 caption），省略结果空串（右缘放不下）→
+    return null 不绘制且终止后续（不得落空文本条目，否则会绘制无文字 pill 并继续
+    推进 x——verify-终-2 失败项 1 裁剪检查顺序缺陷随降级路径删除结构性消解，
+    右缘剩余统一判据前置）；caption 空 → icon-only 候选，resolveIconEntry 解析
+    （未注册 dev warn 在 resolve 内），无有效 icon → null 哨兵；icon-only 固定宽
+    不省略（pill = controlHeightSmall 快照 / link = 图标本体），右缘剩余 < 宽 →
+    不绘制且终止 */
+function ellipsizeButton (button, x, rightBound, font, measureFn, link, buttonHeight) {
   const padX = link ? 0 : TAG_PADDING_X
-  const { text, width: textWidth } = ellipsize({
-    text: String(button.caption ?? ''),
-    font,
-    maxWidth: Math.max(0, rightBound - x - padX * 2),
-    measure: measureFn
-  })
+  const remaining = rightBound - x
 
-  if (!text) return null
+  if (String(button.caption ?? '') !== '') {
+    const { text, width: textWidth } = ellipsize({
+      text: String(button.caption ?? ''),
+      font,
+      maxWidth: Math.max(0, remaining - padX * 2),
+      measure: measureFn
+    })
 
-  return { text, width: Math.min(textWidth + padX * 2, rightBound - x) }
+    // 空文本（右缘放不下）→ 不绘制且终止——d 条款，不得落空文本条目
+    if (!text) return null
+
+    return { text, icon: null, width: Math.min(padX * 2 + textWidth, remaining) }
+  }
+
+  const icon = button.icon ? resolveIconEntry(button.icon) : null
+
+  // 空哨兵（含未注册，warn 在 resolve 内）：不绘制且终止后续
+  if (!icon) return null
+
+  const width = link ? BUTTON_ICON_SIZE : buttonHeight
+
+  return remaining < width ? null : { text: null, width, icon }
 }
 
 /** link 形态单条按钮（列级 column.link）：无底无边框纯文字链，常态
     colors[name].color、hover 变 colors[name].hover 谱系 + 1px 下划线（下划线式与
-    link 条目同源）；disabled 恒置灰不悬停 */
-function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, font, hovered) {
+    link 条目同源）；disabled 恒置灰不悬停。形态互斥（20261105 二轮）：
+    icon-only（caption 空）图标于条目起点 x、centerY 垂直锚，宽 = 图标本体
+    （无 pill 几何）；caption-only（icon 恒 null）文字于条目起点 x，路径不变 */
+function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad) {
   const disabled = isTruthyAttr(button.disabled)
   const colored = theme?.colors?.[colorNameOf(button.color, record)]
-
-  ctx.font = font
-  ctx.fillStyle = disabled
+  const textColor = disabled
     ? (theme?.textColorMuted || theme?.gray)
     : (hovered
         ? (colored?.hover ?? colored?.color ?? theme?.primaryColor)
         : (colored?.color ?? theme?.primaryColor))
+
+  if (icon) {
+    drawIconGlyph(ctx, icon, { x, centerY, size: BUTTON_ICON_SIZE, color: textColor, onLoad })
+    // drawIconGlyph（cls 路径）改写 font，文本度量/绘制前重设
+    ctx.font = font
+  }
+
+  ctx.fillStyle = textColor
   ctx.textAlign = 'left'
 
   const anchor = centeredTextAnchor(ctx, centerY)
 
   ctx.textBaseline = anchor.baseline
-  ctx.fillText(text, x, anchor.y)
+
+  if (text) {
+    ctx.fillText(text, x, anchor.y)
+  }
 
   if (hovered && !disabled) {
     ctx.fillRect(x, linkUnderlineY(anchor.y), width, 1)
@@ -1320,16 +1454,20 @@ function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, fo
 }
 
 // 单个 button pill 绘制（省略预处理产物入参）：hovered 且非 disabled 时反转
-// （底/边框 = colors[name].color、文字 = bgNormal）；disabled 置灰
-function drawButtonPill (ctx, button, text, width, x, centerY, record, theme, font, hovered) {
+// （底/边框 = colors[name].color、文字 = bgNormal）；disabled 置灰。pill 高 =
+// controlHeightSmall 快照（buttonHeightOf，20261105 二轮）；icon-only（caption
+// 空）图标 12px 在 pill 内水平垂直居中（x = x + (h − 12)/2、centerY 锚），色 =
+// 同一文本色变量（常态 buttonTextOf、hover 反转 bgNormal）；caption-only
+// （icon 恒 null）文字路径不变（pill 内 TAG_PADDING_X 内距）
+function drawButtonPill (ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad, buttonHeight) {
   const disabled = isTruthyAttr(button.disabled)
   const colored = theme?.colors?.[colorNameOf(button.color, record)]
-  const y = centerY - TAG_HEIGHT / 2
+  const y = centerY - buttonHeight / 2
   const inverted = hovered && !disabled
 
   ctx.font = font
   ctx.beginPath()
-  ctx.roundRect(x + 0.5, y + 0.5, width - 1, TAG_HEIGHT - 1, TAG_RADIUS)
+  ctx.roundRect(x + 0.5, y + 0.5, width - 1, buttonHeight - 1, TAG_RADIUS)
   ctx.fillStyle = inverted
     ? (colored?.color ?? theme?.primaryColor)
     : buttonFillOf(theme, colored, disabled)
@@ -1340,7 +1478,23 @@ function drawButtonPill (ctx, button, text, width, x, centerY, record, theme, fo
   ctx.lineWidth = 1
   ctx.stroke()
 
-  ctx.fillStyle = inverted ? theme?.bgNormal : buttonTextOf(theme, colored, disabled)
+  const textColor = inverted ? theme?.bgNormal : buttonTextOf(theme, colored, disabled)
+
+  if (icon) {
+    drawIconGlyph(ctx, icon, {
+      x: x + (buttonHeight - BUTTON_ICON_SIZE) / 2,
+      centerY,
+      size: BUTTON_ICON_SIZE,
+      color: textColor,
+      onLoad
+    })
+    // drawIconGlyph（cls 路径）改写 font，文本度量/绘制前重设
+    ctx.font = font
+  }
+
+  if (!text) return
+
+  ctx.fillStyle = textColor
   ctx.textAlign = 'left'
 
   const anchor = centeredTextAnchor(ctx, centerY)
@@ -1434,31 +1588,45 @@ function horizontalItemsOverflowOf (items, params) {
   return total > params.contentWidth
 }
 
-/** button 组溢出（drawButton 逐 pill 累加等价式）：x 越右缘 break / 空 caption 哨兵
-    终止（其后仍有按钮 = 内容被丢弃）/ pill 文本区放不下整体不绘制 / pill 截断均计
-    溢出；link 形态无 pill 内边距、字体取正文（drawButton 同式切换） */
+/** button 组溢出（drawButton 逐 pill 累加等价式）：x 越右缘 break / caption 空且
+    无有效 icon 哨兵终止（其后仍有按钮 = 内容被丢弃）——形态互斥（20261105 二轮）：
+    caption 非空 → caption-only（icon 忽略不解析、零查表零 warn，计宽 = 内距 +
+    caption 全文，超剩余即截断计溢出）；caption 空 → icon-only 固定宽（pill =
+    controlHeightSmall 快照 / link = 图标本体 12），放不下该条目不绘制终止计溢出；
+    link 形态无 pill 内边距、字体取正文（drawButton 同式切换） */
 function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, link }) {
   const font = link ? cellFontOf(theme) : tagFontOf(theme)
   const padX = link ? 0 : TAG_PADDING_X
+  const buttonHeight = buttonHeightOf(theme)
   let consumed = 0
 
   for (let i = 0; i < buttons.length; i++) {
-    const caption = String(buttons[i]?.caption ?? '')
+    const button = buttons[i] ?? EMPTY_BUTTON
+    const caption = String(button.caption ?? '')
 
     if (consumed >= contentWidth) return true
 
-    // ellipsize 空文本 → -1 哨兵（drawButtonPill 同式）：该按钮不绘制且终止后续
-    if (caption === '') return i < buttons.length - 1
+    if (caption !== '') {
+      // caption-only：pill 宽 = 内距 + caption 全文，超剩余即截断（部分丢失）→ 溢出
+      const width = padX * 2 + measure(caption, font)
 
-    const remaining = contentWidth - consumed
+      if (width > contentWidth - consumed) return true
 
-    // pill 文本区放不下（maxWidth ≤ 0 → ellipsize 空文本 → -1 → break）：该按钮整体不绘制
-    if (remaining - padX * 2 <= 0) return true
+      consumed += width + padding
 
-    // pill 宽 = min(全宽, 右缘剩余)：全宽超剩余即截断（caption 部分丢失）→ 溢出
-    const width = measure(caption, font) + padX * 2
+      continue
+    }
 
-    if (width > remaining) return true
+    // icon-only：icon 解析移入 caption 空分支（未注册 warn 在 resolve 内），
+    // null 哨兵（drawButton 同式）——非末条 = 内容被丢弃
+    const icon = button.icon ? resolveIconEntry(button.icon) : null
+
+    if (!icon) return i < buttons.length - 1
+
+    const width = link ? BUTTON_ICON_SIZE : buttonHeight
+
+    // 固定宽放不下 → 该条目不绘制且终止（drawButton 终止同式）→ 溢出
+    if (consumed + width > contentWidth) return true
 
     consumed += width + padding
   }

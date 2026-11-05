@@ -1,7 +1,8 @@
 /** table-ex 绘制管线（02-design.md A2 图层划分 / A3 按需重绘与 lastPaint / A8）。
     入口：draw / drawRegion / cellRectAt / createPainter（见各导出函数注释） */
-import { drawCell, drawTreeArrow, requestIconImage } from './cell-painters.js'
-import { editorRectOf, editorGridlineFlagsOf, editorButtonRectOf } from './editor.js'
+import { drawCell, drawTreeArrow, drawIconGlyph } from './cell-painters.js'
+import { editorRectOf, editorGridlineFlagsOf, editButtonRectOf } from './editor.js'
+import { resolveIconEntry } from '../column-types/icon'
 import { createMeasureCache } from './theme.js'
 import { ellipsize } from './text-wrap.js'
 import { expandableAt, isExpandedKey } from './tree.js'
@@ -18,8 +19,8 @@ import {
   CELL_PADDING_FALLBACK,
   ROW_TOP_INSET,
   ROW_HEIGHT_FALLBACK,
-  EDITOR_BUTTON_AREA,
-  EDITOR_BUTTON_ICON_SIZE,
+  EDIT_BUTTON_AREA,
+  EDIT_BUTTON_ICON_SIZE,
   CHECK_SIZE,
   CHECK_RADIUS,
   CHECK_FONT_SIZE,
@@ -984,32 +985,34 @@ function paintHoverEditorStroke (ctx, state, hover) {
   ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
 }
 
-/** 编辑按钮绘制（问题 5，覆盖层最上层）：hover 格所在列配 editorButton.icon 时，
-    经 editorButtonRectOf 取区矩形（合并区域 = spanRectOf 区域矩形，§5.1）、
-    requestIconImage 取图；仅 loaded 才 drawImage，onLoad 经 state.onImageLoad 转
-    invalidateCell；hoverMode none 随覆盖层抑制 */
-function paintEditorButton (ctx, state, hover) {
+/** 编辑按钮绘制（问题 5，覆盖层最上层）：hover 格所在列配 editButton.icon（注册
+    名，resolveIconEntry 查表，未注册不绘制）时，经 editButtonRectOf 取区矩形
+    （合并区域 = spanRectOf 区域矩形，§5.1）、drawIconGlyph 绘制（svg 走
+    requestIconImage 缓存管线、cls 直绘注册表 glyph；色 = theme.textColor，尺寸 =
+    EDIT_BUTTON_ICON_SIZE，x 左对齐区内 16px 槽、centerY = 区矩形中心），onLoad 经
+    state.onImageLoad 转 invalidateCell；hoverMode none 随覆盖层抑制 */
+function paintEditButton (ctx, state, hover) {
   const column = state.columns?.[hover.col]
-  const icon = column?.editorButton?.icon
+  const icon = resolveIconEntry(column?.editButton?.icon)
 
   if (!icon) return
 
   const { theme } = state
-  const rect = editorButtonRectOf(
+  const rect = editButtonRectOf(
     spanRectOf(state.layout, hover.row, hover.col, state.spans),
     {
       padding: theme?.cellPadding || CELL_PADDING_FALLBACK,
       rowHeight: theme?.rowHeight || ROW_HEIGHT_FALLBACK
     }
   )
-  const entry = requestIconImage(icon, theme.textColor, () => state.onImageLoad?.(hover.row, hover.col))
 
-  if (entry.status !== 'loaded') return
-
-  const size = EDITOR_BUTTON_ICON_SIZE
-  const inset = (EDITOR_BUTTON_AREA - size) / 2
-
-  ctx.drawImage(entry.image, rect.x + inset, rect.y + inset, size, size)
+  drawIconGlyph(ctx, icon, {
+    x: rect.x + (EDIT_BUTTON_AREA - EDIT_BUTTON_ICON_SIZE) / 2,
+    centerY: rect.y + rect.height / 2,
+    size: EDIT_BUTTON_ICON_SIZE,
+    color: theme.textColor,
+    onLoad: () => state.onImageLoad?.(hover.row, hover.col)
+  })
 }
 
 /** hover 叠加：高亮底色 → 可编辑格描边 → 树箭头主色 → 编辑按钮（顺序固定）。
@@ -1032,7 +1035,7 @@ function paintHoverOverlay (ctx, state, hover, mode) {
 
       paintTreeArrowAccent(ctx, state)
 
-      paintEditorButton(ctx, state, hover)
+      paintEditButton(ctx, state, hover)
     }
   })
 }

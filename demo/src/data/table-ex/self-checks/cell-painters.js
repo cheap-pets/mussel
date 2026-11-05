@@ -46,8 +46,11 @@ import {
   drawCell,
   getImageEntry,
   requestIconImage,
+  drawIconGlyph,
   linkHoverColorOf
 } from '../../../../../src/components/table/ex/cell-painters.js'
+import { resolveIconEntry } from '../../../../../src/components/table/column-types/icon.js'
+import { install, icons, whenGlyphReady } from '../../../../../src/icons/index.js'
 import { createWrapCache } from '../../../../../src/components/table/ex/text-wrap.js'
 import { LinkColumn } from '../../../../../src/components/table/column-types/link.js'
 import { ListColumn } from '../../../../../src/components/table/column-types/list.js'
@@ -105,6 +108,7 @@ const THEME = {
   rowHeight: 36,
   cellPadding: 8,
   cellLineHeight: 18,
+  controlHeightSmall: 24,
   colors: THEME_COLORS
 }
 
@@ -151,13 +155,14 @@ function drawRecorded (col, record, options = {}) {
 /**
  * canvas 2d 上下文代理：记录 fillText（text/x/y + 调用时 fillStyle）、fill
  * （调用时 fillStyle）、fillRect（x/y/width/height + fillStyle——link 悬停下划线
- * 断言，A5 行）与 stroke（strokeStyle——button 悬停反转边框色断言）。文本取色
+ * 断言，A5 行）、stroke（strokeStyle——button 悬停反转边框色断言）与 drawImage
+ * （x/y/width/height——icon/editButton 图标绘制断言，20261105）。文本取色
  * 断言避免像素抗锯齿噪声，直接捕获 fillStyle。set 派发到 target 本体（默认 set
  * 的 receiver 为 proxy，会触发原生 setter 的品牌检查抛 Illegal invocation）。
  */
 function recordingCtx (canvas) {
   const ctx = canvas.getContext('2d')
-  const calls = { fillText: [], fill: [], fillRect: [], stroke: [] }
+  const calls = { fillText: [], fill: [], fillRect: [], stroke: [], drawImage: [] }
 
   canvas.__paintCalls = calls
 
@@ -188,6 +193,13 @@ function recordingCtx (canvas) {
         return () => {
           calls.stroke.push({ strokeStyle: target.strokeStyle })
           return target.stroke()
+        }
+      }
+
+      if (prop === 'drawImage') {
+        return (image, x, y, width, height) => {
+          calls.drawImage.push({ x, y, width, height })
+          return target.drawImage(image, x, y, width, height)
         }
       }
 
@@ -285,6 +297,15 @@ function tinyPngDataUri () {
  *  持存，固定串在页内重跑时会直接命中已加载条目，「loading」断言假红（同
  *  tinyPngDataUri 的重跑时序规避，A5 行） */
 let iconSeed = 0
+
+// —— icon 列夹具（20261105-table-ex-icon-column）——
+// cls 夹具注册（class 定义见 demo/src/common/style.css）：install 同步码点解析；
+// 页面侧 main-view.vue 亦注册同名 → 此处重复注册走幂等继承（同 cls ready 免重复
+// DOM 读取，icons/index.js 定案 e）。svg 夹具用一次性注册名（不依赖内置名单）
+install({ demoGlyphA: 'mu-demo-glyph-a', demoGlyphB: 'mu-demo-glyph-b' }, 'cls')
+install({
+  iconProbeSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h20v20H2z" fill="currentColor"/></svg>'
+}, 'svg')
 
 // —— resolveCellTooltip 夹具（title 列协议，20261030-table-ex-cell-tooltip）： ——
 // stub measure（fakeMeasure，CJK 每字符 9px）+ 固定 theme；contentWidth =
@@ -981,7 +1002,7 @@ export const checks = [
     }
   },
   {
-    name: 'button 绘制：tag 同构、色板/disabled 两态取色、条目矩形回报 itemHits',
+    name: 'button 绘制：色板/disabled 两态取色、条目矩形回报 itemHits（pill 高 = controlHeightSmall）',
     fn: () => {
       const col = prepareColumn({
         field: 'v',
@@ -1003,8 +1024,8 @@ export const checks = [
       assert(rects[0].rect.width > 0, '条目矩形应含宽高')
       assertEqual(
         `${rects[0].rect.y},${rects[0].rect.height}`,
-        '9,20',
-        'button 命中矩形 = pill 绘制区（centerY 19 ± TAG_HEIGHT/2，非整格）'
+        '7,24',
+        'button 命中矩形 = pill 绘制区（centerY 19 ± controlHeightSmall/2 = 12，非整格）'
       )
 
       // 对齐（20261104 修复）：两遍式测宽后按列 align 分布——pill 34×2 + gap 8 = 76
@@ -2135,6 +2156,394 @@ export const checks = [
       )
 
       return '截断溢出 / 97px 不溢出 / 空 caption 中位溢出末位不溢出；全文 join 正确'
+    }
+  },
+  {
+    name: 'icon 列：双通道 compile 产物（canvas kind/icon/color/size、DOM mu-icon + text-{color} + innerHTML）',
+    fn: () => {
+      const colorCol = prepareColumn({ field: 'v', type: 'icon', color: r => r.c, iconOption: { size: 20 } })
+      const canvas = content(colorCol, { v: 'iconProbeSvg', c: 'danger' })
+
+      assert(Array.isArray(canvas.items) && canvas.items.length === 1, 'canvas 通道应产出单条目 items 数组（D3 kind 平铺）')
+
+      const item = canvas.items[0]
+
+      assertEqual(item.kind, 'icon', '条目 kind icon')
+      assertEqual(item.icon, icons.iconProbeSvg, '条目 icon = 注册表项原引用')
+      assertEqual(item.color, 'danger', 'column.color 函数求值（色名平铺，绘制期查表）')
+      assertEqual(item.size, 20, 'iconOption.size 归一生效')
+      assertEqual(item.title, null, 'canvas 产物 title 缺省 null')
+
+      const titled = content(prepareColumn({ field: 'v', type: 'icon', title: true }), { v: 'iconProbeSvg' })
+
+      assertEqual(titled.items[0].title, 'iconProbeSvg', 'title: true → 条目 title = 注册名')
+      assertEqual(content(prepareColumn({ field: 'v', type: 'icon' }), { v: 'iconProbeSvg' }).items[0].size, 16, 'size 缺省 16（对齐 CHECK_SIZE）')
+
+      // DOM 通道：svg 形态（mu-icon + text-{color} + innerHTML，不叠 cls）。
+      // 断言走 base table 真实消费链构造：table.vue:180 compile(el, true) 产 render、
+      // table-row.vue:60-66 解构消费（顶层 class/style 上提 td class，items 等其余键
+      // Object.assign 进 cell）。resolveCellContent 是 canvas 解析链（prepareColumn 的
+      // _render 恒 dom=false 产物，且 :300-303 剥顶层 class/style/title），不能用于
+      // DOM cell class 断言（verify-1 失败项 1）
+      const domSvg = resolveColumnType('icon').compile(
+        { field: 'v', type: 'icon', color: 'danger', iconOption: { size: 22 } },
+        true
+      )({ record: { v: 'iconProbeSvg' }, value: 'iconProbeSvg' })
+
+      assertEqual(domSvg.class, 'mu-table__icon-cell', 'DOM 通道 cell class')
+      assertArray(domSvg.items[0].attrs.class, ['mu-icon', null, 'text-danger'], 'svg 形态 class（不叠 cls 渲染 glyph）')
+      assertArray(domSvg.items[0].attrs.style, [{ fontSize: '22px' }], '内联 font-size = size（1em 随之）')
+      assertEqual(domSvg.items[0].attrs.innerHTML, icons.iconProbeSvg.svg, 'innerHTML = 净化后注册表 svg')
+
+      // DOM 通道：cls 形态（无 innerHTML 键，cls class 直挂）——同走 compile(el, true) 消费链
+      const domCls = resolveColumnType('icon').compile(
+        { field: 'v', type: 'icon' },
+        true
+      )({ record: { v: 'demoGlyphA' }, value: 'demoGlyphA' })
+      const clsAttrs = domCls.items[0].attrs
+
+      assertArray(clsAttrs.class, ['mu-icon', 'mu-demo-glyph-a', null], 'cls 形态 class 直挂')
+      assert(!('innerHTML' in clsAttrs), 'cls 形态省略 innerHTML 键（与传 null 等价，不产生 "null" 文本）')
+
+      return 'canvas 单条目 kind/icon/color/size；DOM mu-icon + text-{color} + innerHTML（svg）/ cls 直挂（无 innerHTML）'
+    }
+  },
+  {
+    name: 'icon 列：非法值/未注册名空产物 + dev warn、null 静默不 warn、占位文本落地',
+    fn: () => {
+      const col = prepareColumn({ field: 'v', type: 'icon' })
+      const warnings = []
+      const originalWarn = console.warn
+
+      console.warn = (...args) => warnings.push(args.map(String).join(' '))
+
+      try {
+        const before = warnings.length
+
+        assert(!content(col, { v: null }).items && !content(col, { v: null }).text, 'null 值空产物（落占位链）')
+        assertEqual(warnings.length - before, 0, 'null 值不 warn')
+
+        assert(!content(col, { v: 123 }).items, '非 string 空产物')
+        assert(warnings.some(w => w.includes('实际类型 number')), '非 string dev warn 一次')
+
+        const unregName = `noRegIcon${Date.now()}`
+
+        assert(!content(col, { v: unregName }).items, '未注册名空产物')
+        assert(warnings.some(w => w.includes(unregName)), '未注册名 dev warn（消息含图标名）')
+      } finally {
+        console.warn = originalWarn
+      }
+
+      // 非法值落占位文本（drawCell placeholder 链）
+      const { calls } = drawRecorded(col, { v: 123 }, { placeholder: '-' })
+
+      assert(calls.fillText.some(call => call.text === '-'), '非法值绘制落 placeholder 文本')
+
+      // 数组值在 resolveCellContent A9 门控拦截（icon 非 link/list/tag/button）
+      assert(!content(col, { v: ['clock'] }).items, '数组值空产物（A9 门控，不进 render）')
+
+      return 'null 静默 / 非 string 与未注册名空产物 + dev warn / placeholder 落地 / 数组 A9 拦截'
+    }
+  },
+  {
+    name: 'icons install：cls 项码点解析（转义/字面两形态 glyph、fontFamily、ready 态、whenGlyphReady 不回调）',
+    fn: () => {
+      const escaped = icons.demoGlyphA
+      const literal = icons.demoGlyphB
+
+      assert(escaped && escaped.glyphStatus === 'ready', `转义形态（\\25CF）install 时解析 ready，实际 ${escaped?.glyphStatus}`)
+      assertEqual(escaped.glyph, '●', '转义形态解码 glyph（U+25CF）')
+      assert(literal && literal.glyphStatus === 'ready' && literal.glyph === '●', '字面形态解析 ready（实测确认点 1 两形态兼容）')
+      assert(!escaped.glyph.includes('\\'), 'glyph 无残留转义符')
+      assert(
+        (typeof escaped.fontFamily === 'string' && escaped.fontFamily !== '') &&
+        (typeof literal.fontFamily === 'string' && literal.fontFamily !== ''),
+        'fontFamily 非空（getComputedStyle 产物）'
+      )
+
+      let fired = false
+
+      whenGlyphReady(escaped, () => { fired = true })
+
+      assert(!fired, 'whenGlyphReady 对 ready 项不回调（调用方已分支处理）')
+
+      // 同名重复注册（页面侧已先注册同名同 cls）→ 幂等继承，仍 ready
+      install({ demoGlyphA: 'mu-demo-glyph-a' }, 'cls')
+
+      assert(icons.demoGlyphA.glyphStatus === 'ready' && icons.demoGlyphA.glyph === '●', '同名同 cls 重注册幂等继承 ready')
+
+      return '转义/字面两形态解析 ready、glyph/fontFamily 落注册表项、ready 不回调、重注册幂等'
+    }
+  },
+  {
+    name: 'drawIconGlyph：cls 路径 fillText（glyph/font/x/color）、svg 路径同步 Image 桩 drawImage 尺寸 = size',
+    fn: () => {
+      // cls 路径：icon 列 default size 16 → font 16px、glyph 直绘
+      const clsCol = prepareColumn({ field: 'v', type: 'icon' })
+      const clsEntry = icons.demoGlyphA
+      const { calls } = drawRecorded(clsCol, { v: 'demoGlyphA' })
+      const glyph = calls.fillText.find(call => call.text === clsEntry.glyph)
+
+      assert(glyph, 'cls 图标以 fillText 绘制（glyph 取自注册表项）')
+      assertEqual(glyph.font, `16px ${clsEntry.fontFamily}`, 'font = `${size}px ${fontFamily}`')
+      assertEqual(glyph.fillStyle, cssColorOf(THEME.textColor), '缺省正文色')
+      assertEqual(glyph.x, 72, '单条目 center 对齐起点（(160−16)/2）')
+      assertEqual(glyph.y, 19 + textAnchorOffset(`16px ${clsEntry.fontFamily}`), '垂直锚 = centerY + 光学半差（槽位式）')
+
+      // color 染色：canvas 色名查表
+      const colored = drawRecorded(prepareColumn({ field: 'v', type: 'icon', color: 'primary' }), { v: 'demoGlyphA' })
+
+      assert(colored.calls.fillText.some(call => call.text === clsEntry.glyph && call.fillStyle === cssColorOf(PRIMARY_COLOR)), 'column.color 查表染色')
+
+      // svg 路径：同步 Image 桩（src 赋值即 onload）→ loaded → drawImage 尺寸 = size
+      const RealImage = window.Image
+
+      window.Image = function () {
+        const img = document.createElement('img')
+        let src = ''
+
+        Object.defineProperty(img, 'src', {
+          get () {
+            return src
+          },
+          set (value) {
+            src = value
+            img.onload?.()
+          }
+        })
+
+        return img
+      }
+
+      try {
+        const { calls: svgCalls } = drawRecorded(prepareColumn({ field: 'v', type: 'icon' }), { v: 'iconProbeSvg' })
+        const drawn = svgCalls.drawImage[0]
+
+        assert(drawn, 'svg 图标以 drawImage 绘制（requestIconImage 缓存管线）')
+        assertArray([drawn.x, drawn.y, drawn.width, drawn.height], [72, 11, 16, 16], 'drawImage 方形尺寸 = size、centerY − size/2')
+      } finally {
+        window.Image = RealImage
+      }
+
+      return 'cls fillText（font/x/锚/color）+ svg drawImage（16×16 @72,11）正确'
+    }
+  },
+  {
+    name: 'resolveIconEntry：注册命中返回原引用 / 未注册返回 null（editButton 门控同源）',
+    fn: () => {
+      assertEqual(resolveIconEntry('demoGlyphA'), icons.demoGlyphA, '已注册 → 注册表项原引用')
+      assertEqual(resolveIconEntry('iconProbeSvg'), icons.iconProbeSvg, 'svg 形态命中')
+
+      const unregName = `noRegEntry${Date.now()}`
+
+      assertEqual(resolveIconEntry(unregName), null, '未注册名 → null（调用方分支：占位/降级/不绘制）')
+      assertEqual(resolveIconEntry(''), null, '空串 → null')
+      assertEqual(resolveIconEntry(123), null, '非 string → null')
+
+      return '注册命中原引用 / 未注册、空串、非 string 均 null'
+    }
+  },
+  {
+    name: 'button 图标：两形态互斥（文本优先）、icon-only 快照宽高居中、省略只作用 caption、哨兵与右缘裁剪、tooltip 溢出计宽',
+    fn: () => {
+      const col = prepareColumn({ field: 'v', type: 'button', buttons: r => r.list })
+      const glyph = icons.demoGlyphA.glyph
+      const unregName = `noRegBtn${Date.now()}`
+
+      // 两形态矩阵（pill 形态，连续横排：起点 = 前序条目宽累加 + gap 8，与 :1040
+      // 既有两遍式布局断言同语义）：caption+icon 文本优先（icon 忽略，宽 34 =
+      // 8×2 + 18，起点 8 → caption x = 16）；icon-only（宽 = 高 = controlHeightSmall
+      // 快照 24，起点 8+34+8 = 50 → 图标居中 x = 50+(24−12)/2 = 56）；caption+
+      // 未注册名（icon 忽略不解析零 warn，宽 34，起点 50+24+8 = 82 → x = 90）
+      const rects = []
+      const warns = []
+      const originalWarn = console.warn
+      let mixed
+
+      console.warn = (...args) => warns.push(args.map(String).join(' '))
+
+      try {
+        mixed = drawRecorded(
+          col,
+          { list: [{ caption: '编辑', icon: 'demoGlyphA' }, { icon: 'demoGlyphA' }, { caption: '删除', icon: unregName }] },
+          { measure: fakeMeasure, onItemRect: r => rects.push(r) }
+        )
+      } finally {
+        console.warn = originalWarn
+      }
+
+      assertArray(
+        mixed.calls.fillText.map(c => `${c.text}@${c.x}`),
+        ['编辑@16', `${glyph}@56`, '删除@90'],
+        'caption-only（x=16 无图标偏移）+ icon-only（起点 50 → 居中 x=56）+ caption+未注册名（icon 忽略 x=90）'
+      )
+      assertArray(
+        rects.map(r => r.rect.width),
+        [34, 24, 34],
+        'caption-only 宽 = TAG_PADDING_X×2 + caption；icon-only 宽 = 高 = 24；caption 条目 icon 忽略同 caption-only'
+      )
+      assertArray(rects.map(r => r.rect.height), [24, 24, 24], '命中矩形高 = controlHeightSmall 快照 24')
+      assertEqual(
+        `${rects[1].rect.y},${rects[1].rect.height}`,
+        '7,24',
+        'icon-only 命中矩形 = pill 绘制区（centerY 19 ± 12）'
+      )
+      assertEqual(
+        mixed.calls.fillText.filter(c => c.text === glyph).length,
+        1,
+        'glyph fillText 仅 icon-only 条目 1 次（caption 条目 icon 不解析不绘制）'
+      )
+      assert(!warns.some(w => w.includes(unregName)), 'caption 非空条目未注册 icon 零 warn（互斥短路在解析前）')
+
+      // 省略只作用 caption：caption+icon 条目按 caption-only 计（icon 忽略），
+      // caption x = 起点 + TAG_PADDING_X = 16（无图标偏移），无 glyph fillText
+      const elided = drawRecorded(
+        col,
+        { list: [{ caption: '一二三四五六七八九十'.repeat(2), icon: 'demoGlyphA' }] },
+        { measure: fakeMeasure }
+      )
+      const cap = elided.calls.fillText.find(c => String(c.text).endsWith('...'))
+
+      assert(cap, 'caption 超宽 → 省略只作用 caption')
+      assertEqual(cap.x, 16, 'caption x = 起点 + TAG_PADDING_X（无图标偏移）')
+      assert(!elided.calls.fillText.some(c => c.text === glyph), 'caption 条目无 glyph fillText（icon 忽略）')
+
+      // d 回归（verify-终-2 失败项 1，裁剪检查先于一切绘制）：width 40 → 内容宽 24，
+      // caption '甲' 需 内距 16 + 9 = 25 > 24 → 省略必空串 → 不绘制且终止；不得落
+      // 空文本条目（仅断 fillText 会漏掉「空文本 pill 仍绘制」的退化实现 →
+      // 0 fillText + 0 pill fill/stroke + 0 onItemRect）
+      const cutRects = []
+      const cut = drawRecorded(
+        col,
+        { list: [{ caption: '甲', icon: 'demoGlyphA' }, { caption: '乙' }] },
+        { width: 40, measure: fakeMeasure, onItemRect: r => cutRects.push(r) }
+      )
+
+      assertEqual(cut.calls.fillText.length, 0, 'd 回归：caption 放不下 → 0 次 fillText')
+      assertEqual(cut.calls.fill.length, 0, 'd 回归：不得落空文本条目（0 次 pill fill）')
+      assertEqual(cut.calls.stroke.length, 0, 'd 回归：0 次 pill stroke')
+      assertEqual(cutRects.length, 0, 'd 回归：0 条 onItemRect')
+
+      // icon-only 右缘剩余 < 24 → 该条目 0 绘制且终止（width 56：起点 8 + 25 + 8 = 41，
+      // 剩余 48 − 41 = 7 < 24）
+      const cutIconRects = []
+      const cutIcon = drawRecorded(
+        col,
+        { list: [{ caption: '甲' }, { icon: 'demoGlyphA' }, { caption: '乙' }] },
+        { width: 56, measure: fakeMeasure, onItemRect: r => cutIconRects.push(r) }
+      )
+
+      assertArray(cutIcon.calls.fillText.map(c => c.text), ['甲'], 'icon-only 剩余 < 24 → 该条目 0 绘制且终止')
+      assertEqual(cutIconRects.length, 1, '终止后仅首条回报（onItemRect 1 条）')
+
+      // 哨兵三态：空条目（caption 空且无 icon）终止；icon-only 有有效图标继续；
+      // 未注册 icon-only 哨兵（warn 一次，caption 空才解析）终止
+      const sentinel = drawRecorded(
+        col,
+        { list: [{ caption: '甲' }, {}, { caption: '乙' }] },
+        { measure: fakeMeasure }
+      )
+
+      assertArray(sentinel.calls.fillText.map(c => c.text), ['甲'], '空条目（无 caption 无图标）哨兵终止后续')
+
+      const keeps = drawRecorded(
+        col,
+        { list: [{ caption: '甲' }, { icon: 'demoGlyphA' }, { caption: '乙' }] },
+        { measure: fakeMeasure }
+      )
+
+      assertArray(
+        keeps.calls.fillText.filter(c => c.text !== glyph).map(c => c.text),
+        ['甲', '乙'],
+        'icon-only 有有效图标不触发哨兵，后续条目继续'
+      )
+
+      const sentinelWarns = []
+      const sentinelOriginalWarn = console.warn
+      let unregSentinel
+
+      console.warn = (...args) => sentinelWarns.push(args.map(String).join(' '))
+
+      try {
+        unregSentinel = drawRecorded(
+          col,
+          { list: [{ caption: '甲' }, { icon: unregName }, { caption: '乙' }] },
+          { measure: fakeMeasure }
+        )
+      } finally {
+        console.warn = sentinelOriginalWarn
+      }
+
+      assertArray(
+        unregSentinel.calls.fillText.filter(c => c.text !== glyph).map(c => c.text),
+        ['甲'],
+        '未注册 icon-only 哨兵终止（仅首条 caption，后续不绘制）'
+      )
+      assert(sentinelWarns.some(w => w.includes(unregName)), '未注册 icon-only dev warn 一次（消息含图标名）')
+
+      // 快照驱动验证（二轮调整 a/c）：icon-only pill 宽 = 高 = controlHeightSmall；
+      // 缺字段回退常量 24；自定义 32 → 宽/高/命中矩形随之、图标居中 x = 起点 +
+      // (32 − 12)/2（证明值由快照驱动，非硬编码 24）
+      const iconOnlyCol = { field: 'v', type: 'button', buttons: r => r.list }
+      const fallbackRects = []
+
+      drawRecorded(
+        prepareColumn(iconOnlyCol),
+        { list: [{ icon: 'demoGlyphA' }] },
+        { theme: { ...THEME, controlHeightSmall: undefined }, measure: fakeMeasure, onItemRect: r => fallbackRects.push(r) }
+      )
+      assertEqual(
+        `${fallbackRects[0].rect.width},${fallbackRects[0].rect.height}`,
+        '24,24',
+        'controlHeightSmall 缺字段 → 回退常量 24（pill 宽 = 高）'
+      )
+
+      const customRects = []
+      const custom = drawRecorded(
+        prepareColumn(iconOnlyCol),
+        { list: [{ icon: 'demoGlyphA' }] },
+        { theme: { ...THEME, controlHeightSmall: 32 }, measure: fakeMeasure, onItemRect: r => customRects.push(r) }
+      )
+
+      assertEqual(`${customRects[0].rect.y},${customRects[0].rect.height}`, '3,32', '自定义快照 32 → 命中矩形 3,32（centerY 19 ± 16）')
+      assertEqual(
+        custom.calls.fillText.find(c => c.text === glyph).x,
+        18,
+        '自定义 32 → 图标水平居中 x = 起点 8 + (32 − 12)/2 = 18'
+      )
+
+      // tooltip 溢出矩阵：纯图标组无文本 → 无 tooltip；icon-only 固定宽 24 计入
+      // 计宽（44 时 24 + gap 8 + pill 25 > 44 溢出、70 时放得下不溢出）；
+      // caption+icon 计宽忽略 icon（10 字 16+90 = 106 ≤ 144 不溢出、15 字 151 > 144 溢出）
+      const buttonsCol = { field: 'v', type: 'button', title: true, buttons: r => r.list }
+
+      assertEqual(
+        tooltipOf(buttonsCol, { list: [{ icon: 'demoGlyphA' }] }),
+        null,
+        '纯图标组无文本 → 无 tooltip（预期）'
+      )
+      assertEqual(
+        tooltipOf(buttonsCol, { list: [{ icon: 'demoGlyphA' }, { caption: '甲' }] }, { contentWidth: 44 }).overflow,
+        true,
+        'icon-only 固定宽 24 计入计宽（窄内容宽 44 溢出）'
+      )
+      assertEqual(
+        tooltipOf(buttonsCol, { list: [{ icon: 'demoGlyphA' }, { caption: '甲' }] }, { contentWidth: 70 }).overflow,
+        false,
+        'icon-only 组内容宽充足不溢出（哨兵未误判终止）'
+      )
+      assertEqual(
+        tooltipOf(buttonsCol, { list: [{ caption: '一二三四五六七八九十', icon: 'demoGlyphA' }] }).overflow,
+        false,
+        'caption+icon 计宽忽略 icon：10 字 16 + 90 = 106 ≤ 144 不溢出'
+      )
+      assertEqual(
+        tooltipOf(buttonsCol, { list: [{ caption: '一二三四五六七八九十' + '一二三四五', icon: 'demoGlyphA' }] }).overflow,
+        true,
+        'caption+icon 计宽忽略 icon：15 字 16 + 135 = 151 > 144 溢出'
+      )
+
+      return '两形态互斥（文本优先零查表零 warn）、icon-only 快照 24/回退 24/自定义 32 居中、省略只作用 caption、d 回归 0 fill/stroke/onItemRect、哨兵三态、tooltip 矩阵均正确'
     }
   }
 ]

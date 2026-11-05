@@ -11,6 +11,7 @@ import { LinkColumn } from './link'
 import { ListColumn } from './list'
 import { TagColumn } from './tag'
 import { ImageColumn } from './image'
+import { IconColumn } from './icon'
 
 import './style.scss'
 
@@ -28,7 +29,8 @@ const ColumnTypes = {
   list: ListColumn,
   tag: TagColumn,
   img: ImageColumn,
-  image: ImageColumn
+  image: ImageColumn,
+  icon: IconColumn
 }
 
 export function resolveColumnType (type) {

@@ -13,7 +13,7 @@
 
     <demo-section
       title="列类型"
-      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / list / tag / img；enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes"
+      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / list / tag / img / icon；enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes"
       wide>
       <mu-table
         :columns="typeColumns"
@@ -159,11 +159,11 @@ const columns = [
   const orderBy = ref('')
 
   const records = [
-    { id: 1, name: 'Alice', count: 30, active: true, gender: 'female', birthday: '1992-05-14', registeredAt: '2023-03-01 09:30:00', amount: 1234.5, email: 'alice@example.com', tags: ['admin', 'vip'], avatar: 'https://dummyimage.com/48x48/228be6/ffffff&text=A', missing: '' },
-    { id: 2, name: 'Bob', count: 12, active: false, gender: 'male', birthday: '1988-11-02', registeredAt: '2022-07-15 14:00:00', amount: 987.65, email: 'bob@example.com', tags: ['editor'], avatar: 'https://dummyimage.com/48x48/40c057/ffffff&text=B', missing: '' },
-    { id: 3, name: 'Carol', count: 88, active: true, gender: 'female', birthday: '1995-08-23', registeredAt: '2024-01-20 11:20:00', amount: 22000, email: 'carol@example.com', tags: ['admin', 'editor'], avatar: 'https://dummyimage.com/48x48/fab005/ffffff&text=C', missing: '' },
+    { id: 1, name: 'Alice', count: 30, active: true, gender: 'female', birthday: '1992-05-14', registeredAt: '2023-03-01 09:30:00', amount: 1234.5, email: 'alice@example.com', tags: ['admin', 'vip'], avatar: 'https://dummyimage.com/48x48/228be6/ffffff&text=A', icon: 'clock', missing: '' },
+    { id: 2, name: 'Bob', count: 12, active: false, gender: 'male', birthday: '1988-11-02', registeredAt: '2022-07-15 14:00:00', amount: 987.65, email: 'bob@example.com', tags: ['editor'], avatar: 'https://dummyimage.com/48x48/40c057/ffffff&text=B', icon: 'calendar', missing: '' },
+    { id: 3, name: 'Carol', count: 88, active: true, gender: 'female', birthday: '1995-08-23', registeredAt: '2024-01-20 11:20:00', amount: 22000, email: 'carol@example.com', tags: ['admin', 'editor'], avatar: 'https://dummyimage.com/48x48/fab005/ffffff&text=C', icon: 'sun', missing: '' },
     { id: 4, name: 'Dave', count: 5, active: false, gender: 'male', birthday: '2001-02-09', registeredAt: '2024-06-08 16:45:00', amount: 45.2, email: 'dave@example.com', tags: [], avatar: 'https://dummyimage.com/48x48/e64980/ffffff&text=D', missing: '' },
-    { id: 5, name: 'Erin', count: 47, active: true, gender: 'female', birthday: '1990-12-30', registeredAt: '2021-11-11 08:05:00', amount: 5300.1, email: 'erin@example.com', tags: ['viewer', 'vip'], avatar: 'https://dummyimage.com/48x48/7950f2/ffffff&text=E', missing: '' }
+    { id: 5, name: 'Erin', count: 47, active: true, gender: 'female', birthday: '1990-12-30', registeredAt: '2021-11-11 08:05:00', amount: 5300.1, email: 'erin@example.com', tags: ['viewer', 'vip'], avatar: 'https://dummyimage.com/48x48/7950f2/ffffff&text=E', icon: 'moon', missing: '' }
   ]
 
   const basicColumns = [
@@ -183,6 +183,10 @@ const columns = [
     { caption: '链接', field: 'email', width: '180px', type: 'link' },
     { caption: '标签', field: 'tags', width: '160px', type: 'tag', tagOption: { pill: true, flat: true } },
     { caption: '图像', field: 'avatar', width: '64px', type: 'img' },
+    // icon 列（20261105-table-ex-icon-column）：value = icons 注册名（内置 svg 名）；
+    // title: true 挂原生 tooltip（显示注册名）；第 4 行空值落占位
+    { caption: '图标', field: 'icon', width: '80px', type: 'icon', title: true },
+    { caption: '图标（color/size）', field: 'icon', width: '130px', type: 'icon', color: 'primary', iconOption: { size: 20 } },
     { caption: '空值', field: 'missing', width: '90px', placeholder: '-' }
   ]
 

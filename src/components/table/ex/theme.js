@@ -1,5 +1,5 @@
 /**
- * table-ex 主题模块：--mu-* 变量探针读取、主题快照（20 固定字段 + colors
+ * table-ex 主题模块：--mu-* 变量探针读取、主题快照（21 固定字段 + colors
  * 固定 17 色 map，02-design.md A6.1）、暗色切换感知、透明度叠加与文本测量
  * （createMeasureCache 缓存 + createTextMeasurer 测量工厂，A2.2）。
  *
@@ -104,7 +104,7 @@ function readColors (probe) {
   return colors
 }
 
-/** 主题快照：一次读取全部绘制所需变量（20 固定字段 + colors），绘制期间不重复触发 reflow 批次 */
+/** 主题快照：一次读取全部绘制所需变量（21 固定字段 + colors），绘制期间不重复触发 reflow 批次 */
 export function readSnapshot (probe) {
   return {
     textColor: readVar(probe, '--mu-text-color-normal'),
@@ -127,6 +127,9 @@ export function readSnapshot (probe) {
     headHeight: readPx(probe, '--head-row-height'),
     cellPadding: readPx(probe, '--cell-padding'),
     cellLineHeight: readPx(probe, '--cell-line-height'),
+    // button pill 高度（20261105 二轮，--mu-control-height-small）：raw 读取、
+    // 未定义 → 0、消费侧回退（buttonHeightOf），与 rowHeight 同模式
+    controlHeightSmall: readPx(probe, '--mu-control-height-small'),
     colors: readColors(probe)
   }
 }
@@ -246,7 +249,7 @@ function colorsEqual (a, b) {
 }
 
 /**
- * 快照相等判定（mutation 变更抑制门控，verify-1 失败项 1）：20 固定字段逐键
+ * 快照相等判定（mutation 变更抑制门控，verify-1 失败项 1）：21 固定字段逐键
  * 严格相等 + colors 每色 color/translucent/hover 严格相等。滚动状态 class 翻转
  * （mu-table-ex--y-scrolled 等）等与主题无关的观察根 attribute 变更，
  * 重读快照结果不变 → 不通知 onChange，壳侧行几何不被误 rebuild（已精算

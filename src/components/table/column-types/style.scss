@@ -83,3 +83,18 @@
     text-decoration: underline;
   }
 }
+
+// icon 列（20261105-table-ex-icon-column）：单图标格。宽/高 1em 随条目内联
+// font-size（iconOption.size）；svg 显式 block 1em——tabler svg 自带 width/height=24，
+// 缺规则会显示 24px（不依赖 icon.scss 是否被打包）
+.mu-table__icon-cell > .mu-icon {
+  display: inline-block;
+  width: 1em;
+  vertical-align: middle;
+
+  & > svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
+}

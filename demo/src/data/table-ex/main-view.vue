@@ -43,7 +43,8 @@
           @update:tree-expanded-keys="onTreeExpandedKeys"
           @tree-expand="onTreeExpand"
           @tree-collapse="onTreeCollapse"
-          @column-resize="onColumnResize">
+          @column-resize="onColumnResize"
+          @edit-button-click="onEditButtonClick">
           <template v-if="emptyVariant === 'slot'" #empty>
             <div class="ct-empty-slot">
               自定义空态（#empty 插槽）
@@ -330,8 +331,14 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
   import { runChecks } from './self-checks/index.js'
-  // 问题 5 夹具：备注列自定义编辑按钮图标（demo 构建通路先例 demo/src/common/app.js）
-  import pencilIcon from '~icons/outline/pencil.svg'
+  // icon 列 cls 夹具（20261105-table-ex-icon-column）：注入 class 注册（码点解析随
+  // install 同步执行；class 定义见 demo/src/common/style.css）
+  import { installIcons } from 'mussel'
+
+  installIcons({
+    demoGlyphA: 'mu-demo-glyph-a',
+    demoGlyphB: 'mu-demo-glyph-b'
+  })
 
   // S1：真实组件本地接入（相对路径，不依赖 S2 全局注册；见 02-design.md S1 行）
   import { MuTableEx } from '../../../../src/components/table/ex/index.js'
@@ -455,13 +462,15 @@
           validate: value =>
             (String(value).includes('错误') ? '备注不能包含"错误"字样' : true)
         },
-        // 问题 5 夹具：hover 格内最右侧铅笔按钮（仅图标、仅一个），点击行为用户自定义
-        editorButton: {
-          icon: pencilIcon,
-          onClick: payload => logEvent('editorButton 点击', payload)
-        }
+        // 问题 5 夹具（20261105 改造）：hover 格内最右侧编辑按钮——icon 收敛为
+        // 注册名（内置 dots；pencil 未内置），onClick 属性移除、改组件
+        // @edit-button-click 监听（payload { record, recordIndex, column }）
+        editButton: { icon: 'dots' }
       },
-      { caption: '启用', field: 'active', type: 'bool', width: 80, color: (r, v) => (v ? 'success' : null), editable: true, editor: true },
+      // cls 形态 editButton 夹具（终验 UNVERIFIED 补齐）：icon = installIcons 注入类名
+      // demoGlyphA（svg 形态见备注列 dots）——hover 显示注入 glyph、点击走同一
+      // @edit-button-click 链
+      { caption: '启用', field: 'active', type: 'bool', width: 80, color: (r, v) => (v ? 'success' : null), editable: true, editor: true, editButton: { icon: 'demoGlyphA' } },
       // 等级列：enum 类型（20261104）——options 显示映射（显示 label）+ 编辑 select
       // 下拉（column.options 原样通道，提交 number）；number 纯数值演示由数量列覆盖
       {
@@ -665,7 +674,8 @@
   // 条目/新列型场景：link 三态（字符串数组/对象数组/单值数字）+ 超限 dots、
   // list 全 text 列与全 link 列（R1 列级 link：column.link 整列、条目级 link 键
   // 为负向夹具不参与渲染）、text.link 链色文本、彩色 tag、progress（记录级色）、
-  // button（彩色/disabled）
+  // button（彩色/disabled）、icon 列（20261105-table-ex-icon-column：内置 svg 名 +
+  // 注入 cls 名两形态 + 空值/未注册名占位负向夹具）
   const itemRecords = [
     {
       id: 1,
@@ -678,7 +688,18 @@
       tags: [{ caption: '新品', color: 'green' }, '热门', { caption: '置顶', color: 'blue' }],
       progress: 30,
       progressColor: 'success',
-      buttons: [{ caption: '编辑' }, { caption: '删除', color: 'red' }]
+      icon: 'clock',
+      // button 图标（20261105-table-ex-icon-column 二轮）：caption 与 icon 互斥、
+      // 有文本文本优先（icon 忽略不显示）——icon-only（svg 名）/ icon-only（cls
+      // 名）/ caption+icon 文本优先演示 / caption+未注册名（icon 忽略，caption-only）；
+      // icon-only 未注册名哨兵终止用例入 self-checks 不入 demo 宽列；
+      // 「按钮」「链接按钮」两列同源消费，pill 与 link 形态各渲染一遍
+      buttons: [
+        { icon: 'clock' },
+        { icon: 'demoGlyphA' },
+        { caption: '编辑', icon: 'clock' },
+        { caption: '删除', color: 'red', icon: 'noRegBtnGlyph' }
+      ]
     },
     {
       id: 2,
@@ -700,6 +721,7 @@
       tags: [{ caption: 'V4', color: 'violet' }, { caption: 'LTS', color: 'orange' }],
       progress: 75,
       progressColor: 'warning',
+      icon: 'demoGlyphA',
       buttons: [{ caption: '详情', color: 'indigo' }, { caption: '禁用', disabled: true }]
     },
     {
@@ -713,6 +735,7 @@
       tags: '单标签',
       progress: 100,
       progressColor: 'primary',
+      icon: 'demoGlyphB',
       buttons: [{ caption: '唯一' }]
     },
     {
@@ -726,7 +749,23 @@
       tags: Array.from({ length: 12 }, (_, i) => `标签 ${i + 1}`),
       progress: 50,
       progressColor: 'danger',
+      // 负向夹具：未注册名落占位 + dev warn 一次
+      icon: 'noRegGlyph',
       buttons: [{ caption: 'A' }, { caption: 'B' }, { caption: 'C', color: 'grape' }]
+    },
+    {
+      id: 5,
+      name: '空值行',
+      count: 8,
+      links: '空值行链接',
+      list: ['空值行条目'],
+      textLink: '空值行文本',
+      tags: '空值行标签',
+      progress: 10,
+      progressColor: 'cyan',
+      // 负向夹具：icon 空值落占位不 warn
+      icon: null,
+      buttons: [{ caption: '空值行' }]
     }
   ]
 
@@ -755,7 +794,12 @@
     { caption: '按钮', field: 'buttons', type: 'button', width: 180, buttons: record => record.buttons },
     // link 形态按钮（column.link）：整列纯文字链渲染，数据与 pill 按钮同源对照
     // （同名键注记：button 列 column.link 为「链接形态按钮」，与 text 列 link 选项同名不同义）
-    { caption: '链接按钮', field: 'buttons', type: 'button', link: true, width: 180, buttons: record => record.buttons }
+    { caption: '链接按钮', field: 'buttons', type: 'button', link: true, width: 180, buttons: record => record.buttons },
+    // icon 列（20261105-table-ex-icon-column）：单图标纯展示——第 1 行内置 svg 名、
+    // 2/3 行注入 cls 名（转义/字面两形态）、第 4 行未注册名与第 5 行空值落占位
+    { caption: '图标', field: 'icon', type: 'icon', width: 80, title: true },
+    // color / iconOption.size 用例：primary 染色 + 20px（缺省 16 对照）
+    { caption: '图标（color/size）', field: 'icon', type: 'icon', width: 130, color: (r, v) => (v ? 'primary' : null), iconOption: { size: 20 } }
   ]
 
   // 全类型默认宽场景：全部列不配 width（A3.2 类型感知双值基线，含 bool 与无 type 列）
@@ -1130,6 +1174,12 @@
 
   function onCellItemClick (payload) {
     logEvent('cell-item-click', payload)
+  }
+
+  // 编辑按钮派发（20261105 改造）：onClick 属性移除后改组件事件监听，payload
+  // { record, recordIndex, column } 与旧 onClick 参数一致
+  function onEditButtonClick (payload) {
+    logEvent('edit-button-click', payload)
   }
 
   // DOM 版参照：同列定义、同数据源前 20 行（10 万行 DOM 全量渲染不可行，取视口对齐子集）

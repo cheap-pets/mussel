@@ -1,8 +1,9 @@
 /**
  * table-ex 自检断言 — theme 模块（G1-b，G2-6 扩 hover）。
  *
- * 覆盖 02-design.md G1-b 判据：快照 20 固定字段计数（14 色 + 字号/字体 + 4 尺寸，
- * 含 bgStrong/textColorMuted/bgDisabled；controlHeight 已随 C3 死代码清理移除）+ colors 固定
+ * 覆盖 02-design.md G1-b 判据：快照 21 固定字段计数（14 色 + 字号/字体 + 5 尺寸，
+ * 含 bgStrong/textColorMuted/bgDisabled；controlHeightSmall 二轮新增——button pill
+ * 高，设计期曾有、已随 C3 清理移除的 controlHeight 由其取代）+ colors 固定
  * 17 色形态（12 彩色 + 5 语义，gray 不入，每色 color+translucent+hover 三形态）+
  * bgStrong 半透明形态 + hover 悬停色专项（02-design.md A7：语义色取
  * --mu-{name}-color-4 原始串且 ≠ color、彩色同色、未定义变量回退同色）；
@@ -34,9 +35,11 @@ import {
   withAlpha
 } from '../../../../../src/components/table/ex/theme.js'
 
-// G1-a 阶段 scss 未创建，四个尺寸变量由自检容器内联声明（值与 table.scss 镜像一致）
+// G1-a 阶段 scss 未创建，五个尺寸变量由自检容器内联声明（值与 table.scss /
+// root.scss 镜像一致；--mu-control-height-small 镜像 root.scss .mu-root,.mu-light
+// 块定义，20261105 二轮新增，夹具自含不依赖页面根作用域）
 const SIZE_VARS =
-  '--row-height: 36px; --head-row-height: 36px; --cell-padding: 8px; --cell-line-height: 20px;'
+  '--row-height: 36px; --head-row-height: 36px; --cell-padding: 8px; --cell-line-height: 20px; --mu-control-height-small: 24px;'
 
 // colors 固定色板独立口径（A6.1：色名集合 = tag.scss:28-45 色类体系，gray 不入）
 const EXPECTED_BASE_COLORS = [
@@ -238,7 +241,7 @@ export const checks = [
     }
   },
   {
-    name: 'readSnapshot：快照 20 固定字段齐全，颜色/字号/字体/尺寸形态正确',
+    name: 'readSnapshot：快照 21 固定字段齐全，颜色/字号/字体/尺寸形态正确',
     fn: () =>
       withFixture('', fixture => {
         const probe = createProbe(fixture)
@@ -249,7 +252,7 @@ export const checks = [
           'bgNormal', 'bgFill', 'bgStripe', 'bgStrong', 'bgDisabled',
           'selectBg', 'hoverBg', 'primaryColor', 'gray'
         ]
-        const pxKeys = { rowHeight: 36, headHeight: 36, cellPadding: 8, cellLineHeight: 20 }
+        const pxKeys = { rowHeight: 36, headHeight: 36, cellPadding: 8, cellLineHeight: 20, controlHeightSmall: 24 }
 
         for (const key of colorKeys) {
           assertValidCssColor(snapshot[key], `快照.${key}`)
@@ -267,16 +270,16 @@ export const checks = [
 
         assert(snapshot.colors && typeof snapshot.colors === 'object', '快照.colors 缺失')
 
-        // 20 固定字段（14 色 + 字号/字体 + 4 尺寸）+ colors map = 21 键
+        // 21 固定字段（14 色 + 字号/字体 + 5 尺寸）+ colors map = 22 键
         const fixedCount = colorKeys.length + 2 + Object.keys(pxKeys).length
-        assert(fixedCount === 20, `固定字段计数口径应为 20，实际 ${fixedCount}`)
+        assert(fixedCount === 21, `固定字段计数口径应为 21，实际 ${fixedCount}`)
         assert(
           Object.keys(snapshot).length === fixedCount + 1,
-          `快照应含 ${fixedCount + 1} 个键（20 固定字段 + colors），实际 ${Object.keys(snapshot).length}`
+          `快照应含 ${fixedCount + 1} 个键（21 固定字段 + colors），实际 ${Object.keys(snapshot).length}`
         )
 
         probe.remove()
-        return `${Object.keys(snapshot).length} 键：20 固定字段（14 色 + 字号/字体 + 4 尺寸）+ colors`
+        return `${Object.keys(snapshot).length} 键：21 固定字段（14 色 + 字号/字体 + 5 尺寸）+ colors`
       })
   },
   {
