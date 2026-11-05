@@ -47,6 +47,7 @@
 - [table 列类型体系 v2：list/link 兼容壳/text.link](./project/table-column-types-v2.md) `convention` `code@b3528d7`：text.link 链色单行、list 条目列 column 级 link + label 键、link 兼容壳委托 list、双端数组仅 list 支持。
 - [table-ex recordsVersion 行高粘性契约](./project/table-ex-recordsversion-height-contract.md) `convention` `code@worktree(2026-11-05)`：精算缓存按行快照跳过；就地改 records 须 bump recordsVersion，否则行高不更新。
 - table-ex 新增绘制特征同步自检断言 `convention` `code@worktree(2026-11-06)`：新增/改变画布绘制须同批改写 demo self-checks/painter.js 像素断言，否则恒败。
+- demo self-checks 直引 ex/ 内部模块 `convention` `code@worktree(2026-11-06)`：移动/改名 src/components/table/ex/ 文件须同步 demo self-checks 12 文件的 import。
 
 ## Global
 
