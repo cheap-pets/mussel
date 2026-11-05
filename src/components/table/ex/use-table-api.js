@@ -11,7 +11,7 @@ import { cellRectAt } from './painter'
 /**
  * @param {Object} ctx host 袋（读取 props, scrollEl, canvasEl, displayRows,
  *   treeOptions, layout, getPainter, rowGeometry, getThemeWatcher, spans,
- *   invalidateRow, selectedKey, genRecordKey, getLastRelayout）
+ *   invalidateRow, selectedKey, selectedCell, genRecordKey, getLastRelayout）
  * @returns {{ scrollToRecord, getLayoutInfo, getThemeSnapshot, getCellRect }}
  */
 export function useTableApi (ctx) {
@@ -83,6 +83,9 @@ export function useTableApi (ctx) {
       contentHeight: cur.contentHeight,
       rowHeight: cur.rowHeight,
       headHeight: cur.headHeight,
+      // 单元格选中内省（20261105-table-ex-cell-select 验证锚点，getCellRect 同
+      // 先例；additive 字段，消费方按需读取）
+      selectedCell: ctx.selectedCell.value ? { ...ctx.selectedCell.value } : null,
       viewRows: { ...cur.viewRows },
       rowGeometryMode: ctx.rowGeometry.mode,
       lastPaint: painter?.lastPaint ? { ...painter.lastPaint } : null,

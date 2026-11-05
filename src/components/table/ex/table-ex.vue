@@ -82,11 +82,13 @@
   import { isCellEditable, createEditorController } from './editor'
 
   // 功能纵切 composables（C1 拆分；组装顺序见各步骤注释，TDZ 约束：useCellTooltip
-  // 先于 useTreeRows，host.relayout 前向槽在 useRelayout 后覆盖）
+  // 先于 useTreeRows，useCellSelect 居 9 与 10 之间（清除 watch 先于 relayout
+  // 合并 watch flush），host.relayout 前向槽在 useRelayout 后覆盖）
   import { useCellTooltip } from './use-cell-tooltip'
   import { usePaintState } from './use-paint-state'
   import { usePointer } from './use-pointer'
   import { useCellClick } from './use-cell-click'
+  import { useCellSelect } from './use-cell-select'
   import { useRelayout } from './use-relayout'
   import { useTableInstances } from './use-table-instances'
   import { useTableApi } from './use-table-api'
@@ -182,6 +184,10 @@
   // 以本值归一（hoverMode none 恒 null）
   const hoverItem = shallowRef(null)
   const cursor = ref('default')
+  // 单元格选中（20261105-table-ex-cell-select）：{ row, col } | null 锚格坐标
+  // （合并区域经 resolveSpanCell 归一）；paintState.selectedCell 在 syncPaintState
+  // 同步，getLayoutInfo 暴露内省；useCellSelect 编排置清与键盘通道
+  const selectedCell = shallowRef(null)
 
   // —— 模块实例槽（useTableInstances / useRelayout 经 host setter 写入） ——
   // 文本测量实例（onMounted 创建；行高估高/精算与绘制折行单一事实源，A2.2）
@@ -232,6 +238,7 @@
     hover,
     hoverItem,
     cursor,
+    selectedCell,
     getPreparedColumns: () => preparedColumns.value,
     getScrollEl: () => scrollEl.value,
     getLayout: () => layout.value,
@@ -383,6 +390,11 @@
   const pointerApi = usePointer(host)
   Object.assign(host, pointerApi)
   const { onPointerMove, onPointerLeave, onPointerDown } = pointerApi
+
+  // 9.5 单元格选中（selectedCell 已在 shell 声明，本步不回填）：清除 watch 先于
+  // useRelayout 合并 watch flush（pre watcher 按创建 id 排序），同 tick 先清旧
+  // 选中格再整幅重绘，避免 relayout 帧残留选中描边
+  Object.assign(host, useCellSelect(host))
 
   // 10. 布局重算/滚动/尺寸响应 + 三个源 watch；末尾覆盖 host.relayout 前向槽
   const relayoutApi = useRelayout(host)

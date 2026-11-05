@@ -3,14 +3,14 @@
  *
  * paintState 持久状态（G2-a 契约：原地变更后 invalidate/draw 即以新状态重绘；
  * 组装扩展 A2.1/A2.2：displayRows/flatInfo/expandedKeys/editable/
- * isCellEditableFn/measure/wrapCache/itemHits）+ syncPaintState / redraw /
- * invalidate / invalidateRow 四个壳级重绘入口。
+ * isCellEditableFn/measure/wrapCache/itemHits；20261105-table-ex-cell-select 增
+ * selectedCell）+ syncPaintState / redraw / invalidate / invalidateRow 四个壳级重绘入口。
  */
 /**
  * @param {Object} ctx host 袋（读取 props, emit, displayRows, flatRows, spans,
  *   treeExpanded, wiredColumns, getMeasure, getWrapCache, selectedKey, hover,
- *   hoverItem, getEditingCellRef, resizeGuideX, getThemeWatcher, cellEditableOf,
- *   resolveRecordKey, getPainter）
+ *   hoverItem, getEditingCellRef, resizeGuideX, selectedCell, getThemeWatcher,
+ *   cellEditableOf, resolveRecordKey, getPainter）
  * @returns {{ paintState, syncPaintState, redraw, invalidate, invalidateRow }}
  */
 export function usePaintState (ctx) {
@@ -47,7 +47,9 @@ export function usePaintState (ctx) {
     hover: null,
     hoverItem: null,
     editingCell: null,
-    resizeGuideX: null
+    resizeGuideX: null,
+    // 单元格选中（20261105-table-ex-cell-select）：{ row, col } | null 锚格坐标
+    selectedCell: null
   }
 
   function syncPaintState () {
@@ -85,6 +87,8 @@ export function usePaintState (ctx) {
     paintState.hoverItem = props.hoverMode === 'none' ? null : ctx.hoverItem.value
     paintState.editingCell = ctx.getEditingCellRef()
     paintState.resizeGuideX = ctx.resizeGuideX.value
+    // 单元格选中（20261105-table-ex-cell-select）：与 hover 同级原地同步（G2-a）
+    paintState.selectedCell = ctx.selectedCell.value
     paintState.theme = ctx.getThemeWatcher()?.snapshot ?? paintState.theme
   }
 

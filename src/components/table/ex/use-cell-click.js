@@ -126,15 +126,25 @@ export function useCellClick (ctx) {
     // check 翻转后 nextTick 重绘该行（A3 数据契约①）
     if (toggled) nextTick(() => ctx.invalidateRow(hit.rowIndex))
 
-    // 先发完整选中/cell-click 链再开编辑，父级一次收到全部事件，选中态与编辑态一致
-    if (resolveCellClickOpen({ hit, cellEditable: ctx.cellEditableOf(col) }).openEditor) {
+    // 先发完整选中/cell-click 链再开编辑，父级一次收到全部事件，选中态与编辑态一致。
+    // 单元格选中（20261105-table-ex-cell-select）：可编辑格点击让位编辑态（清除选中），
+    // 不可编辑格点击置选中（点击是选中唯一入口）
+    const { openEditor } = resolveCellClickOpen({ hit, cellEditable: ctx.cellEditableOf(col) })
+
+    if (openEditor) {
+      ctx.clearCellSelection?.()
       openEditorAt(hit, record, col)
+    } else {
+      ctx.selectCell?.(hit.rowIndex, hit.colIndex)
     }
   }
 
   /** R5：空白延伸区点击（行有效、x 越出列区右缘）仅选中行——同 resolveCellClick
-      的选中事件序（key → record），不发 cell-click（无对应列），check/树槽/编辑不适用 */
+      的选中事件序（key → record），不发 cell-click（无对应列），check/树槽/编辑不适用；
+      点击空白延伸区清除单元格选中（裁定 4） */
   function selectRowOnly (record) {
+    ctx.clearCellSelection?.()
+
     const recordKey = ctx.resolveRecordKey(record)
 
     if (recordKey !== ctx.selectedKey.value) emit('update:selected-record-key', recordKey)
@@ -153,6 +163,8 @@ export function useCellClick (ctx) {
     const col = hit.colIndex >= 0 ? ctx.wiredColumns.value[hit.colIndex] : null
 
     if (hit.isHeader) {
+      // 表头点击清除单元格选中（裁定 4：表头非选中通道）
+      ctx.clearCellSelection?.()
       emitHeaderClick(col)
 
       return

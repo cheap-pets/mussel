@@ -854,7 +854,7 @@ export const checks = [
     })
   },
   {
-    name: 'hover 编辑感知：可编辑格 1px 主色描边贴格线内侧（不与格线重叠），非可编辑/关闭/none 无描边',
+    name: 'hover 编辑感知：可编辑格 1px 主色描边贴格线内侧（不与格线重叠），非可编辑/关闭 → 灰描边，none 无描边',
     fn: () => withCanvas(canvas => {
       const painter = createPainter({ canvas })
       const isEditable = col => col.field === 'name'
@@ -896,13 +896,15 @@ export const checks = [
       assertPixel(canvas, 130, 36, row0Stroke, '行 0 顶缘描边（格内无行线）', 2)
       assertPixel(canvas, 130, 35, THEME.borderColorSoft, 'header 底边框不被描边覆盖')
 
-      // 同 hover 落在不可编辑列（金额 col 3）：仅行带无描边
+      // 同 hover 落在不可编辑列（金额 col 3）：左缘灰描边（非主色，浅灰贴格缘）
       drawRegion(canvas.getContext('2d'), makeState({ hover: { row: 0, col: 3 }, editable: true, isCellEditableFn: isEditable }), null)
-      assertPixel(canvas, 300, 50, row0Band, '非可编辑列无描边', 2)
+      assertPixel(canvas, 300, 50, THEME.borderColorSoft, '非可编辑列 hover 左缘灰描边（非主色）', 2)
+      assertPixel(canvas, 310, 50, row0Band, '非可编辑列内邻无描边（行带）', 2)
 
-      // editable=false：无描边
+      // editable=false：全部列不可编辑 → 灰描边（无主色）
       drawRegion(canvas.getContext('2d'), makeState({ hover: { row: 0, col: 1 }, isCellEditableFn: isEditable }), null)
-      assertPixel(canvas, 60, 50, row0Band, 'editable 关闭无描边', 2)
+      assertPixel(canvas, 60, 50, THEME.borderColorSoft, 'editable 关闭 hover 左缘灰描边（无主色）', 2)
+      assertPixel(canvas, 180, 50, row0Band, 'editable 关闭内邻无描边（行带）', 2)
 
       // hoverMode none：无高亮无描边
       drawRegion(canvas.getContext('2d'), makeState({ hover: { row: 0, col: 1 }, editable: true, isCellEditableFn: isEditable, hoverMode: 'none' }), null)
@@ -910,7 +912,7 @@ export const checks = [
 
       painter.dispose()
 
-      return '描边随 editable+isCellEditableFn 开合、贴格线内侧不压格线（浮层盒仍整格），hoverMode=none 抑制'
+      return '描边随 editable+isCellEditableFn 开合、贴格线内侧不压格线（浮层盒仍整格），非可编辑/关闭 → 灰描边，hoverMode=none 抑制'
     })
   },
   {
