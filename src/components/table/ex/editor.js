@@ -34,7 +34,7 @@ import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../../form/index.js'
 // - 画布 pointerdown（editing 中先提交再续行）与容器滚动：调 editor.commit()
 // - 卸载：editor.destroy()（onUnmounted）
 
-/** 不可编辑的列类型（A6）；link/list 条目列不可编辑（list 对齐 link，link 为其兼容壳）；button/progress 为 canvas 专属展示类型；image 为 img 别名；icon 为纯展示类型（20261105-table-ex-icon-column） */
+/** 不可编辑的列类型（A6）；link/list 条目列不可编辑（list 对齐 link，link 为其兼容壳）；progress 为 canvas 专属展示类型，button 已入列类型注册表（20261105-column-button-type）但仍不可编辑；image 为 img 别名；icon 为纯展示类型（20261105-table-ex-icon-column） */
 export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check', 'link', 'list', 'button', 'progress', 'icon']
 
 /** 编辑器类型 → mussel 输入组件；textarea 为原生元素 tag（INPUT_TYPES.memo 约定） */

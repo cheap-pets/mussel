@@ -10,6 +10,7 @@ import { NumberColumn, CurrencyColumn } from './number'
 import { LinkColumn } from './link'
 import { ListColumn } from './list'
 import { TagColumn } from './tag'
+import { ButtonColumn } from './button'
 import { ImageColumn } from './image'
 import { IconColumn } from './icon'
 
@@ -28,6 +29,7 @@ const ColumnTypes = {
   link: LinkColumn,
   list: ListColumn,
   tag: TagColumn,
+  button: ButtonColumn,
   img: ImageColumn,
   image: ImageColumn,
   icon: IconColumn

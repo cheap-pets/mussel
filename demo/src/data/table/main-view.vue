@@ -13,7 +13,7 @@
 
     <demo-section
       title="列类型"
-      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / list / tag / img / icon；enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes"
+      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / list / tag / img / icon / button；enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes"
       wide>
       <mu-table
         :columns="typeColumns"
@@ -55,6 +55,26 @@
         style="margin-top: 12px"
         @cell-item-click="logItemClick('link 兼容列')($event)" />
       <span class="demo-log">link 兼容列点击日志：{{ compatClickLog || '（点击 link 条目后记录）' }}</span>
+    </demo-section>
+
+    <demo-section
+      title="button 列"
+      note="column.buttons 数组或函数定义按钮 { caption, icon, color, disabled }（文本优先）；color 仅 4 色名；column.link: true 整列 link 形态"
+      wide>
+      <mu-table
+        :columns="buttonColumns"
+        :records="buttonRecords"
+        key-field="id"
+        @cell-item-click="logButtonClick('button 列')($event)" />
+      <span class="demo-log">cell-item-click 日志：{{ buttonClickLog || '（点击按钮后记录）' }}</span>
+
+      <mu-table
+        :columns="buttonLinkColumns"
+        :records="buttonRecords"
+        key-field="id"
+        style="margin-top: 12px"
+        @cell-item-click="logButtonClick('链接按钮列')($event)" />
+      <span class="demo-log">链接按钮列点击日志：{{ buttonLinkClickLog || '（点击按钮后记录）' }}</span>
     </demo-section>
 
     <demo-section
@@ -348,6 +368,57 @@ const columns = [
       if (source === 'list 全 text 列') listClickLog.value = text
       else if (source === 'list 全 link 列') listLinkClickLog.value = text
       else compatClickLog.value = text
+    }
+  }
+
+  // —— button 列（20261105-column-button-type）：两表同源数据，pill / link 形态各渲染一遍 ——
+  // color 夹具覆盖 4 色内（primary/secondary/danger）与超出色 'warning'
+  // （canvas 17 色名，MuButton color validator 外 → 回退缺省形态）
+
+  const buttonRecords = [
+    {
+      id: 1,
+      name: '多按钮 / color',
+      buttons: [
+        { caption: '主色', color: 'primary' },
+        { caption: '次色', color: 'secondary' },
+        { caption: '危险', color: 'danger' },
+        { caption: '超出色回退', color: 'warning' }
+      ]
+    },
+    {
+      id: 2,
+      name: '禁用 / 图标',
+      buttons: [
+        { caption: '禁用', disabled: true },
+        { icon: 'clock' },
+        { caption: '文本优先', icon: 'clock' }
+      ]
+    }
+  ]
+
+  const buttonColumns = [
+    { caption: '名称', field: 'name', width: '120px' },
+    { caption: '按钮', field: 'buttons', type: 'button', width: '320px', buttons: record => record.buttons }
+  ]
+
+  const buttonLinkColumns = [
+    { caption: '名称', field: 'name', width: '120px' },
+    { caption: '链接按钮', field: 'buttons', type: 'button', link: true, width: '320px', buttons: record => record.buttons }
+  ]
+
+  const buttonClickLog = ref('')
+  const buttonLinkClickLog = ref('')
+
+  function logButtonClick (source) {
+    return payload => {
+      const text =
+        `${source} record.id=${payload.record?.id}` +
+        ` column.field=${payload.column?.field}` +
+        ` button=${JSON.stringify(payload.button)}`
+
+      if (source === 'button 列') buttonClickLog.value = text
+      else buttonLinkClickLog.value = text
     }
   }
 

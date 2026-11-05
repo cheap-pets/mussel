@@ -9,6 +9,7 @@
         :records="records"
         :selected-record-key="selectedKey"
         key-field="id"
+        style="height: 500px;"
         @update:selected-record-key="key => (selectedKey = key)"
         @cell-click="onCellClick" />
       <p class="ex-basic__tip">
@@ -40,6 +41,7 @@
         :fixed-left-columns="2"
         key-field="id"
         resizable
+        style="height: 500px"
         @update:order-by="value => (orderBy = value)" />
       <p class="ex-basic__tip">
         当前 orderBy：{{ orderBy || '（空）' }}（排序由父级执行后传回，组件不改动数据）
@@ -59,7 +61,7 @@
         <mu-radio-group
           v-model="hoverMode"
           :options="['row', 'column', 'cross', 'cell', 'none']" />
-        <mu-switch v-model="striped" caption="striped" />
+        <mu-switch v-model="striped" label="striped" />
       </div>
       <mu-table-ex
         :columns="basicColumns"
@@ -67,6 +69,7 @@
         :gridlines="gridlines"
         :hover-mode="hoverMode"
         :striped="striped"
+        style="height: 500px"
         key-field="id" />
     </demo-section>
   </demo-page>
@@ -194,8 +197,8 @@
 <style>
   .ex-basic__tip {
     margin: 8px 0 0;
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .ex-basic__controls {
@@ -203,7 +206,9 @@
     flex-wrap: wrap;
     gap: 8px 20px;
     align-items: center;
+
     margin-bottom: 12px;
+
     font-size: var(--mu-font-size-small);
   }
 </style>

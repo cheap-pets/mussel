@@ -68,9 +68,10 @@ function linkItemCountOf (col, record, recordNumber, value, emit, maxItems) {
 }
 
 // P2-1 图形列清单（估高阶段行数恒 1，免 valueOf）：tag/check/img/icon 走横排
-// drawItems、progress/button 走 canvas 专属 drawCanvasKindContent，均单行垂直
-// 居中不折行；不含条目列 link/list（行数来自 render 计数）；数组值横排呈现恒
-// 1 行（与 A9 非条目列口径一致），不参与变高模式判定
+// drawItems、progress 走 canvas 专属 drawCanvasKindContent、button 经注册表 compile
+// 产 canvasKind 同走 drawCanvasKindContent，均单行垂直居中不折行；不含条目列
+// link/list（行数来自 render 计数）；数组值横排呈现恒 1 行（与 A9 非条目列口径
+// 一致），不参与变高模式判定
 const GRAPHIC_ITEM_TYPES = new Set(['tag', 'button', 'check', 'img', 'image', 'progress', 'icon'])
 
 /** 列级估高描述表（P2-4，循环前预计算）：isEntry = link/list 条目列；

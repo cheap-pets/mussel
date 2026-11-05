@@ -18,7 +18,12 @@
           v-on="item.events ?? {}"
           @mouseenter="setTitle($event.target, item.title)"
           @mouseleave="removeTitle($event.target)">
-          {{ item.text }}
+          <!-- text 恒生成文本 vnode 会占满默认插槽，组件条目（is 为组件对象）的
+               内部 slot fallback（如 mu-button 的 icon/caption）不渲染——text 为
+               null/undefined 时不生成文本节点，插槽落 fallback -->
+          <template v-if="item.text != null">
+            {{ item.text }}
+          </template>
         </component>
       </template>
       <template v-else>

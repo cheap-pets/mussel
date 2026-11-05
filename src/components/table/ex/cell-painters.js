@@ -3,6 +3,7 @@ import { ensureFn } from '@/utils/type'
 import { whenGlyphReady } from '@/icons'
 import { resolveColumnType } from '../column-types'
 import { resolveIconEntry } from '../column-types/icon'
+import { resolveColorName } from '../column-types/button'
 import { wrapLines, ellipsize, cellFontOf, MAX_LINES_LIMIT } from './text-wrap'
 import { createDisplayMapper } from '../mappings'
 import { EnumColumn } from '../column-types/enum'
@@ -70,8 +71,10 @@ const FALLBACK_LINE_HEIGHT = 18
 const EMPTY_BUTTON = {}
 
 // canvas 专属类型（A3.3）：不入 table 列类型注册表，prepareColumn 在
-// resolveColumnType 之前分发，drawCell 按 canvasKind 走 drawProgress/drawButton
-const CANVAS_ONLY_TYPES = { progress: true, button: true }
+// resolveColumnType 之前分发，drawCell 按 canvasKind 走 drawProgress；
+// button 已入注册表（column-types/button，20261105-column-button-type），
+// 经 compile 产 canvasKind: 'button' 同走 drawCanvasKindContent 分发
+const CANVAS_ONLY_TYPES = { progress: true }
 
 // —— img 异步加载缓存：src → { image, status: 'loading' | 'loaded' | 'failed' } ——
 
@@ -178,7 +181,7 @@ function clampLimit (value, fallback) {
   return Number.isFinite(n) ? Math.min(Math.max(n, 1), MAX_LINES_LIMIT) : fallback
 }
 
-// _render 构建：canvas 专属类型（progress/button）不经 resolveColumnType 产物
+// _render 构建：canvas 专属类型（progress）不经 resolveColumnType 产物
 // （回退 TextColumn 会绘制文本），直接产出 canvasKind render；普通类型 compile 优先，
 // 其次类型对象/函数自身作为 render
 function createColumnRender (column, type, canvasOnlyKind) {
@@ -189,17 +192,6 @@ function createColumnRender (column, type, canvasOnlyKind) {
       canvasKind: 'progress',
       value,
       progressOption: getProgressOption(record) ?? {}
-    })
-  }
-
-  if (canvasOnlyKind === 'button') {
-    const getButtons = ensureFn(column.buttons)
-
-    // link 形态标志列级声明（column.link），整列统一生效不落单条 button
-    return ({ record }) => ({
-      canvasKind: 'button',
-      buttons: getButtons(record) ?? [],
-      link: column.link === true || null
     })
   }
 
@@ -1208,13 +1200,8 @@ function drawLinkItems (ctx, rect, items, {
   }
 }
 
-// —— canvas 专属类型（A3.3） ——
-
-function colorNameOf (value, record) {
-  const name = typeof value === 'function' ? value(record) : value
-
-  return typeof name === 'string' && name ? name : 'primary'
-}
+// —— progress 绘制与 button 组绘制（A3.3 canvasKind 分发；button 已入列类型
+// 注册表，canvas 产物同走本节 drawCanvasKindContent） ——
 
 /** progress 条：轨道 bgStrong 8px 圆角 4 + 填充 colors[color].color + 百分比文本 */
 function drawProgress (ctx, rect, content, { padding, theme, record, measure, centerY }) {
@@ -1225,7 +1212,7 @@ function drawProgress (ctx, rect, content, { padding, theme, record, measure, ce
   const option = content.progressOption ?? {}
   const numeric = Number(content.value)
   const value = Number.isFinite(numeric) ? Math.min(Math.max(numeric, 0), 100) : 0
-  const colorName = colorNameOf(option.color, record)
+  const colorName = resolveColorName(option.color, record)
   const color = theme?.colors?.[colorName]?.color ?? theme?.primaryColor
   const showText = option.showText !== false
 
@@ -1424,7 +1411,7 @@ function ellipsizeButton (button, x, rightBound, font, measureFn, link, buttonHe
     （无 pill 几何）；caption-only（icon 恒 null）文字于条目起点 x，路径不变 */
 function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad) {
   const disabled = isTruthyAttr(button.disabled)
-  const colored = theme?.colors?.[colorNameOf(button.color, record)]
+  const colored = theme?.colors?.[resolveColorName(button.color, record)]
   const textColor = disabled
     ? (theme?.textColorMuted || theme?.gray)
     : (hovered
@@ -1461,7 +1448,7 @@ function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, fo
 // （icon 恒 null）文字路径不变（pill 内 TAG_PADDING_X 内距）
 function drawButtonPill (ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad, buttonHeight) {
   const disabled = isTruthyAttr(button.disabled)
-  const colored = theme?.colors?.[colorNameOf(button.color, record)]
+  const colored = theme?.colors?.[resolveColorName(button.color, record)]
   const y = centerY - buttonHeight / 2
   const inverted = hovered && !disabled
 

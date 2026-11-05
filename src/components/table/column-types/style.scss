@@ -50,6 +50,17 @@
   vertical-align: middle;
 }
 
+// button 列（20261105-column-button-type）：条目 = mu-button（恒 small），仅补
+// 组内水平间距与基线对齐，三态/hover/disabled/link 视觉全部复用 button.scss
+// 现成规则（组间距 8px 与 canvas drawButton 组间距同值）
+.mu-table__button-cell > .mu-button {
+  vertical-align: middle;
+
+  & + .mu-button {
+    margin-left: var(--cell-padding);
+  }
+}
+
 // list 列（含 link 兼容列）：竖排每项单行、超长省略；link 项 a 元素常态无下划线、
 // hover 下划线；disabled 条目置灰并拦截点击。条目不复用 .mu-link（atomic 导入序下
 // 其 color: var(--mu-primary-color) 会覆盖 text-{color} 染色），颜色走 text-{color} 类
