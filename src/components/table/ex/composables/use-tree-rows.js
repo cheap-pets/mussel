@@ -12,8 +12,8 @@
  */
 import { computed, shallowRef, watch } from 'vue'
 
-import { TREE_INDENT } from './constants'
-import { buildChildrenIndex, buildFlatRows, resolveInitialExpandedKeys, toggleKey } from './tree'
+import { TREE_INDENT } from '../shared/constants'
+import { buildChildrenIndex, buildFlatRows, resolveInitialExpandedKeys, toggleKey } from '../shared/tree'
 
 /**
  * 创建树接线（组件壳 setup 内调用；内部注册三条树 watch）。

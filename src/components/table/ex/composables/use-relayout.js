@@ -5,8 +5,8 @@
 import { ref, watch } from 'vue'
 import { throttle } from 'throttle-debounce'
 
-import { computeViewCols, computeViewRows, relayout as computeLayout } from './layout'
-import { createFrameScheduler } from './interactions'
+import { computeViewCols, computeViewRows, relayout as computeLayout } from '../geometry/layout'
+import { createFrameScheduler } from '../interaction/interactions'
 
 /**
  * @param {Object} ctx host 袋（读取 scrollEl, canvasEl, props, preparedColumns,

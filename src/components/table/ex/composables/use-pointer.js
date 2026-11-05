@@ -3,9 +3,9 @@
  * 决策函数来自 interactions.js，本 composable 执行状态更新与光标切换；
  * clickGuard/startResize 来自 use-column-resize 经 host 转发）。
  */
-import { resolveCursor, hitTest, resolveItemClick, resolvePointerdown } from './interactions'
-import { resolveSpanCell } from './spans'
-import { isEditButtonHit } from './edit-button'
+import { resolveCursor, hitTest, resolveItemClick, resolvePointerdown } from '../interaction/interactions'
+import { resolveSpanCell } from '../spans/spans'
+import { isEditButtonHit } from '../interaction/edit-button'
 
 /**
  * @param {Object} ctx host 袋（读取 canvasEl, props, layout, wiredColumns,

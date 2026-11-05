@@ -17,16 +17,16 @@ import {
   resolveSpanCell,
   spanRectOf,
   regionsForRows
-} from '@/components/table/ex/spans.js'
-import { prepareColumn } from '@/components/table/ex/cell-painters.js'
+} from '@/components/table/ex/spans/spans.js'
+import { prepareColumn } from '@/components/table/ex/cell-paint/cell-painters.js'
 import {
   computeRowHeights,
   ensureRowMeasured,
   createUniformRowGeometry,
   createVariableRowGeometry
-} from '@/components/table/ex/row-geometry.js'
-import { cellRectAt } from '@/components/table/ex/painter.js'
-import { editorGridlineFlagsOf } from '@/components/table/ex/editor.js'
+} from '@/components/table/ex/geometry/row-geometry.js'
+import { cellRectAt } from '@/components/table/ex/table-paint/painter.js'
+import { editorGridlineFlagsOf } from '@/components/table/ex/editing/editor.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)

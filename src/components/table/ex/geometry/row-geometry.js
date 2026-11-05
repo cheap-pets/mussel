@@ -1,8 +1,8 @@
 /** table-ex 行几何策略（02-design.md A2.2/A2.3）：等高/变高双模式统一接口，
     painter / layout / interactions / editor 全部经几何接口取行坐标，不感知模式 */
-import { estimateLineCount, wrapLines, cellFontOf } from './text-wrap'
-import { CELL_PADDING_FALLBACK } from './constants'
-import { spanHeightRoleOf } from './spans'
+import { estimateLineCount, wrapLines, cellFontOf } from '../shared/text-wrap'
+import { CELL_PADDING_FALLBACK } from '../shared/constants'
+import { spanHeightRoleOf } from '../spans/spans'
 import { createFenwick } from './fenwick'
 
 // uniform：O(1) 算式（topAt = i×h、visibleRange 与 layout.computeViewRows 恒等）；

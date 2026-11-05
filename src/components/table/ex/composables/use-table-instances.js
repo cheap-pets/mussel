@@ -6,9 +6,9 @@
  */
 import { nextTick, onMounted, onUnmounted } from 'vue'
 
-import { createThemeWatcher, createTextMeasurer } from './theme'
-import { createWrapCache } from './text-wrap'
-import { createPainter } from './painter'
+import { createThemeWatcher, createTextMeasurer } from '../shared/theme'
+import { createWrapCache } from '../shared/text-wrap'
+import { createPainter } from '../table-paint/painter'
 
 /**
  * @param {Object} ctx host 袋（读取 scrollEl, stickyEl, rootEl, canvasEl,

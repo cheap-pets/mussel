@@ -1,5 +1,5 @@
 /** 分区 1 单元格区域 + 分区 3 固定列 + spanKeepRows 帧机制 */
-import { drawCell } from './cell-painters.js'
+import { drawCell } from '../cell-paint/cell-painters.js'
 import {
   rowBackground,
   recordKeyOf,
@@ -8,7 +8,7 @@ import {
   viewRowsRange,
   isEmptyRange
 } from './paint-utils'
-import { regionsForRows, spanRegionRect, spanCellKindOf } from './spans.js'
+import { regionsForRows, spanRegionRect, spanCellKindOf } from '../spans/spans.js'
 import { isGridlineMode, paintGridlines } from './paint-gridlines'
 
 // 本帧 region pass 实际绘制过内容的锚行集合（§5.3 trimItemHits keepRows）：paint()

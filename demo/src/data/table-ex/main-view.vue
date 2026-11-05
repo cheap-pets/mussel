@@ -343,7 +343,7 @@
   // S1：真实组件本地接入（相对路径，不依赖 S2 全局注册；见 02-design.md S1 行）
   import { MuTableEx } from '../../../../src/components/table/ex/index.js'
   // 调试句柄用：与组件同参重算平铺行数（树场景状态展示/e2e 断言入口）
-  import { buildChildrenIndex, buildFlatRows } from '../../../../src/components/table/ex/tree.js'
+  import { buildChildrenIndex, buildFlatRows } from '../../../../src/components/table/ex/shared/tree.js'
 
   // ---------- 调试句柄（契约见 02-design.md 改动清单 demo 行） ----------
   // 组件挂载前为占位对象（getCellRect 返回 null 防误用抛错）；onMounted 起替换为

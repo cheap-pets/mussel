@@ -3,7 +3,7 @@
  * 复制排除类型清单 / 复制文本提取 / 方向键 clamp / 选中格可见性滚动量，
  * 全纯函数、无壳状态（壳编排见 use-cell-select.js）。
  */
-import { resolveCellContent } from './cell-content'
+import { resolveCellContent } from '../cell-paint/cell-content'
 
 /** 复制排除类型（裁定 1，图形列无文本语义）：check（✓ 方框）/ button（pill）/
     progress（进度条）/ img・image（图片）/ icon（图标）。bool 列不入清单——canvas

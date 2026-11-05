@@ -13,8 +13,8 @@
 import { onUnmounted, watch } from 'vue'
 
 import { warn } from '@/utils/warn'
-import { resolveSpanCell } from './spans'
-import { resolveCellCopyText, resolveSelectionMove, resolveSelectionScroll } from './cell-selection'
+import { resolveSpanCell } from '../spans/spans'
+import { resolveCellCopyText, resolveSelectionMove, resolveSelectionScroll } from '../interaction/cell-selection'
 
 /** 剪贴板写入失败提示（warn once 去重，文案固定串；非安全上下文/无焦点环境降级） */
 const CLIPBOARD_WARN =

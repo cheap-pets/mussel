@@ -3,9 +3,9 @@
     （未注册名两边一致判失败——不绘制、不命中）且指针落在 editButtonRectOf 区矩形
     内（半开区间，与 interactions.isItemRectHit 同口径）；区矩形 = spanRectOf
     （合并区域为区域矩形，§5.3），为 painter 绘制与壳命中共用的单一事实源 */
-import { resolveIconEntry } from '../column-types/icon'
-import { editButtonRectOf } from './editor'
-import { spanRectOf } from './spans'
+import { resolveIconEntry } from '../../column-types/icon'
+import { editButtonRectOf } from '../editing/editor'
+import { spanRectOf } from '../spans/spans'
 
 /**
  * @param {Object} hit hitTest 产出（消费 x/y/rowIndex/colIndex）

@@ -33,9 +33,9 @@ import {
   resolveTreeToggle,
   createClickGuard,
   createFrameScheduler
-} from '@/components/table/ex/interactions.js'
-import { resolveTypeMinWidth } from '@/components/table/ex/layout.js'
-import { createUniformRowGeometry } from '@/components/table/ex/row-geometry.js'
+} from '@/components/table/ex/interaction/interactions.js'
+import { resolveTypeMinWidth } from '@/components/table/ex/geometry/layout.js'
+import { createUniformRowGeometry } from '@/components/table/ex/geometry/row-geometry.js'
 import { getPixelNumber } from '@/utils/size'
 
 function assertEqual (actual, expected, label) {

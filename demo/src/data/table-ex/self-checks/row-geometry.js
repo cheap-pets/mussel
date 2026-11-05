@@ -21,8 +21,8 @@ import {
   computeAnchorShift,
   computeRowHeights,
   ensureRowMeasured
-} from '@/components/table/ex/row-geometry.js'
-import { OVERSCAN, computeViewRows } from '@/components/table/ex/layout.js'
+} from '@/components/table/ex/geometry/row-geometry.js'
+import { OVERSCAN, computeViewRows } from '@/components/table/ex/geometry/layout.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)

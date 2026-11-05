@@ -1,6 +1,6 @@
 /** 分区 4 表头 + 表头测量缓存 */
-import { createMeasureCache } from './theme.js'
-import { ellipsize } from './text-wrap.js'
+import { createMeasureCache } from '../shared/theme.js'
+import { ellipsize } from '../shared/text-wrap.js'
 import {
   CELL_PADDING_FALLBACK,
   CHECK_SIZE,
@@ -8,7 +8,7 @@ import {
   CHECK_FONT_SIZE,
   FONT_SIZE_FALLBACK,
   FONT_FAMILY_FALLBACK
-} from './constants.js'
+} from '../shared/constants.js'
 import { viewportColX, withClip, sortDirectionOf } from './paint-utils'
 
 // 排序图标：th 内 absolute right: cell-padding、font-size 18px（table.scss

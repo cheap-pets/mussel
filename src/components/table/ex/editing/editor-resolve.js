@@ -1,8 +1,8 @@
 /** 编辑器类型 / props / 开值 / 提交值规整链（editor.js 入口按关注点拆出） */
 import { isObject } from '@/utils/type'
 
-import { selectOptionsFromMappings } from '../mappings'
-import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../../form/index.js'
+import { selectOptionsFromMappings } from '../../mappings'
+import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../../../form/index.js'
 
 /** 不可编辑的列类型（A6）；link/list 条目列不可编辑（list 对齐 link，link 为其兼容壳）；progress 为 canvas 专属展示类型，button 已入列类型注册表（20261105-column-button-type）但仍不可编辑；image 为 img 别名；icon 为纯展示类型（20261105-table-ex-icon-column） */
 export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check', 'link', 'list', 'button', 'progress', 'icon']

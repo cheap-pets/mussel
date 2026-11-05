@@ -1,6 +1,6 @@
 /** 单元格文本绘制共享原语：光学居中锚 / 水平锚 / 单多行落地 / 行高 / 下划线 y（cell-painters 簇共享层） */
-import { wrapLines, ellipsize, cellFontOf } from './text-wrap'
-import { FONT_FAMILY_FALLBACK } from './constants'
+import { wrapLines, ellipsize, cellFontOf } from '../shared/text-wrap'
+import { FONT_FAMILY_FALLBACK } from '../shared/constants'
 
 // 生产路径 theme 快照必含以下字段（readSnapshot）；缺省值仅为容错
 const FALLBACK_LINE_HEIGHT = 18

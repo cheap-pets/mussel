@@ -9,8 +9,8 @@
 import { shallowRef } from 'vue'
 
 import { getPixelNumber } from '@/utils/size'
-import { computePrefixSums, resolveTypeMinWidth } from './layout'
-import { createClickGuard, resolveResizeWidth, RESIZE_MIN_WIDTH } from './interactions'
+import { computePrefixSums, resolveTypeMinWidth } from '../geometry/layout'
+import { createClickGuard, resolveResizeWidth, RESIZE_MIN_WIDTH } from '../interaction/interactions'
 
 /**
  * 创建列宽拖拽（组件壳 setup 内调用）。

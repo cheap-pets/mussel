@@ -1,14 +1,14 @@
 /** canvasKind 分发绘制：progress 条 + button 组（pill/link 两形态） */
-import { resolveColorName } from '../column-types/button'
-import { resolveIconEntry } from '../column-types/icon'
+import { resolveColorName } from '../../column-types/button'
+import { resolveIconEntry } from '../../column-types/icon'
 import {
   TAG_HEIGHT,
   TAG_PADDING_X,
   TAG_RADIUS,
   BUTTON_ICON_SIZE,
   CONTROL_HEIGHT_SMALL_FALLBACK
-} from './constants'
-import { ellipsize, cellFontOf } from './text-wrap'
+} from '../shared/constants'
+import { ellipsize, cellFontOf } from '../shared/text-wrap'
 import { fontFamilyOf, measureOf, centeredTextAnchor, linkUnderlineY } from './cell-text'
 import { tagFontOf, itemsStartX, isTruthyAttr } from './item-painters'
 import { drawIconGlyph } from './icon-image'

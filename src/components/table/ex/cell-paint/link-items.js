@@ -1,6 +1,6 @@
 /** link/list 列竖排绘制 */
-import { ellipsize, cellFontOf } from './text-wrap'
-import { ELLIPSIS } from './constants'
+import { ellipsize, cellFontOf } from '../shared/text-wrap'
+import { ELLIPSIS } from '../shared/constants'
 import { measureOf, centeredTextAnchor, linkUnderlineY, cellLineHeightOf } from './cell-text'
 import { isLinkEntryHovered, isTruthyAttr, linkHoverColorOf, linkTextColorOf } from './item-painters'
 

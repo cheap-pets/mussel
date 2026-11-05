@@ -1,9 +1,9 @@
 /** 列准备与取值链：prepareColumn / resolveCellContent / 行数上限 */
 import { ensureFn } from '@/utils/type'
-import { resolveColumnType } from '../column-types'
-import { createDisplayMapper } from '../mappings'
-import { EnumColumn } from '../column-types/enum'
-import { MAX_LINES_LIMIT } from './text-wrap'
+import { resolveColumnType } from '../../column-types'
+import { createDisplayMapper } from '../../mappings'
+import { EnumColumn } from '../../column-types/enum'
+import { MAX_LINES_LIMIT } from '../shared/text-wrap'
 import { cellLineHeightOf } from './cell-text'
 
 // 取值链（与 DOM 版同款：base/table.vue internalColumns 列准备、base/table-row.vue cells 取值）：

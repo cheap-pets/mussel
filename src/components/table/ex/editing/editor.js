@@ -7,7 +7,7 @@ import {
   ROW_TOP_INSET,
   ROW_HEIGHT_FALLBACK,
   EDIT_BUTTON_AREA
-} from './constants'
+} from '../shared/constants'
 import {
   EDITOR_COMPONENTS,
   isCellEditable,

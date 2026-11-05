@@ -24,8 +24,8 @@ import {
   colAt,
   findResizeColumn,
   relayout
-} from '@/components/table/ex/layout.js'
-import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table/ex/row-geometry.js'
+} from '@/components/table/ex/geometry/layout.js'
+import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table/ex/geometry/row-geometry.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)

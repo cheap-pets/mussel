@@ -10,9 +10,9 @@
  * 坐标口径（与 layout.js 一致，02-design.md A5）：x/y 为相对 canvas 视口的
  * 坐标（getBoundingClientRect 差值换算，不用 offsetX）。
  */
-import { colAt, findResizeColumn, rowAt } from './layout'
-import { expandableAt } from './tree'
-import { TREE_INDENT, CELL_PADDING_FALLBACK } from './constants'
+import { colAt, findResizeColumn, rowAt } from '../geometry/layout'
+import { expandableAt } from '../shared/tree'
+import { TREE_INDENT, CELL_PADDING_FALLBACK } from '../shared/constants'
 
 /** 拖拽调宽的下限缺省（02-design.md A5：col.minWidth ?? 40） */
 export const RESIZE_MIN_WIDTH = 40

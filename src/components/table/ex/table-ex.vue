@@ -74,24 +74,24 @@
   import { warn } from '@/utils/warn'
   import { resolveSelectedKey } from '../utils'
 
-  import { createRowGeometryController } from './row-geometry-controller'
-  import { useTreeRows } from './use-tree-rows'
-  import { useColumnResize } from './use-column-resize'
-  import { buildSpans } from './spans'
-  import { prepareColumn } from './cell-painters'
-  import { isCellEditable, createEditorController } from './editor'
+  import { createRowGeometryController } from './geometry/row-geometry-controller'
+  import { useTreeRows } from './composables/use-tree-rows'
+  import { useColumnResize } from './composables/use-column-resize'
+  import { buildSpans } from './spans/spans'
+  import { prepareColumn } from './cell-paint/cell-painters'
+  import { isCellEditable, createEditorController } from './editing/editor'
 
   // 功能纵切 composables（C1 拆分；组装顺序见各步骤注释，TDZ 约束：useCellTooltip
   // 先于 useTreeRows，useCellSelect 居 9 与 10 之间（清除 watch 先于 relayout
   // 合并 watch flush），host.relayout 前向槽在 useRelayout 后覆盖）
-  import { useCellTooltip } from './use-cell-tooltip'
-  import { usePaintState } from './use-paint-state'
-  import { usePointer } from './use-pointer'
-  import { useCellClick } from './use-cell-click'
-  import { useCellSelect } from './use-cell-select'
-  import { useRelayout } from './use-relayout'
-  import { useTableInstances } from './use-table-instances'
-  import { useTableApi } from './use-table-api'
+  import { useCellTooltip } from './composables/use-cell-tooltip'
+  import { usePaintState } from './composables/use-paint-state'
+  import { usePointer } from './composables/use-pointer'
+  import { useCellClick } from './composables/use-cell-click'
+  import { useCellSelect } from './composables/use-cell-select'
+  import { useRelayout } from './composables/use-relayout'
+  import { useTableInstances } from './composables/use-table-instances'
+  import { useTableApi } from './composables/use-table-api'
 
   import './table-ex.scss'
 

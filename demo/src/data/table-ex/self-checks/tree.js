@@ -19,7 +19,7 @@ import {
   expandableAt,
   resolveInitialExpandedKeys,
   toggleKey
-} from '@/components/table/ex/tree.js'
+} from '@/components/table/ex/shared/tree.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)

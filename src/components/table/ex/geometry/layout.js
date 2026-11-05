@@ -1,6 +1,6 @@
 /** table-ex 布局计算（02-design.md A2/A3/A5）：全纯函数，不持状态、不触 DOM、不写回入参 */
 import { getPixelNumber } from '@/utils/size'
-import { resolveColumnType } from '../column-types'
+import { resolveColumnType } from '../../column-types'
 
 /** 滚动虚拟窗口上下各多绘的行数（02-design.md A3） */
 export const OVERSCAN = 2

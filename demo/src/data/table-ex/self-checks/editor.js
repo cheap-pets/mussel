@@ -47,10 +47,10 @@ import {
   isInDropdownPanel,
   resolveBlurFallback,
   createEditorController
-} from '@/components/table/ex/editor.js'
+} from '@/components/table/ex/editing/editor.js'
 import { resolveIconEntry } from '@/components/table/column-types/icon.js'
 import { install, icons } from '@/icons/index.js'
-import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table/ex/row-geometry.js'
+import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table/ex/geometry/row-geometry.js'
 import { MuInput, MuSelect, MuDateInput, MuSwitch } from '@/components/form/index.js'
 
 function assert (cond, message) {

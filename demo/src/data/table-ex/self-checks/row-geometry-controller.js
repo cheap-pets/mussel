@@ -11,9 +11,9 @@
  * - 重扫 rebuild → mergeMeasuredHeights 混入真值 → totalHeight 不回缩（#15）。
  * measure 为注入参数（等宽假测量），模块级零 canvas 依赖。
  */
-import { createRowGeometryController } from '@/components/table/ex/row-geometry-controller.js'
-import { buildSpans } from '@/components/table/ex/spans.js'
-import { createWrapCache } from '@/components/table/ex/text-wrap.js'
+import { createRowGeometryController } from '@/components/table/ex/geometry/row-geometry-controller.js'
+import { buildSpans } from '@/components/table/ex/spans/spans.js'
+import { createWrapCache } from '@/components/table/ex/shared/text-wrap.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)

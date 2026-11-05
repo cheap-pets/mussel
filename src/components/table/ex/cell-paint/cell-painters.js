@@ -4,9 +4,9 @@ import {
   CELL_PADDING_FALLBACK,
   ROW_TOP_INSET,
   ROW_HEIGHT_FALLBACK
-} from './constants'
-import { cellFontOf } from './text-wrap'
-import { expandableAt, isExpandedKey } from './tree'
+} from '../shared/constants'
+import { cellFontOf } from '../shared/text-wrap'
+import { expandableAt, isExpandedKey } from '../shared/tree'
 import { resolveCellContent, capMaxLinesOf } from './cell-content'
 import { drawTextValue } from './cell-text'
 import { drawItems, itemClassOf } from './item-painters'

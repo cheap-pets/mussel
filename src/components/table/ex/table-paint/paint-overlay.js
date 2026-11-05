@@ -1,8 +1,8 @@
 /** 分区 5 覆盖层（hover 编辑感知/不可编辑灰描边/单元格选中描边/树箭头主色/编辑按钮） */
-import { drawTreeArrow, drawIconGlyph } from './cell-painters.js'
-import { editorRectOf, editorGridlineFlagsOf, editButtonRectOf } from './editor.js'
-import { resolveIconEntry } from '../column-types/icon'
-import { expandableAt, isExpandedKey } from './tree.js'
+import { drawTreeArrow, drawIconGlyph } from '../cell-paint/cell-painters.js'
+import { editorRectOf, editorGridlineFlagsOf, editButtonRectOf } from '../editing/editor.js'
+import { resolveIconEntry } from '../../column-types/icon'
+import { expandableAt, isExpandedKey } from '../shared/tree.js'
 import {
   TREE_INDENT,
   CELL_PADDING_FALLBACK,
@@ -10,9 +10,9 @@ import {
   ROW_HEIGHT_FALLBACK,
   EDIT_BUTTON_AREA,
   EDIT_BUTTON_ICON_SIZE
-} from './constants.js'
+} from '../shared/constants.js'
 import { viewportColX, viewportRowY, rowsOf, recordKeyOf, withClip } from './paint-utils'
-import { regionAt, spanRectOf } from './spans.js'
+import { regionAt, spanRectOf } from '../spans/spans.js'
 
 // —— 分区 5：覆盖层 ——
 

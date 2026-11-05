@@ -4,12 +4,12 @@ import {
   TAG_PADDING_X,
   BUTTON_ICON_SIZE,
   CELL_PADDING_FALLBACK
-} from './constants'
-import { cellFontOf, wrapLines } from './text-wrap'
+} from '../shared/constants'
+import { cellFontOf, wrapLines } from '../shared/text-wrap'
 import { resolveCellContent, capMaxLinesOf } from './cell-content'
 import { resolveItemKind, itemClassOf, tagFontOf, imageLayoutSize } from './item-painters'
 import { getImageEntry } from './icon-image'
-import { resolveIconEntry } from '../column-types/icon'
+import { resolveIconEntry } from '../../column-types/icon'
 import { buttonHeightOf, EMPTY_BUTTON } from './canvas-kind-painters'
 
 // —— 单元格 tooltip 求值（title 列协议，02-design.md 20261030-table-ex-cell-tooltip） ——

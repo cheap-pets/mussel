@@ -48,10 +48,10 @@ import {
   requestIconImage,
   drawIconGlyph,
   linkHoverColorOf
-} from '../../../../../src/components/table/ex/cell-painters.js'
+} from '../../../../../src/components/table/ex/cell-paint/cell-painters.js'
 import { resolveIconEntry } from '../../../../../src/components/table/column-types/icon.js'
 import { install, icons, whenGlyphReady } from '../../../../../src/icons/index.js'
-import { createWrapCache } from '../../../../../src/components/table/ex/text-wrap.js'
+import { createWrapCache } from '../../../../../src/components/table/ex/shared/text-wrap.js'
 import { LinkColumn } from '../../../../../src/components/table/column-types/link.js'
 import { ListColumn } from '../../../../../src/components/table/column-types/list.js'
 import { TagColumn } from '../../../../../src/components/table/column-types/tag.js'

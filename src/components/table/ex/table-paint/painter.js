@@ -13,7 +13,7 @@ import {
   withClip,
   eraseClipRegion
 } from './paint-utils.js'
-import { coveredAnchorOf, regionAt, regionsForRows } from './spans.js'
+import { coveredAnchorOf, regionAt, regionsForRows } from '../spans/spans.js'
 
 // 单 canvas 分区绘制，分区顺序固定（后区不透明覆盖前区）：
 // 1 表体滚动区（可视行 × 滚动区可视列，逐格背景→内容）；2 网格线

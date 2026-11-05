@@ -6,8 +6,8 @@ import {
   TAG_HEIGHT,
   TAG_PADDING_X,
   TAG_RADIUS
-} from './constants'
-import { ellipsize, cellFontOf } from './text-wrap'
+} from '../shared/constants'
+import { ellipsize, cellFontOf } from '../shared/text-wrap'
 import { fontFamilyOf, measureOf, centeredTextAnchor, linkUnderlineY, cellLineHeightOf } from './cell-text'
 import { requestImage, drawIconGlyph } from './icon-image'
 

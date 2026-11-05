@@ -5,11 +5,11 @@
  */
 import { nextTick, watch } from 'vue'
 
-import { resolveCellClick, resolveCellClickOpen, resolveHeaderClick, resolveItemClick, resolveTreeToggle } from './interactions'
-import { regionAt, spanRectOf } from './spans'
-import { computeEditorStyle, resolveEditorType } from './editor'
-import { resolveCellContent } from './cell-painters'
-import { isEditButtonHit } from './edit-button'
+import { resolveCellClick, resolveCellClickOpen, resolveHeaderClick, resolveItemClick, resolveTreeToggle } from '../interaction/interactions'
+import { regionAt, spanRectOf } from '../spans/spans'
+import { computeEditorStyle, resolveEditorType } from '../editing/editor'
+import { resolveCellContent } from '../cell-paint/cell-painters'
+import { isEditButtonHit } from '../interaction/edit-button'
 
 /**
  * @param {Object} ctx host 袋（读取 emit, props, wiredColumns, flatRows,

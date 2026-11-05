@@ -33,7 +33,7 @@ import {
   resolveObserverRoots,
   snapshotsEqual,
   withAlpha
-} from '../../../../../src/components/table/ex/theme.js'
+} from '../../../../../src/components/table/ex/shared/theme.js'
 
 // G1-a 阶段 scss 未创建，五个尺寸变量由自检容器内联声明（值与 table.scss /
 // root.scss 镜像一致；--mu-control-height-small 镜像 root.scss .mu-root,.mu-light

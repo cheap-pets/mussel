@@ -13,10 +13,10 @@
  */
 import { inject, shallowRef } from 'vue'
 import { TOOLTIP_SHOW_DELAY } from '@/components/tooltip/tooltip-core'
-import { CELL_PADDING_FALLBACK, ROW_TOP_INSET, TREE_INDENT } from './constants'
-import { resolveTooltipTarget } from './interactions'
-import { resolveCellTooltip } from './cell-painters'
-import { regionAt, spanRectOf } from './spans'
+import { CELL_PADDING_FALLBACK, ROW_TOP_INSET, TREE_INDENT } from '../shared/constants'
+import { resolveTooltipTarget } from '../interaction/interactions'
+import { resolveCellTooltip } from '../cell-paint/cell-painters'
+import { regionAt, spanRectOf } from '../spans/spans'
 
 /**
  * @param {Object} ctx host 袋（读取 rootEl, props, wiredColumns, flatRows,

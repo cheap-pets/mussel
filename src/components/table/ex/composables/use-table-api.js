@@ -6,7 +6,7 @@
 import { watch } from 'vue'
 
 import { warn } from '@/utils/warn'
-import { cellRectAt } from './painter'
+import { cellRectAt } from '../table-paint/painter'
 
 /**
  * @param {Object} ctx host 袋（读取 props, scrollEl, canvasEl, displayRows,
