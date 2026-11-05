@@ -1,0 +1,165 @@
+/** 单元格文本绘制共享原语：光学居中锚 / 水平锚 / 单多行落地 / 行高 / 下划线 y（cell-painters 簇共享层） */
+import { wrapLines, ellipsize, cellFontOf } from './text-wrap'
+import { FONT_FAMILY_FALLBACK } from './constants'
+
+// 生产路径 theme 快照必含以下字段（readSnapshot）；缺省值仅为容错
+const FALLBACK_LINE_HEIGHT = 18
+
+/** 测量回调解析：注入 measure 优先（theme.js 测量缓存）；未注入回退 ctx 直测无缓存 */
+export function measureOf (ctx, measure) {
+  if (typeof measure === 'function') return measure
+
+  return (text, font) => {
+    ctx.font = font
+    return ctx.measureText(text).width
+  }
+}
+
+// —— 文本光学居中锚（20261029 问题 1） ——
+// canvas 'middle' 基线按 em 方框中点定位，与 DOM 行框（字体 ascent/descent，
+// 如 .mu-tag 的 inline-flex + line-height:1）居中口径不同，CJK 字形群系统性
+// 偏上（实测 12px 雅黑链偏 1~2px）。改以 alphabetic 基线 + fontBoundingBox
+// 度量半差补偿，使字形框中点对齐槽位 centerY（与 DOM 行框居中同口径）。
+// 偏移按 font 串缓存取整（主题字体有限，无需淘汰；与既有整数锚一致防亚像素模糊）。
+// 度量不可得（fontBoundingBoxAscent/Descent 缺失或 ctx 无 measureText——自检
+// width-only stub ctx）时回退 { y: centerY, baseline: 'middle' }，行为等同修复前。
+// 注意一：fontBoundingBox 口径随 ctx.textBaseline 当前值变化（middle 状态下返回
+// 相对 em 中点的换算值而非 ascent/descent 本身），测量必须在 alphabetic 状态下取。
+// 注意二：缓存键并入 ctx 实例级「可度量」能力位——真 canvas 与 width-only stub
+// 同 font 串时能力不同，防止真 ctx 条目污染 stub 的回退路径。
+const textAnchorCache = new Map()
+
+/**
+ * ctx 可度量探测（实例级一次）：measureText('') 在 alphabetic 状态下能取到
+ * 有限 fontBoundingBoxAscent/Descent 才走补偿路径。
+ */
+function probeTextMetricsCapable (ctx) {
+  if (typeof ctx.measureText !== 'function') return false
+
+  const prevBaseline = ctx.textBaseline
+
+  ctx.textBaseline = 'alphabetic'
+  const metrics = ctx.measureText('')
+  ctx.textBaseline = prevBaseline
+
+  return Number.isFinite(metrics?.fontBoundingBoxAscent) && Number.isFinite(metrics?.fontBoundingBoxDescent)
+}
+
+/**
+ * 文本光学居中锚：全部单元格文本 fillText 站点共用（槽位 centerY 的字形
+ * 光学居中换算）。
+ * @param {CanvasRenderingContext2D} ctx 已设 ctx.font 的绘制上下文
+ * @param {Number} centerY 槽位中心（drawCell 槽位锚）
+ * @returns {{ y: Number, baseline: 'alphabetic' | 'middle' }}
+ */
+export function centeredTextAnchor (ctx, centerY) {
+  if (ctx.__muTextAnchorCapable == null) {
+    ctx.__muTextAnchorCapable = probeTextMetricsCapable(ctx)
+  }
+
+  const key = ctx.__muTextAnchorCapable ? ctx.font : `stub:${ctx.font}`
+  let offset = textAnchorCache.get(key)
+
+  if (offset === undefined) {
+    offset = null
+
+    if (ctx.__muTextAnchorCapable) {
+      const prevBaseline = ctx.textBaseline
+
+      ctx.textBaseline = 'alphabetic'
+      const metrics = ctx.measureText('')
+      ctx.textBaseline = prevBaseline
+      offset = Math.round((metrics.fontBoundingBoxAscent - metrics.fontBoundingBoxDescent) / 2)
+    }
+
+    textAnchorCache.set(key, offset)
+  }
+
+  // 度量缺失（null）→ 'middle' 原行为
+  return offset == null
+    ? { y: centerY, baseline: 'middle' }
+    : { y: centerY + offset, baseline: 'alphabetic' }
+}
+
+/** 文本水平锚点：center 锚扣本格右缘列线占用 rightInset（painter 注入），left/right 不动 */
+export function textAnchorX (rect, align, padding, rightInset) {
+  return align === 'right'
+    ? rect.x + rect.width - padding
+    : align === 'center'
+      ? rect.x + (rect.width - rightInset) / 2
+      : rect.x + padding
+}
+
+// 文本取值落地（A3.5 统一规则；A9 后无数组形态——数组值在 resolveCellContent
+// 门控落占位，不会进入本函数）：
+// - 字符串 + maxLines>1 → wrapLines 多行（与 row-geometry 同一函数与缓存；
+//   measure 未注入时回退单行省略），首行槽位锚起排
+// - 其余 → 单行省略（垂直锚 = 槽位中心 centerY，与多行首行同式）
+// color 为 canvas 通道色名查表产物（drawDisplayText 直取 content.color）
+export function drawTextValue (ctx, rect, display, align, {
+  padding, theme, color, measure, wrapCache, maxLines, centerY, rightInset
+}) {
+  const contentWidth = rect.width - padding * 2
+
+  if (contentWidth <= 0) return
+
+  const text = String(display)
+  const lineHeight = cellLineHeightOf(theme)
+
+  if (maxLines > 1 && typeof measure === 'function' && text) {
+    const { lines } = wrapLines({
+      text, font: cellFontOf(theme), maxWidth: contentWidth, measure, cache: wrapCache, maxLines
+    })
+
+    ctx.fillStyle = color || theme?.textColor
+    ctx.textAlign = align
+
+    // 首行光学居中锚（问题 1），后续行 += lineHeight
+    const anchor = centeredTextAnchor(ctx, centerY)
+
+    ctx.textBaseline = anchor.baseline
+
+    let y = anchor.y
+
+    for (const line of lines) {
+      ctx.fillText(line, textAnchorX(rect, align, padding, rightInset), y)
+      y += lineHeight
+    }
+
+    return
+  }
+
+  // 单行省略：截断经注入 measure 走缓存（P0-1）
+  const { text: single } = ellipsize({
+    text,
+    font: cellFontOf(theme),
+    maxWidth: contentWidth,
+    measure: measureOf(ctx, measure)
+  })
+
+  if (!single) return
+
+  ctx.fillStyle = color || theme?.textColor
+  ctx.textAlign = align
+
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+  ctx.fillText(single, textAnchorX(rect, align, padding, rightInset), anchor.y)
+}
+
+/** link 悬停下划线 y（drawLinkEntry 与 drawItemText 共用单函数防公式漂移）：
+    基线（alphabetic 锚，问题 1）下 2px——CJK descent ≈ 0.12em < 2px，不下穿字形 */
+export function linkUnderlineY (anchorY) {
+  return anchorY + 2
+}
+
+/** 行框高（--cell-line-height 快照缺省回退 18）：三条文本绘制路径同源 */
+export function cellLineHeightOf (theme) {
+  return theme?.cellLineHeight || FALLBACK_LINE_HEIGHT
+}
+
+/** 字体族回退（theme 快照缺 fontFamily 时用兜底族；check/tag/progress 同源） */
+export function fontFamilyOf (theme) {
+  return theme?.fontFamily || FONT_FAMILY_FALLBACK
+}

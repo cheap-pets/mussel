@@ -52,3 +52,26 @@ export const CONTROL_HEIGHT_SMALL_FALLBACK = 24
     16px 图标居中其中 */
 export const EDIT_BUTTON_AREA = 24
 export const EDIT_BUTTON_ICON_SIZE = 16
+
+// —— 视觉常量（镜像现有 DOM 规格，非新增设计值；自 cell-painters.js 迁入，
+// 拆分后跨 item-painters / canvas-kind-painters / cell-tooltip / link-items 共享）——
+
+// tag pill —— components/tag/tag.scss .mu-tag（height 20 / padding 0 8 /
+// font-size 12 / 圆角 4px）。TAG_HEIGHT / TAG_PADDING_X 为 tag 绘制链专用
+// （drawTag、items 命中矩形）；button 不再与 tag 同构（20261105 二轮）——
+// pill 高度经 buttonHeightOf 取 controlHeightSmall 快照，仅 link 形态命中框
+// 沿用 TAG_HEIGHT（column.link = true 时整列改纯文字链形态，无 pill 内边距）
+
+/** tag pill 高度（镜像 tag.scss .mu-tag height: 20px） */
+export const TAG_HEIGHT = 20
+
+/** tag pill 水平内距（镜像 tag.scss .mu-tag padding: 0 8px） */
+export const TAG_PADDING_X = 8
+
+/** tag pill 圆角（镜像 tag.scss .mu-tag 圆角 4px） */
+export const TAG_RADIUS = 4
+
+/** button 图标（20261105-table-ex-icon-column）：12px 同 TAG_FONT_SIZE 档；
+    caption 与 icon 互斥、有文本 icon 忽略（不解析不绘制），icon-only pill
+    宽 = 高 = controlHeightSmall 快照（图标水平垂直居中）、link 形态宽 = 图标本体 */
+export const BUTTON_ICON_SIZE = 12

@@ -68,48 +68,28 @@
 </template>
 
 <script setup>
-  import { computed, inject, nextTick, onMounted, onUnmounted, shallowRef, watch, ref } from 'vue'
-  import { throttle } from 'throttle-debounce'
+  import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 
   import { autoIncrementKeyBuilder } from '@/utils/key-builder'
   import { warn } from '@/utils/warn'
-  import { TOOLTIP_SHOW_DELAY } from '@/components/tooltip/tooltip-core'
-
   import { resolveSelectedKey } from '../utils'
 
-  import { createThemeWatcher, createTextMeasurer } from './theme'
-  import { createWrapCache } from './text-wrap'
   import { createRowGeometryController } from './row-geometry-controller'
   import { useTreeRows } from './use-tree-rows'
   import { useColumnResize } from './use-column-resize'
-  import { buildSpans, regionAt, resolveSpanCell, spanRectOf } from './spans'
-  import { computeViewCols, computeViewRows, relayout as computeLayout } from './layout'
-  import { CELL_PADDING_FALLBACK, ROW_TOP_INSET, TREE_INDENT } from './constants'
-  import { prepareColumn, resolveCellContent, resolveCellTooltip } from './cell-painters'
-  import { cellRectAt, createPainter } from './painter'
+  import { buildSpans } from './spans'
+  import { prepareColumn } from './cell-painters'
+  import { isCellEditable, createEditorController } from './editor'
 
-  import {
-    createFrameScheduler,
-    hitTest,
-    resolveCellClick,
-    resolveCellClickOpen,
-    resolveCursor,
-    resolveHeaderClick,
-    resolveItemClick,
-    resolvePointerdown,
-    resolveTooltipTarget,
-    resolveTreeToggle
-  } from './interactions'
-
-  import {
-    computeEditorStyle,
-    createEditorController,
-    editButtonRectOf,
-    isCellEditable,
-    resolveEditorType
-  } from './editor'
-
-  import { resolveIconEntry } from '../column-types/icon'
+  // 功能纵切 composables（C1 拆分；组装顺序见各步骤注释，TDZ 约束：useCellTooltip
+  // 先于 useTreeRows，host.relayout 前向槽在 useRelayout 后覆盖）
+  import { useCellTooltip } from './use-cell-tooltip'
+  import { usePaintState } from './use-paint-state'
+  import { usePointer } from './use-pointer'
+  import { useCellClick } from './use-cell-click'
+  import { useRelayout } from './use-relayout'
+  import { useTableInstances } from './use-table-instances'
+  import { useTableApi } from './use-table-api'
 
   import './table-ex.scss'
 
@@ -194,48 +174,129 @@
 
   const layout = shallowRef(null)
 
-  // —— 单元格 tooltip 状态（title 列协议，20261030-table-ex-cell-tooltip）——
-  // 必须声明于 useTreeRows() 之前：其 immediate tree watch 在 setup 期同步执行
-  // relayoutAndRedraw → hideCellTooltip（读 tooltipShowTimer/tooltipCell/
-  // tooltipController），晚于此处的 let/const 即触发 TDZ（knowledge
-  // watch-immediate-callback-tdz）。tooltipEnabled/watch 依赖 wiredColumns，
-  // 留在下方 tooltip 编排段 ——
-  const $mussel = inject('$mussel', null)
-  // 控制器缺失（宿主未走完整 install / SSR）→ 优雅降级为无 tooltip（调度短路）
-  const tooltipController = $mussel?.tooltip
-  const tooltipAnchorEl = shallowRef()
-  // 当前去重键 { row, col } | null（格身份比较，与 hover 同式）
-  let tooltipCell = null
-  let tooltipShowTimer = 0
+  const selectedKey = computed(() => resolveSelectedKey(props))
 
-  // —— 树接线（A2.4，C1 拆出 use-tree-rows）：childrenIndex/flatRows/displayRows/
-  // wiredColumns/缩进回调/toggle + 三条树 watch。
-  // immediate tree watch 在 setup 期触发 relayout，scrollEl 未挂载早退，无顺序问题 ——
+  const hover = shallowRef(null)
+  // 条目悬停（20261027 问题 7）：{ row, col, kind, index, disabled } | null，
+  // onPointerMove 经 resolveItemClick 求值；paintState.hoverItem 在 syncPaintState
+  // 以本值归一（hoverMode none 恒 null）
+  const hoverItem = shallowRef(null)
+  const cursor = ref('default')
 
+  // —— 模块实例槽（useTableInstances / useRelayout 经 host setter 写入） ——
+  // 文本测量实例（onMounted 创建；行高估高/精算与绘制折行单一事实源，A2.2）
+  let measureFn = null
+  let wrapCacheObj = null
+
+  let painter = null
+  let themeWatcher = null
+  // 最近一次 relayout 统计（getLayoutInfo 暴露，调试面板显示）
+  let lastRelayout = null
+  // veil 编辑格行列（20261027 问题 6）：editor 控制器的 editing 不含 row/col，
+  // 行列由壳承载；paintState.editingCell 在 syncPaintState 以本值归一
+  let editingCellRef = null
+
+  /** 行 key：树模式 = 树 key 字段（treeProps.key ?? keyField ?? 'id'，箭头展开态
+      与 toggle 同口径）；普通模式 = keyField ?? 自增键 */
+  function resolveRecordKey (record) {
+    if (props.tree) {
+      const { key } = treeOptions.value
+
+      return record?.[key]
+    }
+
+    return props.keyField ? record?.[props.keyField] : genRecordKey(record)
+  }
+
+  /** 可编辑格判定（hover 描边 / cursor text / 单击开编辑共用） */
+  function cellEditableOf (column) {
+    return isCellEditable({ editable: props.editable, column })
+  }
+
+  // —— host 袋（单一 ctx 载体，各 composable 以 useX(host) 调用、返回值
+  // Object.assign(host, api) 并入；响应式状态对象直传，shell 普通 let 经
+  // get*/set* 读写；尚未创建的成员一律 host 惰性读取，setup 期唯一同步
+  // 前向调用 = tree immediate watch 的 host.relayout() 空实现）——
+  const host = {
+    props,
+    emit,
+    rootEl,
+    scrollEl,
+    stickyEl,
+    canvasEl,
+    spacerEl,
+    editorEl,
+    preparedColumns,
+    layout,
+    selectedKey,
+    hover,
+    hoverItem,
+    cursor,
+    getPreparedColumns: () => preparedColumns.value,
+    getScrollEl: () => scrollEl.value,
+    getLayout: () => layout.value,
+    setLayout: next => {
+      layout.value = next
+    },
+    getCanvasEl: () => canvasEl.value,
+    getPainter: () => painter,
+    setPainter: value => {
+      painter = value
+    },
+    getThemeWatcher: () => themeWatcher,
+    setThemeWatcher: value => {
+      themeWatcher = value
+    },
+    getMeasure: () => measureFn,
+    setMeasure: value => {
+      measureFn = value
+    },
+    getWrapCache: () => wrapCacheObj,
+    setWrapCache: value => {
+      wrapCacheObj = value
+    },
+    getLastRelayout: () => lastRelayout,
+    setLastRelayout: value => {
+      lastRelayout = value
+    },
+    getEditingCellRef: () => editingCellRef,
+    setEditingCellRef: value => {
+      editingCellRef = value
+    },
+    resolveRecordKey,
+    cellEditableOf,
+    genRecordKey,
+    // useTreeRows 运行时提交通道（editor 步骤赋值前不触达）
+    commit: () => host.editor.commit(),
+    // 前向槽：useTreeRows immediate watch setup 期调用等价早退（原实现
+    // scrollEl/themeWatcher 为空在 relayoutAndRedraw 头部早退），useRelayout 后覆盖
+    relayout: () => {},
+    // tooltipEnabled computed 声明在 useTreeRows 之后（依赖 wiredColumns），
+    // usePointer 运行时经本惰性键读取
+    isTooltipEnabled: () => tooltipEnabled.value
+  }
+
+  // 1. tooltip 壳级编排（须先于 useTreeRows：immediate tree watch 的运行时链路
+  //    依赖 hideCellTooltip；tooltipAnchorEl 为模板 ref 绑定）
+  const tooltipApi = useCellTooltip(host)
+  Object.assign(host, tooltipApi)
+  const { tooltipAnchorEl, tooltipController } = tooltipApi
+
+  // 2. 树接线（immediate tree watch 触发 host.relayout() 空实现，等价早退）
+  const treeApi = useTreeRows(host)
+  Object.assign(host, treeApi)
   const {
-    treeExpanded,
     treeOptions,
     flatRows,
     displayRows,
     wiredColumns,
     treeIndentsOf,
-    applyTreeToggle,
     expandAll,
     collapseAll,
     getTreeExpandedKeys
-  } = useTreeRows({
-    props,
-    emit,
-    getPreparedColumns: () => preparedColumns.value,
-    commit: () => editor.commit(),
-    relayout: () => relayoutAndRedraw(),
-    recomputeViewWindows,
-    redraw,
-    getScrollEl: () => scrollEl.value,
-    getLayout: () => layout.value
-  })
+  } = treeApi
 
-  // —— 合并单元格（02-design.md §4）：SpansIndex computed，无合并恒 null（快路径） ——
+  // 3. 合并单元格（02-design.md §4）：SpansIndex computed，无合并恒 null（快路径）
   // 依赖：displayRows（records 引用/树展开收起）、wiredColumns（列集变化）、
   // spanMethod 引用、recordsVersion（就地改值通道）、orderBy（防御：父级只改
   // orderBy 未替换 records 引用时仍重算）。列宽调整 / 行高精算 / hover 不依赖，
@@ -261,10 +322,11 @@
     })
   })
 
-  // —— 行几何策略（A2.2，C1 拆出 row-geometry-controller）：uniform/variable
-  // 双模式几何、估高扫描输入签名（scanSignature）、精算缓存失效签名
-  // （measureSignature）、进窗精算/单行重估与锚定补偿 ——
+  host.spans = spans
 
+  // 4. 行几何策略（A2.2，C1 拆出 row-geometry-controller）：uniform/variable
+  // 双模式几何、估高扫描输入签名（scanSignature）、精算缓存失效签名
+  // （measureSignature）、进窗精算/单行重估与锚定补偿
   const rowGeometry = createRowGeometryController({
     getRows: () => displayRows.value,
     getColumns: () => wiredColumns.value,
@@ -282,41 +344,51 @@
     setLayout: next => {
       layout.value = next
     },
-    relayout: () => relayoutAndRedraw()
+    relayout: () => host.relayout()
   })
 
-  // —— 列宽拖拽（A5，C1 拆出 use-column-resize）：widthOverrides/clickGuard/
-  // startResize + move 临时几何 ——
+  host.rowGeometry = rowGeometry
 
-  const { resizeGuideX, clickGuard, widthOverrides, startResize, resetOverrides } = useColumnResize({
-    props,
-    emit,
-    getPreparedColumns: () => preparedColumns.value,
-    getLayout: () => layout.value,
-    setLayout: next => {
-      layout.value = next
-    },
-    getCanvasEl: () => canvasEl.value,
-    invalidate,
-    relayout: () => relayoutAndRedraw()
+  // 5. 列宽拖拽（A5，C1 拆出 use-column-resize）：widthOverrides/clickGuard/
+  // startResize/resetOverrides 并入 host 供 usePointer/useCellClick/useRelayout
+  // 运行时读取。host.invalidate 此刻未赋值——useColumnResize 只在拖拽 move
+  // 回调调用它，运行时已由步骤 6 赋值
+  Object.assign(host, useColumnResize(host))
+
+  // 6. painter 持久 state 组装 + redraw/invalidate/invalidateRow 重绘入口
+  Object.assign(host, usePaintState(host))
+
+  // 7. 编辑器（G2-c 契约；触发点 = 单击，A5.2）
+  const editor = createEditorController({
+    onCommit ({ record, recordIndex, column, value }) {
+      emit('update:cell-value', { record, recordIndex, column, value })
+
+      // A3 数据契约①：父级在事件处理器内同步就地改 record 后，nextTick 重绘该行；
+      // 多行列含行高重估 + 锚定，值形态变数组且当前 uniform 时触发模式升级（A2.2）
+      nextTick(() => {
+        rowGeometry.remeasureRow(recordIndex)
+        painter?.invalidateRow(recordIndex)
+      })
+    }
   })
 
-  // 文本测量实例（onMounted 创建；行高估高/精算与绘制折行单一事实源，A2.2）
-  let measureFn = null
-  let wrapCacheObj = null
+  host.editor = editor
 
-  const selectedKey = computed(() => resolveSelectedKey(props))
+  // 8. click 单一入口派发（表头/树槽/编辑按钮/条目/选中/check + 编辑开启）
+  const clickApi = useCellClick(host)
+  Object.assign(host, clickApi)
+  const { onClick } = clickApi
 
-  const hover = shallowRef(null)
-  // 条目悬停（20261027 问题 7）：{ row, col, kind, index, disabled } | null，
-  // onPointerMove 经 resolveItemClick 求值；paintState.hoverItem 在 syncPaintState
-  // 以本值归一（hoverMode none 恒 null）
-  const hoverItem = shallowRef(null)
-  const cursor = ref('default')
+  // 9. 指针交互（hover/hoverItem/cursor 已在 shell 声明并入 host，本步不回填）
+  const pointerApi = usePointer(host)
+  Object.assign(host, pointerApi)
+  const { onPointerMove, onPointerLeave, onPointerDown } = pointerApi
 
-  const yScrolled = ref(false)
-  const yScrolledEnd = ref(false)
-  const yOverflowed = ref(false)
+  // 10. 布局重算/滚动/尺寸响应 + 三个源 watch；末尾覆盖 host.relayout 前向槽
+  const relayoutApi = useRelayout(host)
+  Object.assign(host, relayoutApi)
+  host.relayout = relayoutApi.relayoutAndRedraw
+  const { onScroll, onResize, yScrolled, yScrolledEnd, yOverflowed } = relayoutApi
 
   const isEmpty = computed(() => !props.records?.length)
 
@@ -346,289 +418,17 @@
     return cur ? { width: `${cur.spacerWidth}px`, height: `${cur.spacerHeight}px` } : null
   })
 
-  // —— 模块实例（onMounted 创建） ——
+  // 11. 实例生命周期（onMounted/onUnmounted 内部注册，首帧 nextTick(host.relayout)）
+  const instancesApi = useTableInstances(host)
+  Object.assign(host, instancesApi)
+  const { refreshTheme } = instancesApi
 
-  let painter = null
-  let themeWatcher = null
-  // 最近一次 relayout 统计（getLayoutInfo 暴露，调试面板显示）
-  let lastRelayout = null
-  // veil 编辑格行列（20261027 问题 6）：editor 控制器的 editing 不含 row/col，
-  // 行列由壳承载；paintState.editingCell 在 syncPaintState 以本值归一
-  let editingCellRef = null
+  // 12. 暴露方法 + 选中 watch
+  const apiApi = useTableApi(host)
+  Object.assign(host, apiApi)
+  const { scrollToRecord, getLayoutInfo, getThemeSnapshot, getCellRect } = apiApi
 
-  // painter 持久 state（G2-a 契约：原地变更后 invalidate/draw 即以新状态重绘；
-  // paintState 组装扩展（A2.1/A2.2）：displayRows/flatInfo/expandedKeys/
-  // editable/isCellEditableFn/measure/wrapCache/itemHits）
-  const itemHits = new Map()
-
-  const paintState = {
-    dpr: 1,
-    layout: null,
-    theme: null,
-    records: props.records,
-    displayRows: null,
-    flatInfo: null,
-    expandedKeys: null,
-    spans: null,
-    editable: props.editable,
-    isCellEditableFn: null,
-    measure: null,
-    wrapCache: null,
-    itemHits,
-    columns: [],
-    recordsOffset: props.recordsOffset,
-    emit,
-    keyField: props.keyField,
-    getRecordKey: (record, row) => resolveRecordKey(record),
-    selectedKey: null,
-    headerChecked: props.headerChecked,
-    gridlines: props.gridlines,
-    hoverMode: props.hoverMode,
-    striped: props.striped,
-    orderBy: props.orderBy,
-    placeholder: props.placeholder,
-    hover: null,
-    hoverItem: null,
-    editingCell: null,
-    resizeGuideX: null
-  }
-
-  /** 行 key：树模式 = 树 key 字段（treeProps.key ?? keyField ?? 'id'，箭头展开态
-      与 toggle 同口径）；普通模式 = keyField ?? 自增键 */
-  function resolveRecordKey (record) {
-    if (props.tree) {
-      const { key } = treeOptions.value
-
-      return record?.[key]
-    }
-
-    return props.keyField ? record?.[props.keyField] : genRecordKey(record)
-  }
-
-  /** 可编辑格判定（hover 描边 / cursor text / 单击开编辑共用） */
-  function cellEditableOf (column) {
-    return isCellEditable({ editable: props.editable, column })
-  }
-
-  function syncPaintState () {
-    paintState.layout = layout.value
-    paintState.records = props.records
-    paintState.displayRows = displayRows.value
-    paintState.flatInfo = flatRows.value
-      ? {
-        levels: flatRows.value.levels,
-        hasChildren: flatRows.value.hasChildren,
-        parentKeys: flatRows.value.parentKeys,
-        expandable: flatRows.value.expandable
-      }
-      : null
-    paintState.spans = spans.value
-    paintState.expandedKeys = props.tree ? treeExpanded.value : null
-    paintState.editable = props.editable
-    paintState.isCellEditableFn = cellEditableOf
-    paintState.measure = measureFn
-    paintState.wrapCache = wrapCacheObj
-    paintState.columns = wiredColumns.value
-    paintState.recordsOffset = props.recordsOffset
-    paintState.keyField = props.keyField
-    paintState.selectedKey = selectedKey.value
-    paintState.headerChecked = props.headerChecked
-    paintState.gridlines = props.gridlines
-    paintState.hoverMode = props.hoverMode
-    paintState.striped = props.striped
-    paintState.orderBy = props.orderBy
-    paintState.placeholder = props.placeholder
-    paintState.hover = hover.value
-    // 条目悬停（问题 7）+ veil 编辑格（问题 6）。hoverMode none 总开关归一：
-    // 条目 hover 色在表体 pass（drawCell）绘制，不经 paintOverlay 的 hoverMode
-    // 门控，切到 none 后（指针不动）须由本处立即置 null
-    paintState.hoverItem = props.hoverMode === 'none' ? null : hoverItem.value
-    paintState.editingCell = editingCellRef
-    paintState.resizeGuideX = resizeGuideX.value
-    paintState.theme = themeWatcher?.snapshot ?? paintState.theme
-  }
-
-  function redraw () {
-    syncPaintState()
-    painter?.draw(paintState)
-  }
-
-  // 脏区重绘一律 immediate：painter 的 rAF 队列 apply 的是上次绘制时的 state 浅拷贝，
-  // 本壳以持久 state 原地变更后必须同步应用才能以新状态重绘（G2-a invalidate 契约）；
-  // 同帧多次调用各自独立应用，范围即脏带本身
-  function invalidate (region) {
-    syncPaintState()
-
-    return painter?.invalidate(region, { state: paintState, immediate: true }) ?? false
-  }
-
-  function invalidateRow (row) {
-    syncPaintState()
-
-    return painter?.invalidateRow(row, { state: paintState, immediate: true }) ?? false
-  }
-
-  // —— DPR 适配与布局重算（A2） ——
-
-  function syncCanvasSize (cssWidth, cssHeight) {
-    const canvas = canvasEl.value
-
-    if (!canvas) return
-
-    const dpr = window.devicePixelRatio || 1
-
-    paintState.dpr = dpr
-
-    const physicsWidth = Math.round(cssWidth * dpr)
-    const physicsHeight = Math.round(cssHeight * dpr)
-
-    if (canvas.width !== physicsWidth) canvas.width = physicsWidth
-    if (canvas.height !== physicsHeight) canvas.height = physicsHeight
-
-    canvas.style.width = `${cssWidth}px`
-    canvas.style.height = `${cssHeight}px`
-  }
-
-  /** 统一布局重算入口（A2 relayout()）：探针尺寸 → 变高候选全量快速估高 + 几何
-      重建/升级 → sticky/spacer 尺寸 → 列宽求解 → canvas 物理尺寸 → 可视窗口 → 整幅重绘。
-      估高需 contentWidth（列宽），先按首过几何解一次列宽再带几何重算（纯函数，成本可忽略） */
-  function relayoutAndRedraw () {
-    // tooltip 收起（状态失效类）：数据/几何变化即旧格提示过期（含 recordsVersion 通道）
-    hideCellTooltip()
-
-    const el = scrollEl.value
-
-    if (!el || !themeWatcher) return
-
-    const startedAt = performance.now()
-    const snapshot = themeWatcher.snapshot
-    const base = {
-      columns: preparedColumns.value,
-      rowCount: displayRows.value?.length ?? 0,
-      containerWidth: el.clientWidth,
-      containerHeight: el.clientHeight,
-      fixedLeftColumns: props.fixedLeftColumns ?? 0,
-      // 探针读取失败（变量未定义）时回退 table.scss 镜像缺省（兜底在消费方）
-      rowHeight: snapshot.rowHeight || 36,
-      headHeight: snapshot.headHeight || 36,
-      scrollTop: el.scrollTop,
-      scrollLeft: el.scrollLeft,
-      widthOverrides
-    }
-
-    // 首过：以现有几何（变高）/等高几何解列宽；scanDirty 时重建几何再算一次
-    let next = computeLayout({ ...base, rowGeometry: rowGeometry.currentGeometry(base) })
-    const { geometry, scanCount, rebuild } = rowGeometry.resolveForRelayout({
-      colWidths: next.colWidths,
-      theme: snapshot
-    })
-
-    if (rebuild) next = computeLayout({ ...base, rowGeometry: geometry })
-
-    layout.value = next
-
-    yOverflowed.value = next.contentHeight > next.stickyHeight + 0.5
-    yScrolled.value = next.scrollTop > 0.5
-    yScrolledEnd.value =
-      yScrolled.value && next.contentHeight - next.scrollTop - next.stickyHeight < 1
-
-    syncCanvasSize(next.stickyWidth, next.stickyHeight)
-
-    // relayout 出口统一精算（20261029 问题 2，onThemeChange 先例同款三连）：
-    // 估高对字符串多行列恒取 1 行下界，relayout 尾部只 redraw 会令行高/格线停在
-    // 估高位置；补可视行精算（uniform 模式零成本早退）+ 窗口重算 + 整幅重绘，
-    // 保证一切 relayout 出口的可视行高为真值、格线落在精算位置
-    rowGeometry.remeasureVisibleRows()
-    recomputeViewWindows()
-    redraw()
-
-    // relayout 计时（getLayoutInfo 暴露：lastPaint 只覆盖 paint()，本字段补齐
-    // 估高扫描/几何重建阶段的可见性，复核 2026-10-26 验证设施缺口）
-    lastRelayout = { elapsed: performance.now() - startedAt, scanCount, rebuild }
-  }
-
-  // 滚动路径不重跑 solveWidths（G1-b 契约）：直接以现有 colLefts 重算可视窗口
-  function recomputeViewWindows () {
-    const el = scrollEl.value
-    const cur = layout.value
-
-    if (!el || !cur) return
-
-    const scrollTop = el.scrollTop
-    const scrollLeft = el.scrollLeft
-
-    layout.value = {
-      ...cur,
-      scrollTop,
-      scrollLeft,
-      viewRows: computeViewRows({
-        scrollTop,
-        viewH: cur.viewH,
-        rowGeometry: cur.rowGeometry
-      }),
-      viewCols: computeViewCols({
-        scrollLeft,
-        viewW: cur.viewW,
-        colLefts: cur.colLefts,
-        fixedLeftColumns: cur.fixedCount
-      })
-    }
-  }
-
-  // —— 滚动 / 尺寸响应 ——
-
-  const scrollFrame = createFrameScheduler(() => {
-    rowGeometry.remeasureVisibleRows()
-    recomputeViewWindows()
-    redraw()
-  })
-
-  function onScroll () {
-    const el = scrollEl.value
-
-    if (!el) return
-
-    // 滚动即提交（A6，kaka SELECTED_CELL/SCROLL 同语义）
-    editor.commit()
-
-    // tooltip 收起（壳统一收起：锚点在 sticky 层内不随内容滚动，面板会停在旧视觉位置）
-    hideCellTooltip()
-
-    yScrolled.value = el.scrollTop > 0.5
-    yScrolledEnd.value =
-      yScrolled.value && el.scrollHeight - el.scrollTop - el.clientHeight < 1
-
-    // rAF 合帧：同帧多次 scroll 只重绘一次（A3）
-    scrollFrame.schedule()
-  }
-
-  const onResize = throttle(100, () => {
-    if (scrollEl.value) relayoutAndRedraw()
-  }, { noLeading: true })
-
-  // —— 编辑器（G2-c 契约；触发点 = 单击，A5.2） ——
-
-  const editor = createEditorController({
-    onCommit ({ record, recordIndex, column, value }) {
-      emit('update:cell-value', { record, recordIndex, column, value })
-
-      // A3 数据契约①：父级在事件处理器内同步就地改 record 后，nextTick 重绘该行；
-      // 多行列含行高重估 + 锚定，值形态变数组且当前 uniform 时触发模式升级（A2.2）
-      nextTick(() => {
-        rowGeometry.remeasureRow(recordIndex)
-        painter?.invalidateRow(recordIndex)
-      })
-    }
-  })
-
-  // —— 单元格 tooltip（title 列协议，20261030-table-ex-cell-tooltip）：壳级编排 ——
-  // 决策纯函数在 interactions.resolveTooltipTarget / cell-painters.resolveCellTooltip，
-  // 本壳持有显示定时器与合成锚点：pointermove 格身份去重 + TOOLTIP_SHOW_DELAY 延迟调度
-  // （move 内不求值内容）；滚动/拖拽/编辑/relayout/重绘 watch/卸载经 hideCellTooltip
-  // 收起并同步清去重键（不清则回到同格被去重跳过，该格再无 tooltip）。
-  // 状态声明（$mussel/tooltipController/tooltipAnchorEl/tooltipCell/tooltipShowTimer）
-  // 前置于 useTreeRows() 之前——immediate watch 同步经 relayout 触达 hideCellTooltip
-
+  // —— 单元格 tooltip 开关（title 列协议）：依赖 wiredColumns，留 useTreeRows 之后 ——
   const tooltipEnabled = computed(() => wiredColumns.value.some(col => Boolean(col?.title)))
 
   // 控制器缺失的降级提示（utils/warn once 去重）
@@ -637,852 +437,6 @@
       devWarn('列配置了 title，但 $mussel.tooltip 控制器不存在（宿主未安装 mussel 或未走完整 install），单元格 tooltip 功能关闭')
     }
   }, { immediate: true })
-
-  function isSameCell (prev, next) {
-    if (prev == null || next == null) return (prev == null) === (next == null)
-
-    return prev.row === next.row && prev.col === next.col
-  }
-
-  function clearTooltipTimer () {
-    clearTimeout(tooltipShowTimer)
-    tooltipShowTimer = 0
-  }
-
-  /** pointermove 尾部调度：格身份（{row, col}）去重，同格内移动零开销；换格才
-      重排定时器。无 title 目标（表头/越界/编辑中/none）→ 延迟收起（300ms 宽限，
-      同 v-mu-tooltip mouseleave 语义）；有目标格 → 清面板挂起的 hide 计时器
-      （先排定的 hide 会先于 show 触发 = 退出动画 + 再入场闪一次），不主动 hide，
-      面板保持可见由下一次 showCellTooltip 写锚点 + updatePosition 重定向 */
-  function scheduleCellTooltip (hit) {
-    if (!tooltipController) return
-
-    const next = resolveTooltipTarget({
-      hit,
-      columns: wiredColumns.value,
-      hoverMode: props.hoverMode,
-      editingCell: editingCellRef,
-      resizing: resizeGuideX.value != null
-    })
-
-    if (isSameCell(next, tooltipCell)) return
-
-    clearTooltipTimer()
-    tooltipCell = next
-
-    if (next == null) {
-      if (tooltipController.isAnchorIn(rootEl.value)) tooltipController.delayHide()
-
-      return
-    }
-
-    tooltipController.clearHideTimer()
-    tooltipShowTimer = setTimeout(() => showCellTooltip(next), TOOLTIP_SHOW_DELAY)
-  }
-
-  /** 树形列内容区缩进（drawTreeAffordance 同式）：level×16 + 16px 箭头槽；非树列/树关 0 */
-  function tooltipTreeInsetOf (col, row) {
-    if (!col._isTreeColumn || !flatRows.value) return 0
-
-    return (flatRows.value.levels?.[row] ?? 0) * TREE_INDENT + TREE_INDENT
-  }
-
-  /** tooltip 求值上下文：layout/主题/测量/折行缓存/列/行记录任一缺失 → null（失效）；
-      params 按 drawCell box 同式预算内容区宽高（格宽 − padding×2 − 树缩进 /
-      格高 − ROW_TOP_INSET），rect = 命中格（合并区域）视口矩形 */
-  function tooltipContextOf (cell) {
-    const cur = layout.value
-    const col = wiredColumns.value[cell.col]
-    const record = displayRows.value?.[cell.row]
-
-    if (!cur || !themeWatcher || !measureFn || !wrapCacheObj || !col || record == null) return null
-
-    const snapshot = themeWatcher.snapshot
-    const padding = snapshot?.cellPadding || CELL_PADDING_FALLBACK
-    const rect = spanRectOf(cur, cell.row, cell.col, spans.value)
-
-    return {
-      col,
-      rect,
-      params: {
-        record,
-        recordNumber: (props.recordsOffset || 0) + cell.row + 1,
-        contentWidth: rect.width - padding * 2 - tooltipTreeInsetOf(col, cell.row),
-        contentHeight: rect.height - ROW_TOP_INSET,
-        regionHeight: regionAt(spans.value, cell.row, cell.col) ? rect.height : null,
-        theme: snapshot,
-        measure: measureFn,
-        wrapCache: wrapCacheObj
-      }
-    }
-  }
-
-  /** 命令式写锚点矩形（不经 Vue patch，规避 show 时序耦合） */
-  function placeTooltipAnchor (rect) {
-    const style = tooltipAnchorEl.value.style
-
-    style.left = `${rect.x}px`
-    style.top = `${rect.y}px`
-    style.width = `${rect.width}px`
-    style.height = `${rect.height}px`
-  }
-
-  /** TOOLTIP_SHOW_DELAY 到期：resolveCellTooltip 解析内容与溢出态（复用绘制同源测量
-      缓存），命令式定位锚点到命中格视口矩形，show + 显式 updatePosition——
-      锚点元素单例复用，state.anchor 引用不变，面板字段 watch 不触发，不显式
-      重定位则面板停在上一格；首次 show 面板未 ready 时空转，由面板内部
-      runPopupSequence 的 updatePosition 完成定位 */
-  function showCellTooltip (cell) {
-    if (!tooltipController || !tooltipAnchorEl.value) return
-    // 过期守卫：定时器触发时去重键已变化（换格/收起）则放弃本次显示
-    if (!isSameCell(tooltipCell, cell)) return
-
-    const context = tooltipContextOf(cell)
-
-    if (!context) {
-      hideTooltip()
-
-      return
-    }
-
-    const tip = resolveCellTooltip(context.col, context.params)
-
-    // 无可显示内容（无 title / 无文本源 / 未溢出 / 空串）：收起上一格残留。
-    // 只用 hideTooltip 不清 tooltipCell——保留去重键，否则同格内每次 pointermove
-    // 都会重排 300ms 定时器并重复求值（本格确无提示）
-    if (!tip || tip.content === '' || (tip.overflowOnly && !tip.overflow)) {
-      hideTooltip()
-
-      return
-    }
-
-    placeTooltipAnchor(context.rect)
-    tooltipController.show(tooltipAnchorEl.value, {
-      content: tip.content,
-      placement: 'top',
-      trigger: 'hover'
-    })
-    tooltipController.updatePosition()
-  }
-
-  /** 仅收面板，不动去重键；isAnchorIn 守卫不误杀他组件的 tooltip */
-  function hideTooltip () {
-    if (tooltipController?.isAnchorIn(rootEl.value)) tooltipController.hide()
-  }
-
-  /** 状态失效类收起点（滚动/拖拽/编辑/relayout/重绘 watch/卸载）：收面板 +
-      清去重键 + 清显示定时器 */
-  function hideCellTooltip () {
-    clearTooltipTimer()
-    tooltipCell = null
-    hideTooltip()
-  }
-
-  // —— 指针交互（A5；决策函数来自 interactions.js，本壳执行 emit 与状态更新；
-  //     clickGuard/startResize 来自 use-column-resize） ——
-
-  function pointOf (event) {
-    const rect = canvasEl.value.getBoundingClientRect()
-
-    return { x: event.clientX - rect.left, y: event.clientY - rect.top }
-  }
-
-  function hitAt (event) {
-    const cur = layout.value
-
-    if (!cur) return null
-
-    const { x, y } = pointOf(event)
-    const raw = hitTest({
-      x,
-      y,
-      headHeight: cur.headHeight,
-      scrollTop: cur.scrollTop,
-      scrollLeft: cur.scrollLeft,
-      colLefts: cur.colLefts,
-      colWidths: cur.colWidths,
-      rowGeometry: cur.rowGeometry,
-      columns: wiredColumns.value,
-      fixedLeftColumns: cur.fixedCount,
-      resizable: props.resizable,
-      cellPadding: themeWatcher?.snapshot?.cellPadding
-    })
-
-    // 合并命中归一（§5.4 单一接入点）：covered 格 → 主格坐标（浅拷贝仅改
-    // rowIndex/colIndex，cellX/x/y 原样）。归一后 hit 供 resolveCursor /
-    // updateHover / updateHoverItem / applyItemCursor / isEditButtonHit /
-    // tryEditButtonClick / finishCellClick / openEditorAt / resolveItemClick；
-    // rawHit 供 resolveTreeToggle（树槽判定用原始 hit，树列不参与归一改写）
-    return {
-      point: { x, y },
-      hit: resolveSpanCell(spans.value, raw),
-      rawHit: raw
-    }
-  }
-
-  /** hover 命中 → 高亮格坐标（表头 / 越界 / 无命中均不高亮；R5：列宽总和小于
-      表格宽时，行有效但 x 越出列区右缘的空白延伸区放行为行级 hover，
-      colIndex 保持 -1 —— 行带高亮整宽、列高亮/编辑描边/树箭头按 col 无效跳过） */
-  function hoverCellOf (hit) {
-    if (!hit || hit.isHeader || hit.rowIndex < 0) return null
-    if (hit.colIndex >= 0 || hit.beyondCols) return { row: hit.rowIndex, col: hit.colIndex }
-
-    return null
-  }
-
-  function isSameHover (prev, next) {
-    if (prev == null || next == null) return (prev == null) === (next == null)
-
-    return prev.row === next.row && prev.col === next.col
-  }
-
-  /** 行/列带脏区（按行列号去重，prev/next 同带时至多一次；R5：空白区命中
-      col = -1 不产生列带） */
-  function bandRegionsOf (active, values, key) {
-    const regions = []
-
-    if (!active) return regions
-
-    for (const value of new Set(values)) {
-      if (value != null && value >= 0) regions.push({ [key]: [value, value + 1] })
-    }
-
-    return regions
-  }
-
-  /** hover 变化脏区（A3）：row/column/cross 为带、cell 为格、none 为空 */
-  function hoverRegions (prev, next, mode) {
-    if (mode === 'none') return []
-
-    if (mode === 'cell') {
-      const regions = []
-
-      if (prev) regions.push({ cell: prev })
-      if (next) regions.push({ cell: next })
-
-      return regions
-    }
-
-    const cross = mode === 'cross'
-
-    return [
-      ...bandRegionsOf(mode === 'row' || cross, [prev?.row, next?.row], 'rows'),
-      ...bandRegionsOf(mode === 'column' || cross, [prev?.col, next?.col], 'cols')
-    ]
-  }
-
-  function updateHover (hit) {
-    const next = hoverCellOf(hit)
-    const prev = hover.value
-
-    if (isSameHover(prev, next)) return
-
-    hover.value = next
-    syncPaintState()
-
-    // hover 变化仅脏带重绘（A3）：行带/列带/单格。prev/next 同行（同行内横移、
-    // row/cross 模式）或同列时脏带完全重合，按行列号去重后各区域至多一次同步
-    // 应用（N1，复核 2026-10-26：同行横移 2 次 → 1 次）
-    for (const region of hoverRegions(prev, next, props.hoverMode || 'row')) invalidate(region)
-  }
-
-  /** 条目悬停相等判定（问题 7）：行列 + 条目身份（kind/index）+ disabled 全等 */
-  function isSameHoverItem (prev, next) {
-    if (prev == null || next == null) return (prev == null) === (next == null)
-
-    return (
-      prev.row === next.row &&
-      prev.col === next.col &&
-      prev.kind === next.kind &&
-      prev.index === next.index &&
-      prev.disabled === next.disabled
-    )
-  }
-
-  /** hoverItem 变化脏区：prev/next 两格按行列号去重（同格至多一次失效） */
-  function hoverItemCells (prev, next) {
-    const cells = []
-
-    for (const cell of [prev, next]) {
-      if (cell == null) continue
-
-      const { row, col } = cell
-
-      if (!cells.some(el => el.row === row && el.col === col)) cells.push({ row, col })
-    }
-
-    return cells
-  }
-
-  /** 条目悬停接线（问题 7）：经既有 resolveItemClick 求值，变化时对 prev/next
-      格去重逐格失效；独立于 updateHover（同格内条目间移动不触发 hover 变化）；
-      hoverMode none 恒 null（与编辑按钮绘制同受总开关抑制） */
-  function updateHoverItem (hit) {
-    const prev = hoverItem.value
-    const next = props.hoverMode === 'none'
-      ? null
-      : resolveItemClick({ hit, itemHits: paintState.itemHits })
-
-    if (isSameHoverItem(prev, next)) return
-
-    hoverItem.value = next
-    paintState.hoverItem = next
-
-    for (const cell of hoverItemCells(prev, next)) invalidate({ cell })
-  }
-
-  function onPointerMove (event) {
-    const result = hitAt(event)
-
-    if (!result) return
-
-    // hover 感知（A5.3 / 评审 6 P3）：context 提供树槽 pointer 与可编辑格 text 判定
-    cursor.value = resolveCursor(result.hit, wiredColumns.value, {
-      flatInfo: flatRows.value,
-      editable: props.editable,
-      isCellEditableFn: cellEditableOf
-    })
-
-    updateHoverItem(result.hit)
-    updateHover(result.hit)
-
-    // 光标覆盖（问题 5/7）：resolveCursor 结果先落位，条目 / 编辑按钮区再覆盖
-    applyItemCursor(result.hit)
-
-    // tooltip 调度（title 列协议）：格身份去重 + TOOLTIP_SHOW_DELAY 延迟，move 内不求值内容
-    if (tooltipEnabled.value) scheduleCellTooltip(result.hit)
-  }
-
-  function onPointerLeave () {
-    cursor.value = 'default'
-    updateHoverItem(null)
-    updateHover(null)
-
-    // tooltip：清调度与去重键；面板仍归属本组件锚点时延迟收起（isAnchorIn
-    // 守卫，不误杀他组件 tooltip）
-    clearTooltipTimer()
-    tooltipCell = null
-    if (tooltipController?.isAnchorIn(rootEl.value)) tooltipController.delayHide()
-  }
-
-  /** 编辑按钮命中判定（20261027 问题 5，20261105 收敛注册名图标）：列配
-      editButton.icon 且 resolveIconEntry 查表命中（未注册名两边一致判失败——
-      不绘制、不命中）且指针落在 editButtonRectOf 区矩形内（半开区间，与
-      interactions.isItemRectHit 同口径）；区矩形 = spanRectOf（合并区域为区域
-      矩形，§5.3），为 painter 绘制与壳命中共用的单一事实源 */
-  function isEditButtonHit (hit, col) {
-    if (!resolveIconEntry(col?.editButton?.icon)) return false
-
-    const rect = editButtonRectOf(
-      spanRectOf(layout.value, hit.rowIndex, hit.colIndex, spans.value),
-      {
-        padding: themeWatcher?.snapshot?.cellPadding,
-        rowHeight: themeWatcher?.snapshot?.rowHeight
-      }
-    )
-
-    return (
-      hit.x >= rect.x && hit.x < rect.x + rect.width &&
-      hit.y >= rect.y && hit.y < rect.y + rect.height
-    )
-  }
-
-  /** 光标覆盖（问题 5/7）：resolveCursor 结果之后追加判定，仅覆盖表体
-      text/default——条目（link/button 且非禁用）与编辑按钮区为 pointer；
-      link 条目以 item.link !== false 门控（list 非 link 列条目无指针反馈，
-      R1 列级语义，与 isLinkEntryHovered 同谓词）；col-resize 手柄与表头
-      pointer 不覆盖 */
-  function applyItemCursor (hit) {
-    if (hit.resizeCol >= 0 || hit.isHeader) return
-
-    const item = hoverItem.value
-
-    if (item && !item.disabled && item.link !== false &&
-      (item.kind === 'link' || item.kind === 'button')) {
-      cursor.value = 'pointer'
-
-      return
-    }
-
-    const col = hit.colIndex >= 0 ? wiredColumns.value[hit.colIndex] : null
-
-    if (isEditButtonHit(hit, col)) cursor.value = 'pointer'
-  }
-
-  function onPointerDown (event) {
-    const result = hitAt(event)
-
-    if (!result) return
-
-    const decision = resolvePointerdown({ editing: editor.state.editing, hit: result.hit })
-
-    // editing 中画布 pointerdown 先同步提交再续行命中（A6 画布侧隔离：
-    // 点击其他单元格一步完成「提交 + 选中新行」）
-    if (decision.commitEditing) editor.commit()
-
-    // 拖拽收起 tooltip（状态失效类：手柄拖宽即列几何失效，去重键同步清空）
-    if (decision.startResize) {
-      hideCellTooltip()
-      startResize(event, result.hit)
-    }
-  }
-
-  function runEvents (events) {
-    for (const ev of events) emit(ev.name, ...ev.args)
-  }
-
-  /** 表头单击：发 header-click / update:header-checked / update:order-by 事件链 */
-  function emitHeaderClick (col) {
-    if (!col) return
-
-    runEvents(
-      resolveHeaderClick({
-        column: col,
-        headerChecked: props.headerChecked,
-        orderBy: props.orderBy
-      }).events
-    )
-  }
-
-  /** 编辑按钮派发（20261027 问题 5，局部交互——对齐树槽先例：不选中行、不发
-      cell-click、不开编辑；20261105 onClick 属性移除，改组件 emit
-      'edit-button-click'（与 links item click 同构：走组件 emit 而非属性回调；
-      payload 形状不变），column 传原始列引用）；命中并派发返回 true */
-  function tryEditButtonClick (hit, record, col) {
-    if (!isEditButtonHit(hit, col)) return false
-
-    emit('edit-button-click', {
-      record,
-      recordIndex: hit.rowIndex,
-      column: col._raw ?? col
-    })
-
-    return true
-  }
-
-  /** 树箭头槽 toggle（A4.3 序 2，局部交互）：命中则应用展开态并返回 true；
-      meta 携带命中行 record/level（问题 3：tree-expand/tree-collapse 载荷） */
-  function tryToggleTreeRow (hit, record) {
-    if (!props.tree || !flatRows.value) return false
-
-    const toggle = resolveTreeToggle({
-      hit,
-      columns: wiredColumns.value,
-      flatInfo: flatRows.value,
-      recordKey: resolveRecordKey(record)
-    })
-
-    if (toggle) {
-      applyTreeToggle(toggle.key, {
-        record,
-        level: flatRows.value.levels?.[hit.rowIndex] ?? 0
-      })
-    }
-
-    return !!toggle
-  }
-
-  /** check 列选中态输入（G2-b 契约，与 drawCheck 同款判定）：disabled/value
-      从单元格 items attrs 读取，非 check 列为缺省值 */
-  function checkColumnState (col, record, rowIndex) {
-    if (col._raw?.type !== 'check') return { disabled: false, value: undefined }
-
-    const content = resolveCellContent(col, {
-      record,
-      recordNumber: (props.recordsOffset || 0) + rowIndex + 1,
-      emit
-    })
-    const attrs = Array.isArray(content.items) ? content.items[0]?.attrs : null
-
-    return {
-      disabled: attrs?.disabled != null && attrs?.disabled !== false,
-      value: attrs?.['data-checked'] ?? false
-    }
-  }
-
-  /** A4.3 序 3-4 / A5.2：条目 cell-item-click → 选中/cell-click 事件链 → 单击进编辑 */
-  function finishCellClick (hit, record, col) {
-    const item = resolveItemClick({ hit, itemHits: paintState.itemHits })
-
-    if (item) emitCellItemClick(item, record, col, hit.rowIndex)
-
-    const { disabled, value } = checkColumnState(col, record, hit.rowIndex)
-    const { events, toggled } = resolveCellClick({
-      record,
-      recordIndex: hit.rowIndex,
-      column: col,
-      recordKey: resolveRecordKey(record),
-      selectedRecordKey: selectedKey.value,
-      selectedRecord: props.selectedRecord,
-      disabled,
-      value
-    })
-
-    runEvents(events)
-
-    // check 翻转后 nextTick 重绘该行（A3 数据契约①）
-    if (toggled) nextTick(() => painter?.invalidateRow(hit.rowIndex))
-
-    // 先发完整选中/cell-click 链再开编辑，父级一次收到全部事件，选中态与编辑态一致
-    if (resolveCellClickOpen({ hit, cellEditable: cellEditableOf(col) }).openEditor) {
-      openEditorAt(hit, record, col)
-    }
-  }
-
-  /** R5：空白延伸区点击（行有效、x 越出列区右缘）仅选中行——同 resolveCellClick
-      的选中事件序（key → record），不发 cell-click（无对应列），check/树槽/编辑不适用 */
-  function selectRowOnly (record) {
-    const recordKey = resolveRecordKey(record)
-
-    if (recordKey !== selectedKey.value) emit('update:selected-record-key', recordKey)
-    if (record !== props.selectedRecord) emit('update:selected-record', record)
-  }
-
-  function onClick (event) {
-    // 拖拽误触抑制：拖拽后紧随的 click 丢弃（A5 / decisions「[I1 前]⑧」）
-    if (clickGuard.consume()) return
-
-    const result = hitAt(event)
-
-    if (!result) return
-
-    const { hit, rawHit } = result
-    const col = hit.colIndex >= 0 ? wiredColumns.value[hit.colIndex] : null
-
-    if (hit.isHeader) {
-      emitHeaderClick(col)
-
-      return
-    }
-
-    const record = displayRows.value?.[hit.rowIndex]
-
-    if (record == null) return
-
-    // R5：空白延伸区命中（beyondCols）无对应列，仅选中行
-    if (!col) {
-      if (hit.beyondCols) selectRowOnly(record)
-
-      return
-    }
-
-    // 编辑按钮命中（20261027 问题 5）：局部交互，不选中行、不发 cell-click、
-    // 不开编辑；判定在树槽之前（A4.3 序 2 前置）
-    if (tryEditButtonClick(hit, record, col)) return
-
-    // A4.3 序 2：树箭头槽 toggle（局部交互，不选中行、不发 cell-click）；
-    // 树槽判定消费原始 hit（§5.4）
-    if (tryToggleTreeRow(rawHit, record)) return
-
-    finishCellClick(hit, record, col)
-  }
-
-  // cell-item-click 派发（A1/A3.3，payload 对齐 DOM 版 + recordIndex）：
-  // link/tag 经 render 产物 events.click 取同源 payload；button（canvas 专属产物，
-  // 无 DOM events 通道）payload = buttons[index]；disabled 条目只续链不发
-  function emitCellItemClick (item, record, col, row) {
-    const raw = col._raw ?? col
-    const recordNumber = (props.recordsOffset || 0) + row + 1
-
-    if (item.kind === 'button') {
-      emitButtonItemClick(item, record, col, raw, recordNumber, row)
-
-      return
-    }
-
-    emitDomItemClick(item, record, col, raw, recordNumber, row)
-  }
-
-  /** button 条目派发（canvas 专属 render 产物，无 DOM events 通道）：
-      payload = buttons[index] 配置对象 */
-  function emitButtonItemClick (item, record, col, raw, recordNumber, row) {
-    const value = col._value?.(record) ?? (col.field != null ? record?.[col.field] : undefined)
-    const produced = col._render?.({ record, recordNumber, value, emit })
-    const button = produced?.buttons?.[item.index]
-
-    if (button != null && !isDisabledAttr(button.disabled)) {
-      emit('cell-item-click', { record, column: raw, button, recordIndex: row })
-    }
-  }
-
-  /** link/tag 条目派发：canvas 通道 render 产物自持 onItemClick（payload 与 DOM 版
-      events.click 同构——常规条目 = 条目对象原引用，linkOption.max dots 的 payload
-      值 '...'），外包 recordIndex；disabled 条目只续链不发 */
-  function emitDomItemClick (item, record, col, raw, recordNumber, row) {
-    const wrappedEmit = (name, payload) => {
-      if (name === 'cell-item-click') {
-        emit('cell-item-click', { ...payload, recordIndex: row })
-      } else {
-        emit(name, payload)
-      }
-    }
-
-    const content = resolveCellContent(col, { record, recordNumber, emit: wrappedEmit })
-    const items = Array.isArray(content.items) ? content.items : null
-    const canvasItem = items?.[item.index]
-
-    if (!canvasItem || isDisabledAttr(canvasItem.disabled)) return
-
-    // canvas 侧 _maxItems 截断省略条目（绘制层 dots，render 产物内无对应条目）：
-    // payload 值 '...'（A1/A3.3）；link/list 条目 payload 键统一 item
-    // （decisions 第 5 条，20261104-table-column-type），tag/button 键不变
-    if (isCappedDotsItem(item, items, col)) {
-      emit('cell-item-click', {
-        record,
-        column: raw,
-        [item.kind === 'link' ? 'item' : item.kind]: '...',
-        recordIndex: row
-      })
-      return
-    }
-
-    canvasItem.onItemClick?.()
-  }
-
-  /** _maxItems 截断省略条目判定（绘制层 dots；render 内 linkOption.max dots 经
-      onItemClick 自持 '...' payload，不在此判） */
-  function isCappedDotsItem (item, items, col) {
-    const maxItems = col._maxItems ?? 10
-
-    return items.length > maxItems && item.index === maxItems - 1
-  }
-
-  /** disabled 存在性判定（实施约束 7：与 G2 绘制侧 linkTextColorOf 同一谓词） */
-  function isDisabledAttr (disabled) {
-    return disabled != null && disabled !== false
-  }
-
-  /** 单击进编辑（A5.2/A5.5）：style 按 computeEditorStyle 浮层盒（贴格线内侧，
-      border/编辑器类型分支），editorType 判定用开值形态与 _resolveMaxLines(record) 行级求值。
-      合并区域（§5.5）：cellRect 经 spanRectOf 取区域矩形（浮层覆盖整个合并区域），
-      rowFrom/colTo 供格线内缩按区域外缘判定 */
-  function openEditorAt (hit, record, col) {
-    // 编辑浮层打开即收起 tooltip（互不干扰：veil 遮蔽编辑格内容，提示无意义）
-    hideCellTooltip()
-
-    const cur = layout.value
-
-    if (!cur) return
-
-    const rawValue =
-      col._value?.(record) ??
-      (col.field != null ? record?.[col.field] : undefined)
-
-    const editorType = resolveEditorType(col, { rawValue, record })
-    const border = isObjectEditor(col.editor) ? col.editor.border !== false : true
-    const region = regionAt(spans.value, hit.rowIndex, hit.colIndex)
-
-    const editorStyle = computeEditorStyle({
-      colIndex: hit.colIndex,
-      rowIndex: hit.rowIndex,
-      colLefts: cur.colLefts,
-      colWidths: cur.colWidths,
-      headHeight: cur.headHeight,
-      scrollTop: cur.scrollTop,
-      scrollLeft: cur.scrollLeft,
-      fixedCount: cur.fixedCount,
-      rowGeometry: cur.rowGeometry,
-      editorType,
-      border,
-      gridlines: props.gridlines,
-      stickyWidth: cur.stickyWidth,
-      contentWidth: cur.contentWidth,
-      cellRect: spanRectOf(cur, hit.rowIndex, hit.colIndex, spans.value),
-      rowFrom: region?.rowFrom,
-      colTo: region?.colTo
-    })
-
-    const opened = editor.open({
-      column: col,
-      record,
-      recordIndex: hit.rowIndex,
-      editable: props.editable,
-      style: toPxStyle(editorStyle),
-      bordered: editorStyle.bordered,
-      getEditorEl: () => editorEl.value
-    })
-
-    if (!opened) return
-
-    focusEditor()
-
-    // veil 接线（20261027 问题 6）：先更新行列引用再失效——旧格 invalidate 时
-    // 已不在 veil（恢复内容），新格 invalidate 置 veil；同一 tick 内「提交旧格 +
-    // 打开新格」时旧格恢复由本处失效直接完成
-    const prevCell = editingCellRef
-
-    editingCellRef = { row: hit.rowIndex, col: hit.colIndex }
-
-    if (prevCell) invalidate({ cell: prevCell })
-    invalidate({ cell: editingCellRef })
-  }
-
-  /** column.editor 为对象形态时读取 border（true 形态按缺省 true） */
-  function isObjectEditor (editorConfig) {
-    return editorConfig != null && typeof editorConfig === 'object'
-  }
-
-  /** 编辑器聚焦（A5.5）：渲染完成后 input/select/date 聚焦内部真实 input，
-      textarea 聚焦 textarea 元素，switch 聚焦容器。focus() 会把最近的可滚动
-      祖先滚出溢出量（浮层相对画布漂移），聚焦后复位浮层容器滚动 */
-  function focusEditor () {
-    nextTick(() => {
-      const el = editorEl.value
-      const editing = editor.state.editing
-
-      if (!el || !editing) return
-
-      if (editing.editorType === 'switch') el.focus()
-      else el.querySelector('input, textarea')?.focus()
-
-      const overlay = el.parentElement
-
-      if (overlay) {
-        overlay.scrollLeft = 0
-        overlay.scrollTop = 0
-      }
-    })
-  }
-
-  /** computeEditorStyle 产出数值；Vue :style 不自动补 px（el.style.left = '624'
-      非法被浏览器忽略），此处转 px 串后再入编辑态 */
-  function toPxStyle ({ left, top, width, height }) {
-    return { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` }
-  }
-
-  // —— 行定位辅助（选中横带 / scrollToRecord；树模式下在平铺行数组内查找） ——
-
-  function keyNameOf () {
-    return props.tree ? treeOptions.value.key : props.keyField
-  }
-
-  function findRowByKey (key) {
-    if (key == null) return -1
-
-    const rows = displayRows.value ?? []
-    const keyName = keyNameOf()
-
-    if (keyName != null) {
-      return rows.findIndex(rec => rec?.[keyName] === key)
-    }
-
-    return rows.findIndex(rec => genRecordKey(rec) === key)
-  }
-
-  // —— 暴露方法（A1；树展开操作见 use-tree-rows 解构） ——
-
-  function scrollToRecord (keyOrIndex) {
-    const rows = displayRows.value ?? []
-    const keyName = keyNameOf()
-    let row = -1
-
-    // keyField 值优先，退化为行号
-    if (keyName != null) {
-      row = rows.findIndex(rec => rec?.[keyName] === keyOrIndex)
-    }
-
-    if (row < 0) {
-      const index = Number(keyOrIndex)
-
-      row = Number.isInteger(index) && index >= 0 && index < rows.length ? index : -1
-    }
-
-    const el = scrollEl.value
-    const cur = layout.value
-
-    if (row < 0 || !el || !cur) return false
-
-    // 不可见时置于视口顶部：行顶对准表头下缘（变高模式 top 经 rowGeometry.topAt）
-    const top = Math.min(
-      Math.max(cur.rowGeometry.topAt(row), 0),
-      Math.max(0, cur.contentHeight - cur.stickyHeight)
-    )
-
-    el.scrollTo({ top, behavior: 'instant' })
-
-    return true
-  }
-
-  /** 手动重读 --mu-* 变量并 relayout + 整幅重绘（暗色感知兜底 / 尺寸变量覆盖生效通道） */
-  function refreshTheme () {
-    themeWatcher?.refresh()
-  }
-
-  /** 契约⑤（评审 6 P9 / A2.2 主题·字号·行高变量刷新通道）：theme.js 仅发信号，
-      重估链全部在壳——wrap 缓存失效 + 全量快速重估 + rebuild（relayoutAndRedraw 内）
-      + 锚定补偿 + 窗口重精算（controller.remeasureVisibleRows 内）+ 窗口同步重绘 */
-  function onThemeChange () {
-    const el = scrollEl.value
-    const geometry = rowGeometry.geometry
-    let anchor = null
-
-    // 锚定基准在 rebuild 重估前捕获（旧几何 topAt；主题变化不改行集合，行号不变）
-    if (geometry && el) {
-      const row = geometry.offsetToRow(el.scrollTop)
-
-      anchor = { row, top: geometry.topAt(row) }
-    }
-
-    // wrap 缓存失效：key 含 text+font+width+maxLines，主题变化后旧条目不再命中，
-    // 整体重建清掉死权重
-    wrapCacheObj = createWrapCache()
-
-    relayoutAndRedraw()
-
-    if (anchor && rowGeometry.geometry && el) {
-      const shift = rowGeometry.geometry.topAt(anchor.row) - anchor.top
-
-      if (shift) el.scrollTop += shift
-    }
-
-    rowGeometry.remeasureVisibleRows()
-    recomputeViewWindows()
-    redraw()
-  }
-
-  function getLayoutInfo () {
-    const cur = layout.value
-
-    if (!cur) return null
-
-    return {
-      colWidths: cur.colWidths.slice(),
-      contentWidth: cur.contentWidth,
-      contentHeight: cur.contentHeight,
-      rowHeight: cur.rowHeight,
-      headHeight: cur.headHeight,
-      viewRows: { ...cur.viewRows },
-      rowGeometryMode: rowGeometry.mode,
-      lastPaint: painter?.lastPaint ? { ...painter.lastPaint } : null,
-      lastRelayout: lastRelayout ? { ...lastRelayout } : null
-    }
-  }
-
-  /** 主题快照（G0 偏离 4 契约）：直接返回 watcher.snapshot（getter，随 refresh 更新） */
-  function getThemeSnapshot () {
-    return themeWatcher?.snapshot ?? null
-  }
-
-  /** 坐标辅助（decisions「[I1 前]②」）：单元格视口矩形 + 页面坐标，供 playwright
-      page.mouse 坐标级交互换算；未挂载返回 null */
-  function getCellRect (row, col) {
-    const canvas = canvasEl.value
-    const cur = layout.value
-
-    if (!canvas || !cur) return null
-
-    const base = canvas.getBoundingClientRect()
-    const cell = cellRectAt(cur, row, col)
-
-    return {
-      left: base.left + cell.x,
-      top: base.top + cell.y,
-      width: cell.width,
-      height: cell.height,
-      x: cell.x,
-      y: cell.y
-    }
-  }
 
   defineExpose({
     scrollToRecord,
@@ -1493,141 +447,5 @@
     expandAll,
     collapseAll,
     getTreeExpandedKeys
-  })
-
-  // —— 渲染 props watch（A3 重绘表） ——
-
-  // 编辑关闭 veil 清理（20261027 问题 6）：仅 editing 变为 null（关闭）时恢复
-  // 编辑格内容。commit 与 open 落在同一 tick 时 watcher 只 flush 一次，无条件
-  // 清除会把新格 veil 抹掉；行列由 editingCellRef 承载，覆盖全部关闭路径
-  watch(() => editor.state.editing, newValue => {
-    if (newValue != null) return
-
-    const cell = editingCellRef
-
-    if (cell == null) return
-
-    editingCellRef = null
-
-    // 卸载路径空值防护：painter 未创建 / 已 dispose 时无重绘意义
-    if (!painter) {
-      paintState.editingCell = null
-
-      return
-    }
-
-    invalidate({ cell })
-  })
-
-  // relayout 源合一（20261030 P1 合帧）：六个源（records / columns / recordsVersion /
-  // spanMethod / orderBy / fixedLeftColumns）合并为单一 watch——同批多源变化（如父级
-  // 一次替换数据与列定义）从「每 watch 各跑一次完整 relayout（估高扫描 + 精算 +
-  // 重绘）」变为一次；回调内按源 diff 执行各自前置副作用，顺序与合并前各 watch
-  // 定义序一致：
-  // - records 引用变化：滚动复位（A2 数据契约，table.vue 同款）
-  // - columns 引用变化：清空拖拽宽度覆盖（G1-b 契约）+ 行高缓存签名置空（列定义
-  //   变化改变行高语义；缓存键为 record 引用，不含列定义维度）
-  // - recordsVersion：异步就地修改 records 后的通知通道 → spans 重算 + relayout
-  //   （§4：合并行高分层随 spans 身份重扫，A3 数据契约②）
-  // - spanMethod / orderBy：spans 重算（orderBy 变化即行序语义变化，合并块随本批重算，§4）
-  // - fixedLeftColumns：固定区宽度 / viewW 口径变化
-  // 之后统一 relayout（含尾部可视行精算与整幅重绘）
-  watch(
-    [
-      () => props.records,
-      () => props.columns,
-      () => props.recordsVersion,
-      () => props.spanMethod,
-      () => props.orderBy,
-      () => props.fixedLeftColumns
-    ],
-    ([records, columns], [prevRecords, prevColumns]) => {
-      if (records !== prevRecords) {
-        scrollEl.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-      }
-
-      if (columns !== prevColumns) {
-        resetOverrides()
-        rowGeometry.invalidateMeasureCache()
-      }
-
-      relayoutAndRedraw()
-    }
-  )
-
-  // 渲染 props → 整幅重绘；placeholder 不进列准备（绘制期兜底，见
-  // preparedColumns 注释），切换占位文本仅整幅重绘、不触发估高重扫
-  watch(
-    () => [
-      props.gridlines,
-      props.hoverMode,
-      props.striped,
-      props.recordsOffset,
-      props.placeholder
-    ],
-    () => {
-      // hoverMode 切换等重绘路径同步收起 tooltip（去重键同步清空）
-      hideCellTooltip()
-      redraw()
-    }
-  )
-
-  // headerChecked 受控变化 → 表头区整幅（受控 ✓ 状态变化即重绘）
-  watch(() => props.headerChecked, () => invalidate({ header: true }))
-
-  // 选中变化（selectedRecordKey/selectedRecord/keyField 经 selectedKey 汇聚）→
-  // 旧/新选中行两条横带（合并区域由 painter 脏区扩展到区域包围盒，覆盖行底色随动）；
-  // 覆盖行 key 被受控选中 → 区域无选中反馈，dev 警告一次（§5.8/§7）
-  watch(selectedKey, (newValue, oldValue) => {
-    for (const key of new Set([oldValue, newValue])) {
-      const row = findRowByKey(key)
-
-      if (row >= 0) invalidateRow(row)
-    }
-
-    if (newValue != null && spans.value) {
-      const row = findRowByKey(newValue)
-
-      // covered 顶层键存在即该行在至少一列被区域覆盖（区域内无选中反馈）
-      if (row >= 0 && spans.value.covered.has(row)) {
-        warn({
-          component: 'table-ex',
-          message: `选中 key "${String(newValue)}" 落在合并区域的覆盖行上，该区域无选中反馈（选中仅可由锚行表达）`
-        })
-      }
-    }
-  })
-
-  // —— 树 watch（tree/treeProps/treeExpandedKeys 三条已随 use-tree-rows 注册） ——
-
-  // —— 生命周期 ——
-
-  onMounted(() => {
-    painter = createPainter({ canvas: canvasEl.value })
-
-    // 文本测量注入（A2.2）：单实例同时供行高估高/精算与绘制折行（单一事实源）
-    measureFn = createTextMeasurer()
-    wrapCacheObj = createWrapCache()
-
-    themeWatcher = createThemeWatcher({
-      probeHost: stickyEl.value,
-      componentRoot: rootEl.value,
-      // 主题刷新（暗色切换 / DPR 变化 / refreshTheme）：契约⑤（评审 6 P9）——
-      // wrap 缓存失效 + 变高行全量快速重估 + rebuild + 窗口重精算 + 锚定在壳
-      // onChange 处理器（relayout 前），theme.js 仅发信号
-      onChange: () => onThemeChange()
-    })
-
-    // 首帧：canvas 入文档布局后 relayout + 绘制（A2）
-    nextTick(relayoutAndRedraw)
-  })
-
-  onUnmounted(() => {
-    hideCellTooltip()
-    editor.destroy()
-    themeWatcher?.destroy()
-    painter?.dispose()
-    scrollFrame.cancel()
-    onResize.cancel()
   })
 </script>

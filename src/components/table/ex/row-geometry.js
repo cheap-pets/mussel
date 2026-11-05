@@ -3,6 +3,7 @@
 import { estimateLineCount, wrapLines, cellFontOf } from './text-wrap'
 import { CELL_PADDING_FALLBACK } from './constants'
 import { spanHeightRoleOf } from './spans'
+import { createFenwick } from './fenwick'
 
 // uniform：O(1) 算式（topAt = i×h、visibleRange 与 layout.computeViewRows 恒等）；
 // variable：Float64Array + 内部 Fenwick 树（前缀和/单点加/偏移定位 O(log n)）
@@ -153,64 +154,6 @@ function rowMetricsOf (theme) {
 /** 树形列 inset（treeIndents(colIndex, row) 回调；无树传 null/undefined 零成本） */
 function insetOf (treeIndents, colIndex, row) {
   return treeIndents ? treeIndents(colIndex, row) || 0 : 0
-}
-
-// —— Fenwick 树（BIT，Float64Array；A2.3 选型） ——
-
-function buildFenwick (values) {
-  const n = values.length
-  const tree = new Float64Array(n + 1)
-
-  for (let i = 1; i <= n; i++) {
-    tree[i] += values[i - 1]
-    const parent = i + (i & -i)
-
-    if (parent <= n) tree[parent] += tree[i]
-  }
-
-  return tree
-}
-
-function createFenwick (values) {
-  const n = values.length
-  let tree = buildFenwick(values)
-  // 倍增下降的最高 2 幂
-  let power = 1
-
-  while (power * 2 <= n) power *= 2
-
-  return {
-    add (index, delta) {
-      for (let k = index + 1; k <= n; k += k & -k) tree[k] += delta
-    },
-    /** 前 count 项和（count = 行数） */
-    prefix (count) {
-      let sum = 0
-
-      for (let k = Math.min(count, n); k > 0; k -= k & -k) sum += tree[k]
-
-      return sum
-    },
-    /** 偏移定位（倍增下降）：前 pos 项和 ≤ offset 的最大 pos（∈ [0, n]） */
-    findRowAtOffset (offset) {
-      let pos = 0
-      let remaining = offset
-
-      for (let step = power; step > 0; step >>= 1) {
-        const next = pos + step
-
-        if (next <= n && tree[next] <= remaining) {
-          pos = next
-          remaining -= tree[next]
-        }
-      }
-
-      return pos
-    },
-    rebuild (nextValues) {
-      tree = buildFenwick(nextValues)
-    }
-  }
 }
 
 /** 等高行几何（O(1) 算式；visibleRange 与 layout.computeViewRows 算式恒等） */

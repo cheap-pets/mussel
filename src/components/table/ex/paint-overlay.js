@@ -1,0 +1,180 @@
+/** 分区 5 覆盖层（hover/编辑感知/树箭头主色/编辑按钮） */
+import { drawTreeArrow, drawIconGlyph } from './cell-painters.js'
+import { editorRectOf, editorGridlineFlagsOf, editButtonRectOf } from './editor.js'
+import { resolveIconEntry } from '../column-types/icon'
+import { expandableAt, isExpandedKey } from './tree.js'
+import {
+  TREE_INDENT,
+  CELL_PADDING_FALLBACK,
+  ROW_TOP_INSET,
+  ROW_HEIGHT_FALLBACK,
+  EDIT_BUTTON_AREA,
+  EDIT_BUTTON_ICON_SIZE
+} from './constants.js'
+import { viewportColX, viewportRowY, rowsOf, recordKeyOf, withClip } from './paint-utils'
+import { regionAt, spanRectOf } from './spans.js'
+
+// —— 分区 5：覆盖层 ——
+
+/** 树箭头 hover 主色（A2.4）：hover 命中树形列父行格时，覆盖层以主色重画箭头
+    三角盖住分区 1 的常态箭头；粒度为格级（槽位级命中需壳改动） */
+function paintTreeArrowAccent (ctx, state) {
+  const { hover, flatInfo, columns, theme } = state
+
+  if (!hover || !flatInfo) return
+
+  const column = columns?.[hover.col]
+
+  if (!column?._isTreeColumn || !expandableAt(flatInfo, hover.row)) return
+
+  const record = rowsOf(state)?.[hover.row]
+
+  if (record == null) return
+
+  const rowHeight = theme?.rowHeight || ROW_HEIGHT_FALLBACK
+  const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
+  const level = flatInfo.levels?.[hover.row] ?? 0
+  const x = viewportColX(state.layout, hover.col) + padding + level * TREE_INDENT
+  // centerY = 首行行框槽位锚中点原式（cell-painters 内容锚四舍五入，差 0.5px）；
+  // 不用 heightAt/2——超高行中两分区会错位出双层边
+  const centerY = viewportRowY(state.layout, hover.row) + ROW_TOP_INSET + (rowHeight - ROW_TOP_INSET) / 2
+
+  drawTreeArrow(
+    ctx,
+    x,
+    centerY,
+    isExpandedKey(state.expandedKeys, recordKeyOf(state, record, hover.row)),
+    theme?.colors?.primary?.color ?? theme?.primaryColor
+  )
+}
+
+function hoverModeShows (mode, kind) {
+  return mode === kind || mode === 'cross'
+}
+
+function paintHoverRow (ctx, layout, row) {
+  ctx.fillRect(0, viewportRowY(layout, row), layout.stickyWidth, layout.rowGeometry.heightAt(row))
+}
+
+function paintHoverCol (ctx, layout, col) {
+  ctx.fillRect(
+    viewportColX(layout, col),
+    layout.headHeight,
+    layout.colWidths[col] || 0,
+    layout.stickyHeight - layout.headHeight
+  )
+}
+
+/** hover 高亮矩形（fillStyle 由调用方预设为 hoverBg）：按模式与命中有效性。
+    cell 模式经 spanRectOf 取区域矩形（合并区域整体高亮，§5.1）；row/column/cross
+    维持物理行/列矩形不动（正交语义，写入文档 §2.5） */
+function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid, spans) {
+  if (hoverModeShows(mode, 'row') && rowValid) paintHoverRow(ctx, layout, hover.row)
+
+  if (hoverModeShows(mode, 'column') && colValid) paintHoverCol(ctx, layout, hover.col)
+
+  if (mode === 'cell' && rowValid && colValid) {
+    const rect = spanRectOf(layout, hover.row, hover.col, spans)
+
+    ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+  }
+}
+
+/** 可编辑格 hover 感知（A5.3）：1px 主色描边，矩形与编辑浮层盒 import 同一
+    editorRectOf 同源同位（贴格线内侧，合并区域按区域矩形 + 区域外缘格线内缩）；
+    不占布局、随 hover 带重绘生效 */
+function paintHoverEditorStroke (ctx, state, hover) {
+  if (!state.editable || !state.isCellEditableFn) return
+
+  const column = state.columns?.[hover.col]
+
+  if (!column || !state.isCellEditableFn(column)) return
+
+  const { layout, spans } = state
+  const region = regionAt(spans, hover.row, hover.col)
+  const rect = editorRectOf(
+    spanRectOf(layout, hover.row, hover.col, spans),
+    editorGridlineFlagsOf({
+      rowIndex: hover.row,
+      colIndex: hover.col,
+      colCount: layout.colWidths.length,
+      stickyWidth: layout.stickyWidth,
+      contentWidth: layout.contentWidth,
+      gridlines: state.gridlines,
+      rowFrom: region?.rowFrom,
+      colTo: region?.colTo
+    })
+  )
+
+  ctx.strokeStyle = state.theme.primaryColor
+  ctx.lineWidth = 1
+  ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
+}
+
+/** 编辑按钮绘制（问题 5，覆盖层最上层）：hover 格所在列配 editButton.icon（注册
+    名，resolveIconEntry 查表，未注册不绘制）时，经 editButtonRectOf 取区矩形
+    （合并区域 = spanRectOf 区域矩形，§5.1）、drawIconGlyph 绘制（svg 走
+    requestIconImage 缓存管线、cls 直绘注册表 glyph；色 = theme.textColor，尺寸 =
+    EDIT_BUTTON_ICON_SIZE，x 左对齐区内 16px 槽、centerY = 区矩形中心），onLoad 经
+    state.onImageLoad 转 invalidateCell；hoverMode none 随覆盖层抑制 */
+function paintEditButton (ctx, state, hover) {
+  const column = state.columns?.[hover.col]
+  const icon = resolveIconEntry(column?.editButton?.icon)
+
+  if (!icon) return
+
+  const { theme } = state
+  const rect = editButtonRectOf(
+    spanRectOf(state.layout, hover.row, hover.col, state.spans),
+    {
+      padding: theme?.cellPadding || CELL_PADDING_FALLBACK,
+      rowHeight: theme?.rowHeight || ROW_HEIGHT_FALLBACK
+    }
+  )
+
+  drawIconGlyph(ctx, icon, {
+    x: rect.x + (EDIT_BUTTON_AREA - EDIT_BUTTON_ICON_SIZE) / 2,
+    centerY: rect.y + rect.height / 2,
+    size: EDIT_BUTTON_ICON_SIZE,
+    color: theme.textColor,
+    onLoad: () => state.onImageLoad?.(hover.row, hover.col)
+  })
+}
+
+/** hover 叠加：高亮底色 → 可编辑格描边 → 树箭头主色 → 编辑按钮（顺序固定）。
+    统一裁剪到表体区：高亮矩形按视口 y 起画，行滚入表头后整幅绘制无外层收敛，
+    半透明 hover 底色会叠上表头底色形成变色带（行带/列带/单格脏区路径外层 clip
+    已收敛到表体区，此处裁剪对它们为冗余交集）；调宽参考线不在此函数，全高不受影响 */
+function paintHoverOverlay (ctx, state, hover, mode) {
+  const { layout, theme } = state
+  const rowCount = rowsOf(state)?.length ?? 0
+  const rowValid = hover.row >= 0 && hover.row < rowCount
+  const colValid = hover.col >= 0 && hover.col < layout.colWidths.length
+
+  ctx.fillStyle = theme.hoverBg
+
+  withClip(ctx, [0, layout.headHeight, layout.stickyWidth, layout.stickyHeight - layout.headHeight], () => {
+    paintHoverHighlight(ctx, layout, hover, mode, rowValid, colValid, state.spans)
+
+    if (rowValid && colValid) {
+      paintHoverEditorStroke(ctx, state, hover)
+
+      paintTreeArrowAccent(ctx, state)
+
+      paintEditButton(ctx, state, hover)
+    }
+  })
+}
+
+export function paintOverlay (ctx, state) {
+  const { layout, theme, hover } = state
+  const mode = state.hoverMode || 'row'
+
+  if (hover && mode !== 'none') paintHoverOverlay(ctx, state, hover, mode)
+
+  // 调宽拖拽参考线：1px 主色、全高（A2 分区 5）
+  if (state.resizeGuideX != null) {
+    ctx.fillStyle = theme.primaryColor
+    ctx.fillRect(Math.round(state.resizeGuideX), 0, 1, layout.stickyHeight)
+  }
+}
