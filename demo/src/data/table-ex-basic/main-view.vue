@@ -56,11 +56,22 @@
         <span>gridlines</span>
         <mu-radio-group
           v-model="gridlines"
-          :options="['all', 'row', 'column', 'none']" />
+          :options="[
+            { value: 'all', label: 'all' },
+            { value: 'row', label: 'row' },
+            { value: 'column', label: 'column' },
+            { value: 'none', label: 'none' }
+          ]" />
         <span>hover 模式</span>
         <mu-radio-group
           v-model="hoverMode"
-          :options="['row', 'column', 'cross', 'cell', 'none']" />
+          :options="[
+            { value: 'row', label: 'row' },
+            { value: 'column', label: 'column' },
+            { value: 'cross', label: 'cross' },
+            { value: 'cell', label: 'cell' },
+            { value: 'none', label: 'none' }
+          ]" />
         <mu-switch v-model="striped" label="striped" />
       </div>
       <mu-table-ex
