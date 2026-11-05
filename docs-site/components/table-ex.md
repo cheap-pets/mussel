@@ -53,6 +53,7 @@
       type: 'button',
       width: 150,
       buttons: record => [
+        { icon: 'search', color: 'primary' },
         { caption: '查看', color: 'primary' },
         { caption: '删除', color: 'danger', disabled: record.active }
       ]
@@ -175,6 +176,7 @@ const columns = [
   { field: 'memo', caption: '备注', width: 220, maxLines: 2, editor: true },  // textarea
   { caption: '操作', type: 'button', width: 150,
     buttons: record => [
+      { icon: 'search', color: 'primary' },     // 图标按钮：caption 留空时生效
       { caption: '查看', color: 'primary' },
       { caption: '删除', color: 'danger', disabled: record.active }
     ] }
@@ -256,6 +258,7 @@ function onCellValue ({ record, column, value }) {
 | `tree-collapse` | `{ key, record, level }` | 展开箭头 toggle 收起 |
 | `update:cell-value` | `{ record, recordIndex, column, value }` | check 翻转与编辑提交（较 MuTable 多 `recordIndex`）|
 | `cell-item-click` | `{ record, recordIndex, column, link/tag/button }` | 条目点击（较 MuTable 多 `recordIndex`；`button` 列载荷为按钮配置项）|
+| `edit-button-click` | `{ record, recordIndex, column }` | 点击列 `editButton` 图标按钮（不选中行、不开编辑）|
 
 | 插槽 | 说明 |
 |------|------|
@@ -278,24 +281,46 @@ function onCellValue ({ record, column, value }) {
 |------|------|------|
 | `editable` | Boolean | 列级编辑开关，`false` 关闭 |
 | `editor` | Boolean\|Object | 编辑器配置：`true` 按列类型自动选择；对象 `{ type, props, validate, border }`，见下 |
-| `editorButton` | Object | `{ icon, onClick }`：hover 时单元格右侧显示图标按钮（`icon` 为 SVG 字符串或图片 URL），点击回调 `({ record, recordIndex, column })`，不触发选中 / 编辑 |
+| `editButton` | Object | `{ icon }`：hover 时单元格右侧显示图标按钮（`icon` 为 `installIcons` 注册名），点击发 `edit-button-click` 事件（载荷 `{ record, recordIndex, column }`），不触发选中 / 编辑 |
 | `maxLines` | Number | 文本最大行数（1–10）：`> 1` 时自动折行，超出省略；替代 `multiline` + `lineClamp`（两者仍兼容）|
 | `maxItems` | Number | `link` / `tag` / `button` 条目最大显示数（1–10，默认 10），超出以 `...` 省略 |
 | `resizable` | Boolean | `false` 禁止拖拽该列宽；`minWidth`（缺省 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |
 | `treeNode` | Boolean | 树模式下显示展开箭头与缩进的列，缺省为首个非 `check` / `rec_no` 列 |
 | `progressOption` | Object\|Function | `progress` 列：`{ color, showText }`，`color` 为主题色名（缺省 `primary`），`showText: false` 隐藏百分比；可为 `record => option` |
-| `buttons` | Array\|Function | `button` 列：`[{ caption, color, disabled }]` 或 `record => 数组`，`color` 为主题色名 |
+| `buttons` | Array\|Function | `button` 列：`[{ caption, icon, color, disabled }]` 或 `record => 数组`，`color` 为主题色名；`icon` 为图标注册名，与 `caption` 互斥（文本优先：有 `caption` 时 `icon` 忽略），仅图标时为图标按钮；未注册名且无 `caption` 时该条目不绘制 |
+
+> [!IMPORTANT]
+> **v4.3.0 破坏性变更（`editorButton` → `editButton`）**：v4.2.0 引入的 `editorButton` 旧协议已移除，无兼容层。
+> - 键名 `column.editorButton` → `column.editButton`（即使 `icon` 已是注册名也须改键名）。
+> - `icon` 仅接受 `installIcons` 注册名：svg 字符串先注册再引用；图片 URL 不再支持，转为 svg 字符串或 icon-font class 注册。
+> - `onClick` 属性移除，改组件事件 `@edit-button-click`，载荷形状不变。
+>
+> ```javascript
+> // v4.2.0
+> const columns = [{ field: 'amount', editorButton: { icon: pencilSvg, onClick: p => edit(p.record) } }]
+>
+> // v4.3.0
+> installIcons({ pencil: pencilSvg })
+> const columns = [{ field: 'amount', editButton: { icon: 'pencil' } }]
+> ```
+>
+> ```html
+> <mu-table-ex :columns="columns" @edit-button-click="p => edit(p.record)" />
+> ```
 
 ### 扩展列类型
 
 | 类型 | 说明 | 默认对齐 |
 |------|------|---------|
 | `progress` | 进度条，值 0–100，配合 `progressOption` | left |
-| `button` | 轻量按钮组，配合 `buttons`；点击发 `cell-item-click`（载荷 `button`）| left |
+| `button` | 轻量按钮组，配合 `buttons`（文本 / 图标按钮，互斥文本优先）；点击发 `cell-item-click`（载荷 `button`）| left |
+| `icon` | 图标列（MuTable 同源类型），值为图标注册名，配合 `color` / `iconOption`，详见 [MuTable · 图标列](./table) | center |
+
+`button` 图标按钮：仅设 `icon`（`caption` 留空）时渲染纯图标按钮，宽 = 高 = `--mu-control-height-small`（默认 24，图标水平垂直居中；`column.link` 链接形态无 pill，宽 = 图标本体）。v4.3.0 起 pill 高度随 `--mu-control-height-small` 变量（原固定 20），覆盖该变量的主题自动跟随。
 
 ## 单元格编辑器
 
-开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `tag` / `img` / `button` / `progress` 列不可编辑，单击单元格进入编辑。
+开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `tag` / `img` / `button` / `progress` / `icon` 列不可编辑，单击单元格进入编辑。
 
 编辑器类型（`editor.type` 显式指定优先，可选 `input` / `select` / `date` / `switch` / `textarea`）：
 

@@ -77,7 +77,7 @@
 
 # 表格 MuTable
 
-数据驱动的表格组件：通过 `columns` 配置列（12 种列类型）、`records` 传入数据，内置单选、勾选、排序、斑马纹、hover 高亮、固定列等能力。
+数据驱动的表格组件：通过 `columns` 配置列（13 种列类型）、`records` 传入数据，内置单选、勾选、排序、斑马纹、hover 高亮、固定列等能力。
 
 大数据量、单元格编辑、树形展示、列宽拖拽场景请使用 [MuTableEx](./table-ex)（canvas 渲染，属性 / 事件 / 列配置与本组件同源）。
 
@@ -117,9 +117,24 @@
 | `link` | 链接，配合 `links` 函数或字段值 | left |
 | `tag` | 标签，配合 `tags` 函数或字段值 | left |
 | `img` / `image` | 图片缩略图 | left |
+| `icon` | 图标，值为图标注册名，配合 `color` / `iconOption`（见下「图标列」） | center |
 | `enum` | 枚举显示映射，独占 `mappings` / `options`；映射值可为 `{ text, color, class, style }` 对象 | center |
 
 `type` 也可直接传自定义类型对象 `{ align, width, compile: column => ({ record, value, recordNumber, emit }) => ({ text } | { items }) }`。
+
+## 图标列 `icon`
+
+值为图标注册名（string）——不支持 svg 字符串 / 图片 URL 直传。`color` 设色（主题色名或 `(record, value) => 色名`），`iconOption: { size }` 设尺寸（默认 16）；纯展示、不可编辑，空值 / 未注册名显示 `placeholder`。
+
+内置注册名 32 个，直接按名使用：
+
+`X` `check` `x` `ok` `info` `alert` `question` `chevronUp` `chevronDown` `chevronLeft` `chevronRight` `arrowDownLeft` `arrowUpRight` `list` `grid` `dots` `search` `file` `folder` `folderOpen` `sun` `moon` `star` `starred` `leftCollapse` `leftExpand` `clock` `calendar` `loading` `windowClose` `treeNodeExpand` `dropdownExpand`
+
+业务图标经 `installIcons` 注册后按名引用（svg 字符串或 icon-font class，用法见[图标 MuIcon](./icon)），运行时注册对后续渲染即时生效：
+
+```javascript
+const columns = [{ field: 'priority', caption: '优先级', type: 'icon', color: 'warning', iconOption: { size: 20 } }]
+```
 
 ## 显示映射 `mappings` / `options`
 
@@ -306,5 +321,6 @@ function onHeaderClick (column) {
 | `linkOption` | Object | `{ max, class, style, color, danger, disabled }`，为全部链接项设置缺省值 |
 | `tags` | Function | 标签生成函数 `(record, value) => 标签数组`（`tag` 类型）|
 | `tagOption` | Object | `{ max, class, style, pill, flat, color }` |
+| `iconOption` | Object | `{ size }`（`icon` 类型）：图标尺寸（Number，默认 16）|
 | `disabled` | Function | 禁用函数（`check` 类型）|
 | `headerCheckbox` | Boolean | 显示表头全选框（`check` 类型）；需同时传表格级 `header-checked` prop |

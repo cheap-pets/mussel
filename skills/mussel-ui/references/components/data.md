@@ -167,6 +167,7 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 | `linkOption` | Object | `{ max, class, style, color, danger, disabled }`，为全部链接项设置缺省值 |
 | `tags` | Function | 标签生成函数 `(record, value) => 标签数组`（`tag` 类型）；不传时按字段值转换 |
 | `tagOption` | Object | `{ max, class, style, pill, flat, color }` |
+| `iconOption` | Object | `{ size }`（`icon` 类型）：图标尺寸（Number，默认 16）|
 | `disabled` | Function | 禁用函数（`check` 类型）|
 | `headerCheckbox` | Boolean | 显示表头全选框（`check` 类型）；需同时传表格级 `header-checked` prop 才实际显示 |
 
@@ -185,7 +186,12 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 | `link` | 链接，配合 `links` 函数 | left | — |
 | `tag` | 标签，配合 `tags` 函数 | left | — |
 | `img` / `image` | 图片缩略图 | left | — |
+| `icon` | 图标，值为 `installIcons` 注册名（仅此一种形态），配合 `color` / `iconOption`；纯展示、不可编辑 | center | — |
 | `enum` | 枚举显示映射，独占 `mappings` / `options`；映射值可为 `{ text, color, class, style }` 对象 | center | — |
+
+> **`icon` 列**：value 为图标注册名（string），经 `field` / `value` 取值——不支持 svg 串 / 图片 URL / 对象 / 数组直传。`column.color` 设色（主题色名或 `(record, value) => 色名`，与 `text` 列同契约，缺省正文色）；`iconOption: { size }` 设尺寸（Number，默认 16，canvas / DOM 双通道生效）。缺省对齐 `center`；纯展示、无条目点击；空值 / 非 string / 未注册名落 `placeholder` 占位（后两者 dev 环境 warn 一次）。`title: true` 时 DOM 通道条目挂原生 title（显示注册名），canvas 通道不触发。
+>
+> 内置注册名 32 个：`X` `check` `x` `ok` `info` `alert` `question` `chevronUp` `chevronDown` `chevronLeft` `chevronRight` `arrowDownLeft` `arrowUpRight` `list` `grid` `dots` `search` `file` `folder` `folderOpen` `sun` `moon` `star` `starred` `leftCollapse` `leftExpand` `clock` `calendar`（28 个 Tabler 图标）+ `loading` `windowClose` `treeNodeExpand` `dropdownExpand`（4 个组合项，自带动画）。其余图标经 `installIcons({ 名称: svg串或class串 })` 注册后按名引用；运行时注册对新行 / 重绘即时生效。
 
 #### 完整示例
 
@@ -268,6 +274,7 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；p
 | `tree-collapse` | `{ key, record, level }` | 展开箭头 toggle 收起 |
 | `update:cell-value` | `{ record, recordIndex, column, value }` | check 翻转与编辑提交（较 `MuTable` 多 `recordIndex`）|
 | `cell-item-click` | `{ record, recordIndex, column, link/tag/button }` | 条目点击（较 `MuTable` 多 `recordIndex`；`button` 列载荷为按钮配置项）|
+| `edit-button-click` | `{ record, recordIndex, column }` | 点击列 `editButton` 图标按钮（不选中行、不开编辑）|
 
 | 插槽 | 说明 |
 |------|------|
@@ -290,24 +297,24 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；p
 |------|------|------|
 | `editable` | Boolean | 列级编辑开关，`false` 关闭 |
 | `editor` | Boolean\|Object | 编辑器配置：`true` 按列类型自动选择；对象 `{ type, props, validate, border }`，见下方「单元格编辑」|
-| `editorButton` | Object | `{ icon, onClick }`：hover 时单元格右侧显示图标按钮（`icon` 为 SVG 字符串或图片 URL），点击回调 `({ record, recordIndex, column })`，不触发选中 / 编辑 |
+| `editButton` | Object | `{ icon }`：hover 时单元格右侧显示图标按钮（`icon` 为 `installIcons` 注册名），点击发 `edit-button-click` 事件（载荷 `{ record, recordIndex, column }`），不触发选中 / 编辑 |
 | `maxLines` | Number | 文本最大行数（1–10）：`> 1` 时自动折行，超出省略；替代 `multiline` + `lineClamp`（两者仍兼容）|
 | `maxItems` | Number | `link` / `tag` / `button` 条目最大显示数（1–10，默认 10），超出以 `...` 省略 |
 | `resizable` | Boolean | `false` 禁止拖拽该列宽；`minWidth`（缺省 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |
 | `treeNode` | Boolean | 树模式下显示展开箭头与缩进的列，缺省为首个非 `check` / `rec_no` 列 |
 | `progressOption` | Object\|Function | `progress` 列：`{ color, showText }`，`color` 为主题色名（缺省 `primary`），`showText: false` 隐藏百分比；可为 `record => option` |
-| `buttons` | Array\|Function | `button` 列：`[{ caption, color, disabled }]` 或 `record => 数组`，`color` 为主题色名 |
+| `buttons` | Array\|Function | `button` 列：`[{ caption, icon, color, disabled }]` 或 `record => 数组`，`color` 为主题色名；`icon` 为图标注册名，与 `caption` 互斥（文本优先：有 `caption` 时 `icon` 忽略），仅图标时宽 = 高 = `--mu-control-height-small`（默认 24，图标居中；`link` 形态无 pill，宽 = 图标本体）；未注册名且无 `caption` 时该条目不绘制 |
 
 #### 扩展列类型
 
 | 类型 | 说明 | 默认对齐 |
 |------|------|---------|
 | `progress` | 进度条，值 0–100，配合 `progressOption` | left |
-| `button` | 轻量按钮组，配合 `buttons`；点击发 `cell-item-click`（载荷 `button`）| left |
+| `button` | 轻量按钮组，配合 `buttons`（文本 / 图标按钮，互斥文本优先）；点击发 `cell-item-click`（载荷 `button`）| left |
 
 #### 单元格编辑
 
-- 开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `tag` / `img` / `button` / `progress` 列不可编辑。单击单元格进入编辑。
+- 开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `tag` / `img` / `button` / `progress` / `icon` 列不可编辑。单击单元格进入编辑。
 - 编辑器类型（`editor.type` 显式指定优先，可选 `input` / `select` / `date` / `switch` / `textarea`）：
 
 | 列类型 | 缺省编辑器 |
