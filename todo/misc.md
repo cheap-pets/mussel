@@ -8,3 +8,5 @@
   * 统一列表型子元素的快捷定义方式
 * 增加 MuSteps 组件，用于显示步骤指引
 * MuDialog 去掉 autoOrBool 类型属性
+
+* table-ex edit-button 改为 cell-button，同步改事件名。进入编辑态后不显示。

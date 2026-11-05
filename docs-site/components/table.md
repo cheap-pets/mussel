@@ -52,8 +52,8 @@
       type: 'link',
       linkOption: { max: 3 },
       links: (record) => [
-        { caption: '编辑', action: 'edit' },
-        { caption: '删除', action: 'delete', danger: true }
+        { label: '编辑', action: 'edit' },
+        { label: '删除', action: 'delete', danger: true }
       ]
     }
   ]
@@ -70,14 +70,15 @@
       : `${column.field}:asc`
   }
 
-  function onCellItemClick ({ link, tag }) {
-    console.log('cell-item-click', (link || tag)?.caption)
+  function onCellItemClick ({ item, tag }) {
+    const entry = item || tag
+    console.log('cell-item-click', entry?.label ?? entry?.caption)
   }
 </script>
 
 # 表格 MuTable
 
-数据驱动的表格组件：通过 `columns` 配置列（13 种列类型）、`records` 传入数据，内置单选、勾选、排序、斑马纹、hover 高亮、固定列等能力。
+数据驱动的表格组件：通过 `columns` 配置列（15 种列类型）、`records` 传入数据，内置单选、勾选、排序、斑马纹、hover 高亮、固定列等能力。
 
 大数据量、单元格编辑、树形展示、列宽拖拽场景请使用 [MuTableEx](./table-ex)（canvas 渲染，属性 / 事件 / 列配置与本组件同源）。
 
@@ -113,9 +114,11 @@
 | `check` | 复选勾选 | center |
 | `bool` | 布尔，缺省显示 是 / 否，可配 `trueText` / `falseText` | center |
 | `date` / `datetime` | 日期（时间）格式化，配合 `format` / `formatter` | right |
-| `number` / `currency` | 数字 / 货币格式化，配合 `formatOption` / `locale` | right |
-| `link` | 链接，配合 `links` 函数或字段值 | left |
+| `number` / `currency` | 数字 / 货币格式化，配合 `formatOption` / `locales` | right |
+| `link` | 链接（竖排，每项一行），配合 `links` 函数或字段值 | left |
+| `list` | 条目列（竖排，每项一行、超长省略），仅接受数组值，配合 `listItems` / `listOption`（见下「条目列」） | left |
 | `tag` | 标签，配合 `tags` 函数或字段值 | left |
+| `button` | 轻量按钮组，配合 `buttons`（文本 / 图标按钮） | left |
 | `img` / `image` | 图片缩略图 | left |
 | `icon` | 图标，值为图标注册名，配合 `color` / `iconOption`（见下「图标列」） | center |
 | `enum` | 枚举显示映射，独占 `mappings` / `options`；映射值可为 `{ text, color, class, style }` 对象 | center |
@@ -124,7 +127,7 @@
 
 ## 图标列 `icon`
 
-值为图标注册名（string）——不支持 svg 字符串 / 图片 URL 直传。`color` 设色（主题色名或 `(record, value) => 色名`），`iconOption: { size }` 设尺寸（默认 16）；纯展示、不可编辑，空值 / 未注册名显示 `placeholder`。
+值为图标注册名（string）——不支持 svg 字符串 / 图片 URL 直传。`color` 设色（主题色名或 `(record, value) => 色名`），`iconOption: { size }` 设尺寸（默认 16）；纯展示、不可编辑，空值 / 非 string / 未注册名显示 `placeholder`（后两者 dev 警告）。
 
 内置注册名 32 个，直接按名使用：
 
@@ -134,6 +137,27 @@
 
 ```javascript
 const columns = [{ field: 'priority', caption: '优先级', type: 'icon', color: 'warning', iconOption: { size: 20 } }]
+```
+
+## 条目列 `list` / `link` / `button`
+
+`list` / `link` 为竖排条目（每项一行、超长省略），`button` 为横排按钮组：
+
+- `list` 仅接受数组值：条目为 `string` / `number` / `{ label, color, disabled, ...任意属性 }`（标准键 `label`，扩展属性随条目原样传出）；`listItems` 自定义取值，`listOption: { max, color, disabled, class, style }` 设缺省值与超限省略（`color` 仅列级 `link: true` 时生效）。
+- 列级 `link: true` 整列条目按链接样式渲染（缺省 `primary` 色，条目 `color` 覆盖），纯文本条目同样可点击；`disabled` 条目置灰且点击拦截。
+- `link` 为 `list` 的兼容形态：`links` 函数或字段值生成链接项 `{ label, color, danger, disabled }`（`caption` 键兼容），`linkOption: { max, danger, disabled, class, style }`；`danger: true` 等价链接色 `danger`。
+- `button` 渲染 `mu-button` 按钮组（恒 small 尺寸）：`buttons: [{ caption, icon, color, disabled }]`，`icon`（注册名）与 `caption` 互斥、文本优先，`color` 仅 `normal` / `primary` / `secondary` / `danger`（超出回退缺省色）；`caption` 为空且 `icon` 未注册的条目不渲染。
+- 条目点击均发 `cell-item-click`：`list` / `link` 列载荷键 `item`、`tag` 列 `tag`、`button` 列 `button`。
+
+```javascript
+const columns = [
+  { field: 'owners', caption: '负责人', type: 'list', listOption: { max: 3 }, link: true },
+  { field: 'actions', caption: '操作', type: 'button', width: 140,
+    buttons: record => [
+      { caption: '编辑', color: 'primary' },
+      { caption: '删除', color: 'danger', disabled: record.locked }
+    ] }
+]
 ```
 
 ## 显示映射 `mappings` / `options`
@@ -171,11 +195,12 @@ const columns = [
   { field: 'status', caption: '状态', type: 'enum',
     mappings: { active: '启用', inactive: '停用', default: '未知' } },
   { field: 'created', caption: '创建时间', type: 'date', format: 'yyyy-MM-dd' },
+  { field: 'owners', caption: '负责人', type: 'list', listOption: { max: 3 }, link: true },
   { field: 'actions', caption: '操作', type: 'link',
     linkOption: { max: 3 },
     links: (record) => [
-      { caption: '编辑', action: 'edit' },
-      { caption: '删除', action: 'delete', danger: true }
+      { label: '编辑', action: 'edit' },
+      { label: '删除', action: 'delete', danger: true }
     ]
   }
 ]
@@ -268,7 +293,7 @@ function onHeaderClick (column) {
 |------|------|------|
 | `header-click` | `column` | 表头点击 |
 | `cell-click` | `{ record, recordIndex, column }` | 单元格点击 |
-| `cell-item-click` | `{ record, column, link/tag }` | 单元格内链接/标签点击 |
+| `cell-item-click` | `{ record, column, item/tag/button }` | 单元格内条目点击（`link` / `list` 列载荷键 `item`、`tag` 列 `tag`、`button` 列 `button`，值为条目对象原引用，超限省略项为 `'...'`） |
 | `update:selected-record` | `record` | 选中记录变更 |
 | `update:selected-record-key` | `key` | 选中 key 变更 |
 | `update:header-checked` | `column, value` | 表头全选框切换 |
@@ -305,20 +330,24 @@ function onHeaderClick (column) {
 | `sortable` | Boolean | 是否可排序 |
 | `text` | String\|Function | 单元格显示文本（可覆盖默认值，优先于 `mappings` / `options`）|
 | `value` | String\|Function | 单元格值（可覆盖 field）|
-| `title` | String\|Function | 单元格 title（`true` 时为 link/tag 类型开启省略项的 title 提示）|
+| `title` | String\|Function\|Boolean | `true` 时为单元格 / 省略项挂原生 title（`MuTableEx` 为溢出才显示的 tooltip）；String / Function 为自定义提示文本 |
+| `link` | Boolean | 列级链接形态：`text` 列渲染链色文本（缺省 `primary` 色）；`list` / `button` 列条目按链接样式渲染，整列统一生效 |
 | `class` / `style` | String\|Function | 单元格 class / 样式 |
-| `headerClass` / `headerStyle` | String\|Function | 表头 class / 样式 |
+| `headerClass` / `headerStyle` | String | 表头 class / 样式（静态值，不支持函数） |
 | `mappings` | Object | 显示映射（`enum` 列），见「显示映射」；映射值可为 `{ text, color, class, style }` 对象 |
 | `options` | Array | 选项数组自动转换为显示映射（`enum` 列，格式同 `mu-select`），`mappings` 优先 |
 | `multiline` | Boolean | 多行文本（`text` 类型）|
 | `lineClamp` | Number\|Function | 行数限制（`text` 类型）|
-| `color` | String\|Function | 单元格文本色（主题色名），可为 `(record, value) => 色名`（`text` / `bool` / `date` / `datetime` / `number` / `currency` 类型）|
+| `color` | String\|Function | 单元格文本色（主题色名），可为 `(record, value) => 色名`（`text` / `bool` / `date` / `datetime` / `number` / `currency` / `icon` 类型）|
 | `format` | String | 日期格式（`date` / `datetime` 类型）|
 | `formatter` | Function | 日期格式化函数 `(value, format) => text` |
 | `formatOption` | Object | `Intl.NumberFormat` 选项（`number` / `currency` 类型）|
-| `locale` / `locales` | String | 数字 / 货币格式化 locale（默认 `'zh-CN'`）|
-| `links` | Function | 链接生成函数 `(record, value) => 链接数组`（`link` 类型），链接项 `{ caption, color, danger, disabled }`；不传时按字段值转换 |
-| `linkOption` | Object | `{ max, class, style, color, danger, disabled }`，为全部链接项设置缺省值 |
+| `locales` | String | 数字 / 货币格式化 locale（默认 `'zh-CN'`）|
+| `listItems` | Function | 条目生成函数 `(record, value) => 条目数组`（`list` 类型）；不传时取字段值，仅接受数组 |
+| `listOption` | Object | `{ max, color, disabled, class, style }`（`list` 类型），见「条目列」 |
+| `links` | Function | 链接生成函数 `(record, value) => 链接数组`（`link` 类型），链接项 `{ label, color, danger, disabled }`（`caption` 键兼容）；不传时按字段值转换 |
+| `linkOption` | Object | `{ max, danger, disabled, class, style }`（`link` 类型）|
+| `buttons` | Array\|Function | 按钮数组 `[{ caption, icon, color, disabled }]` 或 `record => 数组`（`button` 类型），见「条目列」 |
 | `tags` | Function | 标签生成函数 `(record, value) => 标签数组`（`tag` 类型）|
 | `tagOption` | Object | `{ max, class, style, pill, flat, color }` |
 | `iconOption` | Object | `{ size }`（`icon` 类型）：图标尺寸（Number，默认 16）|

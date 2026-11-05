@@ -87,7 +87,7 @@
 
 # 表格 MuTableEx
 
-canvas 渲染的高性能表格：只绘制可视区域，适合大数据量。属性 / 事件 / 列配置与 [MuTable](./table) 完全同源，并扩展单元格编辑、列宽拖拽、树形展示及 `progress` / `button` 列类型。
+canvas 渲染的高性能表格：只绘制可视区域，适合大数据量。属性 / 事件 / 列配置与 [MuTable](./table) 完全同源，并扩展单元格编辑、列宽拖拽、树形展示、合并单元格、单元格选中/复制及 `progress` 列类型（`button` 列两组件通用）。
 
 > [!IMPORTANT]
 >
@@ -226,10 +226,40 @@ function onCellValue ({ record, column, value }) {
 
 全部展开 / 收起经 ref 调用 `expandAll()` / `collapseAll()`。
 
+## 合并单元格
+
+两种声明方式：
+
+- 表格级 `span-method(info)`：每行调用一次（`info = { record, recordIndex, recordNumber, prevRecord, nextRecord, columns }`），返回 `{ [列 key 或 field]: rowspan | { rowspan, colspan | 'rest' } } | null` 声明该行作为主行的合并区域（`'rest'` 占满至本列所在分区末列——固定列区 / 滚动区各自为界）；键先按 `column.key` 精确匹配，否则按 `field` 匹配。
+- 列级 `autoRowSpan`：`true` 按显示值（含 `mappings` 映射）分组、传字段名按字段值分组、传函数 `(record) => 键` 行级求值——相邻同键行自动纵向合并，适合相同值列。
+
+```javascript
+const columns = [
+  { field: 'quarter', caption: '季度', autoRowSpan: true },
+  { field: 'region', caption: '大区', autoRowSpan: 'regionId' }
+]
+
+// 手写声明（可与 autoRowSpan 共存，spanMethod 声明优先）
+function spanMethod ({ record, prevRecord, columns }) {
+  if (record.kind !== 'total' || !prevRecord) return null
+  return { name: 2 }  // name 列与下一行合并
+}
+```
+
+约束：`spanMethod` 声明落在树形列 / `check` 列时丢弃（dev 警告）；`autoRowSpan: true` 取到对象 / 数组值（如条目列）时不产生合并（dev 警告）；`colspan` 跨固定列边界自动夹紧到固定区末列；区域重叠时整条丢弃（dev 警告）；`spanMethod` 接管的列上 `autoRowSpan` 全表失效；`order-by` 非空且存在 `autoRowSpan` 时 dev 警告（排序后合并块可能无意义）。
+
+## 单元格选中与复制
+
+- 点击不可编辑单元格置选中格（描边高亮，合并单元格按区域整体选中）；点击可编辑格进入编辑并清除选中。
+- 方向键移动选中格：边界 clamp 不环绕，超出可视区域自动滚动。
+- `Ctrl` / `Cmd + C` 复制选中格显示文本：条目列（`link` / `list` / `tag`）按换行连接；`check` / `button` / `progress` / `img` / `icon` 图形列可选中但不写剪贴板。
+- 点击表头 / 空白延伸区、`records` / `columns` 引用变化时自动清除；编辑器与表单控件聚焦时不抢占键盘。
+
 ## 与 MuTable 的差异
 
 - 组件自身 `width: 100%; height: 100%`，高度须由容器确定，内容区虚拟滚动。
-- 列配置 `class` / `style` / `headerClass` / `headerStyle` / `title` 为 DOM 通道字段，不生效；`link` / `tag` 条目的 `class` / `style` 亦不生效，颜色经色名（`linkOption` / `tagOption` 及条目的 `color` / `danger`）生效。
+- 列配置 `class` / `style` / `headerClass` / `headerStyle` 为 DOM 通道字段，不生效；`link` / `list` / `tag` 条目的 `class` / `style` 亦不生效，颜色经色名（条目 `color` / `danger` 及 `listOption` / `tagOption` 的 `color`）生效。
+- `title` 生效为单元格 tooltip：`true` 时溢出才显示全文，String / Function 为 hover 即显示自定义文本（依赖宿主完整 install 提供的 `$mussel.tooltip` 控制器，缺失时 dev 警告并关闭）。
 - 点击可排序表头自动发 `update:order-by`，排序状态可双向绑定。
 - 组件不修改数据：勾选翻转与编辑提交均经 `update:cell-value` 通知，需由外部写回 `record`（写回后自动重绘该行）。
 - 就地修改 `records` 内容（引用未变）后，递增 `records-version` 触发整幅重绘。
@@ -248,6 +278,7 @@ function onCellValue ({ record, column, value }) {
 | `tree-props` | Object | — | `{ key, parentKey, isLeaf }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }`；`isLeaf` 映射懒加载字段名（未映射不生效，见「树模式」）|
 | `tree-expanded-keys` | Array | — | 展开节点 key（双向绑定；传入即接管展开状态，`default-expand-level` 不生效）|
 | `default-expand-level` | Number | `0` | 初始展开层级（0 基：`level <= 值` 的节点展开；`-1` 全收起）|
+| `span-method` | Function | — | 合并单元格声明（每行调用一次），见「合并单元格」；也可用列级 `autoRowSpan` |
 
 | 事件 | 参数 | 说明 |
 |------|------|------|
@@ -257,7 +288,7 @@ function onCellValue ({ record, column, value }) {
 | `tree-expand` | `{ key, record, level }` | 展开箭头 toggle 展开（每次展开均发；懒加载在事件内异步取子级，见「树模式」）|
 | `tree-collapse` | `{ key, record, level }` | 展开箭头 toggle 收起 |
 | `update:cell-value` | `{ record, recordIndex, column, value }` | check 翻转与编辑提交（较 MuTable 多 `recordIndex`）|
-| `cell-item-click` | `{ record, recordIndex, column, link/tag/button }` | 条目点击（较 MuTable 多 `recordIndex`；`button` 列载荷为按钮配置项）|
+| `cell-item-click` | `{ record, recordIndex, column, item/tag/button }` | 条目点击（较 MuTable 多 `recordIndex`；载荷键 `link` / `list` 列为 `item`、`tag` 列 `tag`、`button` 列 `button`）|
 | `edit-button-click` | `{ record, recordIndex, column }` | 点击列 `editButton` 图标按钮（不选中行、不开编辑）|
 
 | 插槽 | 说明 |
@@ -283,11 +314,11 @@ function onCellValue ({ record, column, value }) {
 | `editor` | Boolean\|Object | 编辑器配置：`true` 按列类型自动选择；对象 `{ type, props, validate, border }`，见下 |
 | `editButton` | Object | `{ icon }`：hover 时单元格右侧显示图标按钮（`icon` 为 `installIcons` 注册名），点击发 `edit-button-click` 事件（载荷 `{ record, recordIndex, column }`），不触发选中 / 编辑 |
 | `maxLines` | Number | 文本最大行数（1–10）：`> 1` 时自动折行，超出省略；替代 `multiline` + `lineClamp`（两者仍兼容）|
-| `maxItems` | Number | `link` / `tag` / `button` 条目最大显示数（1–10，默认 10），超出以 `...` 省略 |
-| `resizable` | Boolean | `false` 禁止拖拽该列宽；`minWidth`（缺省 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |
+| `maxItems` | Number | `link` / `list` 条目列最大显示条数（1–10，默认 10），超出以 `...` 省略（canvas 绘制层；DOM 通道用 `linkOption.max` / `listOption.max` / `tagOption.max`）|
+| `resizable` | Boolean | `false` 禁止拖拽该列宽；`minWidth`（缺省取列类型最小宽，兜底 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |
 | `treeNode` | Boolean | 树模式下显示展开箭头与缩进的列，缺省为首个非 `check` / `rec_no` 列 |
+| `autoRowSpan` | Boolean\|String\|Function | 列级纵向合并（见「合并单元格」）：`true` 按显示值（含 `mappings` 映射）分组、字段名 string 按字段值分组、`(record) => 键` 行级求值 |
 | `progressOption` | Object\|Function | `progress` 列：`{ color, showText }`，`color` 为主题色名（缺省 `primary`），`showText: false` 隐藏百分比；可为 `record => option` |
-| `buttons` | Array\|Function | `button` 列：`[{ caption, icon, color, disabled }]` 或 `record => 数组`，`color` 为主题色名；`icon` 为图标注册名，与 `caption` 互斥（文本优先：有 `caption` 时 `icon` 忽略），仅图标时为图标按钮；未注册名且无 `caption` 时该条目不绘制 |
 
 > [!IMPORTANT]
 > **v4.3.0 破坏性变更（`editorButton` → `editButton`）**：v4.2.0 引入的 `editorButton` 旧协议已移除，无兼容层。
@@ -312,15 +343,13 @@ function onCellValue ({ record, column, value }) {
 
 | 类型 | 说明 | 默认对齐 |
 |------|------|---------|
-| `progress` | 进度条，值 0–100，配合 `progressOption` | left |
-| `button` | 轻量按钮组，配合 `buttons`（文本 / 图标按钮，互斥文本优先）；点击发 `cell-item-click`（载荷 `button`）| left |
-| `icon` | 图标列（MuTable 同源类型），值为图标注册名，配合 `color` / `iconOption`，详见 [MuTable · 图标列](./table) | center |
+| `progress` | 进度条，值 0–100，配合 `progressOption`（canvas 专属，MuTable 不含） | left |
 
-`button` 图标按钮：仅设 `icon`（`caption` 留空）时渲染纯图标按钮，宽 = 高 = `--mu-control-height-small`（默认 24，图标水平垂直居中；`column.link` 链接形态无 pill，宽 = 图标本体）。v4.3.0 起 pill 高度随 `--mu-control-height-small` 变量（原固定 20），覆盖该变量的主题自动跟随。
+`button` 列两组件通用（用法见 [MuTable · 条目列](./table)）。canvas 绘制细节：仅设 `icon`（`caption` 留空）时渲染纯图标按钮，宽 = 高 = `--mu-control-height-small`（默认 24，图标水平垂直居中；`column.link` 链接形态无 pill，宽 = 图标本体），`color` 支持全部主题色名；v4.3.0 起 pill 高度随 `--mu-control-height-small` 变量（原固定 20），覆盖该变量的主题自动跟随。
 
 ## 单元格编辑器
 
-开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `tag` / `img` / `button` / `progress` / `icon` 列不可编辑，单击单元格进入编辑。
+开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `list` / `tag` / `img` / `button` / `progress` / `icon` 列不可编辑，单击单元格进入编辑。
 
 编辑器类型（`editor.type` 显式指定优先，可选 `input` / `select` / `date` / `switch` / `textarea`）：
 

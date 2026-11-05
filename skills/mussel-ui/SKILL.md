@@ -1,7 +1,7 @@
 ---
 name: mussel-ui
 author: Scrollbar.W
-date: 2026-10-29
+date: 2026-11-06
 description: >
   编写、修改、Review 使用 MUSSEL 4 组件库的 Vue 界面代码时使用。
   用户明确要求将旧版 Mussel（Mussel 3，或 Mussel 1 / @mctech/mussel）升级到 Mussel 4 时也需使用，
@@ -13,7 +13,7 @@ description: >
 > 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token、M3→4 与 M1→4 迁移），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
 
 > **版本检查**：
-本文档及 `references/` 基于 MUSSEL `4.1.*`（当前 `4.1.5`），最后核对日期 **2026-10-13**。
+本文档及 `references/` 基于 MUSSEL `4.3.*`（当前 `4.3.0`），最后核对日期 **2026-11-06**。
 开始前确认项目中依赖的 `mussel` 版本，若不符合，需进行提示确认。
 若组件库源码与本文档描述出现冲突，**以源码为准**，并按实际情况订正对应 `references/` 文件。
 

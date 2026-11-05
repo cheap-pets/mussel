@@ -1631,7 +1631,7 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 | -------------------------- | ---------------------------------- | -------------------------- |
 | header-click               | column                             | 表头点击                   |
 | cell-click                 | { record, recordIndex, column }    | 单元格点击                 |
-| cell-item-click            | { record, column, link/tag }       | 单元格内项目点击（链接/标签） |
+| cell-item-click            | { record, column, item/tag/button } | 单元格内条目点击（`link` / `list` 列载荷键 `item`、`tag` 列 `tag`、`button` 列 `button`，超限省略项为 `'...'`） |
 | update:header-checked      | column, value                      | check 列头部全选状态变更   |
 | update:selected-record     | record                             | 选中记录变更               |
 | update:selected-record-key | key                                | 选中记录 key 变更          |
@@ -1652,22 +1652,26 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 | sortable       | Boolean             | 是否可排序                                 |
 | text           | String \| Function  | 单元格显示文本（可覆盖默认值，优先于 `mappings` / `options`） |
 | value          | String \| Function  | 单元格值（可覆盖 field）                   |
-| title          | String \| Function  | 单元格 title（`true` 时为 link/tag 类型开启省略项的 title 提示） |
+| title          | String \| Function \| Boolean | `true` 时为单元格 / 省略项挂原生 title（`MuTableEx` 为溢出才显示的 tooltip）；String / Function 为自定义提示文本 |
+| link           | Boolean             | 列级链接形态：`text` 列渲染链色文本（缺省 `primary` 色）；`list` / `button` 列条目按链接样式渲染，整列统一生效 |
 | class          | String \| Function  | 单元格 class                               |
 | style          | String \| Function  | 单元格样式                                 |
-| headerClass    | String \| Function  | 表头 class                                 |
-| headerStyle    | String \| Function  | 表头样式                                   |
+| headerClass    | String              | 表头 class（静态值，不支持函数）            |
+| headerStyle    | String              | 表头样式（静态值，不支持函数）              |
 | mappings       | Object              | 显示映射（`enum` 列）：`{ 值: 文本 }`，按 `String(value)` 匹配；未命中回退 `default` 键，再回退原值；空值显示 `placeholder`；映射值可为 `{ text, color, class, style }` 对象 |
 | options        | Array               | 选项数组自动转换为显示映射（`enum` 列），格式同 `MuSelect` 的 `options`（`[{ value, label }]` 或字符串数组）；与 `mappings` 同时存在时 `mappings` 优先 |
 | multiline      | Boolean             | 多行文本（text 类型）                      |
 | lineClamp      | Number \| Function  | 文本行数限制（text 类型）                  |
-| color          | String \| Function  | 单元格文本色（主题色名），可为 `(record, value) => 色名`（`text` / `bool` / `date` / `datetime` / `number` / `currency` 类型） |
+| color          | String \| Function  | 单元格文本色（主题色名），可为 `(record, value) => 色名`（`text` / `bool` / `date` / `datetime` / `number` / `currency` / `icon` 类型） |
 | format         | String              | 日期格式（`date` / `datetime` 类型）       |
 | formatter      | Function            | 日期格式化函数 `(value, format) => text`（`date` / `datetime` 类型） |
 | formatOption   | Object              | `Intl.NumberFormat` 选项（`number` / `currency` 类型） |
-| locale / locales | String            | 数字 / 货币格式化 locale（默认 `'zh-CN'`） |
-| links          | Function            | 链接生成函数（`link` 类型），返回链接项 `{ caption, color, danger, disabled }` 数组；不传时按字段值转换 |
-| linkOption     | Object              | `{ max, class, style, color, danger, disabled }`，为全部链接项设置缺省值 |
+| locales        | String              | 数字 / 货币格式化 locale（默认 `'zh-CN'`） |
+| listItems      | Function            | 条目生成函数 `(record, value) => 条目数组`（`list` 类型）；不传时取字段值，仅接受数组 |
+| listOption     | Object              | `{ max, color, disabled, class, style }`（`list` 类型）：`max` 超限以 `...` 省略，`color`（仅列级 `link` 生效）/ `disabled` 为条目缺省值 |
+| links          | Function            | 链接生成函数（`link` 类型，内部委托 `list` 实现），返回链接项 `{ label, color, danger, disabled }` 数组（`caption` 键兼容）；不传时按字段值转换 |
+| linkOption     | Object              | `{ max, danger, disabled, class, style }`（`link` 类型）；`danger: true` 等价链接色 `danger` |
+| buttons        | Array \| Function   | 按钮数组 `[{ caption, icon, color, disabled }]` 或 `record => 数组`（`button` 类型）；`icon` 为图标注册名，与 `caption` 互斥（文本优先）；点击发 `cell-item-click`（载荷 `button`）。DOM 通道渲染 `mu-button`（恒 small，`color` 仅 `normal` / `primary` / `secondary` / `danger`）；canvas 通道支持全部主题色名 |
 | tags           | Function            | 标签生成函数（`tag` 类型），返回标签数组   |
 | tagOption      | Object              | `{ max, class, style, pill, flat, color }` |
 | iconOption     | Object              | `{ size }`（`icon` 类型）：图标尺寸（Number，默认 16）|
@@ -1686,8 +1690,10 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 | datetime  | 日期时间            | right    | -        |
 | number    | 数字                | right    | -        |
 | currency  | 货币                | right    | -        |
-| link      | 链接                | left     | -        |
+| link      | 链接（竖排，每项一行），配合 `links` 函数或字段值，条目点击发 `cell-item-click`（载荷键 `item`） | left | - |
+| list      | 条目列（竖排，每项一行、超长省略），仅接受数组值；条目 `string` / `number` / `{ label, color, disabled, ...任意属性 }`，配合 `listItems` / `listOption` / 列级 `link`；条目点击发 `cell-item-click`（载荷键 `item`） | left | - |
 | tag       | 标签                | left     | -        |
+| button    | 轻量按钮组，配合 `buttons`（文本 / 图标按钮，互斥文本优先）；点击发 `cell-item-click`（载荷 `button`） | left | - |
 | img/image | 图片                | left     | -        |
 | icon      | 图标列，值为 `installIcons` 注册名（仅此一种形态），配合 `color` / `iconOption`；纯展示、不可编辑 | center | - |
 | enum      | 枚举显示映射，独占 `mappings` / `options`；映射值可为 `{ text, color, class, style }` 对象 | center | - |
@@ -1700,8 +1706,10 @@ DOM 渲染的数据表格。大数据量、单元格编辑、树形展示、列�
 - **bool**：布尔值，缺省显示 是 / 否，可配 `trueText` / `falseText` 自定义显示文本
 - **date/datetime**：日期格式化，通过 `format` 指定格式，默认 `yyyy-MM-dd` / `yyyy-MM-dd hh:mm`
 - **number/currency**：数字格式化，使用 `Intl.NumberFormat`，支持 `formatOption` 配置
-- **link**：链接列，通过 `links` 函数生成链接数组，支持 `max` 限制显示数量
+- **link**：链接列（竖排，每项一行），通过 `links` 函数或字段值生成链接数组，`linkOption.max` 限制显示数量；内部委托 `list` 实现，条目标准键 `label`（`caption` 兼容）
+- **list**：条目列（竖排，每项一行、超长省略），仅接受数组值；条目 `string` / `number` / `{ label, color, disabled, ...任意属性 }`；列级 `link: true` 时整列条目按链接样式渲染（缺省 `primary` 色），纯文本条目同样可点击；`disabled` 条目置灰且点击拦截
 - **tag**：标签列，通过 `tags` 函数生成标签数组，支持 `max` 限制显示数量
+- **button**：轻量按钮组，通过 `buttons` 配置 `[{ caption, icon, color, disabled }]`；`icon` 与 `caption` 互斥（文本优先）
 - **img/image**：图片列，显示图片缩略图
 - **icon**：图标列，值为 `installIcons` 注册名（string，不支持 svg 串 / 图片 URL / 对象 / 数组直传）；`color` 设色（主题色名或 `(record, value) => 色名`，缺省正文色）、`iconOption: { size }` 设尺寸（默认 16，双通道生效）；缺省居中，纯展示、无条目点击；空值 / 非 string / 未注册名显示 `placeholder`（后两者 dev 环境 warn 一次）。内置注册名 32 个：`X` `check` `x` `ok` `info` `alert` `question` `chevronUp` `chevronDown` `chevronLeft` `chevronRight` `arrowDownLeft` `arrowUpRight` `list` `grid` `dots` `search` `file` `folder` `folderOpen` `sun` `moon` `star` `starred` `leftCollapse` `leftExpand` `clock` `calendar`（28 个 Tabler 图标）+ `loading` `windowClose` `treeNodeExpand` `dropdownExpand`（4 个组合项）；其余图标经 `installIcons({ 名称: svg串或class串 })` 注册后按名引用，运行时注册对新行 / 重绘即时生效
 - **enum**：枚举显示映射列，独占 `mappings` / `options`（`mappings` 优先）；映射值可为 `{ text, color, class, style }` 对象
@@ -1736,11 +1744,12 @@ const columns = [
   { field: 'level',   caption: '等级',   type: 'enum',
     options: [{ value: 1, label: '低' }, { value: 2, label: '中' }, { value: 3, label: '高' }] },
   { field: 'created', caption: '创建时间', type: 'date', format: 'yyyy-MM-dd' },
+  { field: 'owners',  caption: '负责人',  type: 'list', listOption: { max: 3 }, link: true },
   { field: 'actions', caption: '操作',   type: 'link',
     linkOption: { max: 3 },
     links: (record) => [
-      { caption: '编辑', action: 'edit' },
-      { caption: '删除', action: 'delete', danger: true }
+      { label: '编辑', action: 'edit' },
+      { label: '删除', action: 'delete', danger: true }
     ]
   }
 ]
@@ -1751,16 +1760,18 @@ const columns = [
 
 ### MuTableEx
 
-canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；属性 / 事件 / 列配置与 `MuTable` 完全同源（上节全部适用），并扩展单元格编辑、列宽拖拽、树形展示及 `progress` / `button` 列类型。
+canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；属性 / 事件 / 列配置与 `MuTable` 完全同源（上节全部适用），并扩展单元格编辑、列宽拖拽、树形展示、合并单元格、单元格选中/复制及 `progress` 列类型（`button` 列两组件通用）。
 
 > 仅 `mussel.ex` 版本包含此组件（`dist/mussel.ex.js` + `dist/mussel.ex.css`，基础版 `mussel.js` 不含）；`install` 用法与基础版相同，额外注册 `MuTableEx`。
 
 与 `MuTable` 的差异：
 
 - 组件自身 `width: 100%; height: 100%`，高度须由容器确定（flex 子项 / 固定高），内容区虚拟滚动。
-- 列配置 `class` / `style` / `headerClass` / `headerStyle` / `title` 为 DOM 通道字段，不生效；`link` / `tag` 条目的 `class` / `style` 亦不生效，颜色经色名（`linkOption` / `tagOption` 及条目的 `color` / `danger`）生效。
+- 列配置 `class` / `style` / `headerClass` / `headerStyle` 为 DOM 通道字段，不生效；`link` / `list` / `tag` 条目的 `class` / `style` 亦不生效，颜色经色名（条目 `color` / `danger` 及 `listOption` / `tagOption` 的 `color`）生效。
+- `title` 生效为单元格 tooltip：`true` 时溢出才显示全文，String / Function 为 hover 即显示自定义文本（依赖宿主完整 install 提供的 `$mussel.tooltip` 控制器，缺失时 dev 警告并关闭）。
 - 点击可排序表头自动发 `update:order-by`（`field:asc → field:desc → ''` 循环），可 `v-model:order-by`。
 - 组件不修改数据：勾选翻转与编辑提交均经 `update:cell-value` 通知，需由外部写回 `record`（写回后自动重绘该行）。
+- 单元格选中：点击不可编辑格置选中（描边），方向键移动、Ctrl+C 复制（见下文）。
 
 #### 扩展属性
 
@@ -1774,6 +1785,7 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；�
 | tree-props          | Object  | —      | `{ key, parentKey, isLeaf }`，缺省 `{ key: keyField ?? 'id', parentKey: 'parentId' }`；`isLeaf` 映射懒加载字段名（未映射不生效；映射后 `字段 === false` 且无子级的节点显示展开三角，点击发 `tree-expand`，异步回填 = 就地 push 子级 + `records-version`++） |
 | tree-expanded-keys  | Array   | —      | 展开节点 key（双向绑定；传入即接管展开状态，`default-expand-level` 不生效） |
 | default-expand-level| Number  | `0`    | 初始展开层级（0 基：`level <= 值` 的节点展开；`-1` 全收起）|
+| span-method          | Function | —    | 合并单元格：`(info) => { [列 key 或 field]: rowspan \| { rowspan, colspan \| 'rest' } } \| null`，每行调用一次（`info = { record, recordIndex, recordNumber, prevRecord, nextRecord, columns }`），返回该行作为主行的合并声明；也可用列级 `autoRowSpan` |
 
 #### 扩展事件
 
@@ -1785,7 +1797,7 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；�
 | tree-expand                 | { key, record, level }                           | 展开箭头 toggle 展开（每次展开均发；`treeProps.isLeaf` 懒加载在此事件内异步取子级） |
 | tree-collapse               | { key, record, level }                           | 展开箭头 toggle 收起                              |
 | update:cell-value           | { record, recordIndex, column, value }           | check 翻转与编辑提交（较 `MuTable` 多 `recordIndex`） |
-| cell-item-click             | { record, recordIndex, column, link/tag/button } | 条目点击（较 `MuTable` 多 `recordIndex`；`button` 列载荷为按钮配置项） |
+| cell-item-click             | { record, recordIndex, column, item/tag/button } | 条目点击（较 `MuTable` 多 `recordIndex`；载荷键 `link` / `list` 列为 `item`、`tag` 列 `tag`、`button` 列 `button`） |
 | edit-button-click           | { record, recordIndex, column }                  | 点击列 `editButton` 图标按钮（不选中行、不开编辑） |
 
 | 插槽 | 说明                                     |
@@ -1811,22 +1823,34 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；�
 | editor         | Boolean \| Object   | 编辑器配置：`true` 按列类型自动选择；对象 `{ type, props, validate, border }`，见下文「单元格编辑」 |
 | editButton     | Object              | `{ icon }`：hover 时单元格右侧显示图标按钮（`icon` 为 `installIcons` 注册名），点击发 `edit-button-click` 事件（载荷 `{ record, recordIndex, column }`），不触发选中 / 编辑 |
 | maxLines       | Number              | 文本最大行数（1–10）：`> 1` 时自动折行，超出省略；替代 `multiline` + `lineClamp`（两者仍兼容） |
-| maxItems       | Number              | `link` / `tag` / `button` 条目最大显示数（1–10，默认 10），超出以 `...` 省略 |
-| resizable      | Boolean             | `false` 禁止拖拽该列宽；`minWidth`（缺省 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |
+| maxItems       | Number              | `link` / `list` 条目列最大显示条数（1–10，默认 10），超出以 `...` 省略（canvas 绘制层；DOM 通道用 `linkOption.max` / `listOption.max` / `tagOption.max`） |
+| resizable      | Boolean             | `false` 禁止拖拽该列宽；`minWidth`（缺省取列类型最小宽，兜底 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |
 | treeNode       | Boolean             | 树模式下显示展开箭头与缩进的列，缺省为首个非 `check` / `rec_no` 列 |
+| autoRowSpan    | Boolean \| String \| Function | 列级纵向合并：`true` 按显示值（含 `mappings` 映射）分组、字段名 string 按字段值分组、`(record) => 键` 行级求值，相邻同键行自动合并；与 `spanMethod` 混用时被接管的列全表失效，`order-by` 非空时 dev 警告 |
 | progressOption | Object \| Function  | `progress` 列：`{ color, showText }`，`color` 为主题色名（缺省 `primary`），`showText: false` 隐藏百分比；可为 `record => option` |
-| buttons        | Array \| Function   | `button` 列：`[{ caption, icon, color, disabled }]` 或 `record => 数组`，`color` 为主题色名；`icon` 为图标注册名，与 `caption` 互斥（文本优先：有 `caption` 时 `icon` 忽略），仅图标时宽 = 高 = `--mu-control-height-small`（默认 24，图标居中；`link` 形态无 pill，宽 = 图标本体）；未注册名且无 `caption` 时该条目不绘制 |
 
 #### 扩展 Column Types
 
 | 类型      | 说明                                                    | 默认对齐 |
 | --------- | ------------------------------------------------------- | -------- |
-| progress  | 进度条，值 0–100，配合 `progressOption`                 | left     |
-| button    | 轻量按钮组，配合 `buttons`（文本 / 图标按钮，互斥文本优先）；点击发 `cell-item-click`（载荷 `button`） | left |
+| progress  | 进度条，值 0–100，配合 `progressOption`（canvas 专属，`MuTable` 不含） | left     |
+
+#### 合并单元格
+
+- 表格级 `span-method(info)`：每行调用一次，返回 `{ [列 key 或 field]: rowspan | { rowspan, colspan | 'rest' } } | null`（`'rest'` 占满至本列所在分区末列——固定列区 / 滚动区各自为界）；键先按 `column.key` 精确匹配，否则按 `field` 匹配（命中多列警告）。
+- 列级 `autoRowSpan` 适合相同值自动合并，可与 `spanMethod` 共存（`spanMethod` 声明优先，接管列的 `autoRowSpan` 失效）。
+- 约束：`spanMethod` 声明落在树形列 / `check` 列时丢弃（dev 警告）；`autoRowSpan: true` 取到对象 / 数组值时不产生合并（dev 警告）；`colspan` 跨固定列边界夹紧到固定区末列；区域重叠整条丢弃（dev 警告）。
+
+#### 单元格选中与复制
+
+- 点击不可编辑单元格置选中格（描边高亮，合并单元格按区域整体选中）；点击可编辑格进入编辑并清除选中。
+- 方向键移动选中格（边界 clamp 不环绕，自动滚动到可见区域）。
+- `Ctrl` / `Cmd + C` 复制选中格显示文本：条目列（`link` / `list` / `tag`）按换行连接；`check` / `button` / `progress` / `img` / `icon` 图形列可选中但不写剪贴板。
+- 点击表头 / 空白延伸区、`records` / `columns` 引用变化时自动清除；编辑器与表单控件聚焦时不抢占键盘。
 
 #### 单元格编辑
 
-- 开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `tag` / `img` / `button` / `progress` / `icon` 列不可编辑。单击单元格进入编辑。
+- 开启条件：表格 `editable` + 列 `editor`；`rec_no` / `check` / `link` / `list` / `tag` / `img` / `button` / `progress` / `icon` 列不可编辑。单击单元格进入编辑。
 - 编辑器类型（`editor.type` 显式指定优先，可选 `input` / `select` / `date` / `switch` / `textarea`）：
 
 | 列类型                          | 缺省编辑器                                                 |
