@@ -1,5 +1,5 @@
 /** 分区 2 网格线（含合并区域分段） */
-import { viewportColX, viewportRowY, isEmptyRange } from './paint-utils'
+import { viewportColX, viewportRowY, contentRightXOf, contentBottomYOf, isEmptyRange } from './paint-utils'
 
 // —— 分区 2：网格线（合并区域分段：内部行线/列线在区域包围盒区间内跳过，§5.1）——
 
@@ -114,6 +114,13 @@ function paintColGridlines (ctx, state, cols) {
   const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
   const skipsByBoundary = spans ? colLineSkipIntervals(layout, spans, cols) : null
 
+  // 列线下界截断（20261106-column-link-hover-button-value 需求 3）：行高之和 <
+  // 容器高时止于末行底部视口 y（与 paintGridlines 行线右界同式 min cap，取
+  // contentBottomYOf 共享式；行满/列满或滚动溢出时 contentBottomY >=
+  // stickyHeight，min() 无操作）；空表维持现状（rowCount > 0 门控，
+  // decisions.md 裁定：0 行列线保留全高）
+  const contentBottomY = contentBottomYOf(layout)
+
   for (let c = cols.from; c < cols.to; c++) {
     if (c >= n - 1 && !blankTail) break
 
@@ -121,12 +128,12 @@ function paintColGridlines (ctx, state, cols) {
     const skips = skipsByBoundary?.get(c + 1)
 
     if (!skips) {
-      ctx.fillRect(x, layout.headHeight, 1, layout.stickyHeight - layout.headHeight)
+      ctx.fillRect(x, layout.headHeight, 1, contentBottomY - layout.headHeight)
 
       continue
     }
 
-    paintSegmentedVLine(ctx, x, layout.headHeight, layout.stickyHeight, skips)
+    paintSegmentedVLine(ctx, x, layout.headHeight, contentBottomY, skips)
   }
 }
 
@@ -138,9 +145,17 @@ export function paintGridlines (ctx, state, rows, cols, maxWidth) {
   const { layout, theme } = state
   const W = Math.min(maxWidth ?? layout.stickyWidth, layout.stickyWidth)
 
+  // 行线右界截断（20261106-column-link-hover-button-value 需求 3）：列宽之和 <
+  // 容器宽时 cap 至末列右缘视口 x（contentRightXOf 共享式，与 paint-header 末线/
+  // 表头背景、paint-overlay hover 带、paint-body 选中带同源；行满/列满或滚动
+  // 溢出时 contentRightX >= stickyWidth，min() 无操作；固定区 pass 传
+  // maxWidth = fixedWidth 时 contentRightX >= fixedWidth 恒成立，cap 同样无操作）
+  const contentRightX = contentRightXOf(layout)
+  const rowLineW = Math.min(W, contentRightX)
+
   ctx.fillStyle = theme.borderColorSoft
 
-  if (isGridlineMode(mode, 'row')) paintRowGridlines(ctx, state, rows, W)
+  if (isGridlineMode(mode, 'row')) paintRowGridlines(ctx, state, rows, rowLineW)
 
   if (isGridlineMode(mode, 'column')) paintColGridlines(ctx, state, cols)
 }

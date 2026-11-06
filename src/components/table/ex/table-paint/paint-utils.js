@@ -41,6 +41,25 @@ export function cellRectAt (layout, row, col) {
   }
 }
 
+/** 有效内容右缘视口 x（末列右缘；n=0 时 0）——格线/表头/hover/选中 cap 同源式
+    （20261106-column-link-hover-button-value 轮 1 内联式收敛单一定义） */
+export function contentRightXOf (layout) {
+  const n = layout.colWidths.length
+
+  return n ? viewportColX(layout, n - 1) + (layout.colWidths[n - 1] || 0) : 0
+}
+
+/** 有效内容底缘视口 y（末行底部；行满/溢出时 ≥ stickyHeight，min() 无操作；
+    空表维持 stickyHeight 现状，decisions.md 裁定） */
+export function contentBottomYOf (layout) {
+  return layout.rowGeometry.rowCount > 0
+    ? Math.min(
+      layout.stickyHeight,
+      layout.headHeight + layout.rowGeometry.totalHeight - layout.scrollTop
+    )
+    : layout.stickyHeight
+}
+
 export function viewColsRange (layout) {
   return { from: layout.viewCols.start, to: layout.viewCols.end }
 }
@@ -52,7 +71,7 @@ export function viewRowsRange (layout) {
 
 // —— 选中判定（table.vue selectedRecKey/getRecordKey 语义） ——
 
-function isSelectedRow (state, row) {
+export function isSelectedRow (state, row) {
   const { selectedKey } = state
 
   if (selectedKey == null) return false
@@ -62,12 +81,17 @@ function isSelectedRow (state, row) {
   return record != null && recordKeyOf(state, record, row) === selectedKey
 }
 
+/** 非选中口径行底色（斑马/普通）——选中带延伸区补底与 rowBackground 共用，
+    避免优先级链双源漂移（追加轮 2 需求 C） */
+export function baseRowBackground (state, row) {
+  return state.striped && row % 2 === 1 ? state.theme.bgStripe : state.theme.bgNormal
+}
+
 /** 行背景优先级：选中（--mu-primary-faint）> 斑马偶行（--mu-bg-stripe）> 普通 */
 export function rowBackground (state, row) {
   if (isSelectedRow(state, row)) return state.theme.selectBg
-  if (state.striped && row % 2 === 1) return state.theme.bgStripe
 
-  return state.theme.bgNormal
+  return baseRowBackground(state, row)
 }
 
 // —— 排序方向（table.vue:144-153 同款解析） ——

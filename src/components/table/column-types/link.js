@@ -10,10 +10,9 @@ import { ListColumn } from './list'
 function valueToLinks (record, value) {
   if (value != null) {
     return Array.isArray(value)
-      // 对象元素原样保留（{ caption, color, danger, disabled }），字符串/数字元素
-      // 仍包 { caption: el }（单值 → 单元素数组的包装同样保留，links: 12345 夹具）
-      ? value.map(el => (el != null && typeof el === 'object' ? el : { caption: el }))
-      : [{ caption: value }]
+      // 对象结构 {  label, color, danger, disabled }
+      ? value.map(el => (el != null && typeof el === 'object' ? el : { label: el }))
+      : [{ label: value }]
   }
 }
 

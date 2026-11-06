@@ -9,7 +9,7 @@ import {
   FONT_SIZE_FALLBACK,
   FONT_FAMILY_FALLBACK
 } from '../shared/constants.js'
-import { viewportColX, withClip, sortDirectionOf } from './paint-utils'
+import { viewportColX, contentRightXOf, withClip, sortDirectionOf } from './paint-utils'
 
 // 排序图标：th 内 absolute right: cell-padding、font-size 18px（table.scss
 // .mu-sort-icon），viewBox 24 双三角 path（sort-icon.vue），caption 右侧预留 18px
@@ -267,15 +267,22 @@ export function paintHeader (ctx, state) {
   const { layout, theme } = state
   const W = layout.stickyWidth
   const headHeight = layout.headHeight
+  // 末列右缘视口 x（contentRightXOf 共享式，与 paintGridlines rowLineW 同源）
+  const contentRightX = contentRightXOf(layout)
 
-  // 整宽不透明底，盖住下方所有层（A2 分区 4）
+  // 不透明底盖住下方所有层（A2 分区 4）；追加轮 2 裁定（decisions.md，取代
+  // 「表头背景仍整宽」）：背景同末线 cap 至末列右缘——列少时右缘以右不再绘
+  // 表头背景（擦除链路清为透明）；列满/滚动溢出时 contentRightX >=
+  // stickyWidth，min() 无操作；n=0 时宽 0 与末线 cap 同口径
   ctx.fillStyle = theme.bgFill
-  ctx.fillRect(0, 0, W, headHeight)
+  ctx.fillRect(0, 0, Math.min(W, contentRightX), headHeight)
 
   paintHeaderCells(ctx, state)
 
   paintHeaderColLines(ctx, state, layout, theme)
 
+  // 底边框承担首行顶线 r=0 语义（paint-gridlines 行线注释口径），需求 3-b 同式
+  // 截断：末线右界 cap 至末列右缘视口 x，cap 后右缘 = 末列右缘线右缘
   ctx.fillStyle = theme.borderColorSoft
-  ctx.fillRect(0, headHeight - 1, W, 1)
+  ctx.fillRect(0, headHeight - 1, Math.min(W, contentRightX), 1)
 }

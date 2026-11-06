@@ -90,14 +90,32 @@ export function textAnchorX (rect, align, padding, rightInset) {
       : rect.x + padding
 }
 
+/** 对齐反推左缘（下划线 x / 命中矩形 x 同式防口径漂移）：textAnchorX 对
+    center/right 返回的是锚点而非左缘，按实绘宽反推（缺此换算时对齐列的线会
+    从锚点向右溢出格内文本区） */
+function alignedLeftX (align, anchorX, width) {
+  if (align === 'center') return anchorX - width / 2
+  if (align === 'right') return anchorX - width
+  return anchorX
+}
+
 // 文本取值落地（A3.5 统一规则；A9 后无数组形态——数组值在 resolveCellContent
 // 门控落占位，不会进入本函数）：
 // - 字符串 + maxLines>1 → wrapLines 多行（与 row-geometry 同一函数与缓存；
 //   measure 未注入时回退单行省略），首行槽位锚起排
 // - 其余 → 单行省略（垂直锚 = 槽位中心 centerY，与多行首行同式）
 // color 为 canvas 通道色名查表产物（drawDisplayText 直取 content.color）
+// options.underline（20261106-column-link-hover-button-value）：缺省 falsy；
+// true 时每实绘行下画 1px 下划线（y = linkUnderlineY(该行锚 y)，色随文本
+// fillStyle，与 drawLinkEntry/drawItemText 同式），多行逐行对齐 DOM
+// text-decoration 行为
+// 返回值（新增）：实绘文本块行框外接矩形 { x, y, width, height } | undefined
+// （y = centerY − lineHeight/2，height = 实绘行数 × lineHeight，width = 最宽
+// 实绘行宽省略后，x 按 align 反推）；未绘制任何文本（空串/零宽）返回 undefined。
+// 既有调用方（cell-painters line-clamp 路径 / drawDisplayText）不传 underline、
+// 忽略返回值，行为不变
 export function drawTextValue (ctx, rect, display, align, {
-  padding, theme, color, measure, wrapCache, maxLines, centerY, rightInset
+  padding, theme, color, measure, wrapCache, maxLines, centerY, rightInset, underline
 }) {
   const contentWidth = rect.width - padding * 2
 
@@ -119,18 +137,37 @@ export function drawTextValue (ctx, rect, display, align, {
 
     ctx.textBaseline = anchor.baseline
 
+    const anchorX = textAnchorX(rect, align, padding, rightInset)
     let y = anchor.y
+    let widest = 0
 
     for (const line of lines) {
-      ctx.fillText(line, textAnchorX(rect, align, padding, rightInset), y)
+      // 行宽走注入 measure 缓存（wrapLines 同源）；下划线 x 与文本起点同口径
+      const lineWidth = measure(line, cellFontOf(theme))
+
+      ctx.fillText(line, anchorX, y)
+
+      if (underline && lineWidth > 0) {
+        ctx.fillRect(alignedLeftX(align, anchorX, lineWidth), linkUnderlineY(y), lineWidth, 1)
+      }
+
+      if (lineWidth > widest) widest = lineWidth
       y += lineHeight
     }
 
-    return
+    // 空串/零宽（未绘制任何文本）不回报矩形
+    if (!(widest > 0)) return
+
+    return {
+      x: alignedLeftX(align, anchorX, widest),
+      y: centerY - lineHeight / 2,
+      width: widest,
+      height: lines.length * lineHeight
+    }
   }
 
   // 单行省略：截断经注入 measure 走缓存（P0-1）
-  const { text: single } = ellipsize({
+  const { text: single, width } = ellipsize({
     text,
     font: cellFontOf(theme),
     maxWidth: contentWidth,
@@ -143,9 +180,25 @@ export function drawTextValue (ctx, rect, display, align, {
   ctx.textAlign = align
 
   const anchor = centeredTextAnchor(ctx, centerY)
+  const anchorX = textAnchorX(rect, align, padding, rightInset)
+  const drawn = Math.min(width, contentWidth)
 
   ctx.textBaseline = anchor.baseline
-  ctx.fillText(single, textAnchorX(rect, align, padding, rightInset), anchor.y)
+  ctx.fillText(single, anchorX, anchor.y)
+
+  if (!(drawn > 0)) return
+
+  // link 悬停下划线（条目链路同式）：宽 = 实绘省略后宽，1px
+  if (underline) {
+    ctx.fillRect(alignedLeftX(align, anchorX, drawn), linkUnderlineY(anchor.y), drawn, 1)
+  }
+
+  return {
+    x: alignedLeftX(align, anchorX, drawn),
+    y: centerY - lineHeight / 2,
+    width: drawn,
+    height: lineHeight
+  }
 }
 
 /** link 悬停下划线 y（drawLinkEntry 与 drawItemText 共用单函数防公式漂移）：

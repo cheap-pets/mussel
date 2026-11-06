@@ -781,7 +781,8 @@
     // list 全 link 列（column.link 列级，R1 语义迁移）：整列条目链色渲染
     // （缺省 primary、条目 color 覆盖、disabled 置灰拦截）；第 3 行标量落占位
     { caption: 'list 全 link 列', field: 'listLink', type: 'list', link: true, width: 170, title: true },
-    // text.link（decisions 第 8 条：canvas 仅链色文本，无 hover 下划线/条目命中）
+    // text.link（20261106 起双通道同口径：canvas 通道 hover 下划线 + pointer 光标，
+    // 点击仍走 cell-click）
     { caption: 'text.link', field: 'textLink', link: true, width: 110 },
     { caption: '标签（彩色）', field: 'tags', type: 'tag', width: 210 },
     {

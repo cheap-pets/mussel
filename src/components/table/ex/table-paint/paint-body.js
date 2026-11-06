@@ -2,6 +2,9 @@
 import { drawCell } from '../cell-paint/cell-painters.js'
 import {
   rowBackground,
+  baseRowBackground,
+  isSelectedRow,
+  contentRightXOf,
   recordKeyOf,
   rowsOf,
   viewportColX,
@@ -68,9 +71,28 @@ function paintBodyRow (ctx, state, records, columns, r, cols, x0, bandWidth, W, 
   const rowHeight = geometry.heightAt(r)
   const y = layout.headHeight + geometry.topAt(r) - layout.scrollTop
 
-  // 高度 = heightAt(r)；带右缘经 bandToX 扩展（见 paintCellRange 头注）
-  ctx.fillStyle = rowBackground(state, r)
-  ctx.fillRect(x0, y, bandWidth, rowHeight)
+  // 高度 = heightAt(r)；带右缘经 bandToX 扩展（见 paintCellRange 头注）。
+  // 追加轮 2 需求 C：选中行 selectBg 高亮带宽 cap 至末列右缘视口 x（与格线/
+  // hover 带同源 contentRightXOf），cap 掉的延伸区补非选中口径底色（与 hover
+  // cap 后露出的整宽底色带一致）；非选中行维持整宽现状（R1 裁定不推翻）。
+  // 列满/滚动溢出时 contentRightX >= stickyWidth >= bandEnd，cap 无操作、无补画；
+  // 固定列 pass bandEnd = 固定列区右缘 ≤ contentRightX 恒成立，同样无操作
+  const bandEnd = x0 + bandWidth
+
+  if (!isSelectedRow(state, r)) {
+    ctx.fillStyle = rowBackground(state, r)
+    ctx.fillRect(x0, y, bandWidth, rowHeight)
+  } else {
+    const capEnd = Math.min(bandEnd, contentRightXOf(layout))
+
+    ctx.fillStyle = rowBackground(state, r)
+    ctx.fillRect(x0, y, capEnd - x0, rowHeight)
+
+    if (capEnd < bandEnd) {
+      ctx.fillStyle = baseRowBackground(state, r)
+      ctx.fillRect(capEnd, y, bandEnd - capEnd, rowHeight)
+    }
+  }
 
   const record = records?.[r]
 
@@ -104,8 +126,23 @@ function paintBodyRowSpans (ctx, state, records, columns, r, cols, x0, bandWidth
   const rowHeight = geometry.heightAt(r)
   const y = layout.headHeight + geometry.topAt(r) - layout.scrollTop
 
-  ctx.fillStyle = rowBackground(state, r)
-  ctx.fillRect(x0, y, bandWidth, rowHeight)
+  // 选中带 cap + 延伸区补底，与 paintBodyRow 同构（追加轮 2 需求 C，见彼处注释）
+  const bandEnd = x0 + bandWidth
+
+  if (!isSelectedRow(state, r)) {
+    ctx.fillStyle = rowBackground(state, r)
+    ctx.fillRect(x0, y, bandWidth, rowHeight)
+  } else {
+    const capEnd = Math.min(bandEnd, contentRightXOf(layout))
+
+    ctx.fillStyle = rowBackground(state, r)
+    ctx.fillRect(x0, y, capEnd - x0, rowHeight)
+
+    if (capEnd < bandEnd) {
+      ctx.fillStyle = baseRowBackground(state, r)
+      ctx.fillRect(capEnd, y, bandEnd - capEnd, rowHeight)
+    }
+  }
 
   const record = records?.[r]
 
@@ -182,6 +219,8 @@ function paintSpanRegions (ctx, state, records, columns, rows, cols, W, H) {
 // 单元格区域绘制（滚动区与固定区共用，含行背景）。bandToX：行背景带右缘视口 x
 // 下限——滚动区调用点传 layout.stickyWidth（ΣcolWidths < 视口宽时行背景充满至
 // 视口右缘）；固定列 pass 不传（带保持固定列区间，防覆盖已绘滚动区内容）。
+// bandToX 扩展的延伸区按行分口径（追加轮 2 需求 C）：非选中行整段行底色（R1
+// 裁定），选中行 selectBg 高亮 cap 至末列右缘、延伸区补非选中口径底色。
 // spans null 分支逐字保留原实现（无合并表格零回归，00-task 硬约束）；非 null 走
 // 两遍式（§5.1）：①全行背景 + 非 span 格内容 → ②region pass 区域底色 + 主格内容
 // ——三段式背景顺序保证区域底色不被下方行背景带重盖

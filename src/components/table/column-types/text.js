@@ -40,7 +40,9 @@ export const TextColumn = {
     const getColor = ensureFn(column.color)
     // link 选项（20261104-table-column-type）：true 时按 link 样式渲染——链色
     // 缺省 primary、DOM 产物追加 mu-table__cell-link（cursor + hover 下划线）；
-    // canvas 端仅链色文本（无 hover 下划线/条目命中，点击仍走 cell-click）。
+    // canvas 通道同口径（20261106-column-link-hover-button-value：dom=false 产物
+    // 携带 link 门控字段，drawDisplayText 悬停谱系取色 + 下划线 + pointer 光标），
+    // 点击仍走 cell-click（不发 cell-item-click）。
     // danger 不支持（红色用 color:'danger' 表达）
     const isLink = column.link === true
 
@@ -55,10 +57,13 @@ export const TextColumn = {
       const lineClamp = getLineClamp(record, value)
 
       if (!dom) {
+        // link 门控字段（绘制/交互层消费，非 link 列恒 null）；占位产物（compile
+        // 上方空值返回 null）无 link，drawDisplayText 不会误报命中
         return {
           text,
           color: isLink ? (color || 'primary') : color,
-          title
+          title,
+          link: isLink || null
         }
       }
 

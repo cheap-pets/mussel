@@ -3,9 +3,12 @@ import { MuButton } from '@/components/button'
 import { resolveIconEntry } from './icon'
 
 // button 列（20261105-column-button-type）：条目按钮列，数据结构沿用 table-ex
-// button 列现状——column.buttons: Array | (record) => Array，按钮
+// button 列现状——column.buttons: Array | (record, value) => Array，按钮
 // { caption?, icon?, color?, disabled? }，caption/icon 互斥、caption 优先；
 // column.link: true 列级 link 形态（整列统一生效，与 table-ex 同定义）。
+// 仅配 field 时字段值按 tag 同口径自动包装为条目（valueToButtons 缺省包装，
+// 20261106-column-link-hover-button-value；显式配置优先），空组（null/非数组/
+// 空数组）双通道统一在 compile 落占位链。
 // compile 双通道：
 // - dom=false（mu-table-ex canvas）：平铺 { canvasKind: 'button', buttons, link }，
 //   绘制/命中/事件派发全走 ex 侧既有 drawButton/itemHits/emitButtonItemClick 零改动
@@ -67,23 +70,38 @@ function domItemOf (button, { isLink, showTitle, columnRef, record, emit }) {
   }
 }
 
+// buttons 缺省包装（tag 列 valueToTags 同构，20261106-column-link-hover-button-
+// value）：仅配 field 时字段值直接渲染——数组对象元素原样保留（caption/icon/
+// color/disabled），字符串/数字元素包 { caption: el }；非数组值包单元素数组；
+// value == null 不产条目（键名随 tag/button 现状用 caption）
+function valueToButtons (record, value) {
+  if (value != null) {
+    return Array.isArray(value)
+      ? value.map(el => (el != null && typeof el === 'object' ? el : { caption: el }))
+      : [{ caption: value }]
+  }
+}
+
 export const ButtonColumn = {
   compile: (column, dom = false) => {
-    const getButtons = ensureFn(column.buttons)
+    // buttons 显式配置（数组/函数）优先，缺省回退字段值包装
+    const getButtons = ensureFn(column.buttons || valueToButtons)
 
-    // link 形态标志列级声明（column.link），整列统一生效不落单条 button
     const isLink = column.link === true
-
     const showTitle = column.title === true
-
-    // payload column = 原始列引用（list 列同款防御）
     const columnRef = column._raw ?? column
 
     return ({ record, value, emit }) => {
-      const buttons = getButtons(record) ?? []
+      // (record, value) 透传（tag getTags 同款）：函数形态可读字段值
+      const buttons = getButtons(record, value) ?? []
 
-      // canvas 通道：与原 createColumnRender button 分支产物逐字段一致；
-      // 空数组由 drawButton 门控（不绘制不命中）
+      // 空组门控上提（双通道共用，原仅 dom 分支有）：canvas 空组不再产
+      // canvasKind: 'button' → 落 drawDisplayText 占位链（列级/表格级 placeholder），
+      // 与 DOM 通道空值落占位同口径（需2-6）
+      if (!Array.isArray(buttons) || !buttons.length) return
+
+      // canvas 通道：与原 createColumnRender button 分支产物逐字段一致
+      // （drawButton 内空组门控保留作兜底，不绘制不命中）
       if (!dom) {
         return {
           canvasKind: 'button',
@@ -92,9 +110,7 @@ export const ButtonColumn = {
         }
       }
 
-      // dom 通道：MuButton 条目组；非数组/空数组落占位链（门控同 canvas drawButton）
-      if (!Array.isArray(buttons) || !buttons.length) return
-
+      // dom 通道：MuButton 条目组
       const options = { isLink, showTitle, columnRef, record, emit }
 
       return {

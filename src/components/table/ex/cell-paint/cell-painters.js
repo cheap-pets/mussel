@@ -9,7 +9,7 @@ import { cellFontOf } from '../shared/text-wrap'
 import { expandableAt, isExpandedKey } from '../shared/tree'
 import { resolveCellContent, capMaxLinesOf } from './cell-content'
 import { drawTextValue } from './cell-text'
-import { drawItems, itemClassOf } from './item-painters'
+import { drawItems, itemClassOf, isLinkEntryHovered, linkHoverColorOf, linkTextColorOf } from './item-painters'
 import { drawLinkItems } from './link-items'
 import { drawProgress, drawButton } from './canvas-kind-painters'
 
@@ -102,7 +102,8 @@ export function drawCell (ctx, {
 
   drawDisplayText(
     ctx, contentRect, content, col, record, placeholder,
-    padding, theme, measure, wrapCache, centerY, rightInset, maxLines
+    padding, theme, measure, wrapCache, centerY, rightInset, maxLines,
+    hoverItem, onItemRect
   )
 
   return content
@@ -202,17 +203,35 @@ function drawContentItems (
   })
 }
 
+// text.link 格伪条目（isLinkEntryHovered 谓词入参：无 disabled、link !== false
+// 恒真——门控已在 compile 产物 link === true 处完成）
+const CELL_LINK_ITEM = { link: true }
+
+// 纯文本格落地（text / 空组 button 占位等）。text.link 格（20261106-column-link-
+// hover-button-value，与 DOM mu-table__cell-link 同口径）：hover 时谱系悬停色 +
+// 1px 下划线，恒回报 kind:'link' 命中矩形（itemHits → updateHoverItem →
+// applyItemCursor pointer；hoverMode 'none' 时 updateHoverItem 恒 null 自动抑制）；
+// 点击仍走 cell-click（text 格无 items，emitDomItemClick 判空短路，不发
+// cell-item-click）
 function drawDisplayText (
   ctx, rect, content, col, record, placeholder,
-  padding, theme, measure, wrapCache, centerY, rightInset, maxLines
+  padding, theme, measure, wrapCache, centerY, rightInset, maxLines,
+  hoverItem, onItemRect
 ) {
   const display = content.text ?? col.placeholder ?? placeholder
 
   if (display != null) {
-    // canvas 通道 color 直取（17 色板名 → colors 查表）；未知名/缺省回退 textColor
-    const color = content.color && theme?.colors?.[content.color]?.color
+    const isCellLink = content.link === true
+    const hovered = isCellLink && isLinkEntryHovered(hoverItem, CELL_LINK_ITEM, 0)
 
-    drawTextValue(ctx, rect, display, col._align, {
+    // link 格走条目口径取色（linkTextColorOf/linkHoverColorOf 谱系，compile 已
+    // 缺省 color || 'primary'）；非 link 路径原样：17 色板名 → colors 查表，
+    // 未知名/缺省回退 textColor
+    const color = isCellLink
+      ? (hovered ? linkHoverColorOf : linkTextColorOf)({ color: content.color, link: true }, theme)
+      : content.color && theme?.colors?.[content.color]?.color
+
+    const block = drawTextValue(ctx, rect, display, col._align, {
       padding,
       theme,
       color,
@@ -220,8 +239,14 @@ function drawDisplayText (
       wrapCache,
       maxLines,
       centerY,
-      rightInset
+      rightInset,
+      underline: hovered
     })
+
+    // 命中矩形恒发生（非仅 hover 时），矩形 = 实绘文本块行框（drawTextValue 返回值）
+    if (isCellLink && block) {
+      onItemRect?.({ kind: 'link', index: 0, rect: block, disabled: false, link: true })
+    }
   }
 }
 

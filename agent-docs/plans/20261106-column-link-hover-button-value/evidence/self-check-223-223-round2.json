@@ -1,0 +1,9 @@
+{
+  "url": "http://localhost:3000/data/table-ex/",
+  "capturedAt": "2026-11-06T11:24:32.046Z",
+  "summary": "自检结果（223/223 通过）",
+  "totalChecks": 223,
+  "failCount": 0,
+  "failItems": [],
+  "round2BandCheck": "✓[painter]行背景带宽度：ΣcolWidths < 视口宽时行底色带充满至视口右缘，hover/选中带止于末列右缘、hover 列带止于末行底部（R1/人工 3 意见 1 + 追加轮 2）行底色带整宽/hover 行列带与选中带止于有效缘/表头背景同截/脏区保持/固定区不扩带/Σ>W 裁剪（窄列 Σ=350，W=600）"
+}

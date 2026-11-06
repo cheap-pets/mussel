@@ -1222,7 +1222,7 @@ export const checks = [
       const linkRender = LinkColumn.compile(columnDef)
       const lc = linkRender({
         record: { id: 1 },
-        value: [{ caption: 'A', danger: true }, { caption: 'B', disabled: true }, 'C'],
+        value: [{ label: 'A', danger: true }, { label: 'B', disabled: true }, 'C'],
         emit: captureEmit
       })
 
@@ -1230,7 +1230,7 @@ export const checks = [
       assert(lc.items.every(i => i.kind === 'link'), 'canvas 条目恒带 kind: link')
       assert(lc.items.every(i => i.link === true), 'link 列条目 link:true（列级 column.link，兼容壳顶层 link:true）')
       assertArray(lc.items.map(i => i.text), ['A', 'B', 'C'], '条目文本')
-      assert(lc.items.every(i => i.title === i.text), 'title:true 时 title = caption')
+      assert(lc.items.every(i => i.title === i.text), 'title:true 时 title = label')
       assertEqual(lc.items[0].color, 'danger', 'danger:true → color danger（兼容映射）')
       assertEqual(lc.items[1].disabled, true, 'disabled 平铺')
       assertEqual(lc.items[2].color, 'primary', '无 color 条目缺省 primary')
@@ -1244,7 +1244,7 @@ export const checks = [
       lc.items[0].onItemClick()
 
       assertEqual(calls[0][0], 'cell-item-click', 'onItemClick 派发 cell-item-click')
-      assertEqual(calls[0][1].item.caption, 'A', 'payload.item = 条目对象原引用')
+      assertEqual(calls[0][1].item.label, 'A', 'payload.item = 条目对象原引用')
       assertEqual(calls[0][1].record.id, 1, 'payload.record = 行记录')
       assert(calls[0][1].column === columnDef, 'payload.column = 原始列引用（compile 入参，_raw 回指）')
 
@@ -1254,7 +1254,7 @@ export const checks = [
       )
 
       assertEqual(linkDots.items[1].text, '...', 'canvas dots 条目 \'...\'')
-      assertEqual(linkDots.items[1].title, 'b\n\nc', 'canvas dots title = 截断条目 caption join')
+      assertEqual(linkDots.items[1].title, 'b\n\nc', 'canvas dots title = 截断条目 label join')
 
       linkDots.items[1].onItemClick()
 
@@ -1263,7 +1263,7 @@ export const checks = [
       // link dom 通道（compile(column, true)）：共用 list 实现——list-cell + a + text-{color}
       const ld = LinkColumn.compile({ linkOption: { max: 2 } }, true)({
         record: {},
-        value: [{ caption: 'A', danger: true }, 'B', 'C'],
+        value: [{ label: 'A', danger: true }, 'B', 'C'],
         emit: () => {}
       })
 
@@ -1321,18 +1321,18 @@ export const checks = [
     }
   },
   {
-    name: 'LinkColumn compile 产物（dom 通道，兼容壳委托 list）：caption/color 激活、dots payload item、danger→color、disabled、过滤',
+    name: 'LinkColumn compile 产物（dom 通道，兼容壳委托 list）：label/color 激活、dots payload item、danger→color、disabled、过滤',
     fn: () => {
       const render = LinkColumn.compile({}, true)
 
       // 对象数组：对象元素原样保留；color 键激活（decisions 第 4 条，20261103 版「不消费」已推翻）
-      const out = render({ record: {}, value: [{ caption: 'A', color: 'success' }, { caption: 'B' }, 3], emit: () => {} })
+      const out = render({ record: {}, value: [{ label: 'A', color: 'success' }, { label: 'B' }, 3], emit: () => {} })
 
       assertEqual(out.items.length, 3, '3 个条目')
-      assertEqual(out.items[0].text, 'A', '对象元素 caption 文本（非 [object Object]）')
+      assertEqual(out.items[0].text, 'A', '对象元素 label 文本（非 [object Object]）')
       assert(out.items[0].attrs.class.includes('text-success'), 'color 键激活 → text-{color}')
       assert(!out.items[0].attrs.class.join(' ').includes('mu-link'), '不复用 mu-link 类（list-cell 样式通道）')
-      assertEqual(out.items[2].text, 3, '数字元素仍包 { caption: el } 行为不变（text 保持原始 number）')
+      assertEqual(out.items[2].text, 3, '数字元素仍包 { label: el } 行为不变（text 保持原始 number）')
 
       // 字符串数组：包裹行为不变、link 列缺省 primary 色类
       const out2 = render({ record: {}, value: ['x', 'y'], emit: () => {} })
@@ -1352,7 +1352,7 @@ export const checks = [
       assertEqual(dotEvents[0][1].item, '...', 'dots payload 键 item 值 = \'...\'（decisions 第 5 条）')
 
       // 常规条目 payload item = 条目原对象、payload column = 原始列引用
-      const target = { caption: 'P', color: 'blue' }
+      const target = { label: 'P', color: 'blue' }
       const columnDef = { caption: '兼容列' }
       let captured = null
       const out4 = LinkColumn.compile(columnDef, true)(
@@ -1364,21 +1364,21 @@ export const checks = [
       assert(captured.column === columnDef, 'payload column 应为原始列引用（_raw 回指）')
 
       // danger 映射（壳内 danger:true → { ...el, color: el.color ?? 'danger' }）与 disabled
-      const out5 = render({ record: {}, value: [{ caption: 'D', danger: true }, { caption: 'E', disabled: true }], emit: () => {} })
+      const out5 = render({ record: {}, value: [{ label: 'D', danger: true }, { label: 'E', disabled: true }], emit: () => {} })
 
       assert(out5.items[0].attrs.class.includes('text-danger'), 'danger:true 落 text-danger')
       assertEqual(out5.items[1].attrs.disabled, '', 'disabled 落 attrs')
 
-      const out6 = render({ record: {}, value: [{ color: 'red' }, { caption: 'ok' }], emit: () => {} })
+      const out6 = render({ record: {}, value: [{ color: 'red' }, { label: 'ok' }], emit: () => {} })
 
-      assertEqual(out6.items.length, 1, '缺 caption 对象被过滤')
+      assertEqual(out6.items.length, 1, '缺 label 对象被过滤')
       assertEqual(out6.items[0].text, 'ok', '有效条目保留')
 
       return 'color 激活、字符串不变、dots click 键 item、payload 原对象/原列、danger→color/disabled/过滤全通过'
     }
   },
   {
-    name: 'ListColumn compile 产物（20261104 list 列双通道，R1 列级 link）：仅数组值、列级 link 整列、非 link 列正文色、payload item、caption 兼容、过滤',
+    name: 'ListColumn compile 产物（20261104 list 列双通道，R1 列级 link）：仅数组值、列级 link 整列、非 link 列正文色、payload item、caption 遗留键不再读取、空 label 过滤',
     fn: () => {
       // 非数组（标量）→ 空产物落占位（A4）；listItems 自定义取值同门控
       assertEqual(ListColumn.compile({}, true)({ record: {}, value: '标量', emit: () => {} }), undefined, '标量值 → undefined（占位链）')
@@ -1460,13 +1460,13 @@ export const checks = [
       assertEqual(events[0].item.label, '甲', 'link 项 payload item')
       assertEqual(events[1].item.label, '乙', '纯文本项 payload item = primitive 包装对象 { label }')
 
-      // caption 兼容读取 + 空条目过滤
+      // caption 遗留键不再读取（兼容已删除，label-only）+ 空 label 条目过滤
       const legacy = ListColumn.compile({}, true)({ record: {}, value: [{ caption: '旧键' }, { label: '' }, 'ok'], emit: () => {} })
 
-      assertEqual(legacy.items.length, 2, '空 label 条目过滤、caption 条目保留')
-      assertEqual(legacy.items[0].text, '旧键', 'caption 键兼容读取（开发期警告一次）')
+      assertEqual(legacy.items.length, 1, 'caption 遗留键不再读取（兼容已删除）、空 label 条目过滤')
+      assertEqual(legacy.items[0].text, 'ok', '有效条目保留')
 
-      return '标量/对象落占位、列级 link 整列 span/a、非 link 列正文色、payload item/column、caption 兼容、过滤全通过'
+      return '标量/对象落占位、列级 link 整列 span/a、非 link 列正文色、payload item/column、caption 遗留键不再读取、空 label 过滤全通过'
     }
   },
   {
@@ -1545,7 +1545,7 @@ export const checks = [
     name: 'link 列竖排：数组每条一行、color 查表/danger 映射/disabled 取色、超限 dots \'...\'、条目矩形回报',
     fn: () => {
       const col = prepareColumn({ field: 'v', type: 'link', maxItems: 4 })
-      const record = { v: [{ caption: 'A', color: 'success' }, { caption: 'B', disabled: true }, { caption: 'C', danger: true }, 'D', 'E'] }
+      const record = { v: [{ label: 'A', color: 'success' }, { label: 'B', disabled: true }, { label: 'C', danger: true }, 'D', 'E'] }
       const rects = []
       const { calls } = drawRecorded(col, record, { height: 88, onItemRect: r => rects.push(r) })
 
@@ -1619,7 +1619,7 @@ export const checks = [
     name: 'link 悬停（问题 7/A7）：竖排与横排两路径色变 + 1px 下划线、disabled 不悬停、list 非 link 条目不悬停',
     fn: () => {
       const col = prepareColumn({ field: 'v', type: 'link', maxItems: 4 })
-      const record = { v: [{ caption: 'A', color: 'success' }, { caption: 'B', disabled: true }, { caption: 'C', danger: true }, 'D', 'E'] }
+      const record = { v: [{ label: 'A', color: 'success' }, { label: 'B', disabled: true }, { label: 'C', danger: true }, 'D', 'E'] }
 
       // 竖排路径（drawLinkItems）：hover 第 0 条（color success 查表，彩色 hover === color）
       const vertical = drawRecorded(col, record, { height: 88, hoverItem: { kind: 'link', index: 0 } })

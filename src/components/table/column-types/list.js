@@ -1,5 +1,4 @@
 import { ensureFn } from '@/utils/type'
-import { warn } from '@/utils/warn'
 
 // list 列（20261104-table-column-type）：条目列，仅接受数组值；元素默认按文本行
 // 渲染，每项单行、超长省略；column 级 link: true 时整列按 link 样式渲染（整列
@@ -13,18 +12,6 @@ function defaultListItems (record, value) {
   return Array.isArray(value) ? value : undefined
 }
 
-// 条目文本取值：label 为标准键，caption 保留兼容（link 列遗留键，开发期警告一次）
-function labelOf (entry) {
-  if (entry.label == null && entry.caption != null) {
-    warn({
-      component: 'table',
-      message: 'list 列条目 "caption" 键已废弃，请使用 "label"'
-    })
-  }
-
-  return entry.label ?? entry.caption
-}
-
 // 条目归一：对象元素原样保留（payload 原引用传出，任意属性不丢）、primitive 包
 // { label: el }；label ?? caption 为 null/'' 的条目过滤
 function normalizeEntries (rawItems) {
@@ -33,7 +20,7 @@ function normalizeEntries (rawItems) {
 
   for (const el of rawItems) {
     const entry = el != null && typeof el === 'object' ? el : { label: el }
-    const label = labelOf(entry)
+    const label = entry.label
 
     if (label == null || label === '') continue
 

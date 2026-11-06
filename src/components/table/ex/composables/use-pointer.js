@@ -58,7 +58,8 @@ export function usePointer (ctx) {
 
   /** hover 命中 → 高亮格坐标（表头 / 越界 / 无命中均不高亮；R5：列宽总和小于
       表格宽时，行有效但 x 越出列区右缘的空白延伸区放行为行级 hover，
-      colIndex 保持 -1 —— 行带高亮整宽、列高亮/编辑描边/树箭头按 col 无效跳过） */
+      colIndex 保持 -1 —— 行带高亮至末列右缘（追加轮 2 需求 B 绘制 cap 后口径）、
+      列高亮/编辑描边/树箭头按 col 无效跳过） */
   function hoverCellOf (hit) {
     if (!hit || hit.isHeader || hit.rowIndex < 0) return null
     if (hit.colIndex >= 0 || hit.beyondCols) return { row: hit.rowIndex, col: hit.colIndex }

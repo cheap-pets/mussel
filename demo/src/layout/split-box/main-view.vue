@@ -5,7 +5,7 @@
       note="mu-split-h-box 左中右三栏，#left / #center / #right 插槽；拖动分隔条调整两侧宽度"
       :code="basicCode"
       vertical>
-      <mu-split-h-box class="demo-split-frame" :splitter="{ collapsible: true }">
+      <mu-split-h-box class="demo-split-frame" :splitter="{ resizable: true, collapsible: true }">
         <template #left>
           <div class="demo-block mu-bg-strong">
             left
@@ -27,14 +27,14 @@
     <demo-section
       title="嵌套纵向分割"
       note="center 内嵌 mu-split-v-box 上下分割，拖动水平分隔条调整上下高度">
-      <mu-split-h-box class="demo-split-frame" :splitter="{ collapsible: true }">
+      <mu-split-h-box class="demo-split-frame" :splitter="{ resizable: true, collapsible: true }">
         <template #left>
           <div class="demo-block mu-bg-strong">
             left
           </div>
         </template>
         <template #center>
-          <mu-split-v-box class="demo-split-inner">
+          <mu-split-v-box class="demo-split-inner" :splitter="{ resizable: true }">
             <template #top>
               <div class="demo-block--fill mu-bg-strong">
                 top
@@ -127,7 +127,7 @@
       </div>
       <mu-split-h-box
         class="demo-split-frame demo-mt"
-        :splitter="{ size: zeroSize ? 'zero' : 'normal', collapsible: true, collapseHandle: true }"
+        :splitter="{ size: zeroSize ? 'zero' : 'normal', resizable: true, collapsible: true, collapseHandle: true }"
         left-class="mu-bg-strong"
         left-style="min-width: 200px"
         right-class="mu-bg-strong">
@@ -157,7 +157,7 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
-  const basicCode = `<mu-split-h-box :splitter="{ collapsible: true }">
+  const basicCode = `<mu-split-h-box :splitter="{ resizable: true, collapsible: true }">
   <template #left>left</template>
   <template #center>center</template>
   <template #right>right</template>
@@ -176,6 +176,7 @@
   const rightCollapsibleOn = ref(true)
 
   const sharedSplitterOptions = computed(() => ({
+    resizable: true,
     size: splitterSize.value,
     shape: splitterShape.value,
     collapseHandle: collapseHandle.value
@@ -200,6 +201,8 @@
     flex-wrap: wrap;
     gap: 12px;
     align-items: center;
+
+    width: 100%;
   }
 
   .demo-mt {
@@ -207,10 +210,12 @@
   }
 
   .demo-split-frame {
+    overflow: hidden;
+
+    width: 100%;
     height: 280px;
     border: 1px solid var(--mu-border-color);
     border-radius: 4px;
-    overflow: hidden;
   }
 
   .demo-split-inner {
@@ -218,20 +223,22 @@
   }
 
   .demo-block {
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+
     min-width: 220px;
     height: 100%;
-    overflow: hidden;
   }
 
   .demo-block--fill {
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 100%;
     height: 100%;
-    overflow: hidden;
   }
 </style>

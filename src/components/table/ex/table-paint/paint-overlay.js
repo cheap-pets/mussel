@@ -11,7 +11,7 @@ import {
   EDIT_BUTTON_AREA,
   EDIT_BUTTON_ICON_SIZE
 } from '../shared/constants.js'
-import { viewportColX, viewportRowY, rowsOf, recordKeyOf, withClip } from './paint-utils'
+import { viewportColX, viewportRowY, contentRightXOf, contentBottomYOf, rowsOf, recordKeyOf, withClip } from './paint-utils'
 import { regionAt, spanRectOf } from '../spans/spans.js'
 
 // —— 分区 5：覆盖层 ——
@@ -52,22 +52,33 @@ function hoverModeShows (mode, kind) {
   return mode === kind || mode === 'cross'
 }
 
+// 行 hover 带（追加轮 2 需求 B）：宽 cap 至末列右缘视口 x——列少时不绘入末列
+// 右缘以右的空白延伸区（R5 命中放行不变，仅收缩绘制矩形；列满/溢出时
+// contentRightX >= stickyWidth，min() 无操作）
 function paintHoverRow (ctx, layout, row) {
-  ctx.fillRect(0, viewportRowY(layout, row), layout.stickyWidth, layout.rowGeometry.heightAt(row))
+  ctx.fillRect(0, viewportRowY(layout, row),
+    Math.min(layout.stickyWidth, contentRightXOf(layout)),
+    layout.rowGeometry.heightAt(row))
 }
 
+// 列 hover 带（追加轮 2 需求 B）：高 cap 至末行底部视口 y——行少时不绘入末行
+// 底部以下（与格线 contentBottomY 同源式；行 hover 状态前提 rowCount > 0，
+// contentBottomYOf 空表门控在此路径恒走有效分支）
 function paintHoverCol (ctx, layout, col) {
+  const yTo = contentBottomYOf(layout)
+
   ctx.fillRect(
     viewportColX(layout, col),
     layout.headHeight,
     layout.colWidths[col] || 0,
-    layout.stickyHeight - layout.headHeight
+    yTo - layout.headHeight
   )
 }
 
 /** hover 高亮矩形（fillStyle 由调用方预设为 hoverBg）：按模式与命中有效性。
-    cell 模式经 spanRectOf 取区域矩形（合并区域整体高亮，§5.1）；row/column/cross
-    维持物理行/列矩形不动（正交语义，写入文档 §2.5） */
+    cell 模式经 spanRectOf 取区域矩形（合并区域整体高亮，§5.1，天然在有效行列
+    内）；row/column/cross 维持物理行/列矩形（正交语义，写入文档 §2.5），行带
+    止于末列右缘、列带止于末行底部（追加轮 2 需求 B，不越有效行列范围） */
 function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid, spans) {
   if (hoverModeShows(mode, 'row') && rowValid) paintHoverRow(ctx, layout, hover.row)
 

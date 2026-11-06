@@ -185,7 +185,7 @@
     { caption: '名称', field: 'name', width: 160 },
     { caption: '数量', field: 'count', type: 'number', width: 90 },
     { caption: '小计', key: 'summary', field: 'summary', width: 140 },
-    { caption: '操作', field: 'name', width: 130, type: 'link' }
+    { caption: '操作', field: 'name', width: 130, type: 'tag' }
   ]
 
   /** 小计行跨列声明：summary 'rest' 展开到行尾；其余行交给 autoRowSpan */
