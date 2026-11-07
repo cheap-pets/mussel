@@ -8,7 +8,7 @@ import {
   TAG_RADIUS
 } from '../shared/constants'
 import { ellipsize, cellFontOf } from '../shared/text-wrap'
-import { fontFamilyOf, measureOf, centeredTextAnchor, linkUnderlineY, cellLineHeightOf } from './cell-text'
+import { fontFamilyOf, measureOf, centeredTextAnchor, centeredGlyphAnchor, linkUnderlineY, cellLineHeightOf } from './cell-text'
 import { requestImage, drawIconGlyph } from './icon-image'
 
 // 条目字体 12px（镜像 tag.scss font-size；单文件消费，不入 constants）
@@ -331,7 +331,8 @@ function drawCheck (ctx, item, x, centerY, theme) {
     ctx.font = `${CHECK_FONT_SIZE}px ${fontFamilyOf(theme)}`
     ctx.textAlign = 'center'
 
-    const anchor = centeredTextAnchor(ctx, centerY)
+    // 字形墨迹锚（20261107）：✓ 墨迹偏 em 框上部，文本 CJK 探针半差不适用
+    const anchor = centeredGlyphAnchor(ctx, '✓', centerY)
 
     ctx.textBaseline = anchor.baseline
     ctx.fillStyle = disabled ? theme?.gray : theme?.textColor

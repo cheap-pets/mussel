@@ -42,6 +42,7 @@
 import { drawCell } from '../../../../../src/components/table/ex/cell-paint/cell-painters.js'
 import { prepareColumn, resolveCellContent } from '../../../../../src/components/table/ex/cell-paint/cell-content.js'
 import { resolveCellTooltip } from '../../../../../src/components/table/ex/cell-paint/cell-tooltip.js'
+import { CJK_PROBE_CHAR } from '../../../../../src/components/table/ex/cell-paint/cell-text.js'
 import { getImageEntry, requestIconImage, drawIconGlyph } from '../../../../../src/components/table/ex/cell-paint/icon-image.js'
 import { linkHoverColorOf } from '../../../../../src/components/table/ex/cell-paint/item-painters.js'
 import { resolveIconEntry } from '../../../../../src/components/table/column-types/icon.js'
@@ -216,19 +217,58 @@ function fakeMeasure (text) {
   return String(text).replace(/\s/g, '').length * 7 + String(text).length * 2
 }
 
-/** 文本光学居中锚偏移（20261029 问题 1）：与 cell-painters.centeredTextAnchor
- *  同参口径现算——y = centerY + round((fbAscent − fbDescent)/2)，随运行时字体
- *  自适应（fontBoundingBox 须 alphabetic 状态测量；度量缺失环境回退 0 = middle） */
-function textAnchorOffset (font) {
+/** 墨迹半差锚偏移现算基座（20261107 测量基升级 CJK 墨迹）：alphabetic 状态
+ *  单字符 actualBoundingBox 半差取整；度量缺失/非有限/墨迹零高回退 0（= 实现
+ *  侧 'middle' 回退的 y 无偏移口径） */
+function inkOffsetOf (char, font) {
   const c = document.createElement('canvas').getContext('2d')
 
   c.font = font
   c.textBaseline = 'alphabetic'
-  const m = c.measureText('')
+  const m = c.measureText(char)
 
-  return Number.isFinite(m?.fontBoundingBoxAscent) && Number.isFinite(m?.fontBoundingBoxDescent)
-    ? Math.round((m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2)
+  return Number.isFinite(m?.actualBoundingBoxAscent) &&
+    Number.isFinite(m?.actualBoundingBoxDescent) &&
+    m.actualBoundingBoxAscent + m.actualBoundingBoxDescent > 0
+    ? Math.round((m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2)
     : 0
+}
+
+/** 文本光学居中锚偏移（20261029 问题 1；20261107 测量基升级）：与
+ *  cell-text.centeredTextAnchor 同参口径现算——y = centerY + round(CJK 探针
+ *  字符墨迹半差)，随运行时字体自适应（boundingBox 须 alphabetic 状态测量；
+ *  度量缺失环境回退 0 = middle） */
+function textAnchorOffset (font) {
+  return inkOffsetOf(CJK_PROBE_CHAR, font)
+}
+
+/** 字形墨迹锚偏移（20261107：iconfont 字形/✓ 单字形内容）：与
+ *  cell-text.centeredGlyphAnchor 同参口径现算——y = centerY + round(该字形墨迹
+ *  半差)，实测渲染高度；度量缺失环境回退 0 = middle */
+function glyphAnchorOffset (glyph, font) {
+  return inkOffsetOf(glyph, font)
+}
+
+/** 劫持原型 measureText 统计指定文本调用数（同步窗口内，计数后复原；锚缓存
+ *  「实测/缓存命中」计数断言用。能力探测测 CJK_PROBE_CHAR、锚 miss 测量目标
+ *  字符，按文本计数可分离两类调用） */
+function countMeasureTextDuring (chars, fn) {
+  const proto = CanvasRenderingContext2D.prototype
+  const original = proto.measureText
+  const counted = { calls: 0 }
+
+  proto.measureText = function (text) {
+    if (chars.includes(text)) counted.calls++
+    return original.call(this, text)
+  }
+
+  try {
+    fn()
+  } finally {
+    proto.measureText = original
+  }
+
+  return counted.calls
 }
 
 // THEME fixture 的 cellFontOf 产物与对应锚偏移（槽位锚 y 断言 = 19 + OFF）
@@ -1203,6 +1243,42 @@ export const checks = [
       assertEqual(tall.calls.fillText[0].y, 19 + TEXT_ANCHOR_OFF, '超高行单行锚不变（不随行高变，与多行/link 竖排首行同高）')
 
       return `x=80/79.5/8/152；y 恒 ${19 + TEXT_ANCHOR_OFF}（h=36/88 同值，跨列首行同高）`
+    }
+  },
+  {
+    name: '文本锚缓存：CJK 墨迹实测同 font 跨实例不重测（模块级缓存 + fonts loaded 守卫）',
+    fn: () => {
+      assertEqual(document.fonts?.status, 'loaded', '前置：document.fonts 已 loaded（缓存守卫直通，计数协议成立）')
+
+      // 专属冷 font 串（13px 基底 + 每次运行随机小数）：模块级缓存跨「重跑自检」
+      // 存续，固定 13px 会被页内首次运行预热致 A=2 不可复现——13px 基底全
+      // self-checks / demo 数据未用（冷口径），小数后缀仅保证每次运行冷键；
+      // ctx.font 序列化保小数，实现与断言两侧同串同键。绘制文本 '甲' 不混入计数
+      const coldSize = Number((13 + Math.random()).toFixed(4))
+      const coldFont = `${coldSize}px sans-serif`
+      const theme = { ...THEME, fontSize: coldSize }
+      let first = null
+
+      const countA = countMeasureTextDuring([CJK_PROBE_CHAR], () => {
+        first = drawRecorded(prepareColumn({ field: 'v' }), { v: '甲' }, { theme })
+      })
+
+      assertEqual(countA, 2, `canvas A 首绘探针字符测量 = 2（能力探测 1 + 锚 miss 1），实际 ${countA}`)
+
+      let second = null
+
+      const countB = countMeasureTextDuring([CJK_PROBE_CHAR], () => {
+        second = drawRecorded(prepareColumn({ field: 'v' }), { v: '甲' }, { theme })
+      })
+
+      assertEqual(countB, 1, `canvas B（新实例）同 font 首绘 = 1（仅能力探测，锚命中模块级缓存），实际 ${countB}`)
+
+      const off = textAnchorOffset(coldFont)
+
+      assertEqual(first.calls.fillText[0].y, 19 + off, `A 锚 y = 19 + CJK 墨迹半差 ${off}（font ${coldFont}）`)
+      assertEqual(second.calls.fillText[0].y, first.calls.fillText[0].y, 'B 锚 y 与 A 相同（跨实例缓存命中口径一致）')
+
+      return `A=2 / B=1，y 恒 ${19 + off}（font ${coldFont} 跨实例不重测，兼证度量全局保存）`
     }
   },
   {
@@ -2280,10 +2356,10 @@ export const checks = [
       const glyph = calls.fillText.find(call => call.text === clsEntry.glyph)
 
       assert(glyph, 'cls 图标以 fillText 绘制（glyph 取自注册表项）')
-      assertEqual(glyph.font, `16px ${clsEntry.fontFamily}`, 'font = `${size}px ${fontFamily}`')
+      assertEqual(glyph.font, `16px ${clsEntry.fontFamily}`, 'font = size px + fontFamily 拼接串')
       assertEqual(glyph.fillStyle, cssColorOf(THEME.textColor), '缺省正文色')
       assertEqual(glyph.x, 72, '单条目 center 对齐起点（(160−16)/2）')
-      assertEqual(glyph.y, 19 + textAnchorOffset(`16px ${clsEntry.fontFamily}`), '垂直锚 = centerY + 光学半差（槽位式）')
+      assertEqual(glyph.y, 19 + glyphAnchorOffset(clsEntry.glyph, `16px ${clsEntry.fontFamily}`), '垂直锚 = centerY + 字形墨迹半差（实测渲染高度，槽位式）')
 
       // color 染色：canvas 色名查表
       const colored = drawRecorded(prepareColumn({ field: 'v', type: 'icon', color: 'primary' }), { v: 'demoGlyphA' })
@@ -2321,6 +2397,65 @@ export const checks = [
       }
 
       return 'cls fillText（font/x/锚/color）+ svg drawImage（16×16 @72,11）正确'
+    }
+  },
+  {
+    name: '字形锚缓存：iconfont 字形实测渲染高度，同 glyph 同 font 不重测、size 变重测恰 1 次',
+    fn: () => {
+      assertEqual(document.fonts?.status, 'loaded', '前置：document.fonts 已 loaded（缓存守卫直通，计数协议成立）')
+
+      // cls 夹具 demoGlyphA（glyph '●'）直调 drawIconGlyph；字号取 19/21 基底 +
+      // 每次运行随机小数——iconOption.size 经 iconSizeOf Math.round 收敛整数，
+      // 列路径做不出运行内冷键，直调传小数字号绕开收敛；demo 页/其余自检恒用
+      // 16/20/12 等整字号，19/21 基底冷口径成立，小数后缀保证「重跑自检」仍冷键
+      // （模块级缓存跨运行存续）；ctx.font 序列化保小数，实现与断言两侧同串同键
+      const entry = icons.demoGlyphA
+      const sizeA = Number((19 + Math.random()).toFixed(4))
+      const sizeC = Number((21 + Math.random()).toFixed(4))
+      const fontA = `${sizeA}px ${entry.fontFamily}`
+      const fontC = `${sizeC}px ${entry.fontFamily}`
+
+      const drawGlyphAt = size => {
+        const canvas = document.createElement('canvas')
+
+        canvas.width = 40
+        canvas.height = 40
+
+        const ctx = recordingCtx(canvas)
+
+        drawIconGlyph(ctx, entry, { x: 4, centerY: 19, size, color: THEME.textColor })
+
+        return canvas.__paintCalls
+      }
+
+      let first = null
+
+      const count1 = countMeasureTextDuring([entry.glyph], () => {
+        first = drawGlyphAt(sizeA)
+      })
+
+      assertEqual(count1, 1, `19px 基底首绘 glyph 墨迹测量恰 1 次（能力探测测 CJK 探针字符不混入），实际 ${count1}`)
+      assertEqual(first.fillText.find(c => c.text === entry.glyph).y, 19 + glyphAnchorOffset(entry.glyph, fontA), '字形锚 y = 槽位 + 该字形墨迹半差')
+
+      let second = null
+
+      const count2 = countMeasureTextDuring([entry.glyph], () => {
+        second = drawGlyphAt(sizeA)
+      })
+
+      assertEqual(count2, 0, `同 glyph 同 font 二次绘制（新 canvas 实例）0 次重测，实际 ${count2}`)
+      assertEqual(second.fillText.find(c => c.text === entry.glyph).y, first.fillText.find(c => c.text === entry.glyph).y, '二次绘制 y 与首绘一致（缓存口径）')
+
+      let third = null
+
+      const count3 = countMeasureTextDuring([entry.glyph], () => {
+        third = drawGlyphAt(sizeC)
+      })
+
+      assertEqual(count3, 1, `size 19→21 基底（font 串变）重测恰 1 次，实际 ${count3}`)
+      assertEqual(third.fillText.find(c => c.text === entry.glyph).y, 19 + glyphAnchorOffset(entry.glyph, fontC), '21px 基底锚随实测墨迹更新')
+
+      return `首绘 1 / 同 font 二绘 0 / 变 size 恰 1；y = 19 + 字形墨迹半差（${fontA} / ${fontC}）`
     }
   },
   {

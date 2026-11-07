@@ -1,6 +1,6 @@
 /** img/icon 异步加载缓存与字形绘制 */
 import { whenGlyphReady } from '@/icons'
-import { centeredTextAnchor } from './cell-text'
+import { centeredGlyphAnchor } from './cell-text'
 
 // img 缓存上限（超限整体清空，同 theme.js 测量缓存策略）
 const IMAGE_CACHE_LIMIT = 200
@@ -69,7 +69,8 @@ export function requestIconImage (icon, color, onLoad) {
     ready 才 fillText（iconfont fillStyle 直传色，无按色分键，D2）；pending 静默
     不绘 + whenGlyphReady 登记重绘回调（解析/字体就绪后一次性回调 → invalidateCell）；
     failed 不绘不登记（install 侧已 dev warn）。统一 textAlign = 'left'，x 为条目
-    起点，垂直锚 = centeredTextAnchor（与文本绘制同槽位式） */
+    起点，垂直锚 = centeredGlyphAnchor（字形墨迹实测渲染高度，20261107；字号变
+    = font 串变才重测） */
 export function drawIconGlyph (ctx, icon, { x, centerY, size, color, onLoad }) {
   if (!icon || !(size > 0)) return
 
@@ -88,7 +89,7 @@ export function drawIconGlyph (ctx, icon, { x, centerY, size, color, onLoad }) {
     ctx.fillStyle = color
     ctx.textAlign = 'left'
 
-    const anchor = centeredTextAnchor(ctx, centerY)
+    const anchor = centeredGlyphAnchor(ctx, icon.glyph, centerY)
 
     ctx.textBaseline = anchor.baseline
     ctx.fillText(icon.glyph, x, anchor.y)

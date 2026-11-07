@@ -10,6 +10,7 @@ import {
   FONT_FAMILY_FALLBACK
 } from '../shared/constants.js'
 import { viewportColX, contentRightXOf, withClip, sortDirectionOf } from './paint-utils'
+import { centeredTextAnchor, centeredGlyphAnchor } from '../cell-paint/cell-text'
 
 // 排序图标：th 内 absolute right: cell-padding、font-size 18px（table.scss
 // .mu-sort-icon），viewBox 24 双三角 path（sort-icon.vue），caption 右侧预留 18px
@@ -76,8 +77,12 @@ function drawHeaderCheck (ctx, theme, x, centerY, checked) {
     ctx.font = `600 ${CHECK_FONT_SIZE}px ${theme?.fontFamily || FONT_FAMILY_FALLBACK}`
     ctx.fillStyle = theme.textColor
     ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText('✓', x + CHECK_SIZE / 2, centerY)
+
+    // 字形墨迹锚（20261107）：20261029 统一遗漏站点收敛，✓ 墨迹偏 em 框上部
+    const anchor = centeredGlyphAnchor(ctx, '✓', centerY)
+
+    ctx.textBaseline = anchor.baseline
+    ctx.fillText('✓', x + CHECK_SIZE / 2, anchor.y)
   }
 }
 
@@ -134,8 +139,13 @@ function drawHeaderText (ctx, state, col, font, align, hasHeaderCheck, textX, ma
   ctx.font = font
   ctx.fillStyle = theme.textColor
   ctx.textAlign = hasHeaderCheck ? 'left' : align
-  ctx.textBaseline = 'middle'
-  ctx.fillText(display, headerTextAnchorX(align, hasHeaderCheck, textX, x, width, padding, reserve), centerY)
+
+  // 光学居中锚（20261107）：20261029 统一遗漏站点收敛（'middle' 对 CJK 偏上
+  // 1~2px）；headerFontOf 500 字重自成缓存键
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+  ctx.fillText(display, headerTextAnchorX(align, hasHeaderCheck, textX, x, width, padding, reserve), anchor.y)
 }
 
 function drawHeaderCell (ctx, state, col, x, width) {
