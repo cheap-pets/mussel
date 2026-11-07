@@ -29,9 +29,8 @@ export function requestImage (src, onLoad) {
     image.crossOrigin = 'anonymous'
     image.onload = () => {
       entry.status = 'loaded'
-      // 多监听 flush（20261105：icon 列 N 行共用同 src 时仅首格收到回调的缺陷
-      // 修正——加载完成一次 flush 全部监听，painter 逐格 invalidate、rAF 合帧为
-      // 一次整幅重绘）；单 listener 场景「恰回调一次」语义不变
+      // 加载完成一次 flush 全部监听（icon 列 N 行共用同 src 场景），painter 逐格
+      // invalidate、rAF 合帧为一次整幅重绘；单 listener 场景「恰回调一次」语义不变
       const listeners = entry.listeners
 
       entry.listeners = []
@@ -48,7 +47,7 @@ export function requestImage (src, onLoad) {
     entry.listeners.push(onLoad)
   }
 
-  // 命中已 loaded / failed：不回调（调用方以 status 判定，既有行为不变）
+  // 命中已 loaded / failed：不回调，调用方以 status 判定
   return entry
 }
 
@@ -66,11 +65,10 @@ export function requestIconImage (icon, color, onLoad) {
     icon = 注册表项原引用（resolveIconEntry 查表产物，非注册表形态不入此函数）。
     svg 路径复用 requestIconImage 缓存管线（loaded 才 drawImage）；cls 路径直读
     注册表项（码点解析已由 icons 模块 install 时完成，本模块无解析状态机）——
-    ready 才 fillText（iconfont fillStyle 直传色，无按色分键，D2）；pending 静默
-    不绘 + whenGlyphReady 登记重绘回调（解析/字体就绪后一次性回调 → invalidateCell）；
-    failed 不绘不登记（install 侧已 dev warn）。统一 textAlign = 'left'，x 为条目
-    起点，垂直锚 = centeredGlyphAnchor（字形墨迹实测渲染高度，20261107；字号变
-    = font 串变才重测） */
+    ready 才 fillText（fillStyle 直传色，无按色分键）；pending 静默不绘 +
+    whenGlyphReady 登记重绘回调（解析/字体就绪后一次性回调 → invalidateCell）；
+    failed 不绘不登记（install 侧已 dev warn）。统一 textAlign = 'left'，x 为
+    条目起点，垂直锚 = centeredGlyphAnchor（字形墨迹实测渲染高度） */
 export function drawIconGlyph (ctx, icon, { x, centerY, size, color, onLoad }) {
   if (!icon || !(size > 0)) return
 

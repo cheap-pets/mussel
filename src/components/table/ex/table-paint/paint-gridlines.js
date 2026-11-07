@@ -1,7 +1,7 @@
 /** 分区 2 网格线（含合并区域分段） */
 import { viewportColX, viewportRowY, contentRightXOf, contentBottomYOf, isEmptyRange } from './paint-utils'
 
-// —— 分区 2：网格线（合并区域分段：内部行线/列线在区域包围盒区间内跳过，§5.1）——
+// —— 分区 2：网格线（合并区域分段：内部行线/列线在区域包围盒区间内跳过）——
 
 /** 网格线模式含某向：all 全画，其余按 row / column 精确匹配（未知值不画线） */
 export function isGridlineMode (mode, kind) {
@@ -62,11 +62,9 @@ function paintSegmentedVLine (ctx, x, yFrom, yTo, intervals) {
 }
 
 /** 列竖线被跨线区域占用的 y 区间（视口坐标，按分界线 b 分组）：竖线左缘线按其
-    右侧列号索引（b ∈ (colFrom, colTo) 为区域内部分界）；一次遍历 regions 分组。
-    上界取 cols.to + 1（20261106-ex-fixed-select-hover-span 人工修订 2）：列带重绘
-    的画线范围含末列右缘线 b = cols.to，该线落在区域内部（cols.to < colTo）时同
-    为内部线，须登记跳段——否则列带重绘（如 hover 相邻行边界列的单列带脏区）走
-    无 skips 分支整条补画，区域内部格线残留（再次 hover 过区域后自愈） */
+    右侧列号索引（b ∈ (colFrom, colTo) 为区域内部分界）。上界取 cols.to + 1：
+    列带重绘的画线范围含末列右缘线 b = cols.to，该线落在区域内部时同为内部线，
+    须登记跳段——否则列带重绘走无 skips 分支整条补画，区域内部格线残留 */
 function colLineSkipIntervals (layout, spans, cols) {
   const map = new Map()
 
@@ -110,7 +108,7 @@ function paintRowGridlines (ctx, state, rows, W) {
   }
 }
 
-/** 列线：列右缘 1px，遇末列终止（同 .last-col）；空白区时末列右缘补画 1px（问题 9）；
+/** 列线：列右缘 1px，遇末列终止（同 .last-col）；空白区时末列右缘补画 1px；
     区域内部竖线在区域 y 区间内跳过 */
 function paintColGridlines (ctx, state, cols) {
   const { layout, spans } = state
@@ -118,11 +116,8 @@ function paintColGridlines (ctx, state, cols) {
   const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
   const skipsByBoundary = spans ? colLineSkipIntervals(layout, spans, cols) : null
 
-  // 列线下界截断（20261106-column-link-hover-button-value 需求 3）：行高之和 <
-  // 容器高时止于末行底部视口 y（与 paintGridlines 行线右界同式 min cap，取
-  // contentBottomYOf 共享式；行满/列满或滚动溢出时 contentBottomY >=
-  // stickyHeight，min() 无操作）；空表维持现状（rowCount > 0 门控，
-  // decisions.md 裁定：0 行列线保留全高）
+  // 列线下界截断：行高之和 < 容器高时止于末行底部视口 y（contentBottomYOf 共享
+  // 式）；空表 0 行列线保留全高（rowCount > 0 门控）
   const contentBottomY = contentBottomYOf(layout)
 
   for (let c = cols.from; c < cols.to; c++) {
@@ -149,11 +144,9 @@ export function paintGridlines (ctx, state, rows, cols, maxWidth) {
   const { layout, theme } = state
   const W = Math.min(maxWidth ?? layout.stickyWidth, layout.stickyWidth)
 
-  // 行线右界截断（20261106-column-link-hover-button-value 需求 3）：列宽之和 <
-  // 容器宽时 cap 至末列右缘视口 x（contentRightXOf 共享式，与 paint-header 末线/
-  // 表头背景、paint-overlay hover 带、paint-body 选中带同源；行满/列满或滚动
-  // 溢出时 contentRightX >= stickyWidth，min() 无操作；固定区 pass 传
-  // maxWidth = fixedWidth 时 contentRightX >= fixedWidth 恒成立，cap 同样无操作）
+  // 行线右界截断：列宽之和 < 容器宽时 cap 至末列右缘视口 x（contentRightXOf
+  // 共享式，与表头末线/背景、hover 带、选中带同源；固定区 pass 传
+  // maxWidth = fixedWidth 时 cap 同样无操作）
   const contentRightX = contentRightXOf(layout)
   const rowLineW = Math.min(W, contentRightX)
 

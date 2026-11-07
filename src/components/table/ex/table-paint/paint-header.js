@@ -12,12 +12,12 @@ import {
 import { viewportColX, contentRightXOf, withClip, sortDirectionOf } from './paint-utils'
 import { centeredTextAnchor, centeredGlyphAnchor } from '../cell-paint/cell-text'
 
-// 排序图标：th 内 absolute right: cell-padding、font-size 18px（table.scss
-// .mu-sort-icon），viewBox 24 双三角 path（sort-icon.vue），caption 右侧预留 18px
+// 排序图标复刻 DOM 版：th 内 absolute right: cell-padding、font-size 18px，
+// viewBox 24 双三角 path，caption 右侧预留 18px
 const SORT_ICON_SIZE = 18
 const SORT_ICON_RESERVE = 18
 
-// —— 文本测量缓存（theme.js createMeasureCache 消费方；模块级共享，主线程同步绘制） ——
+// —— 文本测量缓存：模块级共享，主线程同步绘制 ——
 
 let measuringCtx = null
 
@@ -78,7 +78,7 @@ function drawHeaderCheck (ctx, theme, x, centerY, checked) {
     ctx.fillStyle = theme.textColor
     ctx.textAlign = 'center'
 
-    // 字形墨迹锚（20261107）：20261029 统一遗漏站点收敛，✓ 墨迹偏 em 框上部
+    // 字形墨迹锚：✓ 墨迹偏 em 框上部
     const anchor = centeredGlyphAnchor(ctx, '✓', centerY)
 
     ctx.textBaseline = anchor.baseline
@@ -106,7 +106,7 @@ function drawSortIcon (ctx, state, col, ix, iy) {
   drawTriangle([[18, 14], [12, 20], [6, 14]], direction === 'down')
 }
 
-/** check 表头 ✓ 判定（table.vue:22 同款：type=check + field + headerCheckbox + 受控态） */
+/** check 表头 ✓ 判定（table.vue 同款：type=check + field + headerCheckbox + 受控态） */
 function isHeaderCheckColumn (state, raw) {
   return !!(raw.type === 'check' && raw.field && raw.headerCheckbox && state.headerChecked)
 }
@@ -140,8 +140,7 @@ function drawHeaderText (ctx, state, col, font, align, hasHeaderCheck, textX, ma
   ctx.fillStyle = theme.textColor
   ctx.textAlign = hasHeaderCheck ? 'left' : align
 
-  // 光学居中锚（20261107）：20261029 统一遗漏站点收敛（'middle' 对 CJK 偏上
-  // 1~2px）；headerFontOf 500 字重自成缓存键
+  // 光学居中锚（'middle' 对 CJK 偏上 1~2px）；headerFontOf 500 字重自成缓存键
   const anchor = centeredTextAnchor(ctx, centerY)
 
   ctx.textBaseline = anchor.baseline
@@ -200,8 +199,8 @@ function paintHeaderColLine (ctx, theme, layout, c, strong) {
   ctx.fillRect(viewportColX(layout, c) + (layout.colWidths[c] || 0) - 1, 0, 1, layout.headHeight - 1)
 }
 
-/** 表头列分隔线整批：可视列从左到右，遇末列终止；滚动列部分在固定区右缘
-    clip 内（R1：部分滚入固定区下方的首可见列分隔线不绘入固定表头区） */
+/** 表头列分隔线整批：可视列从左到右，遇末列终止；滚动列部分在固定区右缘 clip
+    内——部分滚入固定区下方的首可见列分隔线不绘入固定表头区 */
 function paintHeaderColLines (ctx, state, layout, theme) {
   const mode = state.gridlines ?? 'all'
   const strongBoundary = layout.scrollLeft > 0.5
@@ -225,7 +224,7 @@ function paintHeaderColLines (ctx, state, layout, theme) {
   })
 }
 
-/** 表头列分隔线区间绘制；末列无线同 .last-col，空白区时末列右缘补画 1px（问题 9） */
+/** 表头列分隔线区间绘制；末列无线同 .last-col，空白区时末列右缘补画 1px */
 function paintHeaderColLineRange (ctx, state, theme, layout, cols, mode, strongBoundary) {
   const n = layout.colWidths.length
   const blankTail = layout.stickyWidth > (layout.contentWidth || 0)
@@ -239,8 +238,8 @@ function paintHeaderColLineRange (ctx, state, theme, layout, cols, mode, strongB
   }
 }
 
-/** 表头单元格内容绘制（文字/check/排序图标）。R1：滚动列部分在固定区右缘
-    clip 内绘制——不裁剪会绘入固定表头区形成残影（表头为最后分区须自裁剪） */
+/** 表头单元格内容绘制（文字/check/排序图标）。滚动列部分在固定区右缘 clip 内
+    绘制——不裁剪会绘入固定表头区形成残影（表头为最后分区须自裁剪） */
 function paintHeaderCells (ctx, state) {
   const { layout } = state
   const cols = headerColIndexes(layout)
@@ -277,13 +276,11 @@ export function paintHeader (ctx, state) {
   const { layout, theme } = state
   const W = layout.stickyWidth
   const headHeight = layout.headHeight
-  // 末列右缘视口 x（contentRightXOf 共享式，与 paintGridlines rowLineW 同源）
+  // 末列右缘视口 x（contentRightXOf 共享式）
   const contentRightX = contentRightXOf(layout)
 
-  // 不透明底盖住下方所有层（A2 分区 4）；追加轮 2 裁定（decisions.md，取代
-  // 「表头背景仍整宽」）：背景同末线 cap 至末列右缘——列少时右缘以右不再绘
-  // 表头背景（擦除链路清为透明）；列满/滚动溢出时 contentRightX >=
-  // stickyWidth，min() 无操作；n=0 时宽 0 与末线 cap 同口径
+  // 不透明底盖住下方所有层；背景同末线 cap 至末列右缘——列少时右缘以右不再绘
+  // 表头背景（擦除链路清为透明）
   ctx.fillStyle = theme.bgFill
   ctx.fillRect(0, 0, Math.min(W, contentRightX), headHeight)
 
@@ -291,8 +288,8 @@ export function paintHeader (ctx, state) {
 
   paintHeaderColLines(ctx, state, layout, theme)
 
-  // 底边框承担首行顶线 r=0 语义（paint-gridlines 行线注释口径），需求 3-b 同式
-  // 截断：末线右界 cap 至末列右缘视口 x，cap 后右缘 = 末列右缘线右缘
+  // 底边框承担首行顶线 r=0 语义（paint-gridlines 行线口径）；末线右界同式 cap
+  // 至末列右缘视口 x
   ctx.fillStyle = theme.borderColorSoft
   ctx.fillRect(0, headHeight - 1, Math.min(W, contentRightX), 1)
 }

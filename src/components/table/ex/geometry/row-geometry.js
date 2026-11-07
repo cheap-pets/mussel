@@ -1,16 +1,9 @@
-/** table-ex 行几何策略（02-design.md A2.2/A2.3）：等高/变高双模式统一接口，
-    painter / layout / interactions / editor 全部经几何接口取行坐标，不感知模式 */
+/** table-ex 行几何策略：等高/变高双模式统一接口，painter / layout /
+    interactions / editor 全部经几何接口取行坐标，不感知模式 */
 import { estimateLineCount, wrapLines, cellFontOf } from '../shared/text-wrap'
 import { CELL_PADDING_FALLBACK } from '../shared/constants'
 import { spanHeightRoleOf } from '../spans/spans'
 import { createFenwick } from './fenwick'
-
-// uniform：O(1) 算式（topAt = i×h、visibleRange 与 layout.computeViewRows 恒等）；
-// variable：Float64Array + 内部 Fenwick 树（前缀和/单点加/偏移定位 O(log n)）
-
-// 行高来源 = 主动计算（A2.2）：computeRowHeights 全量快速估高（O(n) 纯算术，link/list
-// 条目计数真值、字符串估 1 行下界）+ ensureRowMeasured 进窗精算（wrapLines
-// 折行 + maxLines 钳制）；measure/wrapCache 经参数注入，与绘制折行同函数同缓存
 
 /** 主题快照缺字段时的容错回退（与 --row-height / --cell-line-height 缺省一致） */
 const ROW_HEIGHT_FALLBACK = 36
@@ -23,8 +16,8 @@ function clamp (value, min, max) {
   return Math.min(Math.max(value, min), max)
 }
 
-/** link/list 条目列判定（render 产物计数决定行数；20261104-table-column-type：
-    list 为新增条目列类型，link 为委托 list 的兼容壳，col.type 字符串保持不变） */
+/** link/list 条目列判定（行数来自 render 产物计数；link 为委托 list 的兼容壳，
+    col.type 字符串保持不变） */
 function isLinkColumn (col) {
   return col.type === 'link' || col.type === 'list'
 }
@@ -44,8 +37,8 @@ function resolveMaxLinesOf (col, record) {
   return 1
 }
 
-/** 字段取值（resolveCellContent 同款链），映射列经 _mapText 按显示文本取值
-    （mapper 返回对象取 .text；估高/精算与绘制同源）；数组原值穿透，数组路径不受影响 */
+/** 字段取值（resolveCellContent 同款链，估高/精算与绘制同源）：映射列经
+    _mapText 按显示文本取值（mapper 返回对象取 .text）；数组原值穿透 */
 function valueOf (col, record) {
   const fromFn = typeof col._value === 'function' ? col._value(record) : undefined
   const value = fromFn ?? (col.field ? record?.[col.field] : undefined)
@@ -68,15 +61,13 @@ function linkItemCountOf (col, record, recordNumber, value, emit, maxItems) {
   return Math.min(count, maxItems)
 }
 
-// P2-1 图形列清单（估高阶段行数恒 1，免 valueOf）：tag/check/img/icon 走横排
-// drawItems、progress 走 canvas 专属 drawCanvasKindContent、button 经注册表 compile
-// 产 canvasKind 同走 drawCanvasKindContent，均单行垂直居中不折行；不含条目列
-// link/list（行数来自 render 计数）；数组值横排呈现恒 1 行（与 A9 非条目列口径
-// 一致），不参与变高模式判定
+// 图形列清单：估高行数恒 1、免 valueOf（tag/check/img/icon 横排、progress/
+// button 走 canvas 专属绘制，均单行垂直居中不折行）；不含条目列 link/list；
+// 数组值横排呈现恒 1 行，不参与变高模式判定
 const GRAPHIC_ITEM_TYPES = new Set(['tag', 'button', 'check', 'img', 'image', 'progress', 'icon'])
 
-/** 列级估高描述表（P2-4，循环前预计算）：isEntry = link/list 条目列；
-    graphicItem = 图形呈现列（估高行数恒 1，免 valueOf）；maxItems 仅条目列消费 */
+/** 列级估高描述表（循环前预计算）：isEntry = link/list 条目列；graphicItem =
+    图形呈现列（估高行数恒 1，免 valueOf）；maxItems 仅条目列消费 */
 function estimateColumnDescOf (col) {
   const isEntry = isLinkColumn(col)
   const graphicItem =
@@ -94,28 +85,25 @@ function measuredLineCountOf (text, width, font, fontSize, measure, wrapCache, m
 }
 
 /** 文本列行数：空值 0；单行省略与估高恒 1 行（下界），precise 时走精算。
-    !precise 提前于 resolveMaxLinesOf（P2-2）：估高阶段 maxLines 求值结果
-    （_resolveMaxLines/lineClamp 回调）不被消费，逐字等价改写（仅省回调次数）；
-    条目列与数组路径不经本函数（columnLineCount 先行返回） */
+    估高提前于 maxLines 求值（_resolveMaxLines/lineClamp 回调不被消费，仅省
+    回调次数）；条目列与数组路径不经本函数（columnLineCount 先行返回） */
 function textLineCountOf (col, record, value, width, precise, font, fontSize, measure, wrapCache) {
   const text = value == null ? '' : String(value)
 
   if (!text) return 0
 
-  // 估高：字符串一律估 1 行（下界），标记待精
   if (!precise) return 1
 
   const maxLines = resolveMaxLinesOf(col, record)
 
-  // 单行省略（含 maxLines == 1）：恒 1 行，不参与变高
   if (!(maxLines > 1)) return 1
 
   return measuredLineCountOf(text, width, font, fontSize, measure, wrapCache, maxLines)
 }
 
-/** 单列行数求值（A2.2 列级展开）：link/list 条目列 render 计数（数组值同样经 render，
-    与绘制及 listOption.max 截断同口径）；其余列数组值恒 1 行（A9：数组值渲染门控
-    落占位，渲染链路不再逐元素拆行）；其余走 textLineCountOf */
+/** 单列行数求值：link/list 条目列 render 计数（数组值同样经 render，与绘制及
+    listOption.max 截断同口径）；其余列数组值恒 1 行（渲染门控落占位，渲染链路
+    不再逐元素拆行）；其余走 textLineCountOf */
 function columnLineCount ({
   col,
   record,
@@ -133,7 +121,6 @@ function columnLineCount ({
 
   if (isLinkColumn(col)) return linkItemCountOf(col, record, recordNumber, value, emit, maxItems)
 
-  // A9：非条目列数组值恒 1 行（渲染门控落占位，不再逐元素拆行/按元素数计高）
   if (Array.isArray(value)) return 1
 
   return textLineCountOf(col, record, value, width, precise, font, fontSize, measure, wrapCache)
@@ -254,9 +241,9 @@ export function createVariableRowGeometry ({ initialHeights } = {}) {
       const first = fenwick.findRowAtOffset(y)
       const start = clamp(first - overscan, 0, n)
 
-      // 从窗口首行按 heights 直加至覆盖 viewH（end = 第一个 topAt ≥ scrollTop +
-      // viewH 的行；P5：每行一次 Fenwick prefix O(log n) → O(window) 直加，与
-      // 分组求和仅存在 ~1e-15 量级末位浮点差，整数高度精确一致）
+      // end = 第一个 topAt ≥ scrollTop + viewH 的行：从窗口首行按 heights 直加
+      // 至覆盖 viewH（O(window) 直加，与 Fenwick 分组求和仅 ~1e-15 末位浮点差，
+      // 整数高度精确一致）
       let end = first
       const target = y + Math.max(0, viewH ?? 0)
       let acc = geometry.topAt(first)
@@ -304,13 +291,13 @@ function columnAt (cols, i) {
   return cols[i] ?? {}
 }
 
-/** 模式判定输入（A2.2；A9 后仅剩 link/list 条目数 > 1——文本列数组值不再拆行，
-    计数结果复用。hasArrayValues 语义随之收窄：true = 存在 link/list 多条目格） */
+/** 模式判定输入：仅 link/list 条目数 > 1（文本列数组值不再拆行）；hasArrayValues
+    语义随之收窄：true = 存在 link/list 多条目格 */
 function indicatesVariableMode (col, value, count) {
   return isLinkColumn(col) && count > 1
 }
 
-/** 区域宽（rowspan === 1 的 colspan 主格按区域宽参与本行，§5.6） */
+/** 区域宽（rowspan === 1 的 colspan 主格按区域宽参与本行） */
 function regionWidthOf (region, widths) {
   let sum = 0
 
@@ -319,16 +306,14 @@ function regionWidthOf (region, widths) {
   return sum
 }
 
-/** 全量快速估高（A2.2 管线 1，O(n) 纯算术无测量）：link/list 条目列取真值
-    （其余列数组值恒 1 行，A9），字符串列估 1 行下界；同时产出 hasArrayValues
-    （模式判定输入，语义收窄 = 存在 link/list 多条目格；row-geometry-controller
-    消费点不改名）。P2 估高免无效求值：图形列免 valueOf（P2-1）、列级描述表
-    预计算 + 非条目列内联三分支（P2-4）、宽/inset 免算（P2-3）——估高对文本
-    内容与宽度零消费，measure/wrapCache/colWidths/treeIndents 仅保留入参兼容
-    （precise 精算路径不经此处）。spans（§5.6 分层数据链，缺省 null 零成本）：
-    covered 格与 rowspan>1 主格整格排除（不参与行高，也不得触发 hasArrayValues
-    变高模式升级） */
-// 每行热路径：拆分会引入参数打包与函数调用开销，复杂度收益低于回归风险（02-optimize A 线裁定 #2②）
+/** 全量快速估高（O(n) 纯算术无测量）：link/list 条目列取真值，其余列数组值
+    恒 1 行、字符串列估 1 行下界；同时产出 hasArrayValues（模式判定输入，
+    true = 存在 link/list 多条目格）。估高对文本内容与宽度零消费——图形列免
+    valueOf、列级描述表预计算、宽/inset 免算，measure/wrapCache/colWidths/
+    treeIndents 仅保留入参兼容（precise 精算路径不经此处）。spans 分层数据链
+    （缺省 null 零成本）：covered 格与 rowspan>1 主格整格排除（不参与行高，
+    也不得触发变高模式升级） */
+// 每行热路径：拆分引入参数打包与调用开销，复杂度收益低于回归风险
 // eslint-disable-next-line complexity
 export function computeRowHeights ({
   records,
@@ -354,9 +339,6 @@ export function computeRowHeights ({
     for (let i = 0; i < cols.length; i++) {
       const col = columnAt(cols, i)
 
-      // 合并分层（§5.6）：'excluded'（covered 格 / rowspan>1 主格）整格跳过——
-      // 不参与行高、其数组值也不得触发变高模式升级（P2-3：估高路径不消费宽，
-      // region 求宽 / treeIndents 求 inset 一并免除，分层数据链判定保留）
       const spanRole = spans ? spanHeightRoleOf(spans, row, i) : null
 
       if (spanRole === 'excluded') continue
@@ -366,17 +348,16 @@ export function computeRowHeights ({
       let value
 
       if (desc.graphicItem) {
-        // P2-1：图形列估高行数恒 1（与空值计数 0 在 rowHeight ≥ 2×padding +
-        // lineHeight 的配置下等价，默认主题 36 ≥ 34），免 valueOf（_value 回调
-        // 不执行）
+        // 行数恒 1：与空值计数 0 在 rowHeight ≥ 2×padding + lineHeight 配置下
+        // 等价（默认主题 36 ≥ 34），免 valueOf（_value 回调不执行）
         count = 1
       } else if (desc.isEntry) {
         // 条目列：render 计数真值（估高/精算同路径，不折行）
         value = valueOf(col, record)
         count = linkItemCountOf(col, record, row, value, undefined, desc.maxItems)
       } else {
-        // 非条目列内联三分支（P2-4，与 columnLineCount !precise 路径逐字等价，
-        // 免 textLineCountOf/resolveMaxLinesOf 求值）：数组恒 1 行（A9）、空值 0、
+        // 非条目列内联三分支（与 columnLineCount !precise 路径等价，免
+        // textLineCountOf/resolveMaxLinesOf 求值）：数组恒 1 行、空值 0、
         // 非空 1（估高下界）；文本列 _value 仍必须执行（数组占位与空值判定）
         value = valueOf(col, record)
         count = Array.isArray(value)
@@ -386,8 +367,6 @@ export function computeRowHeights ({
 
       if (count > lines) lines = count
 
-      // 模式判定输入（命中后不再重复判定；图形列不取值、value undefined 不
-      // 参与判定——indicatesVariableMode 已收窄为条目列计数 > 1）
       if (!hasArrayValues) hasArrayValues = indicatesVariableMode(col, value, count)
     }
 
@@ -397,10 +376,10 @@ export function computeRowHeights ({
   return { heights, hasArrayValues }
 }
 
-/** 单行精算（A2.2 管线 2，进窗逐行调用）：estimateLineCount 短路 → wrapLines
-    折行 + maxLines 钳制；与绘制共用同一 wrapLines + wrapCache，行高与折行一致。
-    spans（§5.6 分层数据链，缺省 null 零成本）：covered 格与 rowspan>1 主格排除，
-    rowspan===1 的 colspan 主格按区域宽折行（row 须为该行在行集合中的真实下标） */
+/** 单行精算（进窗逐行调用）：estimateLineCount 短路 → wrapLines 折行 +
+    maxLines 钳制；与绘制共用同一 wrapLines + wrapCache，行高与折行一致。
+    spans 分层（缺省 null 零成本）：covered 格与 rowspan>1 主格排除，
+    rowspan===1 的 colspan 主格按区域宽折行（row 须为行集合中的真实下标） */
 export function ensureRowMeasured ({
   record,
   recordNumber = 0,

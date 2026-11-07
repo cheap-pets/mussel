@@ -9,7 +9,7 @@
       class="mu-table-ex__scroll"
       @scroll="onScroll"
       @sizechange="onResize">
-      <!-- 指针交互监听层（A4.3 click 单一入口：树槽 → 条目 → 编辑 → 选中链）；
+      <!-- 指针交互监听层（click 单一入口：树槽 → 条目 → 编辑 → 选中链）；
            v-mu-scrollbar 注入的 .mu-scrollbar__tracks 经 insertBefore 成为 __scroll 首子元素 -->
       <div
         ref="stickyEl"
@@ -28,9 +28,9 @@
               {{ emptyText }}
             </slot>
           </div>
-          <!-- 编辑浮层（A5/A6）：分类型 v-on 合成、容器 tabindex=-1 承接 esc；
+          <!-- 编辑浮层：分类型 v-on 合成、容器 tabindex=-1 承接 esc；
                bordered === false 挂 --borderless；画布侧 pointerdown 先提交再续行。
-               textarea 须渲染真实元素（<component :is> 下 v-model 失效，memo 约定） -->
+               textarea 须渲染真实元素（<component :is> 下 v-model 失效） -->
           <div
             v-if="editor.state.editing"
             ref="editorEl"
@@ -82,9 +82,8 @@
   import { createEditorController } from './editing/editor'
   import { isCellEditable } from './editing/editor-resolve'
 
-  // 功能纵切 composables（C1 拆分；组装顺序见各步骤注释，TDZ 约束：useCellTooltip
-  // 先于 useTreeRows，useCellSelect 居 9 与 10 之间（清除 watch 先于 relayout
-  // 合并 watch flush），host.relayout 前向槽在 useRelayout 后覆盖）
+  // 功能纵切 composables（TDZ 约束：useCellTooltip 先于 useTreeRows，
+  // useCellSelect 居 9 与 10 之间，host.relayout 前向槽在 useRelayout 后覆盖）
   import { useCellTooltip } from './composables/use-cell-tooltip'
   import { usePaintState } from './composables/use-paint-state'
   import { usePointer } from './composables/use-pointer'
@@ -122,11 +121,11 @@
     recordsVersion: { type: Number, default: 0 },
     editable: { type: Boolean, default: false },
     resizable: { type: Boolean, default: false },
-    // —— 合并单元格（02-design.md §2.3 入口 B）——
+    // —— 合并单元格（入口 B）——
     // (info) => Record<string, number | { rowspan?, colspan? | 'rest' }> | null，
     // 每行调用一次返回该行作为主行的声明；列级入口 autoRowSpan 配在列定义上
     spanMethod: { type: Function, default: null },
-    // —— 树模式（A2.4，意见 1）——
+    // —— 树模式 ——
     tree: { type: Boolean, default: false },
     // 树字段名配置 { key, parentKey }，缺省 { key: keyField ?? 'id', parentKey: 'parentId' }
     treeProps: Object,
@@ -180,18 +179,18 @@
   const selectedKey = computed(() => resolveSelectedKey(props))
 
   const hover = shallowRef(null)
-  // 条目悬停（20261027 问题 7）：{ row, col, kind, index, disabled } | null，
+  // 条目悬停：{ row, col, kind, index, disabled } | null，
   // onPointerMove 经 resolveItemClick 求值；paintState.hoverItem 在 syncPaintState
   // 以本值归一（hoverMode none 恒 null）
   const hoverItem = shallowRef(null)
   const cursor = ref('default')
-  // 单元格选中（20261105-table-ex-cell-select）：{ row, col } | null 锚格坐标
+  // 单元格选中：{ row, col } | null 锚格坐标
   // （合并区域经 resolveSpanCell 归一）；paintState.selectedCell 在 syncPaintState
   // 同步，getLayoutInfo 暴露内省；useCellSelect 编排置清与键盘通道
   const selectedCell = shallowRef(null)
 
   // —— 模块实例槽（useTableInstances / useRelayout 经 host setter 写入） ——
-  // 文本测量实例（onMounted 创建；行高估高/精算与绘制折行单一事实源，A2.2）
+  // 文本测量实例（onMounted 创建；行高估高/精算与绘制折行单一事实源）
   let measureFn = null
   let wrapCacheObj = null
 
@@ -199,7 +198,7 @@
   let themeWatcher = null
   // 最近一次 relayout 统计（getLayoutInfo 暴露，调试面板显示）
   let lastRelayout = null
-  // veil 编辑格行列（20261027 问题 6）：editor 控制器的 editing 不含 row/col，
+  // veil 编辑格行列：editor 控制器的 editing 不含 row/col，
   // 行列由壳承载；paintState.editingCell 在 syncPaintState 以本值归一
   let editingCellRef = null
 
@@ -276,8 +275,7 @@
     genRecordKey,
     // useTreeRows 运行时提交通道（editor 步骤赋值前不触达）
     commit: () => host.editor.commit(),
-    // 前向槽：useTreeRows immediate watch setup 期调用等价早退（原实现
-    // scrollEl/themeWatcher 为空在 relayoutAndRedraw 头部早退），useRelayout 后覆盖
+    // 前向槽：useTreeRows immediate watch setup 期调用等价早退，useRelayout 后覆盖
     relayout: () => {},
     // tooltipEnabled computed 声明在 useTreeRows 之后（依赖 wiredColumns），
     // usePointer 运行时经本惰性键读取
@@ -290,7 +288,7 @@
   Object.assign(host, tooltipApi)
   const { tooltipAnchorEl, tooltipController } = tooltipApi
 
-  // 2. 树接线（immediate tree watch 触发 host.relayout() 空实现，等价早退）
+  // 2. 树接线
   const treeApi = useTreeRows(host)
   Object.assign(host, treeApi)
   const {
@@ -304,11 +302,11 @@
     getTreeExpandedKeys
   } = treeApi
 
-  // 3. 合并单元格（02-design.md §4）：SpansIndex computed，无合并恒 null（快路径）
+  // 3. 合并单元格：SpansIndex computed，无合并恒 null（快路径）
   // 依赖：displayRows（records 引用/树展开收起）、wiredColumns（列集变化）、
   // spanMethod 引用、recordsVersion（就地改值通道）、orderBy（防御：父级只改
   // orderBy 未替换 records 引用时仍重算）。列宽调整 / 行高精算 / hover 不依赖，
-  // 不重算，仅重绘（声明与几何解耦，§2.1）
+  // 不重算，仅重绘（声明与几何解耦）
 
   /** 构建期 dev 警告出口（utils/warn once 去重；自检经 buildSpans warn 参数注入捕获） */
   function devWarn (message) {
@@ -332,16 +330,15 @@
 
   host.spans = spans
 
-  // 4. 行几何策略（A2.2，C1 拆出 row-geometry-controller）：uniform/variable
-  // 双模式几何、估高扫描输入签名（scanSignature）、精算缓存失效签名
-  // （measureSignature）、进窗精算/单行重估与锚定补偿
-  // 注入 getter 清单（14 项）见 geometry/row-geometry-controller.js 文件头 @getters 声明
+  // 4. 行几何策略：uniform/variable 双模式几何、估高扫描输入签名（scanSignature）、
+  // 精算缓存失效签名（measureSignature）、进窗精算/单行重估与锚定补偿。
+  // 注入 getter 清单见 geometry/row-geometry-controller.js 文件头 @getters 声明
   const rowGeometry = createRowGeometryController({
     getRows: () => displayRows.value,
     getColumns: () => wiredColumns.value,
     getTreeIndents: () => treeIndentsOf(),
     getRecordsOffset: () => props.recordsOffset,
-    // P1 精算快照失效维度：records 就地改值通知版本（合并 watch 不改）
+    // 精算快照失效维度：records 就地改值通知版本（合并 watch 不改）
     getRecordsVersion: () => props.recordsVersion,
     getTheme: () => themeWatcher?.snapshot,
     getMeasure: () => measureFn,
@@ -358,22 +355,21 @@
 
   host.rowGeometry = rowGeometry
 
-  // 5. 列宽拖拽（A5，C1 拆出 use-column-resize）：widthOverrides/clickGuard/
-  // startResize/resetOverrides 并入 host 供 usePointer/useCellClick/useRelayout
-  // 运行时读取。host.invalidate 此刻未赋值——useColumnResize 只在拖拽 move
-  // 回调调用它，运行时已由步骤 6 赋值
+  // 5. 列宽拖拽：widthOverrides/clickGuard/startResize/resetOverrides 并入
+  // host 供 usePointer/useCellClick/useRelayout 运行时读取。host.invalidate
+  // 此刻未赋值——useColumnResize 只在拖拽 move 回调调用它，运行时已由步骤 6 赋值
   Object.assign(host, useColumnResize(host))
 
   // 6. painter 持久 state 组装 + redraw/invalidate/invalidateRow 重绘入口
   Object.assign(host, usePaintState(host))
 
-  // 7. 编辑器（G2-c 契约；触发点 = 单击，A5.2）
+  // 7. 编辑器（触发点 = 单击）
   const editor = createEditorController({
     onCommit ({ record, recordIndex, column, value }) {
       emit('update:cell-value', { record, recordIndex, column, value })
 
-      // A3 数据契约①：父级在事件处理器内同步就地改 record 后，nextTick 重绘该行；
-      // 多行列含行高重估 + 锚定，值形态变数组且当前 uniform 时触发模式升级（A2.2）
+      // 数据契约：父级在事件处理器内同步就地改 record 后，nextTick 重绘该行；
+      // 多行列含行高重估 + 锚定，值形态变数组且当前 uniform 时触发模式升级
       nextTick(() => {
         rowGeometry.remeasureRow(recordIndex)
         painter?.invalidateRow(recordIndex)
@@ -413,7 +409,7 @@
     'mu-table-ex--y-overflowed': yOverflowed.value
   }))
 
-  // 光标反馈（A5 pointermove 行）经 stickyStyle 一并绑定在 __sticky 上
+  // 光标反馈经 stickyStyle 一并绑定在 __sticky 上
   const stickyStyle = computed(() => {
     const cur = layout.value
     const style = { cursor: cursor.value }

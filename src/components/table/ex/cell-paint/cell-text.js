@@ -15,25 +15,23 @@ export function measureOf (ctx, measure) {
   }
 }
 
-// —— 文本光学居中锚（20261029 问题 1；20261107 测量基升级 CJK 墨迹半差） ——
+// —— 文本光学居中锚 ——
 // canvas 'middle' 基线按 em 方框中点定位，与 DOM 行框（字体 ascent/descent，
 // 如 .mu-tag 的 inline-flex + line-height:1）居中口径不同，CJK 字形群系统性
 // 偏上（实测 12px 雅黑链偏 1~2px）。改以 alphabetic 基线 + 典型 CJK 字符
 // （CJK_PROBE_CHAR '永'）actualBoundingBox 墨迹半差补偿，使墨迹框中点对齐槽位
-// centerY（与 DOM 行框居中同口径）——实测墨迹度量随系统字体栈自适应，取代
-// fontBoundingBox 整字体包围盒（对 CJK 回退字体不敏感、跨系统漂移大）。
+// centerY（与 DOM 行框居中同口径）；墨迹度量随系统字体栈自适应，较 fontBoundingBox
+// 整字体包围盒对 CJK 回退字体更稳、跨系统漂移小。
 // 偏移按 font 串缓存取整（font 串含字号/字重 ⇒ 同字体+字号不重测；基数有界，
-// 无需淘汰；与既有整数锚一致防亚像素模糊）。
-// 度量不可得（actualBoundingBox* 缺失/非有限、墨迹零高或 ctx 无 measureText——
-// 自检 width-only stub ctx）时回退 { y: centerY, baseline: 'middle' }，行为等同
-// 修复前。
+// 无需淘汰；取整防亚像素模糊）。度量不可得（actualBoundingBox* 缺失/非有限、
+// 墨迹零高或 ctx 无 measureText——自检 width-only stub ctx）时回退
+// { y: centerY, baseline: 'middle' }。
 // 注意一：boundingBox 口径随 ctx.textBaseline 当前值变化（middle 状态下返回
-// 相对 em 中点的换算值而非 ascent/descent 本身），测量必须在 alphabetic 状态下取。
+// 相对 em 中点的换算值），测量必须在 alphabetic 状态下取。
 // 注意二：缓存键并入 ctx 实例级「可度量」能力位——真 canvas 与 width-only stub
 // 同 font 串时能力不同，防止真 ctx 条目污染 stub 的回退路径。能力位保持实例级
-// （勿改模块级）：探测本身 = 一次 measureText(CJK_PROBE_CHAR)，与锚 miss 测量
-// 分开计——新实例首绘固定 2 次探针字符测量（探测 1 + 锚 1），同 font 的第二
-// 实例仅 1 次（探测 1，锚命中）。
+// （勿改模块级）：新实例首绘固定 2 次探针字符测量（探测 1 + 锚 1），同 font 的
+// 第二实例仅 1 次（探测 1，锚命中）。
 // 注意三：缓存写入守卫 fontsLoadedForCache——@font-face 加载前实测易把回退/tofu
 // 度量固化进模块级缓存，document.fonts.status !== 'loaded' 期间测得值即用即弃
 // （该窗口内按 fillText 站点重复测量，有界于 fonts.ready，稳态为零）。
@@ -52,8 +50,8 @@ function fontsLoadedForCache () {
 }
 
 /** 墨迹半差锚偏移：alphabetic 状态单字形测量的 (inkAscent − inkDescent)/2 取整；
-    度量缺失/非有限/墨迹零高返回 null（调用方回退 'middle'）。
-    恢复调用前 textBaseline，边界对齐既有探测/锚测量写法 */
+    度量缺失/非有限/墨迹零高返回 null（调用方回退 'middle'）；恢复调用前
+    textBaseline */
 function inkHalfDiffOffsetOf (ctx, text) {
   const prevBaseline = ctx.textBaseline
 
@@ -90,7 +88,6 @@ function probeTextMetricsCapable (ctx) {
  * 文本光学居中锚：全部单元格文本 fillText 站点共用（槽位 centerY 的字形
  * 光学居中换算）。
  * @param {CanvasRenderingContext2D} ctx 已设 ctx.font 的绘制上下文
- * @param {Number} centerY 槽位中心（drawCell 槽位锚）
  * @returns {{ y: Number, baseline: 'alphabetic' | 'middle' }}
  */
 export function centeredTextAnchor (ctx, centerY) {
@@ -107,25 +104,22 @@ export function centeredTextAnchor (ctx, centerY) {
     if (fontsLoadedForCache()) textAnchorCache.set(key, offset)
   }
 
-  // 度量缺失（null）→ 'middle' 原行为
   return offset == null
     ? { y: centerY, baseline: 'middle' }
     : { y: centerY + offset, baseline: 'alphabetic' }
 }
 
-// —— 字形墨迹锚（20261107：iconfont 字形与单元格/表头 ✓ 等单字形内容） ——
+// —— 字形墨迹锚：iconfont 字形与单元格/表头 ✓ 等单字形内容 ——
 // 单字形内容（iconfont 图标常不满 em 框、✓ 墨迹偏 em 框上部）的墨迹框与
 // CJK 表意字差异大，文本 CJK 探针半差不代表其渲染高度——逐字形实测
-// actualBoundingBox 墨迹半差（键含 glyph + font 串，font 串含字号 ⇒ 字号未变
-// 不重测）。守卫（fontsLoadedForCache）、回退（'middle'）、取整口径与文本锚一致，
+// actualBoundingBox 墨迹半差（键含 glyph + font 串，字号未变不重测）。
+// 守卫（fontsLoadedForCache）、回退（'middle'）、取整口径与文本锚一致，
 // 两缓存无共享可变状态。
 const glyphAnchorCache = new Map()
 
 /**
  * 字形墨迹锚：单字形内容（iconfont cls 字形、check ✓）fillText 站点共用。
  * @param {CanvasRenderingContext2D} ctx 已设 ctx.font 的绘制上下文
- * @param {String} glyph 单字符字形（缓存键一部分）
- * @param {Number} centerY 槽位中心（drawCell 槽位锚）
  * @returns {{ y: Number, baseline: 'alphabetic' | 'middle' }}
  */
 export function centeredGlyphAnchor (ctx, glyph, centerY) {
@@ -165,21 +159,14 @@ function alignedLeftX (align, anchorX, width) {
   return anchorX
 }
 
-// 文本取值落地（A3.5 统一规则；A9 后无数组形态——数组值在 resolveCellContent
-// 门控落占位，不会进入本函数）：
-// - 字符串 + maxLines>1 → wrapLines 多行（与 row-geometry 同一函数与缓存；
-//   measure 未注入时回退单行省略），首行槽位锚起排
-// - 其余 → 单行省略（垂直锚 = 槽位中心 centerY，与多行首行同式）
-// color 为 canvas 通道色名查表产物（drawDisplayText 直取 content.color）
-// options.underline（20261106-column-link-hover-button-value）：缺省 falsy；
-// true 时每实绘行下画 1px 下划线（y = linkUnderlineY(该行锚 y)，色随文本
-// fillStyle，与 drawLinkEntry/drawItemText 同式），多行逐行对齐 DOM
-// text-decoration 行为
-// 返回值（新增）：实绘文本块行框外接矩形 { x, y, width, height } | undefined
-// （y = centerY − lineHeight/2，height = 实绘行数 × lineHeight，width = 最宽
-// 实绘行宽省略后，x 按 align 反推）；未绘制任何文本（空串/零宽）返回 undefined。
-// 既有调用方（cell-painters line-clamp 路径 / drawDisplayText）不传 underline、
-// 忽略返回值，行为不变
+// 文本取值落地：字符串 + maxLines>1 → wrapLines 多行（与 row-geometry 同一函数
+// 与缓存；measure 未注入时回退单行省略），首行槽位锚起排；其余 → 单行省略
+// （垂直锚 = 槽位中心，与多行首行同式）。color 为 canvas 通道色名查表产物。
+// options.underline 缺省 falsy；true 时每实绘行下画 1px 下划线（y =
+// linkUnderlineY(该行锚 y)，色随文本 fillStyle），多行逐行对齐 DOM
+// text-decoration 行为。返回实绘文本块行框外接矩形 { x, y, width, height } |
+// undefined（y = centerY − lineHeight/2，height = 实绘行数 × lineHeight，width
+// = 最宽实绘行省略后宽，x 按 align 反推）；未绘制任何文本返回 undefined
 export function drawTextValue (ctx, rect, display, align, {
   padding, theme, color, measure, wrapCache, maxLines, centerY, rightInset, underline
 }) {
@@ -198,7 +185,6 @@ export function drawTextValue (ctx, rect, display, align, {
     ctx.fillStyle = color || theme?.textColor
     ctx.textAlign = align
 
-    // 首行光学居中锚（问题 1），后续行 += lineHeight
     const anchor = centeredTextAnchor(ctx, centerY)
 
     ctx.textBaseline = anchor.baseline
@@ -221,7 +207,6 @@ export function drawTextValue (ctx, rect, display, align, {
       y += lineHeight
     }
 
-    // 空串/零宽（未绘制任何文本）不回报矩形
     if (!(widest > 0)) return
 
     return {
@@ -232,7 +217,6 @@ export function drawTextValue (ctx, rect, display, align, {
     }
   }
 
-  // 单行省略：截断经注入 measure 走缓存（P0-1）
   const { text: single, width } = ellipsize({
     text,
     font: cellFontOf(theme),
@@ -254,7 +238,6 @@ export function drawTextValue (ctx, rect, display, align, {
 
   if (!(drawn > 0)) return
 
-  // link 悬停下划线（条目链路同式）：宽 = 实绘省略后宽，1px
   if (underline) {
     ctx.fillRect(alignedLeftX(align, anchorX, drawn), linkUnderlineY(anchor.y), drawn, 1)
   }
@@ -267,8 +250,8 @@ export function drawTextValue (ctx, rect, display, align, {
   }
 }
 
-/** link 悬停下划线 y（drawLinkEntry 与 drawItemText 共用单函数防公式漂移）：
-    基线（alphabetic 锚，问题 1）下 2px——CJK descent ≈ 0.12em < 2px，不下穿字形 */
+/** link 悬停下划线 y（drawLinkEntry 与 drawItemText 共用防公式漂移）：基线下
+    2px——CJK descent ≈ 0.12em < 2px，不下穿字形 */
 export function linkUnderlineY (anchorY) {
   return anchorY + 2
 }

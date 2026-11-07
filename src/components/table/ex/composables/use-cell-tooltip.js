@@ -1,8 +1,7 @@
 /**
- * 单元格 tooltip 壳级编排 composable（title 列协议，20261030-table-ex-cell-tooltip；
- * C1 壳拆分自 table-ex.vue）。
+ * 单元格 tooltip 壳级编排 composable（title 列协议）。
  *
- * 决策纯函数在 interactions.resolveTooltipTarget / cell-painters.resolveCellTooltip，
+ * 决策纯函数在 interactions.resolveTooltipTarget / cell-tooltip.resolveCellTooltip，
  * 本 composable 持有显示定时器、去重键与合成锚点：pointermove 格身份去重 +
  * TOOLTIP_SHOW_DELAY 延迟调度（move 内不求值内容）；滚动/拖拽/编辑/relayout/
  * 重绘 watch/卸载经 hideCellTooltip 收起并同步清去重键（不清则回到同格被去重
@@ -12,7 +11,7 @@
  * 经 host.relayout 触达（前向槽为空实现，运行时链路仍依赖本模块先注册）。
  */
 /**
- * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads rootEl, props, wiredColumns, flatRows, displayRows, layout, spans,
  *   resizeGuideX
  * @host-writes tooltipAnchorEl, tooltipController, scheduleCellTooltip,
@@ -173,8 +172,7 @@ export function useCellTooltip (host) {
     if (tooltipController?.isAnchorIn(host.rootEl.value)) tooltipController.hide()
   }
 
-  /** 状态失效类收起点（滚动/拖拽/编辑/relayout/重绘 watch/卸载）：收面板 +
-      清去重键 + 清显示定时器 */
+  /** 状态失效类收起点：收面板 + 清去重键 + 清显示定时器 */
   function hideCellTooltip () {
     clearTooltipTimer()
     tooltipCell = null

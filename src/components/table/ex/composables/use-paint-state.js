@@ -1,13 +1,11 @@
 /**
- * painter 持久 state 组装与重绘入口 composable（C1 壳拆分自 table-ex.vue）。
+ * painter 持久 state 组装与重绘入口 composable。
  *
- * paintState 持久状态（G2-a 契约：原地变更后 invalidate/draw 即以新状态重绘；
- * 组装扩展 A2.1/A2.2：displayRows/flatInfo/expandedKeys/editable/
- * isCellEditableFn/measure/wrapCache/itemHits；20261105-table-ex-cell-select 增
- * selectedCell）+ syncPaintState / redraw / invalidate / invalidateRow 四个壳级重绘入口。
+ * paintState 持久状态（原地变更后 invalidate/draw 即以新状态重绘）+
+ * syncPaintState / redraw / invalidate / invalidateRow 四个壳级重绘入口。
  */
 /**
- * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads props, emit, layout, displayRows, flatRows, spans, treeExpanded,
  *   wiredColumns, selectedKey, hover, hoverItem, resizeGuideX, selectedCell
  * @host-writes paintState, syncPaintState, redraw, invalidate, invalidateRow
@@ -16,10 +14,7 @@
  *   getPainter（壳）
  */
 /**
- * @param {Object} host host 袋（读取 props, emit, displayRows, flatRows, spans,
- *   treeExpanded, wiredColumns, getMeasure, getWrapCache, selectedKey, hover,
- *   hoverItem, getEditingCellRef, resizeGuideX, selectedCell, getThemeWatcher,
- *   cellEditableOf, resolveRecordKey, getPainter）
+ * @param {Object} host host 袋（消费面见文件头 @host-* 声明）
  * @returns {{ paintState, syncPaintState, redraw, invalidate, invalidateRow }}
  */
 export function usePaintState (host) {
@@ -57,7 +52,7 @@ export function usePaintState (host) {
     hoverItem: null,
     editingCell: null,
     resizeGuideX: null,
-    // 单元格选中（20261105-table-ex-cell-select）：{ row, col } | null 锚格坐标
+    // { row, col } | null 锚格坐标
     selectedCell: null
   }
 
@@ -90,13 +85,12 @@ export function usePaintState (host) {
     paintState.orderBy = props.orderBy
     paintState.placeholder = props.placeholder
     paintState.hover = host.hover.value
-    // 条目悬停（问题 7）+ veil 编辑格（问题 6）。hoverMode none 总开关归一：
-    // 条目 hover 色在表体 pass（drawCell）绘制，不经 paintOverlay 的 hoverMode
-    // 门控，切到 none 后（指针不动）须由本处立即置 null
+    // hoverMode none 总开关归一：条目 hover 色在表体 pass（drawCell）绘制，
+    // 不经 paintOverlay 的 hoverMode 门控，切到 none 后（指针不动）须由本处立即置 null
     paintState.hoverItem = props.hoverMode === 'none' ? null : host.hoverItem.value
     paintState.editingCell = host.getEditingCellRef()
     paintState.resizeGuideX = host.resizeGuideX.value
-    // 单元格选中（20261105-table-ex-cell-select）：与 hover 同级原地同步（G2-a）
+    // 与 hover 同级原地同步
     paintState.selectedCell = host.selectedCell.value
     paintState.theme = host.getThemeWatcher()?.snapshot ?? paintState.theme
   }
@@ -106,8 +100,8 @@ export function usePaintState (host) {
     host.getPainter()?.draw(paintState)
   }
 
-  // 脏区重绘一律 immediate：painter 的 rAF 队列 apply 的是上次绘制时的 state 浅拷贝，
-  // 本壳以持久 state 原地变更后必须同步应用才能以新状态重绘（G2-a invalidate 契约）；
+  // 脏区重绘一律 immediate：painter 的 rAF 队列 apply 的是上次绘制时的 state
+  // 浅拷贝，本壳以持久 state 原地变更后必须同步应用才能以新状态重绘；
   // 同帧多次调用各自独立应用，范围即脏带本身
   function invalidate (region) {
     syncPaintState()

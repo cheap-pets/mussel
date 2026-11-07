@@ -1,24 +1,20 @@
 /**
  * table-ex 主题模块：--mu-* 变量探针读取、主题快照（21 固定字段 + colors
- * 固定 17 色 map，02-design.md A6.1）、暗色切换感知、透明度叠加与文本测量
- * （createMeasureCache 缓存 + createTextMeasurer 测量工厂，A2.2）。
- *
- * 职责边界（评审 6 P9）：本模块只负责快照读取与变更信号（createThemeWatcher
- * 的 onChange/refresh 通知通道）；变高行重估等几何消费归组件壳，不在此实施。
+ * 固定 17 色 map）、暗色切换感知、透明度叠加与文本测量缓存。
+ * 只负责快照读取与变更信号（onChange/refresh 通知通道）；行高重估等几何
+ * 消费归组件壳。
  *
  * 大量变量值是 rgb(from ...) 相对色语法，getPropertyValue() 只返回 token 串、
  * canvas 不可用；须赋给真实属性（color / height）再读计算值，才能拿到浏览器
- * 求值后的 'rgb(r, g, b)' / 'rgba(...)' 字符串（mussel 已有读取先例：menu.vue）。
+ * 求值后的 'rgb(r, g, b)' / 'rgba(...)' 字符串。
  */
 
 export const MEASURE_CACHE_LIMIT = 2000
 
 const MEASURE_CACHE_SEPARATOR = '\u0000'
 
-/**
- * 在 host 内创建隐藏探针元素。须可布局（visibility:hidden 而非 display:none），
- * 不参与交互与占位；挂载位置应继承 .mu-root / .mu-dark 及任何中间层变量覆盖。
- */
+/** 创建隐藏探针：须可布局（visibility:hidden 而非 display:none）、不参与交互；
+    挂载位置应继承 .mu-root / .mu-dark 及任何中间层变量覆盖 */
 export function createProbe (host) {
   const probe = document.createElement('div')
 
@@ -53,9 +49,8 @@ export function readInheritedFontSize (probe) {
 }
 
 /**
- * 内置色板固定色名（02-design.md A6.1）：12 彩色基础 + 5 语义。
- * 色名集合与消费先例 = components/tag/tag.scss 的 mu-tag--{color} 色类体系；
- * gray 不入 map（root.scss $BASE_COLORS 含 gray 共 13 色，gray 为绘制回退色）。
+ * 内置色板固定色名：12 彩色基础 + 5 语义（色名集合对齐 components/tag/tag.scss
+ * 的 mu-tag--{color} 色类体系）；gray 不入 map（gray 为绘制回退色）。
  */
 const BASE_COLOR_NAMES = [
   'red', 'pink', 'grape', 'violet', 'indigo', 'blue',
@@ -65,17 +60,14 @@ const BASE_COLOR_NAMES = [
 const SEMANTIC_COLOR_NAMES = ['primary', 'secondary', 'success', 'warning', 'danger']
 
 /**
- * 固定 17 色 map：每色 { color, translucent, hover } 三形态，39 次
- * getComputedStyle 在一次探针批次内完成。固定全量读取（不经列准备期收集）——记录级色
- * （tag.color、(record)=> 配置）与条目级 color 在列准备期不可见，收集式
- * 动态 map 必然漏色；colors 随任何一次快照重读一并刷新，无过期契约。
- * 彩色读 --mu-{name}、语义读 --mu-{name}-color，translucent 双态全定义
- * （基础色 root.scss `.mu-root,.mu-light` 块、语义色明态 + .mu-dark 覆盖）。
- * hover 为条目悬停浅色（问题 7 复刻 .mu-link:hover）：语义色取
- * --mu-{name}-color-4（root.scss 0–9 谱系，readFont 同款原始串读取）——
- * 不能走 readVar 的 color 求值路径：变量被自定义主题裁剪时该声明在计算值
- * 阶段失效、回退为探针继承色（合法颜色串），无法区分「未定义」；原始串
- * 未定义为 ''，据此回退同色。12 彩色无 -4 谱系（link.scss 先例），hover 同色。
+ * 固定 17 色 map：每色 { color, translucent, hover } 三形态，一次探针批次内完成。
+ * 固定全量读取（不经列准备期收集）——记录级色（tag.color、(record)=> 配置）与
+ * 条目级 color 在列准备期不可见，收集式动态 map 必然漏色；colors 随任何一次
+ * 快照重读一并刷新，无过期契约。
+ * hover 为条目悬停浅色（复刻 .mu-link:hover）：语义色取 --mu-{name}-color-4
+ * 原始串读取——不能走 readVar 的 color 求值路径：变量被自定义主题裁剪时该
+ * 声明在计算值阶段失效、回退为探针继承色，无法区分「未定义」；原始串未定义
+ * 为 ''，据此回退同色。12 彩色无 -4 谱系，hover 同色。
  */
 function readColors (probe) {
   const colors = {}
@@ -104,7 +96,7 @@ function readColors (probe) {
   return colors
 }
 
-/** 主题快照：一次读取全部绘制所需变量（21 固定字段 + colors），绘制期间不重复触发 reflow 批次 */
+/** 主题快照：一次读取全部绘制所需变量，绘制期间不重复触发 reflow 批次 */
 export function readSnapshot (probe) {
   return {
     textColor: readVar(probe, '--mu-text-color-normal'),
@@ -127,17 +119,14 @@ export function readSnapshot (probe) {
     headHeight: readPx(probe, '--head-row-height'),
     cellPadding: readPx(probe, '--cell-padding'),
     cellLineHeight: readPx(probe, '--cell-line-height'),
-    // button pill 高度（20261105 二轮，--mu-control-height-small）：raw 读取、
-    // 未定义 → 0、消费侧回退（buttonHeightOf），与 rowHeight 同模式
+    // button pill 高度：未定义 → 0，消费侧 buttonHeightOf 回退
     controlHeightSmall: readPx(probe, '--mu-control-height-small'),
     colors: readColors(probe)
   }
 }
 
-/**
- * 暗色/换肤观察根：.mu-root（变量作用域）与组件根本身（mu-dark 可直接挂在组件根）。
- * Set 去重组件根即 .mu-root 的情形；无 .mu-root 祖先时兜底 documentElement。
- */
+/** 观察 .mu-root（变量作用域）与组件根本身（mu-dark 可直接挂在组件根）；
+    Set 去重二者重合情形，无 .mu-root 祖先时兜底 documentElement */
 export function resolveObserverRoots (componentRoot) {
   const roots = new Set()
 
@@ -148,11 +137,9 @@ export function resolveObserverRoots (componentRoot) {
   return roots
 }
 
-/**
- * 颜色串解析：兼容 'rgb()/rgba()' 与 'color(srgb r g b / a)' 两种求值形态
- * （本机 Chrome 将 rgb(from ...) 相对色变量序列化为 color(srgb ...)，实测确认）。
- * sRGB 分量 0-1 → 0-255（四舍五入）；alpha 缺省 1。解析失败返回 null。
- */
+/** 颜色串解析：兼容 'rgb()/rgba()' 与 'color(srgb r g b / a)'（Chrome 将
+    rgb(from ...) 相对色变量序列化为后者）。sRGB 分量 0-1 → 0-255（四舍五入）；
+    alpha 缺省 1；解析失败返回 null */
 const COLOR_PATTERNS = [
   /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)$/,
   /^color\(\s*srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*([\d.]+)\s*)?\)$/
@@ -192,10 +179,8 @@ export function withAlpha (color, alpha) {
   return c ? `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha})` : color
 }
 
-/**
- * 文本测量缓存：key = text + '\u0000' + font，容量上限 MEASURE_CACHE_LIMIT 条，
- * 超限整体清空（LRU 过重不做）。measure(text, font) 由调用方提供（ctx.measureText 包装）。
- */
+/** 文本测量缓存：key = text + '\u0000' + font，超上限整体清空（不做 LRU）。
+    measure(text, font) 由调用方提供（ctx.measureText 包装） */
 export function createMeasureCache (measure) {
   const cache = new Map()
 
@@ -213,12 +198,9 @@ export function createMeasureCache (measure) {
   }
 }
 
-/**
- * 文本测量工厂（02-design.md A2.2）：离屏 canvas 2d 上下文 + createMeasureCache
- * 缓存包装 → measure(text, font)，主线程同步。组件壳创建单实例注入
- * row-geometry（行高估高/精算）与 painter state（drawText）——行高计算与
- * 绘制折行共用同一实例（同一缓存），折行结果单一事实源。
- */
+/** 文本测量工厂：离屏 canvas 2d 上下文 + createMeasureCache 缓存包装 →
+    measure(text, font)。组件壳创建单例注入 row-geometry 与 painter——行高
+    计算与绘制折行共用同一实例（同一缓存），折行结果单一事实源 */
 export function createTextMeasurer () {
   const ctx = document.createElement('canvas').getContext('2d')
 
@@ -249,11 +231,10 @@ function colorsEqual (a, b) {
 }
 
 /**
- * 快照相等判定（mutation 变更抑制门控，verify-1 失败项 1）：21 固定字段逐键
- * 严格相等 + colors 每色 color/translucent/hover 严格相等。滚动状态 class 翻转
- * （mu-table-ex--y-scrolled 等）等与主题无关的观察根 attribute 变更，
- * 重读快照结果不变 → 不通知 onChange，壳侧行几何不被误 rebuild（已精算
- * 行高丢失、滚动条回缩的触发源）。
+ * 快照相等判定（mutation 变更抑制门控）：21 固定字段逐键严格相等 + colors
+ * 每色 color/translucent/hover 严格相等。滚动状态 class 翻转等与主题无关的
+ * 观察根 attribute 变更，重读快照结果不变 → 不通知 onChange，壳侧行几何
+ * 不被误 rebuild（已精算行高丢失、滚动条回缩的触发源）。
  */
 export function snapshotsEqual (a, b) {
   if (a === b) return true
@@ -277,11 +258,11 @@ export function snapshotsEqual (a, b) {
 }
 
 /**
- * 主题观察器：探针 + 快照 + MutationObserver（暗色切换感知）+ window resize（DPR 变化）。
- * 回调经 requestAnimationFrame 节流合帧；mutation 触发的重读经快照相等门控
- * （snapshotsEqual）——重读无变化的 attribute 变更（滚动状态 class 翻转等）
- * 不通知 onChange。onChange(snapshot, reason) 后由组件侧 relayout + 整幅重绘。
- * refresh() 同步重读，供 refreshTheme() 手动兜底。
+ * 主题观察器：探针 + 快照 + MutationObserver（class/style，暗色切换感知）
+ * + window resize（DPR 变化）。回调经 requestAnimationFrame 节流合帧；
+ * mutation 触发的重读经快照相等门控（snapshotsEqual）。onChange(snapshot,
+ * reason) 后由组件侧 relayout + 整幅重绘。refresh() 同步重读，供
+ * refreshTheme() 手动兜底。
  */
 export function createThemeWatcher ({ probeHost, componentRoot, onChange }) {
   const probe = createProbe(probeHost)
@@ -301,16 +282,13 @@ export function createThemeWatcher ({ probeHost, componentRoot, onChange }) {
       // 探针读取失败（如低版本浏览器不支持相对色求值）时保留上一次快照
     }
 
-    // 变更抑制：mutation 重读快照逐字段相等（滚动状态 class 翻转等与主题无关
-    // 的观察根 attribute 变更）→ 不通知 onChange；dpr（影响画布物理尺寸）与
-    // manual（refreshTheme 显式兜底）不抑制
+    // dpr（影响画布物理尺寸）与 manual（refreshTheme 显式兜底）不受门控抑制
     if (reason === 'mutation' && snapshotsEqual(snapshot, next)) return
 
     snapshot = next
     onChange?.(snapshot, reason)
   }
 
-  // rAF 节流：同一帧内多次 class/style 变更只触发一次重读 + 重绘
   const scheduleRefresh = (reason) => {
     if (scheduled) return
     scheduled = true
@@ -344,7 +322,6 @@ export function createThemeWatcher ({ probeHost, componentRoot, onChange }) {
       return snapshot
     },
 
-    /** 手动刷新（refreshTheme 兜底）：同步重读快照并通知 onChange */
     refresh (reason = 'manual') {
       applyChange(reason)
     },

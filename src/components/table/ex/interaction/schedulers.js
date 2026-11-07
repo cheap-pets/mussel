@@ -1,10 +1,9 @@
 /**
- * 拖拽误触抑制（02-design.md A5「up 后的 click 丢弃」；decisions「[I1 前]⑧」）：
- * 拖拽开始 arm()；click 处理器内 consume() 返回 true 并立即解除（消费即清除，
- * kaka EventBinding 模式）；pointerup 时 release() 延时清除——拖拽在 canvas 外
- * 释放、click 未触发的场景下，残留 flag 经延时任务清除，不会吞掉下一次表头点击。
- * schedule 可注入（自检同步验证用），缺省 setTimeout 0（click 在 pointerup 同一
- * 任务内同步触发，先于延时任务被 consume 消费）。
+ * 拖拽误触抑制：拖拽开始 arm()；click 处理器内 consume() 返回 true 并立即解除；
+ * pointerup 时 release() 延时清除——拖拽在 canvas 外释放、click 未触发时，
+ * 残留 flag 经延时任务清除，不会吞掉下一次表头点击。schedule 可注入
+ * （自检同步验证用），缺省 setTimeout 0（click 在 pointerup 同一任务内同步
+ * 触发，先于延时任务被 consume 消费）。
  *
  * @param {Function} [options.schedule] 延时任务注入（默认 setTimeout(fn, 0)）
  * @returns {{ arm: Function, consume: Function, release: Function }}
@@ -18,7 +17,6 @@ export function createClickGuard ({ schedule } = {}) {
     arm () {
       armed = true
     },
-    /** click 处理器内调用：返回 true 表示该 click 应丢弃（消费并立即解除） */
     consume () {
       const discard = armed
 
@@ -26,7 +24,6 @@ export function createClickGuard ({ schedule } = {}) {
 
       return discard
     },
-    /** pointerup 时调用：延时清除残留 flag */
     release () {
       defer(() => {
         armed = false
@@ -36,10 +33,9 @@ export function createClickGuard ({ schedule } = {}) {
 }
 
 /**
- * rAF 合帧（02-design.md A3 滚动行 / A5 pointermove 行）：同一帧内多次 schedule()
- * 合并为一次回调（同帧多次 scroll/hover 只重绘一次）；cancel 供组件卸载。
- * raf 可注入（自检同步验证用），缺省 requestAnimationFrame（Node 环境退化为
- * setTimeout 16ms，仅为容错）。
+ * rAF 合帧：同一帧内多次 schedule() 合并为一次回调（同帧多次 scroll/hover
+ * 只重绘一次）；cancel 供组件卸载。raf 可注入（自检同步验证用），缺省
+ * requestAnimationFrame（Node 环境退化为 setTimeout 16ms，仅为容错）。
  *
  * @param {Function} fn 帧回调
  * @param {Function} [raf] 帧调度注入
@@ -64,7 +60,6 @@ export function createFrameScheduler (fn, raf) {
         if (!cancelled) fn()
       })
     },
-    /** 组件卸载后挂起的帧回调不再执行 */
     cancel () {
       cancelled = true
     }

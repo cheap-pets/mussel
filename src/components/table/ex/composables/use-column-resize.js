@@ -1,13 +1,12 @@
 /**
- * table-ex 列宽拖拽 composable（C1 壳拆分自 table-ex.vue；02-design.md
- * A5、decisions「[I1 前]⑥⑧」）。
+ * table-ex 列宽拖拽 composable。
  *
  * 职责：拖拽宽度覆盖（widthOverrides，按列 key 存放、不写回 props，columns
  * 引用替换时清空）、move 中临时几何更新（被拖列改宽仅重算前缀和与 spacer，
  * 不重跑宽度求解防其他列抖动）、参考线 x 状态、拖拽误触抑制 clickGuard 接线。
  */
 /**
- * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads emit
  * @host-writes resizeGuideX, clickGuard, widthOverrides, startResize, resetOverrides
  * @host-calls getPreparedColumns（壳）, getLayout / setLayout（壳）,
@@ -22,15 +21,8 @@ import { resolveResizeWidth, RESIZE_MIN_WIDTH } from '../interaction/interaction
 import { createClickGuard } from '../interaction/schedulers'
 
 /**
- * 创建列宽拖拽（组件壳 setup 内调用）。
+ * 创建列宽拖拽（组件壳 setup 内调用；消费面见文件头 @host-* 声明）。
  *
- * @param {Object} host 组件壳注入
- * - emit                           组件 emit（column-resize 事件）
- * - getPreparedColumns ()           → prepareColumn 后的内部列数组
- * - getLayout () / setLayout (v)    → layout shallowRef 读写（拖拽 move 临时几何）
- * - getCanvasEl ()                  → canvas 元素（拖拽起点 rect）
- * - invalidate (region)             → 壳脏区重绘（move 脏带：该列左缘至视口右端 + 表头）
- * - relayout ()                     → 壳 relayoutAndRedraw（up 后全量重算）
  * @returns {{
  *   resizeGuideX: Object, clickGuard: Object, widthOverrides: Object,
  *   startResize: Function, resetOverrides: Function
@@ -42,14 +34,11 @@ export function useColumnResize (host) {
   /** 调宽拖拽参考线视口 x（overlay 覆盖层绘制；拖拽中非 null） */
   const resizeGuideX = shallowRef(null)
 
-  /** 拖拽误触抑制（A5 / decisions「[I1 前]⑧」）：拖拽后紧随的 click 丢弃 */
+  /** 拖拽误触抑制：拖拽后紧随的 click 丢弃 */
   const clickGuard = createClickGuard()
 
-  // 拖拽列宽存放（按列 key），不写回 props（decisions「[I1 前]⑥」G1-b 契约：
-  // overrides 由组件壳持有，columns 引用替换时清空）
   const widthOverrides = {}
 
-  /** move 中临时更新列几何：被拖列改宽后仅重算前缀和与 spacer，不重跑宽度求解 */
   function applyOverrideGeometry (colIndex, width, base) {
     const colWidths = base.colWidths.slice()
 
@@ -67,7 +56,7 @@ export function useColumnResize (host) {
     })
   }
 
-  /** 表头手柄 pointerdown 开拖（A5）：window 级 pointermove/pointerup 接线 */
+  /** 表头手柄 pointerdown 开拖：window 级 pointermove/pointerup 接线 */
   function startResize (event, hit) {
     const colIndex = hit.resizeCol
     const col = host.getPreparedColumns()[colIndex]
@@ -89,8 +78,8 @@ export function useColumnResize (host) {
         pointerX: ev.clientX - canvasRect.left,
         scrollLeft: base.scrollLeft,
         columnLeft: base.colLefts[colIndex],
-        // 拖拽下限（评审 6 P2）：col.minWidth 显式值 > 类型最小宽 > 40 兜底
-        // （真正 clamp 在 resolveResizeWidth 内，A4.1）
+        // 拖拽下限：col.minWidth 显式值 > 类型最小宽 > 40 兜底
+        // （真正 clamp 在 resolveResizeWidth 内）
         minWidth: getPixelNumber(col.minWidth) ?? resolveTypeMinWidth(col) ?? RESIZE_MIN_WIDTH,
         maxWidth: getPixelNumber(col.maxWidth)
       })
@@ -99,15 +88,13 @@ export function useColumnResize (host) {
 
       lastWidth = width
 
-      // move 中不重跑 solveWidths（A5 防其他列抖动）：暂存 override 并临时更新列几何
       widthOverrides[col._key] = width
 
       applyOverrideGeometry(colIndex, width, base)
 
-      // 参考线 = 拖拽列右缘视口 x（overlay 覆盖层绘制）
       resizeGuideX.value = base.colLefts[colIndex] + width - base.scrollLeft
 
-      // move 脏区：该列左缘至视口右端竖带 + 表头整幅（A3 重绘表 / 评审 M9）
+      // move 脏区：该列左缘至视口右端竖带 + 表头整幅
       host.invalidate({ colFrom: colIndex })
     }
 
@@ -115,13 +102,13 @@ export function useColumnResize (host) {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
 
-      // pointerup 后延时清除残留 flag（decisions「[I1 前]⑧」）
+      // pointerup 后延时清除残留 flag
       clickGuard.release()
 
       resizeGuideX.value = null
 
-      // up：emit → relayout（拖拽列显式定宽〔overrides 已写入〕，
-      // 其余未定宽列重跑求解重新瓜分剩余空间，A3/A5）
+      // up：emit → relayout（拖拽列显式定宽〔overrides 已写入〕，其余未定宽列
+      // 重跑求解重新瓜分剩余空间）
       emit('column-resize', { column: col._raw, width: lastWidth })
       host.relayout()
     }
@@ -130,7 +117,6 @@ export function useColumnResize (host) {
     window.addEventListener('pointerup', onUp)
   }
 
-  /** columns 引用变化时清空拖拽宽度覆盖（G1-b 契约） */
   function resetOverrides () {
     for (const key of Object.keys(widthOverrides)) delete widthOverrides[key]
   }

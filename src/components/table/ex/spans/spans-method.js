@@ -40,13 +40,12 @@ function occupyRect (occupied, rowFrom, rowTo, colFrom, colTo) {
   }
 }
 
-/** 登记区域（§3.2：越界截断 → 跨度 < 2 静默丢弃 → 重叠整条丢弃 → 四表回填 +
-    占用集回填）。返回 region 或 null */
+/** 登记区域：越界截断 → 跨度 < 2 静默丢弃 → 重叠整条丢弃 → 四表回填 +
+    占用集回填。返回 region 或 null */
 export function registerRegion (index, occupied, { row, col, rowspan, colspan }, rowCount, emitWarn, warnKey) {
   const rowTo = Math.min(row + rowspan, rowCount)
   const colTo = col + colspan
 
-  // 截断/夹紧后跨度 < 2 无合并意义：静默丢弃（不警告）
   if (rowTo - row < 2 && colTo - col < 2) return null
 
   if (isRectOccupied(occupied, row, rowTo, col, colTo)) {
@@ -86,7 +85,7 @@ export function registerRegion (index, occupied, { row, col, rowspan, colspan },
   return region
 }
 
-/** covered 表回填：主格以外的覆盖格 → 主格坐标（§3.2 四表回填之一） */
+/** covered 表回填：主格以外的覆盖格 → 主格坐标 */
 function fillCoveredCells (index, { row, col, rowTo, colTo }) {
   for (let r = row; r < rowTo; r++) {
     for (let c = col; c < colTo; c++) {
@@ -114,7 +113,7 @@ function fillRowRegions (index, region) {
   }
 }
 
-/** spanMethod(info) 载荷构造（§2.3）：record/recordIndex/recordNumber/prev/next/columns */
+/** spanMethod(info) 载荷构造：record/recordIndex/recordNumber/prev/next/columns */
 function buildSpanInfo (records, columns, row, rowCount, recordsOffset) {
   return {
     record: records[row],
@@ -126,10 +125,8 @@ function buildSpanInfo (records, columns, row, rowCount, recordsOffset) {
   }
 }
 
-/**
- * 键解析（§2.3）：先 column.key 精确匹配；否则 field 匹配全部列（命中多列警告
- * 一次/键，无匹配列忽略 + 警告一次/键——warnedKeys 键级去重）。返回命中的列下标数组。
- */
+/** 键解析：先 column.key 精确匹配；否则 field 匹配全部列（命中多列警告一次/键，
+    无匹配列忽略 + 警告一次/键——warnedKeys 键级去重）。返回命中的列下标数组 */
 function resolveDeclColumns (columns, name, warnedKeys, emitWarn) {
   const byKey = []
 
@@ -165,8 +162,8 @@ function resolveDeclColumns (columns, name, warnedKeys, emitWarn) {
   return byField
 }
 
-/** 值形态归一（§2.3 规则 3）：number → { rowspan: n } 糖；对象取 rowspan/colspan
-    （colspan 支持 'rest' 透传）；其余形态警告后返回 null（整条丢弃） */
+/** 值形态归一：number → { rowspan: n } 糖；对象取 rowspan/colspan（colspan
+    支持 'rest' 透传）；其余形态警告后返回 null（整条丢弃） */
 function normalizeSpanValue (raw, row, colIndex, emitWarn) {
   if (typeof raw === 'number') return { rowspan: raw, colspan: 1 }
 
@@ -205,15 +202,15 @@ function validateSpanSize ({ rowspan, colspan }, row, colIndex, emitWarn) {
   return { rowspan, colspan }
 }
 
-/** 值形态解析（§2.3 规则 3 组合）：归一 → 校验；任一失败整条丢弃（警告） */
+/** 值形态解析：归一 → 校验；任一失败整条丢弃（警告） */
 function parseSize (raw, row, colIndex, emitWarn) {
   const normalized = normalizeSpanValue(raw, row, colIndex, emitWarn)
 
   return normalized ? validateSpanSize(normalized, row, colIndex, emitWarn) : null
 }
 
-/** 'rest' 展开与固定列边界夹紧（§3.2 规则 2，占用检查之前完成）：主格在固定列区
-    → 展开到 fixedCount，滚动区 → 总末列；固定区内越界夹紧 + clamp 警告 */
+/** 'rest' 展开与固定列边界夹紧（占用检查之前完成）：主格在固定列区 → 展开到
+    fixedCount，滚动区 → 总末列；固定区内越界夹紧 + clamp 警告 */
 function resolveDeclaredColspan (size, colIndex, fixed, colCount, row, emitWarn) {
   const partitionEnd = colIndex < fixed ? fixed : colCount
 
@@ -238,8 +235,8 @@ function errorMessageOf (err) {
   return err?.message ?? err
 }
 
-/** 入口 B —— 表格级 spanMethod（§2.3）：每行调用一次（O(rows)），返回该行作为
-    主行的声明；键解析 key 优先→field（多列命中作用全部 + 警告）、值形态解析、
+/** 入口 B —— 表格级 spanMethod：每行调用一次（O(rows)），返回该行作为主行的
+    声明；键解析 key 优先→field（多列命中作用全部 + 警告）、值形态解析、
     'rest' 展开 / 固定列夹紧、树形/check 列丢弃、异常按 null 处置 */
 export function applySpanMethod (spanCtx, index, occupied) {
   const { records, columns, spanMethod, recordsOffset, rowCount, fixed, emitWarn, takenOver } = spanCtx
@@ -263,7 +260,7 @@ export function applySpanMethod (spanCtx, index, occupied) {
 
     for (const name of Object.keys(declared)) {
       for (const colIndex of resolveDeclColumns(columns, name, warnedKeys, emitWarn)) {
-        // 列级接管（§2.4）：返回某列键即接管，该列 autoRowSpan 对全表失效
+        // 列级接管：返回某列键即接管，该列 autoRowSpan 对全表失效
         takenOver.add(colIndex)
 
         const col = columns[colIndex]

@@ -1,17 +1,16 @@
 /**
- * 单元格选中壳编排 composable（20261105-table-ex-cell-select；C1 组合式约定）：
- * selectCell / clearCellSelection（span 归一 + prev/next 格 invalidate）+
- * document 级 keydown 挂摘（选中存在时挂、清除即摘，不触碰焦点链）+
- * Ctrl+C 复制（navigator.clipboard.writeText，失败 devWarn 降级）+
- * 方向键移动（clamp + 自动滚动）+ 行集/列集引用变化清除 watch + onUnmounted 摘除。
+ * 单元格选中壳编排 composable：selectCell / clearCellSelection（span 归一 +
+ * prev/next 格 invalidate）+ document 级 keydown 挂摘（选中存在时挂、清除即摘，
+ * 不触碰焦点链）+ Ctrl+C 复制（navigator.clipboard.writeText，失败 devWarn 降级）
+ * + 方向键移动（clamp + 自动滚动）+ 行集/列集引用变化清除 watch + onUnmounted 摘除。
  *
- * 创建时序（组装步骤 9.5，usePointer 之后、useRelayout 之前）：清除 watch 的 pre
- * flush 先于 relayout 合并 watch（Vue pre watcher 按创建 id 排序），同 tick 先清
- * 旧选中格再整幅重绘，避免 relayout 帧残留选中描边；成员一律运行时经 host.<key>
+ * 创建时序：须在 usePointer 之后、useRelayout 之前——清除 watch 的 pre flush
+ * 先于 relayout 合并 watch（Vue pre watcher 按创建 id 排序），同 tick 先清旧
+ * 选中格再整幅重绘，避免 relayout 帧残留选中描边；成员一律运行时经 host.<key>
  * 读取（setup 期不解构）。
  */
 /**
- * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads props, scrollEl, layout, wiredColumns, displayRows, spans,
  *   selectedCell, editor（消费 state.editing）
  * @host-writes selectCell, clearCellSelection
@@ -32,8 +31,7 @@ function devWarnClipboard () {
 }
 
 /**
- * @param {Object} host host 袋（读取 props, scrollEl, layout, wiredColumns,
- *   displayRows, spans, selectedCell, invalidate, editor）
+ * @param {Object} host host 袋（消费面见文件头 @host-* 声明）
  * @returns {{ selectCell, clearCellSelection }}
  */
 export function useCellSelect (host) {
@@ -46,9 +44,9 @@ export function useCellSelect (host) {
       : null
   }
 
-  /** 置选中（点击唯一入口）：合并区域命中归一到锚格坐标（选中一律存锚格）；
-      与当前相同幂等返回；先置值再对 prev/next 各失效（syncPaintState 原地同步，
-      合并区域由 painter 脏区扩展到区域包围盒） */
+  /** 置选中（点击唯一入口）：合并区域命中归一到锚格坐标；与当前相同幂等返回；
+      先置值再对 prev/next 各失效（syncPaintState 原地同步，合并区域由 painter
+      脏区扩展到区域包围盒） */
   function selectCell (row, col) {
     const next = anchorOf(row, col)
 
@@ -204,7 +202,6 @@ export function useCellSelect (host) {
 
     if (!moved) return
 
-    // 合并归一（裁定 5）：目标格落在合并区域 → 锚格坐标；与当前相同即原地
     const next = anchorOf(moved.row, moved.col)
 
     if (!next) return
@@ -214,9 +211,9 @@ export function useCellSelect (host) {
     applySelectionScroll(el, resolveSelectionScroll(live, next.row, next.col))
   }
 
-  // 行集/列集引用变化清除（裁定 4：records 替换/排序/树展开收起/懒加载回填、
-  // 列集变化；就地改值走 recordsVersion 通道不改引用，不清除）。非 immediate——
-  // setup 期不触达 invalidate（painter 为 null 时 invalidate 返回 false 亦安全）
+  // 行集/列集引用变化清除：records 替换/排序/树展开收起/懒加载回填、列集变化；
+  // 就地改值走 recordsVersion 通道不改引用，不清除。非 immediate——setup 期
+  // 不触达 invalidate（painter 为 null 时 invalidate 返回 false 亦安全）
   watch([host.displayRows, host.wiredColumns], () => clearCellSelection())
 
   return {

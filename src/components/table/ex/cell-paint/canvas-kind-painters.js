@@ -21,8 +21,7 @@ const PROGRESS_FONT_SIZE = 12
 // button 组条目缺省占位（共享单例替代循环内逐次 {} 分配）
 export const EMPTY_BUTTON = {}
 
-// —— progress 绘制与 button 组绘制（A3.3 canvasKind 分发；button 已入列类型
-// 注册表，canvas 产物同走本节 drawCanvasKindContent） ——
+// —— progress 绘制与 button 组绘制 ——
 
 /** progress 条：轨道 bgStrong 8px 圆角 4 + 填充 colors[color].color + 百分比文本 */
 export function drawProgress (ctx, rect, content, { padding, theme, record, measure, centerY }) {
@@ -87,16 +86,15 @@ function isButtonHovered (hoverItem, index) {
   return hoverItem?.kind === 'button' && hoverItem.index === index
 }
 
-/** button pill 高度（20261105 二轮，--mu-control-height-small）：主题快照读取、
-    缺字段容错回退镜像常量（快照消费侧回退，与 rowHeight 同模式） */
+/** button pill 高度（--mu-control-height-small）：主题快照读取，缺字段容错回退
+    镜像常量（快照消费侧回退，与 rowHeight 同模式） */
 export function buttonHeightOf (theme) {
   return theme?.controlHeightSmall || CONTROL_HEIGHT_SMALL_FALLBACK
 }
 
-/** button 组第一遍测宽（对齐布局前置）：x 恒从左缘起逐条省略计宽（截断/哨兵
-    行为与左对齐基线一致——对齐平移仅发生在未超宽时，全宽条目平移后仍放得下，
-    不改变截断结果）；返回绘制条目（含原始 index 与省略产物）与累计偏移
-    （含尾随 gap，计入对齐总宽前扣除，itemsStartX 口径） */
+/** button 组第一遍测宽（对齐布局前置）：x 恒从左缘起逐条省略计宽（对齐平移仅在
+    未超宽时发生，截断/哨兵结果与左对齐基线一致）；返回绘制条目（含原始 index 与
+    省略产物）与累计偏移（含尾随 gap，入 itemsStartX 前扣除） */
 function layoutButtonEntries (buttons, rect, rightBound, padding, font, measureFn, link, buttonHeight) {
   const entries = []
   let offset = 0
@@ -105,7 +103,7 @@ function layoutButtonEntries (buttons, rect, rightBound, padding, font, measureF
     const button = buttons[i] ?? EMPTY_BUTTON
     const ellipsized = ellipsizeButton(button, x, rightBound, font, measureFn, link, buttonHeight)
 
-    // ellipsize 空文本 → null 哨兵（原 -1 同义），停止绘制后续按钮
+    // ellipsize 空文本 → null 哨兵，停止绘制后续按钮
     if (!ellipsized) break
 
     entries.push({ button, index: i, ...ellipsized })
@@ -156,8 +154,8 @@ export function drawButton (ctx, rect, content, {
       drawButtonPill(ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad, buttonHeight)
     }
 
-    // 命中矩形：pill 形态高 = 快照值（y = centerY − h/2）；link 形态无 pill 几何，
-    // 沿用 TAG_HEIGHT 高度框现状（与 caption-only link 同口径）
+    // 命中矩形：pill 形态高 = 快照值；link 形态无 pill 几何，沿用 TAG_HEIGHT
+    // 高度框（与 caption-only link 同口径）
     const hitHeight = link ? TAG_HEIGHT : buttonHeight
 
     onItemRect?.({
@@ -188,15 +186,13 @@ function buttonTextOf (theme, colored, disabled) {
     : (colored?.color ?? theme?.textColor)
 }
 
-/** caption 省略与占用宽预处理（pill/link 两形态共用；20261105 二轮形态互斥）：
-    源头判定（互斥短路）——caption 非空 → caption-only（icon 键完全忽略：不解析、
-    不绘制、不 warn，ellipsize 只作用 caption），省略结果空串（右缘放不下）→
-    return null 不绘制且终止后续（不得落空文本条目，否则会绘制无文字 pill 并继续
-    推进 x——verify-终-2 失败项 1 裁剪检查顺序缺陷随降级路径删除结构性消解，
-    右缘剩余统一判据前置）；caption 空 → icon-only 候选，resolveIconEntry 解析
-    （未注册 dev warn 在 resolve 内），无有效 icon → null 哨兵；icon-only 固定宽
-    不省略（pill = controlHeightSmall 快照 / link = 图标本体），右缘剩余 < 宽 →
-    不绘制且终止 */
+/** caption 省略与占用宽预处理（pill/link 两形态共用，形态互斥）：caption 非空 →
+    caption-only（icon 键完全忽略：不解析、不绘制、不 warn，ellipsize 只作用
+    caption），省略结果空串（右缘放不下）→ return null 不绘制且终止后续（不得落
+    空文本条目，否则会绘制无文字 pill 并继续推进 x）；caption 空 → icon-only 候选，
+    resolveIconEntry 解析（未注册 dev warn 在 resolve 内），无有效 icon → null 哨兵；
+    icon-only 固定宽不省略（pill = controlHeightSmall 快照 / link = 图标本体），
+    右缘剩余 < 宽 → 不绘制且终止 */
 function ellipsizeButton (button, x, rightBound, font, measureFn, link, buttonHeight) {
   const padX = link ? 0 : TAG_PADDING_X
   const remaining = rightBound - x
@@ -209,7 +205,6 @@ function ellipsizeButton (button, x, rightBound, font, measureFn, link, buttonHe
       measure: measureFn
     })
 
-    // 空文本（右缘放不下）→ 不绘制且终止——d 条款，不得落空文本条目
     if (!text) return null
 
     return { text, icon: null, width: Math.min(padX * 2 + textWidth, remaining) }
@@ -217,7 +212,6 @@ function ellipsizeButton (button, x, rightBound, font, measureFn, link, buttonHe
 
   const icon = button.icon ? resolveIconEntry(button.icon) : null
 
-  // 空哨兵（含未注册，warn 在 resolve 内）：不绘制且终止后续
   if (!icon) return null
 
   const width = link ? BUTTON_ICON_SIZE : buttonHeight
@@ -226,10 +220,10 @@ function ellipsizeButton (button, x, rightBound, font, measureFn, link, buttonHe
 }
 
 /** link 形态单条按钮（列级 column.link）：无底无边框纯文字链，常态
-    colors[name].color、hover 变 colors[name].hover 谱系 + 1px 下划线（下划线式与
-    link 条目同源）；disabled 恒置灰不悬停。形态互斥（20261105 二轮）：
-    icon-only（caption 空）图标于条目起点 x、centerY 垂直锚，宽 = 图标本体
-    （无 pill 几何）；caption-only（icon 恒 null）文字于条目起点 x，路径不变 */
+    colors[name].color、hover 变 colors[name].hover 谱系 + 1px 下划线（与 link
+    条目同源）；disabled 恒置灰不悬停。形态互斥：icon-only（caption 空）图标于
+    条目起点 x、centerY 垂直锚，宽 = 图标本体（无 pill 几何）；caption-only
+    （icon 恒 null）文字于条目起点 x */
 function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad) {
   const disabled = isTruthyAttr(button.disabled)
   const colored = theme?.colors?.[resolveColorName(button.color, record)]
@@ -262,11 +256,10 @@ function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, fo
 }
 
 // 单个 button pill 绘制（省略预处理产物入参）：hovered 且非 disabled 时反转
-// （底/边框 = colors[name].color、文字 = bgNormal）；disabled 置灰。pill 高 =
-// controlHeightSmall 快照（buttonHeightOf，20261105 二轮）；icon-only（caption
-// 空）图标 12px 在 pill 内水平垂直居中（x = x + (h − 12)/2、centerY 锚），色 =
-// 同一文本色变量（常态 buttonTextOf、hover 反转 bgNormal）；caption-only
-// （icon 恒 null）文字路径不变（pill 内 TAG_PADDING_X 内距）
+// （底/边框 = colors[name].color、文字 = bgNormal）；disabled 置灰；pill 高 =
+// controlHeightSmall 快照；icon-only（caption 空）图标 12px 在 pill 内水平垂直
+// 居中，色用同一文本色变量（常态 buttonTextOf、hover 反转 bgNormal）；caption-only
+// 文字走 pill 内 TAG_PADDING_X 内距路径
 function drawButtonPill (ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad, buttonHeight) {
   const disabled = isTruthyAttr(button.disabled)
   const colored = theme?.colors?.[resolveColorName(button.color, record)]

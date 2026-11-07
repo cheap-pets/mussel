@@ -4,7 +4,7 @@ export const FALLBACK_DPR = 1
 
 // —— 几何换算 ——
 
-/** 读行集合：displayRows ?? records 缺省回退（中间态壳行为不变） */
+/** 读行集合：displayRows ?? records 缺省回退 */
 export function rowsOf (state) {
   return state.displayRows ?? state.records
 }
@@ -20,8 +20,8 @@ export function recordKeyOf (state, record, row) {
       : row
 }
 
-// 行几何直取 layout.rowGeometry（C4 删 WeakMap uniform 回退：layout 恒由
-// relayout() 产出、恒携几何；缺失即 TypeError 快速暴露）
+// 行几何直取 layout.rowGeometry：layout 恒由 relayout() 产出、恒携几何；缺失即
+// TypeError 快速暴露
 
 export function viewportColX (layout, col) {
   return (layout.colLefts[col] || 0) - (col < layout.fixedCount ? 0 : layout.scrollLeft)
@@ -31,7 +31,7 @@ export function viewportRowY (layout, row) {
   return layout.headHeight + layout.rowGeometry.topAt(row) - layout.scrollTop
 }
 
-/** 单元格视口矩形（interactions / editor / 自检共用；高度 = heightAt(row)） */
+/** 单元格视口矩形（interactions / editor / 自检共用） */
 export function cellRectAt (layout, row, col) {
   return {
     x: viewportColX(layout, col),
@@ -41,16 +41,15 @@ export function cellRectAt (layout, row, col) {
   }
 }
 
-/** 有效内容右缘视口 x（末列右缘；n=0 时 0）——格线/表头/hover/选中 cap 同源式
-    （20261106-column-link-hover-button-value 轮 1 内联式收敛单一定义） */
+/** 有效内容右缘视口 x（末列右缘；n=0 时 0）——格线/表头/hover/选中 cap 共用式 */
 export function contentRightXOf (layout) {
   const n = layout.colWidths.length
 
   return n ? viewportColX(layout, n - 1) + (layout.colWidths[n - 1] || 0) : 0
 }
 
-/** 有效内容底缘视口 y（末行底部；行满/溢出时 ≥ stickyHeight，min() 无操作；
-    空表维持 stickyHeight 现状，decisions.md 裁定） */
+/** 有效内容底缘视口 y（末行底部；行满/溢出时 ≥ stickyHeight；空表返回
+    stickyHeight，0 行列线保留全高） */
 export function contentBottomYOf (layout) {
   return layout.rowGeometry.rowCount > 0
     ? Math.min(
@@ -82,7 +81,7 @@ export function isSelectedRow (state, row) {
 }
 
 /** 非选中口径行底色（斑马/普通）——选中带延伸区补底与 rowBackground 共用，
-    避免优先级链双源漂移（追加轮 2 需求 C） */
+    避免优先级链双源漂移 */
 export function baseRowBackground (state, row) {
   return state.striped && row % 2 === 1 ? state.theme.bgStripe : state.theme.bgNormal
 }
@@ -94,7 +93,7 @@ export function rowBackground (state, row) {
   return baseRowBackground(state, row)
 }
 
-// —— 排序方向（table.vue:144-153 同款解析） ——
+// —— 排序方向（table.vue 同款解析） ——
 
 export function sortDirectionOf (orderBy) {
   if (!orderBy) return {}

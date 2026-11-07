@@ -1,17 +1,13 @@
 /**
- * table-ex 树接线 composable（C1 壳拆分自 table-ex.vue；02-design.md
- * A2.1/A2.4、评审 6 P7/P8）。
- *
- * 职责：树展开集（内部持有 + 受控 prop 覆盖）、childrenIndex/flatRows 平铺
- * 链、displayRows 读行集合（树开 = 平铺、树关 = records 原序）、树形列缺省
- * 接线（wiredColumns）与缩进回调、toggle/expandAll/collapseAll 操作与三条树
- * watch（tree 开关 / treeProps / treeExpandedKeys）。
- *
- * 平铺与索引全部由 tree.js 纯函数产出；DOM 接线（锚定补偿写入 scrollTop、
- * 重绘）经 host 回调交回组件壳。
+ * table-ex 树接线 composable：树展开集（内部持有 + 受控 prop 覆盖）、
+ * childrenIndex/flatRows 平铺链、displayRows 读行集合（树开 = 平铺、
+ * 树关 = records 原序）、树形列缺省接线（wiredColumns）与缩进回调、
+ * toggle/expandAll/collapseAll 操作与三条树 watch（tree 开关 / treeProps /
+ * treeExpandedKeys）。平铺与索引全部由 tree.js 纯函数产出；DOM 接线（锚定
+ * 补偿写入 scrollTop、重绘）经 host 回调交回组件壳。
  */
 /**
- * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads props, emit
  * @host-writes treeExpanded, treeOptions, childrenIndex, flatRows, displayRows,
  *   wiredColumns, treeColumnIndex, treeIndentsOf, applyTreeToggle, expandAll,
@@ -26,21 +22,14 @@ import { TREE_INDENT } from '../shared/constants'
 import { buildChildrenIndex, buildFlatRows, resolveInitialExpandedKeys, toggleKey } from '../shared/tree'
 
 /**
- * 创建树接线（组件壳 setup 内调用；内部注册三条树 watch）。
+ * 创建树接线（组件壳 setup 内调用；内部注册三条树 watch；消费面见文件头
+ * @host-* 声明）。
  *
- * @param {Object} host 组件壳注入
- * - props / emit                    组件 props（tree/treeProps/treeExpandedKeys/
- *                                   defaultExpandLevel/records/keyField）与 emit
- * - getPreparedColumns ()           → prepareColumn 后的内部列数组（wiredColumns 输入）
- * - commit ()                       → editor.commit()（行号语义失效先提交，幂等）
- * - relayout ()                     → 壳 relayoutAndRedraw
- * - recomputeViewWindows () / redraw() → 窗口同步与整幅重绘
- * - getScrollEl () / getLayout ()   → 滚动容器与 layout 快照（toggle 锚定补偿）
  * @returns {{
  *   treeExpanded: Object, treeOptions: Object, childrenIndex: Object|null,
  *   flatRows: Object|null（buildFlatRows 产物：rows/levels/hasChildren/
  *   parentKeys/expandable 五平行数组，parentKeys 供 spans 树父链切断、
- *   expandable 供懒节点三角/命中判定，20261029 问题 3）,
+ *   expandable 供懒节点三角/命中判定）,
  *   displayRows: Array, wiredColumns: Array,
  *   treeColumnIndex: Number, treeIndentsOf: Function,
  *   applyTreeToggle: Function, expandAll: Function, collapseAll: Function,
@@ -53,8 +42,8 @@ export function useTreeRows (host) {
   // 展开节点 key 集合（内部持有；受控 prop 引用变化覆盖，点击箭头 toggle + emit）
   const treeExpanded = shallowRef(new Set())
 
-  // isLeaf 字段名映射（20261029 问题 3）：缺省 undefined = 特性关闭（对齐 tree
-  // 组件 DEFAULT_DATA_PROPS.isLeaf 未映射不生效的兼容语义）
+  // isLeaf 字段名映射：缺省 undefined = 特性关闭（对齐 tree 组件
+  // DEFAULT_DATA_PROPS.isLeaf 未映射不生效的兼容语义）
   const treeOptions = computed(() => ({
     key: props.treeProps?.key ?? props.keyField ?? 'id',
     parentKey: props.treeProps?.parentKey ?? 'parentId',
@@ -63,7 +52,7 @@ export function useTreeRows (host) {
 
   // 子级索引（O(n) Map + hasChildren Set；树关 = null 零成本）。
   // recordsVersion 显式依赖（spans computed 同款先例）：records 就地 push 子级
-  // （懒加载回填，问题 3）不改变组内 computed 依赖的数组引用，须随版本号重算
+  // （懒加载回填）不改变组内 computed 依赖的数组引用，须随版本号重算
   // （flatRows 经 childrenIndex 间接失效重建）
   const childrenIndex = computed(() => {
     if (!props.tree) return null
@@ -79,7 +68,7 @@ export function useTreeRows (host) {
   })
 
   // DFS 展开序平铺（迭代防爆栈、visited 防环、孤儿挂根）；树关 = null；
-  // isLeafOf 映射开启时产出含懒节点的 expandable 平行数组（问题 3）
+  // isLeafOf 映射开启时产出含懒节点的 expandable 平行数组
   const flatRows = computed(() => {
     if (!props.tree) return null
 
@@ -94,12 +83,11 @@ export function useTreeRows (host) {
     })
   })
 
-  // 读行集合（A2.1 paintState 契约）：树开 = 平铺行数组、树关 = records 原序；
-  // painter/interactions/editor 全消费方经此取行
+  // 读行集合（painter/interactions/editor 全消费方经此取行）
   const displayRows = computed(() => (props.tree ? flatRows.value?.rows ?? [] : props.records))
 
-  // 列接线：树开且未显式指定 treeNode 时缺省首个数据列为树形列（A3.4；
-  // check/rec_no 为图形列不作为树形列缺省）
+  // 列接线：树开且未显式指定 treeNode 时缺省首个数据列为树形列；
+  // check/rec_no 为图形列不作为树形列缺省
   const wiredColumns = computed(() => {
     const cols = host.getPreparedColumns()
 
@@ -114,8 +102,8 @@ export function useTreeRows (host) {
 
   const treeColumnIndex = computed(() => wiredColumns.value.findIndex(col => col._isTreeColumn))
 
-  /** 树形列缩进回调（评审 6 P8：签名带列号——仅树形列返回 16×level+16，
-      非树形多行列返回 0 不误扣；A2.4/实施约束 6）；无树传 null 零成本 */
+  /** 树形列缩进回调：签名带列号——仅树形列返回 16×level+16，非树形多行列
+      返回 0 不误扣；无树传 null 零成本 */
   function treeIndentsOf () {
     if (!props.tree) return null
 
@@ -125,11 +113,10 @@ export function useTreeRows (host) {
     return (i, row) => (i === colIndex ? TREE_INDENT * (levels?.[row] ?? 0) + TREE_INDENT : 0)
   }
 
-  // —— 展开操作（A1 方法 / A2.4 watch 契约） ——
+  // —— 展开操作 ——
 
-  /** defaultExpandLevel 初始解析（约束 9）：首次入场 + tree 关闭→开启首开 +
-      treeProps 变化时调用；treeExpandedKeys 受控非空时经
-      resolveInitialExpandedKeys 直接取 prop（受控优先） */
+  /** defaultExpandLevel 初始解析：首次入场 + tree 关闭→开启首开 + treeProps
+      变化时调用；treeExpandedKeys 受控非空时直接取 prop（受控优先） */
   function resolveInitialExpansion () {
     if (!props.tree) return
 
@@ -145,10 +132,9 @@ export function useTreeRows (host) {
     }))
   }
 
-  /** 树箭头 toggle（A2.4 联动链）：行号语义失效先提交（commit 幂等）→
-      toggle + emit → 平铺重建（displayRows computed 失效）→ 全量估高 + 几何
-      rebuild + spacer + 锚定（视口首行内容保持）+ 整幅重绘。
-      meta（20261029 问题 3）：壳的 tryToggleTreeRow 已知命中行 record/level，
+  /** 树箭头 toggle：行号语义失效先提交（commit 幂等）→ toggle + emit → 平铺
+      重建（displayRows computed 失效）→ 全量估高 + 几何 rebuild + spacer +
+      锚定（视口首行内容保持）+ 整幅重绘。meta 携带命中行 record/level，
       免 O(n) 反查；toggle 后追加发 tree-expand / tree-collapse（载荷
       { key, record, level }，语义对齐 tree 组件 nodeExpand/nodeCollapse——
       每次 toggle 均发，消费方自判是否懒加载子级） */
@@ -191,7 +177,7 @@ export function useTreeRows (host) {
     host.redraw()
   }
 
-  /** 展开全部（A1：等价展开集 = 全部有子节点 key） */
+  /** 展开全部：等价展开集 = 全部有子节点 key */
   function expandAll () {
     if (!props.tree || !childrenIndex.value) return
 
@@ -208,15 +194,15 @@ export function useTreeRows (host) {
     host.relayout()
   }
 
-  /** 当前展开 key 数组（A1：调试/受控回读） */
+  /** 当前展开 key 数组（调试/受控回读） */
   function getTreeExpandedKeys () {
     return [...treeExpanded.value]
   }
 
-  // —— 树 watch 契约（A2.4 / 约束 9） ——
+  // —— 树 watch 契约 ——
 
-  // tree 开/关 → displayRows 切换 records 原序/平铺 + 几何 rebuild + spacer + 锚定 +
-  // 整幅重绘；关闭→开启首开重解析展开集（受控 prop 非空时经受控优先直取 prop）。
+  // tree 开/关 → displayRows 切换 records 原序/平铺 + 几何 rebuild + spacer +
+  // 锚定 + 整幅重绘；关闭→开启首开重解析展开集（受控 prop 非空时直取 prop）。
   // immediate：首布局前解析（首次入场 defaultExpandLevel 解析）
   watch(() => props.tree, (now, before) => {
     if (now && !before) resolveInitialExpansion()
@@ -232,7 +218,7 @@ export function useTreeRows (host) {
     host.relayout()
   })
 
-  // treeExpandedKeys 受控引用变化 → 覆盖内部 Set → 重建平铺（A2.4）
+  // treeExpandedKeys 受控引用变化 → 覆盖内部 Set → 重建平铺
   watch(() => props.treeExpandedKeys, value => {
     if (value == null) return
 

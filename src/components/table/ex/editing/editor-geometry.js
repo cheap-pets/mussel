@@ -1,4 +1,4 @@
-/** 编辑几何纯函数（editor.js 按关注点拆出，02-design.md O4）：编辑盒矩形 /
+/** 编辑几何纯函数（自 editor.js 按关注点拆出）：编辑盒矩形 /
     格线占位标志 / 编辑按钮区矩形 / 浮层定位——paint（paint-overlay）与
     interaction（edit-button）层消费的跨模块共享原语。零 vue / form 依赖，
     仅镜像常量（constants.js）；定位所需布局数据由调用方传入 */
@@ -58,12 +58,12 @@ export function editButtonRectOf (
   }
 }
 
-/** 编辑浮层定位（矩形相对 __overlay 原点 = canvas 视口原点）：全编辑器类型共用同一
-    矩形（与 hover 描边同源同位）；固定列不随滚动偏移；bordered：switch false / textarea true / 其余 border !== false。
-    cellRect（§5.5）：合并区域主格由组件壳经 spans.spanRectOf 传入区域矩形（浮层
-    覆盖整个合并区域），缺省按 colIndex/rowIndex 构造单格矩形（本模块不 import
-    spans.js，保持模块隔离）；rowFrom/colTo 透传 editorGridlineFlagsOf（格线内缩按
-    区域外缘） */
+/** 编辑浮层定位（矩形相对 __overlay 原点 = canvas 视口原点）：全编辑器类型共用
+    同一矩形（与 hover 描边同源同位）；固定列不随滚动偏移；bordered：switch false /
+    textarea true / 其余 border !== false。cellRect：合并区域主格由组件壳经
+    spans.spanRectOf 传入区域矩形（浮层覆盖整个合并区域），缺省按 colIndex/rowIndex
+    构造单格矩形（本模块不 import spans.js，保持模块隔离）；rowFrom/colTo 透传
+    editorGridlineFlagsOf（格线内缩按区域外缘） */
 export function computeEditorStyle ({
   colIndex,
   rowIndex,

@@ -1,23 +1,15 @@
 /**
- * table-ex 树纯函数（02-design.md A2.4，评审 6 P7）。
- *
- * records 为平铺数组，每行含树 key 字段值与 parentKey 字段值（字段名经
- * treeProps 配置，缺省 keyField ?? 'id' / 'parentId'——对齐 tree 组件
- * DEFAULT_DATA_PROPS 可配置模式）。脏数据容错：孤儿（parentKey 指向不存在
- * 的 key）挂根、环（A→B→A）经 visited Set 防护不死循环、重复 key 行为未定义。
- *
- * 本模块全部为纯函数：不持有状态、不写回入参。
+ * table-ex 树纯函数。records 为平铺数组，每行含树 key/parentKey 字段值
+ * （字段名经 treeProps 配置，缺省 keyField ?? 'id' / 'parentId'）。脏数据
+ * 容错：孤儿（parentKey 指向不存在的 key）挂根、环（A→B→A）经 visited Set
+ * 防护不死循环、重复 key 行为未定义。全部为纯函数：不持有状态、不写回入参。
  */
 
 function isRootParentKey (parentKey) {
   return parentKey == null || parentKey === ''
 }
 
-/**
- * 展开 key 集合命中（Set/Array 双形态容错）：树箭头展开态判定的共享谓词
- * （C2 收拢——cell-painters.drawTreeAffordance 与 painter.paintTreeArrowAccent
- * 原各自持同款实现）。
- */
+/** 展开 key 集合命中（Set/Array 双形态容错）：树箭头展开态判定的共享谓词 */
 export function isExpandedKey (expandedKeys, key) {
   if (expandedKeys == null || key == null) return false
 
@@ -28,10 +20,8 @@ export function isExpandedKey (expandedKeys, key) {
 
 /**
  * 子级索引：一次遍历建 Map<parentKey, row[]>（同父按 records 出现序）
- * + hasChildren Set（被 parentKey 引用过的 key）+ keySet（全部 key）。
- * O(n)。
+ * + hasChildren Set（被 parentKey 引用过的 key）+ keySet（全部 key）。O(n)。
  *
- * @param {Array} records 平铺记录
  * @returns {{ childrenMap: Map, hasChildren: Set, keySet: Set }}
  */
 export function buildChildrenIndex (records, { keyOf, parentKeyOf } = {}) {
@@ -60,8 +50,8 @@ export function buildChildrenIndex (records, { keyOf, parentKeyOf } = {}) {
   return { childrenMap, hasChildren, keySet }
 }
 
-/** 根集栈构建（逆序入栈，DFS pop 顺序 = records 出现序）：parentKey 空，
- * 或父 key 不在集合中（孤儿挂根）。栈项含 parentKey（父链输出，§5.7）。 */
+/** 根集栈构建（逆序入栈，DFS pop 顺序 = records 出现序）：parentKey 空或
+ * 父 key 不在集合中（孤儿）挂根。栈项含 parentKey（父链输出）。 */
 function buildRootStack (list, { keyOf, parentKeyOf }, keySet) {
   const stack = []
 
@@ -90,18 +80,16 @@ function pushChildren (stack, childrenMap, key, level) {
  * 迭代 DFS 平铺（显式栈防爆栈；visited Set 防环）：从根集（parentKey 空或
  * 孤儿——父 key 不在集合中，容错挂根）出发，仅展开节点递归子级。
  * 产出 levels / hasChildren / parentKeys / expandable 四个与 rows 同序的平行数组：
- * parentKeys 为各行直接父 key（根行 null）——spans 构建树模式父链切断
+ * parentKeys 为各行直接父 key（根行 null）——spans 树模式父链切断
  * （autoRowSpan 分段在层级变化或父链不同处切断）的单一事实源，消费方免
  * O(n) 反查、不求数据新增字段；expandable 为行可展开判定（hasChildren 或
- * isLeafOf(record) === false 的懒节点——20261029 问题 3 分级加载），
- * hasChildren 语义保持纯「被 parentKey 引用」不变。
+ * isLeafOf(record) === false 的懒节点——分级加载），hasChildren 语义保持
+ * 纯「被 parentKey 引用」不变。
  *
- * @param {Array} records 平铺记录
  * @param {Set} [params.expandedKeys] 展开节点 key 集合
  * @param {Object} [params.childrenIndex] buildChildrenIndex 产物（缺省内部构建）
  * @param {Function} [params.isLeafOf] record => isLeaf 字段值读取器（未传 = 特性
- *   关闭，expandable 退化为 hasChildren；对齐 tree 组件 DEFAULT_DATA_PROPS.isLeaf
- *   缺省 undefined「未映射不生效」兼容语义）
+ *   关闭，expandable 退化为 hasChildren；对齐 tree 组件「未映射不生效」兼容语义）
  * @returns {{ rows: Array, levels: Number[], hasChildren: Boolean[], parentKeys: Array, expandable: Boolean[] }}
  */
 export function buildFlatRows (records, { keyOf, parentKeyOf, expandedKeys, childrenIndex, isLeafOf } = {}) {
@@ -120,7 +108,6 @@ export function buildFlatRows (records, { keyOf, parentKeyOf, expandedKeys, chil
     const { record, level, parentKey } = stack.pop()
     const key = keyOf(record)
 
-    // 防环 / 防 repeated key 重复展开：已访问的 key 跳过
     if (visited.has(key)) continue
 
     visited.add(key)
@@ -141,12 +128,10 @@ export function buildFlatRows (records, { keyOf, parentKeyOf, expandedKeys, chil
 }
 
 /**
- * 行可展开判定（20261029 问题 3）：树箭头三角显示（cell-painters.drawTreeAffordance）、
- * 箭头槽命中/光标（interactions.isTreeArrowSlot）、hover 主色箭头（painter.
- * paintTreeArrowAccent）三消费点共用单函数防公式漂移（isExpandedKey 同款模式）。
- * expandable = 有子级（hasChildren）或 isLeaf:false 懒节点；flatInfo.expandable
- * 缺省回退 flatInfo.hasChildren（旧形态兼容——组件壳恒提供 expandable，回退
- * 面向自检夹具等旧构造者）。
+ * 行可展开判定：树箭头三角显示、箭头槽命中/光标、hover 主色箭头三消费点
+ * 共用单函数防公式漂移。expandable = 有子级（hasChildren）或 isLeaf:false
+ * 懒节点；flatInfo.expandable 缺省回退 flatInfo.hasChildren（旧形态兼容——
+ * 组件壳恒提供 expandable，回退面向自检夹具等旧构造者）。
  *
  * @param {Object} flatInfo buildFlatRows 产物（树关 = null）
  * @param {Number} row 行号
@@ -219,7 +204,7 @@ function collectExpandableKeys (list, keyOf, levelsByKey, hasChildren, limit) {
 
 /**
  * 初始展开集解析（defaultExpandLevel 首次入场解析；watch 契约——treeProps
- * 变化 / tree 关闭→开启首开时重解析，由组件壳调用，A2.4 / 评审 6 P7）。
+ * 变化 / tree 关闭→开启首开时重解析，由组件壳调用）。
  *
  * - treeExpandedKeys 非空（!= null）→ 受控优先，直接返回 prop（跳过解析）；
  * - 否则按 defaultExpandLevel 解析：节点层级 level <= defaultExpandLevel
@@ -230,7 +215,6 @@ function collectExpandableKeys (list, keyOf, levelsByKey, hasChildren, limit) {
  *
  * @param {Array} [params.treeExpandedKeys] 受控展开 key 数组（非空时直接返回）
  * @param {Number} [params.defaultExpandLevel=0] 0-based 初始展开层级（-1 = 全收起）
- * @param {Array} params.records 平铺记录
  * @param {Object} [params.childrenIndex] buildChildrenIndex 产物（缺省内部构建）
  * @returns {Array} 展开节点 key 数组（新数组，不改写入参）
  */
@@ -259,11 +243,7 @@ export function resolveInitialExpandedKeys ({
   return collectExpandableKeys(list, keyOf, levelsByKey, hasChildren, limit)
 }
 
-/**
- * 展开集 toggle：增删 key，返回新 Set（不写回入参——纯函数约定）。
- *
- * @param {Set} keys 展开节点 key 集合
- */
+/** 展开集 toggle：增删 key，返回新 Set（不写回入参——纯函数约定） */
 export function toggleKey (keys, key) {
   const next = new Set(keys ?? [])
 

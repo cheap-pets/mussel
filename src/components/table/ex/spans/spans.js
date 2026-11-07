@@ -1,14 +1,12 @@
 /**
- * table-ex 合并单元格（cell spans）纯函数模块（02-design.md §2/§3，P0+P1）。
+ * table-ex 合并单元格（cell spans）纯函数模块。
  *
- * 职责：
- * - buildSpans 规范化：spanMethod 声明流（key 优先→field 匹配、'rest' 展开、
- *   固定列夹紧、重叠整条丢弃、树形/check 列丢弃、异常处置）+ autoRowSpan 三形态
- *   （true/string/Function）级联分段与树父链切断 → SpansIndex；
- * - 命中归一（resolveSpanCell）、区域矩形（spanRectOf / spanRegionRect）、
- *   行高分层数据链（spanHeightRoleOf，§5.6）。
+ * buildSpans 规范化：spanMethod 声明流（key 优先→field 匹配、'rest' 展开、
+ * 固定列夹紧、重叠整条丢弃、树形/check 列丢弃、异常处置）+ autoRowSpan 三形态
+ * 级联分段与树父链切断 → SpansIndex；另有命中归一（resolveSpanCell）、区域
+ * 矩形（spanRectOf / spanRegionRect）、行高分层数据链（spanHeightRoleOf）。
  *
- * 行号为平铺行号（displayRows 下标，树开时与 painter/interactions 现行口径一致）。
+ * 行号为平铺行号（displayRows 下标，与 painter/interactions 口径一致）。
  * 无任何有效区域时 buildSpans 返回 null（快路径标记），全部查询函数对 null spans
  * 短路——无合并表格零开销走原路径。零 DOM、零 canvas，不持有状态。
  */
@@ -26,9 +24,6 @@ import { applyAutoRowSpan } from './spans-auto'
 // region = { rowFrom, rowTo, colFrom, colTo, row, col, rowspan, colspan }
 // （rowTo/colTo 排他；row/col 为主格坐标；rowspan/colspan 为登记后的实际跨度）
 
-// 构建链拆分：区域登记基础设施 + spanMethod 解析 → spans-method.js；
-// autoRowSpan 级联分段 → spans-auto.js（本文件保留 buildSpans 编排与查询函数）
-
 /** 构建期警告出口：同一 key 每次构建至多一条（跨构建由 utils/warn once 去重）；
     自检经 warn 参数注入捕获，缺省走组件统一 warn 通道 */
 function createWarner (warnFn) {
@@ -45,15 +40,14 @@ function createWarner (warnFn) {
 }
 
 /**
- * 构建 SpansIndex（§3.2 规范化）：先 spanMethod（行序、行内列序）后 autoRowSpan
- * 填补空位（被接管列跳过）。无 spanMethod 且无 autoRowSpan 列、无行、无有效区域
- * 时返回 null。
+ * 构建 SpansIndex：先 spanMethod（行序、行内列序）后 autoRowSpan 填补空位
+ * （被接管列跳过）。无 spanMethod 且无 autoRowSpan 列、无行、无有效区域时
+ * 返回 null。
  *
- * @param {Object} [params]
  * @param {Array} [params.records] 平铺行记录（displayRows）
  * @param {Array} [params.columns] 已准备内部列（wiredColumns，消费 _autoRowSpan/
  *   _isTreeColumn/_value/_mapText/key/field/type）
- * @param {Function} [params.spanMethod] 表格级声明回调（§2.3）
+ * @param {Function} [params.spanMethod] 表格级声明回调
  * @param {Object} [params.flatInfo] 树平铺信息 { levels, parentKeys }（树关 = null）
  * @param {Number} [params.fixedCount=0] 固定列数（colspan 分区边界）
  * @param {Number} [params.recordsOffset=0] 分页偏移（recordNumber 口径）
@@ -159,11 +153,10 @@ export function regionsForRows (spans, from, to) {
 }
 
 /**
- * 命中归一（§5.4，组件壳 hitAt 出口单一接入点）：covered 格 hit 改写为主格坐标。
+ * 命中归一（组件壳 hitAt 出口单一接入点）：covered 格 hit 改写为主格坐标。
  * 浅拷贝仅覆盖 rowIndex/colIndex——cellX 语义绑定原始命中列内容区偏移、x/y/
  * beyondCols/resizeCol 原样保留；anchor/普通格/表头/null spans 短路原样返回。
  *
- * @param {SpansIndex|null} spans
  * @param {Object|null} hit hitTest 产出
  * @returns {Object} 归一后 hit（或原引用）
  */
@@ -202,7 +195,7 @@ export function spanRegionRect (layout, region) {
 }
 
 /** (row, col) 所在格视口矩形：区域格 → 区域包围盒；普通格 → cellRectAt 同式。
-    hover 高亮 / 可编辑描边 / 编辑按钮区 / 编辑浮层盒的统一矩形来源（§5.1/§5.5） */
+    hover 高亮 / 可编辑描边 / 编辑按钮区 / 编辑浮层盒的统一矩形来源 */
 export function spanRectOf (layout, row, col, spans) {
   const region = regionAt(spans, row, col)
 
@@ -216,7 +209,7 @@ export function spanRectOf (layout, row, col, spans) {
   }
 }
 
-/** 行高分层数据链（§5.6，row-geometry 消费）：
+/** 行高分层数据链（row-geometry 消费）：
  * - 'excluded'：covered 格 / rowspan > 1 主格——不参与行高，也不得触发
  *   hasArrayValues 变高模式升级（被排除格持有数组值不得升级）；
  * - region：rowspan === 1 的 colspan 主格——按区域宽（Σ colWidths[colFrom..colTo)）

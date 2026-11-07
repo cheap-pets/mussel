@@ -1,4 +1,4 @@
-/** autoRowSpan 级联分段（入口 A，§2.2）：spans.js 入口按关注点拆出 */
+/** 入口 A —— 列级 autoRowSpan 级联分段 */
 import { isOccupied, registerRegion } from './spans-method'
 
 function isEmptyKey (key) {
@@ -20,7 +20,7 @@ function displayValueOf (col, record) {
   return value
 }
 
-/** autoRowSpan 键提取（§2.2 三形态）：true → 显示值（含 mappings）；string → 字段值；
+/** autoRowSpan 键提取（三形态）：true → 显示值（含 mappings）；string → 字段值；
     Function → 行级求值 */
 function autoSpanKeyOf (col, mode, record) {
   if (mode === true) return displayValueOf(col, record)
@@ -38,7 +38,7 @@ function collectAutoRowSpanColumns (spanCtx) {
 
     if (mode == null) continue
 
-    // 列级接管（§2.4/§7）：spanMethod 在任一行返回了该列键 → autoRowSpan 全表失效
+    // 列级接管：spanMethod 在任一行返回了该列键 → autoRowSpan 全表失效
     // （info 一次/列；同一列一部分自动、一部分手写会产出不可预期的缺口，禁止混用）
     if (takenOver.has(i)) {
       emitWarn(
@@ -62,8 +62,8 @@ function collectAutoRowSpanColumns (spanCtx) {
   return autoCols
 }
 
-/** 树父链切断判定（§2.2 规则 4）：树关或首行早退；层级变化或父链（parentKeys
-    祖先链）不同的相邻行处切断（parentKeys 由 tree.js buildFlatRows 产出） */
+/** 树父链切断判定：树关或首行早退；层级变化或父链不同的相邻行处切断
+    （parentKeys 由 tree.js buildFlatRows 产出） */
 function isTreeBoundary (levels, parentKeys, row) {
   if (levels == null || row === 0) return false
 
@@ -71,8 +71,8 @@ function isTreeBoundary (levels, parentKeys, row) {
     !Object.is(parentKeys?.[row], parentKeys?.[row - 1])
 }
 
-/** 级联分段判定（§2.2 规则 3）：右侧列的分段在左侧任一 autoRowSpan 列的分段
-    起点处强制切断（autoCols 升序处理，左列起点已定） */
+/** 级联分段判定：右侧列的分段在左侧任一 autoRowSpan 列的分段起点处强制切断
+    （autoCols 升序处理，左列起点已定） */
 function isCascadeBoundary (segStartByCol, autoCols, colIndex, row) {
   for (const earlier of autoCols) {
     if (earlier >= colIndex) break
@@ -100,8 +100,8 @@ function warnNonPrimitiveKey (col, colIndex, trueWarned, emitWarn) {
   )
 }
 
-/** 段推进（§2.2 键比较）：与当前段键不同 → 闭合当前段（close 回调）；
-    未开段（含刚闭合）→ 开段并记录分段起点。seg 每列创建一次（非每行分配） */
+/** 段推进：与当前段键不同 → 闭合当前段（close 回调）；未开段（含刚闭合）→
+    开段并记录分段起点。seg 每列创建一次（非每行分配） */
 function advanceSegment (seg, key, row, segStartByCol, colIndex, close) {
   if (seg.openFrom >= 0 && !Object.is(key, seg.openKey)) close(row)
 
@@ -112,9 +112,9 @@ function advanceSegment (seg, key, row, segStartByCol, colIndex, close) {
   }
 }
 
-/** 入口 A —— 列级 autoRowSpan（§2.2）：true（显示值含 mappings）/ string 字段键 /
-    Function 键；Object.is 键比较；空值不参与且为分段边界；级联分段（右侧列分段在
-    左侧列分段起点处切断）；树父链切断（levels 变化或 parentKeys 不同）；
+/** 入口 A —— 列级 autoRowSpan：true（显示值含 mappings）/ string 字段键 /
+    Function 键；Object.is 键比较；空值不参与且为分段边界；级联分段（右侧列
+    分段在左侧列分段起点处切断）；树父链切断（levels 变化或 parentKeys 不同）；
     spanMethod 占用格切断且分段不跨过 */
 export function applyAutoRowSpan (spanCtx, index, occupied) {
   const { records, columns, rowCount, flatInfo, emitWarn } = spanCtx
@@ -151,30 +151,29 @@ export function applyAutoRowSpan (spanCtx, index, occupied) {
     }
 
     for (let row = 0; row < rowCount; row++) {
-      // 占用格切断（§2.2 规则 6）：spanMethod 已声明的格不参与自动分段，分段在
-      // 占用格处切断、不跨过（该行跳过，后续行自动开启新段）
+      // 占用格切断：spanMethod 已声明的格不参与自动分段，分段在占用格处切断、
+      // 不跨过（该行跳过，后续行自动开启新段）
       if (isOccupied(occupied, row, colIndex)) {
         close(row)
 
         continue
       }
 
-      // 树父链切断（§2.2 规则 4）
+      // 树父链切断
       if (isTreeBoundary(levels, parentKeys, row)) close(row)
 
-      // 级联分段（§2.2 规则 3）
+      // 级联分段
       if (isCascadeBoundary(segStartByCol, autoCols, colIndex, row)) close(row)
 
       const key = autoSpanKeyOf(col, mode, records[row])
 
-      // 空值（null/undefined/''）不参与合并，同时作为分段边界（小计行隔离）
+      // 空值不参与合并：分段边界（小计行隔离）
       if (isEmptyKey(key)) {
         close(row)
 
         continue
       }
 
-      // true 形态非原始值：不产生任何合并 + 警告一次/列
       if (isNonPrimitiveSpanKey(mode, key)) {
         warnNonPrimitiveKey(col, colIndex, trueWarned, emitWarn)
         close(row)
@@ -182,7 +181,6 @@ export function applyAutoRowSpan (spanCtx, index, occupied) {
         continue
       }
 
-      // Object.is 键比较：与当前段键不同 → 闭合当前段；未开段 → 开段（advanceSegment 全程）
       advanceSegment(seg, key, row, segStartByCol, colIndex, close)
     }
 

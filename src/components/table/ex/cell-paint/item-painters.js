@@ -22,8 +22,8 @@ export function itemClassOf (item) {
   return Array.isArray(cls) ? cls.join(' ') : String(cls ?? '')
 }
 
-/** 条目落地类别：canvas 通道产物自带 kind（link/tag）；check/img 无 dom 参数改造，
-    走 is/class 回退；未识别 is 且 text != null 的条目按文本绘制；无文本的未知条目忽略 */
+/** 条目落地类别：canvas 产物自带 kind（link/tag）；check/img/link/tag 走 is/class
+    回退；未识别 is 且 text != null 按文本绘制，无文本的未知条目忽略 */
 export function resolveItemKind (item) {
   if (item.kind) return item.kind
 
@@ -37,8 +37,8 @@ export function resolveItemKind (item) {
   return item.text != null ? 'text' : null
 }
 
-/** link 条目色板解析：color 色名查表优先（list/link 条目平铺色名），
-    item.danger 回退保留（老式自定义 kind:'link' 条目）；无 color/danger 返回 null */
+/** link 条目色板解析：item.color 色名查表优先，item.danger 回退（老式自定义
+    kind:'link' 条目）；无 color/danger 返回 null */
 function linkPaletteOf (item, theme) {
   const palette = item.color ? theme?.colors?.[item.color] : null
 
@@ -47,9 +47,8 @@ function linkPaletteOf (item, theme) {
   return item.danger ? theme?.colors?.danger : null
 }
 
-/** link 条目文本色：disabled → muted；color 色名查表（danger 回退保留）；无 color
-    时非 link 项（list 纯文本条目 link:false）正文色 textColor、其余（含老式自定义
-    kind:'link' 条目）colors.primary 谱系（R1-1b：谱系回退与真实主题同源） */
+/** link 条目文本色：disabled → muted；color 色名查表（danger 回退）；无 color 时
+    非 link 项（list 纯文本条目 link:false）取 textColor，其余取 colors.primary 谱系 */
 export function linkTextColorOf (item, theme) {
   if (isTruthyAttr(item.disabled)) return theme?.textColorMuted || theme?.gray
 
@@ -60,10 +59,9 @@ export function linkTextColorOf (item, theme) {
   return palette?.color ?? theme?.primaryColor
 }
 
-/** link 条目悬停色：disabled → muted；color 色名查表 hover 谱系（danger 回退
-    保留）；无 color 时非 link 项 textColor（hover 门控下不达，防御回退）、其余
-    colors.primary 谱系 hover ?? color ?? primaryColor（R1-1b：恢复 HEAD 老式
-    自定义 kind:'link' 条目悬停谱系，丢失 .hover 层属实现回归） */
+/** link 条目悬停色：disabled → muted；color 色名查表 hover 谱系（danger 回退）；
+    无 color 时非 link 项 textColor（hover 门控下不达，防御回退），其余
+    colors.primary 谱系 hover ?? color ?? primaryColor */
 export function linkHoverColorOf (item, theme) {
   if (isTruthyAttr(item.disabled)) return theme?.textColorMuted || theme?.gray
 
@@ -74,8 +72,8 @@ export function linkHoverColorOf (item, theme) {
   return palette?.hover ?? palette?.color ?? theme?.primaryColor
 }
 
-// items 行绘制：先测各条目宽度，按列 align 分布整体起点，再逐条目绘制；超出右缘
-// 的条目丢弃；link/tag 条目矩形经 onItemRect 回报（painter itemHits 命中来源）
+// items 行绘制：超出右缘的条目丢弃；link/tag 条目矩形经 onItemRect 回报
+// （painter itemHits 命中来源）
 export function drawItems (ctx, rect, items, {
   align, padding, theme, onImageLoad, onItemRect, measure, centerY, rightInset, hoverItem, row, colIndex
 }) {
@@ -118,7 +116,7 @@ export function drawItems (ctx, rect, items, {
   }
 }
 
-/** 逐条目横向起点（可见条目间以 gap 分隔；测量失败条目 null 跳过不占位） */
+/** 逐条目横向起点：测量失败条目 null 跳过不占位 */
 function layoutItemPositions (items, widths, gap) {
   const positions = []
   let offset = 0
@@ -152,10 +150,9 @@ export function itemsStartX (rect, align, padding, offset, visible, contentWidth
   return start
 }
 
-// tag/link 条目命中矩形回报（其余类别不回报）。命中区 = 绘制区域：tag 为 pill
-// 绘制区，link 为首行行框；disabled 随条目回报（与取色/点击同口径 isTruthyAttr）；
-// link 条目附 link 门控布尔（item.link !== false，interactions 光标/悬停消费——
-// list 非 link 列条目无指针反馈，与 isLinkEntryHovered 同谓词）
+// tag/link 条目命中矩形回报（其余类别不回报）：命中区 = 绘制区（tag pill 区、
+// link 首行行框）；disabled 随条目回报（isTruthyAttr 同口径）；link 附 link 门控
+// 布尔（item.link !== false，interactions 光标/悬停消费，与 isLinkEntryHovered 同谓词）
 function reportHitRect (onItemRect, item, index, x, width, centerY, theme) {
   const kind = resolveItemKind(item)
   let rect = null
@@ -187,13 +184,12 @@ function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, 
   if (kind === 'img') {
     const src = item.attrs?.src
 
-    // 空 src 不发起请求（绘制端 drawCellImage 同款守卫，:1265）
+    // 空 src 不发起请求（与绘制端 drawCellImage 同款守卫）
     if (!src) return null
 
-    // img 分支内建 onImageLoad 闭包（P1b：其余格零闭包分配）
     const entry = requestImage(src, onImageLoad ? () => onImageLoad(row, colIndex) : undefined)
 
-    // 加载中 / 失败按空格处理（不占位；加载完成后经回调触发重绘）
+    // 加载中 / 失败不占位；加载完成后经回调触发重绘
     if (entry.status !== 'loaded') return null
 
     return imageLayoutSize(entry.image, contentHeight - padding, contentWidth).width
@@ -228,7 +224,7 @@ function drawItem (ctx, item, x, centerY, {
   if (kind === 'tag') return drawTag(ctx, item, x, centerY, { maxWidth, theme, measure })
 
   if (kind === 'icon') {
-    // 窄格防御：maxWidth ≤ 0 直接 return；size 收进右缘剩余（measureItem 同式）
+    // size 收进右缘剩余（measureItem 同式）
     if (maxWidth <= 0) return
 
     drawIconGlyph(ctx, item.icon, {
@@ -245,10 +241,9 @@ function drawItem (ctx, item, x, centerY, {
 
   if (kind == null) return
 
-  // link 条目悬停（问题 7）：命中 hoverItem 时色变 hover 谱系 + 下划线
+  // link 条目悬停：命中 hoverItem 时色变 hover 谱系 + 下划线
   const hovered = kind === 'link' && isLinkEntryHovered(hoverItem, item, index)
 
-  // link 条目色经平铺 danger/disabled 直取（恒两色：primary / danger）
   drawItemText(ctx, item, x, centerY, {
     maxWidth,
     theme,
@@ -260,8 +255,8 @@ function drawItem (ctx, item, x, centerY, {
   })
 }
 
-/** link 条目悬停判定（横排 drawItem 与竖排 drawLinkItems 共用防口径漂移）：
-    item.link !== false 门控——list 纯文本条目（link:false）可点击不悬停（A6）；
+/** link 条目悬停判定（横排与竖排 drawLinkItems 共用防口径漂移）：
+    item.link !== false 门控——list 纯文本条目（link:false）可点击不悬停；
     老式自定义 kind:'link' 条目无 link 字段（undefined ≠ false）行为不变 */
 export function isLinkEntryHovered (hoverItem, item, index) {
   return hoverItem?.kind === 'link' &&
@@ -289,7 +284,6 @@ function drawItemText (ctx, item, x, centerY, { maxWidth, theme, measure, color,
   ctx.textBaseline = anchor.baseline
   ctx.fillText(text, x, anchor.y)
 
-  // link 悬停下划线（问题 7）：1px，宽 = 实绘文本宽（省略后）
   if (hovered) {
     const underlineWidth = Math.min(width, Math.max(0, maxWidth))
 
@@ -331,7 +325,7 @@ function drawCheck (ctx, item, x, centerY, theme) {
     ctx.font = `${CHECK_FONT_SIZE}px ${fontFamilyOf(theme)}`
     ctx.textAlign = 'center'
 
-    // 字形墨迹锚（20261107）：✓ 墨迹偏 em 框上部，文本 CJK 探针半差不适用
+    // 字形墨迹锚：✓ 墨迹偏 em 框上部，文本 CJK 探针半差不适用
     const anchor = centeredGlyphAnchor(ctx, '✓', centerY)
 
     ctx.textBaseline = anchor.baseline
@@ -404,10 +398,9 @@ function drawCellImage (
 
   if (!src) return
 
-  // img 分支内建 onImageLoad 闭包（P1b）
   const entry = requestImage(src, onImageLoad ? () => onImageLoad(row, colIndex) : undefined)
 
-  // 加载中 / 失败按空格处理；onload 后经回调触发该格重绘（painter 侧）
+  // 加载中 / 失败不绘；onload 后经回调触发该格重绘
   if (entry.status !== 'loaded') return
 
   // 高度收进单元格内边距内，宽度再受右缘剩余空间约束

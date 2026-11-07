@@ -1,7 +1,7 @@
-/** table-ex 编辑状态机（02-design.md A5）：编辑器生命周期状态机（open/commit/cancel）
+/** table-ex 编辑状态机：编辑器生命周期状态机（open/commit/cancel）
     与 blur 兜底判定。类型/props/开值/提交值规整链在 editor-resolve.js；编辑盒几何
     （editorRectOf / editorGridlineFlagsOf / editButtonRectOf / computeEditorStyle）在
-    editor-geometry.js（O4 拆分，paint / interaction 层直引该文件，不经本模块中转） */
+    editor-geometry.js（paint / interaction 层直引该文件，不经本模块中转） */
 import { markRaw, reactive, watch } from 'vue'
 import { isFunction, isObject, isString } from '@/utils/type'
 
@@ -14,7 +14,7 @@ import {
   resolveEditorType
 } from './editor-resolve'
 
-// 模块隔离（A8）：不 import layout.js / theme.js / cell-painters.js / spans.js；
+// 模块隔离：不 import layout.js / theme.js / cell-painters.js / spans.js；
 // mappings.js 为零依赖共享模块可用；定位所需布局数据由组件壳传入
 
 // 提交矩阵：input 走 Enter；textarea Ctrl/Cmd+Enter 显式提交（Enter 换行）；
@@ -25,28 +25,21 @@ import {
 // 容器内；③ 焦点与最近一次 window pointerdown 目标均不在 .mu-dropdown-panel 内
 // （编辑开启期间捕获阶段记录 pointerdown 目标，面板内交互不触发兜底提交）
 
-// 值类型规整层（A5.5）：number/currency input 提交收敛为 number 或 null（非数值
-// 串保留交 validate 拦截）；派生 options select 数值原值按 Number 回写；textarea
-// 数组原值 → 换行分割字符串数组（空行保留）；textarea 数字原值类型保持
-
-// 组件壳（table-ex.vue）对接契约：
-// - createEditorController({ onCommit })：onCommit 收 { record, recordIndex,
-//   column, value }（原始引用非 reactive 代理），壳内 emit 并 nextTick 重绘该行
-
-// - 打开：click 命中可编辑格调 editor.open({...})；聚焦由壳 focusEditor 承担
-// - 画布 pointerdown（editing 中先提交再续行）与容器滚动：调 editor.commit()
-// - 卸载：editor.destroy()（onUnmounted）
+// 组件壳（table-ex.vue）对接契约：createEditorController({ onCommit }) 的 onCommit
+// 收 { record, recordIndex, column, value }（原始引用非 reactive 代理），壳内 emit
+// 并 nextTick 重绘该行；click 命中可编辑格调 editor.open({...})（聚焦由壳
+// focusEditor 承担）；画布 pointerdown（editing 中先提交再续行）与容器滚动调
+// editor.commit()；卸载调 editor.destroy()（onUnmounted）
 
 /** 下拉/日期面板根 class（dropdown-panel.vue，Teleport 到 body） */
 export const DROPDOWN_PANEL_SELECTOR = '.mu-dropdown-panel'
 
-/** 目标元素是否位于下拉/日期面板内（Teleport 到 body 的 .mu-dropdown-panel） */
+/** 目标元素是否位于下拉/日期面板内 */
 export function isInDropdownPanel (target) {
   return target?.closest?.(DROPDOWN_PANEL_SELECTOR) != null
 }
 
-/** blur 兜底提交判定（纯函数三判据）：editing 已清空 / 焦点在 __editor 内 / 焦点或
-    最近 pointerdown 目标在 .mu-dropdown-panel 内 → 不提交 */
+/** blur 兜底提交判定：三判据任一命中 → 不提交（判据见模块头） */
 export function resolveBlurFallback ({
   editing,
   activeElement,
@@ -62,12 +55,12 @@ export function resolveBlurFallback ({
 
 const UNCHANGED = Symbol('unchanged')
 
-/** 创建编辑控制器（组件壳 setup 内创建并持有）。state.editing 为浮层响应式视图状态；
-    column/record 上下文保存在内部原始引用中，emit payload 不经 reactive 代理 */
+/** 创建编辑控制器（组件壳 setup 内创建并持有）。state.editing 为浮层响应式视图
+    状态；column/record 上下文存内部原始引用，emit payload 不经 reactive 代理 */
 export function createEditorController ({ onCommit } = {}) {
   const state = reactive({ editing: null })
 
-  // rawValue/rawWasArray 为 textarea 数组开值/提交规整的锚定输入（A5.5 ④⑤）
+  // rawValue/rawWasArray 为 textarea 数组开值/提交规整的锚定输入
   let context = null
   let getEditorEl = null
   let blurTimer = 0
@@ -79,8 +72,7 @@ export function createEditorController ({ onCommit } = {}) {
     lastPointerdownTarget = event.target
   }
 
-  // 值变化提交（select/date/switch）：提交 emit 但保持编辑态；input/textarea 键入
-  // 不触发提交。flush:'sync' 保证点选下拉项先于 blur 延迟兜底完成提交
+  // flush:'sync' 保证点选下拉项先于 blur 延迟兜底完成提交
   const stopValueWatch = watch(
     () => {
       const editing = state.editing
@@ -165,8 +157,7 @@ export function createEditorController ({ onCommit } = {}) {
     }, 0)
   }
 
-  /** 打开编辑器（触发点 = 单击）。已在编辑时先同步提交上一格（幂等；校验未通过
-      被拦下时保持现有编辑、不开新格） */
+  /** 已在编辑时先同步提交上一格（幂等；校验未通过被拦下时保持现有编辑、不开新格） */
   function open ({
     column,
     record,
@@ -192,11 +183,9 @@ export function createEditorController ({ onCommit } = {}) {
 
     const editing = {
       editorType,
-      // markRaw：组件定义/元素 tag 不进入响应式包装（保持组件身份）
       component: markRaw(EDITOR_COMPONENTS[editorType]),
       props: resolveEditorProps(column),
       events: buildEvents(editorType),
-      // input 键入不提交；textarea Enter 换行不提交（Ctrl/Cmd+Enter 显式提交）
       commitOnValueChange: editorType !== 'input' && editorType !== 'textarea',
       value: normalizeEditorOpenValue({ column, editorType, value: rawValue }),
       style,
@@ -208,7 +197,6 @@ export function createEditorController ({ onCommit } = {}) {
 
     state.editing = editing
 
-    // 编辑开启期间记录 window 级 pointerdown 目标（blur 兜底判据③）
     lastPointerdownTarget = null
     window.addEventListener('pointerdown', onWindowPointerdown, true)
 
@@ -255,7 +243,7 @@ export function createEditorController ({ onCommit } = {}) {
     return true
   }
 
-  /** 提交并关闭（幂等）：applyCommit 校验通过后关闭；校验失败不关闭、不失焦 */
+  /** 提交并关闭（幂等） */
   function commit () {
     if (!applyCommit()) return false
 
@@ -280,7 +268,6 @@ export function createEditorController ({ onCommit } = {}) {
     return lastPointerdownTarget
   }
 
-  /** 卸载清理：关闭编辑、移除 window 监听与定时器、停止值变化 watch */
   function destroy () {
     state.editing = null
     teardown()

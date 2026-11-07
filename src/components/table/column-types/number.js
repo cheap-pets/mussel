@@ -10,7 +10,6 @@ export const NumberColumn = {
       style: 'decimal',
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-      // useGrouping
       ...column.formatOption
     }
 

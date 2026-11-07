@@ -1,10 +1,9 @@
 /**
- * 暴露方法 composable（C1 壳拆分自 table-ex.vue；02-design.md A1）：
- * scrollToRecord / getLayoutInfo / getThemeSnapshot / getCellRect
- * + 选中变化 watch（选中横带脏区 + 合并覆盖行 dev 警告）。
+ * 暴露方法 composable：scrollToRecord / getLayoutInfo / getThemeSnapshot /
+ * getCellRect + 选中变化 watch（选中横带脏区 + 合并覆盖行 dev 警告）。
  */
 /**
- * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads props, displayRows, treeOptions, scrollEl, layout, selectedCell,
  *   spans, selectedKey, rowGeometry（消费 mode / topAt）
  * @host-writes scrollToRecord, getLayoutInfo, getThemeSnapshot, getCellRect
@@ -17,9 +16,7 @@ import { warn } from '@/utils/warn'
 import { cellRectAt } from '../table-paint/painter'
 
 /**
- * @param {Object} host host 袋（读取 props, scrollEl, canvasEl, displayRows,
- *   treeOptions, layout, getPainter, rowGeometry, getThemeWatcher, spans,
- *   invalidateRow, selectedKey, selectedCell, genRecordKey, getLastRelayout）
+ * @param {Object} host host 袋（消费面见文件头 @host-* 声明）
  * @returns {{ scrollToRecord, getLayoutInfo, getThemeSnapshot, getCellRect }}
  */
 export function useTableApi (host) {
@@ -44,7 +41,7 @@ export function useTableApi (host) {
     return rows.findIndex(rec => host.genRecordKey(rec) === key)
   }
 
-  // —— 暴露方法（A1；树展开操作见 use-tree-rows 解构） ——
+  // —— 暴露方法（树展开操作见 use-tree-rows） ——
 
   function scrollToRecord (keyOrIndex) {
     const rows = host.displayRows.value ?? []
@@ -91,8 +88,7 @@ export function useTableApi (host) {
       contentHeight: cur.contentHeight,
       rowHeight: cur.rowHeight,
       headHeight: cur.headHeight,
-      // 单元格选中内省（20261105-table-ex-cell-select 验证锚点，getCellRect 同
-      // 先例；additive 字段，消费方按需读取）
+      // 单元格选中内省（additive 字段，消费方按需读取）
       selectedCell: host.selectedCell.value ? { ...host.selectedCell.value } : null,
       viewRows: { ...cur.viewRows },
       rowGeometryMode: host.rowGeometry.mode,
@@ -101,13 +97,13 @@ export function useTableApi (host) {
     }
   }
 
-  /** 主题快照（G0 偏离 4 契约）：直接返回 watcher.snapshot（getter，随 refresh 更新） */
+  /** 主题快照：直接返回 watcher.snapshot（getter，随 refresh 更新） */
   function getThemeSnapshot () {
     return host.getThemeWatcher()?.snapshot ?? null
   }
 
-  /** 坐标辅助（decisions「[I1 前]②」）：单元格视口矩形 + 页面坐标，供 playwright
-      page.mouse 坐标级交互换算；未挂载返回 null */
+  /** 坐标辅助：单元格视口矩形 + 页面坐标，供 playwright page.mouse 坐标级
+      交互换算；未挂载返回 null */
   function getCellRect (row, col) {
     const canvas = host.canvasEl.value
     const cur = host.layout.value
@@ -129,7 +125,7 @@ export function useTableApi (host) {
 
   // 选中变化（selectedRecordKey/selectedRecord/keyField 经 selectedKey 汇聚）→
   // 旧/新选中行两条横带（合并区域由 painter 脏区扩展到区域包围盒，覆盖行底色随动）；
-  // 覆盖行 key 被受控选中 → 区域无选中反馈，dev 警告一次（§5.8/§7）
+  // 覆盖行 key 被受控选中 → 区域无选中反馈，dev 警告一次
   watch(host.selectedKey, (newValue, oldValue) => {
     for (const key of new Set([oldValue, newValue])) {
       const row = findRowByKey(key)

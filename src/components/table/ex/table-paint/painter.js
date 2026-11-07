@@ -1,5 +1,19 @@
-/** table-ex 绘制管线（02-design.md A2 图层划分 / A3 按需重绘与 lastPaint / A8）。
-    入口：draw / drawRegion / cellRectAt / createPainter（见各导出函数注释） */
+/** table-ex 绘制管线：单 canvas 分区绘制 + 脏区重绘。
+    分区顺序固定（后区不透明覆盖前区）：1 表体滚动区（可视行 × 滚动区可视列，
+    逐格背景→内容）→ 2 网格线 → 3 固定左列区（整高不透明重绘）→ 4 表头区（整宽）
+    → 5 覆盖层（hover/编辑感知）；脏区绘制先在 clip 内擦除为透明再走同一分区管线
+    （半透明行底色直接叠画会重复混色）；选中/斑马底色在分区 1/3 画行背景时直接
+    取值，不做覆盖层。
+    关键 state 契约（table-ex.vue 持有并传入）：dpr 每次绘制 setTransform 直乘；
+    layout = relayout() 快照（含 rowGeometry 引用）；spans（合并单元格
+    buildSpans 产物 | null）null 走逐行单遍原路径，非 null 走两遍式 + 网格线分段
+    + 脏区归一扩展；itemHits = Map<row, Map<col, rects>> 条目命中矩形，按格整组
+    替换收集、批次结束按可视行裁剪（veil 格整组清空）；onImageLoad (row, col) 由
+    createPainter 接管为 invalidateCell（行窗口校验在 invalidate 内）；树关 =
+    flatInfo null（含 parentKeys 平行数组，spans 树父链切断数据源）。
+    脏区 region 形状：{ rows: [from, to) } 行横带 / { cols: [from, to) } 列竖带 /
+    { cell } 单格 / { header: true } 表头整幅 / { colFrom } 自该列至画布右端竖带 +
+    表头（左界取列左缘：列宽变化影响该列截断与右侧所有列位置，防加宽残影） */
 import { beginSpanFrame, endSpanFrame, paintCellRange, paintFixedArea } from './paint-body.js'
 import { paintGridlines } from './paint-gridlines.js'
 import { paintHeader } from './paint-header.js'
@@ -14,44 +28,6 @@ import {
   eraseClipRegion
 } from './paint-utils.js'
 import { coveredAnchorOf, regionAt, regionsForRows } from '../spans/spans.js'
-
-// 单 canvas 分区绘制，分区顺序固定（后区不透明覆盖前区）：
-// 1 表体滚动区（可视行 × 滚动区可视列，逐格背景→内容）；2 网格线
-// 3 固定左列区（整高不透明重绘）；4 表头区（整宽）；5 覆盖层（hover/编辑感知）
-
-// 选中底色与斑马纹在分区 1/3 画行背景时直接取值，不做覆盖层；脏区绘制先在 clip
-// 内擦除为透明再走同一分区管线（半透明行底色直接叠画会重复混色）
-
-// state 契约（table-ex.vue 持有并传入，字段见组件壳 syncPaintState 组装）：
-// - dpr 每次绘制 setTransform(dpr,0,0,dpr,0,0)；layout = relayout() 快照（含
-//   rowGeometry 引用，画布 css 宽高取 stickyWidth/Height）
-
-// - records / displayRows：painter 经 rowsOf(state) = displayRows ?? records 取行
-// - columns = prepareColumn() 后的内部列数组；recordsOffset / emit /
-//   keyField/getRecordKey/selectedKey（选中行判定）原样消费
-
-// - headerChecked / gridlines / hoverMode / striped / orderBy / placeholder 原样传入
-// - hover / hoverItem / editingCell（veil）/ resizeGuideX 视口命中与覆盖层状态
-
-// - flatInfo / expandedKeys 树形列绘制（树关 = flatInfo null；含 parentKeys 平行
-//   数组，spans 树父链切断数据源）
-// - editable / isCellEditableFn hover 编辑感知；measure / wrapCache 文本测量注入
-
-// - spans（§5.1 合并单元格，spans.buildSpans 产物 | null）：null 走原实现路径
-//   （paintCellRange 逐行单遍，零回归）；非 null 走两遍式（①全行背景 + 非 span
-//   格内容 → ②region pass 区域底色 + 主格内容）+ 网格线分段 + 脏区归一扩展
-
-// - itemHits 条目命中矩形集合：Map<row, Map<col, Array>>，绘制 items 时按格
-//   整组替换收集，批次结束按可视窗口行裁剪（veil 格整组清空）
-
-// - onImageLoad (row, col) => void：img 加载完成回调，createPainter 自动接管为
-//   invalidateCell(row, col)（行窗口校验在 invalidate 内）
-
-// 脏区 region 形状（A3 重绘表）：
-//   { rows: [from, to) } 行横带；{ cols: [from, to) } 列竖带；{ cell } 单格
-//   { header: true } 表头整幅；{ colFrom } 自该列至画布右端竖带 + 表头
-
-//   （colFrom 左界取列左缘：列宽变化影响该列截断与右侧所有列位置，防加宽残影）
 
 // —— 绘制入口与脏区调度 ——
 
@@ -140,7 +116,7 @@ function paintColBand (ctx, state, range) {
   }
 }
 
-/** 单格：clip 收敛到格矩形（右/下各扩 1px 覆盖格边框线；高度 = heightAt(row)） */
+/** 单格：clip 收敛到格矩形（右/下各扩 1px 覆盖格边框线） */
 function paintCellRegion (ctx, state, cell) {
   const { layout } = state
   const { row, col } = cell ?? {}
@@ -172,7 +148,7 @@ function paintCellRegion (ctx, state, cell) {
   }
 }
 
-/** 调宽 move：表头整幅 + 自该列视口左缘至画布右端竖带（左界=列左缘防加宽残影） */
+/** 调宽 move：表头整幅 + 自该列至画布右端竖带 */
 function paintResizeBand (ctx, state, colFrom) {
   const { layout } = state
   const n = layout.colWidths.length
@@ -205,7 +181,7 @@ function paintResizeBand (ctx, state, colFrom) {
   return stats
 }
 
-/** 无 region 或未识别的 region 形状（无任何已知字段）按整幅兜底（正确性优先） */
+/** 无 region 或未识别形状（无任何已知字段）按整幅兜底（正确性优先） */
 function isFullPaintRegion (region) {
   return !region ||
     (region.header !== true && region.rows == null && region.cols == null &&
@@ -263,12 +239,12 @@ function paint (ctx, state, region) {
   return stats
 }
 
-/** 整幅绘制入口（A2）：返回 lastPaint 统计 { rowStart, ..., elapsed } */
+/** 整幅绘制入口：返回 lastPaint 统计 { rowStart, ..., elapsed } */
 export function draw (ctx, state) {
   return paint(ctx, state, null)
 }
 
-/** 脏区绘制入口（A3 重绘表）：region 形状见模块头注释，未绘制返回 null */
+/** 脏区绘制入口：region 形状见模块头注释，未绘制返回 null */
 export function drawRegion (ctx, state, region) {
   return paint(ctx, state, region)
 }
@@ -308,14 +284,12 @@ function isRegionPaintable (state, region) {
   return false
 }
 
-/** 合并脏区归一扩展（§5.2，顺序固定：归一 → 扩展，先于 isRegionPaintable 校验——
+/** 合并脏区归一扩展（顺序固定：归一 → 扩展，先于 isRegionPaintable 校验——
     否则锚行滚出窗口时行带/单格失效被 paintable 拒绝）：
- * - 归一：{cell} covered 格改写为主格坐标；
- * - 扩展：{cell} 命中区域 → 区域包围盒（rows+cols 带形状）；{rows} 与相交区域的
- *   行包围盒取并（覆盖行底色随动/残影链路）；
- * - {cols}/{header}/{colFrom} 不扩展：paintColBand 带高恒整高、行范围取整个
- *   viewRows，区域内可视行全部重画，region pass 按 rows 相交自然覆盖。
- */
+    归一：{cell} covered 格改写为主格坐标；扩展：{cell} 命中区域 → 区域包围盒
+    （rows+cols 带形状），{rows} 与相交区域的行包围盒取并（覆盖行底色随动/残影
+    链路）；{cols}/{header}/{colFrom} 不扩展——paintColBand 带高恒整高、行范围取
+    整个 viewRows，区域内可视行全部重画，region pass 按 rows 相交自然覆盖 */
 function prepareSpansRegion (state, region) {
   const spans = state.spans
 
@@ -347,15 +321,10 @@ function prepareSpansRegion (state, region) {
   return region
 }
 
-// 有状态绘制器：draw 记录最近 state，invalidate 系列以 rAF 合帧异步重绘（同帧
-// 多区域合并为整幅，正确性优先）；img 加载完成后经 invalidateCell 联动重绘
-// （行已滚出窗口自动跳过）
-
-// - draw(state)：同步整幅，返回 lastPaint；取消挂起中的脏区任务
-// - invalidate(region, { immediate, state })：受理返回 true；immediate 同步重绘，
-//   否则入队 rAF 合帧；state 缺省用最近一次 draw 的 state
-
-// - invalidateRow/Cell：行不在当前窗口返回 false 不重绘；dispose：取消 rAF 清队列
+// 有状态绘制器：draw(state) 同步整幅、记录最近 state 并取消挂起中的脏区任务；
+// invalidate(region, { immediate, state }) 受理返回 true，以 rAF 合帧异步重绘
+// （同帧多区域合并为整幅，正确性优先），state 缺省用最近一次 draw 的 state；
+// dispose 取消 rAF 清队列
 export function createPainter ({ canvas } = {}) {
   const ctx = canvas?.getContext?.('2d')
 
@@ -408,7 +377,6 @@ export function createPainter ({ canvas } = {}) {
 
       if (!base) return false
 
-      // 合并脏区归一扩展先于窗口校验（§5.2：锚行滚出窗口时按扩展后的 range 放行）
       const prepared = prepareSpansRegion(base, region)
 
       if (!isRegionPaintable(base, prepared)) return false
@@ -446,5 +414,5 @@ export function createPainter ({ canvas } = {}) {
   return api
 }
 
-// 簇内拆分后的导出面（自检 / interactions / editor / table-ex.vue 消费路径不变）
+// re-export：自检 / interactions / editor / table-ex.vue 共用 cellRectAt
 export { cellRectAt } from './paint-utils.js'

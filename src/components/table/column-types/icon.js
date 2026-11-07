@@ -2,19 +2,17 @@ import { ensureFn, isString } from '@/utils/type'
 import { icons } from '@/icons'
 import { warn } from '@/utils/warn'
 
-// icon 列（20261105-table-ex-icon-column）：单图标纯展示列。value 收敛为 icons
-// 注册名 string（唯一形态：不支持对象直传/数组/img src）；column.color 设色
-// （色名 | (record, value) => 色名，与 text 列同契约）、iconOption.size 定尺寸
-// （canvas 直绘 + DOM 内联 font-size，双通道生效）；不可编辑（editor.js
-// NON_EDITABLE_TYPES）、无条目点击（纯展示列）。
+// icon 列：单图标纯展示列，value 收敛为 icons 注册名 string（不支持对象直传/
+// 数组/img src）；column.color 设色（色名 | (record, value) => 色名，与 text 列
+// 同契约）、iconOption.size 定尺寸（canvas 直绘 + DOM 内联 font-size 双通道生效）；
+// 不可编辑（editor.js NON_EDITABLE_TYPES）、无条目点击
 
 // iconOption.size 缺省（对齐 CHECK_SIZE，constants.js）
 const DEFAULT_ICON_SIZE = 16
 
 /** 注册名 → icons 注册表项原引用：icon 列 compile / button 图标绘制 /
-    paintEditButton / isEditButtonHit 四处共用的单一查表入口。未注册 dev warn 一次
-    （不设负缓存——注册表可运行时 install）；返回 null 由调用方分支（占位 / 降级
-    caption-only / 不绘制不命中） */
+    paintEditButton / isEditButtonHit 四处共用的单一查表入口。未注册 dev warn
+    一次（不设负缓存——注册表可运行时 install）；返回 null 由调用方分支处理 */
 export function resolveIconEntry (name) {
   if (!isString(name) || name === '') return null
 
@@ -58,8 +56,7 @@ export const IconColumn = {
         return
       }
 
-      // 注册表查表在 render 函数内每次求值（不在列准备期快照）——运行时
-      // installIcons 后新行/重绘即时生效
+      // 查表在 render 内每次求值（不在列准备期快照）——运行时 installIcons 后即时生效
       const icon = icons[value]
 
       if (!icon) {
@@ -75,7 +72,7 @@ export const IconColumn = {
       const title = showTitle && value
 
       if (!dom) {
-        // canvas 单条目仍走 items 数组（复用 measureItem/drawItem 主干，D3 精神）
+        // canvas 单条目仍走 items 数组（复用 measureItem/drawItem 主干）
         return {
           items: [{
             kind: 'icon',

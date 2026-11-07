@@ -1,13 +1,12 @@
 import { ensureFn } from '@/utils/type'
 
-// list 列（20261104-table-column-type）：条目列，仅接受数组值；元素默认按文本行
-// 渲染，每项单行、超长省略；column 级 link: true 时整列按 link 样式渲染（整列
-// 全 text 或全 link，条目级 link 键不参与渲染）；所有条目点击 emit
-// ('cell-item-click', { record, column, item })。link 列为兼容壳（link.js），
-// 内部构造 list 语义列对象后委托本实现（A7：共用同一实现代码）
+// list 列：条目列，仅接受数组值；元素按文本行渲染，每项单行、超长省略；
+// column.link === true 时整列按 link 样式渲染（条目级 link 键不参与渲染）；
+// 所有条目点击 emit ('cell-item-click', { record, column, item })。
+// link 列（link.js）为兼容壳，构造 list 语义列对象后委托本实现
 
-// 缺省取值链：仅接受数组 value（A4；标量/对象落占位链）。单值包装只存在于
-// link 兼容壳的 valueToLinks（保 links: 12345 夹具），本类型缺省不包装
+// 缺省取值：仅接受数组 value，标量/对象落占位链；单值包装只在 link 兼容壳的
+// valueToLinks 中做（兼容 links: 12345 形态），本类型缺省不包装
 function defaultListItems (record, value) {
   return Array.isArray(value) ? value : undefined
 }
@@ -40,8 +39,8 @@ function entryDisabledOf (entry, columnDisabled) {
   return (entry?.disabled ?? columnDisabled) || null
 }
 
-// canvas 通道条目：复用 kind 'link' 命中/hover 链（painter 侧零分发改动）；
-// link 字段为样式/hover 门控依据（A6 点击所有条目，hover 仅 link 列条目）
+// canvas 通道条目：复用 kind 'link' 命中/hover 链（painter 侧零改动）；
+// link 字段为样式/hover 门控——点击所有条目，hover 仅 link 列条目
 function canvasItemOf (entry, label, {
   isLink, columnColor, columnDisabled, showTitle, columnRef, record, emit
 }) {
@@ -77,7 +76,7 @@ function domItemOf (entry, label, options) {
 
   if (disabled) item.attrs.disabled = ''
 
-  // 所有条目（含纯文本条目与 dots）点击派发（A6）；dots payload 值 '...'
+  // 所有条目（含纯文本与 dots）点击派发；dots payload 值 '...'
   item.events.click =
     () => emit('cell-item-click', { record, column: columnRef, item: isDots ? '...' : entry })
 
@@ -95,18 +94,14 @@ export const ListColumn = {
 
     const showTitle = column.title === true || null
 
-    // link 生效值 = column.link === true（列级单点，整列全 text 或全 link，
-    // 人工-1 [1-1]）：条目对象遗留 link 键不参与渲染，随任意属性原样保留传出
     const isLink = column.link === true
 
-    // payload column = 原始列引用（link 兼容壳传入派生对象 _raw 指回原列；
-    // canvas 侧 prepareColumn 产物同挂 _raw）
+    // payload column = 原始列引用（兼容壳派生对象与 canvas prepareColumn 产物同挂 _raw）
     const columnRef = column._raw ?? column
 
     return ({ record, value, emit }) => {
       const rawItems = getItems(record, value)
 
-      // 非数组（含标量）落占位链（A4）
       if (!Array.isArray(rawItems)) return
 
       const { entries, labels } = normalizeEntries(rawItems)
@@ -116,13 +111,12 @@ export const ListColumn = {
       const dotsIndex = max > 0 && entries.length > max ? max - 1 : null
       const shown = max ? entries.slice(0, max) : entries
 
-      // dots 条目 entry 置 null（无条目对象，payload 值 '...'、title = 被截断条目 join）
+      // dots 条目 entry 置 null（payload 值 '...'，title = 被截断条目 join）
       const itemArgs = (entry, idx) => [
         idx === dotsIndex ? null : entry,
         idx === dotsIndex ? labels.slice(idx).join('\n\n') : labels[idx]
       ]
 
-      // 列级透传参数（canvasItemOf / domItemOf 共用形状）
       const options = { isLink, columnColor, columnDisabled, showTitle, columnRef, record, emit }
 
       if (!dom) {

@@ -1,9 +1,9 @@
 /**
- * 布局重算 / 滚动 / 尺寸响应 composable（C1 壳拆分自 table-ex.vue；
- * 02-design.md A2 DPR 适配与布局重算 + A3 滚动行 + relayout 源合一 watch）。
+ * 布局重算 / 滚动 / 尺寸响应 composable：DPR 适配与布局重算、滚动行同步、
+ * relayout 源合一 watch。
  */
 /**
- * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads props, canvasEl, scrollEl, preparedColumns, displayRows,
  *   widthOverrides, layout, paintState, rowGeometry
  * @host-writes relayoutAndRedraw, recomputeViewWindows, onScroll, onResize,
@@ -22,9 +22,7 @@ import { computeViewCols, computeViewRows, relayout as computeLayout } from '../
 import { createFrameScheduler } from '../interaction/schedulers'
 
 /**
- * @param {Object} host host 袋（读取 scrollEl, canvasEl, props, preparedColumns,
- *   displayRows, rowGeometry, widthOverrides, layout, paintState, getThemeWatcher,
- *   hideCellTooltip, editor, redraw, invalidate, resetOverrides, setLastRelayout）
+ * @param {Object} host host 袋（消费面见文件头 @host-* 声明）
  * @returns {{ relayoutAndRedraw, recomputeViewWindows, onScroll, onResize,
  *   scrollFrame, yScrolled, yScrolledEnd, yOverflowed }}
  */
@@ -54,8 +52,8 @@ export function useRelayout (host) {
     canvas.style.height = `${cssHeight}px`
   }
 
-  /** 统一布局重算入口（A2 relayout()）：探针尺寸 → 变高候选全量快速估高 + 几何
-      重建/升级 → sticky/spacer 尺寸 → 列宽求解 → canvas 物理尺寸 → 可视窗口 → 整幅重绘。
+  /** 统一布局重算入口：探针尺寸 → 变高候选全量快速估高 + 几何重建/升级 →
+      sticky/spacer 尺寸 → 列宽求解 → canvas 物理尺寸 → 可视窗口 → 整幅重绘。
       估高需 contentWidth（列宽），先按首过几何解一次列宽再带几何重算（纯函数，成本可忽略） */
   function relayoutAndRedraw () {
     // tooltip 收起（状态失效类）：数据/几何变化即旧格提示过期（含 recordsVersion 通道）
@@ -100,20 +98,20 @@ export function useRelayout (host) {
 
     syncCanvasSize(next.stickyWidth, next.stickyHeight)
 
-    // relayout 出口统一精算（20261029 问题 2，onThemeChange 先例同款三连）：
-    // 估高对字符串多行列恒取 1 行下界，relayout 尾部只 redraw 会令行高/格线停在
-    // 估高位置；补可视行精算（uniform 模式零成本早退）+ 窗口重算 + 整幅重绘，
-    // 保证一切 relayout 出口的可视行高为真值、格线落在精算位置
+    // relayout 出口统一精算（onThemeChange 先例同款三连）：估高对字符串多行列
+    // 恒取 1 行下界，relayout 尾部只 redraw 会令行高/格线停在估高位置；补可视行
+    // 精算（uniform 模式零成本早退）+ 窗口重算 + 整幅重绘，保证一切 relayout
+    // 出口的可视行高为真值、格线落在精算位置
     host.rowGeometry.remeasureVisibleRows()
     host.recomputeViewWindows()
     host.redraw()
 
     // relayout 计时（getLayoutInfo 暴露：lastPaint 只覆盖 paint()，本字段补齐
-    // 估高扫描/几何重建阶段的可见性，复核 2026-10-26 验证设施缺口）
+    // 估高扫描/几何重建阶段的可见性）
     host.setLastRelayout({ elapsed: performance.now() - startedAt, scanCount, rebuild })
   }
 
-  // 滚动路径不重跑 solveWidths（G1-b 契约）：直接以现有 colLefts 重算可视窗口
+  // 滚动路径不重跑 solveWidths：直接以现有 colLefts 重算可视窗口
   function recomputeViewWindows () {
     const el = host.scrollEl.value
     const cur = host.layout.value
@@ -154,7 +152,7 @@ export function useRelayout (host) {
 
     if (!el) return
 
-    // 滚动即提交（A6，kaka SELECTED_CELL/SCROLL 同语义）
+    // 滚动即提交
     host.editor.commit()
 
     // tooltip 收起（壳统一收起：锚点在 sticky 层内不随内容滚动，面板会停在旧视觉位置）
@@ -164,7 +162,7 @@ export function useRelayout (host) {
     yScrolledEnd.value =
       yScrolled.value && el.scrollHeight - el.scrollTop - el.clientHeight < 1
 
-    // rAF 合帧：同帧多次 scroll 只重绘一次（A3）
+    // rAF 合帧：同帧多次 scroll 只重绘一次
     scrollFrame.schedule()
   }
 
@@ -172,19 +170,18 @@ export function useRelayout (host) {
     if (host.scrollEl.value) relayoutAndRedraw()
   }, { noLeading: true })
 
-  // —— 渲染源 watch（A3 重绘表） ——
+  // —— 渲染源 watch ——
 
-  // relayout 源合一（20261030 P1 合帧）：六个源（records / columns / recordsVersion /
-  // spanMethod / orderBy / fixedLeftColumns）合并为单一 watch——同批多源变化（如父级
-  // 一次替换数据与列定义）从「每 watch 各跑一次完整 relayout（估高扫描 + 精算 +
-  // 重绘）」变为一次；回调内按源 diff 执行各自前置副作用，顺序与合并前各 watch
-  // 定义序一致：
-  // - records 引用变化：滚动复位（A2 数据契约，table.vue 同款）
-  // - columns 引用变化：清空拖拽宽度覆盖（G1-b 契约）+ 行高缓存签名置空（列定义
-  //   变化改变行高语义；缓存键为 record 引用，不含列定义维度）
-  // - recordsVersion：异步就地修改 records 后的通知通道 → spans 重算 + relayout
-  //   （§4：合并行高分层随 spans 身份重扫，A3 数据契约②）
-  // - spanMethod / orderBy：spans 重算（orderBy 变化即行序语义变化，合并块随本批重算，§4）
+  // relayout 源合一：六个源（records / columns / recordsVersion / spanMethod /
+  // orderBy / fixedLeftColumns）合并为单一 watch——同批多源变化（如父级一次替换
+  // 数据与列定义）只跑一次完整 relayout；回调内按源 diff 执行各自前置副作用，
+  // 顺序与合并前各 watch 定义序一致：
+  // - records 引用变化：滚动复位（table.vue 同款）
+  // - columns 引用变化：清空拖拽宽度覆盖 + 行高缓存签名置空（列定义变化改变行高
+  //   语义；缓存键为 record 引用，不含列定义维度）
+  // - recordsVersion：异步就地修改 records 后的通知通道 → spans 重算（合并行高
+  //   分层随 spans 身份重扫）+ relayout
+  // - spanMethod / orderBy：spans 重算（orderBy 变化即行序语义变化，合并块随本批重算）
   // - fixedLeftColumns：固定区宽度 / viewW 口径变化
   // 之后统一 relayout（含尾部可视行精算与整幅重绘）
   watch(

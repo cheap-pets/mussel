@@ -4,8 +4,6 @@ import { ELLIPSIS } from '../shared/constants'
 import { measureOf, centeredTextAnchor, linkUnderlineY, cellLineHeightOf } from './cell-text'
 import { isLinkEntryHovered, isTruthyAttr, linkHoverColorOf, linkTextColorOf } from './item-painters'
 
-// —— link 列竖排（条目列，A3.5） ——
-
 /** 竖排单条起点：按列 align 各自对齐（center 扣 rightInset、right 缘贴 padding，
     与 textAnchorX 同口径；对齐语义对齐 DOM 版 td 的 text-{align} 作用于每行
     inline 条目） */
@@ -65,7 +63,7 @@ export function drawLinkItems (ctx, rect, items, {
       index,
       rect: { x, y: y - lineHeight / 2, width, height: lineHeight },
       disabled,
-      // link 门控布尔（item.link !== false 同 isLinkEntryHovered 谓词，光标/悬停消费）
+      // link 门控布尔（isLinkEntryHovered 同谓词，光标/悬停消费）
       link: entryLink
     })
   }

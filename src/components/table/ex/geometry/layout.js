@@ -1,18 +1,17 @@
-/** table-ex 布局计算（02-design.md A2/A3/A5）：全纯函数，不持状态、不触 DOM、不写回入参 */
+/** table-ex 布局计算：全纯函数，不持状态、不触 DOM、不写回入参 */
 import { getPixelNumber } from '@/utils/size'
 import { resolveColumnType } from '../../column-types'
 
-/** 滚动虚拟窗口上下各多绘的行数（02-design.md A3） */
+/** 滚动虚拟窗口上下各多绘的行数 */
 export const OVERSCAN = 2
 
-/** 调宽手柄命中距离：距列缘 <= 4px（02-design.md A5） */
+/** 调宽手柄命中距离：距列缘 <= 4px */
 export const RESIZE_HANDLE = 4
 
-// 预设类型默认宽度与最小宽度双值表（A3.2）。仅 table-ex 消费（不改
-// column-types/*.js 的 width 字段）；仅在 solveWidths 弹性分支作初始宽与
-// 最小宽基线，定宽链 widthOverrides ?? col.width ?? type.width 与 clamp 不动
-
-// 无 type/空 type 列回退 text 条目；对象/函数自定义类型与未知类型字符串回退 _fallback；
+// 预设类型默认宽度与最小宽度双值表。仅 table-ex 消费（不改 column-types/*.js
+// 的 width 字段）；仅在 solveWidths 弹性分支作初始宽与最小宽基线，定宽链
+// widthOverrides ?? col.width ?? type.width 与 clamp 不动。
+// 无 type/空 type 列回退 text；对象/函数自定义类型与未知类型字符串回退 _fallback；
 // enum 为废弃兼容条目（缺省宽与移除前一致）
 export const TYPE_DEFAULT_WIDTHS = {
   text: { width: 160, minWidth: 80 },
@@ -37,8 +36,8 @@ function typeNameOf (col) {
   return col.type == null ? 'text' : '_fallback'
 }
 
-/** 类型最小宽（评审 6 P2）：调宽拖拽下限缺省值；真正 clamp 位置在
-    interactions.resolveResizeWidth，本模块不 clamp */
+/** 类型最小宽：调宽拖拽下限缺省值；真正 clamp 在 interactions.resolveResizeWidth，
+    本模块不 clamp */
 export function resolveTypeMinWidth (col) {
   return TYPE_DEFAULT_WIDTHS[typeNameOf(col)]?.minWidth
 }
@@ -91,14 +90,11 @@ function distributeRemain (widths, maxes, flexes, remain) {
   }
 }
 
-// 宽度求解（02-design.md A3）：
-// 1. 定宽列：widthOverrides[key] ?? col.width ?? type.width 取 px 后 clamp（现状不动）
-
-// 2. 未定宽列初始宽 clamp(TYPE_DEFAULT_WIDTHS[type].width, minWidth ?? 类型
-//    minWidth, maxWidth)；下限复用循环头部已解析的 min（字符串 '80px' 防 NaN）
-
-// 3. remain = containerWidth − 全部已定宽：> 0 时经 distributeRemain 摊派，
-//    <= 0 保持初始宽（总宽超出容器 → 横向滚动）
+// 宽度求解：定宽列 widthOverrides[key] ?? col.width ?? type.width 取 px 后
+// clamp；未定宽列初始宽 clamp(TYPE_DEFAULT_WIDTHS[type].width, minWidth ??
+// 类型 minWidth, maxWidth)，下限复用循环头部已解析的 min（字符串 '80px' 防
+// NaN）；remain = containerWidth − 全部已定宽，> 0 经 distributeRemain 摊派、
+// <= 0 保持初始宽（总宽超出容器 → 横向滚动）
 export function solveWidths ({ columns, containerWidth = 0, widthOverrides } = {}) {
   const cols = columns ?? []
   const widths = new Array(cols.length)
@@ -208,7 +204,7 @@ function firstIndexAtLeast (lefts, value) {
   return found
 }
 
-/** 画布 y 坐标 → 行号（A5 命中检测）：表头区与数据区之外返回 -1 */
+/** 画布 y 坐标 → 行号（命中检测）：表头区与数据区之外返回 -1 */
 export function rowAt (y, { headHeight = 0, scrollTop = 0, rowGeometry } = {}) {
   if (y < headHeight) return -1
 
@@ -265,8 +261,8 @@ function isResizeBlocked (candidate, hit, fixed, columns) {
   return hit < fixed || candidate < fixed || columns?.[candidate]?.resizable === false
 }
 
-/** 调宽手柄检测（A5）：右缘 <= RESIZE_HANDLE 取命中列，左缘 <= 取左邻列；
-    固定列区域整体排除；列级 resizable === false 返回 -1 */
+/** 调宽手柄检测：右缘 <= RESIZE_HANDLE 取命中列，左缘 <= 取左邻列；固定列
+    区域整体排除；列级 resizable === false 返回 -1 */
 export function findResizeColumn ({
   x,
   scrollLeft = 0,
@@ -295,8 +291,8 @@ export function findResizeColumn ({
   return candidate
 }
 
-/** 统一布局重算（A2 relayout() 计算部分，纯函数）；探针尺寸重读与 __sticky /
-    __spacer 的 DOM 同步由组件壳执行（以返回的 sticky/spacer 尺寸落 DOM） */
+/** 统一布局重算（纯函数）；探针尺寸重读与 __sticky / __spacer 的 DOM 同步
+    由组件壳执行（以返回的 sticky/spacer 尺寸落 DOM） */
 export function relayout ({
   columns,
   rowCount = 0,

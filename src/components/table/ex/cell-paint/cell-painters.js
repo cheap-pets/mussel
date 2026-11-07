@@ -13,15 +13,14 @@ import { drawItems, itemClassOf, isLinkEntryHovered, linkHoverColorOf, linkTextC
 import { drawLinkItems } from './link-items'
 import { drawProgress, drawButton } from './canvas-kind-painters'
 
-// —— 视觉常量（镜像现有 DOM 规格，非新增设计值）——
-// check 方框 —— column-types/style.scss .mu-table__cell-check（与表头
-// painter.drawHeaderCheck 同规格，规格变更两处同步）；tag pill / button 图标
-// 规格常量见 constants.js（拆分后跨文件共享）
+// 视觉常量镜像 DOM 规格：check 方框 = column-types/style.scss
+// .mu-table__cell-check（与表头 painter.drawHeaderCheck 同规格，规格变更两处
+// 同步）；tag pill / button 图标规格常量见 constants.js
 
 // —— canvas 落地 ——
 
-// 绘制单个单元格内容（背景/网格线/hover 由 painter 负责此函数只画内容）：
-// onImageLoad 为 (row, colIndex) => void 处理器，仅 img 消费分支内创建闭包（P1b）
+// 绘制单个单元格内容（背景/网格线/hover 由 painter 负责，此函数只画内容）：
+// onImageLoad 为 (row, colIndex) => void 处理器
 export function drawCell (ctx, {
   col,
   record,
@@ -50,23 +49,21 @@ export function drawCell (ctx, {
   const padding = theme?.cellPadding || CELL_PADDING_FALLBACK
   const rowHeight = theme?.rowHeight || ROW_HEIGHT_FALLBACK
 
-  // 首行行框槽位（问题 1）：行线占用本格矩形顶部 1px；宽度不减（与估高同式）；
+  // 首行行框槽位：行线占用本格矩形顶部 1px，宽度不减（与估高同式）；
   // rightInset 不扣宽度，只参与水平居中锚
   const box = { ...rect, y: rect.y + ROW_TOP_INSET, height: rect.height - ROW_TOP_INSET }
 
   // 槽位中心（全文唯一垂直锚公式）：中点四舍五入取整（.5 恒向上，+0.01 浮点
   // 容差）；不使用 rect.height（超高行贴行顶）。合并区域主格传 regionHeight
-  // （§5.1 垂直居中于区域矩形，单行退化与原式一致），普通格仍按行高
+  // 垂直居中于区域矩形，普通格仍按行高
   const centerY = Math.round(box.y + ((regionHeight ?? rowHeight) - ROW_TOP_INSET) / 2 + 0.01)
 
-  // 合并主格内容行数上限（§5.1）：min(maxLines, floor((regionH − padding×2) /
-  // lineHeight))，绘制期求值（矩形已知），普通格不钳制
+  // 合并主格内容行数上限绘制期求值（矩形已知），普通格不钳制
   const maxLines = capMaxLinesOf(col, record, regionHeight, padding, theme)
 
   ctx.font = cellFontOf(theme)
   ctx.textBaseline = 'middle'
 
-  // 树形列（A2.4/A3.4）：内容区前置 level×16 缩进 + 16px 箭头槽
   const inset = drawTreeAffordance(ctx, box, {
     col,
     row,
@@ -82,7 +79,7 @@ export function drawCell (ctx, {
     ? { ...box, x: box.x + inset, width: box.width - inset }
     : box
 
-  // canvas 专属分发（A3.3）：progress / button 真实绘制，非 items 产物
+  // canvas 专属分发：progress / button 真实绘制，非 items 产物
   if (drawCanvasKindContent(
     ctx, contentRect, content, col, padding, theme, record, measure, onItemRect, centerY, hoverItem, rightInset,
     onImageLoad, row, colIndex
@@ -109,7 +106,7 @@ export function drawCell (ctx, {
   return content
 }
 
-/** 矩形缺失 / 零尺寸（NaN 尺寸照常进入绘制，与原实现一致）时跳过内容绘制 */
+/** 矩形缺失 / 零尺寸时跳过内容绘制（NaN 尺寸比较为 false，照常进入绘制） */
 function isSkippableRect (rect) {
   return !rect || rect.width <= 0 || rect.height <= 0
 }
@@ -134,7 +131,6 @@ function drawCanvasKindContent (
       centerY,
       hoverItem,
       rightInset,
-      // svg 图标异步加载后 invalidate 该格（与 drawItems 同款钩子透传）
       onImageLoad,
       row,
       colIndex
@@ -145,9 +141,9 @@ function drawCanvasKindContent (
   return false
 }
 
-// items 数组落地：单 item + line-clamp class 形态改道 drawText 多行（A3.5 DOM 风格
+// items 数组落地：单 item + line-clamp class 形态改道 drawText 多行（DOM 风格
 // 兼容）；link 列 = 条目列竖排；其余横排。maxLines 由 drawCell 求值传入
-// （合并主格已按区域行数钳制，§5.1）
+// （合并主格已按区域行数钳制）
 function drawContentItems (
   ctx, rect, content, col, record,
   padding, theme, measure, wrapCache, onItemRect, onImageLoad,
@@ -207,12 +203,11 @@ function drawContentItems (
 // 恒真——门控已在 compile 产物 link === true 处完成）
 const CELL_LINK_ITEM = { link: true }
 
-// 纯文本格落地（text / 空组 button 占位等）。text.link 格（20261106-column-link-
-// hover-button-value，与 DOM mu-table__cell-link 同口径）：hover 时谱系悬停色 +
-// 1px 下划线，恒回报 kind:'link' 命中矩形（itemHits → updateHoverItem →
-// applyItemCursor pointer；hoverMode 'none' 时 updateHoverItem 恒 null 自动抑制）；
-// 点击仍走 cell-click（text 格无 items，emitDomItemClick 判空短路，不发
-// cell-item-click）
+// 纯文本格落地（text / 空组 button 占位等）。text.link 格与 DOM
+// mu-table__cell-link 同口径：hover 时谱系悬停色 + 1px 下划线，恒回报
+// kind:'link' 命中矩形（itemHits → updateHoverItem → applyItemCursor pointer；
+// hoverMode 'none' 时 updateHoverItem 恒 null 自动抑制）；点击仍走 cell-click
+// （text 格无 items，emitDomItemClick 判空短路，不发 cell-item-click）
 function drawDisplayText (
   ctx, rect, content, col, record, placeholder,
   padding, theme, measure, wrapCache, centerY, rightInset, maxLines,
@@ -224,9 +219,8 @@ function drawDisplayText (
     const isCellLink = content.link === true
     const hovered = isCellLink && isLinkEntryHovered(hoverItem, CELL_LINK_ITEM, 0)
 
-    // link 格走条目口径取色（linkTextColorOf/linkHoverColorOf 谱系，compile 已
-    // 缺省 color || 'primary'）；非 link 路径原样：17 色板名 → colors 查表，
-    // 未知名/缺省回退 textColor
+    // link 格走条目口径取色（compile 已缺省 color || 'primary'）；非 link 路径：
+    // 17 色板名 → colors 查表，未知名/缺省回退 textColor
     const color = isCellLink
       ? (hovered ? linkHoverColorOf : linkTextColorOf)({ color: content.color, link: true }, theme)
       : content.color && theme?.colors?.[content.color]?.color
@@ -250,19 +244,17 @@ function drawDisplayText (
   }
 }
 
-// —— 树形列（A2.4/A3.4） ——
+// —— 树形列 ——
 
-/** 树箭头三角绘制（形状单一事实源）：常态 textColor 与 hover 主色（painter 分区 5）共用 */
+/** 树箭头三角绘制（形状单一事实源）：常态与 hover 两色共用 */
 export function drawTreeArrow (ctx, x, centerY, expanded, color) {
   ctx.beginPath()
 
   if (expanded) {
-    // 展开 ▾（下指三角）
     ctx.moveTo(x + 2, centerY - 3.5)
     ctx.lineTo(x + 10, centerY - 3.5)
     ctx.lineTo(x + 6, centerY + 3.5)
   } else {
-    // 收起 ▸（右指三角）
     ctx.moveTo(x + 3, centerY - 5)
     ctx.lineTo(x + 3, centerY + 5)
     ctx.lineTo(x + 10, centerY)
@@ -273,9 +265,9 @@ export function drawTreeArrow (ctx, x, centerY, expanded, color) {
   ctx.fill()
 }
 
-// 树形列缩进与箭头：内容区前置 level×16 缩进 + 16px 箭头槽（可展开行三角——
-// hasChildren 或 isLeaf:false 懒节点，20261029 问题 3；叶行空槽）；
-// 返回内容区应右移的 inset px（与行高估高扣减口径一致），非树形列/树关返回 0
+// 树形列缩进与箭头：内容区前置 level×16 缩进 + 16px 箭头槽（可展开行三角 =
+// hasChildren 或 isLeaf:false 懒节点；叶行空槽）；返回内容区应右移的 inset px
+// （与行高估高扣减口径一致），非树形列/树关返回 0
 function drawTreeAffordance (ctx, rect, { col, row, flatInfo, expandedKeys, recordKey, padding, theme, centerY }) {
   if (!col._isTreeColumn || !flatInfo) return 0
 

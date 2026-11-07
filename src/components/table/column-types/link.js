@@ -1,11 +1,10 @@
 import { ensureFn } from '@/utils/type'
 import { ListColumn } from './list'
 
-// link 列兼容壳（20261104-table-column-type，A7）：内部构造 list 语义列对象后
-// 委托 ListColumn.compile（共用 list 实现代码，无自有渲染逻辑）；col.type 保持
-// 'link'（注册表层转换，canvas 侧 4 处 type 字符串分发无感）。
-// 兼容映射（decisions 已裁决）：danger:true → color 'danger'；disabled 原样保留；
-// link 对象既有 color 键顺势激活；caption 键经 ListColumn 兼容读取（开发期警告一次）
+// link 列兼容壳：构造 list 语义列对象后委托 ListColumn.compile（无自有渲染逻辑）；
+// col.type 保持 'link'（注册表层转换，canvas 侧 type 字符串分发无感）。
+// 兼容映射：danger:true → color 'danger'，disabled 原样保留，link 对象既有
+// color 键顺势激活，caption 键经 ListColumn 兼容读取（开发期警告一次）
 
 function valueToLinks (record, value) {
   if (value != null) {
@@ -23,9 +22,8 @@ export const LinkColumn = {
 
     const getLinks = ensureFn(column.links || valueToLinks)
 
-    // listItems 透传 (record, value)（缺省 valueToLinks 依赖 field 值）：
-    // danger 条目映射为含 color 的派生对象（payload 为映射对象，其余属性保留），
-    // 其余对象原引用保留、primitive 包 { label: el }
+    // 透传 (record, value)（缺省 valueToLinks 依赖 field 值）：danger 条目映射为
+    // 含 color 的派生对象并作为 payload，其余对象原引用保留、primitive 包 { label: el }
     const listItems = (record, value) => {
       const links = getLinks(record, value)
 
@@ -43,7 +41,7 @@ export const LinkColumn = {
     return ListColumn.compile({
       ...column,
       type: 'list',
-      // 列级 link（人工-1 [1-1]）：整列 link 渲染；{...column} 展开后显式覆盖
+      // 列级 link：{...column} 展开后显式覆盖
       link: true,
       _raw: column,
       listOption: {

@@ -12,13 +12,11 @@ import { getImageEntry } from './icon-image'
 import { resolveIconEntry } from '../../column-types/icon'
 import { buttonHeightOf, EMPTY_BUTTON } from './canvas-kind-painters'
 
-// —— 单元格 tooltip 求值（title 列协议，02-design.md 20261030-table-ex-cell-tooltip） ——
-//
 // 触发期惰性求值（绘制热路径零改动）：组件壳在 TOOLTIP_SHOW_DELAY 定时器内调用
 // resolveCellTooltip，复用与绘制同一套原语（resolveCellContent / wrapLines /
-// capMaxLinesOf / 测量与 wrapCache），溢出判定与绘制行为逐项等价（矩阵口径见
-// 02-design.md 接口节，不引入第二套测量式）；img 条目只读缓存条目（getImageEntry），
-// 判定期不调用 requestImage、不发起加载。
+// capMaxLinesOf / 测量与 wrapCache），溢出判定与绘制行为逐项等价，不引入第二套
+// 测量式；img 条目只读缓存条目（getImageEntry），判定期不调用 requestImage、
+// 不发起加载。
 
 const TOOLTIP_NOOP = () => {}
 
@@ -67,11 +65,11 @@ function horizontalItemsOverflowOf (items, params) {
 }
 
 /** button 组溢出（drawButton 逐 pill 累加等价式）：x 越右缘 break / caption 空且
-    无有效 icon 哨兵终止（其后仍有按钮 = 内容被丢弃）——形态互斥（20261105 二轮）：
-    caption 非空 → caption-only（icon 忽略不解析、零查表零 warn，计宽 = 内距 +
-    caption 全文，超剩余即截断计溢出）；caption 空 → icon-only 固定宽（pill =
-    controlHeightSmall 快照 / link = 图标本体 12），放不下该条目不绘制终止计溢出；
-    link 形态无 pill 内边距、字体取正文（drawButton 同式切换） */
+    无有效 icon 哨兵终止（其后仍有按钮 = 内容被丢弃）——形态互斥：caption 非空 →
+    caption-only（icon 忽略不解析、零查表零 warn，计宽 = 内距 + caption 全文，
+    超剩余即截断计溢出）；caption 空 → icon-only 固定宽（pill = controlHeightSmall
+    快照 / link = 图标本体 12），放不下该条目不绘制终止计溢出；link 形态无 pill
+    内边距、字体取正文（drawButton 同式切换） */
 function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, link }) {
   const font = link ? cellFontOf(theme) : tagFontOf(theme)
   const padX = link ? 0 : TAG_PADDING_X
@@ -85,7 +83,6 @@ function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, li
     if (consumed >= contentWidth) return true
 
     if (caption !== '') {
-      // caption-only：pill 宽 = 内距 + caption 全文，超剩余即截断（部分丢失）→ 溢出
       const width = padX * 2 + measure(caption, font)
 
       if (width > contentWidth - consumed) return true
@@ -95,15 +92,12 @@ function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, li
       continue
     }
 
-    // icon-only：icon 解析移入 caption 空分支（未注册 warn 在 resolve 内），
-    // null 哨兵（drawButton 同式）——非末条 = 内容被丢弃
     const icon = button.icon ? resolveIconEntry(button.icon) : null
 
     if (!icon) return i < buttons.length - 1
 
     const width = link ? BUTTON_ICON_SIZE : buttonHeight
 
-    // 固定宽放不下 → 该条目不绘制且终止（drawButton 终止同式）→ 溢出
     if (consumed + width > contentWidth) return true
 
     consumed += width + padding
@@ -112,9 +106,9 @@ function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, li
   return false
 }
 
-/** 文本路径全文与溢出判定（drawTextValue 同式；A9 后无数组形态——数组值在
-    resolveCellContent 门控落占位，source 恒为字符串）：按 maxLines 分多行 wrapLines
-    clamped / 单行 measure 对比（contentWidth ≤ 0 按溢出返回，绘制层不画的格子允许提示） */
+/** 文本路径全文与溢出判定（drawTextValue 同式，source 恒为字符串——数组值已在
+    resolveCellContent 门控）：按 maxLines 分多行 wrapLines clamped / 单行 measure
+    对比（contentWidth ≤ 0 按溢出返回，绘制层不画的格子允许提示） */
 function resolveTooltipText (col, record, source, {
   contentWidth, regionHeight, padding, theme, measure, wrapCache
 }) {
@@ -159,7 +153,6 @@ function resolveTooltipButtons (content, params) {
 function resolveTooltipItems (col, record, items, params) {
   const only = items[0]
 
-  // 单 item + line-clamp 形态改道 drawText 多行 → 按文本求值
   if (items.length === 1 && itemClassOf(only).includes('line-clamp') && only.text != null) {
     return resolveTooltipText(col, record, only.text, params)
   }
@@ -168,7 +161,6 @@ function resolveTooltipItems (col, record, items, params) {
 
   if (text === '') return null
 
-  // link/list 条目列竖排口径（list 与 link 共用，20261104-table-column-type）
   if (col.type === 'link' || col.type === 'list') {
     return {
       content: text,
@@ -204,9 +196,7 @@ function resolveTooltipCustomTitle (col, record) {
  * @param {Number} params.contentHeight 内容区高（格矩形高 − ROW_TOP_INSET，drawCell box 同式；
  *   仅 img 条目宽 imageLayoutSize 消费）
  * @param {Number|null} [params.regionHeight] 合并区域矩形高（钳制 maxLines，与绘制同式）
- * @param {Object} params.theme 主题快照（themeWatcher.snapshot）
  * @param {Function} params.measure 测量回调（measureFn，走缓存）
- * @param {Object} params.wrapCache 折行缓存
  * @returns {{ content: String, overflowOnly: Boolean, overflow: Boolean } | null}
  *   无 title 配置 / progress・check・img / 全文为空 → null
  */
@@ -220,7 +210,6 @@ export function resolveCellTooltip (
   // 不得被 String(false) 成 'false'）
   if (!raw) return null
 
-  // String | Function：hover 即显示该文本（空串不显示）
   if (raw !== true) return resolveTooltipCustomTitle(col, record)
 
   // true = 溢出才显示单元格全文：无可提示文本源的类型直接排除
@@ -242,6 +231,5 @@ export function resolveCellTooltip (
     return resolveTooltipItems(col, record, content.items, { ...overflowParams, regionHeight, wrapCache })
   }
 
-  // 文本路径（A9 后 content.text 恒为字符串或缺失；null/undefined 无文本源 → null）
   return resolveTooltipText(col, record, content.text, { ...overflowParams, regionHeight, wrapCache })
 }

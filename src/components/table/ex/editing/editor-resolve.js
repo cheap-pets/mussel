@@ -1,10 +1,12 @@
-/** 编辑器类型 / props / 开值 / 提交值规整链（editor.js 入口按关注点拆出） */
+/** 编辑器类型 / props / 开值 / 提交值规整链（自 editor.js 按关注点拆出） */
 import { isObject } from '@/utils/type'
 
 import { selectOptionsFromMappings } from '../../mappings'
 import { MuInput, MuSelect, MuDateInput, MuSwitch } from '../../../form/index.js'
 
-/** 不可编辑的列类型（A6）；link/list 条目列不可编辑（list 对齐 link，link 为其兼容壳）；progress 为 canvas 专属展示类型，button 已入列类型注册表（20261105-column-button-type）但仍不可编辑；image 为 img 别名；icon 为纯展示类型（20261105-table-ex-icon-column） */
+/** 不可编辑的列类型：link/list 条目列不可编辑（list 对齐 link，link 为其兼容壳）；
+    progress 为 canvas 专属展示类型，button 仍不可编辑；image 为 img 别名；icon
+    为纯展示类型 */
 export const NON_EDITABLE_TYPES = ['rec_no', 'img', 'image', 'tag', 'check', 'link', 'list', 'button', 'progress', 'icon']
 
 /** 编辑器类型 → mussel 输入组件；textarea 为原生元素 tag（INPUT_TYPES.memo 约定） */
@@ -45,9 +47,8 @@ function resolveTextLikeEditorType (column, rawValue, record) {
   return Array.isArray(rawValue) || resolveMaxLines > 1 ? 'textarea' : 'input'
 }
 
-// 编辑器类型解析（A5.5）：① editor.type 显式合法直取；② text 列（type 缺省按 text）
-// 按开值形态与 maxLines 判定（行级求值）；③ 其余按类型映射（enum → select，下拉
-// 来源 = editor.props.options / column.options / mappings 派生），未知列类型回退 input
+// 编辑器类型解析：editor.type 显式合法直取；text 列（type 缺省按 text）按开值
+// 形态与 maxLines 判定（行级求值）；其余按类型映射，未知列类型回退 input
 export function resolveEditorType (column, { rawValue, record } = {}) {
   const explicit = column?.editor?.type
 
@@ -87,28 +88,24 @@ export function normalizeEditorOpenValue ({ column, editorType, value } = {}) {
   return value
 }
 
-/** Number() 有限 → 数值，否则保留原值（交 validate 拦截或原类型保持） */
 function toFiniteNumber (value) {
   const numeric = Number(value)
 
   return Number.isFinite(numeric) ? numeric : value
 }
 
-/** number/currency 与 textarea 数字原值共用收敛：null/'' → null（防 Number(null)===0），其余 toFiniteNumber */
 function normalizeNumericCommit (value) {
   if (value == null || value === '') return null
 
   return toFiniteNumber(value)
 }
 
-/** 派生 options select 数值原值的收敛：仅 null → null（'' 按 Number() 转换） */
 function normalizeDerivedSelectCommit (value) {
   if (value == null) return null
 
   return toFiniteNumber(value)
 }
 
-/** textarea 提交规整：数组原值 split('\n')（空行保留）；数字原值类型保持；字符串原样 */
 function normalizeTextareaCommitValue (rawValue, value) {
   if (Array.isArray(rawValue)) return value.split('\n')
 
@@ -117,12 +114,11 @@ function normalizeTextareaCommitValue (rawValue, value) {
   return value
 }
 
-// 编辑提交值规整（A5.5，validate 之前执行）：
-// ① input + number/currency：null/'' → null；number 原样；数值串转 number；
-//    非数值串保留（交 validate 拦截）
-
-// ② select + 派生 options + 数值原值：null → null；Number 有限转 number；否则原样
-// ④/⑤ textarea：数组 split / 数字类型保持 / 字符串原样；③ 其余原样
+// 编辑提交值规整（validate 之前执行）：
+// input + number/currency：null/'' → null（防 Number(null)===0）；数值串转 number，
+// 非数值串保留交 validate 拦截；select + 派生 options + 数值原值：仅 null → null，
+// Number 有限转 number 否则原样；textarea：数组 split('\n')（空行保留）/
+// 数字原值类型保持 / 字符串原样；其余原样
 export function normalizeCommitValue ({ column, editorType, rawValue, value } = {}) {
   if (editorType === 'input' && (column?.type === 'number' || column?.type === 'currency')) {
     return normalizeNumericCommit(value)

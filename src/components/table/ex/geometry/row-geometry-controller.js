@@ -1,26 +1,13 @@
 /**
- * table-ex 行几何控制器（C1 壳拆分自 table-ex.vue；02-design.md
- * A2.2/A2.3/A2.4 + 复核 2026-10-26 C0 签名显式化）。
- *
- * 持有 uniform/variable 双模式几何与行高缓存，三个显式语义维度（C0）：
- * - mode：'uniform' | 'variable'（只升不降，A2.2）；
- * - scanSignature：估高扫描输入签名（行集合引用 / 列计数语义 / 高度度量 / spans
- *   身份（§4），维度均未变则跳过 O(n×cols) 全量扫描——估高行数与列宽、字号无关，
- *   但行高公式依赖 rowHeight/cellPadding/cellLineHeight，高度度量变化必须重扫）；
- * - measureSignature：精算缓存失效签名（列宽 + 字号/字体/行高/padding，
- *   变化即整体清空 record 引用级精算缓存；仅颜色变化的暗色切换不失效）。
- *
- * 不变量（A2.4，verify-1 失败项 1）：估高 rebuild 前按 record 引用混入已精算
- * 真值，未变行保持精确高度，totalHeight/spacer 滚动全程单调不回缩（#15）；
- * 精算回填导致锚行上方总高变化 Δ 经 scrollTop 一次补偿写入（A2.2 管线 4）。
- *
- * 组件壳经 getter 注入行集合/列/主题/测量能力与 layout 读写（C4 起 layout
- * 恒携几何）；控制器不直接触 DOM（scrollTop 补偿经 getScrollEl 返回的元素）。
- *
- * @getters getRows / getColumns / getTreeIndents / getRecordsOffset /
- *   getRecordsVersion / getTheme / getMeasure / getWrapCache / getColumnKey /
- *   getSpans / getScrollEl / getLayout / setLayout / relayout
- *   （O2 注入面声明，14 项；调用点 table-ex.vue createRowGeometryController）
+ * table-ex 行几何控制器：持有 uniform/variable 双模式几何与行高缓存。
+ * 三个失效/跳过判定维度——mode（uniform|variable，只升不降）、scanSignature
+ * （估高扫描输入签名：行集合引用 / 列计数语义 / 高度度量 / spans 身份，均未变
+ * 则跳过 O(n×cols) 全量扫描；估高行数与列宽、字号无关，但行高公式依赖
+ * rowHeight/cellPadding/cellLineHeight，度量变化必须重扫）、measureSignature
+ * （精算缓存失效签名：列宽 + 字号/字体/行高/padding，变化即整体清空 record
+ * 引用级精算缓存；仅颜色变化的暗色切换不失效）。
+ * 不变量：精算回填导致锚行上方总高变化 Δ 经 scrollTop 一次补偿写入；能力经
+ * getter 注入（见 createRowGeometryController 的 ctx），控制器不直接触 DOM。
  */
 import { OVERSCAN } from './layout'
 import {
@@ -42,55 +29,48 @@ function autoRowSpanMarkOf (value) {
 /**
  * 创建行几何控制器（组件壳 setup 内创建并持有，onMounted 前可用——getter 惰性求值）。
  *
- * @param {Object} ctx 组件壳注入的惰性上下文
- * - getRows ()                    → 读行集合（树开 = 平铺行数组）
- * - getColumns ()                 → 已接线内部列（wiredColumns）
- * - getTreeIndents ()             → 树形列缩进回调 (colIndex, row) => px | null
- * - getRecordsOffset ()           → rec_no 序号偏移
- * - getRecordsVersion ()          → records 就地修改通知版本（P1 精算快照失效
- *                                   维度；缺省/缺方法视同 0）
- * - getTheme ()                   → 主题快照（themeWatcher.snapshot）
- * - getMeasure () / getWrapCache()→ 文本测量/折行缓存实例（onMounted 创建）
- * - getColumnKey (rawColumn)      → 原始列引用 → 稳定 key（估高列签名用）
- * - getSpans ()                   → 合并单元格 SpansIndex | null（§4 行高分层与
- *                                   扫描/缓存失效维度；缺省视同无合并）
- * - getScrollEl ()                → 滚动容器元素（锚定补偿 scrollTop 写入）
- * - getLayout () / setLayout (v)  → layout shallowRef 读写
- * - relayout ()                   → 壳 relayoutAndRedraw（uniform→variable 升级重估）
+ * @param {Object} ctx 组件壳注入的惰性上下文，getter 清单：
+ * - getRows / getColumns：行集合（树开 = 平铺行数组）/ 已接线内部列
+ * - getTreeIndents：树形列缩进回调 (colIndex, row) => px | null
+ * - getRecordsOffset：rec_no 序号偏移
+ * - getRecordsVersion：records 就地修改通知版本（精算快照失效维度，缺省视同 0）
+ * - getTheme：主题快照；getMeasure / getWrapCache：文本测量/折行缓存（onMounted 创建）
+ * - getColumnKey：原始列引用 → 稳定 key（估高列签名用）
+ * - getSpans：合并单元格 SpansIndex | null（行高分层与扫描/缓存失效维度，缺省视同无合并）
+ * - getScrollEl：滚动容器元素（锚定补偿 scrollTop 写入）
+ * - getLayout / setLayout：layout shallowRef 读写
+ * - relayout：壳 relayoutAndRedraw（uniform→variable 升级重估）
  */
 export function createRowGeometryController (ctx) {
-  // —— 状态（C0 显式语义字段） ——
+  // —— 状态 ——
 
   let mode = 'uniform'
   let variableGeometry = null
 
-  // uniform 首过几何缓存（rowHeight|rowCount 签名；uniform 不可变，按签名复用）
   let uniformGeometry = null
   let uniformSig = null
 
-  // A2.4 record 引用级行高缓存：进窗精算真值按 record 引用留存，估高 rebuild
-  // 前混入（P1 起取条目 .height，max 语义不变）；失效维度 = measureSignature
-  // （列宽或高度相关主题维度变化）。P1 起条目为快照 { height, indent,
-  // recordsVersion }——精算值具粘性：缓存不再按滚动帧刷新，records 就地改值
-  // 必须 bump recordsVersion（唯一通知通道），树层级变化经 indent 快照失配暴露
+  // 行高精算缓存：按 record 引用留存，估高 rebuild 前混入未变行真值，
+  // 保证 totalHeight 单调不回缩；条目为快照 { height, indent, recordsVersion }，
+  // 缓存不随滚动帧刷新——records 就地改值必须 bump recordsVersion（唯一通知通道）
   let measuredRowHeights = new WeakMap()
   let measuredHeightsSig = null
 
-  // scanSignature 状态（估高扫描输入，见模块头注释三类维度 + spans 身份 §4）
+  // scanSignature 状态（估高扫描输入，维度见模块头）
   let lastScanRows = null
   let lastScanColumns = null
   let lastScanColumnSig = null
   let lastScanMetricsSig = null
   let lastScanSpans = null
 
-  // 精算缓存随 spans 身份整体失效的判定源（§4：spans 引用变化即清空）
+  // 精算缓存随 spans 引用变化整体失效的判定源
   let lastSpansRef = null
 
   // —— 内部工具 ——
 
-  /** 列计数语义签名：列对象身份（按原始列引用稳定）+ 影响估高行数/模式判定
-      的字段 + autoRowSpan 标记（§4：合并声明改变行高分层数据链）。列引用重建
-      但语义不变（父级每渲染新建列数组）时免重扫 */
+  /** 列计数语义签名：列身份（按原始列引用稳定）+ 影响估高行数/模式判定的
+      字段 + autoRowSpan 标记（合并声明改变行高分层数据链）；列数组每渲染
+      重建但语义不变时免重扫 */
   function estimateColumnSignature (columns) {
     return columns.map(col =>
       `${ctx.getColumnKey(col._raw)}|${col.type}|${col._maxLines}|${col._maxItems}` +
@@ -98,16 +78,14 @@ export function createRowGeometryController (ctx) {
     ).join(';')
   }
 
-  /** 变高候选（A2.2 模式判定的列输入）：文本呈现列 maxLines>1 常量或 multiline
-      （函数形态配置存在即入候选——具体值经 _resolveMaxLines(record) 行级求值）；
-      数组值/多条目经估高扫描发现 */
+  /** 变高候选列判定：maxLines>1 或 multiline 配置即入候选（函数形态配置存在
+      即算，具体值经 _resolveMaxLines(record) 行级求值）；数组值/多条目经估高扫描发现 */
   function isVariableCandidate () {
     return ctx.getColumns().some(col => (col._maxLines ?? 1) > 1 || col.multiline)
   }
 
-  /** A2.4 精算缓存失效判定：列宽或高度相关主题维度签名变化 → 整体清空
-      （仅颜色变化的暗色切换不失效）。每次 relayout 调用——估高跳过重扫时
-      同样执行，保证签名漂移后旧精算值不被后续 rebuild 混入 */
+  /** 每次 relayout 均执行——估高跳过重扫时同样执行，保证签名漂移后旧精算值
+      不被后续 rebuild 混入（失效维度见模块头 measureSignature） */
   function syncMeasuredHeightCache (colWidths, snapshot) {
     const heightSig =
       `${colWidths.join(',')}|${snapshot.fontSize}|${snapshot.fontFamily}` +
@@ -119,10 +97,9 @@ export function createRowGeometryController (ctx) {
     }
   }
 
-  /** 估高结果混入已精算真值（估高 = 下界 ≤ 精算）：rebuild 后未变行保持精确
-      高度，totalHeight 不因 rebuild 回缩（#15 单调性）。P1：条目为快照对象，
-      取 .height，max 混入语义不变——几何值高于缓存真值时（条目列 render 计数
-      漂移等）该行随后经跳过判据失配（heightAt ≠ cached.height）重算修正 */
+  /** 估高结果混入已精算真值（估高 = 下界 ≤ 精算，max 混入）：几何值高于缓存
+      真值时（条目列 render 计数漂移等），该行随后经跳过判据失配
+      （heightAt ≠ cached.height）重算修正 */
   function mergeMeasuredHeights (heights, rows) {
     for (let i = 0; i < heights.length; i++) {
       const measured = measuredRowHeights.get(rows[i])
@@ -143,8 +120,8 @@ export function createRowGeometryController (ctx) {
     return uniformGeometry
   }
 
-  /** 模式升级（A2.2 只升不降）：升级时置空扫描行标记，强制下次 relayout 全量
-      重扫重建 variableGeometry（uniform 期间的扫描不产变高几何） */
+  /** 模式升级：置空扫描行标记，强制下次 relayout 全量重扫重建 variableGeometry
+      （uniform 期间的扫描不产变高几何） */
   function upgradeToVariable () {
     if (mode === 'variable') return
 
@@ -162,11 +139,10 @@ export function createRowGeometryController (ctx) {
     }
   }
 
-  // —— 扫描 / 单行重估内部流程（resolveForRelayout / remeasureRow 拆分） ——
+  // —— 扫描 / 单行重估内部流程 ——
 
-  /** 估高扫描脏判定（三类维度输入任一变化）：行集合引用 / 高度度量签名 / 列计数
-      语义签名 / spans 身份（§4：spanMethod 变化而行集合不变时，「合并格不参与
-      行高」须重扫生效） */
+  /** 估高扫描脏判定（四类维度任一变化，见模块头）；spanMethod 变化而行集合
+      不变时，「合并格不参与行高」须重扫生效 */
   function isScanDirty (rows, metricsSig, columnsChanged, columnSig, spans) {
     return lastScanRows !== rows ||
       lastScanMetricsSig !== metricsSig ||
@@ -174,7 +150,6 @@ export function createRowGeometryController (ctx) {
       (columnsChanged && columnSig !== lastScanColumnSig)
   }
 
-  /** relayout 返回几何：variable = 现有变高几何；uniform = 等高几何（主题行高缺省回退） */
   function resolveGeometry (rows, theme) {
     if (mode === 'variable') return variableGeometry
 
@@ -194,10 +169,9 @@ export function createRowGeometryController (ctx) {
   }
 
   /**
-   * 估高扫描落地（A2.2 管线 1）：更新 lastScan* 状态 → 全量快速估高（O(n) 纯算术，
-   * 数组值/link 条目计数真值、字符串估 1 行下界）→ 变高判定（现有变高几何 /
-   * 变高候选列 / 估高发现数组值）命中则模式升级 + 精算真值混入 + 变高几何重建。
-   * 返回 rebuild（变高几何重建，壳须以返回 geometry 重跑 relayout）。
+   * 估高扫描落地：更新 lastScan* 状态 → computeRowHeights 全量估高 → 变高判定
+   * （现有变高几何 / 变高候选列 / 估高发现多条目）命中则模式升级 + 精算真值
+   * 混入 + 变高几何重建。返回 rebuild=true 时壳须以返回 geometry 重跑 relayout。
    */
   function rescanRowHeights (rows, columns, colWidths, theme, metricsSig, columnSig, spans) {
     lastScanRows = rows
@@ -216,19 +190,16 @@ export function createRowGeometryController (ctx) {
       spans
     })
 
-    // A2.2 模式升级（只升不降）；升级前扫描已在 uniform 期间跑过也不产变高几何
     if (!(mode === 'variable' || isVariableCandidate() || hasArrayValues)) return false
 
     mode = 'variable'
 
-    // A2.4：估高混入已精算真值（mergeMeasuredHeights 注释）
     mergeMeasuredHeights(heights, rows)
     applyEstimatedHeights(heights, rows)
 
     return true
   }
 
-  /** remeasureRow 前置判定：布局就绪且行号落在行集合范围内 */
   function isRowInRange (row, cur, rows) {
     return cur && rows && row >= 0 && row < rows.length
   }
@@ -249,7 +220,7 @@ export function createRowGeometryController (ctx) {
     ctx.relayout()
   }
 
-  /** 锚定补偿 + contentHeight/spacer 同步（A2.2 管线 4，同帧批次内一次写入） */
+  /** 锚定补偿 + contentHeight/spacer 同步（同帧批次内一次写入） */
   function syncAnchoredLayout (cur, el, geometry, anchorRow, prevTopAtAnchor) {
     const shift = computeAnchorShift({
       prevTopAtAnchor,
@@ -267,10 +238,9 @@ export function createRowGeometryController (ctx) {
     })
   }
 
-  /** P1 精算快照条目：{ height, indent, recordsVersion }。树缩进维度仅在树开
-      且存在变高候选列时求值（条目列行数来自 render 计数、与宽度无关，其余场景
-      恒 0）；低频路径（单行重估）独立解析树形列下标，与 remeasureVisibleRows
-      的循环外提口径同一规则 */
+  /** 精算快照条目：树缩进仅在树开且存在变高候选列时求值（条目列行数来自
+      render 计数、与宽度无关，其余场景恒 0）；与 remeasureVisibleRows 的
+      循环外提口径同一规则 */
   function measuredSnapshot (row, height) {
     const treeIndents = ctx.getTreeIndents()
     let indent = 0
@@ -284,7 +254,6 @@ export function createRowGeometryController (ctx) {
     return { height, indent, recordsVersion: ctx.getRecordsVersion?.() ?? 0 }
   }
 
-  /** variable 单行精算 + updateHeight（Δ 非零才同步锚定与布局） */
   function remeasureVariableRow (row, cur, rows) {
     const el = ctx.getScrollEl()
     const geometry = variableGeometry
@@ -302,7 +271,6 @@ export function createRowGeometryController (ctx) {
       spans: ctx.getSpans?.() ?? null
     })
 
-    // 精算真值入缓存（A2.4 → P1 快照条目，按 record 引用为键）
     measuredRowHeights.set(rows[row], measuredSnapshot(row, height))
 
     if (!geometry.updateHeight(row, height)) return
@@ -313,7 +281,6 @@ export function createRowGeometryController (ctx) {
   // —— 对外 API ——
 
   const controller = {
-    /** 当前模式（'uniform' | 'variable'，只升不降） */
     get mode () {
       return mode
     },
@@ -332,13 +299,11 @@ export function createRowGeometryController (ctx) {
 
     /**
      * relayout 扫描块（壳 relayoutAndRedraw 内调用，先以 currentGeometry 解出
-     * colWidths 后传入）。三类估高维度输入任一变化才全量扫描重建；否则跳过并
-     * 沿用现有高度。rebuild 为 true 时壳须以返回 geometry 重跑 relayout。
-     *
+     * colWidths 后传入）：扫描维度未变则跳过全量扫描沿用现有高度；rebuild 为
+     * true 时壳须以返回 geometry 重跑 relayout。
      * @returns {{ geometry: Object, scanCount: Number, rebuild: Boolean }}
      */
     resolveForRelayout ({ colWidths, theme }) {
-      // 精算缓存随 spans 身份整体失效（§4：spans 引用并入失效判定，变化即清空）
       const spans = ctx.getSpans?.() ?? null
 
       if (spans !== lastSpansRef) {
@@ -346,7 +311,6 @@ export function createRowGeometryController (ctx) {
         lastSpansRef = spans
       }
 
-      // A2.4 精算缓存失效判定先于扫描/混入执行（列宽或高度主题维度漂移即清空）
       syncMeasuredHeightCache(colWidths, theme)
 
       const rows = ctx.getRows() ?? []
@@ -372,15 +336,13 @@ export function createRowGeometryController (ctx) {
     },
 
     /**
-     * 进窗精算（A2.2 管线 2，滚动帧调用）：可视窗口 ±OVERSCAN 逐行处理——
-     * P1 起命中精算缓存快照（几何值 + recordsVersion + 树缩进全匹配）的行
-     * 直接跳过（测量侧零重算；跳过等价性：此时 updateHeight(row, cached.height)
-     * 恒返回 0），未命中行 ensureRowMeasured → 写快照 → updateHeight → Δ 累计
-     * 滚动锚定（scrollTop 一次补偿写入）→ contentHeight/spacer 同步。
-     * uniform 模式零成本跳过。粘性契约：本缓存不再按帧刷新，records 就地改值
-     * 必须 bump recordsVersion（快照失配 → 重算）。
+     * 进窗精算（滚动帧调用）：可视窗口 ±OVERSCAN 逐行处理。命中精算缓存快照
+     * （几何值 + recordsVersion + 树缩进全匹配）的行直接跳过——此时
+     * updateHeight(row, cached.height) 恒返回 0，测量侧零重算；未命中行精算
+     * → 写快照 → updateHeight → Δ 累计滚动锚定 + contentHeight/spacer 同步。
+     * uniform 模式零成本跳过。
      */
-    // 每行热路径：拆分会引入参数打包与函数调用开销，复杂度收益低于回归风险（02-optimize A 线裁定 #2②）
+    // 每行热路径：拆分引入参数打包与调用开销，复杂度收益低于回归风险
     // eslint-disable-next-line complexity
     remeasureVisibleRows () {
       const cur = ctx.getLayout()
@@ -393,10 +355,8 @@ export function createRowGeometryController (ctx) {
       const anchorRow = variableGeometry.offsetToRow(el.scrollTop)
       const prevTopAtAnchor = variableGeometry.topAt(anchorRow)
       const base = measureContext()
-      // P5：循环不变量提循环外（每帧窗口内每行各一次 getter 求值 → 各一次）
       const spans = ctx.getSpans?.() ?? null
       const recordsOffset = ctx.getRecordsOffset() || 0
-      // P1 快照失效维度（循环外求值一次）：records 就地修改通知版本 + 树缩进
       const version = ctx.getRecordsVersion?.() ?? 0
       const { columns, treeIndents } = base
       const needIndent = !!treeIndents && isVariableCandidate()
@@ -411,8 +371,6 @@ export function createRowGeometryController (ctx) {
         const cached = measuredRowHeights.get(rows[row])
         const indent = indentOf(row)
 
-        // 三条件快照全匹配才跳过：几何值、recordsVersion、树缩进——此时
-        // updateHeight(row, cached.height) 恒返回 0，不存在"少算行高"
         if (
           cached &&
           variableGeometry.heightAt(row) === cached.height &&
@@ -429,14 +387,12 @@ export function createRowGeometryController (ctx) {
           spans
         })
 
-        // 精算真值入缓存（A2.4 → P1 快照条目，按 record 引用为键）
         measuredRowHeights.set(rows[row], { height, indent, recordsVersion: version })
         delta += variableGeometry.updateHeight(row, height)
       }
 
       if (!delta) return
 
-      // 滚动锚定（A2.2 管线 4）：锚行上方总高变化 Δ 一次性补偿，视口内容视觉不动
       const shift = computeAnchorShift({
         prevTopAtAnchor,
         nextTopAtAnchor: variableGeometry.topAt(anchorRow)
@@ -454,9 +410,9 @@ export function createRowGeometryController (ctx) {
     },
 
     /**
-     * 单行行高重估（A2.2 契约①，编辑提交 nextTick 调用）：variable 模式单行
-     * 精算 + updateHeight + 锚定 + 布局同步；uniform 模式判定该行是否引入数组
-     * 值/多条目 → 模式升级 + 壳全量 relayout。
+     * 单行行高重估（编辑提交 nextTick 调用）：variable 单行精算 + updateHeight
+     * + 锚定 + 布局同步；uniform 判定该行是否引入数组值/多条目 → 模式升级 +
+     * 壳全量 relayout。
      */
     remeasureRow (row) {
       const cur = ctx.getLayout()

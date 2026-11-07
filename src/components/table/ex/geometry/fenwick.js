@@ -1,4 +1,4 @@
-// —— Fenwick 树（BIT，Float64Array；A2.3 选型） ——
+// —— Fenwick 树（BIT，Float64Array） ——
 
 function buildFenwick (values) {
   const n = values.length

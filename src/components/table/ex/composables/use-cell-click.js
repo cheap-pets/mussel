@@ -1,10 +1,9 @@
 /**
- * click 单一入口派发 composable（C1 壳拆分自 table-ex.vue；02-design.md
- * A4.3 click 单一入口 / A5.2 编辑触发 = click）：表头/树槽/编辑按钮/条目/选中/
- * check 事件链 + 编辑开启（openEditorAt/focusEditor）+ editing veil watch。
+ * click 单一入口派发 composable：表头/树槽/编辑按钮/条目/选中/check 事件链
+ * + 编辑开启（openEditorAt/focusEditor）+ editing veil watch。
  */
 /**
- * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads emit, props, layout, spans, flatRows, wiredColumns, displayRows,
  *   paintState, selectedKey, editorEl, editor, clickGuard
  * @host-writes onClick
@@ -26,11 +25,7 @@ import { isEditButtonHit } from '../interaction/edit-button'
 import { recordNumberOf } from '../shared/cell-identity'
 
 /**
- * @param {Object} host host 袋（读取 emit, props, wiredColumns, flatRows,
- *   displayRows, spans, layout, selectedKey, resolveRecordKey, cellEditableOf,
- *   paintState, editor, editorEl, getEditingCellRef, setEditingCellRef,
- *   invalidate, invalidateRow, getPainter, hideCellTooltip, applyTreeToggle,
- *   clickGuard, hitAt）
+ * @param {Object} host host 袋（消费面见文件头 @host-* 声明）
  * @returns {{ onClick }}
  */
 export function useCellClick (host) {
@@ -53,10 +48,9 @@ export function useCellClick (host) {
     )
   }
 
-  /** 编辑按钮派发（20261027 问题 5，局部交互——对齐树槽先例：不选中行、不发
-      cell-click、不开编辑；20261105 onClick 属性移除，改组件 emit
-      'edit-button-click'（与 links item click 同构：走组件 emit 而非属性回调；
-      payload 形状不变），column 传原始列引用）；命中并派发返回 true */
+  /** 编辑按钮派发（局部交互——对齐树槽先例：不选中行、不发 cell-click、
+      不开编辑；走组件 emit 'edit-button-click' 而非属性回调，column 传原始
+      列引用）；命中并派发返回 true */
   function tryEditButtonClick (hit, record, col) {
     if (
       !isEditButtonHit(hit, col, {
@@ -77,8 +71,8 @@ export function useCellClick (host) {
     return true
   }
 
-  /** 树箭头槽 toggle（A4.3 序 2，局部交互）：命中则应用展开态并返回 true；
-      meta 携带命中行 record/level（问题 3：tree-expand/tree-collapse 载荷） */
+  /** 树箭头槽 toggle（局部交互）：命中则应用展开态并返回 true；
+      meta 携带命中行 record/level，作 tree-expand/tree-collapse 载荷 */
   function tryToggleTreeRow (hit, record) {
     if (!props.tree || !host.flatRows.value) return false
 
@@ -99,8 +93,8 @@ export function useCellClick (host) {
     return !!toggle
   }
 
-  /** check 列选中态输入（G2-b 契约，与 drawCheck 同款判定）：disabled/value
-      从单元格 items attrs 读取，非 check 列为缺省值 */
+  /** check 列选中态输入（与 drawCheck 同款判定）：disabled/value 从单元格
+      items attrs 读取，非 check 列为缺省值 */
   function checkColumnState (col, record, rowIndex) {
     if (col._raw?.type !== 'check') return { disabled: false, value: undefined }
 
@@ -117,7 +111,7 @@ export function useCellClick (host) {
     }
   }
 
-  /** A4.3 序 3-4 / A5.2：条目 cell-item-click → 选中/cell-click 事件链 → 单击进编辑 */
+  /** 条目 cell-item-click → 选中/cell-click 事件链 → 单击进编辑 */
   function finishCellClick (hit, record, col) {
     const item = resolveItemClick({ hit, itemHits: host.paintState.itemHits })
 
@@ -137,12 +131,11 @@ export function useCellClick (host) {
 
     runEvents(events)
 
-    // check 翻转后 nextTick 重绘该行（A3 数据契约①）
+    // check 翻转后 nextTick 重绘该行
     if (toggled) nextTick(() => host.invalidateRow(hit.rowIndex))
 
-    // 先发完整选中/cell-click 链再开编辑，父级一次收到全部事件，选中态与编辑态一致。
-    // 单元格选中（20261105-table-ex-cell-select）：可编辑格点击让位编辑态（清除选中），
-    // 不可编辑格点击置选中（点击是选中唯一入口）
+    // 先发完整选中/cell-click 链再开编辑，父级一次收到全部事件，选中态与编辑态一致；
+    // 可编辑格点击让位编辑态（清除选中），不可编辑格点击置选中（点击是选中唯一入口）
     const { openEditor } = resolveCellClickOpen({ hit, cellEditable: host.cellEditableOf(col) })
 
     if (openEditor) {
@@ -153,9 +146,9 @@ export function useCellClick (host) {
     }
   }
 
-  /** R5：空白延伸区点击（行有效、x 越出列区右缘）仅选中行——同 resolveCellClick
-      的选中事件序（key → record），不发 cell-click（无对应列），check/树槽/编辑不适用；
-      点击空白延伸区清除单元格选中（裁定 4） */
+  /** 空白延伸区点击（行有效、x 越出列区右缘）仅选中行——同 resolveCellClick
+      的选中事件序（key → record），不发 cell-click（无对应列），check/树槽/
+      编辑不适用；点击空白延伸区清除单元格选中 */
   function selectRowOnly (record) {
     host.clearCellSelection?.()
 
@@ -166,7 +159,7 @@ export function useCellClick (host) {
   }
 
   function onClick (event) {
-    // 拖拽误触抑制：拖拽后紧随的 click 丢弃（A5 / decisions「[I1 前]⑧」）
+    // 拖拽误触抑制：拖拽后紧随的 click 丢弃
     if (host.clickGuard.consume()) return
 
     const result = host.hitAt(event)
@@ -177,7 +170,7 @@ export function useCellClick (host) {
     const col = hit.colIndex >= 0 ? host.wiredColumns.value[hit.colIndex] : null
 
     if (hit.isHeader) {
-      // 表头点击清除单元格选中（裁定 4：表头非选中通道）
+      // 表头点击清除单元格选中（表头非选中通道）
       host.clearCellSelection?.()
       emitHeaderClick(col)
 
@@ -188,27 +181,25 @@ export function useCellClick (host) {
 
     if (record == null) return
 
-    // R5：空白延伸区命中（beyondCols）无对应列，仅选中行
+    // 空白延伸区命中（beyondCols）无对应列，仅选中行
     if (!col) {
       if (hit.beyondCols) selectRowOnly(record)
 
       return
     }
 
-    // 编辑按钮命中（20261027 问题 5）：局部交互，不选中行、不发 cell-click、
-    // 不开编辑；判定在树槽之前（A4.3 序 2 前置）
+    // 编辑按钮命中判定在树槽之前
     if (tryEditButtonClick(hit, record, col)) return
 
-    // A4.3 序 2：树箭头槽 toggle（局部交互，不选中行、不发 cell-click）；
-    // 树槽判定消费原始 hit（§5.4）
+    // 树槽判定消费原始 hit（树列不参与合并归一改写）
     if (tryToggleTreeRow(rawHit, record)) return
 
     finishCellClick(hit, record, col)
   }
 
-  // cell-item-click 派发（A1/A3.3，payload 对齐 DOM 版 + recordIndex）：
-  // link/tag 经 render 产物 events.click 取同源 payload；button（canvas 专属产物，
-  // 无 DOM events 通道）payload = buttons[index]；disabled 条目只续链不发
+  // cell-item-click 派发（payload 对齐 DOM 版 + recordIndex）：link/tag 经
+  // render 产物 events.click 取同源 payload；button（canvas 专属产物，无 DOM
+  // events 通道）payload = buttons[index]；disabled 条目只续链不发
   function emitCellItemClick (item, record, col, row) {
     const raw = col._raw ?? col
     const recordNumber = recordNumberOf(props.recordsOffset, row)
@@ -222,8 +213,6 @@ export function useCellClick (host) {
     emitDomItemClick(item, record, col, raw, recordNumber, row)
   }
 
-  /** button 条目派发（canvas 专属 render 产物，无 DOM events 通道）：
-      payload = buttons[index] 配置对象 */
   function emitButtonItemClick (item, record, col, raw, recordNumber, row) {
     const value = col._value?.(record) ?? (col.field != null ? record?.[col.field] : undefined)
     const produced = col._render?.({ record, recordNumber, value, emit })
@@ -234,9 +223,9 @@ export function useCellClick (host) {
     }
   }
 
-  /** link/tag 条目派发：canvas 通道 render 产物自持 onItemClick（payload 与 DOM 版
-      events.click 同构——常规条目 = 条目对象原引用，linkOption.max dots 的 payload
-      值 '...'），外包 recordIndex；disabled 条目只续链不发 */
+  /** link/tag 条目派发：render 产物自持 onItemClick（payload 与 DOM 版
+      events.click 同构——常规条目 = 条目对象原引用，linkOption.max dots 的
+      payload 值 '...'），外包 recordIndex */
   function emitDomItemClick (item, record, col, raw, recordNumber, row) {
     const wrappedEmit = (name, payload) => {
       if (name === 'cell-item-click') {
@@ -253,8 +242,7 @@ export function useCellClick (host) {
     if (!canvasItem || isDisabledAttr(canvasItem.disabled)) return
 
     // canvas 侧 _maxItems 截断省略条目（绘制层 dots，render 产物内无对应条目）：
-    // payload 值 '...'（A1/A3.3）；link/list 条目 payload 键统一 item
-    // （decisions 第 5 条，20261104-table-column-type），tag/button 键不变
+    // payload 值 '...'；link/list 条目 payload 键统一 item，tag/button 键不变
     if (isCappedDotsItem(item, items, col)) {
       emit('cell-item-click', {
         record,
@@ -276,14 +264,14 @@ export function useCellClick (host) {
     return items.length > maxItems && item.index === maxItems - 1
   }
 
-  /** disabled 存在性判定（实施约束 7：与 G2 绘制侧 linkTextColorOf 同一谓词） */
+  /** disabled 存在性判定（与绘制侧 linkTextColorOf 同一谓词） */
   function isDisabledAttr (disabled) {
     return disabled != null && disabled !== false
   }
 
-  /** 单击进编辑（A5.2/A5.5）：style 按 computeEditorStyle 浮层盒（贴格线内侧，
-      border/编辑器类型分支），editorType 判定用开值形态与 _resolveMaxLines(record) 行级求值。
-      合并区域（§5.5）：cellRect 经 spanRectOf 取区域矩形（浮层覆盖整个合并区域），
+  /** 单击进编辑：style 按 computeEditorStyle 浮层盒（贴格线内侧，border/编辑器
+      类型分支），editorType 判定用开值形态与 _resolveMaxLines(record) 行级求值；
+      合并区域：cellRect 经 spanRectOf 取区域矩形（浮层覆盖整个合并区域），
       rowFrom/colTo 供格线内缩按区域外缘判定 */
   function openEditorAt (hit, record, col) {
     // 编辑浮层打开即收起 tooltip（互不干扰：veil 遮蔽编辑格内容，提示无意义）
@@ -335,9 +323,9 @@ export function useCellClick (host) {
 
     focusEditor()
 
-    // veil 接线（20261027 问题 6）：先更新行列引用再失效——旧格 invalidate 时
-    // 已不在 veil（恢复内容），新格 invalidate 置 veil；同一 tick 内「提交旧格 +
-    // 打开新格」时旧格恢复由本处失效直接完成
+    // veil 接线：先更新行列引用再失效——旧格 invalidate 时已不在 veil（恢复
+    // 内容），新格 invalidate 置 veil；同一 tick 内「提交旧格 + 打开新格」时
+    // 旧格恢复由本处失效直接完成
     const prevCell = host.getEditingCellRef()
 
     host.setEditingCellRef({ row: hit.rowIndex, col: hit.colIndex })
@@ -351,9 +339,9 @@ export function useCellClick (host) {
     return editorConfig != null && typeof editorConfig === 'object'
   }
 
-  /** 编辑器聚焦（A5.5）：渲染完成后 input/select/date 聚焦内部真实 input，
-      textarea 聚焦 textarea 元素，switch 聚焦容器。focus() 会把最近的可滚动
-      祖先滚出溢出量（浮层相对画布漂移），聚焦后复位浮层容器滚动 */
+  /** 编辑器聚焦：渲染完成后 input/select/date 聚焦内部真实 input，textarea
+      聚焦 textarea 元素，switch 聚焦容器。focus() 会把最近的可滚动祖先滚出
+      溢出量（浮层相对画布漂移），聚焦后复位浮层容器滚动 */
   function focusEditor () {
     nextTick(() => {
       const el = host.editorEl.value
@@ -379,9 +367,9 @@ export function useCellClick (host) {
     return { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` }
   }
 
-  // 编辑关闭 veil 清理（20261027 问题 6）：仅 editing 变为 null（关闭）时恢复
-  // 编辑格内容。commit 与 open 落在同一 tick 时 watcher 只 flush 一次，无条件
-  // 清除会把新格 veil 抹掉；行列由 editingCellRef 承载，覆盖全部关闭路径
+  // 编辑关闭 veil 清理：仅 editing 变为 null（关闭）时恢复编辑格内容。commit
+  // 与 open 落在同一 tick 时 watcher 只 flush 一次，无条件清除会把新格 veil
+  // 抹掉；行列由 editingCellRef 承载，覆盖全部关闭路径
   watch(() => host.editor.state.editing, newValue => {
     if (newValue != null) return
 
