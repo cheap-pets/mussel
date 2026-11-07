@@ -12,7 +12,7 @@
 - [table-ex 覆盖层绘制须裁剪到表体区](./project/table-ex-overlay-clip-body-area.md) `convention` `code@worktree(2026-11-06)`：分区 5 withClip 表体区；hover 带刻意横穿固定列，选中描边须另裁固定列区（否则滚入压固定列上）。
 - [table-ex hover 高亮与脏区随合并区域联动](./project/table-ex-hover-span-region.md) `convention` `code@worktree(2026-11-06)`：hover 带/列带脏区须同批按 spanRectOf/regionAt 取合并区域，只改绘制会残影，补画会两次混色。
 - [table-ex 条目列对齐协议](./project/table-ex-item-column-align.md) `convention` `code@worktree(2026-11-04)`：button 组两遍式平移、link 竖排每条各自对齐、tag 横排 itemsStartX；命中矩形 x 随对齐同步。
-- [canvas 文本光学居中锚 centeredTextAnchor](./project/canvas-text-optical-centering.md) `convention` `code@worktree(2026-10-29)`：textBaseline='middle' 对 CJK 偏上 1~2px；单元格文本垂直居中统一走 alphabetic 基线 + fontBoundingBox 半差锚。
+- [canvas 文本光学居中锚 centeredTextAnchor](./project/canvas-text-optical-centering.md) `convention` `code@worktree(2026-11-07)`：文本/字形垂直居中统一 alphabetic + 墨迹半差锚（CJK 探针/逐字形实测，全局缓存带 fonts-loaded 写守卫）；勿手写 'middle'。
 - [table-ex recordsVersion 行高粘性契约](./project/table-ex-recordsversion-height-contract.md) `convention` `code@worktree(2026-11-05)`：精算缓存按行快照跳过；就地改 records 须 bump recordsVersion，否则行高不更新。
 - [table-ex 树 isLeaf 懒加载协议](./project/table-ex-tree-lazy-load.md) `convention` `code@worktree(2026-10-29)`：treeProps.isLeaf 未映射即关闭；仅 ===false 且无子级显三角；toggle 必发 tree-expand/collapse；回填就地 push + recordsVersion++ 防闪顶。
 
@@ -23,3 +23,4 @@
 - [table-ex 自检断言随绘制/结构变更漂移](./project/canvas-pixel-assert-anchor-drift.md) `pitfall` `code@worktree(2026-10-28)`：自检恒败伪装组件缺陷——锚点/绘制特征/断言同批改写、grep 旧值全扫 self-checks；ex/ 文件移动须同步 self-checks import。
 - [overlay DOM 阴影 canvas getImageData 不可见](./project/dom-shadow-canvas-imagedata-invisible.md) `pitfall`：getImageData 读不到滚动阴影——overlay 阴影是 DOM box-shadow；断言 DOM 或截图合成像素。
 - [table-ex 重构行为冻结：探针基线逐字比对](./project/table-ex-refactor-frozen-probe.md) `convention` `code@worktree(2026-10-30)`：重构前采集行为快照（警告原文序列/构建序）为冻结基线，重构后逐字比对 + 自检双安全网；探针交付前删除。
+- [table-ex 计数断言冷键被预热致重跑恒败](./project/table-ex-counter-assert-warm-cache.md) `pitfall` `code@worktree(2026-11-07)`：自检重跑计数断言恒败——固定冷键被前序用例预热；冷键加随机小数、按探针/字形维度计数、fonts loaded 前置。

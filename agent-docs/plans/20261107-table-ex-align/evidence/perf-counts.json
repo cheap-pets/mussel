@@ -1,0 +1,27 @@
+{
+  "method": "劫持 CanvasRenderingContext2D.prototype.measureText 计数（table-ex-performance-profiling 口径），前置 document.fonts.status === 'loaded' ✓",
+  "steadyState": {
+    "scroll5FirstVisibility": { "deltasPerScroll": [34, 29, 35, 34, 29], "uniqueTexts": 161, "repeatedTexts": 0, "note": "全部为首次入视口新文本的宽度测量（width 链），每文本恰 1 次" },
+    "scrollBackSeenRegion": { "delta": 0 },
+    "hover3": { "deltas": [0, 0, 0] },
+    "columnDrag160to188FullRepaint": { "dragDelta": 0, "afterUpDelta": 0, "nextFrameDelta": 0 },
+    "probeCharYongCount": 0,
+    "glyphDotCount": 0,
+    "checkGlyphCount": 0,
+    "note": "稳态帧增量全 0：锚/字形/能力探测缓存全命中，无逐帧/逐行重复测量"
+  },
+  "freshLoad": {
+    "window": "reload + addInitScript 劫持，load 后 2.5s（含自检面板首轮）",
+    "totalMeasureText": 3003,
+    "contexts2dCreated": 444,
+    "probeCharYong": 128,
+    "glyphDot": 7,
+    "checkGlyph": 2,
+    "note": "'永' 计数 = 每 ctx 实例能力探测 1 次 + 每 font 串锚 miss 1 次；'●' 每 (glyph,font) 恰 1 次；'✓' = 单元格 ✓ + 表头 ✓ 各 1（font 串各 1）——与设计接口块推导一致",
+    "postReloadSteadyCheck": { "hoverDelta": 0, "probeChar": 128, "glyphDot": 7, "checkGlyph": 2, "note": "滚到新行 23 = 新文本宽度测量（每文本 1 次，width 链与基线同构）；锚/字形计数不增" }
+  },
+  "firstFrameVsBaseline": {
+    "type": "推导（基线 dev@095cfdf 禁 checkout 不可实测；与 04-impl.md 偏离口径一致）",
+    "derivation": "width 链逐字节未触碰（cell-text.js diff 仅锚区域）；能力探测两版本同为每 ctx 实例 1 次（HEAD 测 ''，现测 '永'，计数相消）；文本锚 miss 两版本同为每 font 串 1 次（HEAD ''，现 '永'，计数相消）；净增 = 表头 500 字重 font 串 1（HEAD 无锚）+ 表头 ✓ 字形 1（HEAD 'middle' 无测量）+ 图标字形锚按 (glyph,font) 拆分相对 HEAD 按 font 串锚的增量（fresh-load '●'=7 为一次性）≈ 3~9，一次性，量级 <10，落在设计上界「首绘 font 串数 + 图标字形数」内"
+  }
+}
