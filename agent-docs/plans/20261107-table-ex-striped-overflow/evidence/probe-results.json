@@ -1,0 +1,54 @@
+{
+  "date": "2026-11-07",
+  "env": "http://localhost:3000/data/table-ex/（demo watch dev 产物，playwright chromium，devicePixelRatio=1）",
+  "standard3_selfcheck": {
+    "url": "http://localhost:3000/data/table-ex/",
+    "dom": "调试面板 .ct-self-checks 文本「自检结果（241/241 通过）」",
+    "result": "PASS"
+  },
+  "standard1_narrow_striped": {
+    "url": "http://localhost:3000/data/table-ex/?scene=narrow",
+    "layout": { "colWidths": [56, 280, 240], "colSum": 576, "stickyWidthCss": 956, "headH": 36, "rowH": 36 },
+    "theme": { "bgStripe": "rgb(246, 246, 246)", "bgNormal": "rgb(255, 255, 255)" },
+    "samples_row1_center_y90": {
+      "inCol_x196": [246, 246, 246, 255],
+      "blank_x596": [255, 255, 255, 255],
+      "blank_x946": [255, 255, 255, 255]
+    },
+    "boundary_scan_row1_x570_582": {
+      "570": [246, 246, 246, 255], "571": [246, 246, 246, 255], "572": [246, 246, 246, 255],
+      "573": [246, 246, 246, 255], "574": [246, 246, 246, 255],
+      "575": [201, 205, 209, 255],
+      "576": [255, 255, 255, 255], "577": [255, 255, 255, 255], "578": [255, 255, 255, 255],
+      "579": [255, 255, 255, 255], "580": [255, 255, 255, 255], "581": [255, 255, 255, 255], "582": [255, 255, 255, 255]
+    },
+    "result": "PASS — 斑马色止于 x=575（末列分隔线），x>=576 全为 bgNormal 白"
+  },
+  "standard2_wide_xscrolled": {
+    "url": "http://localhost:3000/data/table-ex/（default 场景）",
+    "layout": { "colSum": 1944, "viewportW": 956, "scrollLeft": 240, "rowGeometryMode": "variable" },
+    "row1_center_y141": {
+      "x40": 246, "x144": 246, "x600": 246, "x900": 246, "x930": 246, "x946": 246, "x950": 246, "x954": 246,
+      "row0_x144": 255, "row2_x144": 255
+    },
+    "result": "PASS — 横向滚动态斑马色铺满整个视口宽（capEnd=bandEnd，bgNormal 补底分支不触发），奇偶交替正确"
+  },
+  "standard4_header_shadow": {
+    "narrow_y_scrolled": {
+      "url": "http://localhost:3000/data/table-ex/?scene=narrow + scrollTop=300",
+      "before_scroll": { "scrolledClass": false, "shadowWidthStyle": "576px", "shadowRectW": 576, "computedShadow": "none" },
+      "after_scroll": { "scrolledClass": true, "shadowWidthStyle": "576px", "shadowRectW": 576, "shadowRectRight_relCanvas": 576, "shadowTop_relCanvas": 37, "computedShadow": "active", "colSum": 576, "canvasW": 956 }
+    },
+    "default_y_scrolled": {
+      "url": "http://localhost:3000/data/table-ex/（default，colSum=1944 >= canvas 956）+ scrollTop=200",
+      "before_scroll": { "scrolledClass": false, "shadowWidthStyle": "956px", "computedShadow": "none" },
+      "after_scroll": { "scrolledClass": true, "shadowWidthStyle": "956px", "shadowRectW": 956, "computedShadow": "active" }
+    },
+    "result": "PASS — 窄列滚动态阴影条宽度=min(stickyWidth, contentRight)=576 止于列内容区右缘；非窄列态=956=stickyWidth 行为不变；未滚动态两场景均无阴影"
+  },
+  "console_errors": "1~2 条 ERR_INVALID_URL（data:image/png;base64,AAAA<N>）= demo/src/data/table-ex/self-checks/cell-painters.js:814 负向夹具预期产物，与本修复无关",
+  "screenshots": [
+    "narrow-striped-viewport.png（窄列未滚动，斑马止于列区）",
+    "narrow-scrolled-shadow-stage.png（窄列+纵滚，斑马/表头止于列区右缘 x=576，空白区干净）"
+  ]
+}

@@ -9,6 +9,7 @@
 
 ## 绘制与几何
 
+- [table-ex 绘制收口：行带与 DOM 阴影统一 cap 至列内容区右缘](./project/table-ex-paint-cap-content-right.md) `convention` `code@worktree(2026-11-07)`：canvas 行带与 DOM head 阴影条宽度一律 cap 至 contentRightXOf，延伸区补 bgNormal；勿以视口宽/100% 为宽度事实源。
 - [table-ex 覆盖层绘制须裁剪到表体区](./project/table-ex-overlay-clip-body-area.md) `convention` `code@worktree(2026-11-06)`：分区 5 withClip 表体区；hover 带刻意横穿固定列，选中描边须另裁固定列区（否则滚入压固定列上）。
 - [table-ex hover 高亮与脏区随合并区域联动](./project/table-ex-hover-span-region.md) `convention` `code@worktree(2026-11-06)`：hover 带/列带脏区须同批按 spanRectOf/regionAt 取合并区域，只改绘制会残影，补画会两次混色。
 - [table-ex 条目列对齐协议](./project/table-ex-item-column-align.md) `convention` `code@worktree(2026-11-04)`：button 组两遍式平移、link 竖排每条各自对齐、tag 横排 itemsStartX；命中矩形 x 随对齐同步。
