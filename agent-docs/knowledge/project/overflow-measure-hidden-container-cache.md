@@ -8,7 +8,7 @@
 
 - 折叠数由 `widthCache` 直算（`computeCount`）；`display:none` 子树无布局盒，`getBoundingClientRect().width` 恒为 0。
 - 隐藏瞬间 `sizechange`（RO 观测到 0×0）照常派发 → `recompute` 重测可见行，测量写入不设洁净条件，0 宽直接入缓存。
-- 现状（含漂移检测）靠**下一次容器 resize** 的漂移比对（缓存 0 vs 真实宽）触发全量重测自愈；删除漂移检测的直算路径改动（见 `agent-docs/plans/menu-overflow-measure.md`）会去掉该自愈路径，损坏状态持续到 items 身份变化 / `fonts.ready` 重测。
+- 现状（含漂移检测）靠**下一次容器 resize** 的漂移比对（缓存 0 vs 真实宽）触发全量重测自愈；删除漂移检测的直算路径改动（menu-overflow-measure 改造，方案已实施、原记录已随 2026-11-07 plans 清理删除）会去掉该自愈路径，损坏状态持续到 items 身份变化 / `fonts.ready` 重测。
 - 实测（`demo/menu` 面板 2，900px、8 项，正确态 = 6 行 + 触发器）：容器 `display:none` → 恢复后 8 行、无触发器（错误）；再 resize 至 640px 后恢复为 5 行 + 触发器（正确）。
 
 ## 注意

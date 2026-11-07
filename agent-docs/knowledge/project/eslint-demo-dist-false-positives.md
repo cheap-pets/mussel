@@ -15,4 +15,4 @@
 
 ## 来源
 
-.eslintrc / .eslintignore；agent-docs/plans/20261029-table-ex-optimize/01-explore.md 块 1
+.eslintrc / .eslintignore；原 agent-docs/plans/20261029-table-ex-optimize/01-explore.md 块 1（已随 2026-11-07 plans 清理删除）

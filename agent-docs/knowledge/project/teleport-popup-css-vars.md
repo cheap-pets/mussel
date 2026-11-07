@@ -2,7 +2,7 @@
 
 ## 结论
 
-组件内经 `Teleport` 挂到 `$mussel.rootElement` 的弹层（tooltip-panel / dropdown-panel / side-menu-popup），脱离宿主组件的 DOM 子树，宿主类上声明的组件级 CSS 变量（如 `.mu-side-menu` 上的 `--mu-side-menu_*`）对弹层内元素**不生效**。
+组件内经 `Teleport` 挂到 `$mussel.rootElement` 的弹层（popup-menu / dropdown-panel 等，common/popup.js 统一挂载），脱离宿主组件的 DOM 子树，宿主类上声明的组件级 CSS 变量（如 `.mu-side-menu` 上的 `--mu-side-menu_*`）对弹层内元素**不生效**。
 
 弹层自身的类必须重复声明所需变量的默认值，使用方可按同名单独覆盖。
 
@@ -12,6 +12,6 @@ CSS 自定义属性沿 DOM 树级联。Teleport 把弹层移到 `.mu-root` 下�
 
 ## 注意
 
-- 变量重复声明只放"弹层内实际用到的"（side-menu-popup：indent / item-height / popup-width / popup-gap），与宿主保持同值。
+- 变量重复声明只放"弹层内实际用到的"，与宿主保持同值（现行例：popup-menu.scss 重复声明 `--mu-side-menu_popup-min-width/max-width`）。
 - 主题/暗色变量（`--mu-*` 全局系）不受影响——它们定义在 `.mu-root` / `.mu-dark` 上，弹层仍在该子树内。
 - 新增带 Teleport 弹层的组件时，把"弹层内用了哪些宿主变量"作为检查项，Playwright 断言弹层内行高/缩进可兜住此类回归。

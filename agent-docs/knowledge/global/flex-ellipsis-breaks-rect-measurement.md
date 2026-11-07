@@ -15,4 +15,4 @@
 ## 注意
 
 - 适用前提是行内其余元素 `flex: none`（刚性），压缩只落在可截断元素上；若还有其他可压缩元素（如无 nowrap 的 `···` span），它们同样会让 rect 测量失真。
-- 实例：`src/components/bar/pagination.vue` 的 `contentWidth()`（方案与验证记录见 `agent-docs/plans/pagination-button-count.md`）。
+- 实例：`src/components/bar/pagination.vue` 的 `contentWidth()`（原方案记录 agent-docs/plans/pagination-button-count.md 已随 2026-11-07 plans 清理删除）。

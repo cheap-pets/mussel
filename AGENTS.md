@@ -34,7 +34,8 @@ Mussel — Vue 3 组件库。
 使用 `project-knowledge` skill，仅在以下时机调用：
 
 - 任务开始时，涉及项目特有实现前，先读取 `agent-docs/knowledge/INDEX.md`。
-- 任务结束前，若产生可复用的新知识，调用该 skill 完成沉淀。
+- table / table-ex 相关任务（改组件、列类型、画布绘制、自检等），另读主题索引 `agent-docs/knowledge/INDEX-table.md`；相关条目只在主题页维护，主索引不重复。
+- 任务结束前，若产生可复用的新知识，调用该 skill 完成沉淀；table / table-ex 新条目写入 `INDEX-table.md`，其余写入主索引。
 
 不要在其他时机主动调用此 skill。
 

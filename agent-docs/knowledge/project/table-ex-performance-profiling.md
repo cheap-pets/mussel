@@ -16,4 +16,4 @@
 
 ## 来源
 
-src/components/table-ex/table-ex.vue（getLayoutInfo/lastRelayout）、demo/src/data/table-ex/main-view.vue（调试面板），2026-10-26 table-ex 优化验证实测。
+src/components/table/ex/table-ex.vue（getLayoutInfo/lastRelayout）、composables/use-relayout.js、demo/src/data/table-ex/main-view.vue（调试面板），2026-10-26 table-ex 优化验证实测。

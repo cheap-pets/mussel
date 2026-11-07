@@ -1,8 +1,9 @@
-# demo watch 运行中新增页面目录需重启构建
+# demo 页 URL 前缀 /data/ 与新增页构建重启
 
 ## 结论
 
-新增 demo 页须两步：① 在 `demo/src/catalog.js` 登记（`path` 须以分类前缀开头，目录与 URL 一致）；② 重启 `npm run demo:build`（结束占用 :3000 端口的 node 进程再重新运行）。未登记或未重启，访问 `http://localhost:3000/data/<name>/` 404。
+- demo 验证页实际 URL 为 `http://localhost:3000/data/<name>/`（如 `/data/table-ex/`），非 `/<name>/`；页面源码在 `demo/src/data/<name>/`，构建产物落在 serve 根的 `data/` 子目录。AGENTS.md「常用命令」节的 `demo/src/<name>/` 与 `/<name>/` 表述已过时，以本条为准。
+- 新增 demo 页须两步：① 在 `demo/src/catalog.js` 登记（`path` 须以分类前缀开头，目录与 URL 一致）；② 重启 `npm run demo:build`（结束占用 :3000 端口的 node 进程再重新运行）。未登记或未重启，访问 404。
 
 ## 原因
 
@@ -10,9 +11,13 @@
 
 ## 注意
 
-- 判断方法：`curl -o /dev/null -w "%{http_code}" http://localhost:3000/<name>/` 返回 404 而老页面 200。
+- 判断方法：`curl -o /dev/null -w "%{http_code}" http://localhost:3000/data/<name>/` 返回 404 而老页面 200——404 时先确认 /data/ 前缀，再查登记/重启。
 - 重启杀进程前先用 `netstat -ano | grep :3000` 确认 PID 是 demo watch（知识库另有条目：后台脚本记录的是 shell PID，须按端口定位）。
 - 修改**已有** demo 页源码不受影响，watch 正常增量构建。
+
+## 来源
+
+vite.demo.config.js、demo/src/catalog.js；demo/dist 目录结构实测（2026-10-28，`/table-ex/` 404、`/data/table-ex/` 200）
 
 ## 来源
 

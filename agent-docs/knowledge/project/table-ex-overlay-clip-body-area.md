@@ -11,7 +11,7 @@ painter 分区 5（paintOverlay/paintHoverOverlay）绘制分两类口径：
 
 ## 来源
 
-- src/components/table/ex/painter.js paintHoverOverlay（20261031 修复）
+- src/components/table/ex/table-paint/painter.js paintHoverOverlay（20261031 修复）
 - src/components/table/ex/table-paint/paint-overlay.js paintCellSelection（20261106 固定列选中框修复）
 - 脏区路径差异：行带/列带/单格/调宽入口的外层 clip 已把 y 收敛到 ≥ headHeight，唯 paintFull（滚动 redraw 走整幅）无外层收敛，溢出仅在该路径可见。
 

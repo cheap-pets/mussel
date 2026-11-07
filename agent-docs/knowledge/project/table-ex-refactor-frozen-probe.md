@@ -6,7 +6,7 @@
 
 ## 来源
 
-agent-docs/plans/20261029-table-ex-optimize/04-impl.md「B 线冻结基线比对」节（实证拦截两处重构缺陷：段闭合时序、region 解构键名）
+原 agent-docs/plans/20261029-table-ex-optimize/04-impl.md「B 线冻结基线比对」节（实证拦截两处重构缺陷：段闭合时序、region 解构键名）；原记录已随 2026-11-07 plans 清理删除
 
 ## 注意
 

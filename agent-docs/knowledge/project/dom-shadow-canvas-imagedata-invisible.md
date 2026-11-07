@@ -15,4 +15,4 @@
 
 ## 来源
 
-agent-docs/plans/20261027-table-ex-improve/05-verify-1.md（A2 行验证手段修正）；src/components/table-ex/table-ex.scss
+原 agent-docs/plans/20261027-table-ex-improve/05-verify-1.md（A2 行验证手段修正，已随 2026-11-07 plans 清理删除）；src/components/table/ex/table-ex.scss

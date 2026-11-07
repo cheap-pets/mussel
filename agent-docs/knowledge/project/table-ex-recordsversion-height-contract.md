@@ -1,4 +1,4 @@
-# table-ex recordsVersion 行高粘性契约（精算缓存快照跳过）
+# table-ex recordsVersion 行高粘性契约
 
 ## 结论
 
@@ -8,4 +8,4 @@
 
 ## 来源
 
-src/components/table/ex/row-geometry-controller.js（remeasureVisibleRows / syncMeasuredHeightCache）、table-ex.vue 合并 watch（recordsVersion 接线），code@worktree(2026-11-05)。
+src/components/table/ex/geometry/row-geometry-controller.js（remeasureVisibleRows / syncMeasuredHeightCache）、table-ex.vue 合并 watch（recordsVersion 接线），code@worktree(2026-11-05)。

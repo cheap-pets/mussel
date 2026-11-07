@@ -1,4 +1,4 @@
-# Playwright 验证 watch 驱动路径：经组件实例替换 props
+# Playwright 经组件实例内部通道验证
 
 ## 结论
 
@@ -19,6 +19,7 @@ await new Promise(r => setTimeout(r, 300))   // 等 watch → fullMeasure → ne
 
 ## 注意
 
+- **通道按被测构建选择**：`__vueParentComponent` 等 dev-only 内部通道仅 dev 构建存在（demo watch 的 dev 产物可用）；production 构建（`npm run build` 产物、`demo:build` 生产包）不暴露组件内部态（setupState/props 读取恒空或不可用），headless 断言改走页面真实 UI 控件驱动（点击、键盘、控件显隐）+ DOM/像素断言，断言语义不变。
 - 替换后等 200–300ms 再断言：链路含 watch → 异步测量（nextTick 往返）；`sizechange` 路径另有 50ms throttle trailing。
 - 替换后**不要**再触发父组件重渲——父传入的原 const 会覆盖替换值。
 - 整场景放在单次 `browser_evaluate` 内完成，结束后 reload 恢复页面。

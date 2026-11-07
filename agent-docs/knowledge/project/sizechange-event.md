@@ -27,4 +27,4 @@ patch 的生效时机：`src/index.js` re-export `EventInterceptor` 时连带 im
 - **SSR 安全**：`ResizeObserver` / `Element` 不存在时全部 no-op。
 - handler 拿到的是 CustomEvent，尺寸需自行读 `event.target.clientWidth` 等。
 
-现有消费方（改机制时回归）：pagination、dialog、tooltip-panel、combo-wrapper、date-range-picker、scrollbar。
+现有消费方（改机制时回归）：scroll-area、pagination、date-picker / week-picker / date-range-picker、segmented、combo-wrapper、dialog、menu、scrollbar、table（base + ex）。

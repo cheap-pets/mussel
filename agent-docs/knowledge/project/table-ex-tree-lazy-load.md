@@ -8,7 +8,7 @@
 
 ## 来源
 
-src/components/table/ex/tree.js、use-tree-rows.js、table-ex.vue；demo/src/data/table-ex/main-view.vue（tree-lazy 夹具）
+src/components/table/ex/shared/tree.js、composables/use-tree-rows.js、table-ex.vue；demo/src/data/table-ex/main-view.vue（tree-lazy 夹具）
 
 ## 注意
 

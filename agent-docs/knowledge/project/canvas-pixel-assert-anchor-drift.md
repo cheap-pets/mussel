@@ -1,4 +1,4 @@
-# table-ex 自检像素断言随锚点口径漂移
+# table-ex 自检断言随绘制/结构变更漂移
 
 ## 触发特征
 
@@ -16,7 +16,9 @@
 - 正确：锚点公式变更与受影响断言的采样区、期望值、对照帧构造同批改写；对照帧必须用真·基线态（`makeState({})`）；改前先按新锚点推算墨迹落位再定采样区。
 - **同步清单不依赖方案文档，grep 旧锚字面值全量扫 self-checks 全目录**（如 `54`、`'208,45'`、`42,24`、夹具字段名），凡精确值断言逐一重算；±1px 容差断言数值上不破，但注释口径一并同步，防下次误判。
 - 「直调 harness 通过」不覆盖像素与页面层——实施自验结论不能替代浏览器面板验证。
+- 新增/改变画布绘制特征，与受影响断言同批改写（demo/src/data/table-ex/self-checks/ 各模块，重点 painter.js 像素断言），否则恒败。
+- 移动/改名 `src/components/table/ex/` 文件，同批同步 demo self-checks 12 文件的 import（self-checks 直引 ex/ 内部模块）。
 
 ## 来源
 
-agent-docs/plans/20261027-table-ex-improve/05-verify-1.md 失败项 1/2；agent-docs/plans/20261028-table-ex-anchor-rowheight/01-impl.md（painter.js 自检遗漏实例）
+原 agent-docs/plans/20261027-table-ex-improve/05-verify-1.md 失败项 1/2；原 agent-docs/plans/20261028-table-ex-anchor-rowheight/01-impl.md（painter.js 自检遗漏实例）——均已随 2026-11-07 plans 清理删除

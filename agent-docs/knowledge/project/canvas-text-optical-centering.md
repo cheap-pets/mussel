@@ -2,11 +2,11 @@
 
 ## 结论
 
-cell-painters.js 内 `centeredTextAnchor` 统一文本垂直居中：textBaseline 用 `'alphabetic'`，y = centerY + (fontBoundingBoxAscent - fontBoundingBoxDescent) / 2；`fontBoundingBox*` 缺失时回退 `'middle'` 原行为。tag/button/progress 等 fillText 站点统一走该锚，新增绘制站点勿再手写 `'middle'`。
+cell-paint/cell-text.js 导出的 `centeredTextAnchor` 统一文本垂直居中：textBaseline 用 `'alphabetic'`，y = centerY + (fontBoundingBoxAscent - fontBoundingBoxDescent) / 2；`fontBoundingBox*` 缺失时回退 `'middle'` 原行为。tag/button/progress 等 fillText 站点统一走该锚，新增绘制站点勿再手写 `'middle'`。
 
 ## 来源
 
-src/components/table/ex/cell-painters.js；demo/src/data/table-ex/self-checks/cell-painters.js
+src/components/table/ex/cell-paint/cell-text.js；demo/src/data/table-ex/self-checks/cell-painters.js
 
 ## 注意
 

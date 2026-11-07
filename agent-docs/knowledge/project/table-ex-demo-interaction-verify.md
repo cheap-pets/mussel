@@ -1,4 +1,4 @@
-# table-ex demo 页交互验证（合成点击 + getLayoutInfo + 日志读取）
+# table-ex demo 页交互验证
 
 ## 结论
 
@@ -12,7 +12,7 @@
 ## 来源
 
 - demo/src/data/table-ex/main-view.vue（logEvent unshift、stageColumns 列序）
-- src/components/table-ex/table-ex.vue（sticky 监听层、pointOf、getLayoutInfo expose）
+- src/components/table/ex/table-ex.vue（sticky 监听层、pointOf、getLayoutInfo expose）
 - 2026-10-28 编辑态保持改造的 playwright 实测
 
 ## 注意

@@ -11,7 +11,7 @@
 
 ## 来源
 
-src/components/table/ex/cell-painters.js（drawButton / drawLinkItems / itemsStartX / alignedEntryX），20261104 修复 button/link 列 align 不生效。
+src/components/table/ex/cell-paint/（drawButton / drawLinkItems / itemsStartX / alignedEntryX 分布于 cell-painters、item-painters、link-items 等），20261104 修复 button/link 列 align 不生效。
 
 ## 注意
 
