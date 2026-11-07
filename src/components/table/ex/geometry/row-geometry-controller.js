@@ -15,7 +15,8 @@ import {
   createUniformRowGeometry,
   createVariableRowGeometry,
   computeAnchorShift,
-  ensureRowMeasured
+  ensureRowMeasured,
+  isEntryColumn
 } from './row-geometry'
 import { recordNumberOf } from '../shared/cell-identity'
 
@@ -322,6 +323,30 @@ export function createRowGeometryController (ctx) {
       let rebuild = false
 
       if (columnsChanged) lastScanColumns = columns
+
+      // 表级估高短路：uniform + 无 spans + 全列为确定单行列（非条目列、无变高
+      // 候选）时本次扫描是 no-op——isVariableCandidate() false ∧ hasArrayValues
+      // false（唯一产源为条目列）⟹ rescanRowHeights 必返回 false 且 heights
+      // 全部弃用。须按「已扫描」写回 lastScan*（lastScanColumns 由上方既有行
+      // 更新），否则脏判定停留在更早输入上；mode 变 variable 只来自
+      // upgradeToVariable（第一动作 lastScanRows = null）或 rescanRowHeights
+      // 自身，编辑升级路径（remeasureUniformRow）不被截断
+      if (
+        mode === 'uniform' && !spans && columns.every(
+          col => !isEntryColumn(col) && !((col._maxLines ?? 1) > 1) && !col.multiline
+        )
+      ) {
+        lastScanRows = rows
+        lastScanColumnSig = columnSig
+        lastScanMetricsSig = metricsSig
+        lastScanSpans = spans
+
+        return {
+          geometry: resolveGeometry(rows, theme),
+          scanCount: 0,
+          rebuild: false
+        }
+      }
 
       if (isScanDirty(rows, metricsSig, columnsChanged, columnSig, spans)) {
         scanCount = rows.length

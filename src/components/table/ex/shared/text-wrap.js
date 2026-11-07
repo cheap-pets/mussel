@@ -12,7 +12,7 @@
  */
 import { ELLIPSIS, FONT_SIZE_FALLBACK, FONT_FAMILY_FALLBACK } from './constants'
 
-/** 折行结果缓存上限（超限整体清空，同 theme.js createMeasureCache 策略） */
+/** 折行结果缓存上限（超限逐条 LRU 淘汰：get 命中触碰重插、淘汰最旧一条） */
 export const WRAP_CACHE_LIMIT = 2000
 
 const CACHE_SEPARATOR = '\u0000'
@@ -281,15 +281,29 @@ export function wrapLines ({ text, font, maxWidth, measure, cache, maxLines }) {
   return result
 }
 
-/** 折行结果缓存：key = text + font + width + maxLines，超上限整体清空
-    （复用 theme.js createMeasureCache 模式） */
+/** 折行结果缓存：key = text + font + width + maxLines，Map 插入序 LRU——
+    get 命中触碰（delete + set 重插）、set 已存在键重插、超限淘汰最旧一条。
+    淘汰必须单步 if 不用 while：limit ≤ 0 时空表 keys().next().value 为
+    undefined，while 会死循环（delete undefined 恒 no-op、size 不减）；值是
+    key 的纯函数，淘汰仅导致重算，结果一致 */
 export function createWrapCache (limit = WRAP_CACHE_LIMIT) {
   const cache = new Map()
 
   return {
-    get: key => cache.get(key),
-    set: (key, value) => {
-      if (cache.size >= limit) cache.clear()
+    get (key) {
+      const value = cache.get(key)
+
+      if (value === undefined) return undefined
+
+      cache.delete(key)
+      cache.set(key, value)
+
+      return value
+    },
+    set (key, value) {
+      if (cache.has(key)) cache.delete(key)
+      else if (cache.size >= limit) cache.delete(cache.keys().next().value)
+
       cache.set(key, value)
     },
     get size () {

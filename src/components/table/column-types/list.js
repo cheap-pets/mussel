@@ -99,7 +99,12 @@ export const ListColumn = {
     // payload column = 原始列引用（兼容壳派生对象与 canvas prepareColumn 产物同挂 _raw）
     const columnRef = column._raw ?? column
 
-    return ({ record, value, emit }) => {
+    // canvas 产物附加计数通道（dom 不挂）：与渲染共享 getItems/normalizeEntries/
+    // max 闭包与同一 shown 表达式，语义 = 渲染 items.length 的免构建等价（估高/
+    // 精算行数计数，row-geometry 消费）。须在 compile 作用域挂一次——写进
+    // render 函数体则每次绘制重建闭包；截断不得写 Math.min(entries.length, max)：
+    // max 为负/小数/字符串时 slice 截断语义不同，须与渲染同表达式
+    const render = ({ record, value, emit }) => {
       const rawItems = getItems(record, value)
 
       if (!Array.isArray(rawItems)) return
@@ -132,5 +137,23 @@ export const ListColumn = {
         )
       }
     }
+
+    if (!dom) {
+      render.count = (record, value) => {
+        const rawItems = getItems(record, value)
+
+        if (!Array.isArray(rawItems)) return 0
+
+        const { entries } = normalizeEntries(rawItems)
+
+        if (!entries.length) return 0
+
+        const shown = max ? entries.slice(0, max) : entries
+
+        return shown.length
+      }
+    }
+
+    return render
   }
 }

@@ -725,5 +725,129 @@ export const checks = [
 
       return '_resolveMaxLines/treeIndents 0 次；render 每格 1 次；heights [70, 36]'
     }
+  },
+  {
+    name: 'count 计数通道：带 .count 的 _render 估高/精算计数正确且 render 主体零调用（spy）；无 .count 回落现状全产物计数',
+    fn: () => {
+      // 带 .count 夹具（list.js compile canvas 产物同构：count 与 items.length 同值）
+      let renderCalls = 0
+      let countCalls = 0
+      const render = ({ value }) => {
+        renderCalls++
+
+        return { items: (Array.isArray(value) ? value : []).map(el => ({ text: el })) }
+      }
+      render.count = (record, value) => {
+        countCalls++
+
+        return Array.isArray(value) ? value.length : 0
+      }
+
+      const col = { type: 'list', field: 'tags', _maxItems: 4, _render: render }
+      const { heights, hasArrayValues } = computeRowHeights({
+        records: [
+          { tags: ['a', 'b', 'c', 'd', 'e'] }, // count 5 → min(5, maxItems 4) = 4 行
+          { tags: ['a'] }, // count 1 → 基线
+          { tags: '标量' } // count 0（非数组）→ 基线
+        ],
+        columns: [col],
+        colWidths: [100],
+        theme: THEME,
+        measure: plainMeasure
+      })
+
+      assertEqual(renderCalls, 0, '估高 count 通道 render 主体零调用（spy）')
+      assertEqual(countCalls, 3, 'count 每格恰 1 次')
+      assertEqual(heights[0], 16 + 4 * 18, 'count 5 → maxItems 4 → 4 行 88')
+      assertEqual(heights[1], 36, 'count 1 → 基线 36')
+      assertEqual(heights[2], 36, '非数组 count 0 → 基线 36')
+      assertEqual(hasArrayValues, true, 'count > 1 仍触发变高判定')
+
+      // 精算（进窗 ensureRowMeasured）同走 count 通道：render 主体仍零调用
+      const precise = ensureRowMeasured({
+        record: { tags: ['a', 'b', 'c', 'd', 'e'] },
+        columns: [col],
+        colWidths: [100],
+        theme: THEME,
+        measure: plainMeasure
+      })
+
+      assertEqual(renderCalls, 0, '精算 count 通道 render 主体零调用（spy）')
+      assertEqual(precise, 16 + 4 * 18, '精算 count 同口径 4 行 88')
+
+      // 无 .count 回落路径（全产物计数）：render 主体被调用、计数 = items.length
+      const fallen = computeRowHeights({
+        records: [{ tags: ['a', 'b', 'c', 'd', 'e'] }],
+        columns: [{ type: 'list', field: 'tags', _maxItems: 3, _render: listRenderOf }],
+        colWidths: [100],
+        theme: THEME,
+        measure: plainMeasure
+      })
+
+      assertEqual(fallen.heights[0], 16 + 3 * 18, '无 .count 回落：min(5, maxItems 3) = 3 行 70')
+
+      return '估高/精算 count 通道 render 主体 0 次、count 每格 1 次；无 .count 回落全产物计数 3 行 70'
+    }
+  },
+  {
+    name: '免取值 fast path：flat 度量非条目列 _value 零调用、heights 全 rowHeight；非 flat 逐格取值、空值/非空行高差保留（现状）',
+    fn: () => {
+      // flat 夹具（默认主题 36 ≥ 2×8+18 = 34）：非条目列跳过 valueOf
+      const valueCalls = { count: 0 }
+      const flat = computeRowHeights({
+        records: [
+          { v: '非空文本' },
+          { v: '' },
+          { v: null },
+          { v: undefined }
+        ],
+        columns: [
+          {
+            field: 'v',
+            _value: r => {
+              valueCalls.count++
+
+              return r.v
+            }
+          }
+        ],
+        colWidths: [100],
+        theme: THEME,
+        measure: plainMeasure
+      })
+
+      assertEqual(valueCalls.count, 0, 'flat 免取值：_value 估高零调用')
+      assertEqual(flat.heights[0], 36, '非空行 36（count 0/1 行高等价）')
+      assertEqual(flat.heights[1], 36, '空串行 36')
+      assertEqual(flat.heights[2], 36, 'null 行 36')
+      assertEqual(flat.heights[3], 36, 'undefined 行 36')
+      assertEqual(flat.hasArrayValues, false, 'flat 非条目列不触发变高')
+
+      // 非 flat 夹具（rowHeight 30 < 34）：逐格取值、行高差保留
+      const lowValueCalls = { count: 0 }
+      const lowTheme = { rowHeight: 30, cellPadding: 8, cellLineHeight: 18, fontSize: 14, fontFamily: 'test-font' }
+      const low = computeRowHeights({
+        records: [{ v: '非空文本' }, { v: null }],
+        columns: [
+          {
+            field: 'v',
+            _value: r => {
+              lowValueCalls.count++
+
+              return r.v
+            }
+          }
+        ],
+        colWidths: [100],
+        theme: lowTheme,
+        measure: plainMeasure
+      })
+
+      assertEqual(lowValueCalls.count, 2, '非 flat 逐格取值（每行 1 次）')
+      assertEqual(low.heights[0], 34, '非空行 16+18=34')
+      assertEqual(low.heights[1], 30, '空值行 30（行高差保留，现状）')
+
+      return 'flat _value 0 次、heights 全 36；非 flat _value 每行 1 次、34/30 行高差保留'
+    }
   }
 ]

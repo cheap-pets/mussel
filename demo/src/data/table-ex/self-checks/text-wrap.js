@@ -276,19 +276,67 @@ export const checks = [
     }
   },
   {
-    name: 'createWrapCache：容量上限整体清空（WRAP_CACHE_LIMIT）',
+    name: 'createWrapCache：LRU 逐条淘汰（size ≤ limit、最旧淘汰、get 触碰改变淘汰序、limit=0 不挂死）',
     fn: () => {
       assertEqual(WRAP_CACHE_LIMIT, 2000, '缓存上限常量')
 
+      // limit=3 填 5：最旧 2 条逐条淘汰
       const cache = createWrapCache(3)
 
       for (let i = 0; i < 5; i++) {
         wrapLines({ text: `文本${i}`, font: FONT, maxWidth: 30, measure: plainMeasure, cache })
       }
 
-      assert(cache.size <= 3, `缓存超限未清空（size=${cache.size}）`)
+      assertEqual(cache.size, 3, '超限逐条淘汰后 size = limit')
 
-      return `limit=3 填 5 条后 size=${cache.size}（≤3）`
+      const hitCounter = { calls: 0 }
+      const hitMeasure = countingMeasure(hitCounter)
+
+      // 存活的 3 条（文本2/3/4）命中缓存免测量
+      wrapLines({ text: '文本2', font: FONT, maxWidth: 30, measure: hitMeasure, cache })
+      wrapLines({ text: '文本3', font: FONT, maxWidth: 30, measure: hitMeasure, cache })
+      wrapLines({ text: '文本4', font: FONT, maxWidth: 30, measure: hitMeasure, cache })
+
+      assertEqual(hitCounter.calls, 0, '存活条目命中缓存免测量')
+
+      wrapLines({ text: '文本0', font: FONT, maxWidth: 30, measure: hitMeasure, cache })
+
+      assert(hitCounter.calls > 0, '最旧条目已被淘汰（重算触发测量）')
+
+      // get 触碰改变淘汰序：填 甲/乙/丙 → 触碰甲 → 插丁 → 淘汰乙（未触碰的最旧）而非甲
+      const lru = createWrapCache(3)
+
+      wrapLines({ text: '甲', font: FONT, maxWidth: 30, measure: plainMeasure, cache: lru })
+      wrapLines({ text: '乙', font: FONT, maxWidth: 30, measure: plainMeasure, cache: lru })
+      wrapLines({ text: '丙', font: FONT, maxWidth: 30, measure: plainMeasure, cache: lru })
+
+      const touchCounter = { calls: 0 }
+
+      wrapLines({ text: '甲', font: FONT, maxWidth: 30, measure: countingMeasure(touchCounter), cache: lru })
+
+      assertEqual(touchCounter.calls, 0, '触碰前命中（前置）')
+
+      wrapLines({ text: '丁', font: FONT, maxWidth: 30, measure: plainMeasure, cache: lru })
+
+      const probeCounter = { calls: 0 }
+      const probe = countingMeasure(probeCounter)
+
+      wrapLines({ text: '乙', font: FONT, maxWidth: 30, measure: probe, cache: lru })
+
+      assert(probeCounter.calls > 0, 'get 触碰后最旧（乙）被淘汰（LRU 触碰生效）')
+
+      wrapLines({ text: '甲', font: FONT, maxWidth: 30, measure: probe, cache: lru })
+
+      assertEqual(probeCounter.calls, 1, '触碰过的甲仍存活（二次命中免测量）')
+
+      // limit=0：单步淘汰不挂死（空表 delete undefined 为 no-op）
+      const zero = createWrapCache(0)
+
+      wrapLines({ text: '零', font: FONT, maxWidth: 30, measure: plainMeasure, cache: zero })
+
+      assert(zero.size <= 1, `limit=0 不挂死且 size ≤ 1（实际 ${zero.size}）`)
+
+      return `limit=3 填 5 → size 3、存活 3 条命中/最旧重算；触碰甲存活、乙被淘汰；limit=0 size=${zero.size}`
     }
   }
 ]

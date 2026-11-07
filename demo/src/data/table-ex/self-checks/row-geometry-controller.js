@@ -117,6 +117,78 @@ function prime (fixture) {
   return result
 }
 
+/** 表级短路夹具：全确定单行列（无条目列、无变高候选、无 spans）——短路谓词
+ *  成立的最小场景 */
+function createSingleLineFixture () {
+  const state = {
+    rows: Array.from({ length: 6 }, (_, i) => ({ id: i + 1, name: `r${i}`, count: i, checked: false })),
+    columns: [
+      { field: 'name' },
+      { field: 'count', type: 'number' },
+      { field: 'checked', type: 'check' }
+    ],
+    spans: null
+  }
+  let layout = { viewH: 400, colWidths: [100, 100, 100], headHeight: 36, stickyHeight: 0 }
+  const controller = createRowGeometryController({
+    getRows: () => state.rows,
+    getColumns: () => state.columns,
+    getTreeIndents: () => null,
+    getRecordsOffset: () => 0,
+    getRecordsVersion: () => 0,
+    getTheme: () => THEME,
+    getMeasure: () => plainMeasure,
+    getWrapCache: () => createWrapCache(),
+    getColumnKey: col => col?.field ?? '',
+    getSpans: () => state.spans,
+    getScrollEl: () => ({ scrollTop: 0 }),
+    getLayout: () => layout,
+    setLayout: next => {
+      layout = next
+    },
+    relayout: () => {}
+  })
+
+  return { state, controller, layoutBox: () => layout }
+}
+
+/** 升级路径夹具：uniform 表（全单条目，条目列在场谓词假、不短路）——编辑引入
+ *  多条目后经 remeasureUniformRow 升级 variable */
+function createUpgradableFixture () {
+  const state = {
+    rows: Array.from({ length: 4 }, (_, i) => ({ id: i + 1, name: `r${i}`, tags: ['a'] })),
+    columns: [
+      { field: 'name' },
+      { field: 'tags', type: 'list', _render: listRenderOf }
+    ],
+    spans: null
+  }
+  let layout = { viewH: 400, colWidths: [100, 100], headHeight: 36, stickyHeight: 0 }
+  let relayoutCalls = 0
+  const controller = createRowGeometryController({
+    getRows: () => state.rows,
+    getColumns: () => state.columns,
+    getTreeIndents: () => null,
+    getRecordsOffset: () => 0,
+    getRecordsVersion: () => 0,
+    getTheme: () => THEME,
+    getMeasure: () => plainMeasure,
+    getWrapCache: () => createWrapCache(),
+    getColumnKey: col => col?.field ?? '',
+    getSpans: () => state.spans,
+    getScrollEl: () => ({ scrollTop: 0 }),
+    getLayout: () => layout,
+    setLayout: next => {
+      layout = next
+    },
+    relayout: () => {
+      relayoutCalls++
+    }
+  })
+
+  return { state, controller, layoutBox: () => layout, relayoutCalls: () => relayoutCalls }
+}
+
 export const checks = [
   {
     name: 'P1 跳过：首次进窗精算计数列求值 = 窗口行数；稳态再次调用增量 0',
@@ -328,6 +400,131 @@ export const checks = [
       assertEqual(valueCalls.count, 0, '缓存快照未被清空 → 稳态跳过')
 
       return 'scanCount 10 / rebuild true；totalHeight 不回缩；remeasure 增量 0'
+    }
+  },
+  {
+    name: '表级短路：全确定单行列 uniform 首次 resolveForRelayout scanCount=0、mode 保持 uniform、rows 替换后仍 0',
+    fn: () => {
+      const fixture = createSingleLineFixture()
+      const { state, controller } = fixture
+
+      assertEqual(controller.mode, 'uniform', '初建 uniform')
+
+      const first = controller.resolveForRelayout({ colWidths: [100, 100, 100], theme: THEME })
+
+      assertEqual(first.scanCount, 0, '首次 relayout 短路 scanCount = 0（不执行 computeRowHeights）')
+      assertEqual(first.rebuild, false, 'rebuild false')
+      assertEqual(controller.mode, 'uniform', 'mode 保持 uniform')
+      assertEqual(first.geometry.mode, 'uniform', '返回等高几何')
+
+      // rows 引用替换（排序/树重建同构）→ isScanDirty 真但谓词仍成立 → 仍 0
+      state.rows = [...state.rows]
+
+      const second = controller.resolveForRelayout({ colWidths: [100, 100, 100], theme: THEME })
+
+      assertEqual(second.scanCount, 0, 'rows 替换后仍短路 0')
+      assertEqual(controller.mode, 'uniform', 'rows 替换后 mode 仍 uniform')
+
+      return '首扫 0 / rebuild false / uniform 保持；rows 替换后仍 0'
+    }
+  },
+  {
+    name: '短路条件破坏：列加条目列 / 出现变高候选 / spans 非 null / mode 已 variable → 恢复全量扫 scanCount = n',
+    fn: () => {
+      // ① 列集合加入 list 条目列（columnsChanged + 谓词假 → 全量扫，单条目不升级）
+      const f1 = createSingleLineFixture()
+      const { state, controller, layoutBox } = f1
+
+      controller.resolveForRelayout({ colWidths: layoutBox().colWidths, theme: THEME })
+
+      state.columns = [...state.columns, { field: 'tags', type: 'list', _render: listRenderOf }]
+      state.rows.forEach(r => {
+        r.tags = ['a']
+      })
+
+      const withLink = controller.resolveForRelayout({ colWidths: [100, 100, 100, 100], theme: THEME })
+
+      assertEqual(withLink.scanCount, 6, '列加条目列 → 全量扫 6')
+      assertEqual(controller.mode, 'uniform', '单条目不升级')
+
+      // ② 出现变高候选（_maxLines > 1 列加入，列引用替换进签名）
+      const f2 = createSingleLineFixture()
+
+      f2.controller.resolveForRelayout({ colWidths: [100, 100, 100], theme: THEME })
+
+      f2.state.columns = [...f2.state.columns, { field: 'name', _maxLines: 3 }]
+
+      const withCandidate = f2.controller.resolveForRelayout({ colWidths: [100, 100, 100, 100], theme: THEME })
+
+      assertEqual(withCandidate.scanCount, 6, '出现变高候选列 → 全量扫 6')
+
+      // ③ spans 非 null（grp 列同值 autoRowSpan → 全表合并区，保证 buildSpans
+      // 非 null）——谓词 !spans 假
+      const f3 = createSingleLineFixture()
+
+      f3.controller.resolveForRelayout({ colWidths: [100, 100, 100], theme: THEME })
+
+      f3.state.spans = buildSpans({
+        records: f3.state.rows.map(r => ({ ...r, grp: 'g' })),
+        columns: [...f3.state.columns, { field: 'grp', _autoRowSpan: true }],
+        fixedCount: 0,
+        recordsOffset: 0,
+        orderBy: '',
+        warn: () => {}
+      })
+
+      assert(f3.state.spans, '前置：buildSpans 应产出非空 SpansIndex（无有效区域时返回 null）')
+
+      const withSpans = f3.controller.resolveForRelayout({ colWidths: [100, 100, 100], theme: THEME })
+
+      assertEqual(withSpans.scanCount, 6, 'spans 非 null → 全量扫 6')
+
+      // ④ mode 已 variable（只升不降）→ 谓词 mode === 'uniform' 恒假 → 列变仍全量扫
+      const f4 = createSingleLineFixture()
+
+      f4.state.columns = [...f4.state.columns, { field: 'tags', type: 'list', _render: listRenderOf }]
+      f4.state.rows[0].tags = ['a', 'b', 'c']
+      f4.controller.resolveForRelayout({ colWidths: [100, 100, 100, 100], theme: THEME })
+
+      assertEqual(f4.controller.mode, 'variable', '前置：多条目升级 variable')
+
+      f4.state.columns = f4.state.columns.slice(0, 3)
+
+      const backToSingle = f4.controller.resolveForRelayout({ colWidths: [100, 100, 100], theme: THEME })
+
+      assertEqual(backToSingle.scanCount, 6, 'mode 已 variable → 列变仍全量扫（不短路）')
+
+      return '条目列/变高候选/spans/mode 已 variable 四条破坏路径均恢复全量扫 6'
+    }
+  },
+  {
+    name: '升级路径完整：uniform 表编辑引入多条目 → remeasureUniformRow 升级 variable + relayout 全量重扫',
+    fn: () => {
+      const fixture = createUpgradableFixture()
+      const { state, controller, layoutBox, relayoutCalls } = fixture
+
+      // 全部单条目：条目列在场谓词假 → 全量扫 4，但 mode 保持 uniform
+      const first = controller.resolveForRelayout({ colWidths: layoutBox().colWidths, theme: THEME })
+
+      assertEqual(first.scanCount, 4, '首扫全量 4（条目列在场不短路）')
+      assertEqual(controller.mode, 'uniform', '单条目不升级')
+
+      // 编辑引入多条目：remeasureRow → remeasureUniformRow 判定 hasArrayValues
+      state.rows[1].tags = ['a', 'b', 'c']
+      controller.remeasureRow(1)
+
+      assertEqual(relayoutCalls(), 1, '升级触发壳全量 relayout 恰 1 次')
+      assertEqual(controller.mode, 'variable', 'mode 升级 variable')
+
+      // 升级后首轮 relayout：lastScanRows 已置 null → 全量重扫 + 变高几何重建
+      const after = controller.resolveForRelayout({ colWidths: layoutBox().colWidths, theme: THEME })
+
+      assertEqual(after.scanCount, 4, '升级后全量重扫 4')
+      assertEqual(after.rebuild, true, '变高几何重建')
+      assertEqual(after.geometry.mode, 'variable', '返回变高几何')
+      assertEqual(after.geometry.heightAt(1), 16 + 3 * 18, '行 1 高 70（3 条目真值）')
+
+      return 'remeasureRow 升级 + relayout 1 次；重扫 scanCount 4 / rebuild true / 行 1 高 70'
     }
   }
 ]

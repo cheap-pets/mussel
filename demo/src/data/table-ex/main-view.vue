@@ -76,7 +76,8 @@
               { value: 'widths', label: '全类型默认宽' },
               { value: 'fixed', label: '固定列组合' },
               { value: 'narrow', label: '窄列' },
-              { value: 'spans', label: '合并单元格' }
+              { value: 'spans', label: '合并单元格' },
+              { value: 'single', label: '单行列' }
             ]" />
         </div>
 
@@ -512,6 +513,12 @@
       { caption: '备注（替换后）', field: 'memo', width: 240 }
     ]
   }
+
+  // 单行列场景：全确定单行列（无 link/list、无变高候选、无 spans），records 走
+  // default 分支（100000 行）。稳定引用（模块级 const，非每次重建）——mode 只升
+  // 不降，「替换列」路径无法回到 uniform；不参与 canvas/DOM 参照对照（参照表
+  // 绑定默认 columns）
+  const singleLineColumns = createAlternateColumns()
 
   const columns = ref(createDefaultColumns())
   const columnsReplaced = ref(false)
@@ -1008,7 +1015,10 @@
 
   // ---------- 夹具状态 ----------
   const dataScale = ref('full') // full | few | empty
-  const scene = ref('default') // default | tree | tree-lazy | multiline | items | widths | fixed | spans
+  // 场景白名单：?scene= 初始值经 URL 直载，非白名单值回退 default
+  const SCENE_WHITELIST = ['default', 'tree', 'tree-lazy', 'multiline', 'items', 'widths', 'fixed', 'narrow', 'spans', 'single']
+  const sceneParam = new URLSearchParams(location.search).get('scene')
+  const scene = ref(SCENE_WHITELIST.includes(sceneParam) ? sceneParam : 'default') // default | tree | tree-lazy | multiline | items | widths | fixed | narrow | spans | single
   const emptyVariant = ref('none') // none | slot | text
   const editable = ref(true)
   const resizable = ref(true)
@@ -1072,6 +1082,7 @@
       case 'fixed': return fixedColumns
       case 'narrow': return narrowColumns
       case 'spans': return spanColumns
+      case 'single': return singleLineColumns
       // 性能夹具仅默认场景列尾追加（B4 采样开关，默认关闭）；DOM 参照表用
       // columns 原引用，不受影响
       default: return perfColumnOn.value ? [...columns.value, perfColumn] : columns.value

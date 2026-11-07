@@ -2675,5 +2675,43 @@ export const checks = [
 
       return '两形态互斥（文本优先零查表零 warn）、icon-only 快照 24/回退 24/自定义 32 居中、省略只作用 caption、d 回归 0 fill/stroke/onItemRect、哨兵三态、tooltip 矩阵均正确'
     }
+  },
+  {
+    name: 'ListColumn/LinkColumn compile 产物 .count 计数通道（canvas 挂载、dom 不挂、过滤与非数组 0、max 负/小数/字符串 slice 同源）',
+    fn: () => {
+      // canvas 产物挂 .count（估高/精算计数通道）
+      const canvasRender = ListColumn.compile({ listOption: { max: 4 } })
+
+      assert(typeof canvasRender.count === 'function', 'canvas 产物应挂 .count')
+      assert(typeof ListColumn.compile({}, true).count !== 'function', 'dom 产物（compile(col, true)）不挂 .count')
+
+      // 门控同源：非数组值 / 空 entries → 0（render 同落占位）；空 label 条目过滤后计数
+      assertEqual(canvasRender.count({}, '标量'), 0, '非数组值 → 0（render 落占位）')
+      assertEqual(canvasRender.count({}, { label: '对象' }), 0, '对象值 → 0（render 落占位）')
+      assertEqual(canvasRender.count({}, []), 0, '空数组 → 0')
+      assertEqual(canvasRender.count({}, ['a', { label: '' }, { caption: '旧键' }, 'b']), 2, '空 label 过滤后计数 2')
+
+      // listOption.max 截断与渲染 items.length 同源（同一 slice 表达式——非 Math.min）
+      assertEqual(
+        ListColumn.compile({ listOption: { max: 3 } }).count({}, ['a', 'b', 'c', 'd', 'e']),
+        ListColumn.compile({ listOption: { max: 3 } })({ record: {}, value: ['a', 'b', 'c', 'd', 'e'], emit: () => {} }).items.length,
+        'max=3 count 与渲染 items.length 相等'
+      )
+      assertEqual(ListColumn.compile({ listOption: { max: 3 } }).count({}, ['a', 'b', 'c', 'd', 'e']), 3, 'max=3 截断 3')
+      // 负/小数/字符串 max：slice 语义（Math.min 写法此处会得 -1 / 3 / NaN）
+      assertEqual(ListColumn.compile({ listOption: { max: -1 } }).count({}, ['a', 'b', 'c', 'd', 'e']), 4, '负 max slice 语义（去末条）')
+      assertEqual(ListColumn.compile({ listOption: { max: 2.5 } }).count({}, ['a', 'b', 'c']), 2, '小数 max slice 截断 2')
+      assertEqual(ListColumn.compile({ listOption: { max: '2' } }).count({}, ['a', 'b', 'c']), 2, '字符串 max slice 截断 2')
+
+      // LinkColumn 兼容壳委托：单值 1 条 / 数组 / 空标签过滤 / linkOption.max 截断
+      const linkRender = LinkColumn.compile({})
+
+      assert(typeof linkRender.count === 'function', 'LinkColumn 委托产物挂 .count')
+      assertEqual(linkRender.count({}, 12345), 1, 'link 单值包装 1 条')
+      assertEqual(linkRender.count({}, [{ label: 'A', danger: true }, 'B', { label: '' }]), 2, 'link 数组空标签过滤后 2 条')
+      assertEqual(LinkColumn.compile({ linkOption: { max: 1 } }).count({}, ['a', 'b']), 1, 'linkOption.max 截断生效')
+
+      return 'canvas 挂 count / dom 不挂 / 非数组与空 entries 0 / 空标签过滤 / max 负·小数·字符串 slice 同源 / link 单值·数组·max 截断'
+    }
   }
 ]

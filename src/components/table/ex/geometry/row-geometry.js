@@ -22,6 +22,9 @@ function isLinkColumn (col) {
   return col.type === 'link' || col.type === 'list'
 }
 
+/** 条目列判定导出别名（表级短路谓词消费；实现同 isLinkColumn） */
+export const isEntryColumn = isLinkColumn
+
 function cellFontSizeOf (theme) {
   return theme?.fontSize || FONT_SIZE_FALLBACK
 }
@@ -53,6 +56,13 @@ function valueOf (col, record) {
 }
 
 function linkItemCountOf (col, record, recordNumber, value, emit, maxItems) {
+  // 计数通道：compile canvas 产物附加 .count（与渲染共享闭包，语义 =
+  // items.length 免构建等价）——估高/进窗精算/编辑单行重估三条路径共用本
+  // 函数。自定义类型/手写 _render 无 .count → 回落全产物路径
+  if (typeof col._render?.count === 'function') {
+    return Math.min(col._render.count(record, value) || 0, maxItems)
+  }
+
   const rendered = col._render?.({ record, recordNumber, value, emit })
   const count = Array.isArray(rendered?.items)
     ? rendered.items.length
@@ -332,6 +342,12 @@ export function computeRowHeights ({
   const heights = new Array(list.length)
   let hasArrayValues = false
 
+  // 免取值 fast path：度量满足 rowHeight ≥ 2×padding + lineHeight（缺省 36 ≥ 34）
+  // 时非条目列 count ∈ {0, 1} 两值行高等价（rowHeightOf 的 max 项被 rowHeight
+  // 覆盖），跳过 valueOf（_value 回调不执行）；不满足走逐格取值。判定与
+  // rowHeightOf/rowMetricsOf 同源——行高公式或度量变量含义变化时须同批修改
+  const flat = metrics.rowHeight >= metrics.padding * 2 + metrics.lineHeight
+
   for (let row = 0; row < list.length; row++) {
     const record = list[row]
     let lines = 0
@@ -355,6 +371,11 @@ export function computeRowHeights ({
         // 条目列：render 计数真值（估高/精算同路径，不折行）
         value = valueOf(col, record)
         count = linkItemCountOf(col, record, row, value, undefined, desc.maxItems)
+      } else if (flat) {
+        // flat 免取值：非条目列 count 记 0（与 1 在 flat 度量下行高等价）、
+        // 免 valueOf；非条目列 hasArrayValues 恒 false（indicatesVariableMode
+        // 仅 link/list 列为真），模式判定不受影响
+        count = 0
       } else {
         // 非条目列内联三分支（与 columnLineCount !precise 路径等价，免
         // textLineCountOf/resolveMaxLinesOf 求值）：数组恒 1 行、空值 0、
