@@ -16,6 +16,11 @@
  *
  * 组件壳经 getter 注入行集合/列/主题/测量能力与 layout 读写（C4 起 layout
  * 恒携几何）；控制器不直接触 DOM（scrollTop 补偿经 getScrollEl 返回的元素）。
+ *
+ * @getters getRows / getColumns / getTreeIndents / getRecordsOffset /
+ *   getRecordsVersion / getTheme / getMeasure / getWrapCache / getColumnKey /
+ *   getSpans / getScrollEl / getLayout / setLayout / relayout
+ *   （O2 注入面声明，14 项；调用点 table-ex.vue createRowGeometryController）
  */
 import { OVERSCAN } from './layout'
 import {
@@ -25,6 +30,7 @@ import {
   computeAnchorShift,
   ensureRowMeasured
 } from './row-geometry'
+import { recordNumberOf } from '../shared/cell-identity'
 
 /** autoRowSpan 标记签名值（函数形态取 'fn'——函数体不定长，不进签名串） */
 function autoRowSpanMarkOf (value) {
@@ -416,7 +422,7 @@ export function createRowGeometryController (ctx) {
 
         const height = ensureRowMeasured({
           record: rows[row],
-          recordNumber: recordsOffset + row + 1,
+          recordNumber: recordNumberOf(recordsOffset, row),
           colWidths: cur.colWidths,
           ...base,
           row,

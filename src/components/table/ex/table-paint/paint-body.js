@@ -13,6 +13,7 @@ import {
 } from './paint-utils'
 import { regionsForRows, spanRegionRect, spanCellKindOf } from '../spans/spans.js'
 import { isGridlineMode, paintGridlines } from './paint-gridlines'
+import { recordNumberOf } from '../shared/cell-identity'
 
 // 本帧 region pass 实际绘制过内容的锚行集合（§5.3 trimItemHits keepRows）：paint()
 // 入口置空集合、批次结束消费后复位；region pass 与 itemHits 收集同一次遍历产出，
@@ -63,21 +64,15 @@ function rowBandEndX (layout, cols, bandToX) {
   return Math.max(x1, bandToX ?? x1)
 }
 
-// 表体单行：行背景一条矩形覆盖列区间 + 逐格内容绘制；recordKey 行级求值一次
-// （P1a：树关时为 null，drawTreeAffordance 不消费）
-function paintBodyRow (ctx, state, records, columns, r, cols, x0, bandWidth, W, H) {
-  const { layout } = state
-  const geometry = layout.rowGeometry
-  const rowHeight = geometry.heightAt(r)
-  const y = layout.headHeight + geometry.topAt(r) - layout.scrollTop
-
-  // 高度 = heightAt(r)；带右缘经 bandToX 扩展（见 paintCellRange 头注）。
-  // 追加轮 2 需求 C：选中行 selectBg 高亮带宽 cap 至末列右缘视口 x（与格线/
-  // hover 带同源 contentRightXOf），cap 掉的延伸区补非选中口径底色（与 hover
-  // cap 后露出的整宽底色带一致）；非选中行维持整宽现状（R1 裁定不推翻）。
-  // 列满/滚动溢出时 contentRightX >= stickyWidth >= bandEnd，cap 无操作、无补画；
-  // 固定列 pass bandEnd = 固定列区右缘 ≤ contentRightX 恒成立，同样无操作
-  const bandEnd = x0 + bandWidth
+/** 行背景带绘制（paintBodyRow / paintBodyRowSpans 单一事实源，O5 同源归一）：
+    非选中行整带宽底色；选中行 selectBg 高亮 cap 至末列右缘视口 x、cap 掉的延伸区
+    补非选中口径底色（追加轮 2 需求 C）。bandEnd 由调用处求值传入（bandToX 扩展
+    语义见 paintCellRange 头注）；y 与带宽经 state.layout 现场求值（与调用方原式
+    逐字同源：headHeight + topAt(r) − scrollTop；bandWidth = bandEnd − x0） */
+function paintRowBandBackground (ctx, state, r, x0, bandEnd, rowHeight) {
+  const layout = state.layout
+  const y = layout.headHeight + layout.rowGeometry.topAt(r) - layout.scrollTop
+  const bandWidth = bandEnd - x0
 
   if (!isSelectedRow(state, r)) {
     ctx.fillStyle = rowBackground(state, r)
@@ -93,12 +88,27 @@ function paintBodyRow (ctx, state, records, columns, r, cols, x0, bandWidth, W, 
       ctx.fillRect(capEnd, y, bandEnd - capEnd, rowHeight)
     }
   }
+}
+
+// 表体单行：行背景一条矩形覆盖列区间 + 逐格内容绘制；recordKey 行级求值一次
+// （P1a：树关时为 null，drawTreeAffordance 不消费）
+function paintBodyRow (ctx, state, records, columns, r, cols, x0, bandWidth, W, H) {
+  const { layout } = state
+  const geometry = layout.rowGeometry
+  const rowHeight = geometry.heightAt(r)
+  const y = layout.headHeight + geometry.topAt(r) - layout.scrollTop
+
+  // 高度 = heightAt(r)；带右缘经 bandToX 扩展（见 paintCellRange 头注）。
+  // 选中行 cap + 延伸区补底口径见 paintRowBandBackground（需求 C 注释随提取迁移彼处）
+  const bandEnd = x0 + bandWidth
+
+  paintRowBandBackground(ctx, state, r, x0, bandEnd, rowHeight)
 
   const record = records?.[r]
 
   if (record == null) return
 
-  const recordNumber = (state.recordsOffset || 0) + r + 1
+  const recordNumber = recordNumberOf(state.recordsOffset, r)
   const recordKey = state.flatInfo ? recordKeyOf(state, record, r) : null
 
   for (let c = Math.max(cols.from, 0); c < cols.to; c++) {
@@ -126,29 +136,17 @@ function paintBodyRowSpans (ctx, state, records, columns, r, cols, x0, bandWidth
   const rowHeight = geometry.heightAt(r)
   const y = layout.headHeight + geometry.topAt(r) - layout.scrollTop
 
-  // 选中带 cap + 延伸区补底，与 paintBodyRow 同构（追加轮 2 需求 C，见彼处注释）
+  // 选中带 cap + 延伸区补底：与 paintBodyRow 同源（提取为 paintRowBandBackground，
+  // 追加轮 2 需求 C 口径见彼 helper 注释）
   const bandEnd = x0 + bandWidth
 
-  if (!isSelectedRow(state, r)) {
-    ctx.fillStyle = rowBackground(state, r)
-    ctx.fillRect(x0, y, bandWidth, rowHeight)
-  } else {
-    const capEnd = Math.min(bandEnd, contentRightXOf(layout))
-
-    ctx.fillStyle = rowBackground(state, r)
-    ctx.fillRect(x0, y, capEnd - x0, rowHeight)
-
-    if (capEnd < bandEnd) {
-      ctx.fillStyle = baseRowBackground(state, r)
-      ctx.fillRect(capEnd, y, bandEnd - capEnd, rowHeight)
-    }
-  }
+  paintRowBandBackground(ctx, state, r, x0, bandEnd, rowHeight)
 
   const record = records?.[r]
 
   if (record == null) return
 
-  const recordNumber = (state.recordsOffset || 0) + r + 1
+  const recordNumber = recordNumberOf(state.recordsOffset, r)
   const recordKey = state.flatInfo ? recordKeyOf(state, record, r) : null
 
   for (let c = Math.max(cols.from, 0); c < cols.to; c++) {
@@ -204,7 +202,7 @@ function paintSpanRegions (ctx, state, records, columns, rows, cols, W, H) {
       state,
       col,
       record,
-      (state.recordsOffset || 0) + region.row + 1,
+      recordNumberOf(state.recordsOffset, region.row),
       rect,
       region.row,
       region.col,

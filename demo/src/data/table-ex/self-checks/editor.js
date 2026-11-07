@@ -31,23 +31,19 @@
  * 同步断言判定输入；聚焦由组件壳 focusEditor 承担（留浏览器用例）。
  */
 import { toRaw } from 'vue'
+import { createEditorController, isInDropdownPanel, resolveBlurFallback } from '@/components/table/ex/editing/editor.js'
+import { editorRectOf, editButtonRectOf, computeEditorStyle } from '@/components/table/ex/editing/editor-geometry.js'
 import {
   NON_EDITABLE_TYPES,
   EDITOR_COMPONENTS,
-  editorRectOf,
-  editButtonRectOf,
   isCellEditable,
   resolveEditorType,
   usesDerivedOptions,
   normalizeEditorOpenValue,
   normalizeCommitValue,
   resolveSelectOptions,
-  resolveEditorProps,
-  computeEditorStyle,
-  isInDropdownPanel,
-  resolveBlurFallback,
-  createEditorController
-} from '@/components/table/ex/editing/editor.js'
+  resolveEditorProps
+} from '@/components/table/ex/editing/editor-resolve.js'
 import { resolveIconEntry } from '@/components/table/column-types/icon.js'
 import { install, icons } from '@/icons/index.js'
 import { createUniformRowGeometry, createVariableRowGeometry } from '@/components/table/ex/geometry/row-geometry.js'

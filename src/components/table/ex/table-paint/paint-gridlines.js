@@ -62,7 +62,11 @@ function paintSegmentedVLine (ctx, x, yFrom, yTo, intervals) {
 }
 
 /** 列竖线被跨线区域占用的 y 区间（视口坐标，按分界线 b 分组）：竖线左缘线按其
-    右侧列号索引（b ∈ (colFrom, colTo) 为区域内部分界）；一次遍历 regions 分组 */
+    右侧列号索引（b ∈ (colFrom, colTo) 为区域内部分界）；一次遍历 regions 分组。
+    上界取 cols.to + 1（20261106-ex-fixed-select-hover-span 人工修订 2）：列带重绘
+    的画线范围含末列右缘线 b = cols.to，该线落在区域内部（cols.to < colTo）时同
+    为内部线，须登记跳段——否则列带重绘（如 hover 相邻行边界列的单列带脏区）走
+    无 skips 分支整条补画，区域内部格线残留（再次 hover 过区域后自愈） */
 function colLineSkipIntervals (layout, spans, cols) {
   const map = new Map()
 
@@ -72,7 +76,7 @@ function colLineSkipIntervals (layout, spans, cols) {
     const y0 = viewportRowY(layout, region.rowFrom)
     const y1 = viewportRowY(layout, region.rowTo)
     const from = Math.max(region.colFrom + 1, cols.from + 1)
-    const to = Math.min(region.colTo, cols.to)
+    const to = Math.min(region.colTo, cols.to + 1)
 
     for (let b = from; b < to; b++) {
       const list = map.get(b)

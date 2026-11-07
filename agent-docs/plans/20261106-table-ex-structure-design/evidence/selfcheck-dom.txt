@@ -1,0 +1,9 @@
+# demo self-checks DOM 断言（playwright mcp，2026-11-06）
+URL: http://localhost:3000/data/table-ex/（自检内嵌于调试面板；00-task 中 /data/table-ex-self-checks/ 路径已不存在，catalog 无登记、demo/dist 无该目录）
+DOM: .ct-self-checks .ct-debug__header span → "自检结果（232/232 通过）"
+.ct-check-item 总数 232；.ct-check-item--fail 0；✗ 标记 0；body 内 /FAIL/i 命中 0
+console: 1 error = data:image/png;base64,AAAA1 无效 URL（cell-painters.js:774 失败路径测试夹具，本批 diff hunk 仅 42–51 未触及该行）；
+43 warnings = Canvas2D willReadFrequently（自检像素读回性能提示）×41 + 图标夹具提示×2；
+v-on with no argument / ReferenceError / is not defined / Cannot find 检索 0 命中
+/data/table-ex-basic/ console: 0 error 0 warning
+/data/table-ex-scene/ console: 0 error 0 warning

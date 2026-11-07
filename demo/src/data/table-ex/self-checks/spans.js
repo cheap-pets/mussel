@@ -18,7 +18,7 @@ import {
   spanRectOf,
   regionsForRows
 } from '@/components/table/ex/spans/spans.js'
-import { prepareColumn } from '@/components/table/ex/cell-paint/cell-painters.js'
+import { prepareColumn } from '@/components/table/ex/cell-paint/cell-content.js'
 import {
   computeRowHeights,
   ensureRowMeasured,
@@ -26,7 +26,7 @@ import {
   createVariableRowGeometry
 } from '@/components/table/ex/geometry/row-geometry.js'
 import { cellRectAt } from '@/components/table/ex/table-paint/painter.js'
-import { editorGridlineFlagsOf } from '@/components/table/ex/editing/editor.js'
+import { editorGridlineFlagsOf } from '@/components/table/ex/editing/editor-geometry.js'
 
 function assert (cond, message) {
   if (!cond) throw new Error(message)

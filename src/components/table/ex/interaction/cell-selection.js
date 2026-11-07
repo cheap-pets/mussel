@@ -4,6 +4,7 @@
  * 全纯函数、无壳状态（壳编排见 use-cell-select.js）。
  */
 import { resolveCellContent } from '../cell-paint/cell-content'
+import { recordNumberOf } from '../shared/cell-identity'
 
 /** 复制排除类型（裁定 1，图形列无文本语义）：check（✓ 方框）/ button（pill）/
     progress（进度条）/ img・image（图片）/ icon（图标）。bool 列不入清单——canvas
@@ -40,7 +41,7 @@ export function resolveCellCopyText ({ columns, rows, row, col, recordsOffset = 
 
   const content = resolveCellContent(column, {
     record,
-    recordNumber: recordsOffset + row + 1,
+    recordNumber: recordNumberOf(recordsOffset, row),
     emit: COPY_NOOP
   })
 

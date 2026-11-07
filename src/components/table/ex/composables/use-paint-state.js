@@ -7,14 +7,23 @@
  * selectedCell）+ syncPaintState / redraw / invalidate / invalidateRow 四个壳级重绘入口。
  */
 /**
- * @param {Object} ctx host 袋（读取 props, emit, displayRows, flatRows, spans,
+ * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * @host-reads props, emit, layout, displayRows, flatRows, spans, treeExpanded,
+ *   wiredColumns, selectedKey, hover, hoverItem, resizeGuideX, selectedCell
+ * @host-writes paintState, syncPaintState, redraw, invalidate, invalidateRow
+ * @host-calls resolveRecordKey（壳）, cellEditableOf（壳）, getMeasure（壳）,
+ *   getWrapCache（壳）, getEditingCellRef（壳）, getThemeWatcher（壳）,
+ *   getPainter（壳）
+ */
+/**
+ * @param {Object} host host 袋（读取 props, emit, displayRows, flatRows, spans,
  *   treeExpanded, wiredColumns, getMeasure, getWrapCache, selectedKey, hover,
  *   hoverItem, getEditingCellRef, resizeGuideX, selectedCell, getThemeWatcher,
  *   cellEditableOf, resolveRecordKey, getPainter）
  * @returns {{ paintState, syncPaintState, redraw, invalidate, invalidateRow }}
  */
-export function usePaintState (ctx) {
-  const { props, emit } = ctx
+export function usePaintState (host) {
+  const { props, emit } = host
 
   const itemHits = new Map()
 
@@ -36,7 +45,7 @@ export function usePaintState (ctx) {
     recordsOffset: props.recordsOffset,
     emit,
     keyField: props.keyField,
-    getRecordKey: (record, row) => ctx.resolveRecordKey(record),
+    getRecordKey: (record, row) => host.resolveRecordKey(record),
     selectedKey: null,
     headerChecked: props.headerChecked,
     gridlines: props.gridlines,
@@ -53,48 +62,48 @@ export function usePaintState (ctx) {
   }
 
   function syncPaintState () {
-    paintState.layout = ctx.layout.value
+    paintState.layout = host.layout.value
     paintState.records = props.records
-    paintState.displayRows = ctx.displayRows.value
-    paintState.flatInfo = ctx.flatRows.value
+    paintState.displayRows = host.displayRows.value
+    paintState.flatInfo = host.flatRows.value
       ? {
-          levels: ctx.flatRows.value.levels,
-          hasChildren: ctx.flatRows.value.hasChildren,
-          parentKeys: ctx.flatRows.value.parentKeys,
-          expandable: ctx.flatRows.value.expandable
+          levels: host.flatRows.value.levels,
+          hasChildren: host.flatRows.value.hasChildren,
+          parentKeys: host.flatRows.value.parentKeys,
+          expandable: host.flatRows.value.expandable
         }
       : null
-    paintState.spans = ctx.spans.value
-    paintState.expandedKeys = props.tree ? ctx.treeExpanded.value : null
+    paintState.spans = host.spans.value
+    paintState.expandedKeys = props.tree ? host.treeExpanded.value : null
     paintState.editable = props.editable
-    paintState.isCellEditableFn = ctx.cellEditableOf
-    paintState.measure = ctx.getMeasure()
-    paintState.wrapCache = ctx.getWrapCache()
-    paintState.columns = ctx.wiredColumns.value
+    paintState.isCellEditableFn = host.cellEditableOf
+    paintState.measure = host.getMeasure()
+    paintState.wrapCache = host.getWrapCache()
+    paintState.columns = host.wiredColumns.value
     paintState.recordsOffset = props.recordsOffset
     paintState.keyField = props.keyField
-    paintState.selectedKey = ctx.selectedKey.value
+    paintState.selectedKey = host.selectedKey.value
     paintState.headerChecked = props.headerChecked
     paintState.gridlines = props.gridlines
     paintState.hoverMode = props.hoverMode
     paintState.striped = props.striped
     paintState.orderBy = props.orderBy
     paintState.placeholder = props.placeholder
-    paintState.hover = ctx.hover.value
+    paintState.hover = host.hover.value
     // 条目悬停（问题 7）+ veil 编辑格（问题 6）。hoverMode none 总开关归一：
     // 条目 hover 色在表体 pass（drawCell）绘制，不经 paintOverlay 的 hoverMode
     // 门控，切到 none 后（指针不动）须由本处立即置 null
-    paintState.hoverItem = props.hoverMode === 'none' ? null : ctx.hoverItem.value
-    paintState.editingCell = ctx.getEditingCellRef()
-    paintState.resizeGuideX = ctx.resizeGuideX.value
+    paintState.hoverItem = props.hoverMode === 'none' ? null : host.hoverItem.value
+    paintState.editingCell = host.getEditingCellRef()
+    paintState.resizeGuideX = host.resizeGuideX.value
     // 单元格选中（20261105-table-ex-cell-select）：与 hover 同级原地同步（G2-a）
-    paintState.selectedCell = ctx.selectedCell.value
-    paintState.theme = ctx.getThemeWatcher()?.snapshot ?? paintState.theme
+    paintState.selectedCell = host.selectedCell.value
+    paintState.theme = host.getThemeWatcher()?.snapshot ?? paintState.theme
   }
 
   function redraw () {
     syncPaintState()
-    ctx.getPainter()?.draw(paintState)
+    host.getPainter()?.draw(paintState)
   }
 
   // 脏区重绘一律 immediate：painter 的 rAF 队列 apply 的是上次绘制时的 state 浅拷贝，
@@ -103,13 +112,13 @@ export function usePaintState (ctx) {
   function invalidate (region) {
     syncPaintState()
 
-    return ctx.getPainter()?.invalidate(region, { state: paintState, immediate: true }) ?? false
+    return host.getPainter()?.invalidate(region, { state: paintState, immediate: true }) ?? false
   }
 
   function invalidateRow (row) {
     syncPaintState()
 
-    return ctx.getPainter()?.invalidateRow(row, { state: paintState, immediate: true }) ?? false
+    return host.getPainter()?.invalidateRow(row, { state: paintState, immediate: true }) ?? false
   }
 
   return {

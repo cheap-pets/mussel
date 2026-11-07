@@ -39,8 +39,13 @@ function contentRightEdgeX (colLefts, colWidths, scrollLeft) {
  *
  * @param {Number} params.x 相对 canvas 的 x
  * @param {Number} params.y 相对 canvas 的 y
+ * @param {Number} [params.headHeight=0] 表头高度（y < headHeight 判入表头区）
+ * @param {Number} [params.scrollTop=0] 垂直滚动偏移（rowAt 经 rowGeometry 行定位）
+ * @param {Number} [params.scrollLeft=0] 水平滚动偏移（滚动区列位移，colAt / cellX）
  * @param {Number[]} params.colLefts 列前缀和（layout.js computePrefixSums）
+ * @param {Number[]} params.colWidths 列宽数组（beyondCols 空白延伸区判定）
  * @param {Array} params.columns 列定义（读取列级 resizable）
+ * @param {Number} [params.fixedLeftColumns=0] 固定列数（固定列不随滚动位移）
  * @param {Boolean} [params.resizable=false] 表格级调宽开关
  * @param {Number} [params.cellPadding=8] 内容区 padding（cellX 口径扣减，缺省 8）
  * @param {Object} params.rowGeometry 行几何实例（必传——C4 删 rowHeight 等高回退，
@@ -114,31 +119,31 @@ function isSortableHeader (hit, columns) {
 }
 
 /** 表体可编辑格命中：editable 开 + 该列存在 + isCellEditableFn 判定可编辑（A5.3） */
-function isEditableCell (hit, columns, context) {
-  if (hit.isHeader || hit.colIndex < 0 || !context.editable) return false
+function isEditableCell (hit, columns, deps) {
+  if (hit.isHeader || hit.colIndex < 0 || !deps.editable) return false
 
   const column = columns?.[hit.colIndex]
 
-  return Boolean(column && context.isCellEditableFn?.(column))
+  return Boolean(column && deps.isCellEditableFn?.(column))
 }
 
 /**
  * 指针光标（02-design.md A5 pointermove 行 + A5.3 / 评审 6 P3）：手柄上
- * col-resize；表头可排序列内 pointer；树箭头槽 pointer（context.flatInfo 提供
- * expandableAt 判定，A3.4/20261029 问题 3）；表体可编辑格 text（context.editable +
- * context.isCellEditableFn，A5.3）；其余 default。context 缺省时行为与既有
+ * col-resize；表头可排序列内 pointer；树箭头槽 pointer（deps.flatInfo 提供
+ * expandableAt 判定，A3.4/20261029 问题 3）；表体可编辑格 text（deps.editable +
+ * deps.isCellEditableFn，A5.3）；其余 default。deps 缺省时行为与既有
  * 两参签名一致（回归安全）。
  *
  * @param {Object} hit hitTest 产出（含 cellX）
  * @param {Array} columns 列定义（读取列级 sortable / _isTreeColumn）
- * @param {Object} [context] { flatInfo, editable, isCellEditableFn }
+ * @param {Object} [deps] { flatInfo, editable, isCellEditableFn }
  * @returns {String} 'col-resize' | 'pointer' | 'text' | 'default'
  */
-export function resolveCursor (hit, columns, context = {}) {
+export function resolveCursor (hit, columns, deps = {}) {
   if (hit.resizeCol >= 0) return 'col-resize'
   if (isSortableHeader(hit, columns)) return 'pointer'
-  if (isTreeArrowSlot({ hit, columns, flatInfo: context.flatInfo })) return 'pointer'
-  if (isEditableCell(hit, columns, context)) return 'text'
+  if (isTreeArrowSlot({ hit, columns, flatInfo: deps.flatInfo })) return 'pointer'
+  if (isEditableCell(hit, columns, deps)) return 'text'
 
   return 'default'
 }
@@ -433,6 +438,3 @@ export function resolveTooltipTarget ({ hit, columns, hoverMode, editingCell, re
 
   return { row: hit.rowIndex, col: hit.colIndex }
 }
-
-// 无 DOM 工厂（拖拽误触抑制 / rAF 合帧）拆至 schedulers.js，导出面原位保持
-export { createClickGuard, createFrameScheduler } from './schedulers'

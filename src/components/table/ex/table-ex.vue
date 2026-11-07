@@ -78,8 +78,9 @@
   import { useTreeRows } from './composables/use-tree-rows'
   import { useColumnResize } from './composables/use-column-resize'
   import { buildSpans } from './spans/spans'
-  import { prepareColumn } from './cell-paint/cell-painters'
-  import { isCellEditable, createEditorController } from './editing/editor'
+  import { prepareColumn } from './cell-paint/cell-content'
+  import { createEditorController } from './editing/editor'
+  import { isCellEditable } from './editing/editor-resolve'
 
   // 功能纵切 composables（C1 拆分；组装顺序见各步骤注释，TDZ 约束：useCellTooltip
   // 先于 useTreeRows，useCellSelect 居 9 与 10 之间（清除 watch 先于 relayout
@@ -219,7 +220,7 @@
     return isCellEditable({ editable: props.editable, column })
   }
 
-  // —— host 袋（单一 ctx 载体，各 composable 以 useX(host) 调用、返回值
+  // —— host 袋（单一 host 载体，各 composable 以 useX(host) 调用、返回值
   // Object.assign(host, api) 并入；响应式状态对象直传，shell 普通 let 经
   // get*/set* 读写；尚未创建的成员一律 host 惰性读取，setup 期唯一同步
   // 前向调用 = tree immediate watch 的 host.relayout() 空实现）——
@@ -334,6 +335,7 @@
   // 4. 行几何策略（A2.2，C1 拆出 row-geometry-controller）：uniform/variable
   // 双模式几何、估高扫描输入签名（scanSignature）、精算缓存失效签名
   // （measureSignature）、进窗精算/单行重估与锚定补偿
+  // 注入 getter 清单（14 项）见 geometry/row-geometry-controller.js 文件头 @getters 声明
   const rowGeometry = createRowGeometryController({
     getRows: () => displayRows.value,
     getColumns: () => wiredColumns.value,

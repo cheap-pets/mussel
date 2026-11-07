@@ -39,16 +39,11 @@
  * 生成不同像素，规避页内重跑时序竞争——G1-b 遗留；requestIconImage 的 SVG 串
  * 同理逐次唯一）。
  */
-import {
-  prepareColumn,
-  resolveCellContent,
-  resolveCellTooltip,
-  drawCell,
-  getImageEntry,
-  requestIconImage,
-  drawIconGlyph,
-  linkHoverColorOf
-} from '../../../../../src/components/table/ex/cell-paint/cell-painters.js'
+import { drawCell } from '../../../../../src/components/table/ex/cell-paint/cell-painters.js'
+import { prepareColumn, resolveCellContent } from '../../../../../src/components/table/ex/cell-paint/cell-content.js'
+import { resolveCellTooltip } from '../../../../../src/components/table/ex/cell-paint/cell-tooltip.js'
+import { getImageEntry, requestIconImage, drawIconGlyph } from '../../../../../src/components/table/ex/cell-paint/icon-image.js'
+import { linkHoverColorOf } from '../../../../../src/components/table/ex/cell-paint/item-painters.js'
 import { resolveIconEntry } from '../../../../../src/components/table/column-types/icon.js'
 import { install, icons, whenGlyphReady } from '../../../../../src/icons/index.js'
 import { createWrapCache } from '../../../../../src/components/table/ex/shared/text-wrap.js'

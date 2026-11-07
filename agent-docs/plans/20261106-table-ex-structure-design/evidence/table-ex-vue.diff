@@ -1,0 +1,15 @@
+diff --git a/src/components/table/ex/table-ex.vue b/src/components/table/ex/table-ex.vue
+index 6f590b1..b4b613c 100644
+--- a/src/components/table/ex/table-ex.vue
++++ b/src/components/table/ex/table-ex.vue
+@@ -81,2 +81,3 @@
+-  import { prepareColumn } from './cell-paint/cell-painters'
+-  import { isCellEditable, createEditorController } from './editing/editor'
++  import { prepareColumn } from './cell-paint/cell-content'
++  import { createEditorController } from './editing/editor'
++  import { isCellEditable } from './editing/editor-resolve'
+@@ -222 +223 @@
+-  // —— host 袋（单一 ctx 载体，各 composable 以 useX(host) 调用、返回值
++  // —— host 袋（单一 host 载体，各 composable 以 useX(host) 调用、返回值
+@@ -336,0 +338 @@
++  // 注入 getter 清单（14 项）见 geometry/row-geometry-controller.js 文件头 @getters 声明

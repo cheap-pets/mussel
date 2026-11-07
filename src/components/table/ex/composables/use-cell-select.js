@@ -7,8 +7,15 @@
  *
  * 创建时序（组装步骤 9.5，usePointer 之后、useRelayout 之前）：清除 watch 的 pre
  * flush 先于 relayout 合并 watch（Vue pre watcher 按创建 id 排序），同 tick 先清
- * 旧选中格再整幅重绘，避免 relayout 帧残留选中描边；成员一律运行时经 ctx.<key>
+ * 旧选中格再整幅重绘，避免 relayout 帧残留选中描边；成员一律运行时经 host.<key>
  * 读取（setup 期不解构）。
+ */
+/**
+ * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * @host-reads props, scrollEl, layout, wiredColumns, displayRows, spans,
+ *   selectedCell, editor（消费 state.editing）
+ * @host-writes selectCell, clearCellSelection
+ * @host-calls invalidate（提供方 use-paint-state）
  */
 import { onUnmounted, watch } from 'vue'
 
@@ -25,14 +32,14 @@ function devWarnClipboard () {
 }
 
 /**
- * @param {Object} ctx host 袋（读取 props, scrollEl, layout, wiredColumns,
+ * @param {Object} host host 袋（读取 props, scrollEl, layout, wiredColumns,
  *   displayRows, spans, selectedCell, invalidate, editor）
  * @returns {{ selectCell, clearCellSelection }}
  */
-export function useCellSelect (ctx) {
+export function useCellSelect (host) {
   /** 锚格坐标归一（合并区域命中 → 主格；无效命中 → null）。选中/移动一律存锚格 */
   function anchorOf (row, col) {
-    const anchor = resolveSpanCell(ctx.spans.value, { rowIndex: row, colIndex: col })
+    const anchor = resolveSpanCell(host.spans.value, { rowIndex: row, colIndex: col })
 
     return anchor && anchor.rowIndex >= 0 && anchor.colIndex >= 0
       ? { row: anchor.rowIndex, col: anchor.colIndex }
@@ -47,24 +54,24 @@ export function useCellSelect (ctx) {
 
     if (!next) return
 
-    const prev = ctx.selectedCell.value
+    const prev = host.selectedCell.value
 
     if (prev && prev.row === next.row && prev.col === next.col) return
 
-    ctx.selectedCell.value = next
+    host.selectedCell.value = next
 
-    if (prev) ctx.invalidate({ cell: prev })
-    ctx.invalidate({ cell: next })
+    if (prev) host.invalidate({ cell: prev })
+    host.invalidate({ cell: next })
   }
 
   /** 清除选中（有值才清）：先置空再失效旧格（重绘即去掉描边） */
   function clearCellSelection () {
-    const prev = ctx.selectedCell.value
+    const prev = host.selectedCell.value
 
     if (!prev) return
 
-    ctx.selectedCell.value = null
-    ctx.invalidate({ cell: prev })
+    host.selectedCell.value = null
+    host.invalidate({ cell: prev })
   }
 
   // —— document 级 keydown（编辑态/表单控件/已拦截/组合键四重守卫放行） ——
@@ -107,10 +114,10 @@ export function useCellSelect (ctx) {
   }
 
   function onKeydown (event) {
-    if (!ctx.selectedCell.value) return
+    if (!host.selectedCell.value) return
 
     // 编辑器 owns 键盘（选中与编辑互斥的兜底）
-    if (ctx.editor.state.editing) return
+    if (host.editor.state.editing) return
     if (event.defaultPrevented) return
     if (isFormTarget(event)) return
 
@@ -134,22 +141,22 @@ export function useCellSelect (ctx) {
     document.removeEventListener('keydown', onKeydown)
   }
 
-  watch(ctx.selectedCell, value => (value ? attach() : detach()))
+  watch(host.selectedCell, value => (value ? attach() : detach()))
   onUnmounted(detach)
 
   /** Ctrl+C 复制选中格：resolveCellCopyText 为 null（图形列/空内容）不动剪贴板；
       clipboard 缺失或 writeText reject → devWarn once 降级 */
   function copySelection () {
-    const cur = ctx.selectedCell.value
+    const cur = host.selectedCell.value
 
     if (!cur) return
 
     const text = resolveCellCopyText({
-      columns: ctx.wiredColumns.value,
-      rows: ctx.displayRows.value,
+      columns: host.wiredColumns.value,
+      rows: host.displayRows.value,
       row: cur.row,
       col: cur.col,
-      recordsOffset: ctx.props.recordsOffset
+      recordsOffset: host.props.recordsOffset
     })
 
     if (text == null) return
@@ -179,20 +186,20 @@ export function useCellSelect (ctx) {
       方向键时 layout 快照的滚动值滞后（recomputeViewWindows 在 scroll rAF），
       会误判「已可见」而不回滚 */
   function moveSelection (key) {
-    const cur = ctx.selectedCell.value
-    const base = ctx.layout.value
+    const cur = host.selectedCell.value
+    const base = host.layout.value
 
     if (!cur || !base) return
 
-    const el = ctx.scrollEl.value
+    const el = host.scrollEl.value
     const live = el ? { ...base, scrollTop: el.scrollTop, scrollLeft: el.scrollLeft } : base
 
     const moved = resolveSelectionMove({
       row: cur.row,
       col: cur.col,
       key,
-      rowCount: ctx.displayRows.value?.length ?? 0,
-      colCount: ctx.wiredColumns.value?.length ?? 0
+      rowCount: host.displayRows.value?.length ?? 0,
+      colCount: host.wiredColumns.value?.length ?? 0
     })
 
     if (!moved) return
@@ -210,7 +217,7 @@ export function useCellSelect (ctx) {
   // 行集/列集引用变化清除（裁定 4：records 替换/排序/树展开收起/懒加载回填、
   // 列集变化；就地改值走 recordsVersion 通道不改引用，不清除）。非 immediate——
   // setup 期不触达 invalidate（painter 为 null 时 invalidate 返回 false 亦安全）
-  watch([ctx.displayRows, ctx.wiredColumns], () => clearCellSelection())
+  watch([host.displayRows, host.wiredColumns], () => clearCellSelection())
 
   return {
     selectCell,

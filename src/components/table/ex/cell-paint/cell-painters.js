@@ -293,10 +293,3 @@ function drawTreeAffordance (ctx, rect, { col, row, flatInfo, expandedKeys, reco
 
   return level * TREE_INDENT + TREE_INDENT
 }
-
-// —— 簇内拆分后的导出面（demo 自检 / painter / table-ex.vue 消费路径不变）——
-
-export { prepareColumn, resolveCellContent, capMaxLinesOf } from './cell-content'
-export { getImageEntry, requestIconImage, drawIconGlyph } from './icon-image'
-export { linkHoverColorOf } from './item-painters'
-export { resolveCellTooltip } from './cell-tooltip'

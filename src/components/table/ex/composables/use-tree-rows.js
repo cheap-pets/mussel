@@ -8,7 +8,17 @@
  * watch（tree 开关 / treeProps / treeExpandedKeys）。
  *
  * 平铺与索引全部由 tree.js 纯函数产出；DOM 接线（锚定补偿写入 scrollTop、
- * 重绘）经 ctx 回调交回组件壳。
+ * 重绘）经 host 回调交回组件壳。
+ */
+/**
+ * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * @host-reads props, emit
+ * @host-writes treeExpanded, treeOptions, childrenIndex, flatRows, displayRows,
+ *   wiredColumns, treeColumnIndex, treeIndentsOf, applyTreeToggle, expandAll,
+ *   collapseAll, getTreeExpandedKeys
+ * @host-calls getPreparedColumns（壳）, getScrollEl / getLayout（壳）,
+ *   commit（壳前向槽 → editor.commit）, relayout（壳前向槽，use-relayout 后覆盖）,
+ *   recomputeViewWindows（提供方 use-relayout）, redraw（提供方 use-paint-state）
  */
 import { computed, shallowRef, watch } from 'vue'
 
@@ -18,7 +28,7 @@ import { buildChildrenIndex, buildFlatRows, resolveInitialExpandedKeys, toggleKe
 /**
  * 创建树接线（组件壳 setup 内调用；内部注册三条树 watch）。
  *
- * @param {Object} ctx 组件壳注入
+ * @param {Object} host 组件壳注入
  * - props / emit                    组件 props（tree/treeProps/treeExpandedKeys/
  *                                   defaultExpandLevel/records/keyField）与 emit
  * - getPreparedColumns ()           → prepareColumn 后的内部列数组（wiredColumns 输入）
@@ -37,8 +47,8 @@ import { buildChildrenIndex, buildFlatRows, resolveInitialExpandedKeys, toggleKe
  *   getTreeExpandedKeys: Function
  * }}
  */
-export function useTreeRows (ctx) {
-  const { props, emit } = ctx
+export function useTreeRows (host) {
+  const { props, emit } = host
 
   // 展开节点 key 集合（内部持有；受控 prop 引用变化覆盖，点击箭头 toggle + emit）
   const treeExpanded = shallowRef(new Set())
@@ -91,7 +101,7 @@ export function useTreeRows (ctx) {
   // 列接线：树开且未显式指定 treeNode 时缺省首个数据列为树形列（A3.4；
   // check/rec_no 为图形列不作为树形列缺省）
   const wiredColumns = computed(() => {
-    const cols = ctx.getPreparedColumns()
+    const cols = host.getPreparedColumns()
 
     if (!props.tree || cols.some(col => col._isTreeColumn)) return cols
 
@@ -143,8 +153,8 @@ export function useTreeRows (ctx) {
       { key, record, level }，语义对齐 tree 组件 nodeExpand/nodeCollapse——
       每次 toggle 均发，消费方自判是否懒加载子级） */
   function applyTreeToggle (key, meta = {}) {
-    const el = ctx.getScrollEl()
-    const cur = ctx.getLayout()
+    const el = host.getScrollEl()
+    const cur = host.getLayout()
     let anchor = null
 
     if (el && cur) {
@@ -154,7 +164,7 @@ export function useTreeRows (ctx) {
       anchor = { record: displayRows.value?.[row], top: geometry.topAt(row) }
     }
 
-    ctx.commit()
+    host.commit()
 
     treeExpanded.value = toggleKey(treeExpanded.value, key)
     emit('update:tree-expanded-keys', [...treeExpanded.value])
@@ -164,38 +174,38 @@ export function useTreeRows (ctx) {
       level: meta.level
     })
 
-    ctx.relayout()
+    host.relayout()
 
-    if (anchor && el && ctx.getLayout()) {
+    if (anchor && el && host.getLayout()) {
       const row = (displayRows.value ?? []).indexOf(anchor.record)
 
       if (row >= 0) {
-        const shift = ctx.getLayout().rowGeometry.topAt(row) - anchor.top
+        const shift = host.getLayout().rowGeometry.topAt(row) - anchor.top
 
         if (shift) el.scrollTop += shift
       }
     }
 
     // 锚定补偿写入后以最终 scrollTop 同步窗口并重绘（不等下一帧 scroll 事件）
-    ctx.recomputeViewWindows()
-    ctx.redraw()
+    host.recomputeViewWindows()
+    host.redraw()
   }
 
   /** 展开全部（A1：等价展开集 = 全部有子节点 key） */
   function expandAll () {
     if (!props.tree || !childrenIndex.value) return
 
-    ctx.commit()
+    host.commit()
     treeExpanded.value = new Set(childrenIndex.value.hasChildren)
     emit('update:tree-expanded-keys', [...treeExpanded.value])
-    ctx.relayout()
+    host.relayout()
   }
 
   function collapseAll () {
-    ctx.commit()
+    host.commit()
     treeExpanded.value = new Set()
     emit('update:tree-expanded-keys', [])
-    ctx.relayout()
+    host.relayout()
   }
 
   /** 当前展开 key 数组（A1：调试/受控回读） */
@@ -210,7 +220,7 @@ export function useTreeRows (ctx) {
   // immediate：首布局前解析（首次入场 defaultExpandLevel 解析）
   watch(() => props.tree, (now, before) => {
     if (now && !before) resolveInitialExpansion()
-    ctx.relayout()
+    host.relayout()
   }, { immediate: true })
 
   // treeProps 引用变化 → key/parentKey 字段名变化使既有展开集语义失效 →
@@ -219,7 +229,7 @@ export function useTreeRows (ctx) {
     if (!props.tree) return
 
     resolveInitialExpansion()
-    ctx.relayout()
+    host.relayout()
   })
 
   // treeExpandedKeys 受控引用变化 → 覆盖内部 Set → 重建平铺（A2.4）
@@ -232,7 +242,7 @@ export function useTreeRows (ctx) {
 
     treeExpanded.value = next
 
-    if (!same) ctx.relayout()
+    if (!same) host.relayout()
   })
 
   return {

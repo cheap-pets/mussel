@@ -29,8 +29,8 @@ function autoSpanKeyOf (col, mode, record) {
 }
 
 /** 收集启用中的 autoRowSpan 列下标（takenOver 过滤 + info/orderBy 警告一次） */
-function collectAutoRowSpanColumns (ctx) {
-  const { columns, emitWarn, takenOver } = ctx
+function collectAutoRowSpanColumns (spanCtx) {
+  const { columns, emitWarn, takenOver } = spanCtx
   const autoCols = []
 
   for (let i = 0; i < columns.length; i++) {
@@ -52,7 +52,7 @@ function collectAutoRowSpanColumns (ctx) {
     autoCols.push(i)
   }
 
-  if (autoCols.length && ctx.orderBy) {
+  if (autoCols.length && spanCtx.orderBy) {
     emitWarn(
       'orderBy:autoRowSpan',
       'orderBy 非空且存在启用中的 autoRowSpan：合并依赖当前行序，排序后的合并块可能无意义（不自动关闭排序）'
@@ -116,9 +116,9 @@ function advanceSegment (seg, key, row, segStartByCol, colIndex, close) {
     Function 键；Object.is 键比较；空值不参与且为分段边界；级联分段（右侧列分段在
     左侧列分段起点处切断）；树父链切断（levels 变化或 parentKeys 不同）；
     spanMethod 占用格切断且分段不跨过 */
-export function applyAutoRowSpan (ctx, index, occupied) {
-  const { records, columns, rowCount, flatInfo, emitWarn } = ctx
-  const autoCols = collectAutoRowSpanColumns(ctx)
+export function applyAutoRowSpan (spanCtx, index, occupied) {
+  const { records, columns, rowCount, flatInfo, emitWarn } = spanCtx
+  const autoCols = collectAutoRowSpanColumns(spanCtx)
 
   if (!autoCols.length) return
 

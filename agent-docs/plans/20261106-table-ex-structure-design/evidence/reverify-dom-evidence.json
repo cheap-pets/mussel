@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "round": "05-verify-批次2A-2（修复轮 批次2A 第 1 轮后复验）",
+    "date": "2026-11-07",
+    "page": "http://localhost:3000/data/table-ex/",
+    "server": "npm run demo:build 后台自启，监听 PID 7256，验证后 taskkill 释放",
+    "hoverProbe": {
+      "setup": "window.scrollTo(0,0) → .mu-table-ex boundingBox(x:18,y:119,w:958,h:418) → 鼠标移出 → 12 点位逐一 mouse.move(steps:4) + 900ms 停留（> TOOLTIP_SHOW_DELAY=300ms）→ 每点读 .mu-tooltip-panel 可见性",
+      "points": "x∈{30,150,330,510} × y∈{54,90,126}（表体行 0/1/2 中心 + 列横向取样）"
+    }
+  },
+  "selfCheckPanel": {
+    "countNode": "自检结果（232/232 通过）",
+    "items": 232,
+    "fails": 0,
+    "cross": 0,
+    "moduleCount": 12,
+    "modules": {
+      "text-wrap": 14,
+      "row-geometry": 16,
+      "row-geometry-controller": 8,
+      "tree": 14,
+      "spans": 13,
+      "theme": 16,
+      "layout": 21,
+      "cell-painters": 57,
+      "painter": 32,
+      "interactions": 19,
+      "editor": 18,
+      "data": 4
+    },
+    "baselineRef": "probe-baseline-2A.md §2（12 模块计数逐项相同）"
+  },
+  "hoverProbe": {
+    "newConsoleDuringProbe": [],
+    "tooltipVisiblePoints": [
+      { "x": 330, "y": 54, "visible": true, "text": "状态码：active" },
+      { "x": 330, "y": 90, "visible": true, "text": "状态码：active" },
+      { "x": 330, "y": 126, "visible": true, "text": "状态码：pending" }
+    ],
+    "tooltipHiddenPointsNote": "其余 9 点位面板隐藏（exists=true/visible=false 或首次 exists=false）：非 title 列 / 非溢出格 resolveTooltipTarget 返回 null 按设计隐藏；x=510 点位残留 hidden 面板文本为上一点位状态（单例锚点复用），非错误",
+    "round1FailEvidenceRef": "05-verify-批次2A-1.md 失败项（6 条 ReferenceError: isSameCell is not defined at showCellTooltip）→ 本轮 0 条",
+    "raw": {
+      "box": { "x": 18, "y": 119, "w": 958, "h": 418 },
+      "points": [
+        { "x": 30, "y": 54, "tooltip": { "exists": false } },
+        { "x": 150, "y": 54, "tooltip": { "exists": false } },
+        { "x": 330, "y": 54, "tooltip": { "exists": true, "visible": true, "text": "状态码：active" } },
+        { "x": 510, "y": 54, "tooltip": { "exists": true, "visible": false, "text": "状态码：active" } },
+        { "x": 30, "y": 90, "tooltip": { "exists": true, "visible": false, "text": "状态码：active" } },
+        { "x": 150, "y": 90, "tooltip": { "exists": true, "visible": false, "text": "状态码：active" } },
+        { "x": 330, "y": 90, "tooltip": { "exists": true, "visible": true, "text": "状态码：active" } },
+        { "x": 510, "y": 90, "tooltip": { "exists": true, "visible": false, "text": "状态码：active" } },
+        { "x": 30, "y": 126, "tooltip": { "exists": true, "visible": false, "text": "状态码：active" } },
+        { "x": 150, "y": 126, "tooltip": { "exists": true, "visible": false, "text": "状态码：active" } },
+        { "x": 330, "y": 126, "tooltip": { "exists": true, "visible": true, "text": "状态码：pending" } },
+        { "x": 510, "y": 126, "tooltip": { "exists": true, "visible": false, "text": "状态码：pending" } }
+      ]
+    }
+  },
+  "consoleNormalizedDiff": {
+    "command": "node 归一化（剥 [Nms] 时间戳 / main.js:N 产物行号 / noRegEntryN / editGateProbeN / noRegEditN 夹具 Date.now() 后缀）后逐字节比对",
+    "result": "NORMALIZED_IDENTICAL: 46 lines",
+    "baseline": ".playwright-mcp/console-2026-11-06T16-48-37-009Z.log",
+    "reverify": "evidence/console-reverify-table-ex.log"
+  }
+}

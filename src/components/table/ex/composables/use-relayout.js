@@ -2,34 +2,47 @@
  * 布局重算 / 滚动 / 尺寸响应 composable（C1 壳拆分自 table-ex.vue；
  * 02-design.md A2 DPR 适配与布局重算 + A3 滚动行 + relayout 源合一 watch）。
  */
+/**
+ * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * @host-reads props, canvasEl, scrollEl, preparedColumns, displayRows,
+ *   widthOverrides, layout, paintState, rowGeometry
+ * @host-writes relayoutAndRedraw, recomputeViewWindows, onScroll, onResize,
+ *   scrollFrame, yScrolled, yScrolledEnd, yOverflowed（另覆盖 host.relayout 前向槽）
+ * @host-calls getThemeWatcher（壳）, setLastRelayout（壳）,
+ *   hideCellTooltip（提供方 use-cell-tooltip）, resetOverrides
+ *   （提供方 use-column-resize）, redraw / invalidate
+ *   （提供方 use-paint-state）, editor.commit（壳 editor 控制器）,
+ *   recomputeViewWindows（本模块回填）; rowGeometry.currentGeometry /
+ *   resolveForRelayout / remeasureVisibleRows / invalidateMeasureCache（壳注入控制器）
+ */
 import { ref, watch } from 'vue'
 import { throttle } from 'throttle-debounce'
 
 import { computeViewCols, computeViewRows, relayout as computeLayout } from '../geometry/layout'
-import { createFrameScheduler } from '../interaction/interactions'
+import { createFrameScheduler } from '../interaction/schedulers'
 
 /**
- * @param {Object} ctx host 袋（读取 scrollEl, canvasEl, props, preparedColumns,
+ * @param {Object} host host 袋（读取 scrollEl, canvasEl, props, preparedColumns,
  *   displayRows, rowGeometry, widthOverrides, layout, paintState, getThemeWatcher,
  *   hideCellTooltip, editor, redraw, invalidate, resetOverrides, setLastRelayout）
  * @returns {{ relayoutAndRedraw, recomputeViewWindows, onScroll, onResize,
  *   scrollFrame, yScrolled, yScrolledEnd, yOverflowed }}
  */
-export function useRelayout (ctx) {
-  const { props } = ctx
+export function useRelayout (host) {
+  const { props } = host
 
   const yScrolled = ref(false)
   const yScrolledEnd = ref(false)
   const yOverflowed = ref(false)
 
   function syncCanvasSize (cssWidth, cssHeight) {
-    const canvas = ctx.canvasEl.value
+    const canvas = host.canvasEl.value
 
     if (!canvas) return
 
     const dpr = window.devicePixelRatio || 1
 
-    ctx.paintState.dpr = dpr
+    host.paintState.dpr = dpr
 
     const physicsWidth = Math.round(cssWidth * dpr)
     const physicsHeight = Math.round(cssHeight * dpr)
@@ -46,18 +59,18 @@ export function useRelayout (ctx) {
       估高需 contentWidth（列宽），先按首过几何解一次列宽再带几何重算（纯函数，成本可忽略） */
   function relayoutAndRedraw () {
     // tooltip 收起（状态失效类）：数据/几何变化即旧格提示过期（含 recordsVersion 通道）
-    ctx.hideCellTooltip()
+    host.hideCellTooltip()
 
-    const el = ctx.scrollEl.value
-    const themeWatcher = ctx.getThemeWatcher()
+    const el = host.scrollEl.value
+    const themeWatcher = host.getThemeWatcher()
 
     if (!el || !themeWatcher) return
 
     const startedAt = performance.now()
     const snapshot = themeWatcher.snapshot
     const base = {
-      columns: ctx.preparedColumns.value,
-      rowCount: ctx.displayRows.value?.length ?? 0,
+      columns: host.preparedColumns.value,
+      rowCount: host.displayRows.value?.length ?? 0,
       containerWidth: el.clientWidth,
       containerHeight: el.clientHeight,
       fixedLeftColumns: props.fixedLeftColumns ?? 0,
@@ -66,19 +79,19 @@ export function useRelayout (ctx) {
       headHeight: snapshot.headHeight || 36,
       scrollTop: el.scrollTop,
       scrollLeft: el.scrollLeft,
-      widthOverrides: ctx.widthOverrides
+      widthOverrides: host.widthOverrides
     }
 
     // 首过：以现有几何（变高）/等高几何解列宽；scanDirty 时重建几何再算一次
-    let next = computeLayout({ ...base, rowGeometry: ctx.rowGeometry.currentGeometry(base) })
-    const { geometry, scanCount, rebuild } = ctx.rowGeometry.resolveForRelayout({
+    let next = computeLayout({ ...base, rowGeometry: host.rowGeometry.currentGeometry(base) })
+    const { geometry, scanCount, rebuild } = host.rowGeometry.resolveForRelayout({
       colWidths: next.colWidths,
       theme: snapshot
     })
 
     if (rebuild) next = computeLayout({ ...base, rowGeometry: geometry })
 
-    ctx.layout.value = next
+    host.layout.value = next
 
     yOverflowed.value = next.contentHeight > next.stickyHeight + 0.5
     yScrolled.value = next.scrollTop > 0.5
@@ -91,26 +104,26 @@ export function useRelayout (ctx) {
     // 估高对字符串多行列恒取 1 行下界，relayout 尾部只 redraw 会令行高/格线停在
     // 估高位置；补可视行精算（uniform 模式零成本早退）+ 窗口重算 + 整幅重绘，
     // 保证一切 relayout 出口的可视行高为真值、格线落在精算位置
-    ctx.rowGeometry.remeasureVisibleRows()
-    ctx.recomputeViewWindows()
-    ctx.redraw()
+    host.rowGeometry.remeasureVisibleRows()
+    host.recomputeViewWindows()
+    host.redraw()
 
     // relayout 计时（getLayoutInfo 暴露：lastPaint 只覆盖 paint()，本字段补齐
     // 估高扫描/几何重建阶段的可见性，复核 2026-10-26 验证设施缺口）
-    ctx.setLastRelayout({ elapsed: performance.now() - startedAt, scanCount, rebuild })
+    host.setLastRelayout({ elapsed: performance.now() - startedAt, scanCount, rebuild })
   }
 
   // 滚动路径不重跑 solveWidths（G1-b 契约）：直接以现有 colLefts 重算可视窗口
   function recomputeViewWindows () {
-    const el = ctx.scrollEl.value
-    const cur = ctx.layout.value
+    const el = host.scrollEl.value
+    const cur = host.layout.value
 
     if (!el || !cur) return
 
     const scrollTop = el.scrollTop
     const scrollLeft = el.scrollLeft
 
-    ctx.layout.value = {
+    host.layout.value = {
       ...cur,
       scrollTop,
       scrollLeft,
@@ -131,21 +144,21 @@ export function useRelayout (ctx) {
   // —— 滚动 / 尺寸响应 ——
 
   const scrollFrame = createFrameScheduler(() => {
-    ctx.rowGeometry.remeasureVisibleRows()
-    ctx.recomputeViewWindows()
-    ctx.redraw()
+    host.rowGeometry.remeasureVisibleRows()
+    host.recomputeViewWindows()
+    host.redraw()
   })
 
   function onScroll () {
-    const el = ctx.scrollEl.value
+    const el = host.scrollEl.value
 
     if (!el) return
 
     // 滚动即提交（A6，kaka SELECTED_CELL/SCROLL 同语义）
-    ctx.editor.commit()
+    host.editor.commit()
 
     // tooltip 收起（壳统一收起：锚点在 sticky 层内不随内容滚动，面板会停在旧视觉位置）
-    ctx.hideCellTooltip()
+    host.hideCellTooltip()
 
     yScrolled.value = el.scrollTop > 0.5
     yScrolledEnd.value =
@@ -156,7 +169,7 @@ export function useRelayout (ctx) {
   }
 
   const onResize = throttle(100, () => {
-    if (ctx.scrollEl.value) relayoutAndRedraw()
+    if (host.scrollEl.value) relayoutAndRedraw()
   }, { noLeading: true })
 
   // —— 渲染源 watch（A3 重绘表） ——
@@ -185,12 +198,12 @@ export function useRelayout (ctx) {
     ],
     ([records, columns], [prevRecords, prevColumns]) => {
       if (records !== prevRecords) {
-        ctx.scrollEl.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+        host.scrollEl.value?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
       }
 
       if (columns !== prevColumns) {
-        ctx.resetOverrides()
-        ctx.rowGeometry.invalidateMeasureCache()
+        host.resetOverrides()
+        host.rowGeometry.invalidateMeasureCache()
       }
 
       relayoutAndRedraw()
@@ -209,13 +222,13 @@ export function useRelayout (ctx) {
     ],
     () => {
       // hoverMode 切换等重绘路径同步收起 tooltip（去重键同步清空）
-      ctx.hideCellTooltip()
-      ctx.redraw()
+      host.hideCellTooltip()
+      host.redraw()
     }
   )
 
   // headerChecked 受控变化 → 表头区整幅（受控 ✓ 状态变化即重绘）
-  watch(() => props.headerChecked, () => ctx.invalidate({ header: true }))
+  watch(() => props.headerChecked, () => host.invalidate({ header: true }))
 
   return {
     relayoutAndRedraw,

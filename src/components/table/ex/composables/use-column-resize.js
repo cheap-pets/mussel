@@ -6,16 +6,25 @@
  * 引用替换时清空）、move 中临时几何更新（被拖列改宽仅重算前缀和与 spacer，
  * 不重跑宽度求解防其他列抖动）、参考线 x 状态、拖拽误触抑制 clickGuard 接线。
  */
+/**
+ * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * @host-reads emit
+ * @host-writes resizeGuideX, clickGuard, widthOverrides, startResize, resetOverrides
+ * @host-calls getPreparedColumns（壳）, getLayout / setLayout（壳）,
+ *   getCanvasEl（壳）, invalidate（提供方 use-paint-state）, relayout
+ *   （壳前向槽，use-relayout 后覆盖）
+ */
 import { shallowRef } from 'vue'
 
 import { getPixelNumber } from '@/utils/size'
 import { computePrefixSums, resolveTypeMinWidth } from '../geometry/layout'
-import { createClickGuard, resolveResizeWidth, RESIZE_MIN_WIDTH } from '../interaction/interactions'
+import { resolveResizeWidth, RESIZE_MIN_WIDTH } from '../interaction/interactions'
+import { createClickGuard } from '../interaction/schedulers'
 
 /**
  * 创建列宽拖拽（组件壳 setup 内调用）。
  *
- * @param {Object} ctx 组件壳注入
+ * @param {Object} host 组件壳注入
  * - emit                           组件 emit（column-resize 事件）
  * - getPreparedColumns ()           → prepareColumn 后的内部列数组
  * - getLayout () / setLayout (v)    → layout shallowRef 读写（拖拽 move 临时几何）
@@ -27,8 +36,8 @@ import { createClickGuard, resolveResizeWidth, RESIZE_MIN_WIDTH } from '../inter
  *   startResize: Function, resetOverrides: Function
  * }}
  */
-export function useColumnResize (ctx) {
-  const { emit } = ctx
+export function useColumnResize (host) {
+  const { emit } = host
 
   /** 调宽拖拽参考线视口 x（overlay 覆盖层绘制；拖拽中非 null） */
   const resizeGuideX = shallowRef(null)
@@ -48,7 +57,7 @@ export function useColumnResize (ctx) {
 
     const { colLefts, colsWidth } = computePrefixSums(colWidths)
 
-    ctx.setLayout({
+    host.setLayout({
       ...base,
       colWidths,
       colLefts,
@@ -61,18 +70,18 @@ export function useColumnResize (ctx) {
   /** 表头手柄 pointerdown 开拖（A5）：window 级 pointermove/pointerup 接线 */
   function startResize (event, hit) {
     const colIndex = hit.resizeCol
-    const col = ctx.getPreparedColumns()[colIndex]
-    const cur = ctx.getLayout()
+    const col = host.getPreparedColumns()[colIndex]
+    const cur = host.getLayout()
 
     if (!col || !cur) return
 
     clickGuard.arm()
 
-    const canvasRect = ctx.getCanvasEl().getBoundingClientRect()
+    const canvasRect = host.getCanvasEl().getBoundingClientRect()
     let lastWidth = cur.colWidths[colIndex]
 
     const onMove = ev => {
-      const base = ctx.getLayout()
+      const base = host.getLayout()
 
       if (!base) return
 
@@ -99,7 +108,7 @@ export function useColumnResize (ctx) {
       resizeGuideX.value = base.colLefts[colIndex] + width - base.scrollLeft
 
       // move 脏区：该列左缘至视口右端竖带 + 表头整幅（A3 重绘表 / 评审 M9）
-      ctx.invalidate({ colFrom: colIndex })
+      host.invalidate({ colFrom: colIndex })
     }
 
     const onUp = () => {
@@ -114,7 +123,7 @@ export function useColumnResize (ctx) {
       // up：emit → relayout（拖拽列显式定宽〔overrides 已写入〕，
       // 其余未定宽列重跑求解重新瓜分剩余空间，A3/A5）
       emit('column-resize', { column: col._raw, width: lastWidth })
-      ctx.relayout()
+      host.relayout()
     }
 
     window.addEventListener('pointermove', onMove)

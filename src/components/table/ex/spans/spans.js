@@ -87,7 +87,7 @@ export function buildSpans ({
   const occupied = new Map()
   const emitWarn = createWarner(warnFn)
   const takenOver = new Set()
-  const ctx = {
+  const spanCtx = {
     records: list,
     columns: cols,
     spanMethod,
@@ -100,9 +100,9 @@ export function buildSpans ({
     takenOver
   }
 
-  if (typeof spanMethod === 'function') applySpanMethod(ctx, index, occupied)
+  if (typeof spanMethod === 'function') applySpanMethod(spanCtx, index, occupied)
 
-  applyAutoRowSpan(ctx, index, occupied)
+  applyAutoRowSpan(spanCtx, index, occupied)
 
   return index.regions.length ? index : null
 }

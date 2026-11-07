@@ -1,6 +1,7 @@
 /** 分区 5 覆盖层（hover 编辑感知/不可编辑灰描边/单元格选中描边/树箭头主色/编辑按钮） */
-import { drawTreeArrow, drawIconGlyph } from '../cell-paint/cell-painters.js'
-import { editorRectOf, editorGridlineFlagsOf, editButtonRectOf } from '../editing/editor.js'
+import { drawTreeArrow } from '../cell-paint/cell-painters.js'
+import { drawIconGlyph } from '../cell-paint/icon-image.js'
+import { editorRectOf, editorGridlineFlagsOf, editButtonRectOf } from '../editing/editor-geometry.js'
 import { resolveIconEntry } from '../../column-types/icon'
 import { expandableAt, isExpandedKey } from '../shared/tree.js'
 import {
@@ -54,40 +55,48 @@ function hoverModeShows (mode, kind) {
 
 // 行 hover 带（追加轮 2 需求 B）：宽 cap 至末列右缘视口 x——列少时不绘入末列
 // 右缘以右的空白延伸区（R5 命中放行不变，仅收缩绘制矩形；列满/溢出时
-// contentRightX >= stickyWidth，min() 无操作）
-function paintHoverRow (ctx, layout, row) {
-  ctx.fillRect(0, viewportRowY(layout, row),
+// contentRightX >= stickyWidth，min() 无操作）。
+// 合并区域（20261106-ex-fixed-select-hover-span 缺陷 2）：y/高取 hover 格
+// spanRectOf 矩形（rowspan 区域 = 区域行区间；普通格退化 = 原式）
+function paintHoverRow (ctx, layout, row, cellRect) {
+  ctx.fillRect(0, cellRect ? cellRect.y : viewportRowY(layout, row),
     Math.min(layout.stickyWidth, contentRightXOf(layout)),
-    layout.rowGeometry.heightAt(row))
+    cellRect ? cellRect.height : layout.rowGeometry.heightAt(row))
 }
 
 // 列 hover 带（追加轮 2 需求 B）：高 cap 至末行底部视口 y——行少时不绘入末行
 // 底部以下（与格线 contentBottomY 同源式；行 hover 状态前提 rowCount > 0，
-// contentBottomYOf 空表门控在此路径恒走有效分支）
-function paintHoverCol (ctx, layout, col) {
+// contentBottomYOf 空表门控在此路径恒走有效分支）。
+// 合并区域（缺陷 2 同上）：x/宽取 hover 格 spanRectOf 矩形（colspan 区域 = 区域
+// 列区间；普通格退化 = viewportColX + colWidths 原式）
+function paintHoverCol (ctx, layout, col, cellRect) {
   const yTo = contentBottomYOf(layout)
 
   ctx.fillRect(
-    viewportColX(layout, col),
+    cellRect ? cellRect.x : viewportColX(layout, col),
     layout.headHeight,
-    layout.colWidths[col] || 0,
+    cellRect ? cellRect.width : (layout.colWidths[col] || 0),
     yTo - layout.headHeight
   )
 }
 
 /** hover 高亮矩形（fillStyle 由调用方预设为 hoverBg）：按模式与命中有效性。
-    cell 模式经 spanRectOf 取区域矩形（合并区域整体高亮，§5.1，天然在有效行列
-    内）；row/column/cross 维持物理行/列矩形（正交语义，写入文档 §2.5），行带
-    止于末列右缘、列带止于末行底部（追加轮 2 需求 B，不越有效行列范围） */
+    hover 格视口矩形统一取 spanRectOf（合并区域 = 区域包围盒，普通格退化 =
+    cellRectAt 同式）：cell 模式整体高亮（§5.1）；row/column/cross 带几何随区域
+    扩展（20261106-ex-fixed-select-hover-span 缺陷 2，带语义不变——row = 区域
+    行全宽、column = 区域列全高，行带宽 cap 至末列右缘、列带高 cap 至末行底部
+    维持，追加轮 2 需求 B） */
 function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid, spans) {
-  if (hoverModeShows(mode, 'row') && rowValid) paintHoverRow(ctx, layout, hover.row)
+  const cellRect = rowValid && colValid
+    ? spanRectOf(layout, hover.row, hover.col, spans)
+    : null
 
-  if (hoverModeShows(mode, 'column') && colValid) paintHoverCol(ctx, layout, hover.col)
+  if (hoverModeShows(mode, 'row') && rowValid) paintHoverRow(ctx, layout, hover.row, cellRect)
+
+  if (hoverModeShows(mode, 'column') && colValid) paintHoverCol(ctx, layout, hover.col, cellRect)
 
   if (mode === 'cell' && rowValid && colValid) {
-    const rect = spanRectOf(layout, hover.row, hover.col, spans)
-
-    ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+    ctx.fillRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height)
   }
 }
 
@@ -119,7 +128,19 @@ function paintHoverEditorStroke (ctx, state, hover) {
 
   ctx.strokeStyle = state.theme.primaryColor
   ctx.lineWidth = 1
-  ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
+  // hover 描边固定列裁剪（20261106-ex-fixed-select-hover-span 人工修订 1 / 验收 4）：
+  // 与 paintCellSelection 同源——滚动区格（col ≥ fixedCount）裁掉 [0, fixedWidth)，
+  // 部分滚入固定列覆盖区时描边仅可见段绘制；y 取表体区（与外层 paintHoverOverlay
+  // clip 交集冗余，独立成立）。合并区域恒不跨固定列边界，锚列归类即区域归类
+  const clipX0 = hover.col < layout.fixedCount ? 0 : layout.fixedWidth
+
+  withClip(
+    ctx,
+    [clipX0, layout.headHeight, layout.stickyWidth - clipX0, layout.stickyHeight - layout.headHeight],
+    () => {
+      ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
+    }
+  )
 }
 
 /** 不可编辑格 hover 感知（20261105-table-ex-cell-select 验收 1a）：1px 浅灰
@@ -149,7 +170,16 @@ function paintHoverPlainStroke (ctx, state, hover) {
 
   ctx.strokeStyle = state.theme.borderColorSoft
   ctx.lineWidth = 1
-  ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
+  // 固定列裁剪与 paintHoverEditorStroke 逐字同源（验收 4：灰描边同样仅可见段绘制）
+  const clipX0 = hover.col < layout.fixedCount ? 0 : layout.fixedWidth
+
+  withClip(
+    ctx,
+    [clipX0, layout.headHeight, layout.stickyWidth - clipX0, layout.stickyHeight - layout.headHeight],
+    () => {
+      ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
+    }
+  )
 }
 
 /** 选中格主色描边（20261105-table-ex-cell-select 验收 1b）：state.selectedCell 为
@@ -186,7 +216,20 @@ function paintCellSelection (ctx, state) {
 
   ctx.strokeStyle = state.theme.primaryColor
   ctx.lineWidth = 1
-  ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
+  // 选中描边裁剪（20261106-ex-fixed-select-hover-span 缺陷 1）：overlay（分区 5）
+  // 晚于固定列区（分区 3）绘制，滚动区选中格水平滚入固定列覆盖区后描边会压在固
+  // 定列上——滚动区格（col ≥ fixedCount）裁掉 [0, fixedWidth)，固定列格 x0=0 不
+  // 裁固定区；y 自 headHeight 起（选中格垂直滚入表头区为同类缺口，一并收敛，对
+  // 齐 paintHoverOverlay 既有表体区 clip）
+  const clipX0 = selected.col < layout.fixedCount ? 0 : layout.fixedWidth
+
+  withClip(
+    ctx,
+    [clipX0, layout.headHeight, layout.stickyWidth - clipX0, layout.stickyHeight - layout.headHeight],
+    () => {
+      ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
+    }
+  )
 }
 
 /** 编辑按钮绘制（问题 5，覆盖层最上层）：hover 格所在列配 editButton.icon（注册

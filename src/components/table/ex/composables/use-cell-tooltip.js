@@ -11,34 +11,38 @@
  * 创建时序：须先于 useTreeRows(host)——其 immediate tree watch 在 setup 期同步
  * 经 host.relayout 触达（前向槽为空实现，运行时链路仍依赖本模块先注册）。
  */
+/**
+ * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * @host-reads rootEl, props, wiredColumns, flatRows, displayRows, layout, spans,
+ *   resizeGuideX
+ * @host-writes tooltipAnchorEl, tooltipController, scheduleCellTooltip,
+ *   hideCellTooltip, delayHideCellTooltip
+ * @host-calls getThemeWatcher（壳）, getMeasure（壳）, getWrapCache（壳）,
+ *   getEditingCellRef（壳）
+ */
 import { inject, shallowRef } from 'vue'
 import { TOOLTIP_SHOW_DELAY } from '@/components/tooltip/tooltip-core'
 import { CELL_PADDING_FALLBACK, ROW_TOP_INSET, TREE_INDENT } from '../shared/constants'
 import { resolveTooltipTarget } from '../interaction/interactions'
-import { resolveCellTooltip } from '../cell-paint/cell-painters'
+import { resolveCellTooltip } from '../cell-paint/cell-tooltip'
 import { regionAt, spanRectOf } from '../spans/spans'
+import { isSamePoint, recordNumberOf } from '../shared/cell-identity'
 
 /**
- * @param {Object} ctx host 袋（读取 rootEl, props, wiredColumns, flatRows,
+ * @param {Object} host host 袋（读取 rootEl, props, wiredColumns, flatRows,
  *   displayRows, layout, spans, getThemeWatcher, getMeasure, getWrapCache,
  *   getEditingCellRef, resizeGuideX）
  * @returns {{ tooltipAnchorEl, tooltipController, scheduleCellTooltip,
  *   hideCellTooltip, delayHideCellTooltip }}
  */
-export function useCellTooltip (ctx) {
+export function useCellTooltip (host) {
   const $mussel = inject('$mussel', null)
   // 控制器缺失（宿主未走完整 install / SSR）→ 优雅降级为无 tooltip（调度短路）
   const tooltipController = $mussel?.tooltip
   const tooltipAnchorEl = shallowRef()
-  // 当前去重键 { row, col } | null（格身份比较，与 hover 同式）
+  // 当前去重键 { row, col } | null（格身份比较，isSamePoint 与 hover 同源）
   let tooltipCell = null
   let tooltipShowTimer = 0
-
-  function isSameCell (prev, next) {
-    if (prev == null || next == null) return (prev == null) === (next == null)
-
-    return prev.row === next.row && prev.col === next.col
-  }
 
   function clearTooltipTimer () {
     clearTimeout(tooltipShowTimer)
@@ -55,19 +59,19 @@ export function useCellTooltip (ctx) {
 
     const next = resolveTooltipTarget({
       hit,
-      columns: ctx.wiredColumns.value,
-      hoverMode: ctx.props.hoverMode,
-      editingCell: ctx.getEditingCellRef(),
-      resizing: ctx.resizeGuideX.value != null
+      columns: host.wiredColumns.value,
+      hoverMode: host.props.hoverMode,
+      editingCell: host.getEditingCellRef(),
+      resizing: host.resizeGuideX.value != null
     })
 
-    if (isSameCell(next, tooltipCell)) return
+    if (isSamePoint(next, tooltipCell)) return
 
     clearTooltipTimer()
     tooltipCell = next
 
     if (next == null) {
-      if (tooltipController.isAnchorIn(ctx.rootEl.value)) tooltipController.delayHide()
+      if (tooltipController.isAnchorIn(host.rootEl.value)) tooltipController.delayHide()
 
       return
     }
@@ -78,37 +82,37 @@ export function useCellTooltip (ctx) {
 
   /** 树形列内容区缩进（drawTreeAffordance 同式）：level×16 + 16px 箭头槽；非树列/树关 0 */
   function tooltipTreeInsetOf (col, row) {
-    if (!col._isTreeColumn || !ctx.flatRows.value) return 0
+    if (!col._isTreeColumn || !host.flatRows.value) return 0
 
-    return (ctx.flatRows.value.levels?.[row] ?? 0) * TREE_INDENT + TREE_INDENT
+    return (host.flatRows.value.levels?.[row] ?? 0) * TREE_INDENT + TREE_INDENT
   }
 
   /** tooltip 求值上下文：layout/主题/测量/折行缓存/列/行记录任一缺失 → null（失效）；
       params 按 drawCell box 同式预算内容区宽高（格宽 − padding×2 − 树缩进 /
       格高 − ROW_TOP_INSET），rect = 命中格（合并区域）视口矩形 */
   function tooltipContextOf (cell) {
-    const cur = ctx.layout.value
-    const col = ctx.wiredColumns.value[cell.col]
-    const record = ctx.displayRows.value?.[cell.row]
-    const themeWatcher = ctx.getThemeWatcher()
-    const measureFn = ctx.getMeasure()
-    const wrapCacheObj = ctx.getWrapCache()
+    const cur = host.layout.value
+    const col = host.wiredColumns.value[cell.col]
+    const record = host.displayRows.value?.[cell.row]
+    const themeWatcher = host.getThemeWatcher()
+    const measureFn = host.getMeasure()
+    const wrapCacheObj = host.getWrapCache()
 
     if (!cur || !themeWatcher || !measureFn || !wrapCacheObj || !col || record == null) return null
 
     const snapshot = themeWatcher.snapshot
     const padding = snapshot?.cellPadding || CELL_PADDING_FALLBACK
-    const rect = spanRectOf(cur, cell.row, cell.col, ctx.spans.value)
+    const rect = spanRectOf(cur, cell.row, cell.col, host.spans.value)
 
     return {
       col,
       rect,
       params: {
         record,
-        recordNumber: (ctx.props.recordsOffset || 0) + cell.row + 1,
+        recordNumber: recordNumberOf(host.props.recordsOffset, cell.row),
         contentWidth: rect.width - padding * 2 - tooltipTreeInsetOf(col, cell.row),
         contentHeight: rect.height - ROW_TOP_INSET,
-        regionHeight: regionAt(ctx.spans.value, cell.row, cell.col) ? rect.height : null,
+        regionHeight: regionAt(host.spans.value, cell.row, cell.col) ? rect.height : null,
         theme: snapshot,
         measure: measureFn,
         wrapCache: wrapCacheObj
@@ -134,7 +138,7 @@ export function useCellTooltip (ctx) {
   function showCellTooltip (cell) {
     if (!tooltipController || !tooltipAnchorEl.value) return
     // 过期守卫：定时器触发时去重键已变化（换格/收起）则放弃本次显示
-    if (!isSameCell(tooltipCell, cell)) return
+    if (!isSamePoint(tooltipCell, cell)) return
 
     const context = tooltipContextOf(cell)
 
@@ -166,7 +170,7 @@ export function useCellTooltip (ctx) {
 
   /** 仅收面板，不动去重键；isAnchorIn 守卫不误杀他组件的 tooltip */
   function hideTooltip () {
-    if (tooltipController?.isAnchorIn(ctx.rootEl.value)) tooltipController.hide()
+    if (tooltipController?.isAnchorIn(host.rootEl.value)) tooltipController.hide()
   }
 
   /** 状态失效类收起点（滚动/拖拽/编辑/relayout/重绘 watch/卸载）：收面板 +
@@ -183,7 +187,7 @@ export function useCellTooltip (ctx) {
   function delayHideCellTooltip () {
     clearTooltipTimer()
     tooltipCell = null
-    if (tooltipController?.isAnchorIn(ctx.rootEl.value)) tooltipController.delayHide()
+    if (tooltipController?.isAnchorIn(host.rootEl.value)) tooltipController.delayHide()
   }
 
   return {

@@ -42,12 +42,14 @@
 - [table-ex 树 isLeaf 懒加载协议](./project/table-ex-tree-lazy-load.md) `convention` `code@worktree(2026-10-29)`：treeProps.isLeaf 未映射即关闭；仅 ===false 且无子级显三角；toggle 必发 tree-expand/collapse；回填就地 push + recordsVersion++ 防闪顶。
 - [eslint 报错爆量 13 万：demo/dist 被拾取](./project/eslint-demo-dist-false-positives.md) `pitfall` `code@worktree(2026-10-30)`：`demo/**` glob 拾取 demo/dist 产物假报错；项目用全局 eslint 8.57.0，.eslintignore 须含 demo/dist，口径限 src 与 demo/src。
 - [table-ex 重构行为冻结：探针基线逐字比对](./project/table-ex-refactor-frozen-probe.md) `convention` `code@worktree(2026-10-30)`：重构前采集行为快照（警告原文序列/构建序）为冻结基线，重构后逐字比对 + 自检双安全网；探针交付前删除。
-- [table-ex 覆盖层绘制须裁剪到表体区](./project/table-ex-overlay-clip-body-area.md) `convention` `code@worktree(2026-10-31)`：分区 5 hover 绘制统一 withClip 表体区——行滚入表头后半透明 hoverBg 溢入表头叠色；仅 paintFull 无外层收敛。
+- [table-ex 覆盖层绘制须裁剪到表体区](./project/table-ex-overlay-clip-body-area.md) `convention` `code@worktree(2026-11-06)`：分区 5 withClip 表体区；hover 带刻意横穿固定列，选中描边须另裁固定列区（否则滚入压固定列上）。
+- [table-ex hover 高亮与脏区随合并区域联动](./project/table-ex-hover-span-region.md) `convention` `code@worktree(2026-11-06)`：hover 带/列带脏区须同批按 spanRectOf/regionAt 取合并区域，只改绘制会残影，补画会两次混色。
 - [table-ex 条目列对齐协议](./project/table-ex-item-column-align.md) `convention` `code@worktree(2026-11-04)`：button 组两遍式平移、link 竖排每条各自对齐、tag 横排 itemsStartX；命中矩形 x 随对齐同步。
 - [table 列类型体系 v2：list/link 兼容壳/text.link](./project/table-column-types-v2.md) `convention` `code@b3528d7`：text.link 链色单行、list 条目列 column 级 link + label 键、link 兼容壳委托 list、双端数组仅 list 支持。
 - [table-ex recordsVersion 行高粘性契约](./project/table-ex-recordsversion-height-contract.md) `convention` `code@worktree(2026-11-05)`：精算缓存按行快照跳过；就地改 records 须 bump recordsVersion，否则行高不更新。
 - table-ex 新增绘制特征同步自检断言 `convention` `code@worktree(2026-11-06)`：新增/改变画布绘制须同批改写 demo self-checks/painter.js 像素断言，否则恒败。
 - demo self-checks 直引 ex/ 内部模块 `convention` `code@worktree(2026-11-06)`：移动/改名 src/components/table/ex/ 文件须同步 demo self-checks 12 文件的 import。
+- table-ex 结构底图 `convention` `code@worktree(2026-11-06)`：table-ex 结构分析/重构任务先读 agent-docs/plans/20261106-table-ex-structure-design/structure-map.md（分层/依赖图/调用链/host 袋），重构后同步更新。
 
 ## Global
 

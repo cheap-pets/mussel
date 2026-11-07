@@ -1,13 +1,10 @@
-/** table-ex 编辑状态机（02-design.md A5）：只读判定、编辑器组件/props 解析、编辑盒定位、提交矩阵与值规整层 */
+/** table-ex 编辑状态机（02-design.md A5）：编辑器生命周期状态机（open/commit/cancel）
+    与 blur 兜底判定。类型/props/开值/提交值规整链在 editor-resolve.js；编辑盒几何
+    （editorRectOf / editorGridlineFlagsOf / editButtonRectOf / computeEditorStyle）在
+    editor-geometry.js（O4 拆分，paint / interaction 层直引该文件，不经本模块中转） */
 import { markRaw, reactive, watch } from 'vue'
 import { isFunction, isObject, isString } from '@/utils/type'
 
-import {
-  CELL_PADDING_FALLBACK,
-  ROW_TOP_INSET,
-  ROW_HEIGHT_FALLBACK,
-  EDIT_BUTTON_AREA
-} from '../shared/constants'
 import {
   EDITOR_COMPONENTS,
   isCellEditable,
@@ -17,21 +14,8 @@ import {
   resolveEditorType
 } from './editor-resolve'
 
-// 类型/props/开值/提交值规整链拆至 editor-resolve.js，导出面原位保持
-export {
-  NON_EDITABLE_TYPES,
-  EDITOR_COMPONENTS,
-  isCellEditable,
-  resolveEditorType,
-  usesDerivedOptions,
-  normalizeEditorOpenValue,
-  normalizeCommitValue,
-  resolveSelectOptions,
-  resolveEditorProps
-} from './editor-resolve'
-
-// 模块隔离（A8）：不 import layout.js / theme.js / cell-painters.js（镜像常量经
-// constants.js）；mappings.js 为零依赖共享模块可用；定位所需布局数据由组件壳传入
+// 模块隔离（A8）：不 import layout.js / theme.js / cell-painters.js / spans.js；
+// mappings.js 为零依赖共享模块可用；定位所需布局数据由组件壳传入
 
 // 提交矩阵：input 走 Enter；textarea Ctrl/Cmd+Enter 显式提交（Enter 换行）；
 // select/date/switch 值变化即提交且保持编辑态；Esc 取消；validate 失败不关闭
@@ -55,110 +39,6 @@ export {
 
 /** 下拉/日期面板根 class（dropdown-panel.vue，Teleport 到 body） */
 export const DROPDOWN_PANEL_SELECTOR = '.mu-dropdown-panel'
-
-/** 编辑浮层盒矩形（单一事实源：hover 描边与浮层盒同源，painter import 同一函数）。
-    按格线占位内缩：topGridline/rightGridline 标示本格被行线/列线占用，占用则盒缘退至格线内侧 1px */
-export function editorRectOf (rect, { topGridline = false, rightGridline = false } = {}) {
-  const topInset = topGridline ? 1 : 0
-  const rightInset = rightGridline ? 1 : 0
-
-  return {
-    left: rect.x,
-    top: rect.y + topInset,
-    width: rect.width - rightInset,
-    height: rect.height - topInset
-  }
-}
-
-/** 本格格线占位标志（editorRectOf 入参；painter hover 描边与 computeEditorStyle 共用）。
-    topGridline = rowFrom ≥ 1 且含 row（合并区域传区域首行，缺省回退 rowIndex——
-    锚行即 rowFrom，显式化防锚点定义将来变化）；rightGridline = colTo 非末列
-    （colspan 区域传区域右缘列号 colTo，缺省回退 colIndex + 1——区域右缘在末列时
-    按锚列判定会误缩 1px，浮层与格线错位）（或末列但有空白区）且含 column */
-export function editorGridlineFlagsOf ({
-  rowIndex, colIndex, colCount, stickyWidth = 0, contentWidth = 0, gridlines, rowFrom, colTo
-} = {}) {
-  const mode = gridlines ?? 'all'
-  const topAnchor = rowFrom ?? rowIndex
-  const rightAnchor = colTo ?? (colIndex + 1)
-
-  return {
-    topGridline: topAnchor > 0 && (mode === 'all' || mode === 'row'),
-    rightGridline: (rightAnchor < colCount || stickyWidth > (contentWidth || 0)) &&
-      (mode === 'all' || mode === 'column')
-  }
-}
-
-/** 编辑按钮区矩形（单一事实源：painter 绘制与壳命中共用）。右缘贴格内容区右缘，
-    垂直中心 = 行线间空白中点原式（与单元格文字垂直锚同一槽位公式，不使用 rect.height） */
-export function editButtonRectOf (
-  rect,
-  { padding = CELL_PADDING_FALLBACK, rowHeight = ROW_HEIGHT_FALLBACK } = {}
-) {
-  const centerY = rect.y + ROW_TOP_INSET + (rowHeight - ROW_TOP_INSET) / 2
-
-  return {
-    x: rect.x + rect.width - padding - EDIT_BUTTON_AREA,
-    y: centerY - EDIT_BUTTON_AREA / 2,
-    width: EDIT_BUTTON_AREA,
-    height: EDIT_BUTTON_AREA
-  }
-}
-
-/** 编辑浮层定位（矩形相对 __overlay 原点 = canvas 视口原点）：全编辑器类型共用同一
-    矩形（与 hover 描边同源同位）；固定列不随滚动偏移；bordered：switch false / textarea true / 其余 border !== false。
-    cellRect（§5.5）：合并区域主格由组件壳经 spans.spanRectOf 传入区域矩形（浮层
-    覆盖整个合并区域），缺省按 colIndex/rowIndex 构造单格矩形（editor.js 不 import
-    spans.js，保持模块隔离）；rowFrom/colTo 透传 editorGridlineFlagsOf（格线内缩按
-    区域外缘） */
-export function computeEditorStyle ({
-  colIndex,
-  rowIndex,
-  colLefts,
-  colWidths,
-  headHeight = 0,
-  scrollTop = 0,
-  scrollLeft = 0,
-  fixedCount = 0,
-  rowGeometry,
-  editorType = 'input',
-  border = true,
-  gridlines,
-  stickyWidth = 0,
-  contentWidth = 0,
-  cellRect,
-  rowFrom,
-  colTo
-} = {}) {
-  const bordered = editorType === 'switch'
-    ? false
-    : (editorType === 'textarea' ? true : border !== false)
-
-  const baseRect = cellRect ?? {
-    x: colLefts[colIndex] - (colIndex < fixedCount ? 0 : scrollLeft),
-    y: headHeight + rowGeometry.topAt(rowIndex) - scrollTop,
-    width: colWidths[colIndex],
-    height: rowGeometry.heightAt(rowIndex)
-  }
-  const rect = editorRectOf(baseRect, editorGridlineFlagsOf({
-    rowIndex,
-    colIndex,
-    colCount: colWidths.length,
-    stickyWidth,
-    contentWidth,
-    gridlines,
-    rowFrom,
-    colTo
-  }))
-
-  return {
-    left: rect.left,
-    top: rect.top,
-    width: Math.max(rect.width, 0),
-    height: Math.max(rect.height, 0),
-    bordered
-  }
-}
 
 /** 目标元素是否位于下拉/日期面板内（Teleport 到 body 的 .mu-dropdown-panel） */
 export function isInDropdownPanel (target) {

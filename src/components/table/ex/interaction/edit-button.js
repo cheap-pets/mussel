@@ -4,7 +4,7 @@
     内（半开区间，与 interactions.isItemRectHit 同口径）；区矩形 = spanRectOf
     （合并区域为区域矩形，§5.3），为 painter 绘制与壳命中共用的单一事实源 */
 import { resolveIconEntry } from '../../column-types/icon'
-import { editButtonRectOf } from '../editing/editor'
+import { editButtonRectOf } from '../editing/editor-geometry'
 import { spanRectOf } from '../spans/spans'
 
 /**

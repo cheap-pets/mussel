@@ -3,28 +3,40 @@
  * 决策函数来自 interactions.js，本 composable 执行状态更新与光标切换；
  * clickGuard/startResize 来自 use-column-resize 经 host 转发）。
  */
+/**
+ * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * @host-reads props, canvasEl, layout, wiredColumns, spans, paintState, hover,
+ *   hoverItem, cursor
+ * @host-writes hitAt, onPointerMove, onPointerLeave, onPointerDown
+ * @host-calls getThemeWatcher（壳）, cellEditableOf（壳）, isTooltipEnabled（壳）,
+ *   editor.state / editor.commit（壳 editor 控制器）, syncPaintState / invalidate
+ *   （提供方 use-paint-state）, scheduleCellTooltip / delayHideCellTooltip /
+ *   hideCellTooltip（提供方 use-cell-tooltip）, startResize
+ *   （提供方 use-column-resize）
+ */
 import { resolveCursor, hitTest, resolveItemClick, resolvePointerdown } from '../interaction/interactions'
-import { resolveSpanCell } from '../spans/spans'
+import { resolveSpanCell, regionAt } from '../spans/spans'
 import { isEditButtonHit } from '../interaction/edit-button'
+import { isSamePoint } from '../shared/cell-identity'
 
 /**
- * @param {Object} ctx host 袋（读取 canvasEl, props, layout, wiredColumns,
+ * @param {Object} host host 袋（读取 canvasEl, props, layout, wiredColumns,
  *   flatRows, spans, getThemeWatcher, cellEditableOf, paintState, syncPaintState,
  *   hover, hoverItem, cursor, invalidate, editor, hideCellTooltip,
  *   delayHideCellTooltip, scheduleCellTooltip, isTooltipEnabled, startResize）
  * @returns {{ hitAt, onPointerMove, onPointerLeave, onPointerDown }}
  */
-export function usePointer (ctx) {
-  const { props } = ctx
+export function usePointer (host) {
+  const { props } = host
 
   function pointOf (event) {
-    const rect = ctx.canvasEl.value.getBoundingClientRect()
+    const rect = host.canvasEl.value.getBoundingClientRect()
 
     return { x: event.clientX - rect.left, y: event.clientY - rect.top }
   }
 
   function hitAt (event) {
-    const cur = ctx.layout.value
+    const cur = host.layout.value
 
     if (!cur) return null
 
@@ -38,10 +50,10 @@ export function usePointer (ctx) {
       colLefts: cur.colLefts,
       colWidths: cur.colWidths,
       rowGeometry: cur.rowGeometry,
-      columns: ctx.wiredColumns.value,
+      columns: host.wiredColumns.value,
       fixedLeftColumns: cur.fixedCount,
       resizable: props.resizable,
-      cellPadding: ctx.getThemeWatcher()?.snapshot?.cellPadding
+      cellPadding: host.getThemeWatcher()?.snapshot?.cellPadding
     })
 
     // 合并命中归一（§5.4 单一接入点）：covered 格 → 主格坐标（浅拷贝仅改
@@ -51,7 +63,7 @@ export function usePointer (ctx) {
     // rawHit 供 resolveTreeToggle（树槽判定用原始 hit，树列不参与归一改写）
     return {
       point: { x, y },
-      hit: resolveSpanCell(ctx.spans.value, raw),
+      hit: resolveSpanCell(host.spans.value, raw),
       rawHit: raw
     }
   }
@@ -65,12 +77,6 @@ export function usePointer (ctx) {
     if (hit.colIndex >= 0 || hit.beyondCols) return { row: hit.rowIndex, col: hit.colIndex }
 
     return null
-  }
-
-  function isSameHover (prev, next) {
-    if (prev == null || next == null) return (prev == null) === (next == null)
-
-    return prev.row === next.row && prev.col === next.col
   }
 
   /** 行/列带脏区（按行列号去重，prev/next 同带时至多一次；R5：空白区命中
@@ -87,8 +93,39 @@ export function usePointer (ctx) {
     return regions
   }
 
-  /** hover 变化脏区（A3）：row/column/cross 为带、cell 为格、none 为空 */
-  function hoverRegions (prev, next, mode) {
+  /** 列带脏区（合并扩展，20261106-ex-fixed-select-hover-span 缺陷 2）：column/cross
+      模式 hover 格落在 colspan 区域时失效区间扩为区域 [colFrom, colTo)——列带绘制
+      x/宽随区域扩展后，prev/next 变更须覆盖区域全部列，否则跨列区域高亮残影；
+      无区域回退单列 [col, col+1)（col < 0 跳过，R5 空白延伸区放行语义不变），按
+      区间去重（prev/next 同区域至多一次失效） */
+  function colBandRegionsOf (active, cells, spans) {
+    const regions = []
+
+    if (!active) return regions
+
+    const seen = new Set()
+
+    for (const cell of cells) {
+      if (cell == null || cell.col == null || cell.col < 0) continue
+
+      const region = regionAt(spans, cell.row, cell.col)
+      const band = region ? [region.colFrom, region.colTo] : [cell.col, cell.col + 1]
+      const key = band.join(',')
+
+      if (seen.has(key)) continue
+
+      seen.add(key)
+      regions.push({ cols: band })
+    }
+
+    return regions
+  }
+
+  /** hover 变化脏区（A3）：row/column/cross 为带、cell 为格、none 为空。
+      列带合并扩展见 colBandRegionsOf；row/cross 行带与 cell 模式不变（行带脏区
+      经 painter prepareSpansRegion 对 {rows} 的既有区域并集扩展覆盖，cell 经
+      {cell} 归一扩展） */
+  function hoverRegions (prev, next, mode, spans) {
     if (mode === 'none') return []
 
     if (mode === 'cell') {
@@ -104,23 +141,23 @@ export function usePointer (ctx) {
 
     return [
       ...bandRegionsOf(mode === 'row' || cross, [prev?.row, next?.row], 'rows'),
-      ...bandRegionsOf(mode === 'column' || cross, [prev?.col, next?.col], 'cols')
+      ...colBandRegionsOf(mode === 'column' || cross, [prev, next], spans)
     ]
   }
 
   function updateHover (hit) {
     const next = hoverCellOf(hit)
-    const prev = ctx.hover.value
+    const prev = host.hover.value
 
-    if (isSameHover(prev, next)) return
+    if (isSamePoint(prev, next)) return
 
-    ctx.hover.value = next
-    ctx.syncPaintState()
+    host.hover.value = next
+    host.syncPaintState()
 
     // hover 变化仅脏带重绘（A3）：行带/列带/单格。prev/next 同行（同行内横移、
     // row/cross 模式）或同列时脏带完全重合，按行列号去重后各区域至多一次同步
     // 应用（N1，复核 2026-10-26：同行横移 2 次 → 1 次）
-    for (const region of hoverRegions(prev, next, props.hoverMode || 'row')) ctx.invalidate(region)
+    for (const region of hoverRegions(prev, next, props.hoverMode || 'row', host.spans.value)) host.invalidate(region)
   }
 
   /** 条目悬停相等判定（问题 7）：行列 + 条目身份（kind/index）+ disabled 全等 */
@@ -155,17 +192,17 @@ export function usePointer (ctx) {
       格去重逐格失效；独立于 updateHover（同格内条目间移动不触发 hover 变化）；
       hoverMode none 恒 null（与编辑按钮绘制同受总开关抑制） */
   function updateHoverItem (hit) {
-    const prev = ctx.hoverItem.value
+    const prev = host.hoverItem.value
     const next = props.hoverMode === 'none'
       ? null
-      : resolveItemClick({ hit, itemHits: ctx.paintState.itemHits })
+      : resolveItemClick({ hit, itemHits: host.paintState.itemHits })
 
     if (isSameHoverItem(prev, next)) return
 
-    ctx.hoverItem.value = next
-    ctx.paintState.hoverItem = next
+    host.hoverItem.value = next
+    host.paintState.hoverItem = next
 
-    for (const cell of hoverItemCells(prev, next)) ctx.invalidate({ cell })
+    for (const cell of hoverItemCells(prev, next)) host.invalidate({ cell })
   }
 
   /** 光标覆盖（问题 5/7）：resolveCursor 结果之后追加判定，仅覆盖表体
@@ -176,25 +213,25 @@ export function usePointer (ctx) {
   function applyItemCursor (hit) {
     if (hit.resizeCol >= 0 || hit.isHeader) return
 
-    const item = ctx.hoverItem.value
+    const item = host.hoverItem.value
 
     if (item && !item.disabled && item.link !== false &&
       (item.kind === 'link' || item.kind === 'button')) {
-      ctx.cursor.value = 'pointer'
+      host.cursor.value = 'pointer'
 
       return
     }
 
-    const col = hit.colIndex >= 0 ? ctx.wiredColumns.value[hit.colIndex] : null
+    const col = hit.colIndex >= 0 ? host.wiredColumns.value[hit.colIndex] : null
 
     if (
       isEditButtonHit(hit, col, {
-        layout: ctx.layout.value,
-        spans: ctx.spans.value,
-        snapshot: ctx.getThemeWatcher()?.snapshot
+        layout: host.layout.value,
+        spans: host.spans.value,
+        snapshot: host.getThemeWatcher()?.snapshot
       })
     ) {
-      ctx.cursor.value = 'pointer'
+      host.cursor.value = 'pointer'
     }
   }
 
@@ -204,10 +241,10 @@ export function usePointer (ctx) {
     if (!result) return
 
     // hover 感知（A5.3 / 评审 6 P3）：context 提供树槽 pointer 与可编辑格 text 判定
-    ctx.cursor.value = resolveCursor(result.hit, ctx.wiredColumns.value, {
-      flatInfo: ctx.flatRows.value,
+    host.cursor.value = resolveCursor(result.hit, host.wiredColumns.value, {
+      flatInfo: host.flatRows.value,
       editable: props.editable,
-      isCellEditableFn: ctx.cellEditableOf
+      isCellEditableFn: host.cellEditableOf
     })
 
     updateHoverItem(result.hit)
@@ -217,17 +254,17 @@ export function usePointer (ctx) {
     applyItemCursor(result.hit)
 
     // tooltip 调度（title 列协议）：格身份去重 + TOOLTIP_SHOW_DELAY 延迟，move 内不求值内容
-    if (ctx.isTooltipEnabled()) ctx.scheduleCellTooltip(result.hit)
+    if (host.isTooltipEnabled()) host.scheduleCellTooltip(result.hit)
   }
 
   function onPointerLeave () {
-    ctx.cursor.value = 'default'
+    host.cursor.value = 'default'
     updateHoverItem(null)
     updateHover(null)
 
     // tooltip：清调度与去重键；面板仍归属本组件锚点时延迟收起（isAnchorIn
     // 守卫，不误杀他组件 tooltip——面板经 tooltipController.delayHide 延迟收起）
-    ctx.delayHideCellTooltip()
+    host.delayHideCellTooltip()
   }
 
   function onPointerDown (event) {
@@ -235,16 +272,16 @@ export function usePointer (ctx) {
 
     if (!result) return
 
-    const decision = resolvePointerdown({ editing: ctx.editor.state.editing, hit: result.hit })
+    const decision = resolvePointerdown({ editing: host.editor.state.editing, hit: result.hit })
 
     // editing 中画布 pointerdown 先同步提交再续行命中（A6 画布侧隔离：
     // 点击其他单元格一步完成「提交 + 选中新行」）
-    if (decision.commitEditing) ctx.editor.commit()
+    if (decision.commitEditing) host.editor.commit()
 
     // 拖拽收起 tooltip（状态失效类：手柄拖宽即列几何失效，去重键同步清空）
     if (decision.startResize) {
-      ctx.hideCellTooltip()
-      ctx.startResize(event, result.hit)
+      host.hideCellTooltip()
+      host.startResize(event, result.hit)
     }
   }
 

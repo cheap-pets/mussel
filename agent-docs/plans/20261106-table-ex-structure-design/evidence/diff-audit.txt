@@ -1,0 +1,46 @@
+=== src/components/table/ex/cell-paint/cell-painters.js (norm 0 / add 0) residue 0 ===
+=== src/components/table/ex/composables/use-cell-click.js (norm 44 / add 44) residue 0 ===
+=== src/components/table/ex/composables/use-cell-select.js (norm 22 / add 22) residue 0 ===
+=== src/components/table/ex/composables/use-cell-tooltip.js (norm 19 / add 19) residue 0 ===
+=== src/components/table/ex/composables/use-column-resize.js (norm 9 / add 9) residue 0 ===
+=== src/components/table/ex/composables/use-paint-state.js (norm 26 / add 26) residue 0 ===
+=== src/components/table/ex/composables/use-pointer.js (norm 35 / add 57) ===
+  ONLY-IN-REMOVED(after norm): "      ...bandRegionsOf(mode === 'column' || cross, [prev?.col, next?.col], 'cols')"
+  ONLY-ADDED: "      ...colBandRegionsOf(mode === 'column' || cross, [prev, next], spans)"
+  ONLY-ADDED: "      const band = region ? [region.colFrom, region.colTo] : [cell.col, cell.col + 1]"
+  ONLY-ADDED: "      const key = band.join(',')"
+  ONLY-ADDED: "      const region = regionAt(spans, cell.row, cell.col)"
+  ONLY-ADDED: "      if (cell == null || cell.col == null || cell.col < 0) continue"
+  ONLY-ADDED: "      if (seen.has(key)) continue"
+  ONLY-ADDED: "      regions.push({ cols: band })"
+  ONLY-ADDED: "      seen.add(key)"
+  ONLY-ADDED: "      x/宽随区域扩展后，prev/next 变更须覆盖区域全部列，否则跨列区域高亮残影；"
+  ONLY-ADDED: "      {cell} 归一扩展） */"
+  ONLY-ADDED: "      列带合并扩展见 colBandRegionsOf；row/cross 行带与 cell 模式不变（行带脏区"
+  ONLY-ADDED: "      区间去重（prev/next 同区域至多一次失效） */"
+  ONLY-ADDED: "      无区域回退单列 [col, col+1)（col < 0 跳过，R5 空白延伸区放行语义不变），按"
+  ONLY-ADDED: "      模式 hover 格落在 colspan 区域时失效区间扩为区域 [colFrom, colTo)——列带绘制"
+  ONLY-ADDED: "      经 painter prepareSpansRegion 对 {rows} 的既有区域并集扩展覆盖，cell 经"
+  ONLY-ADDED: "    const regions = []"
+  ONLY-ADDED: "    const seen = new Set()"
+  ONLY-ADDED: "    for (const cell of cells) {"
+  ONLY-IN-REMOVED(after norm): "    for (const region of hoverRegions(prev, next, props.hoverMode || 'row')) host.invalidate(region)"
+  ONLY-ADDED: "    for (const region of hoverRegions(prev, next, props.hoverMode || 'row', host.spans.value)) host.invalidate(region)"
+  ONLY-ADDED: "    if (!active) return regions"
+  ONLY-ADDED: "    return regions"
+  ONLY-ADDED: "    }"
+  ONLY-ADDED: "  function colBandRegionsOf (active, cells, spans) {"
+  ONLY-IN-REMOVED(after norm): "  function hoverRegions (prev, next, mode) {"
+  ONLY-ADDED: "  function hoverRegions (prev, next, mode, spans) {"
+  ONLY-ADDED: "  }"
+=== src/components/table/ex/composables/use-relayout.js (norm 33 / add 33) residue 0 ===
+=== src/components/table/ex/composables/use-table-api.js (norm 20 / add 20) residue 0 ===
+=== src/components/table/ex/composables/use-table-instances.js (norm 24 / add 24) residue 0 ===
+=== src/components/table/ex/composables/use-tree-rows.js (norm 18 / add 18) residue 0 ===
+=== src/components/table/ex/geometry/row-geometry-controller.js (norm 0 / add 0) residue 0 ===
+=== src/components/table/ex/interaction/interactions.js (norm 6 / add 6) residue 0 ===
+=== src/components/table/ex/spans/spans-auto.js (norm 6 / add 6) residue 0 ===
+=== src/components/table/ex/spans/spans-method.js (norm 2 / add 2) residue 0 ===
+=== src/components/table/ex/spans/spans.js (norm 3 / add 3) residue 0 ===
+=== src/components/table/ex/table-ex.vue (norm 0 / add 0) residue 0 ===
+SUMMARY: mechanical-normalized pairs = 267, residue lines = 28

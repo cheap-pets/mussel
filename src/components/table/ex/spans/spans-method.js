@@ -1,3 +1,5 @@
+import { recordNumberOf } from '../shared/cell-identity'
+
 export function createIndex () {
   return {
     anchors: new Map(),
@@ -117,7 +119,7 @@ function buildSpanInfo (records, columns, row, rowCount, recordsOffset) {
   return {
     record: records[row],
     recordIndex: row,
-    recordNumber: (recordsOffset || 0) + row + 1,
+    recordNumber: recordNumberOf(recordsOffset, row),
     prevRecord: row > 0 ? records[row - 1] : null,
     nextRecord: row < rowCount - 1 ? records[row + 1] : null,
     columns
@@ -239,8 +241,8 @@ function errorMessageOf (err) {
 /** 入口 B —— 表格级 spanMethod（§2.3）：每行调用一次（O(rows)），返回该行作为
     主行的声明；键解析 key 优先→field（多列命中作用全部 + 警告）、值形态解析、
     'rest' 展开 / 固定列夹紧、树形/check 列丢弃、异常按 null 处置 */
-export function applySpanMethod (ctx, index, occupied) {
-  const { records, columns, spanMethod, recordsOffset, rowCount, fixed, emitWarn, takenOver } = ctx
+export function applySpanMethod (spanCtx, index, occupied) {
+  const { records, columns, spanMethod, recordsOffset, rowCount, fixed, emitWarn, takenOver } = spanCtx
   const warnedKeys = new Set()
 
   for (let row = 0; row < rowCount; row++) {

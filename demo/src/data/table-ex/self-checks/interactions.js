@@ -30,10 +30,9 @@ import {
   resolveTooltipTarget,
   resolveResizeWidth,
   resolvePointerdown,
-  resolveTreeToggle,
-  createClickGuard,
-  createFrameScheduler
+  resolveTreeToggle
 } from '@/components/table/ex/interaction/interactions.js'
+import { createClickGuard, createFrameScheduler } from '@/components/table/ex/interaction/schedulers.js'
 import { resolveTypeMinWidth } from '@/components/table/ex/geometry/layout.js'
 import { createUniformRowGeometry } from '@/components/table/ex/geometry/row-geometry.js'
 import { getPixelNumber } from '@/utils/size'

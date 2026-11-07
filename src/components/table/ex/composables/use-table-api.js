@@ -3,43 +3,51 @@
  * scrollToRecord / getLayoutInfo / getThemeSnapshot / getCellRect
  * + 选中变化 watch（选中横带脏区 + 合并覆盖行 dev 警告）。
  */
+/**
+ * host 消费面声明（O2，供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
+ * @host-reads props, displayRows, treeOptions, scrollEl, layout, selectedCell,
+ *   spans, selectedKey, rowGeometry（消费 mode / topAt）
+ * @host-writes scrollToRecord, getLayoutInfo, getThemeSnapshot, getCellRect
+ * @host-calls genRecordKey（壳）, getPainter（壳）, getLastRelayout（壳）,
+ *   getThemeWatcher（壳）, invalidateRow（提供方 use-paint-state）
+ */
 import { watch } from 'vue'
 
 import { warn } from '@/utils/warn'
 import { cellRectAt } from '../table-paint/painter'
 
 /**
- * @param {Object} ctx host 袋（读取 props, scrollEl, canvasEl, displayRows,
+ * @param {Object} host host 袋（读取 props, scrollEl, canvasEl, displayRows,
  *   treeOptions, layout, getPainter, rowGeometry, getThemeWatcher, spans,
  *   invalidateRow, selectedKey, selectedCell, genRecordKey, getLastRelayout）
  * @returns {{ scrollToRecord, getLayoutInfo, getThemeSnapshot, getCellRect }}
  */
-export function useTableApi (ctx) {
-  const { props } = ctx
+export function useTableApi (host) {
+  const { props } = host
 
   // —— 行定位辅助（选中横带 / scrollToRecord；树模式下在平铺行数组内查找） ——
 
   function keyNameOf () {
-    return props.tree ? ctx.treeOptions.value.key : props.keyField
+    return props.tree ? host.treeOptions.value.key : props.keyField
   }
 
   function findRowByKey (key) {
     if (key == null) return -1
 
-    const rows = ctx.displayRows.value ?? []
+    const rows = host.displayRows.value ?? []
     const keyName = keyNameOf()
 
     if (keyName != null) {
       return rows.findIndex(rec => rec?.[keyName] === key)
     }
 
-    return rows.findIndex(rec => ctx.genRecordKey(rec) === key)
+    return rows.findIndex(rec => host.genRecordKey(rec) === key)
   }
 
   // —— 暴露方法（A1；树展开操作见 use-tree-rows 解构） ——
 
   function scrollToRecord (keyOrIndex) {
-    const rows = ctx.displayRows.value ?? []
+    const rows = host.displayRows.value ?? []
     const keyName = keyNameOf()
     let row = -1
 
@@ -54,8 +62,8 @@ export function useTableApi (ctx) {
       row = Number.isInteger(index) && index >= 0 && index < rows.length ? index : -1
     }
 
-    const el = ctx.scrollEl.value
-    const cur = ctx.layout.value
+    const el = host.scrollEl.value
+    const cur = host.layout.value
 
     if (row < 0 || !el || !cur) return false
 
@@ -71,9 +79,9 @@ export function useTableApi (ctx) {
   }
 
   function getLayoutInfo () {
-    const cur = ctx.layout.value
-    const painter = ctx.getPainter()
-    const lastRelayout = ctx.getLastRelayout()
+    const cur = host.layout.value
+    const painter = host.getPainter()
+    const lastRelayout = host.getLastRelayout()
 
     if (!cur) return null
 
@@ -85,9 +93,9 @@ export function useTableApi (ctx) {
       headHeight: cur.headHeight,
       // 单元格选中内省（20261105-table-ex-cell-select 验证锚点，getCellRect 同
       // 先例；additive 字段，消费方按需读取）
-      selectedCell: ctx.selectedCell.value ? { ...ctx.selectedCell.value } : null,
+      selectedCell: host.selectedCell.value ? { ...host.selectedCell.value } : null,
       viewRows: { ...cur.viewRows },
-      rowGeometryMode: ctx.rowGeometry.mode,
+      rowGeometryMode: host.rowGeometry.mode,
       lastPaint: painter?.lastPaint ? { ...painter.lastPaint } : null,
       lastRelayout: lastRelayout ? { ...lastRelayout } : null
     }
@@ -95,14 +103,14 @@ export function useTableApi (ctx) {
 
   /** 主题快照（G0 偏离 4 契约）：直接返回 watcher.snapshot（getter，随 refresh 更新） */
   function getThemeSnapshot () {
-    return ctx.getThemeWatcher()?.snapshot ?? null
+    return host.getThemeWatcher()?.snapshot ?? null
   }
 
   /** 坐标辅助（decisions「[I1 前]②」）：单元格视口矩形 + 页面坐标，供 playwright
       page.mouse 坐标级交互换算；未挂载返回 null */
   function getCellRect (row, col) {
-    const canvas = ctx.canvasEl.value
-    const cur = ctx.layout.value
+    const canvas = host.canvasEl.value
+    const cur = host.layout.value
 
     if (!canvas || !cur) return null
 
@@ -122,18 +130,18 @@ export function useTableApi (ctx) {
   // 选中变化（selectedRecordKey/selectedRecord/keyField 经 selectedKey 汇聚）→
   // 旧/新选中行两条横带（合并区域由 painter 脏区扩展到区域包围盒，覆盖行底色随动）；
   // 覆盖行 key 被受控选中 → 区域无选中反馈，dev 警告一次（§5.8/§7）
-  watch(ctx.selectedKey, (newValue, oldValue) => {
+  watch(host.selectedKey, (newValue, oldValue) => {
     for (const key of new Set([oldValue, newValue])) {
       const row = findRowByKey(key)
 
-      if (row >= 0) ctx.invalidateRow(row)
+      if (row >= 0) host.invalidateRow(row)
     }
 
-    if (newValue != null && ctx.spans.value) {
+    if (newValue != null && host.spans.value) {
       const row = findRowByKey(newValue)
 
       // covered 顶层键存在即该行在至少一列被区域覆盖（区域内无选中反馈）
-      if (row >= 0 && ctx.spans.value.covered.has(row)) {
+      if (row >= 0 && host.spans.value.covered.has(row)) {
         warn({
           component: 'table-ex',
           message: `选中 key "${String(newValue)}" 落在合并区域的覆盖行上，该区域无选中反馈（选中仅可由锚行表达）`
