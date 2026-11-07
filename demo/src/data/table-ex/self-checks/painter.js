@@ -9,7 +9,8 @@
  * A3.3）；hover 可编辑格 1px 不透明主色描边贴格线内侧（顶/右按格线占位内缩、
  * 不与格线重叠，与编辑浮层盒 editorRectOf 同源同位）；行底色带仍整宽（R1/人工 3 意见 1：
  * ΣcolWidths < 视口宽时充满至视口右缘；追加轮 2：hover 行带/选中带止于末列右缘、
- * hover 列带止于末行底部、表头背景同口径截断）；树箭头 hover 主色与常态箭头同槽位 centerY（问题 1）；
+ * hover 列带止于末行底部、表头背景同口径截断；20261107 斑马越界修复：斑马色同
+ * 止于末列右缘，延伸区补 bgNormal）；树箭头 hover 主色与常态箭头同槽位 centerY（问题 1）；
  * veil 编辑格跳绘 + itemHits 显式清空（问题 6）；rightInset 注入门控与 painter 路径
  * 槽位锚（问题 1/9，stub ctx 记录 fillText）；编辑按钮加载中不半绘制、hoverMode none
  * 整体抑制（问题 5，加载像素与点击回调归浏览器）；blankTail 末列右缘线（问题 9）；
@@ -1226,7 +1227,7 @@ export const checks = [
     })
   },
   {
-    name: '行背景带宽度：ΣcolWidths < 视口宽时行底色带充满至视口右缘，hover/选中带止于末列右缘、hover 列带止于末行底部（R1/人工 3 意见 1 + 追加轮 2）',
+    name: '行背景带宽度：ΣcolWidths < 视口宽时行底色带充满至视口右缘，斑马/选中色止于末列右缘（延伸区 bgNormal），hover 列带止于末行底部（R1/人工 3 意见 1 + 追加轮 2 + 20261107 斑马越界修复）',
     fn: () => withCanvas(canvas => {
       const painter = createPainter({ canvas })
       // 窄列夹具：4 列全定宽 Σ=350 < W=600（缺陷发生条件 = 全部列定宽）；固定 1 列
@@ -1242,16 +1243,16 @@ export const checks = [
       assertEqual(narrowSum, 350, '窄列夹具 ΣcolWidths')
       assertEqual(narrowState.layout.stickyWidth, W, 'stickyWidth = 容器宽')
 
-      // (a) 延伸区 x ∈ (Σ, W−2)：普通行 = bgNormal、斑马行 = bgStripe（行底色带
-      // 仍整宽，R1 裁定不推翻）；选中行延伸区改非选中口径底色（追加轮 2 需求 C：
-      // selectBg 高亮 cap 至 contentRightX=350、延伸区补底）
+      // (a) 延伸区 x ∈ (Σ, W−2) = bgNormal 表格底色（行底色带仍整宽，R1 裁定
+      // 不推翻；20261107 斑马越界修复：斑马色与 selectBg 同 cap 至
+      // contentRightX=350，延伸区不再出斑马色块）
       const gx = 450
 
       painter.draw(narrowState)
       assertPixel(canvas, gx, 50, THEME.bgNormal, '行 0 普通底色充满延伸区')
-      assertPixel(canvas, gx, 90, THEME.bgStripe, '行 1 斑马底色充满延伸区')
+      assertPixel(canvas, gx, 90, THEME.bgNormal, '行 1 斑马底色止于列内容区右缘（延伸区 bgNormal）')
       assertPixel(canvas, 250, 126, THEME.selectBg, '行 2 选中底色（status 列内）')
-      assertPixel(canvas, gx, 126, THEME.bgNormal, '行 2 选中带延伸区 = 非选中口径底色')
+      assertPixel(canvas, gx, 126, THEME.bgNormal, '行 2 选中带延伸区 = bgNormal 表格底色')
 
       // (a-2) 表头背景止于末列右缘（追加轮 2 需求 A）：右缘以右透明；列内铺满
       //（'金额' 右对齐文字右缘 ≈342、左缘 ≈314，x=300 取空白、y=4 取字形上方）
@@ -1261,7 +1262,7 @@ export const checks = [
       // (b) hover 行带止于末列右缘（追加轮 2 需求 B-1）：延伸区无 hoverBg 叠加，
       // 露出整宽行底色带原色
       drawRegion(canvas.getContext('2d'), makeState({ columns: narrow, hover: { row: 1, col: 2 } }), null)
-      assertPixel(canvas, gx, 90, THEME.bgStripe, 'hover 行带延伸区无混色')
+      assertPixel(canvas, gx, 90, THEME.bgNormal, 'hover 行带延伸区无混色（斑马行带底 = bgNormal）')
 
       // (b-2) hover 列带止于末行底部（追加轮 2 需求 B-2）：3 行夹具末行底 144
       //（36 表头 + 3×36），列带列内混色、末行底以下透明
@@ -1274,13 +1275,14 @@ export const checks = [
       assertPixel(canvas, 200, 100, blendColor(THEME.hoverBg, THEME.bgStripe), 'hover 列带末行内混色')
       assertPixel(canvas, 200, 200, [0, 0, 0, 0], 'hover 列带末行底部以下不绘')
 
-      // (b-3) 选中斑马行（追加轮 2 需求 C）：列内 selectBg、延伸区补斑马底色
+      // (b-3) 选中斑马行（追加轮 2 需求 C + 20261107 斑马越界修复）：列内
+      // selectBg、延伸区补 bgNormal 表格底色（不再补斑马色）
       drawRegion(canvas.getContext('2d'), makeState({ columns: narrow, selectedKey: 1 }), null)
       assertPixel(canvas, 250, 90, THEME.selectBg, '选中斑马行列内 selectBg')
-      assertPixel(canvas, gx, 90, THEME.bgStripe, '选中斑马行延伸区补 bgStripe')
+      assertPixel(canvas, gx, 90, THEME.bgNormal, '选中斑马行延伸区补 bgNormal')
 
       // (c) 行横带脏区（hover 进出）重绘后同采样保持（paintRowBand 经同一 bandToX；
-      // 延伸区按 cap 后口径 = 行底色原色）
+      // 延伸区按 cap 后口径 = bgNormal 表格底色）
       const bandState = makeState({ columns: narrow, hover: { row: 0, col: 1 } })
 
       assert(
@@ -1305,7 +1307,7 @@ export const checks = [
 
       painter.dispose()
 
-      return `行底色带整宽/hover 行列带与选中带止于有效缘/表头背景同截/脏区保持/固定区不扩带/Σ>W 裁剪（窄列 Σ=350，W=${W}）`
+      return `行底色带整宽、斑马/选中色止于末列右缘（延伸区 bgNormal）/hover 列带止于末行底/表头背景同截/脏区保持/固定区不扩带/Σ>W 裁剪（窄列 Σ=350，W=${W}）`
     })
   },
   {

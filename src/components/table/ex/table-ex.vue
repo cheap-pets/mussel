@@ -21,7 +21,7 @@
         @click="onClick">
         <canvas ref="canvasEl" class="mu-table-ex__canvas" />
         <div class="mu-table-ex__overlay">
-          <div class="mu-table-ex__header-shadow" />
+          <div class="mu-table-ex__header-shadow" :style="headerShadowStyle" />
           <div class="mu-table-ex__bottom-shadow" />
           <div v-if="isEmpty" class="mu-table-ex__empty">
             <slot name="empty">
@@ -79,6 +79,7 @@
   import { useColumnResize } from './composables/use-column-resize'
   import { buildSpans } from './spans/spans'
   import { prepareColumn } from './cell-paint/cell-content'
+  import { contentRightXOf } from './table-paint/paint-utils'
   import { createEditorController } from './editing/editor'
   import { isCellEditable } from './editing/editor-resolve'
 
@@ -426,6 +427,18 @@
     const cur = layout.value
 
     return cur ? { width: `${cur.spacerWidth}px`, height: `${cur.spacerHeight}px` } : null
+  })
+
+  // 表头滚动阴影条宽度收口（contentRightXOf 共享口径，同 striped/表头背景/行线）：
+  // 窄列（列总宽 < 表格宽）时阴影止于列内容区右缘，超宽空白区不再画阴影；
+  // 列总宽 ≥ 表格宽（横向滚动态）min 恒取 stickyWidth，行为不变。
+  // layout 未就绪返回 null，CSS width:100% 兜底（首帧无 --y-scrolled 类，不显阴影）
+  const headerShadowStyle = computed(() => {
+    const cur = layout.value
+
+    if (!cur) return null
+
+    return { width: `${Math.min(cur.stickyWidth, contentRightXOf(cur))}px` }
   })
 
   // 11. 实例生命周期（onMounted/onUnmounted 内部注册，首帧 nextTick(host.relayout)）

@@ -80,8 +80,7 @@ export function isSelectedRow (state, row) {
   return record != null && recordKeyOf(state, record, row) === selectedKey
 }
 
-/** 非选中口径行底色（斑马/普通）——选中带延伸区补底与 rowBackground 共用，
-    避免优先级链双源漂移 */
+/** 非选中口径行底色（斑马/普通）——rowBackground 优先级链底座，避免双源漂移 */
 export function baseRowBackground (state, row) {
   return state.striped && row % 2 === 1 ? state.theme.bgStripe : state.theme.bgNormal
 }

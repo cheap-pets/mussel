@@ -2,8 +2,6 @@
 import { drawCell } from '../cell-paint/cell-painters.js'
 import {
   rowBackground,
-  baseRowBackground,
-  isSelectedRow,
   contentRightXOf,
   recordKeyOf,
   rowsOf,
@@ -62,27 +60,21 @@ function rowBandEndX (layout, cols, bandToX) {
   return Math.max(x1, bandToX ?? x1)
 }
 
-/** 行背景带绘制（paintBodyRow / paintBodyRowSpans 单一事实源）：非选中行整带宽
-    底色；选中行 selectBg 高亮 cap 至末列右缘视口 x，cap 掉的延伸区补非选中口径
-    底色。bandToX 扩展语义见 paintCellRange 头注 */
+/** 行背景带绘制（paintBodyRow / paintBodyRowSpans 单一事实源）：行底色带整宽，
+    斑马/选中底色 cap 至末列右缘视口 x（列内容区右边界），cap 掉的延伸区统一补
+    bgNormal 表格底色——ΣcolWidths < 视口宽时斑马色不出列内容区。bandToX 扩展
+    语义见 paintCellRange 头注 */
 function paintRowBandBackground (ctx, state, r, x0, bandEnd, rowHeight) {
   const layout = state.layout
   const y = layout.headHeight + layout.rowGeometry.topAt(r) - layout.scrollTop
-  const bandWidth = bandEnd - x0
+  const capEnd = Math.min(bandEnd, contentRightXOf(layout))
 
-  if (!isSelectedRow(state, r)) {
-    ctx.fillStyle = rowBackground(state, r)
-    ctx.fillRect(x0, y, bandWidth, rowHeight)
-  } else {
-    const capEnd = Math.min(bandEnd, contentRightXOf(layout))
+  ctx.fillStyle = rowBackground(state, r)
+  ctx.fillRect(x0, y, capEnd - x0, rowHeight)
 
-    ctx.fillStyle = rowBackground(state, r)
-    ctx.fillRect(x0, y, capEnd - x0, rowHeight)
-
-    if (capEnd < bandEnd) {
-      ctx.fillStyle = baseRowBackground(state, r)
-      ctx.fillRect(capEnd, y, bandEnd - capEnd, rowHeight)
-    }
+  if (capEnd < bandEnd) {
+    ctx.fillStyle = state.theme.bgNormal
+    ctx.fillRect(capEnd, y, bandEnd - capEnd, rowHeight)
   }
 }
 
