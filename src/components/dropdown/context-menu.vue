@@ -49,7 +49,10 @@
     if (!popupStyle.value) return
 
     const { width: mw, height: mh } = menu.value.getBoundingClientRect()
-    const { innerWidth: tw, innerHeight: th } = window
+    // fixed 定位（right/bottom 属性）的基准是布局视口，不含经典滚动条；
+    // window.innerWidth/innerHeight 含滚动条，会使以 right/bottom 定位的一侧偏移一个滚动条宽度。
+    // pageX/pageY 为文档坐标，页面滚动后定位本身即偏移，属既有独立问题
+    const { clientWidth: tw, clientHeight: th } = document.documentElement
 
     const style = {}
 

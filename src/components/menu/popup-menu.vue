@@ -39,7 +39,7 @@
     layer: { type: Number, default: 0 }
   })
 
-  const MARGIN = 8 // 面板与视口上下边的最小留白，与 max-height: calc(100vh - 16px) 对应
+  const MARGIN = 8 // 面板与视口上下边的最小留白，约对应 max-height: calc(100vh - 16px)（100vh 含横向滚动条，与 clientHeight 略差）
   const GAP = 4 // 弹层与锚点所属容器（side-menu、menu、上级弹层面板）的间距
 
   const menu = inject('menu')
@@ -120,7 +120,9 @@
   // 垂直主轴（横向菜单链头）：主轴上下翻转；交叉轴默认左对齐，右溢出改右对齐
   // （右缘锚定锚点右缘，max-content 宽度变化时面板不漂移），两侧按 MARGIN 夹紧
   function calculateVerticalPosition (anchorRect, panelSize, base, hostRect) {
-    const { innerWidth: vw, innerHeight: vh } = window
+    // fixed 定位（right/bottom 属性）的基准是布局视口，不含经典滚动条；
+    // window.innerWidth/innerHeight 含滚动条，会使以 right/bottom 定位的一侧偏移一个滚动条宽度
+    const { clientWidth: vw, clientHeight: vh } = document.documentElement
     const { width: pw, height: ph } = panelSize
 
     const mainRect = hostRect ?? anchorRect
@@ -149,7 +151,9 @@
   // 水平主轴（side-menu 链及向右下钻的子层）。主轴间距以锚点所属容器为基准：
   // 弹层面板行嵌在面板 padding 内，以行为基准会使间距被 padding 抵消
   function calculateHorizontalPosition (anchorRect, panelSize, base, hostRect) {
-    const { innerWidth: vw, innerHeight: vh } = window
+    // fixed 定位（right/bottom 属性）的基准是布局视口，不含经典滚动条；
+    // window.innerWidth/innerHeight 含滚动条，会使以 right/bottom 定位的一侧偏移一个滚动条宽度
+    const { clientWidth: vw, clientHeight: vh } = document.documentElement
     const { width: pw, height: ph } = panelSize
 
     const mainRect = hostRect ?? anchorRect

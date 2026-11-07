@@ -43,6 +43,7 @@
 - [响应式 style patch 异步：递归重定位读到旧 rect](./global/reactive-style-patch-vs-recursive-rect-read.md) `pitfall`：递归重定位后子层原地不动——style patch 异步、锚点 rect 仍旧值；递归前清旧键同步 Object.assign。
 - [被滚动裁剪容器滚出的行 rect 仍在视口内](./global/clipped-row-rect-still-in-viewport.md) `pitfall`：滚出滚动容器的元素误报可见——getBoundingClientRect 不受裁剪影响；须与裁剪容器可见矩形求交。
 - [fixed 弹层可见性断言不可用 offsetParent](./global/fixed-popup-offset-parent-visibility.md) `pitfall`：可见 fixed 弹层被误判隐藏——fixed 元素 offsetParent 恒 null；用 :visible 或 getClientRects().length 断言。
+- [fixed 弹层 right/bottom 定位基准不含滚动条](./project/fixed-popup-scrollbar-viewport-base.md) `pitfall` `code@worktree(2026-11-07)`：left/top 侧弹层偏移一个滚动条宽——innerWidth 含滚动条，视口量须用 documentElement.clientWidth/Height；tooltip/dropdown/context/popup-menu 已修。
 - Vue reactive 代理引用相等比较恒 false `pitfall` `code@worktree(2026-10-28)`：代理 ≠ 原对象 / 另一代理——断言对象同一性须 `toRaw` 后比较原引用。
 - 自检断言 Intl 数字格式化结果失败 `pitfall` `code@worktree(2026-10-28)`：手写期望值易错（分组分隔、尾零：`'1,234.50'` 实为 `'1,234.5'`）——先 node 复算实际输出。
 - npm 后台脚本记录的是 shell PID，dev 服务杀不掉 `pitfall` `code@worktree(2026-10-28)`：shell PID ≠ node 服务进程——按端口 netstat 定位实际 PID 再 taskkill，事后验证端口释放。

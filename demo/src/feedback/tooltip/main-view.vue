@@ -111,9 +111,15 @@
 <style>
   .demo-placement-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 12px;
     justify-items: center;
+  }
+
+  /* 加大锚点，让各 placement 的对齐差异肉眼可辨 */
+  .demo-placement-grid button {
+    min-width: 220px;
+    min-height: 80px;
   }
 
   .demo-row {

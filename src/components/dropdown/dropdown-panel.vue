@@ -89,7 +89,9 @@
 
     const { width: aw, top: at, right: ar, bottom: ab, left: al } = ctx.anchor.getBoundingClientRect()
     const { width: _dw, height: dh } = el.getBoundingClientRect()
-    const { innerWidth: tw, innerHeight: th } = window
+    // fixed 定位（right/bottom 属性）的基准是布局视口，不含经典滚动条；
+    // window.innerWidth/innerHeight 含滚动条，会使以 right/bottom 定位的一侧偏移一个滚动条宽度
+    const { clientWidth: tw, clientHeight: th } = document.documentElement
 
     let dw = _dw
 

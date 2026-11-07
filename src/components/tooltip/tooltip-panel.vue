@@ -116,11 +116,13 @@
     const anchorRect = state.anchor.getBoundingClientRect()
     const panelRect = el.getBoundingClientRect()
 
-    const { innerWidth, innerHeight } = window
+    // fixed 定位（right/bottom 属性）的基准是布局视口，不含经典滚动条；
+    // window.innerWidth/innerHeight 含滚动条，会使以 right/bottom 定位的一侧偏移一个滚动条宽度
+    const { clientWidth, clientHeight } = document.documentElement
     const [side = 'top', align] = String(state.placement).split('-')
 
     const vertical = side === 'top' || side === 'bottom'
-    const axis = getAxisMetrics(vertical, anchorRect, panelRect, { width: innerWidth, height: innerHeight })
+    const axis = getAxisMetrics(vertical, anchorRect, panelRect, { width: clientWidth, height: clientHeight })
 
     // fits/space 参数按请求侧取向：top/left 取上/左空间，bottom/right 取下/右空间
     const requestedAtStart = side === axis.startSide
