@@ -1,5 +1,7 @@
 <template>
-  <div class="demo-page" :class="{ 'demo-page--fluid': fluid }">
+  <div
+    class="demo-page"
+    :class="{ 'demo-page--fluid': fluid, 'demo-page--wide': wide }">
     <header class="demo-page__bar">
       <a class="demo-page__home" href="/">Mussel</a>
       <span class="demo-page__crumb">
@@ -46,7 +48,9 @@
     // 对应 catalog 中的页面路径，用于查询标题、面包屑与上一页/下一页
     path: { type: String, required: true },
     // 案例页专用：内容区全宽，不做 max-width 与卡片包裹
-    fluid: { type: Boolean, default: false }
+    fluid: { type: Boolean, default: false },
+    // 宽内容区（表格等多栏页面）：max-width 放宽到 1440px
+    wide: { type: Boolean, default: false }
   })
 
   const located = computed(() => findCatalogPage(props.path))

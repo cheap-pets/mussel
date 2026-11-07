@@ -129,6 +129,11 @@ export const catalog = [
         desc: 'MuTableEx：canvas 渲染、虚拟滚动与单元格编辑（验证页）'
       },
       {
+        path: 'data/table-ex-benchmark',
+        title: 'TableEx 性能基准',
+        desc: 'MuTableEx：首绘优化基准场景与指标（短路 / 计数通道 / 变高）'
+      },
+      {
         path: 'data/tree',
         title: 'Tree 树（基础）',
         desc: '数据结构、图标与自定义节点'

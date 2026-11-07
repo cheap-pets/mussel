@@ -117,6 +117,12 @@ h3 {
   padding: 0;
 }
 
+/* 宽内容区档：表格等多栏页面用，body 与 footer 同步放宽 */
+.demo-page--wide .demo-page__body,
+.demo-page--wide .demo-page__footer {
+  max-width: 1440px;
+}
+
 .demo-page__footer {
   display: flex;
   gap: 16px;

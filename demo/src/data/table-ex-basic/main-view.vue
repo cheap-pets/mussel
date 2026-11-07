@@ -1,5 +1,7 @@
 <template>
-  <demo-page path="data/table-ex-basic">
+  <demo-page
+    path="data/table-ex-basic"
+    wide>
     <demo-section
       title="基础用法"
       note="columns 定义列、records 提供行数据、key-field 指定行键；canvas 渲染 + 虚拟滚动，大数据量（十万行）首屏即用"

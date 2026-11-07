@@ -1,5 +1,7 @@
 <template>
-  <demo-page path="data/table-ex" fluid>
+  <demo-page
+    path="data/table-ex"
+    wide>
     <demo-section
       title="组件舞台"
       note="MuTableEx 挂载区（G0 为占位骨架，S1 接入真实组件）；拖拽右下角手柄调整容器尺寸（宽度与高度两个方向）"

@@ -1,5 +1,7 @@
 <template>
-  <demo-page path="data/table-ex-scene">
+  <demo-page
+    path="data/table-ex-scene"
+    wide>
     <demo-section
       title="单元格编辑"
       note="editable 开启后单击可编辑格进入编辑（editor:true 缺省 / editor 对象定制）；提交发 update:cell-value，父级就地改后经 recordsVersion 通知"

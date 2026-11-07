@@ -5,7 +5,8 @@
  * 实施约束 4：maxLines 溢出末行字符 = '...' 三个半角点）：
  * tokenize 分词（CJK 单字 / 拉丁数字连续段原子）、estimateLineCount 短路判定、
  * wrapLines 全宽下界判定 / CJK 逐字断行 / 拉丁词原子不拆 / 超长词逐字断 /
- * 缓存命中（计数 measure）/ maxLines 钳制（行数截断 + 末行 '...' 收缩 +
+ * 缓存命中（计数 measure）/ LRU 逐条淘汰 / 淘汰重算结果逐字比对 /
+ * maxLines 钳制（行数截断 + 末行 '...' 收缩 +
  * clamped 标记 + maxLines=1 等价单行省略）。
  * measure 为注入参数（等宽假测量），模块零 canvas 依赖。
  */
@@ -337,6 +338,34 @@ export const checks = [
       assert(zero.size <= 1, `limit=0 不挂死且 size ≤ 1（实际 ${zero.size}）`)
 
       return `limit=3 填 5 → size 3、存活 3 条命中/最旧重算；触碰甲存活、乙被淘汰；limit=0 size=${zero.size}`
+    }
+  },
+  {
+    name: 'createWrapCache：LRU 淘汰重算结果与原结果逐字比对（冷键加随机小数防预热）',
+    fn: () => {
+      // 冷键含随机小数：防同批前序用例/跨批次固定键预热（INDEX-table 计数断言预热陷阱）
+      const text = `淘汰比对${Math.random()}一一一一一`
+
+      // limit=1：任一异键插入即淘汰该条 → 强制走「淘汰后重算」路径
+      const cache = createWrapCache(1)
+      const firstCounter = { calls: 0 }
+      const first = wrapLines({ text, font: FONT, maxWidth: 30, maxLines: 2, measure: countingMeasure(firstCounter), cache })
+
+      assert(firstCounter.calls > 0, '首算真实执行测量（前置）')
+      assertEqual(cache.size, 1, '首算结果入缓存')
+
+      // 异键挤占 → 首键被逐条淘汰
+      wrapLines({ text: `挤占${Math.random()}`, font: FONT, maxWidth: 30, measure: plainMeasure, cache })
+
+      const recalcCounter = { calls: 0 }
+      const recalc = wrapLines({ text, font: FONT, maxWidth: 30, maxLines: 2, measure: countingMeasure(recalcCounter), cache })
+
+      assert(recalcCounter.calls > 0, '淘汰后重算触发测量（确认未由缓存服务）')
+      assertArray(recalc.lines, first.lines, '淘汰重算 lines 逐字一致')
+      assertEqual(recalc.lineCount, first.lineCount, '淘汰重算 lineCount 一致')
+      assertEqual(recalc.clamped, first.clamped, '淘汰重算 clamped 一致')
+
+      return `淘汰重算 lines/lineCount/clamped 与原结果逐字一致（首算/重算 measure ${firstCounter.calls}/${recalcCounter.calls} 次）`
     }
   }
 ]
