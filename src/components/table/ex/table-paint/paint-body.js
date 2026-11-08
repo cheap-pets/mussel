@@ -44,7 +44,7 @@ function setItemHitGroup (itemHits, row, col, rects) {
 }
 
 /** 绘制批次结束按当前可视窗口行 [start, end) 裁剪（窗口外行删除，长滚不增长）；
-    keepRows = 本帧锚行集合，合并区域锚行滚出窗口后区域内 link/tag/button 仍可点 */
+    keepRows = 本帧 region pass 锚行集合，仅豁免 row ≥ end 的锚行 */
 function trimItemHits (itemHits, viewRows, keepRows) {
   const { start, end } = viewRows
 

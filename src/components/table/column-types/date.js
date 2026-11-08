@@ -1,6 +1,7 @@
 import { toDateString } from '@/utils/date'
 import { ensureFn } from '@/utils/type'
 
+// 双通道色形态：dom 落 text-{color} 类，canvas 携带色名（绘制层查 theme.colors）
 export const DateColumn = {
   align: 'right',
   compile: (column, dom = false) => {

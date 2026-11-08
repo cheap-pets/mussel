@@ -61,7 +61,7 @@ function paintHoverRow (ctx, layout, row, cellRect) {
 }
 
 // 列 hover 带：高 cap 至末行底部视口 y——行少时不绘入末行底部以下（contentBottomY
-// 同源式；行 hover 状态前提 rowCount > 0）。合并区域 x/宽取 hover 格 spanRectOf
+// 同源式；hover 存在前提 rowCount > 0）。合并区域 x/宽取 hover 格 spanRectOf
 // 矩形（普通格退化原式）
 function paintHoverCol (ctx, layout, col, cellRect) {
   const yTo = contentBottomYOf(layout)

@@ -60,7 +60,7 @@ const UNCHANGED = Symbol('unchanged')
 export function createEditorController ({ onCommit } = {}) {
   const state = reactive({ editing: null })
 
-  // rawValue/rawWasArray 为 textarea 数组开值/提交规整的锚定输入
+  // context.rawValue 为编辑器形态判定、开值与提交规整的锚定原值
   let context = null
   let getEditorEl = null
   let blurTimer = 0

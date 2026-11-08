@@ -40,8 +40,8 @@ function occupyRect (occupied, rowFrom, rowTo, colFrom, colTo) {
   }
 }
 
-/** 登记区域：越界截断 → 跨度 < 2 静默丢弃 → 重叠整条丢弃 → 四表回填 +
-    占用集回填。返回 region 或 null */
+/** 登记区域：行侧越界截断至 rowCount → 截断后两维跨度均 < 2（1x1）静默丢弃 →
+    重叠整条丢弃 → 四表回填 + 占用集回填。返回 region 或 null */
 export function registerRegion (index, occupied, { row, col, rowspan, colspan }, rowCount, emitWarn, warnKey) {
   const rowTo = Math.min(row + rowspan, rowCount)
   const colTo = col + colspan
@@ -113,7 +113,8 @@ function fillRowRegions (index, region) {
   }
 }
 
-/** spanMethod(info) 载荷构造：record/recordIndex/recordNumber/prev/next/columns */
+/** spanMethod(info) 载荷构造。recordIndex 为 0 基平铺行号（不含偏移），
+    recordNumber = recordsOffset + 行号 + 1（分页 1 基序号），两口径勿混 */
 function buildSpanInfo (records, columns, row, rowCount, recordsOffset) {
   return {
     record: records[row],

@@ -32,7 +32,8 @@ export const TagColumn = {
 
       const dotsIndex = max > 0 && tags.length > max ? max - 1 : null
 
-      // canvas 通道：payload 与 dom 通道 events.click 同构（dots 条目 payload 值 '...'）
+      // canvas 通道：payload 与 dom 通道 events.click 同构（dots 条目 payload 值 '...'）；
+      // pill/flat 修饰仅 dom 条目生效，canvas 恒默认 pill 形态（drawTag 固定规格）
       if (!dom) {
         return {
           items: (max ? tags.slice(0, max) : tags).map((tag, idx) => {

@@ -84,7 +84,7 @@ export function resolveSelectionMove ({ row, col, key, rowCount, colCount }) {
 /**
  * 选中格可见性滚动量：已可见返回 null；否则返回待赋值的
  * { scrollTop?, scrollLeft? }（非负，调用方直接赋 scrollEl）。
- * layout 为调用方传入的快照（ctx.layout.value 叠加 el 实时 scrollTop/scrollLeft，
+ * layout 为调用方传入的快照（host.layout.value 叠加 el 实时 scrollTop/scrollLeft，
  * 见 use-cell-select 契约——防连按时 layout 滚动值滞后误判「已可见」）；
  * 判定与取值为绝对式（不依赖当前 scroll 的增量）。
  * 固定列（col < fixedCount）恒可见，不产 scrollLeft。

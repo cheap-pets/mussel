@@ -61,6 +61,7 @@
         const value =
           col._value(record) ?? (col.field ? record[col.field] : undefined)
 
+        // emit 为表格壳 emit 的透传（inject 'table'），列类型渲染产物借此触发 update:cell-value 等表格事件
         const { class: rClass, style: rStyle, ...params } =
           col._render({ record, recordNumber, value, emit }) || {}
 

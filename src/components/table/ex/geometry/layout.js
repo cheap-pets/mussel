@@ -45,7 +45,7 @@ function clamp (value, min, max) {
   return Math.min(Math.max(value, min), max)
 }
 
-/** 列 key：widthOverrides / 调宽结果的定位键（组件壳生成 _key，兜底 col.key ?? 下标） */
+/** 列 key：widthOverrides / 调宽结果的定位键——col.key 优先，其次组件壳生成的 _key，均缺落下标兜底 */
 function getColumnKey (col, index) {
   return col.key ?? col._key ?? index
 }
@@ -234,6 +234,8 @@ function scrollRegionColAt (x, scrollLeft, lefts, widths) {
   return contentX < lefts[index] + (widths[index] || 0) ? index : -1
 }
 
+/** 画布 x 坐标 → 列号（命中检测）：固定列区不随滚动、按视口坐标命中；滚动区
+    x + scrollLeft 转内容坐标二分。未命中返回 -1 */
 export function colAt (x, { scrollLeft = 0, colLefts, colWidths, fixedLeftColumns = 0 }) {
   const lefts = colLefts ?? []
   const widths = colWidths ?? []
@@ -327,6 +329,8 @@ export function relayout ({
     rowGeometry: geometry,
     stickyWidth: containerWidth,
     stickyHeight: containerHeight,
+    // spacer 与 __sticky 为流内兄弟（机制见 table-ex.scss）：纵向两元素高相加
+    // = 内容总高，只补差值；横向滚动范围由最宽元素撑出，须给全宽
     spacerWidth: Math.max(colsWidth, containerWidth),
     spacerHeight: Math.max(0, contentHeight - containerHeight),
     viewH,

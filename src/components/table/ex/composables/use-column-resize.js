@@ -21,7 +21,7 @@ import { resolveResizeWidth, RESIZE_MIN_WIDTH } from '../interaction/resize-reso
 import { createClickGuard } from '../interaction/schedulers'
 
 /**
- * 创建列宽拖拽（组件壳 setup 内调用；消费面见文件头 @host-* 声明）。
+ * @param {Object} host host 袋（消费面见文件头 @host-* 声明）
  *
  * @returns {{
  *   resizeGuideX: Object, clickGuard: Object, widthOverrides: Object,

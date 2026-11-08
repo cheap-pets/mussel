@@ -4,12 +4,11 @@ import { ListColumn } from './list'
 // link 列兼容壳：构造 list 语义列对象后委托 ListColumn.compile（无自有渲染逻辑）；
 // col.type 保持 'link'（注册表层转换，canvas 侧 type 字符串分发无感）。
 // 兼容映射：danger:true → color 'danger'，disabled 原样保留，link 对象既有
-// color 键顺势激活，caption 键经 ListColumn 兼容读取（开发期警告一次）
+// color 键顺势激活（caption 遗留键不再读取）
 
 function valueToLinks (record, value) {
   if (value != null) {
     return Array.isArray(value)
-      // 对象结构 {  label, color, danger, disabled }
       ? value.map(el => (el != null && typeof el === 'object' ? el : { label: el }))
       : [{ label: value }]
   }

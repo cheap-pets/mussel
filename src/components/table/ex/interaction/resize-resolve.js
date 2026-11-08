@@ -3,7 +3,7 @@
  * 函数；命中检测与光标判定见 hit-test.js，click 分支决策见 click-resolve.js。
  */
 
-/** 拖拽调宽下限缺省（列未配 minWidth 时） */
+/** 拖拽调宽下限兜底值（列级 minWidth 与类型最小宽均缺省时） */
 export const RESIZE_MIN_WIDTH = 40
 
 /**

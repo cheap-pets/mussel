@@ -19,7 +19,7 @@ import { drawProgress, drawButton } from './canvas-kind-painters'
 // —— canvas 落地 ——
 
 // 绘制单个单元格内容（背景/网格线/hover 由 painter 负责，此函数只画内容）：
-// onImageLoad 为 (row, colIndex) => void 处理器
+// onImageLoad 为 (row, colIndex) => void，img/svg/字形异步就绪后 invalidate 该格
 export function drawCell (ctx, {
   col,
   record,
@@ -60,6 +60,8 @@ export function drawCell (ctx, {
   // 合并主格内容行数上限绘制期求值（矩形已知），普通格不钳制
   const maxLines = capMaxLinesOf(col, record, regionHeight, padding, theme)
 
+  // 正文 font 预设：drawTextValue、link 形态 caption-only 按钮不自设 font，依赖此行；
+  // 'middle' 仅 baseline 初值，文本站点一律经 centeredTextAnchor/centeredGlyphAnchor 重设
   ctx.font = cellFontOf(theme)
   ctx.textBaseline = 'middle'
 

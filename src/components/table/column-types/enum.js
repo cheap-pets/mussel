@@ -21,6 +21,7 @@ export const EnumColumn = {
         ...attrs
       } = mapped
 
+      // 双通道：mappings 产物的 class/style 仅 dom 消费，canvas 丢弃；color 色名 + 其余 attrs 双端平铺
       return dom
         ? { text, class: [mClass, color && `text-${color}`], style: [mStyle], ...attrs }
         : { text, color, ...attrs }

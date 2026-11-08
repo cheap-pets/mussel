@@ -1,6 +1,6 @@
 /** 编辑按钮命中判定（pointer 光标覆盖与 click 派发共用）：列配 editButton.icon
     且 resolveIconEntry 查表命中（未注册名两边一致判失败——不绘制、不命中）且
-    指针落在 editButtonRectOf 区矩形内（半开区间，与 interactions.isItemRectHit
+    指针落在 editButtonRectOf 区矩形内（半开区间，与 click-resolve isItemRectHit
     同口径）；区矩形 = spanRectOf（合并区域为区域矩形），为 painter 绘制与
     壳命中共用的单一事实源 */
 import { resolveIconEntry } from '../../column-types/icon'

@@ -152,6 +152,7 @@ export function usePointer (host) {
     for (const region of hoverRegions(prev, next, props.hoverMode || 'row', host.spans.value)) host.invalidate(region)
   }
 
+  // 条目身份比较（row/col/kind/index/disabled 五字段），语义异于 isSamePoint 的格身份，不可互换
   function isSameHoverItem (prev, next) {
     if (prev == null || next == null) return (prev == null) === (next == null)
 

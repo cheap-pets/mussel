@@ -29,6 +29,7 @@
 
   & thead {
     position: sticky;
+    // 须高于 .fixed-col 的 z-index：纵向滚动时表头盖过固定列
     z-index: calc(var(--mu-z-index-above) + 1);
     top: 0;
 
@@ -148,6 +149,7 @@
   height: 0;
 }
 
+// 底部溢出提示阴影：仅纵向溢出（--y-overflowed）且未滚到底（无 --y-scrolled-end）时可见
 .mu-table--y-overflowed > .mu-table__bottom-shadow {
   box-shadow: 0 -1px 2px 1px rgba(0, 0, 0, 0.1), 0 -2px 3px 1px rgba(0, 0, 0, 0.06);
 }
@@ -156,6 +158,7 @@
   box-shadow: none;
 }
 
+// --hover-* 坐标变量由 base/table.vue 的 setHoverIndicator 系列写入；::before 行指示、::after 列指示
 .mu-table__hover-indicator {
   pointer-events: none;
   width: 0;

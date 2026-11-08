@@ -4,7 +4,7 @@ export const FALLBACK_DPR = 1
 
 // —— 几何换算 ——
 
-/** 读行集合：displayRows ?? records 缺省回退 */
+/** 行集合：树开取平铺 displayRows，树关/缺省回退 records */
 export function rowsOf (state) {
   return state.displayRows ?? state.records
 }
@@ -41,14 +41,14 @@ export function cellRectAt (layout, row, col) {
   }
 }
 
-/** 有效内容右缘视口 x（末列右缘；n=0 时 0）——格线/表头/hover/选中 cap 共用式 */
+/** 有效内容右缘视口 x（末列右缘；n=0 时 0）——行底色/格线/表头/hover 带 cap 共用式 */
 export function contentRightXOf (layout) {
   const n = layout.colWidths.length
 
   return n ? viewportColX(layout, n - 1) + (layout.colWidths[n - 1] || 0) : 0
 }
 
-/** 有效内容底缘视口 y（末行底部；行满/溢出时 ≥ stickyHeight；空表返回
+/** 有效内容底缘视口 y（末行底部，行满/溢出时收敛为 stickyHeight；空表恒
     stickyHeight，0 行列线保留全高） */
 export function contentBottomYOf (layout) {
   return layout.rowGeometry.rowCount > 0

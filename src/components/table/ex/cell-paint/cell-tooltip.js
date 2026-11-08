@@ -160,6 +160,7 @@ function resolveTooltipItems (col, record, items, params) {
 
   if (text === '') return null
 
+  // 竖排溢出 = 条数超 maxItems（第 maxItems 条换 '...'）或任一条超宽省略（drawLinkItems 同式）
   if (col.type === 'link' || col.type === 'list') {
     return {
       content: text,

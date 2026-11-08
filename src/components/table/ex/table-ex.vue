@@ -9,7 +9,8 @@
       class="mu-table-ex__scroll"
       @scroll="onScroll"
       @sizechange="onResize">
-      <!-- 指针交互监听层（click 单一入口：树槽 → 条目 → 编辑 → 选中链）；
+      <!-- 指针交互监听层：canvas 自身无事件，指针交互与 click 派发全在 __sticky
+           （click 单一入口链：编辑按钮 → 树槽 → 条目 → 选中链 → 编辑开启）；
            v-mu-scrollbar 注入的 .mu-scrollbar__tracks 经 insertBefore 成为 __scroll 首子元素 -->
       <div
         ref="stickyEl"

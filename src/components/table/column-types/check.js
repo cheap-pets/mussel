@@ -3,6 +3,8 @@ import { ensureFn } from '@/utils/type'
 export const CheckColumn = {
   align: 'center',
   width: '50px',
+  // compile 无 dom 参数：check 条目双通道共用 DOM 形态产物，canvas 侧
+  // resolveItemKind 按 mu-table__cell-check 类名回退识别（item-painters.js）
   compile: column => {
     const disabledFn = ensureFn(column.disabled)
 

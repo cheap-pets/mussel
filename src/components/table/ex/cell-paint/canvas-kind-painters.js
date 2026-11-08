@@ -154,7 +154,7 @@ export function drawButton (ctx, rect, content, {
     }
 
     // 命中矩形：pill 形态高 = 快照值；link 形态无 pill 几何，沿用 TAG_HEIGHT
-    // 高度框（与 caption-only link 同口径）
+    // 固定高度框（constants.js：button 仅 link 形态命中框与 tag 共用 TAG_HEIGHT）
     const hitHeight = link ? TAG_HEIGHT : buttonHeight
 
     onItemRect?.({

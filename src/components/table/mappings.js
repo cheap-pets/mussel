@@ -5,6 +5,7 @@ export function mappingsFromOptions (options) {
 
   const map = {}
 
+  // options 沿用下拉选项结构：'-' 为分隔线、带 is 的自定义组件项无映射文本，均跳过
   for (const item of options) {
     if (item == null || item === '' || item === '-') continue
 
@@ -27,6 +28,7 @@ function mappingTextOf (value) {
 export function selectOptionsFromMappings (mappings) {
   return Object
     .entries(mappings || {})
+    // 'default' 为兜底映射键（createDisplayMapper 未命中时使用），不是真实选项
     .filter(([key]) => key !== 'default')
     .map(([value, v]) => ({ value, label: mappingTextOf(v) }))
 }

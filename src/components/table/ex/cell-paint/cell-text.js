@@ -166,7 +166,8 @@ function alignedLeftX (align, anchorX, width) {
 // linkUnderlineY(该行锚 y)，色随文本 fillStyle），多行逐行对齐 DOM
 // text-decoration 行为。返回实绘文本块行框外接矩形 { x, y, width, height } |
 // undefined（y = centerY − lineHeight/2，height = 实绘行数 × lineHeight，width
-// = 最宽实绘行省略后宽，x 按 align 反推）；未绘制任何文本返回 undefined
+// = 最宽实绘行省略后宽，x 按 align 反推）；未绘制任何文本返回 undefined。
+// 不自设 ctx.font：fillText 依赖调用方预设正文 cellFont（drawCell 入口统一设置）
 export function drawTextValue (ctx, rect, display, align, {
   padding, theme, color, measure, wrapCache, maxLines, centerY, rightInset, underline
 }) {

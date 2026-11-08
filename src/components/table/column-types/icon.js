@@ -28,7 +28,6 @@ export function resolveIconEntry (name) {
   return entry || null
 }
 
-// size 归一：非正数/非法回退缺省 16
 function iconSizeOf (iconOption) {
   const n = Math.round(Number(iconOption?.size))
 

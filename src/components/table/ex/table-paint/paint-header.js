@@ -239,7 +239,7 @@ function paintHeaderColLineRange (ctx, state, theme, layout, cols, mode, strongB
 }
 
 /** 表头单元格内容绘制（文字/check/排序图标）。滚动列部分在固定区右缘 clip 内
-    绘制——不裁剪会绘入固定表头区形成残影（表头为最后分区须自裁剪） */
+    绘制——不裁剪会绘入固定表头区形成残影（表头之后仅覆盖层，无从盖回，须自裁剪） */
 function paintHeaderCells (ctx, state) {
   const { layout } = state
   const cols = headerColIndexes(layout)

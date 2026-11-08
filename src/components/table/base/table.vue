@@ -179,6 +179,8 @@
       col._ctrlClass = [getCellAlignClass(align)]
       col._render = type.compile ? type.compile(el, true) : (type.render || type)
 
+      // 固定列定位需像素宽度：遇无像素宽或超出 fixedLeftColumns 的列即停止累加，
+      // 该列标 last-fixed-col（自身仍 sticky，其右缘即 onResize 计算的 fixedColumnsWidth）
       if (left != null) {
         const widthPx = getPixelNumber(width)
 
@@ -213,6 +215,7 @@
     hoverStyle['--hover-row-height'] = 0
   }
 
+  // resize 后指示条跨度失效：重取 table 尺寸并隐藏，待下次 hover 重建
   const setHoverSize = debounce(100, () => {
     const table = tableEl.value
     if (!table) return
@@ -240,6 +243,7 @@
 
     const total = internalColumns.value.length
 
+    // 防御合并单元格场景（行内 td 数 < 列数）：向外扫齐格 tr 定位该逻辑行的首/末行；base 行恒齐格
     let prev = row
 
     while (prev && prev.childElementCount !== total) {
@@ -272,6 +276,8 @@
     const fixedWidth = fixedColumnsWidth.value
     const scrollLeft = tableEl.value.parentNode.scrollLeft
 
+    // 指示条随内容滚动（非视口坐标）：sticky 格的 offsetLeft 已含滚动位移，固定列 offset=0 即对齐；
+    // 非固定列部分滚入固定区下方时右移 scrollLeft，裁掉被固定列遮住的部分
     const offset = column._fixed || cellLeft >= fixedWidth + scrollLeft
       ? 0
       : scrollLeft
@@ -318,6 +324,7 @@
     setHoverSize()
   }, { noLeading: true })
 
+  // 配合模板 v-if="!scrolling"：滚动中隐藏 hover 指示条，停止滚动 300ms 后恢复
   const cancelScrolling = debounce(300, () => {
     scrolling.value = false
   })

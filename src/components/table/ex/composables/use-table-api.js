@@ -64,7 +64,7 @@ export function useTableApi (host) {
 
     if (row < 0 || !el || !cur) return false
 
-    // 不可见时置于视口顶部：行顶对准表头下缘（变高模式 top 经 rowGeometry.topAt）
+    // 行顶对准表头下缘（变高模式 top 经 rowGeometry.topAt），clamp 不越过最大可滚动量
     const top = Math.min(
       Math.max(cur.rowGeometry.topAt(row), 0),
       Math.max(0, cur.contentHeight - cur.stickyHeight)

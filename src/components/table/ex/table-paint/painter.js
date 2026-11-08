@@ -1,6 +1,6 @@
 /** table-ex 绘制管线：单 canvas 分区绘制 + 脏区重绘。
     分区顺序固定（后区不透明覆盖前区）：1 表体滚动区（可视行 × 滚动区可视列，
-    逐格背景→内容）→ 2 网格线 → 3 固定左列区（整高不透明重绘）→ 4 表头区（整宽）
+    行背景带→逐格内容）→ 2 网格线 → 3 固定左列区（整高不透明重绘）→ 4 表头区（整宽）
     → 5 覆盖层（hover/编辑感知）；脏区绘制先在 clip 内擦除为透明再走同一分区管线
     （半透明行底色直接叠画会重复混色）；选中/斑马底色在分区 1/3 画行背景时直接
     取值，不做覆盖层。
@@ -219,7 +219,7 @@ function paintRegion (ctx, state, region) {
 }
 
 /** 绘制执行：setTransform DPR 直乘 → 分区管线 → lastPaint 统计；
-    region 为 null/undefined 或未识别形状时整幅绘制（clearRect 起点复位） */
+    region 为 null/undefined 或未识别形状时整幅绘制（整幅路径经 clearRect 全清重画） */
 function paint (ctx, state, region) {
   const startedAt = performance.now()
   const dpr = state.dpr || window.devicePixelRatio || FALLBACK_DPR

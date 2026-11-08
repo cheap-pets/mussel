@@ -78,6 +78,7 @@ export const ButtonColumn = {
 
     const isLink = column.link === true
     const showTitle = column.title === true
+    // payload column 回原始引用：canvas prepareColumn 产物挂 _raw（ex/cell-content.js）
     const columnRef = column._raw ?? column
 
     return ({ record, value, emit }) => {

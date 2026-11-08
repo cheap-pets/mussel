@@ -20,6 +20,7 @@
 export function usePaintState (host) {
   const { props, emit } = host
 
+  // 条目命中反查索引（row→col→rects[]）：painter 绘制时写入，点击/条目悬停链路经 paintState.itemHits 读取
   const itemHits = new Map()
 
   const paintState = {

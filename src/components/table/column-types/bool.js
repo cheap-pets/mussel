@@ -18,6 +18,7 @@ export const BoolColumn = {
       const text = value ? trueText : falseText
       const c = getColor(record, value)
 
+      // 双通道色形态：dom 落 text-{color} 类，canvas 携带色名（绘制层查 theme.colors）
       return dom
         ? { text, class: c ? [`text-${c}`] : null }
         : { text, color: c || null }

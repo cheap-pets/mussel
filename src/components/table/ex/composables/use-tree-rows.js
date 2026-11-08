@@ -22,8 +22,7 @@ import { TREE_INDENT } from '../shared/constants'
 import { buildChildrenIndex, buildFlatRows, resolveInitialExpandedKeys, toggleKey } from '../shared/tree'
 
 /**
- * 创建树接线（组件壳 setup 内调用；内部注册三条树 watch；消费面见文件头
- * @host-* 声明）。
+ * @param {Object} host host 袋（消费面见文件头 @host-* 声明；setup 期注册三条树 watch）
  *
  * @returns {{
  *   treeExpanded: Object, treeOptions: Object, childrenIndex: Object|null,

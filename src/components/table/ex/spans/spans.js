@@ -40,8 +40,9 @@ function createWarner (warnFn) {
 }
 
 /**
- * 构建 SpansIndex：先 spanMethod（行序、行内列序）后 autoRowSpan 填补空位
- * （被接管列跳过）。无 spanMethod 且无 autoRowSpan 列、无行、无有效区域时
+ * 构建 SpansIndex。顺序协议（跨文件契约）：applySpanMethod 先跑（行序、行内
+ * 列序登记，写 takenOver 接管集），applyAutoRowSpan 后跑填补空位（读 takenOver，
+ * 被接管列全表失效）。无 spanMethod 且无 autoRowSpan 列、无行、无有效区域时
  * 返回 null。
  *
  * @param {Array} [params.records] 平铺行记录（displayRows）

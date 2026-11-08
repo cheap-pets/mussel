@@ -28,9 +28,7 @@ import { regionAt, spanRectOf } from '../spans/spans'
 import { isSamePoint, recordNumberOf } from '../shared/cell-identity'
 
 /**
- * @param {Object} host host 袋（读取 rootEl, props, wiredColumns, flatRows,
- *   displayRows, layout, spans, getThemeWatcher, getMeasure, getWrapCache,
- *   getEditingCellRef, resizeGuideX）
+ * @param {Object} host host 袋（消费面见文件头 @host-* 声明）
  * @returns {{ tooltipAnchorEl, tooltipController, scheduleCellTooltip,
  *   hideCellTooltip, delayHideCellTooltip }}
  */

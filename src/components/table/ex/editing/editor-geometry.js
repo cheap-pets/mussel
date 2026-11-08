@@ -24,10 +24,12 @@ export function editorRectOf (rect, { topGridline = false, rightGridline = false
 }
 
 /** 本格格线占位标志（editorRectOf 入参；painter hover 描边与 computeEditorStyle 共用）。
-    topGridline = rowFrom ≥ 1 且含 row（合并区域传区域首行，缺省回退 rowIndex——
-    锚行即 rowFrom，显式化防锚点定义将来变化）；rightGridline = colTo 非末列
-    （colspan 区域传区域右缘列号 colTo，缺省回退 colIndex + 1——区域右缘在末列时
-    按锚列判定会误缩 1px，浮层与格线错位）（或末列但有空白区）且含 column */
+    topGridline = 锚行 ≥ 1 且 gridlines 含行线（'all'/'row'）；锚行 = rowFrom ??
+    rowIndex（合并区域传区域首行，锚行即 rowFrom，显式化防锚点定义将来变化）。
+    rightGridline = 锚列非末列、或末列但 stickyWidth > contentWidth（视口宽于列
+    总宽，末列右侧空白延伸区仍画列线），且 gridlines 含列线（'all'/'column'）；
+    锚列 = colTo ?? colIndex + 1（colspan 区域传区域右缘——区域右缘在末列时按
+    锚列判定会误缩 1px，浮层与格线错位） */
 export function editorGridlineFlagsOf ({
   rowIndex, colIndex, colCount, stickyWidth = 0, contentWidth = 0, gridlines, rowFrom, colTo
 } = {}) {
