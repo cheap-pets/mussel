@@ -1,0 +1,46 @@
+npm warn Unknown user config "home". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "//npm.mctech.vip" (https://npm.mctech.vip). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm notice run mussel@4.3.1 build
+npm notice run npm run build:base && npm run build:ex
+npm warn Unknown env config "home". This will error in a future major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "home". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "//npm.mctech.vip" (https://npm.mctech.vip). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm notice run mussel@4.3.1 build:base
+npm notice run vite build --mode development && vite build --mode production
+[36mvite v8.1.4 [32mbuilding client environment for development...[36m[39m
+[2Ktransforming...✓ 285 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/mussel.css  118.56 kB │ gzip: 16.55 kB
+dist/mussel.js   423.72 kB │ gzip: 90.47 kB │ map: 666.77 kB
+
+[32m✓ built in 630ms[39m
+[36mvite v8.1.4 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...✓ 285 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/mussel.min.css   96.15 kB │ gzip: 15.78 kB
+dist/mussel.min.js   229.00 kB │ gzip: 61.47 kB │ map: 652.01 kB
+
+[32m✓ built in 543ms[39m
+npm warn Unknown env config "home". This will error in a future major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "home". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "//npm.mctech.vip" (https://npm.mctech.vip). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm notice run mussel@4.3.1 build:ex
+npm notice run vite build --mode ex-development && vite build --mode ex-production
+[36mvite v8.1.4 [32mbuilding client environment for ex-development...[36m[39m
+[2Ktransforming...✓ 334 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/mussel.ex.css  120.86 kB │ gzip:  16.85 kB
+dist/mussel.ex.js   726.01 kB │ gzip: 181.75 kB │ map: 1,204.50 kB
+
+[32m✓ built in 595ms[39m
+[36mvite v8.1.4 [32mbuilding client environment for ex-production...[36m[39m
+[2Ktransforming...✓ 334 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/mussel.ex.min.css   97.98 kB │ gzip: 16.06 kB
+dist/mussel.ex.min.js   332.78 kB │ gzip: 96.14 kB │ map: 1,180.40 kB
+
+[32m✓ built in 686ms[39m

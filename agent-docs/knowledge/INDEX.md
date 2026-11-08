@@ -21,6 +21,7 @@
 - [集中样式拆分到各组件后，同特异性覆盖规则跨文件失效](./project/css-split-equal-specificity-order.md) `pitfall`：叠加态样式盖不住——覆盖对随 import 顺序漂移失效；覆盖规则须随被覆盖选择器同文件置尾。
 - [demo 页 URL 前缀 /data/ 与新增页构建重启](./project/demo-watch-new-entry-restart.md) `pitfall` `code@worktree(2026-10-30)`：`/<name>/` 404——验证页实际在 `/data/<name>/`（AGENTS.md 表述过时）；新增页须 catalog.js 登记 + 重启 demo:build。
 - [demo watch 重建会清空 demo/dist](./project/demo-watch-wipes-dist.md) `pitfall`：手工放入的临时资产重建后 404 / `Vue is not defined`——watch 重建清空 outDir；资产随用随放。
+- [demo 验证：编辑工具写入不触发 watch 重建 + 浏览器缓存旧 bundle](./project/demo-watch-agent-edit-cache-bust.md) `pitfall` `code@worktree(2026-11-08)`：Edit 改 demo/src 后页面仍旧 bundle——touch 源文件触发重建；server 无 Cache-Control，playwright 访问须加 cache-bust 参数。
 - [Playwright 验证延时收起弹层：整场景须单调用内完成](./project/playwright-delay-hide-popup-testing.md) `pitfall`：调用间隙链自关、同坐标重进无 mouseenter——hover→停留→断言须单脚本完成，重开前先移出移入。
 - [容器 display:none 期间测量污染溢出折叠宽度缓存](./project/overflow-measure-hidden-container-cache.md) `pitfall`：恢复显示后全部项展开、触发器消失——隐藏期 0 宽写入 widthCache；0 宽须视同未测量。
 - [Playwright 断言 modal 可见性须用 mask 的 display](./project/playwright-modal-visibility-assert.md) `pitfall`：关闭后 `.mu-dialog` display 恒非 none——自身值不受祖先 v-show 影响；须取 closest('.mu-modal-mask')。

@@ -5,12 +5,13 @@
 ## 列类型与结构
 
 - [table 列类型体系 v2：类型协议、enum/color、compile 双通道](./project/table-column-types-v2.md) `convention` `code@worktree(2026-11-06)`：list 条目协议/link 壳委托/enum 映射独占/color 双端/text.link 双端 hover；compile 双通道产物与 `v-on="item.events ?? {}"` 兜底。
-- [table-ex 调用层级关系结构图数据](./project/table-ex-structure-map.md) `fact` `code@6034df3`：table-ex 结构分析/重构任务先读本文件（分层模型/依赖图/调用链/host 袋）；代码重构后同步更新。
+- [table-ex 调用层级关系结构图数据](./project/table-ex-structure-map.md) `fact` `code@ee16eb4`：table-ex 结构分析/重构任务先读本文件（分层模型/依赖图/调用链/host 袋）；代码重构后同步更新。
 
 ## 绘制与几何
 
 - [table-ex 绘制收口：行带与 DOM 阴影统一 cap 至列内容区右缘](./project/table-ex-paint-cap-content-right.md) `convention` `code@worktree(2026-11-07)`：canvas 行带与 DOM head 阴影条宽度一律 cap 至 contentRightXOf，延伸区补 bgNormal；勿以视口宽/100% 为宽度事实源。
 - [table-ex 覆盖层绘制须裁剪到表体区](./project/table-ex-overlay-clip-body-area.md) `convention` `code@worktree(2026-11-06)`：分区 5 withClip 表体区；hover 带刻意横穿固定列，选中描边须另裁固定列区（否则滚入压固定列上）。
+- [table-ex itemHits 修剪豁免集与帧内容解耦](./project/table-ex-itemhits-trim-exemptions.md) `convention` `code@worktree(2026-11-08)`：trimItemHits 豁免只看本帧 spanKeepRows 锚行集，与帧类型及绘制行范围无关；锚行越窗仍保留条目。
 - [table-ex hover 高亮与脏区随合并区域联动](./project/table-ex-hover-span-region.md) `convention` `code@worktree(2026-11-06)`：hover 带/列带脏区须同批按 spanRectOf/regionAt 取合并区域，只改绘制会残影，补画会两次混色。
 - [table-ex 条目列对齐协议](./project/table-ex-item-column-align.md) `convention` `code@worktree(2026-11-04)`：button 组两遍式平移、link 竖排每条各自对齐、tag 横排 itemsStartX；命中矩形 x 随对齐同步。
 - [canvas 文本光学居中锚 centeredTextAnchor](./project/canvas-text-optical-centering.md) `convention` `code@worktree(2026-11-07)`：文本/字形垂直居中统一 alphabetic + 墨迹半差锚（CJK 探针/逐字形实测，全局缓存带 fonts-loaded 写守卫）；勿手写 'middle'。

@@ -1,0 +1,2 @@
+- [启动] 单点派发 designer(primary) 修订重构总结文档，重点=调用数据→结构调整的推导链 + 验证方法适用性 — 用户指定
+- [修订] designer 仅改写目标文档；工作区其他未提交改动（demo 页/benchmark/paint-body 等）为用户并行工作，与本次派发无关，调度者已核验 designer 无源码触碰

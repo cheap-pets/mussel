@@ -10,3 +10,4 @@
 * MuDialog 去掉 autoOrBool 类型属性
 
 * table-ex edit-button 改为 cell-button，同步改事件名。进入编辑态后不显示。
+* D:\workshop\cheap-pets\mussel\src\components\table\ex\geometry\layout.js 中列宽定义是否放到 column-types 下去

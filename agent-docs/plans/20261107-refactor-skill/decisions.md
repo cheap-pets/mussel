@@ -1,0 +1,3 @@
+- [启动] 用户指定：基于重构总结提炼通用 skill（禁本项目名词），primary 编写 → peer 修订；落盘位置 C:/Users/scrol/.agents/skills/structure-refactor/，任务目录 draft/ 先行 — 用户指定+skill-creator 默认
+- [安装] skill 落盘用户级 .agents/skills/structure-refactor/（skill-creator 默认位置）；如需 .zcode/skills 覆盖副本由用户决定 — skill-creator 规范
+- [改址] 用户要求不存全局：已删除 C:/Users/scrol/.agents/skills/structure-refactor/，改装到项目 .agents/skills/structure-refactor/（仓库内、仅本项目发现）— 用户指定

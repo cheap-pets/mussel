@@ -1,6 +1,6 @@
 # table-ex 调用层级关系结构图数据
 
-> 基准：dev 分支 6034df3（2026-11-07 table-ex 结构重构提交）。
+> 基准：工作区（HEAD `ee16eb4` + table-ex 结构重构批次 B1–B6 改动未提交，2026-11-07 验证 PASS；批次定义与验证记录见 `agent-docs/plans/20261107-table-ex-reforge/02-design.md`）。
 > 用途：agent 检索与分析的结构底图。代码重构后须同步更新本文件。
 
 ## 1. 分层模型
@@ -9,14 +9,14 @@
 
 | 层 | 目录/文件 | 职责 | 依赖的下层 |
 |---|---|---|---|
-| L0 壳 | `table-ex.vue`（463 行） | props/emits、模板、host 袋构建、12 步组装、defineExpose | L1 全部 + spans/cell-paint/editing/geometry 直引 |
+| L0 壳 | `table-ex.vue`（474 行） | props/emits、模板、host 袋构建、12 步组装、defineExpose | L1 全部 + spans/cell-content/paint-utils/editing×2/controller 直引 |
 | L1 编排 | `composables/`（10 文件） | 功能纵切：树/tooltip/点击/选中/指针/列宽/绘制状态/relayout/实例/API；注册全部 watch 与生命周期 | L2/L3/L4 + 外部 tooltip-core |
 | L2 管线与控制器 | `table-paint/painter.js`、`geometry/row-geometry-controller.js`、`editing/editor.js` | 有状态闭包工厂：rAF 合帧绘制调度、行高双模式几何、编辑状态机 | L3/L4 |
-| L3 领域纯函数 | `table-paint/`（body/gridlines/header/overlay/utils）、`geometry/`（layout/row-geometry）、`interaction/`（决策函数）、`spans/`（合并索引）、`cell-paint/`（取值与绘制分发） | 单向数据变换：画分区、算几何、判命中、建索引、解析单元格内容 | L4 + column-types/mappings |
-| L4 共享原语 | `shared/`（constants/text-wrap/theme/tree）、`geometry/fenwick.js` | 常量、文本测量/折行、主题观察、树平铺、BIT | 无（零内部依赖） |
+| L3 领域纯函数 | `table-paint/`（body/gridlines/header/overlay/utils）、`geometry/`（layout/row-geometry）、`interaction/`（6 文件：hit-test/click-resolve/resize-resolve/edit-button/cell-selection/schedulers）、`spans/`（合并索引）、`cell-paint/`（取值与绘制分发）、`editing/`（editor-geometry/editor-resolve 纯函数） | 单向数据变换：画分区、算几何、判命中、建索引、解析单元格内容/编辑盒几何与规整 | L4 + column-types/mappings |
+| L4 共享原语 | `shared/`（constants/text-wrap/theme/tree/cell-identity）、`geometry/fenwick.js` | 常量、文本测量/折行、主题观察、树平铺、格身份/行序号、BIT | 无（text-wrap→constants 一条 L4 内边，其余零内部依赖） |
 | 外部对接 | `../column-types/`（16 类型双通道 compile）、`../mappings`、`@/icons`、`form/index.js` | 列类型协议、映射、图标、编辑器表单组件 | — |
 
-层间非严格 DAG，存在三处"低层互引"（见 §6.3）。
+环依赖 NONE；跨目录边见 §6.3（paint/interaction 层直引 editing 纯函数模块 editor-geometry，非反向边）。
 
 ## 2. 目录级依赖图
 
@@ -35,40 +35,36 @@ graph TD
   end
   subgraph L3["L3 领域纯函数"]
     PAINT[table-paint/ 其余 5 文件]
-    GEO[geometry/ layout+row-geometry]
-    INTER[interaction/ 4 文件]
+    GEO[geometry/ layout+row-geometry+fenwick]
+    INTER[interaction/ 6 文件]
     SPANS[spans/ 3 文件]
     CELL[cell-paint/ 8 文件]
+    EGEO[editing/ editor-geometry+editor-resolve]
   end
   subgraph L4["L4 原语"]
-    SHARED[shared/ 4 文件]
-    FEN[geometry/fenwick.js]
+    SHARED[shared/ 5 文件]
   end
   CTYPES[column-types/ 16 类型]
   MAP[mappings.js]
 
-  SHELL --> CMP & SPANS & CELL & EDITOR & RGC
-  CMP --> PAINTER & RGC & INTER & EDITOR & CELL & SPANS & SHARED
+  SHELL --> CMP & SPANS & CELL & EDITOR & RGC & EGEO & PAINT
+  CMP --> PAINTER & INTER & EGEO & CELL & SPANS & SHARED & GEO
   CMP -.->|use-cell-tooltip| TOOLTIP[@/components/tooltip]
-  PAINTER --> PAINT & SPANS & SHARED
-  RGC --> GEO
-  EDITOR -->|editor-resolve| MAP & FORM[form/index.js]
-  EDITOR --> SHARED
-  PAINT --> CELL & SPANS & SHARED
-  PAINT -.->|paint-overlay→editor 几何| EDITOR
-  GEO --> SPANS & SHARED & FEN
-  GEO --> CTYPES
-  INTER --> GEO & SHARED & CELL
-  INTER -.->|edit-button→editor| EDITOR
-  INTER --> CTYPES
+  PAINTER --> PAINT & SPANS
+  RGC --> GEO & SHARED
+  EDITOR --> EGEO
+  PAINT --> CELL & SPANS & SHARED & EGEO
+  GEO --> SPANS & SHARED & CTYPES
+  INTER --> GEO & SHARED & CELL & SPANS & EGEO
+  INTER -.->|edit-button| ICON2[../column-types/icon]
+  EGEO -.->|editor-resolve| MAP & FORM[form/index.js]
   CELL --> CTYPES & MAP & SHARED
   CELL -.->|icon-image| ICONS[@/icons]
   SPANS --> SHARED
   SHARED --> ∅
-  FEN --> ∅
 ```
 
-虚线 = 跨层/反向依赖（§6.3）。`spans` 与 `cell-paint` 无 import 依赖但被 8+ 文件消费（横切，§6.1）。
+虚线 = 跨出 ex/ 的外部依赖。`spans` 与 `cell-paint` 被多文件消费（横切，§6.1）；INTER 内部：click-resolve → hit-test（isTreeArrowSlot 唯一跨文件私有依赖）。
 
 ## 3. 壳组装（table-ex.vue）
 
@@ -128,8 +124,8 @@ usePaintState.redraw()                        [composables]
       │  ├─ ② paintGridlines                  [paint-gridlines] 分段跳线(spans.rowRegions/regions)
       │  ├─ ③ paintFixedArea                  [paint-body] 不透明底 + 递归 ①② (固定列区间)
       │  ├─ ④ paintHeader                     [paint-header] check/文本/排序图标/列线
-      │  └─ ⑤ paintOverlay                    [paint-overlay] hover/编辑描边/选中格/树箭头/编辑按钮/调宽参考线
-      │        └─ (描边三函数逐字同源链: regionAt→spanRectOf→editorGridlineFlagsOf→editorRectOf)
+	      │  └─ ⑤ paintOverlay                    [paint-overlay] hover/编辑描边/选中格/树箭头/编辑按钮/调宽参考线
+	      │        └─ 描边单一事实源（B5 提取）: cellFrameOf（矩形链 regionAt→spanRectOf→editorRectOf）+ strokeBodyFrame（表体区裁剪描边块）
       ├─ 脏区: paintRegion                     5 形状 {header|rows|cols|cell|colFrom} 各自 clip+erase 后跑 ①②③⑤
       └─ endSpanFrame(state.itemHits, viewRows)  裁剪 itemHits + 复位单例
 ```
@@ -140,26 +136,26 @@ usePaintState.redraw()                        [composables]
 
 ```
 pointermove → usePointer.onPointerMove
-  └─ hitAt: hitTest({12 字段}) [interactions] → colAt/rowAt/findResizeColumn [geometry/layout]
+  └─ hitAt: hitTest({12 字段}) [hit-test] → colAt/rowAt/findResizeColumn [geometry/layout]
   │    └─ resolveSpanCell(spans, rawHit)      合并格归一为主格坐标（壳出口单一接入点）
   ├─ updateHover → hoverRegions(prev/next,mode,spans) → invalidate(带脏区)
-  ├─ updateHoverItem → resolveItemClick({hit,itemHits})
-  ├─ resolveCursor(hit, columns, {flatInfo,editable,isCellEditableFn})
-  └─ scheduleCellTooltip → resolveTooltipTarget 门控 → (80ms) resolveCellTooltip [cell-tooltip]
+  ├─ updateHoverItem → resolveItemClick({hit,itemHits}) [click-resolve]
+  └─ resolveCursor(hit, columns, {flatInfo,editable,isCellEditableFn}) [hit-test]
+      └─ scheduleCellTooltip → resolveTooltipTarget 门控 [hit-test] → (80ms) resolveCellTooltip [cell-tooltip]
 
 pointerdown → usePointer.onPointerDown
-  └─ resolvePointerdown({editing,hit}) → editor.commit() | startResize(event,hit) [use-column-resize]
+  └─ resolvePointerdown({editing,hit}) [hit-test] → editor.commit() | startResize(event,hit) [use-column-resize]
 
 click → useCellClick.onClick（单一入口，分支序固定）
   └─ clickGuard.consume → hitAt
-  ├─ 表头: resolveHeaderClick → resolveOrderByNext → emit header-click/update:*
-  ├─ 树槽: resolveTreeToggle → applyTreeToggle [use-tree-rows]
+  ├─ 表头: resolveHeaderClick → resolveOrderByNext [click-resolve] → emit header-click/update:*
+  ├─ 树槽: resolveTreeToggle [click-resolve] → applyTreeToggle [use-tree-rows]
   ├─ 编辑按钮: isEditButtonHit [interaction/edit-button] → emit edit-button-click
-  ├─ 条目: resolveItemClick → emitCellItemClick → emitButtonItemClick/emitDomItemClick
+  ├─ 条目: resolveItemClick [click-resolve] → emitCellItemClick → emitButtonItemClick/emitDomItemClick
   │         （dom 路径重入 resolveCellContent 重建 payload）
-  ├─ check/选中: resolveCellClick({9 字段}) → emit update:cell-value/selected-*
-  └─ 开编辑: resolveCellClickOpen → openEditorAt → resolveEditorType + computeEditorStyle({17 字段})
-              → editor.open({7 字段})
+  ├─ check/选中: resolveCellClick({9 字段}) [click-resolve] → emit update:cell-value/selected-*
+  └─ 开编辑: resolveCellClickOpen [click-resolve] → openEditorAt → resolveEditorType [editor-resolve]
+              + computeEditorStyle({17 字段}) [editor-geometry] → editor.open({7 字段})
 ```
 
 ### 4.3 relayout / 滚动链
@@ -169,8 +165,8 @@ onScroll → useRelayout.onScroll → editor.commit + hideCellTooltip + yScrolle
   └─ scrollFrame.schedule(rAF 合帧) → recomputeViewWindows
       ├─ computeViewRows({scrollTop,viewH,rowGeometry}) / computeViewCols [geometry/layout]
       └─ rowGeometry.remeasureVisibleRows → ensureRowMeasured({10 字段}) [geometry/row-geometry]
-          ├─ spans.spanHeightRoleOf + text-wrap.wrapLines/estimateLineCount
-          └─ 锚定补偿: offsetToRow→computeAnchorShift→scrollTop 回写
+      ├─ spans.spanHeightRoleOf + text-wrap.wrapLines/estimateLineCount
+      └─ 锚定补偿: syncAnchoredLayout（row-geometry-controller 内单一事实源，B6 收敛内联块）
       └─ redraw()
 
 relayoutAndRedraw（host.relayout，resize/主题/树 toggle/列变/合并 watch 共用）
@@ -203,12 +199,12 @@ click 树箭头槽 → resolveTreeToggle → applyTreeToggle [use-tree-rows]
 | 对象 | 字段数 | 生产者 | 消费者 |
 |---|---|---|---|
 | `layout` 快照 | 22 | `layout.relayout()` | 绘制层全量、hitTest、computeEditorStyle、cellRectAt |
-| `paintState` | 31 | `usePaintState` 组装（每次绘制前 sync） | painter 全管线（隐式贯穿 39 个函数） |
-| host 袋 | ~40 | table-ex.vue + 各 composable 回填 | 10 个 composable |
+| `paintState` | 30 | `usePaintState` 组装（每次绘制前 sync） | painter 全管线（隐式贯穿 39 个函数） |
+| host 袋 | ~40 | table-ex.vue + 各 composable 回填 | 10 个 composable（@host-* 注解声明消费面） |
 | `drawCell` 实参 | 19 | `drawCellClipped` | cell-paint 绘制分发 |
 | `computeEditorStyle` 实参 | 17 | `openEditorAt` | editor 几何 |
-| controller ctx | 14（全 getter） | table-ex.vue 步骤 4 | row-geometry-controller |
-| `hitTest` 入参 | 12（JSDoc 只列 7） | `hitAt` | 命中检测 |
+| controller deps | 14（全 getter） | table-ex.vue 步骤 4 | row-geometry-controller |
+| `hitTest` 入参 | 12（JSDoc 已列全） | `hitAt` | 命中检测 |
 | spans 共享 ctx | 10 | `buildSpans` 构造 | spans-method/spans-auto |
 | `relayout` 入参 | 11 | relayoutAndRedraw | layout 聚合 |
 | theme 快照 | 21 + 17 色 | `readSnapshot` [shared/theme] | 绘制/几何/字体 |
@@ -216,20 +212,21 @@ click 树箭头槽 → resolveTreeToggle → applyTreeToggle [use-tree-rows]
 ## 6. 横切关注点与结构异常点（agent 分析时的关键锚）
 
 ### 6.1 横切枢纽
-- `spans/*`：被 8 个文件消费（composables×3、table-paint×3、geometry×2、interaction×1、editing 间接经壳）。
-- `cell-paint/cell-painters.js`：聚合入口 + re-export 8 符号（来自 cell-content/icon-image/item-painters/cell-tooltip）。
-- `table-paint/paint-utils.js`：绘制层叶子，几何换算汇聚点（viewportColX/RowY/cellRectAt/contentRightXOf）。
-- `interaction/interactions.js`：决策函数超市（12 导出），composables 5 个文件的公共依赖。
+- `spans/*`：被 8+ 文件消费（composables×3、table-paint×3、geometry×1、interaction×1、editing 间接经壳）。
+- `cell-paint/cell-painters.js`：绘制适配聚合入口（drawCell 单入口分发 7 个子 painter 文件；已无 re-export）。
+- `table-paint/paint-utils.js`：绘制层叶子，几何换算汇聚点（viewportColX/RowY/cellRectAt/contentRightXOf；cellRectAt 唯一事实源，消费方直引）。
+- `interaction/`：决策纯函数按域分居——hit-test（命中/光标/按下/tooltip 门控）、click-resolve（click 七分支）、resize-resolve（调宽 clamp），composables 4 个文件消费（use-pointer/use-cell-click/use-column-resize/use-cell-tooltip）。
 
 ### 6.2 命名成对但内容分居（检索约定）
 - `composables/use-cell-select.js`（编排/键盘/剪贴板）↔ `interaction/cell-selection.js`（纯函数：复制文本/移动/滚动量）。
-- `editing/editor.js`（状态机+几何+re-export）↔ `editing/editor-resolve.js`（编辑器类型/值规整纯函数）。
+- `editing/editor.js`（状态机）↔ `editing/editor-resolve.js`（编辑器类型/值规整纯函数）↔ `editing/editor-geometry.js`（编辑盒几何纯函数；paint/interaction 层直引该文件，不经 editor.js）。
 - `spans/spans.js`（查询面）↔ `spans-method.js`/`spans-auto.js`（构建面）。
 
-### 6.3 跨层/反向依赖（层间非 DAG 的边）
-1. `table-paint/paint-overlay.js` → `editing/editor.js`（editorRectOf 等 4 个几何函数，paint 层依赖编辑层）。
-2. `interaction/edit-button.js` → `editing/editor.js`（editButtonRectOf）+ `cell-paint/cell-content.js`（cell-selection → resolveCellContent）。
-3. `geometry/row-geometry.js` → `spans/spans.js`（spanHeightRoleOf；几何依赖合并索引）。
+### 6.3 跨目录依赖与环检测
+1. `table-paint/paint-overlay.js`、`interaction/edit-button.js` → `editing/editor-geometry.js`：编辑盒几何为纯函数模块（仅依赖 shared/constants），paint/interaction 层直引——原"paint 层→编辑层"反向边已消除（editor.js 保持 L2 纯状态机）。
+2. `interaction/cell-selection.js` → `cell-paint/cell-content.js`（resolveCellContent，interaction→cell-paint 目录边）。
+3. `geometry/row-geometry.js` → `spans/spans.js`（spanHeightRoleOf；几何依赖合并索引，L3 同层内边）。
+4. 环依赖：NONE。
 
 ### 6.4 隐式依赖（import 图不可见）
 - composable 间横向调用全经 host 袋（如 usePointer → useColumnResize.startResize；useCellClick → useCellSelect.clearCellSelection，后者可选链防时序）。
@@ -239,6 +236,6 @@ click 树箭头槽 → resolveTreeToggle → applyTreeToggle [use-tree-rows]
 - spans 构建顺序协议：applySpanMethod 先跑写 `takenOver`，applyAutoRowSpan 后跑读。
 
 ### 6.5 已知潜在缺陷（分析时注意）
-- `fenwick.rebuild` 换 tree 不复算 `power`，行数跨 2 幂边界后 findRowAtOffset 步长失配。
-- `hitTest` JSDoc 与 12 字段签名不符。
-- paint-overlay 描边三函数、paintBodyRow/Spans 背景带、isSameCell/Hover/HoverItem：三组逐字/近同构重复代码。
+- `fenwick.rebuild` 换 tree 不复算 `power`，行数跨 2 幂边界后 findRowAtOffset 步长失配（未修复）。
+- paintBodyRow/Spans 背景带：近同构重复（未收敛）。
+- 已收敛（2026-11-07 结构重构 B5/B6）：paint-overlay 描边三函数 → cellFrameOf/strokeBodyFrame；controller 内联锚定块 → syncAnchoredLayout；isSameCell/Hover → shared/cell-identity.js isSamePoint 单一事实源（isSameHoverItem 五字段语义不同，保留独立）；hitTest JSDoc 已列全 12 字段。

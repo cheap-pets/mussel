@@ -1,0 +1,71 @@
+# migration integrity: HEAD upgrade-v1/v3 files vs new skill files (diff --strip-trailing-cr)
+# note: mussel3to4/references/rules.md uses CRLF (repo original LF); content diff below is CR-stripped
+==== skills/mussel-ui/references/upgrade-v1/overview.md -> skills/mussel1to4/references/overview.md ====
+< > **不能**用 `references/upgrade-v3/`（V3→V4）的迁移规则直接套用。本目录独立覆盖 v1→v4 全部已知差异。
+> > **不能**用 mussel3to4 skill（V3→V4）的迁移规则直接套用。本目录独立覆盖 v1→v4 全部已知差异。
+< - 写 v4 目标代码时的完整组件 Props/Events/Slots 与样式 Token，查阅本 skill 的 `references/components/*` 与 `references/styles.md`。
+> - 写 v4 目标代码时的完整组件 Props/Events/Slots 与样式 Token，查阅 mussel-ui skill 的 `../../mussel-ui/references/components/*` 与 `../../mussel-ui/references/styles.md`。
+(changed lines: 4)
+==== skills/mussel-ui/references/upgrade-v1/process.md -> skills/mussel1to4/references/process.md ====
+< > Mussel 3（`mussel` 3.x，Vue 3）→ 4 的升级**不走本流程**，改用本 skill 的 `references/upgrade-v3/`。
+> > Mussel 3（`mussel` 3.x，Vue 3）→ 4 的升级**不走本流程**，改用 mussel3to4 skill。
+< **生成工具**：mussel-ui Skill（V1→V4 升级路径）
+> **生成工具**：mussel1to4 Skill
+(changed lines: 4)
+==== skills/mussel-ui/references/upgrade-v1/rules.md -> skills/mussel1to4/references/rules.md ====
+< > Mussel 4 目标写法的完整组件 API 与样式 Token 以 `references/components/*` 与 `references/styles.md` 为单源；本文件「目标写法」列只保留迁移所需的一行速查，不展开 v4 用法。
+> > Mussel 4 目标写法的完整组件 API 与样式 Token 以 mussel-ui skill 的 `../../mussel-ui/references/components/*` 与 `../../mussel-ui/references/styles.md` 为单源；本文件「目标写法」列只保留迁移所需的一行速查，不展开 v4 用法。
+< v1 `variables.js` 中非颜色配置（字号、控件高度、圆角、阴影等）在 v4 中一律改为覆盖 CSS 变量（`--mu-font-size`、`--mu-radius-*`、`--mu-shadow-*` 等，完整清单见 `references/styles.md`）。
+> v1 `variables.js` 中非颜色配置（字号、控件高度、圆角、阴影等）在 v4 中一律改为覆盖 CSS 变量（`--mu-font-size`、`--mu-radius-*`、`--mu-shadow-*` 等，完整清单见 mussel-ui skill 的 `../../mussel-ui/references/styles.md`）。
+< | `.mu-background-primary` / `-success` / `-danger` / `-warning` | `style="background: var(--mu-primary-color)"` | v4 无彩色背景原子类；注意 v1 `-danger` 误引用 success-color（v1 bug 渲染绿色），迁移后变红属修正非回归 |
+< | `.mu-background-info` / `.mu-background-hover` | 无对应 | 人工处理 |
+> | `.mu-background-primary` / `-success` / `-danger` / `-warning` | `.bg-primary` / `.bg-success` / `.bg-danger` / `.bg-warning` | 注意 v1 `-danger` 误引用 success-color（v1 bug 渲染绿色），迁移后变红属修正非回归 |
+> | `.mu-background-hover` | `.bg-gray-translucent` | 与 v3 变量映射（`--mu-background-hover` → `--mu-gray-translucent`）口径一致；v1 为实色时迁移后变半透明，视觉差异需确认；v1 类若为 `background` 简写需改 `background-color` 覆盖 |
+> | `.mu-background-info` | 无对应 | 人工处理 |
+< v4 内置名：`X`、`check`、`x`、`ok`、`info`、`alert`、`question`、`chevronUp/Down/Left/Right`、`arrowDownLeft`、`arrowUpRight`、`list`、`grid`、`dots`、`search`、`file`、`folder`、`folderOpen`、`sun`、`moon`、`star`、`starred`（filled）、`leftCollapse` / `leftExpand`（侧栏收起/展开）、`clock`、`calendar`、`loading`（自带 spin 动画），以及带旋转动画的组合图标 `windowClose`（dialog 关闭按钮自动使用）、`treeNodeExpand`（tree 展开箭头自动使用）、`dropdownExpand`（dropdown 展开箭头自动使用）。**注意大小写敏感**。
+> v4 内置图标名全集（32 个，**大小写敏感**）见 mussel-ui skill 的 `../../mussel-ui/references/components/data.md`『MuTable → 列类型（type）』内 `icon` 列 blockquote 的「内置注册名 32 个」。
+< > 各组件「目标写法」的完整 Props/Events/Slots 以 `references/components/*` 为准。
+> > 各组件「目标写法」的完整 Props/Events/Slots 以 mussel-ui skill 的 `../../mussel-ui/references/components/*` 为准。
+< | （无） | `:model` + `:items` 数据驱动表单 | 新能力，简单表单可一并改写（见 `references/components/form.md`） |
+> | （无） | `:model` + `:items` 数据驱动表单 | 新能力，简单表单可一并改写（见 mussel-ui skill `../../mussel-ui/references/components/form.md`） |
+< | `cell-html` | 无对应 | 用列 items/自定义渲染（见 `references/components/data.md`） |
+> | `cell-html` | 无对应 | 用列 items/自定义渲染（见 mussel-ui skill `../../mussel-ui/references/components/data.md`） |
+< | `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（`references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
+> | `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（mussel-ui skill `../../mussel-ui/references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
+< v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item>`，激活靠 `selectMode` 或逐项 `v-model`）→ v4 **数据驱动重写**为 `<mu-side-menu :items>`（侧边）或 `<mu-menu :items>`（横向顶栏）。完整 API 见 `references/components/navigation.md`。
+> v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item>`，激活靠 `selectMode` 或逐项 `v-model`）→ v4 **数据驱动重写**为 `<mu-side-menu :items>`（侧边）或 `<mu-menu :items>`（横向顶栏）。完整 API 见 mussel-ui skill 的 `../../mussel-ui/references/components/navigation.md`。
+< | `mu-collapse` / `mu-collapse-group` | 折叠面板/组（v1 `mu-expander` 的首选去向，见 6.10） |
+> | `mu-collapse` / `mu-collapse-group` | 折叠面板/组（v1 `mu-expander` 的首选去向，见 6.10；API 见 mussel-ui skill 的 `../../mussel-ui/references/components/containers.md`） |
+(changed lines: 23)
+==== skills/mussel-ui/references/upgrade-v3/process.md -> skills/mussel3to4/references/process.md ====
+< 0. **退出检查**（先做，命中任一即停止升级流程，回到 `SKILL.md` 步骤 2）：
+> 0. **退出检查**（先做，命中任一即停止升级流程，回到 mussel-ui skill 默认 UI 路径）：
+< **生成工具**：Mussel UI Skill
+> **生成工具**：mussel3to4 Skill
+< 升级完成后编写新代码时，查阅 `SKILL.md` 的组件速查表与步骤 2 路由表（8 大类组件 API）、`references/styles.md`（原子样式）与 `references/install.md`（安装初始化）。
+> 升级完成后编写新代码时，查阅 mussel-ui skill 的组件速查表与步骤 2 路由表（8 大类组件 API），及 `../../mussel-ui/references/styles.md`（原子样式）与 `../../mussel-ui/references/install.md`（安装初始化）（参见 mussel-ui skill）。
+(changed lines: 6)
+==== skills/mussel-ui/references/upgrade-v3/rules.md -> skills/mussel3to4/references/rules.md ====
+< > ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**，否则会出现「分析漏检」或「grep 命中但无规则」的不一致。v4 侧事实（组件 API、样式 Token）以 `references/components/*` 与 `references/styles.md` 为单源，本文件只保留迁移所需的一行速查，不展开 v4 用法。
+> > ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**，否则会出现「分析漏检」或「grep 命中但无规则」的不一致。v4 侧事实（组件 API、样式 Token）以 mussel-ui skill 的 `../../mussel-ui/references/components/*` 与 `../../mussel-ui/references/styles.md` 为单源，本文件只保留迁移所需的一行速查，不展开 v4 用法。
+< > 完整 `install` API（options 字段、`$mussel` 上下文、`installIcons`）见 `references/install.md`。
+> > 完整 `install` API（options 字段、`$mussel` 上下文、`installIcons`）见 `../../mussel-ui/references/install.md`（参见 mussel-ui skill）。
+< > M3 运行时换肤函数 `setTheme(option)` 在 M4 中不再导出，改为挂载到 `$mussel` 上下文：`$mussel.setupColors(customColors, rootElement?)`。详见 `references/install.md`「运行时换肤」。
+> > M3 运行时换肤函数 `setTheme(option)` 在 M4 中不再导出，改为挂载到 `$mussel` 上下文：`$mussel.setupColors(customColors, rootElement?)`。详见 `../../mussel-ui/references/install.md`「运行时换肤」（参见 mussel-ui skill）。
+< Mussel 4 新增了完整的原子类系统。完整列表见 `references/styles.md`，主要类别：
+> Mussel 4 新增了完整的原子类系统。完整列表见 mussel-ui skill 的 `../../mussel-ui/references/styles.md`，主要类别：
+< **文本**：`.text-strong`、`.text-normal`、`.text-muted`、`.text-subtle`、`.text-soft`、`.text-primary`、`.text-secondary`、`.text-success`、`.text-warning`、`.text-danger`、`.text-ellipsis`、`.line-clamp`
+> **文本**：`.text-strong`、`.text-normal`、`.text-muted`、`.text-subtle`、`.text-soft`、`.text-primary`、`.text-secondary`、`.text-success`、`.text-warning`、`.text-danger`、`.text-{基本色}`（gray + 12 基本色，共 13 色）、`.text-ellipsis`、`.line-clamp`
+< **背景**：`.bg-normal`、`.bg-strong`、`.bg-fill`、`.bg-disabled`、`.bg-overlay`、`.bg-mask`（斑马纹只有 `--mu-bg-stripe` 变量，无对应原子类）
+> **背景**：`.bg-normal`、`.bg-strong`、`.bg-fill`、`.bg-disabled`、`.bg-overlay`、`.bg-mask`、`.bg-primary` / `.bg-secondary` / `.bg-success` / `.bg-warning` / `.bg-danger`（功能色实底）、`.bg-{功能色}-translucent` / `.bg-gray-translucent` / `.bg-{基本色}-translucent`（共 18 个；基本色实底 `.bg-{基本色}` 当前无效）（斑马纹只有 `--mu-bg-stripe` 变量，无对应原子类）
+< > 完整 MuDialog API：`references/components/containers.md`
+> > 完整 MuDialog API：`../../mussel-ui/references/components/containers.md`（参见 mussel-ui skill）
+< > `dismissible` 取值 `true` / `'esc'` / `'mask'`，不设置则不自动关闭（完整语义见 `references/components/containers.md`）。
+> > `dismissible` 取值 `true` / `'esc'` / `'mask'`，不设置则不自动关闭（完整语义见 mussel-ui skill 的 `../../mussel-ui/references/components/containers.md`）。
+< `input` 属性支持的类型完整清单见 `references/components/form.md`（`text` / `memo` / `date` / `week` / `month` / `quarter` / `year` / `time` / `color` / `segmented` / `select` / `multi-select` / `check-group` / `radio-group`）。
+> `input` 属性支持的类型完整清单见 mussel-ui skill 的 `../../mussel-ui/references/components/form.md`（`text` / `memo` / `date` / `week` / `month` / `quarter` / `year` / `time` / `color` / `segmented` / `select` / `multi-select` / `check-group` / `radio-group`）。
+< V3 仅有 `.mu-badge` CSS 类（无组件，`secondary` / `danger` 属性选择器变体）。V4 新增 `<mu-badge>` 组件（API 见 `references/components/basic.md`），颜色用 `color="secondary/danger/…"` 属性；V3 的属性写法仍兼容但已弃用。
+> V3 仅有 `.mu-badge` CSS 类（无组件，`secondary` / `danger` 属性选择器变体）。V4 新增 `<mu-badge>` 组件（API 见 mussel-ui skill 的 `../../mussel-ui/references/components/basic.md`），颜色用 `color="secondary/danger/…"` 属性；V3 的属性写法仍兼容但已弃用。
+< Mussel 4 新增以下组件（V3 均无对应，`mu-*` 标签直接可用），可用于替代手工实现。完整 API 见 `SKILL.md` 组件速查表路由的对应参考文件。
+> Mussel 4 新增以下组件（V3 均无对应，`mu-*` 标签直接可用），可用于替代手工实现。完整 API 见 mussel-ui skill 组件速查表路由的对应参考文件（`../../mussel-ui/references/components/*`）。
+(changed lines: 22)

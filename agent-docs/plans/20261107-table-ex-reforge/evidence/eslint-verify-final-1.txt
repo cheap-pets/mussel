@@ -1,0 +1,39 @@
+
+D:\workshop\cheap-pets\mussel\demo\src\data\table-ex\main-view.vue
+   227:1   warning  This line has a length of 129. Maximum allowed is 120         max-len
+   347:3   error    Import in body of module; reorder to top                      import/first
+   349:3   error    Import in body of module; reorder to top                      import/first
+  1077:33  warning  Arrow function has a complexity of 11. Maximum allowed is 10  complexity
+
+D:\workshop\cheap-pets\mussel\demo\src\data\table-ex\self-checks\cell-painters.js
+  2629:1  warning  This line has a length of 124. Maximum allowed is 120  max-len
+
+D:\workshop\cheap-pets\mussel\demo\src\data\table-ex\self-checks\painter.js
+  1259:7  error  Expected space or tab after '//' in comment  spaced-comment
+  1269:7  error  Expected space or tab after '//' in comment  spaced-comment
+
+D:\workshop\cheap-pets\mussel\demo\src\data\table-ex\self-checks\spans.js
+  336:1  warning  This line has a length of 128. Maximum allowed is 120  max-len
+
+D:\workshop\cheap-pets\mussel\demo\src\data\table-ex\self-checks\text-wrap.js
+  352:1  warning  This line has a length of 125. Maximum allowed is 120  max-len
+  361:1  warning  This line has a length of 127. Maximum allowed is 120  max-len
+
+D:\workshop\cheap-pets\mussel\src\components\table\ex\cell-paint\canvas-kind-painters.js
+  138:1  warning  This line has a length of 122. Maximum allowed is 120                    max-len
+  226:1  warning  Function 'drawButtonLink' has a complexity of 11. Maximum allowed is 10  complexity
+  262:1  warning  This line has a length of 122. Maximum allowed is 120                    max-len
+
+D:\workshop\cheap-pets\mussel\src\components\table\ex\cell-paint\cell-text.js
+  170:8  warning  Function 'drawTextValue' has a complexity of 15. Maximum allowed is 10  complexity
+
+D:\workshop\cheap-pets\mussel\src\components\table\ex\cell-paint\cell-tooltip.js
+  72:1  warning  Function 'buttonsOverflowOf' has a complexity of 13. Maximum allowed is 10  complexity
+
+D:\workshop\cheap-pets\mussel\src\components\table\ex\cell-paint\item-painters.js
+  179:1  warning  Function 'measureItem' has a complexity of 11. Maximum allowed is 10  complexity
+  213:1  warning  Function 'drawItem' has a complexity of 13. Maximum allowed is 10     complexity
+
+✖ 17 problems (4 errors, 13 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+

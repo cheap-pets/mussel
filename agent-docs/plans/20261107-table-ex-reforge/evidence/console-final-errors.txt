@@ -1,0 +1,6 @@
+Total messages: 127 (Errors: 3, Warnings: 123)
+Returning 3 messages for level "error"
+
+[ERROR] Failed to load resource: net::ERR_INVALID_URL @ data:image/png;base64,AAAA1:0
+[ERROR] Failed to load resource: net::ERR_INVALID_URL @ data:image/png;base64,AAAA4:0
+[ERROR] Failed to load resource: net::ERR_INVALID_URL @ data:image/png;base64,AAAA7:0

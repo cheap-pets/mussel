@@ -1,0 +1,34 @@
+npm notice run mussel@4.3.1 build
+npm notice run npm run build:base && npm run build:ex
+npm notice run mussel@4.3.1 build:base
+npm notice run vite build --mode development && vite build --mode production
+[36mvite v8.1.4 [32mbuilding client environment for development...[36m[39m
+[2Ktransforming...✓ 285 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/mussel.css  118.56 kB │ gzip: 16.55 kB
+dist/mussel.js   423.72 kB │ gzip: 90.47 kB │ map: 666.77 kB
+
+[36mvite v8.1.4 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...✓ 285 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/mussel.min.css   96.15 kB │ gzip: 15.78 kB
+dist/mussel.min.js   229.00 kB │ gzip: 61.47 kB │ map: 652.01 kB
+
+npm notice run mussel@4.3.1 build:ex
+npm notice run vite build --mode ex-development && vite build --mode ex-production
+[36mvite v8.1.4 [32mbuilding client environment for ex-development...[36m[39m
+[2Ktransforming...✓ 334 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/mussel.ex.css  120.86 kB │ gzip:  16.85 kB
+dist/mussel.ex.js   727.03 kB │ gzip: 181.62 kB │ map: 1,208.51 kB
+
+[36mvite v8.1.4 [32mbuilding client environment for ex-production...[36m[39m
+[2Ktransforming...✓ 334 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/mussel.ex.min.css   97.98 kB │ gzip: 16.06 kB
+dist/mussel.ex.min.js   333.70 kB │ gzip: 96.26 kB │ map: 1,184.41 kB
+
