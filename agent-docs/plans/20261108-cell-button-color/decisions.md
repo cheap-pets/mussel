@@ -1,0 +1,2 @@
+- [建目录] hover 释义 = 指针落在 cellButtonRectOf 按钮区矩形内（按钮仅在 cell hover 时绘制；默认态/hover 态为按钮可见期间的两种颜色）— 调度按图标按钮惯例判定，用户可纠正
+- [建目录] 无修复循环：验证 FAIL → 停下汇报 — 用户本轮流水线仅指定 primary 修改 + fast 验证

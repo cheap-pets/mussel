@@ -1,0 +1,5 @@
+- [探索后] 事件名 edit-button-click → cell-button-click — 用户需求①"同步改事件名"直读，kebab 惯例
+- [探索后] 需求② 无代码改动 — 探索证实现状已满足（resolveIconEntry 注册表查表：未注册不绘制不命中、dev warn 一次保留现状）
+- [探索后] 内部命名（常量 EDIT_BUTTON_*、函数 editButton*/isEditButtonHit、模块文件名）随特性改名，验收 A1 以 grep 全扫零残留为准 — 改名任务的自洽性要求
+- [探索后/用户] 配置键 editButton → cellButton 同步改 — 用户裁定；接受文档三处（docs/quick-reference、docs-site、skills）暂不一致（禁改文档约束），遗留待确认更新
+- [探索后/用户] A3 范围 = 仅被编辑格隐藏：编辑格自身按钮不绘制、不可触发；其他格按钮行为不变 — 用户裁定

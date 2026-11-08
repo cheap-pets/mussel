@@ -1,0 +1,23 @@
+# A3/A2 浏览器行为断言记录（2026-11-08, http://localhost:3000/data/table-ex/?v=verify20261108a）
+# 坐标依据：getCellRect(row,col)（use-table-api.js:102 供 playwright 坐标换算）+ 主题快照 cellPadding=8/rowHeight=36
+# 按钮区 = 格右 - 8 - 24，垂直中心 = 格顶 + 1 + (36-1)/2（cellButtonRectOf 原式）
+
+1. hover memo(col7,row1) 按钮区中心(1032,267.83) -> .mu-table-ex__sticky cursor = pointer
+   hover active(col8,row1) 按钮区中心(1112,267.83) -> cursor = pointer
+2. click memo 按钮 -> 事件日志: "#1 cell-button-click {\"record\":\"#2\",\"recordIndex\":1,\"column\":\"memo\"}"
+   click active 按钮 -> "#2 cell-button-click {\"record\":\"#2\",\"recordIndex\":1,\"column\":\"active\"}"
+3. 点击 memo(row1) 格左部进入编辑（.mu-table-ex__editor 存在=true, 日志 #5 cell-click memo）
+   -> 编辑态中点击 memo(row1) 自身按钮区：日志首条保持 #5（无新 cell-button-click、无新 cell-click）= 拦截生效
+      （pointerdown 先 commit 的时序：click 时 committedEditCell 快照抑制）
+4. 编辑态中点击 active(row2) 按钮 -> "#7 cell-button-click {\"record\":\"#3\",\"recordIndex\":2,\"column\":\"active\"}"（其他格照常派发；memo 编辑随之 commit 关闭）
+5. Esc 退出编辑（editor 消失）-> 再点击 memo(row1) 按钮 -> "#8 cell-button-click {\"record\":\"#2\",\"recordIndex\":1,\"column\":\"memo\"}"（原格恢复派发）
+6. 绘制门控像素断言（getImageData 24x24 按钮区, dpr=1.5）：
+   - 编辑 memo(row1) 中 hover 自身按钮区: 单色 225,236,243, hash=6482944；hover 同格非按钮区后同区域: hash 相同 -> 无图标绘制
+   - Esc 后（非编辑）hover 同一按钮区: 11 种颜色（dots 图标像素）, hash=3198597 -> 对照成立，断言方法有效
+7. A2 回归: self-checks "[editor]cellButton 门控 resolveIconEntry：注册名命中（绘制/命中生效）、未注册名判失败（不绘制不命中）" = 通过；
+   console 唯一 error = data:image/png;base64,AAAA 加载失败（self-checks/cell-painters.js:814 故意坏图夹具，行不在本次 hunk(155,2468) 内=存量）；
+   warnings 中 noRegCell*/noRegEntry* unregistered icon dev warn = self-checks 用例故意触发的预期行为，非渲染报错
+8. 自检结果面板: 242/243 通过；唯一失败 =
+   "✗[interactions]resolvePointerdown：editing 先提交再续命中；手柄开拖拽 — editing 中 commit 期望 [true,false]，实际 [true,null,false]"
+   根因: src/components/table/ex/interaction/hit-test.js:147-152 resolvePointerdown 返回新增 committedEditCell 键,
+   demo/src/data/table-ex/self-checks/interactions.js:380-399 Object.values 断言未同步（04-impl 改动清单未含 interactions.js）

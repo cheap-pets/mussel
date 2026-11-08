@@ -17,6 +17,7 @@
 - [canvas 文本光学居中锚 centeredTextAnchor](./project/canvas-text-optical-centering.md) `convention` `code@worktree(2026-11-07)`：文本/字形垂直居中统一 alphabetic + 墨迹半差锚（CJK 探针/逐字形实测，全局缓存带 fonts-loaded 写守卫）；勿手写 'middle'。
 - [table-ex recordsVersion 行高粘性契约](./project/table-ex-recordsversion-height-contract.md) `convention` `code@worktree(2026-11-05)`：精算缓存按行快照跳过；就地改 records 须 bump recordsVersion，否则行高不更新。
 - [table-ex 树 isLeaf 懒加载协议](./project/table-ex-tree-lazy-load.md) `convention` `code@worktree(2026-10-29)`：treeProps.isLeaf 未映射即关闭；仅 ===false 且无子级显三角；toggle 必发 tree-expand/collapse；回填就地 push + recordsVersion++ 防闪顶。
+- [table-ex 编辑格按钮门控双快照](./project/table-ex-editing-cell-gate.md) `convention` `code@worktree(2026-11-08)`：编辑格按钮门控须 editingCell + committedEditCell 双快照；pointerdown 先 commit 后决策，单判 editingCell 在 watcher 间隙放行。
 
 ## 验证与重构方法
 

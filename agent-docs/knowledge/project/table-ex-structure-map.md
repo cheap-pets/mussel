@@ -2,6 +2,7 @@
 
 > 基准：工作区（HEAD `ee16eb4` + table-ex 结构重构批次 B1–B6 改动未提交，2026-11-07 验证 PASS；批次定义与验证记录见 `agent-docs/plans/20261107-table-ex-reforge/02-design.md`）。
 > 用途：agent 检索与分析的结构底图。代码重构后须同步更新本文件。
+> 同步：2026-11-08 工作区改名 edit-button → cell-button（事件 cell-button-click、配置键 cellButton）并加编辑格门控；相关文件名与符号已更新。
 
 ## 1. 分层模型
 
@@ -12,7 +13,7 @@
 | L0 壳 | `table-ex.vue`（474 行） | props/emits、模板、host 袋构建、12 步组装、defineExpose | L1 全部 + spans/cell-content/paint-utils/editing×2/controller 直引 |
 | L1 编排 | `composables/`（10 文件） | 功能纵切：树/tooltip/点击/选中/指针/列宽/绘制状态/relayout/实例/API；注册全部 watch 与生命周期 | L2/L3/L4 + 外部 tooltip-core |
 | L2 管线与控制器 | `table-paint/painter.js`、`geometry/row-geometry-controller.js`、`editing/editor.js` | 有状态闭包工厂：rAF 合帧绘制调度、行高双模式几何、编辑状态机 | L3/L4 |
-| L3 领域纯函数 | `table-paint/`（body/gridlines/header/overlay/utils）、`geometry/`（layout/row-geometry）、`interaction/`（6 文件：hit-test/click-resolve/resize-resolve/edit-button/cell-selection/schedulers）、`spans/`（合并索引）、`cell-paint/`（取值与绘制分发）、`editing/`（editor-geometry/editor-resolve 纯函数） | 单向数据变换：画分区、算几何、判命中、建索引、解析单元格内容/编辑盒几何与规整 | L4 + column-types/mappings |
+| L3 领域纯函数 | `table-paint/`（body/gridlines/header/overlay/utils）、`geometry/`（layout/row-geometry）、`interaction/`（6 文件：hit-test/click-resolve/resize-resolve/cell-button/cell-selection/schedulers）、`spans/`（合并索引）、`cell-paint/`（取值与绘制分发）、`editing/`（editor-geometry/editor-resolve 纯函数） | 单向数据变换：画分区、算几何、判命中、建索引、解析单元格内容/编辑盒几何与规整 | L4 + column-types/mappings |
 | L4 共享原语 | `shared/`（constants/text-wrap/theme/tree/cell-identity）、`geometry/fenwick.js` | 常量、文本测量/折行、主题观察、树平铺、格身份/行序号、BIT | 无（text-wrap→constants 一条 L4 内边，其余零内部依赖） |
 | 外部对接 | `../column-types/`（16 类型双通道 compile）、`../mappings`、`@/icons`、`form/index.js` | 列类型协议、映射、图标、编辑器表单组件 | — |
 
@@ -56,7 +57,7 @@ graph TD
   PAINT --> CELL & SPANS & SHARED & EGEO
   GEO --> SPANS & SHARED & CTYPES
   INTER --> GEO & SHARED & CELL & SPANS & EGEO
-  INTER -.->|edit-button| ICON2[../column-types/icon]
+  INTER -.->|cell-button| ICON2[../column-types/icon]
   EGEO -.->|editor-resolve| MAP & FORM[form/index.js]
   CELL --> CTYPES & MAP & SHARED
   CELL -.->|icon-image| ICONS[@/icons]
@@ -124,7 +125,7 @@ usePaintState.redraw()                        [composables]
       │  ├─ ② paintGridlines                  [paint-gridlines] 分段跳线(spans.rowRegions/regions)
       │  ├─ ③ paintFixedArea                  [paint-body] 不透明底 + 递归 ①② (固定列区间)
       │  ├─ ④ paintHeader                     [paint-header] check/文本/排序图标/列线
-	      │  └─ ⑤ paintOverlay                    [paint-overlay] hover/编辑描边/选中格/树箭头/编辑按钮/调宽参考线
+	      │  └─ ⑤ paintOverlay                    [paint-overlay] hover/编辑描边/选中格/树箭头/格按钮/调宽参考线
 	      │        └─ 描边单一事实源（B5 提取）: cellFrameOf（矩形链 regionAt→spanRectOf→editorRectOf）+ strokeBodyFrame（表体区裁剪描边块）
       ├─ 脏区: paintRegion                     5 形状 {header|rows|cols|cell|colFrom} 各自 clip+erase 后跑 ①②③⑤
       └─ endSpanFrame(state.itemHits, viewRows)  裁剪 itemHits + 复位单例
@@ -150,7 +151,7 @@ click → useCellClick.onClick（单一入口，分支序固定）
   └─ clickGuard.consume → hitAt
   ├─ 表头: resolveHeaderClick → resolveOrderByNext [click-resolve] → emit header-click/update:*
   ├─ 树槽: resolveTreeToggle [click-resolve] → applyTreeToggle [use-tree-rows]
-  ├─ 编辑按钮: isEditButtonHit [interaction/edit-button] → emit edit-button-click
+  ├─ 格按钮: isCellButtonHit [interaction/cell-button] → emit cell-button-click
   ├─ 条目: resolveItemClick [click-resolve] → emitCellItemClick → emitButtonItemClick/emitDomItemClick
   │         （dom 路径重入 resolveCellContent 重建 payload）
   ├─ check/选中: resolveCellClick({9 字段}) [click-resolve] → emit update:cell-value/selected-*
@@ -223,7 +224,7 @@ click 树箭头槽 → resolveTreeToggle → applyTreeToggle [use-tree-rows]
 - `spans/spans.js`（查询面）↔ `spans-method.js`/`spans-auto.js`（构建面）。
 
 ### 6.3 跨目录依赖与环检测
-1. `table-paint/paint-overlay.js`、`interaction/edit-button.js` → `editing/editor-geometry.js`：编辑盒几何为纯函数模块（仅依赖 shared/constants），paint/interaction 层直引——原"paint 层→编辑层"反向边已消除（editor.js 保持 L2 纯状态机）。
+1. `table-paint/paint-overlay.js`、`interaction/cell-button.js` → `editing/editor-geometry.js`：编辑盒几何为纯函数模块（仅依赖 shared/constants），paint/interaction 层直引——原"paint 层→编辑层"反向边已消除（editor.js 保持 L2 纯状态机）。
 2. `interaction/cell-selection.js` → `cell-paint/cell-content.js`（resolveCellContent，interaction→cell-paint 目录边）。
 3. `geometry/row-geometry.js` → `spans/spans.js`（spanHeightRoleOf；几何依赖合并索引，L3 同层内边）。
 4. 环依赖：NONE。

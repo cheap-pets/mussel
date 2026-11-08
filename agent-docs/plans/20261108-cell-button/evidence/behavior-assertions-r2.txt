@@ -1,0 +1,34 @@
+# 终验第 2 轮运行时行为证据（playwright mcp，http://localhost:3000/data/table-ex/?v=verify2-r2-20261108）
+# 说明：画布内部 scrollTop 残留 17px 使 getCellRect 与实际绘制有 y 偏移（探测工具问题，非组件问题）；
+# 点击坐标以像素扫描定位（scanGlyph：右缘 36px 暗色字形像素质心）。滚动条 thumb/track 覆盖 x>=1113，
+# active 列按钮点击钳制 x<=1110。
+
+[1] 普通格按钮派发 cell-button-click
+hover memo row1 -> 字形像素 n=36 质心 (1031,268) -> 点击
+事件日志: #13 cell-button-click {"record":"#2","recordIndex":1,"column":"memo"}
+（按钮点击不派发 cell-click、不选中 —— 局部交互语义）
+
+[2] 编辑格自身按钮：不绘制 + 不可触发
+点击 memo row1 格体 -> 编辑器 DOM 挂载（.mu-input 存在）
+hover 自身格按钮区 -> 画布像素扫描：darkCount=0, colorCount=1, 唯一色 225,236,243（hover 底色，无字形）
+点击自身按钮区 (1032,284) -> 事件日志: #10 cell-click {"record":"#2","recordIndex":1,"column":"memo"} + #9 update:selected-record
+-> 无 cell-button-click（时序：pointerdown 先 commit，committedEditCell 快照抑制）
+
+[3] 编辑中其他格照常
+编辑 memo row1 中，hover active 列其他行按钮区 -> 字形像素存在（n=1114 含格内容）-> 点击 (1110,409)
+事件日志: #24 update:cell-value（同手势 pointerdown commit）-> #25 cell-button-click {"record":"#4","recordIndex":3,"column":"active"}
+
+[4] 退出编辑恢复
+Esc -> hover memo row1 -> 字形恢复 n=36 质心 (1031,268)（与 [1] 同位同量）-> 点击
+事件日志: #20 cell-button-click {"record":"#2","recordIndex":1,"column":"memo"}
+
+[5] 页内自检面板
+"自检结果（243/243 通过）"；DOM 断言 li 共 243 项、含 ✗ 项 0
+其中 [interactions]resolvePointerdown：editing 先提交再续命中；手柄开拖拽 = ✓
+（断言形状 [true,null,false]/[false,null,false]/[true,null,true]/[false,null,true] 与 hit-test.js resolvePointerdown 返回 3 键一致）
+
+[6] 控制台（console-r2-full.log，全会话 47 行）
+ERROR x1: data:image/png;base64,AAAA 加载失败 = self-checks/cell-painters.js 故意坏图夹具（存量，非本次改动行）
+WARNING 类别全部存量：Canvas2D willReadFrequently x39（浏览器性能提示）、
+unregistered icon x2（self-checks noRegCell/noRegEntry 夹具故意触发）、demo 夹具重复 install x3
+-> 无新增报错

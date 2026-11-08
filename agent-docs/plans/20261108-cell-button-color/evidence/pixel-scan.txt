@@ -1,0 +1,34 @@
+A1 像素断言原始数据（playwright run_code，page.mouse 真实输入驱动重绘，等待 120ms 后 canvas.getImageData 扫描）
+
+环境：http://localhost:3000/data/table-ex/?cb=20261108v1，DPR=1.5，
+期望色值页面现算（getComputedStyle 经 color 求值路径，同 theme.js readVar 手段）：
+  soft    = rgb(150, 156, 162)  ← var(--mu-text-color-soft)
+  primary = rgb(28, 126, 214)   ← var(--mu-primary-color)
+（与 window.__canvasTable.getThemeSnapshot().textColorSoft/primaryColor 一致）
+
+矩形口径：备注列 = getCellRect(1,7)（canvas 内 x=704,w=180），按钮区 = cellButtonRectOf
+公式（editor-geometry.js:49-61）：x=cell.x+width-8-24=852，y=cell.y+1+(36-1)/2-12=112.5，
+24×24；物理 36×36 px（DPR 1.5），扫描像素总数 1296。
+判定：exactPx = 与期望色欧氏距离 ≤12 的像素数；minDist = 全区最小距离。
+
+[svg 形态 · 备注列 dots]
+T1 hover 格内非按钮区 (962,284.3)：
+  soft scan    → minDist=0,    exactPx=24, nearPx=24
+T2 移入按钮区中心 (1032,267.8)：
+  primary scan → minDist=0,    exactPx=24, nearPx=24
+  soft scan    → minDist=69.1, exactPx=0  （无默认色残留 = 色彩已切换非叠加）
+T3 移回格内非按钮区 (932,284.3)：
+  soft scan    → minDist=0,    exactPx=24, nearPx=24
+  primary scan → minDist=136,  exactPx=0  （无 hover 色残留）
+T4 移出格（名称列中心 (352,284.3)）：
+  soft scan    → minDist=135.9, exactPx=0
+  primary scan → minDist=233.5, exactPx=0
+  按钮区亮度<200 像素 = 0（无任何字形像素 = 按钮消失）
+
+[cls 形态 · 启用列 demoGlyphA]（getCellRect(1,8)，同款矩形口径与扫描）
+T5 hover 格内非按钮区：soft scan    → minDist=0, exactPx=338
+T6 移入按钮区中心：    primary scan → minDist=0, exactPx=334
+T7 primary 态扫 soft：  minDist=69.1, exactPx=0
+
+结论：svg/cls 两形态均满足 默认态=soft、指针入按钮区=primary、移出按钮区恢复
+soft、移出格按钮消失；字形像素与页面现算主题色完全一致（minDist=0）。
