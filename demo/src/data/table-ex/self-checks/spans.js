@@ -333,7 +333,9 @@ export const checks = [
       assertEqual(normalized.beyondCols, false, 'beyondCols 原样')
       assertEqual(normalized.resizeCol, -1, 'resizeCol 原样')
 
-      const anchorHit = { isHeader: false, rowIndex: 0, colIndex: 0, x: 1, y: 1, cellX: null, beyondCols: false, resizeCol: -1 }
+      const anchorHit = {
+        isHeader: false, rowIndex: 0, colIndex: 0, x: 1, y: 1, cellX: null, beyondCols: false, resizeCol: -1
+      }
 
       assert(resolveSpanCell(spans, anchorHit) === anchorHit, 'anchor/普通格原引用短路')
 

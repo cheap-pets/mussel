@@ -187,21 +187,24 @@
 
   .demo-palette-wrap {
     display: flex;
+    padding: 8px;
     border: 1px dashed var(--mu-border-color);
     border-radius: 4px;
-    padding: 8px;
   }
 
   .demo-block {
     display: flex;
     align-items: center;
     justify-content: center;
+
     min-width: 64px;
     min-height: 48px;
     padding: 8px 12px;
     border-radius: 4px;
-    background: var(--mu-primary-color);
+
     color: var(--mu-text-color-inverse, #fff);
+
+    background: var(--mu-primary-color);
   }
 
   .demo-block--sm {
@@ -211,9 +214,9 @@
 
   .demo-toolbar-like {
     align-items: center;
+    padding: 8px 12px;
     border: 1px dashed var(--mu-border-color);
     border-radius: 4px;
-    padding: 8px 12px;
   }
 
   .demo-inline-box {
@@ -221,14 +224,14 @@
   }
 
   .demo-frame {
+    overflow: hidden;
     height: 240px;
     border: 1px solid var(--mu-border-color);
     border-radius: 4px;
-    overflow: hidden;
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>

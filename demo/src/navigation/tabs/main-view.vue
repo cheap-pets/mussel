@@ -191,10 +191,10 @@
 
 <style>
   .demo-tabs {
-    height: 180px;
 
     /* 16 页签内容超宽时 stretch 不收缩，限制在 section 容器内，页签栏横向滚动 */
     max-width: 100%;
+    height: 180px;
   }
 
   .demo-tabs--short {
@@ -210,7 +210,7 @@
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>

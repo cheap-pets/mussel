@@ -2626,7 +2626,11 @@ export const checks = [
       drawRecorded(
         prepareColumn(iconOnlyCol),
         { list: [{ icon: 'demoGlyphA' }] },
-        { theme: { ...THEME, controlHeightSmall: undefined }, measure: fakeMeasure, onItemRect: r => fallbackRects.push(r) }
+        {
+          theme: { ...THEME, controlHeightSmall: undefined },
+          measure: fakeMeasure,
+          onItemRect: r => fallbackRects.push(r)
+        }
       )
       assertEqual(
         `${fallbackRects[0].rect.width},${fallbackRects[0].rect.height}`,

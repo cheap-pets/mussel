@@ -2,7 +2,7 @@
   <demo-page path="layout/grid-box">
     <demo-section
       title="基础用法"
-      note="mu-grid-box 用 columns / rows 划分等分轨道，mu-grid-cell 用 col-start / col-end / row-start / row-end 指定占据区间（end 为末轨道号，含端点）"
+      :note="basicNote"
       :code="basicCode">
       <mu-grid-box class="demo-grid" :columns="4" :rows="2">
         <mu-grid-cell class="demo-cell">
@@ -99,6 +99,9 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
+  const basicNote =
+    'mu-grid-box 用 columns / rows 划分等分轨道，' +
+    'mu-grid-cell 用 col-start / col-end / row-start / row-end 指定占据区间（end 为末轨道号，含端点）'
   const basicCode = `<mu-grid-box :columns="4" :rows="2">
   <mu-grid-cell>1</mu-grid-cell>
   <mu-grid-cell :col-span="2">2</mu-grid-cell>
@@ -131,9 +134,9 @@
 
   .demo-grid {
     height: 240px;
+    padding: 8px;
     border: 1px dashed var(--mu-border-color);
     border-radius: 4px;
-    padding: 8px;
   }
 
   .demo-grid--case {
@@ -144,9 +147,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
     margin: 4px;
     border-radius: 4px;
-    background: var(--mu-primary-color);
+
     color: var(--mu-text-color-inverse, #fff);
+
+    background: var(--mu-primary-color);
   }
 </style>

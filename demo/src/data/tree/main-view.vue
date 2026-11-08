@@ -225,12 +225,12 @@ const data = [
 
   .demo-column__title {
     margin: 0 0 4px;
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>

@@ -98,40 +98,43 @@
   }
 
   .demo-bar {
-    align-items: center;
     gap: 12px;
+    align-items: center;
   }
 
   .demo-toolbar {
-    align-items: center;
     gap: 8px;
+    align-items: center;
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .demo-scroll-area {
     max-width: 100%;
+    padding: 4px;
     border: 1px dashed var(--mu-border-color);
     border-radius: 4px;
-    padding: 4px;
   }
 
   .demo-scroll-area--vertical {
-    height: 160px;
     width: 280px;
+    height: 160px;
   }
 
   .demo-chip {
     flex: none;
+
     margin: 4px;
     padding: 8px 16px;
-    border-radius: 4px;
-    background: var(--mu-bg-strong);
     border: 1px solid var(--mu-border-color);
+    border-radius: 4px;
+
     white-space: nowrap;
+
+    background: var(--mu-bg-strong);
   }
 
   .demo-chip--wide {

@@ -188,8 +188,8 @@
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .demo-log--block {
@@ -198,11 +198,13 @@
 
   .demo-container-area {
     position: relative;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    height: 300px;
     border: 1px dashed var(--mu-border-color);
     border-radius: 4px;
-    height: 300px;
   }
 </style>

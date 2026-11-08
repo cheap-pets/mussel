@@ -224,7 +224,7 @@
         <span>headerChecked.checked：{{ headerChecked.checked }}</span>
         <span>recordsVersion：{{ recordsVersion }}</span>
         <span>场景：{{ scene }}{{ stageTree ? '（树开）' : (scene === 'tree' || scene === 'tree-lazy' ? '（树关）' : '') }}</span>
-        <span>treeProps：{{ stageTree || scene === 'tree' || scene === 'tree-lazy' ? JSON.stringify(treePropsBind) : '—' }}</span>
+        <span>treeProps：{{ treePropsDisplay }}</span>
         <span>展开节点数：{{ treeExpandedKeys?.length ?? '（未受控）' }}</span>
         <span>平铺行数：{{ debugFlatRowsLength ?? '—' }}</span>
         <span>舞台尺寸：{{ stageWidth }} × {{ stageHeight }}</span>
@@ -338,15 +338,15 @@
   // install 同步执行；class 定义见 demo/src/common/style.css）
   import { installIcons } from 'mussel'
 
-  installIcons({
-    demoGlyphA: 'mu-demo-glyph-a',
-    demoGlyphB: 'mu-demo-glyph-b'
-  })
-
   // S1：真实组件本地接入（相对路径，不依赖 S2 全局注册；见 02-design.md S1 行）
   import { MuTableEx } from '../../../../src/components/table/ex/index.js'
   // 调试句柄用：与组件同参重算平铺行数（树场景状态展示/e2e 断言入口）
   import { buildChildrenIndex, buildFlatRows } from '../../../../src/components/table/ex/shared/tree.js'
+
+  installIcons({
+    demoGlyphA: 'mu-demo-glyph-a',
+    demoGlyphB: 'mu-demo-glyph-b'
+  })
 
   // ---------- 调试句柄（契约见 02-design.md 改动清单 demo 行） ----------
   // 组件挂载前为占位对象（getCellRect 返回 null 防误用抛错）；onMounted 起替换为
@@ -1068,27 +1068,38 @@
       : { key: 'id', parentKey: 'pid' }
   })
 
+  const treePropsDisplay = computed(() => {
+    const treeScene = scene.value === 'tree' || scene.value === 'tree-lazy'
+
+    return stageTree.value || treeScene ? JSON.stringify(treePropsBind.value) : '—'
+  })
+
   const defaultExpandLevel = computed(() => {
     const n = Number(defaultExpandLevelInput.value)
 
     return Number.isFinite(n) ? n : 0
   })
 
+  const SCENE_COLUMNS = {
+    tree: treeColumns,
+    'tree-lazy': treeColumns,
+    multiline: multilineColumns,
+    items: itemColumns,
+    widths: widthColumns,
+    fixed: fixedColumns,
+    narrow: narrowColumns,
+    spans: spanColumns,
+    single: singleLineColumns
+  }
+
   const stageColumns = computed(() => {
-    switch (scene.value) {
-      case 'tree': return treeColumns
-      case 'tree-lazy': return treeColumns
-      case 'multiline': return multilineColumns
-      case 'items': return itemColumns
-      case 'widths': return widthColumns
-      case 'fixed': return fixedColumns
-      case 'narrow': return narrowColumns
-      case 'spans': return spanColumns
-      case 'single': return singleLineColumns
-      // 性能夹具仅默认场景列尾追加（B4 采样开关，默认关闭）；DOM 参照表用
-      // columns 原引用，不受影响
-      default: return perfColumnOn.value ? [...columns.value, perfColumn] : columns.value
-    }
+    const sceneColumns = SCENE_COLUMNS[scene.value]
+
+    if (sceneColumns) return sceneColumns
+
+    // 性能夹具仅默认场景列尾追加（B4 采样开关，默认关闭）；DOM 参照表用
+    // columns 原引用，不受影响
+    return perfColumnOn.value ? [...columns.value, perfColumn] : columns.value
   })
 
   const stageRecords = computed(() => {
@@ -1557,19 +1568,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 100%;
     height: 100%;
-    color: var(--mu-text-color-muted);
+
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .ct-resize-handle {
+    cursor: nwse-resize;
+
     position: absolute;
     right: 0;
     bottom: 0;
+
     width: 16px;
     height: 16px;
-    cursor: nwse-resize;
   }
 
   /* 右下三角 grip（R1/人工 3 意见 3）：视觉挂 ::after 伪元素——clip-path 若直接
@@ -1577,10 +1592,12 @@
      命中区解耦；色仍取 --mu-* 变量，透明度 0.5 不变 */
   .ct-resize-handle::after {
     content: '';
+
     position: absolute;
     inset: 0;
-    background: var(--mu-primary-color);
+
     opacity: 0.5;
+    background: var(--mu-primary-color);
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
   }
 
@@ -1611,9 +1628,11 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px 24px;
+
     margin-top: 12px;
-    color: var(--mu-text-color-muted);
+
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .ct-debug {
@@ -1634,7 +1653,9 @@
     gap: 12px;
     align-items: center;
     justify-content: space-between;
+
     margin-bottom: 8px;
+
     font-weight: 500;
   }
 
@@ -1642,10 +1663,12 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+
     margin: 0;
     padding: 0;
-    list-style: none;
+
     font-size: var(--mu-font-size-small);
+    list-style: none;
   }
 
   .ct-check-item {
@@ -1692,22 +1715,26 @@
   }
 
   .ct-snapshot {
+    overflow: auto;
+
     max-height: 220px;
     margin: 0;
-    overflow: auto;
+
     font-family: monospace;
     font-size: var(--mu-font-size-small);
     white-space: pre-wrap;
   }
 
   .ct-event-log {
+    overflow: auto;
+
     max-height: 260px;
     margin: 0;
     padding: 0;
-    overflow: auto;
-    list-style: none;
+
     font-family: monospace;
     font-size: var(--mu-font-size-small);
+    list-style: none;
   }
 
   .ct-event-log__item {

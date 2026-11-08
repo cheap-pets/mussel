@@ -242,6 +242,23 @@
     window.addEventListener('mouseup', onResizeEnd)
   }
 
+  // 从原始矩形拷贝，仅修改被拖动的边
+  function applyDraggedEdges (next, ctx, p) {
+    if (ctx.edges.w) next.colStart = Math.min(p.col, ctx.start.colEnd)
+    if (ctx.edges.e) next.colEnd = Math.max(p.col, ctx.start.colStart)
+    if (ctx.edges.n) next.rowStart = Math.min(p.row, ctx.start.rowEnd)
+    if (ctx.edges.s) next.rowEnd = Math.max(p.row, ctx.start.rowStart)
+  }
+
+  // 保证跨度至少为 1（inclusive：start === end 即为 1 格）；
+  // 拖动起点侧（w/n）时收缩起点，否则收缩终点
+  function clampSpan (startKey, endKey, draggedEdge, next) {
+    if (next[startKey] <= next[endKey]) return
+
+    if (draggedEdge) next[startKey] = next[endKey]
+    else next[endKey] = next[startKey]
+  }
+
   function onResizeMove (e) {
     const ctx = resizeCtx
     if (!ctx) return
@@ -250,23 +267,11 @@
     if (!cell) return
 
     const p = pointerToCell(e.clientX, e.clientY)
-    // 从原始矩形拷贝，仅修改被拖动的边
     const next = { ...ctx.start }
 
-    if (ctx.edges.w) next.colStart = Math.min(p.col, ctx.start.colEnd)
-    if (ctx.edges.e) next.colEnd = Math.max(p.col, ctx.start.colStart)
-    if (ctx.edges.n) next.rowStart = Math.min(p.row, ctx.start.rowEnd)
-    if (ctx.edges.s) next.rowEnd = Math.max(p.row, ctx.start.rowStart)
-
-    // 保证跨度至少为 1（inclusive：start === end 即为 1 格）
-    if (next.colStart > next.colEnd) {
-      if (ctx.edges.w) next.colStart = next.colEnd
-      else next.colEnd = next.colStart
-    }
-    if (next.rowStart > next.rowEnd) {
-      if (ctx.edges.n) next.rowStart = next.rowEnd
-      else next.rowEnd = next.rowStart
-    }
+    applyDraggedEdges(next, ctx, p)
+    clampSpan('colStart', 'colEnd', ctx.edges.w, next)
+    clampSpan('rowStart', 'rowEnd', ctx.edges.n, next)
 
     // 仅在合法时提交该步；非法则停留在上一合法状态（snap-at-edge）
     if (isValid(next, ctx.id)) {
@@ -308,6 +313,7 @@
     display: inline-flex;
     gap: 6px;
     align-items: center;
+
     font-size: 0.85rem;
     color: var(--mu-text-color-light);
   }
@@ -318,8 +324,8 @@
 
   .designer-demo__tip {
     margin-left: auto;
-    color: var(--mu-text-color-muted);
     font-size: 12px;
+    color: var(--mu-text-color-muted);
   }
 
   /* 画布 */
@@ -330,21 +336,26 @@
 
   .designer-grid {
     position: relative;
+
     overflow: hidden;
     display: grid;
+
     width: 100%;
     height: 100%;
     min-height: 420px;
     border: 1px solid var(--mu-border-color-normal);
+
     background-color: var(--mu-bg-strong);
   }
 
   /* 网格引导线层：绝对定位覆盖整个画布，置于单元格之下 */
   .grid-lines {
     pointer-events: none;
+
     position: absolute;
     z-index: 0;
     inset: 0;
+
     background-image:
       linear-gradient(to right, var(--mu-border-color-normal) 1px, transparent 1px),
       linear-gradient(to bottom, var(--mu-border-color-normal) 1px, transparent 1px);
@@ -363,14 +374,18 @@
   .cell-body {
     cursor: move;
     user-select: none;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 100%;
     height: 100%;
     min-height: 24px;
     border-radius: 4px;
+
     color: var(--mu-text-color-inverse, #fff);
+
     background: var(--mu-primary-color);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   }
@@ -391,12 +406,15 @@
 
   .cell-remove {
     cursor: pointer;
+
     position: absolute;
     top: 0;
     right: 2px;
+
     width: 16px;
     height: 16px;
     border-radius: 50%;
+
     font-size: 14px;
     line-height: 14px;
     color: rgba(255, 255, 255, 0.85);

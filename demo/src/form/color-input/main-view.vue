@@ -100,13 +100,14 @@
   }
 
   .demo-value {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .demo-swatch {
     display: inline-block;
     flex: none;
+
     width: 24px;
     height: 24px;
     border-radius: var(--mu-radius-control);

@@ -214,18 +214,21 @@
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .color-swatch {
     position: relative;
+
     overflow: hidden;
     flex: 1 1 0;
+
     min-width: 100px;
     height: 80px;
     border: 1px solid var(--mu-border-color-soft);
     border-radius: 6px;
+
     text-align: center;
   }
 
@@ -233,10 +236,12 @@
   .color-swatch.is-border::after,
   .color-swatch.is-bg::after {
     content: '';
+
     position: absolute;
     right: 0;
     bottom: 0;
     left: 0;
+
     height: 3px;
   }
 
@@ -255,9 +260,11 @@
   .color-legend {
     display: flex;
     gap: 16px;
+
     margin-top: 12px;
-    color: var(--mu-text-color-muted);
+
     font-size: 12px;
+    color: var(--mu-text-color-muted);
   }
 
   .color-legend__item {
@@ -278,10 +285,12 @@
 
   .semantic-card {
     flex: 1;
+
     min-width: 240px;
     padding: 16px;
     border: 1px solid var(--mu-border-color-soft);
     border-radius: 8px;
+
     background: var(--mu-bg-strong);
   }
 
@@ -303,15 +312,18 @@
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
+
     font-size: 12px;
   }
 
   .semantic-item code {
     padding: 2px 4px;
     border-radius: 3px;
-    background: var(--mu-bg-fill);
+
     font-family: monospace;
     font-size: 11px;
+
+    background: var(--mu-bg-fill);
   }
 
   .semantic-item__arrow {
@@ -373,26 +385,33 @@
     display: flex;
     gap: 8px;
     align-items: center;
+
     margin-bottom: 8px;
+
     font-size: 13px;
   }
 
   .mode-card__label {
     flex-shrink: 0;
+
     width: 70px;
+
     font-family: monospace;
     font-size: 11px;
+
     opacity: 0.6;
   }
 
   .color-block {
     display: inline-block;
+
     width: 80px;
     height: 80px;
     border-radius: 6px;
-    color: var(--mu-text-color-inverse, #fff);
+
     font-size: 12px;
     line-height: 80px;
+    color: var(--mu-text-color-inverse, #fff);
     text-align: center;
   }
 
@@ -404,8 +423,8 @@
 
   .semantic-color-group h5 {
     margin: 12px 0 8px;
-    color: var(--mu-text-color-subtle);
     font-size: 13px;
     font-weight: 500;
+    color: var(--mu-text-color-subtle);
   }
 </style>

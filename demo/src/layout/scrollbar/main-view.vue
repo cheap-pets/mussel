@@ -37,7 +37,7 @@
       title="边界与回归"
       note="超大内容 + sticky 元素：滚动时左右两条红色参考带保持可见、顶部蓝色条吸顶，滚动条拖动流畅无跳动">
       <mu-scroll-box class="demo-scroll-container demo-scroll-container--bordered">
-        <div style="position: sticky; left: 0; right: 0; top: 0;">
+        <div style="position: sticky; top: 0; right: 0; left: 0;">
           <div
             class="demo-sticky demo-sticky--top">
             sticky top
@@ -95,11 +95,14 @@
 
   .demo-scroll-container {
     will-change: scroll-position;
+
     position: relative;
+
+    overflow: auto;
+
     width: 100%;
     max-width: 640px;
     height: 320px;
-    overflow: auto;
   }
 
   .demo-scroll-container--bordered {
@@ -110,7 +113,12 @@
   .demo-scroll-element {
     width: 3000px;
     height: 30000px;
-    background-image: linear-gradient(45deg, var(--mu-warning-color, yellow), var(--mu-danger-color, red), var(--mu-warning-color, yellow));
+    background-image: linear-gradient(
+      45deg,
+      var(--mu-warning-color, yellow),
+      var(--mu-danger-color, red),
+      var(--mu-warning-color, yellow)
+    );
   }
 
   .demo-scroll-element--tall {
@@ -126,8 +134,8 @@
   }
 
   .demo-scroll-element--huge {
-    height: 5000px;
     width: 2000px;
+    height: 5000px;
     margin: 0 150px;
     background: var(--mu-bg-strong);
   }
@@ -139,24 +147,26 @@
   }
 
   .demo-sticky--top {
-    background: var(--mu-primary-color, blue);
-    left: 0;
-    right: 0;
     top: 0;
+    right: 0;
+    left: 0;
+
     height: 40px;
+
+    background: var(--mu-primary-color, blue);
   }
 
   .demo-sticky--left {
-    background: var(--mu-danger-color, red);
     left: 0;
     width: 150px;
     height: 2000px;
+    background: var(--mu-danger-color, red);
   }
 
   .demo-sticky--right {
-    background: var(--mu-danger-color, red);
     right: 0;
     width: 150px;
     height: 2000px;
+    background: var(--mu-danger-color, red);
   }
 </style>

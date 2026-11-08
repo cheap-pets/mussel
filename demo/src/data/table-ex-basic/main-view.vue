@@ -96,10 +96,10 @@
       note="行高之和小于容器高度时垂直格线止于末行底部；列宽之和小于容器宽度时水平格线（含表头底边框）与表头背景止于末列右侧；行 / 列 hover 高亮与选中高亮同口径，不越末列右缘、末行底部"
       wide>
       <mu-table-ex
+        v-model:selected-record-key="sparseSelectedKey"
         :columns="sparseColumns"
         :records="sparseRecords"
         :hover-mode="hoverMode"
-        v-model:selected-record-key="sparseSelectedKey"
         key-field="id"
         style="height: 320px" />
     </demo-section>

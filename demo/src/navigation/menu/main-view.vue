@@ -210,8 +210,8 @@ const menus = [
 
   .demo-bottom-box {
     display: flex;
-    height: 120px;
     align-items: flex-end;
+    height: 120px;
   }
 
   .demo-row {
@@ -222,7 +222,7 @@ const menus = [
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>

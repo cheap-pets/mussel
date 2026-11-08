@@ -128,8 +128,8 @@
   }
 
   .mu-icon.demo-icon-cls {
-    color: var(--mu-danger-color);
     font-size: 24px;
+    color: var(--mu-danger-color);
   }
 
   .mu-icon.demo-icon-cls::before {

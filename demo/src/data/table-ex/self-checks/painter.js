@@ -1258,7 +1258,7 @@ export const checks = [
       assertPixel(canvas, gx, 126, THEME.bgNormal, '行 2 选中带延伸区 = bgNormal 表格底色')
 
       // (a-2) 表头背景止于末列右缘（追加轮 2 需求 A）：右缘以右透明；列内铺满
-      //（'金额' 右对齐文字右缘 ≈342、左缘 ≈314，x=300 取空白、y=4 取字形上方）
+      // （'金额' 右对齐文字右缘 ≈342、左缘 ≈314，x=300 取空白、y=4 取字形上方）
       assertPixel(canvas, gx, 4, [0, 0, 0, 0], '表头背景末列右缘以右透明')
       assertPixel(canvas, 300, 4, THEME.bgFill, '表头背景列内铺满')
 
@@ -1268,7 +1268,7 @@ export const checks = [
       assertPixel(canvas, gx, 90, THEME.bgNormal, 'hover 行带延伸区无混色（斑马行带底 = bgNormal）')
 
       // (b-2) hover 列带止于末行底部（追加轮 2 需求 B-2）：3 行夹具末行底 144
-      //（36 表头 + 3×36），列带列内混色、末行底以下透明
+      // （36 表头 + 3×36），列带列内混色、末行底以下透明
       drawRegion(canvas.getContext('2d'), makeState({
         columns: narrow,
         records: makeRecords(3),

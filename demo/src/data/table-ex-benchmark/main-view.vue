@@ -71,7 +71,9 @@
       wide>
       <div class="bm-metrics">
         <div class="bm-metrics__block">
-          <div class="bm-block-title">records 构建 + 首次 relayout（重挂载）</div>
+          <div class="bm-block-title">
+            records 构建 + 首次 relayout（重挂载）
+          </div>
           <div class="bm-kv">
             <span>records 构建</span>
             <span data-metric="buildMs">{{ fmtMs(lastRun?.buildMs) }}</span>
@@ -91,7 +93,9 @@
         </div>
 
         <div class="bm-metrics__block">
-          <div class="bm-block-title">替换引用（同实例，不重挂载）</div>
+          <div class="bm-block-title">
+            替换引用（同实例，不重挂载）
+          </div>
           <div class="bm-kv">
             <span>records 重建</span>
             <span data-metric="swapBuildMs">{{ fmtMs(lastRun?.swap?.buildMs) }}</span>
@@ -105,7 +109,9 @@
         </div>
 
         <div class="bm-metrics__block">
-          <div class="bm-block-title">滚动帧（{{ SCROLL_STEPS }} 步程序化滚动）</div>
+          <div class="bm-block-title">
+            滚动帧（{{ SCROLL_STEPS }} 步程序化滚动）
+          </div>
           <div class="bm-kv">
             <span>重绘次数</span>
             <span data-metric="scrollPaints">{{ fmtInt(lastRun?.scroll?.paints) }}</span>
@@ -385,32 +391,33 @@
     else summaryRows.value.push(result)
   }
 
-  // 单次运行：同步构建 records（耗时计入指标）→ 重挂载 → 等首次 relayout → 采样
-  async function performRun (sceneKey, rows) {
-    const def = SCENES[sceneKey]
-    let startedAt
-    let buildMs
-
+  // 首跑复用 setup 期已构建并挂载的基准；否则同步构建 records 并切场景重挂载
+  function applyRunStage (sceneKey, rows, def) {
     if (pendingInitial && pendingInitial.sceneKey === sceneKey && pendingInitial.rows === rows) {
-      // 首跑：setup 期已构建并挂载，端到端从页面 setup 起算
-      startedAt = pendingInitial.startedAt
-      buildMs = pendingInitial.buildMs
-      pendingInitial = null
-    } else {
-      startedAt = performance.now()
-      stageRecords.value = def.records(rows)
-      buildMs = performance.now() - startedAt
+      const { startedAt, buildMs } = pendingInitial
 
-      scene.value = sceneKey
-      scaleKey.value = SCALE_OPTIONS.find(s => s.rows === rows)?.value ?? '100k'
-      runKey.value++
-      stageColumns.value = def.columns()
+      pendingInitial = null
+
+      return { startedAt, buildMs }
     }
 
-    const layout = await waitForLayout(l => l?.lastRelayout != null && l?.lastPaint != null)
+    const startedAt = performance.now()
+
+    stageRecords.value = def.records(rows)
+    const buildMs = performance.now() - startedAt
+
+    scene.value = sceneKey
+    scaleKey.value = SCALE_OPTIONS.find(s => s.rows === rows)?.value ?? '100k'
+    runKey.value++
+    stageColumns.value = def.columns()
+
+    return { startedAt, buildMs }
+  }
+
+  function buildRunMetrics (sceneKey, rows, buildMs, startedAt, layout) {
     const relayout = layout?.lastRelayout ?? null
 
-    lastRun.value = {
+    return {
       scene: sceneKey,
       rows,
       buildMs,
@@ -423,6 +430,16 @@
       swap: null,
       scroll: null
     }
+  }
+
+  // 单次运行：同步构建 records（耗时计入指标）→ 重挂载 → 等首次 relayout → 采样
+  async function performRun (sceneKey, rows) {
+    const def = SCENES[sceneKey]
+    const { startedAt, buildMs } = applyRunStage(sceneKey, rows, def)
+
+    const layout = await waitForLayout(l => l?.lastRelayout != null && l?.lastPaint != null)
+
+    lastRun.value = buildRunMetrics(sceneKey, rows, buildMs, startedAt, layout)
 
     window.__benchTable = canvasTableRef.value ?? window.__benchTable
 
@@ -503,16 +520,20 @@
     if (lastRun.value) {
       lastRun.value.swap = layout
         ? {
-            buildMs,
-            wallMs: performance.now() - startedAt,
-            relayoutMs: layout.lastRelayout.elapsed,
-            scanCount: layout.lastRelayout.scanCount
-          }
+          buildMs,
+          wallMs: performance.now() - startedAt,
+          relayoutMs: layout.lastRelayout.elapsed,
+          scanCount: layout.lastRelayout.scanCount
+        }
         : null
     }
 
     runStatus.value = layout ? '替换引用完成' : '替换引用超时'
     running.value = false
+  }
+
+  function avgOf (list) {
+    return list.length ? list.reduce((sum, v) => sum + v, 0) / list.length : null
   }
 
   // 滚动测帧：scrollToRecord 触发 scroll → 组件 rAF 合帧重绘 → 本侧 rAF 后注册
@@ -565,11 +586,9 @@
     if (lastRun.value) {
       lastRun.value.scroll = {
         paints: paintSamples.length,
-        avgPaintMs: paintSamples.length
-          ? paintSamples.reduce((sum, v) => sum + v, 0) / paintSamples.length
-          : null,
+        avgPaintMs: avgOf(paintSamples),
         maxPaintMs: paintSamples.length ? Math.max(...paintSamples) : null,
-        avgGapMs: gaps.length ? gaps.reduce((sum, v) => sum + v, 0) / gaps.length : null
+        avgGapMs: avgOf(gaps)
       }
     }
 

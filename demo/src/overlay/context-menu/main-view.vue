@@ -93,14 +93,17 @@ function onContextMenu (event) {
 
 <style>
   .demo-context-area {
+    user-select: none;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    height: 120px;
     border: 1px dashed var(--mu-border-color);
     border-radius: 4px;
+
     color: var(--mu-text-color-muted);
-    height: 120px;
-    user-select: none;
   }
 
   .demo-context-area--edge {
@@ -109,7 +112,7 @@ function onContextMenu (event) {
 
   .demo-log {
     margin-top: 8px;
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>

@@ -86,7 +86,7 @@
 
     <demo-section
       title="左右分隔条配置"
-      note="left-splitter / right-splitter 独立配置：visibility（always / hover）控制显隐时机，resizable 允许拖拽，collapsible 允许折叠；hover 选项切换后把鼠标悬停在对应分隔条上观察">
+      :note="splitterNote">
       <div class="demo-row demo-row--wrap">
         <mu-switch v-model="leftHover" label="L hover" />
         <mu-switch v-model="rightHover" label="R hover" />
@@ -157,6 +157,9 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
+  const splitterNote =
+    'left-splitter / right-splitter 独立配置：visibility（always / hover）控制显隐时机，resizable 允许拖拽，collapsible 允许折叠；' +
+    'hover 选项切换后把鼠标悬停在对应分隔条上观察'
   const basicCode = `<mu-split-h-box :splitter="{ resizable: true, collapsible: true }">
   <template #left>left</template>
   <template #center>center</template>

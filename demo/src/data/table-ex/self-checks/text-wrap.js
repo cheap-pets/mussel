@@ -349,7 +349,9 @@ export const checks = [
       // limit=1：任一异键插入即淘汰该条 → 强制走「淘汰后重算」路径
       const cache = createWrapCache(1)
       const firstCounter = { calls: 0 }
-      const first = wrapLines({ text, font: FONT, maxWidth: 30, maxLines: 2, measure: countingMeasure(firstCounter), cache })
+      const first = wrapLines({
+        text, font: FONT, maxWidth: 30, maxLines: 2, measure: countingMeasure(firstCounter), cache
+      })
 
       assert(firstCounter.calls > 0, '首算真实执行测量（前置）')
       assertEqual(cache.size, 1, '首算结果入缓存')
@@ -358,7 +360,9 @@ export const checks = [
       wrapLines({ text: `挤占${Math.random()}`, font: FONT, maxWidth: 30, measure: plainMeasure, cache })
 
       const recalcCounter = { calls: 0 }
-      const recalc = wrapLines({ text, font: FONT, maxWidth: 30, maxLines: 2, measure: countingMeasure(recalcCounter), cache })
+      const recalc = wrapLines({
+        text, font: FONT, maxWidth: 30, maxLines: 2, measure: countingMeasure(recalcCounter), cache
+      })
 
       assert(recalcCounter.calls > 0, '淘汰后重算触发测量（确认未由缓存服务）')
       assertArray(recalc.lines, first.lines, '淘汰重算 lines 逐字一致')

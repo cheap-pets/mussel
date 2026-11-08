@@ -46,7 +46,10 @@
                 <span style="font-size: 24px; font-weight: 600;">{{ stat.value }}</span>
                 <span
                   class="ml-1x"
-                  :style="{ fontSize: '12px', color: stat.trend > 0 ? 'var(--mu-success-color)' : 'var(--mu-danger-color)' }">
+                  :style="{
+                    fontSize: '12px',
+                    color: stat.trend > 0 ? 'var(--mu-success-color)' : 'var(--mu-danger-color)'
+                  }">
                   {{ stat.trend > 0 ? '+' : '' }}{{ stat.trend }}%
                 </span>
               </div>
@@ -192,7 +195,12 @@
       <!-- 底部状态栏 -->
       <footer
         class="flex-none flex items-center px-2x"
-        style="height: 28px; border-top: 1px solid var(--mu-border-color-soft); font-size: 12px; background: var(--mu-bg-header);">
+        style="
+          height: 28px;
+          border-top: 1px solid var(--mu-border-color-soft);
+          font-size: 12px;
+          background: var(--mu-bg-header);
+        ">
         <span style="opacity: 0.5;">Mussel Admin v1.0.0</span>
         <div class="ml-auto flex items-center gap-2x">
           <span style="opacity: 0.5;">在线用户：3</span>
@@ -587,7 +595,14 @@
 
     if (isEditingUser.value) {
       const target = users.value.find(u => u.id === editingUserId.value)
-      if (target) Object.assign(target, { name: userForm.name, email: userForm.email, role: userForm.role, active: userForm.active })
+      if (target) {
+        Object.assign(target, {
+          name: userForm.name,
+          email: userForm.email,
+          role: userForm.role,
+          active: userForm.active
+        })
+      }
       messageBox.notify({ title: '成功', message: '用户信息已更新', type: 'success' })
     } else {
       users.value.push({
@@ -659,16 +674,18 @@
   }
 
   .admin-menu-item {
+    cursor: pointer;
+
     height: 36px;
     border-right: 2px solid transparent;
-    color: var(--mu-text-color-normal);
-    cursor: pointer;
+
     font-size: 13px;
+    color: var(--mu-text-color-normal);
   }
 
   .admin-menu-item.is-active {
     border-right: 2px solid var(--mu-primary-color);
-    background: var(--mu-primary-faint, var(--mu-primary-color-light));
     color: var(--mu-primary-color);
+    background: var(--mu-primary-faint, var(--mu-primary-color-light));
   }
 </style>

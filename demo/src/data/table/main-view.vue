@@ -13,7 +13,7 @@
 
     <demo-section
       title="列类型"
-      note="type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / list / tag / img / icon / button；enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes"
+      :note="columnTypesNote"
       wide>
       <mu-table
         :columns="typeColumns"
@@ -157,6 +157,9 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
+  const columnTypesNote =
+    'type 指定列渲染器：text / rec_no / bool / enum / date / datetime / number / currency / link / list / tag / img / icon / button；' +
+    'enum 已废弃（兼容保留，控制台输出迁移警告），bool 缺省按 locale 显示 是/Yes'
   const basicCode = `<mu-table :columns="columns" :records="records" key-field="id" />
 
 const columns = [
@@ -467,7 +470,7 @@ const columns = [
 
 <style>
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>

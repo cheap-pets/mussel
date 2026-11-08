@@ -285,13 +285,14 @@ const menus = [
   }
 
   .demo-menu-header {
+    overflow: hidden;
     display: flex;
     gap: 8px;
     align-items: center;
 
     height: 48px;
     padding: 0 16px;
-    overflow: hidden;
+
     white-space: nowrap;
   }
 
@@ -303,7 +304,7 @@ const menus = [
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>

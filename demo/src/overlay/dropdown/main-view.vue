@@ -258,8 +258,8 @@
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 
   .demo-log--block {
@@ -270,10 +270,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    height: 120px;
     margin-top: 12px;
     border: 1px dashed var(--mu-border-color);
+
     color: var(--mu-text-color-muted);
-    height: 120px;
   }
 
   .dropdown-max-height-200 {

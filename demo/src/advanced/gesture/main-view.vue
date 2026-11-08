@@ -2,7 +2,7 @@
   <demo-page path="advanced/gesture">
     <demo-section
       title="tap / press / panmove"
-      note="EventInterceptor 注册手势事件后在元素上监听 @tap（轻点）、@press（长按 500ms）、@panmove（拖动）；touch 事件类型需在触屏环境或浏览器设备模拟（DevTools Toggle device toolbar）下触发"
+      :note="basicNote"
       :code="basicCode"
       vertical>
       <div class="demo-row">
@@ -40,6 +40,9 @@
   import DemoPage from '../../common/demo-page.vue'
   import DemoSection from '../../common/demo-section.vue'
 
+  const basicNote =
+    'EventInterceptor 注册手势事件后在元素上监听 @tap（轻点）、@press（长按 500ms）、@panmove（拖动）；' +
+    'touch 事件类型需在触屏环境或浏览器设备模拟（DevTools Toggle device toolbar）下触发'
   const basicCode = `// mussel 的 events 模块在触屏环境自动注册手势拦截器
 // （'ontouchstart' in window 时生效）
 <div @tap="onTap" @press="onPress" @panmove="onPanMove">
@@ -81,11 +84,13 @@ function onTap (event) {
   }
 
   .gesture-box {
+    cursor: pointer;
+
+    overflow: auto;
+
     width: 200px;
     height: 200px;
     padding: 0;
-    overflow: auto;
-    cursor: pointer;
   }
 
   .gesture-box__gradient {
@@ -94,17 +99,20 @@ function onTap (event) {
   }
 
   .gesture-log {
+    overflow-y: auto;
     flex: 1;
+
     min-width: 240px;
     max-width: 480px;
     max-height: 200px;
     padding: 10px;
-    overflow-y: auto;
     border: 1px solid var(--mu-border-color);
     border-radius: 4px;
-    background: var(--mu-bg-strong);
+
     font-family: monospace;
     font-size: 12px;
+
+    background: var(--mu-bg-strong);
   }
 
   .gesture-log__entry {
@@ -117,7 +125,7 @@ function onTap (event) {
   }
 
   .demo-log {
-    color: var(--mu-text-color-muted);
     font-size: var(--mu-font-size-small);
+    color: var(--mu-text-color-muted);
   }
 </style>
