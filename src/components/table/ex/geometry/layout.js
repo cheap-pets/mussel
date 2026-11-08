@@ -291,6 +291,12 @@ export function findResizeColumn ({
   return candidate
 }
 
+/** spacer 宽度：横向滚动范围由最宽元素撑出，内容宽与容器宽取大。
+    relayout 与拖拽临时几何（use-column-resize）共用的单一事实源 */
+export function spacerWidthOf (colsWidth, containerWidth) {
+  return Math.max(colsWidth, containerWidth)
+}
+
 /** 统一布局重算（纯函数）；探针尺寸重读与 __sticky / __spacer 的 DOM 同步
     由组件壳执行（以返回的 sticky/spacer 尺寸落 DOM） */
 export function relayout ({
@@ -331,7 +337,7 @@ export function relayout ({
     stickyHeight: containerHeight,
     // spacer 与 __sticky 为流内兄弟（机制见 table-ex.scss）：纵向两元素高相加
     // = 内容总高，只补差值；横向滚动范围由最宽元素撑出，须给全宽
-    spacerWidth: Math.max(colsWidth, containerWidth),
+    spacerWidth: spacerWidthOf(colsWidth, containerWidth),
     spacerHeight: Math.max(0, contentHeight - containerHeight),
     viewH,
     viewW,

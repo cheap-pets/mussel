@@ -18,20 +18,24 @@
  * none/拖拽/表头/行列越界/无 title 列/编辑中格 → null，正常格 → { row, col }。
  */
 import {
-  RESIZE_MIN_WIDTH,
   hitTest,
   resolveCursor,
+  resolvePointerdown,
+  resolveTooltipTarget
+} from '@/components/table/ex/interaction/hit-test.js'
+import {
   resolveOrderByNext,
   isCheckHeaderColumn,
   resolveHeaderClick,
   resolveCellClick,
   resolveItemClick,
   resolveCellClickOpen,
-  resolveTooltipTarget,
-  resolveResizeWidth,
-  resolvePointerdown,
   resolveTreeToggle
-} from '@/components/table/ex/interaction/interactions.js'
+} from '@/components/table/ex/interaction/click-resolve.js'
+import {
+  RESIZE_MIN_WIDTH,
+  resolveResizeWidth
+} from '@/components/table/ex/interaction/resize-resolve.js'
 import { createClickGuard, createFrameScheduler } from '@/components/table/ex/interaction/schedulers.js'
 import { resolveTypeMinWidth } from '@/components/table/ex/geometry/layout.js'
 import { createUniformRowGeometry } from '@/components/table/ex/geometry/row-geometry.js'

@@ -22,7 +22,8 @@
  * 主题夹具字段名对齐 theme.js readSnapshot（值用固定 rgba 串）；行高经 layout.js
  * relayout 入参与 THEME.rowHeight 双通道传入（20261028 起垂直锚消费快照 rowHeight）。
  */
-import { drawRegion, cellRectAt, createPainter } from '@/components/table/ex/table-paint/painter.js'
+import { drawRegion, createPainter } from '@/components/table/ex/table-paint/painter.js'
+import { cellRectAt } from '@/components/table/ex/table-paint/paint-utils.js'
 import { editButtonRectOf } from '@/components/table/ex/editing/editor-geometry.js'
 import { relayout } from '@/components/table/ex/geometry/layout.js'
 import { prepareColumn } from '@/components/table/ex/cell-paint/cell-content.js'
@@ -1677,5 +1678,107 @@ export const checks = [
 
       return 'hover 过 B 自愈不变；末列边界 hover 内部无残留、边界线不误跳'
     })
+  },
+  {
+    name: 'spans 锚行滚出窗口：区域内 link 条目命中保留（整幅 + header 帧 + 区域外行带帧均不丢，20261108 问题 3）',
+    fn: () => withCanvas(canvas => {
+      const painter = createPainter({ canvas })
+      // 锚行 0 link 列 rowspan=15 区域 [0,15)×col 1；scrollTop=288 → 窗口 [8,16)：
+      // 锚行 < start 且区域与窗口相交（行 8..14 可见）。修复前 trimItemHits
+      // 无条件删 row < start → 区域内点击/悬停条目 miss
+      const itemColumns = [
+        prepareColumn({ field: 'tagList', caption: '标签', type: 'tag', tags: r => r.tagList, width: 200 }),
+        prepareColumn({ field: 'links', caption: '链接', type: 'link', width: 300 })
+      ]
+      const records = Array.from({ length: 50 }, (_, i) => ({
+        tagList: [{ caption: `甲${i}`, color: 'success' }, { caption: '乙' }],
+        links: Array.from({ length: 12 }, (_row, k) => `链接${i}-${k}`)
+      }))
+      const spans = buildSpans({
+        records,
+        columns: itemColumns,
+        spanMethod: ({ recordIndex }) => (recordIndex === 0 ? { links: { rowspan: 15 } } : null),
+        fixedCount: 1
+      })
+      const itemHits = new Map()
+      const layout = relayout({
+        columns: itemColumns,
+        rowCount: records.length,
+        containerWidth: W,
+        containerHeight: H,
+        fixedLeftColumns: 1,
+        rowHeight: ROW_HEIGHT,
+        headHeight: HEAD_HEIGHT,
+        scrollTop: 288,
+        rowGeometry: createUniformRowGeometry({ rowHeight: ROW_HEIGHT, rowCount: records.length })
+      })
+      const state = {
+        ...makeState({ records, striped: false }),
+        layout,
+        columns: itemColumns,
+        itemHits,
+        spans
+      }
+
+      assert(spans != null, '前置：spans 应非 null')
+      assert(layout.viewRows.start > 0, `前置：窗口 start=${layout.viewRows.start} 应 > 锚行 0`)
+      assert(
+        (spans.rowRegions.get(layout.viewRows.start) ?? []).some(r => r.row === 0),
+        '前置：窗口首行与锚行 0 区域相交'
+      )
+
+      // 整幅绘制：锚行条目组保留（12 条截断 10 含 dots）
+      painter.draw(state)
+
+      const anchorGroup = itemHits.get(0)?.get(1)
+
+      assert(anchorGroup?.length === 10, `锚行 0 link 条目组应保留（12 条截断 10），实际 ${anchorGroup?.length ?? '缺失'}`)
+      assert(itemHits.get(10)?.get(0)?.length === 2, '窗口内行条目组照常收集')
+
+      // header 帧 / 区域外行带帧（本帧不绘制该区域）后仍保留——豁免集与帧内容
+      // 解耦（修复前 header 帧后条目被删）
+      drawRegion(canvas.getContext('2d'), state, { header: true })
+      assert(itemHits.get(0)?.get(1)?.length === 10, 'header 帧后锚行条目仍保留')
+
+      // 行 15 在窗口内且在区域 [0,15) 外：行带脏区经区域并集扩展不含锚行区域
+      painter.invalidate({ rows: [15, 16] }, { immediate: true, state: { ...state, hover: { row: 15, col: 0 } } })
+      assert(itemHits.get(0)?.get(1)?.length === 10, '区域外行带帧后锚行条目仍保留')
+
+      // 无 spans 对照：窗口外行照旧删除（豁免仅作用于与窗口相交的区域锚行）
+      const plainHits = new Map()
+
+      painter.draw({ ...state, spans: null, itemHits: plainHits })
+      assert(!plainHits.has(0), '无 spans：窗口外行不保留')
+      assert(plainHits.has(10), '无 spans：窗口内行照常收集')
+
+      painter.dispose()
+
+      return `锚行 0 条目 10 条在整幅/header/行带帧后均保留；窗口 [${layout.viewRows.start},${layout.viewRows.end})`
+    })
+  },
+  {
+    name: 'spanMethod 数组返回值：单条准确警告（key 去重）+ 不产出区域，对象路径不回归（20261108 问题 7）',
+    fn: () => {
+      const warns = []
+      const arraySpans = buildSpans({
+        records: makeRecords(6),
+        columns: COLUMNS,
+        spanMethod: () => ['name', 'status'],
+        fixedCount: FIXED_COLS,
+        warn: message => warns.push(message)
+      })
+
+      assert(arraySpans === null, '数组形态声明整表忽略 → buildSpans 返回 null')
+      assertEqual(warns.length, 1, '数组形态警告条数（多行仅一条）')
+      assert(
+        warns[0].includes('对象') && warns[0].includes('数组'),
+        `警告文案应指明「须为对象、收到数组」，实际：「${warns[0]}」`
+      )
+
+      // 对象路径不回归：既有夹具（行 0 rowspan + 行 3 colspan）正常产出区域
+      assert(makeSpans() != null, '对象形态 spanMethod 路径不回归')
+
+      return `警告 1 条：「${warns[0]}」`
+    }
   }
 ]

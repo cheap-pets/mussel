@@ -40,13 +40,20 @@ export const moduleChecks = [
 /**
  * 运行全部自检：模块断言（moduleChecks）+ 页面夹具断言（extraChecks）。
  * 单条断言返回字符串时作为 detail 展示；抛错视为失败，error 取错误消息。
+ *
+ * 页内第二次及以后调用视为重跑：向 check.fn(isRerun) 传入重跑标志。
+ * dev warn 为 warn-once 去重（@/utils/warn），重跑时同键警告不再发出，
+ * 涉 warn 的自检项按 isRerun 分支断言口径（首跑要求发出、重跑断言未重复触发）。
  */
+let checkRunCount = 0
+
 export function runChecks (extraChecks = []) {
+  const isRerun = checkRunCount++ > 0
   const results = []
 
   const run = (module, check) => {
     try {
-      const detail = check.fn()
+      const detail = check.fn(isRerun)
       results.push({ module, name: check.name, passed: true, detail: detail == null ? '' : String(detail), error: '' })
     } catch (err) {
       results.push({ module, name: check.name, passed: false, detail: '', error: err?.message ?? String(err) })

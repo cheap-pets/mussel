@@ -239,8 +239,47 @@ function errorMessageOf (err) {
 /** 入口 B —— 表格级 spanMethod：每行调用一次（O(rows)），返回该行作为主行的
     声明；键解析 key 优先→field（多列命中作用全部 + 警告）、值形态解析、
     'rest' 展开 / 固定列夹紧、树形/check 列丢弃、异常按 null 处置 */
+/** 单行声明落地：逐键解析列（key 优先→field）→ 列级接管 → 树形/check 列丢弃 →
+    跨度解析与 'rest' 展开 → 区域登记 */
+function registerRowDeclarations (declared, spanCtx, index, occupied, warnedKeys, row) {
+  const { columns, fixed, rowCount, emitWarn, takenOver } = spanCtx
+
+  for (const name of Object.keys(declared)) {
+    for (const colIndex of resolveDeclColumns(columns, name, warnedKeys, emitWarn)) {
+      // 列级接管（语义见 spans-auto collectAutoRowSpanColumns）
+      takenOver.add(colIndex)
+
+      const col = columns[colIndex]
+
+      if (col?._isTreeColumn || col?.type === 'check') {
+        emitWarn(
+          `${row}|${colIndex}|reserved`,
+          `spanMethod 声明落在树形列/check 列（${row}, ${colIndex}），丢弃（缩进槽/每行勾选框与合并语义冲突）`
+        )
+
+        continue
+      }
+
+      const size = parseSize(declared[name], row, colIndex, emitWarn)
+
+      if (!size) continue
+
+      const colspan = resolveDeclaredColspan(size, colIndex, fixed, columns.length, row, emitWarn)
+
+      registerRegion(
+        index,
+        occupied,
+        { row, col: colIndex, rowspan: size.rowspan, colspan },
+        rowCount,
+        emitWarn,
+        `${row}|${colIndex}`
+      )
+    }
+  }
+}
+
 export function applySpanMethod (spanCtx, index, occupied) {
-  const { records, columns, spanMethod, recordsOffset, rowCount, fixed, emitWarn, takenOver } = spanCtx
+  const { records, columns, spanMethod, recordsOffset, rowCount, emitWarn } = spanCtx
   const warnedKeys = new Set()
 
   for (let row = 0; row < rowCount; row++) {
@@ -259,37 +298,16 @@ export function applySpanMethod (spanCtx, index, occupied) {
 
     if (declared == null || typeof declared !== 'object') continue
 
-    for (const name of Object.keys(declared)) {
-      for (const colIndex of resolveDeclColumns(columns, name, warnedKeys, emitWarn)) {
-        // 列级接管（语义见 spans-auto collectAutoRowSpanColumns）
-        takenOver.add(colIndex)
+    // 数组形态单列拦截：Object.keys 会把下标当列键，走「无匹配列」警告误导排查
+    if (Array.isArray(declared)) {
+      emitWarn(
+        'spanMethod:array',
+        'spanMethod 返回值须为 { 列键: 跨度 } 对象，收到数组，返回值忽略（同类不再重复提示）'
+      )
 
-        const col = columns[colIndex]
-
-        if (col?._isTreeColumn || col?.type === 'check') {
-          emitWarn(
-            `${row}|${colIndex}|reserved`,
-            `spanMethod 声明落在树形列/check 列（${row}, ${colIndex}），丢弃（缩进槽/每行勾选框与合并语义冲突）`
-          )
-
-          continue
-        }
-
-        const size = parseSize(declared[name], row, colIndex, emitWarn)
-
-        if (!size) continue
-
-        const colspan = resolveDeclaredColspan(size, colIndex, fixed, columns.length, row, emitWarn)
-
-        registerRegion(
-          index,
-          occupied,
-          { row, col: colIndex, rowspan: size.rowspan, colspan },
-          rowCount,
-          emitWarn,
-          `${row}|${colIndex}`
-        )
-      }
+      continue
     }
+
+    registerRowDeclarations(declared, spanCtx, index, occupied, warnedKeys, row)
   }
 }

@@ -25,7 +25,7 @@ import {
   createUniformRowGeometry,
   createVariableRowGeometry
 } from '@/components/table/ex/geometry/row-geometry.js'
-import { cellRectAt } from '@/components/table/ex/table-paint/painter.js'
+import { cellRectAt } from '@/components/table/ex/table-paint/paint-utils.js'
 import { editorGridlineFlagsOf } from '@/components/table/ex/editing/editor-geometry.js'
 
 function assert (cond, message) {

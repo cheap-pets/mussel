@@ -177,7 +177,7 @@ export function createEditorController ({ onCommit } = {}) {
       (column.field != null ? record?.[column.field] : undefined)
     const editorType = resolveEditorType(column, { rawValue, record })
 
-    context = { column, record, recordIndex, rawValue, rawWasArray: Array.isArray(rawValue) }
+    context = { column, record, recordIndex, rawValue }
     getEditorEl = editorElGetter ?? null
     emittedValue = UNCHANGED
 

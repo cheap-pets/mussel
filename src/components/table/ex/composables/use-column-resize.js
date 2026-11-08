@@ -16,7 +16,7 @@
 import { shallowRef } from 'vue'
 
 import { getPixelNumber } from '@/utils/size'
-import { computePrefixSums, resolveTypeMinWidth } from '../geometry/layout'
+import { computePrefixSums, resolveTypeMinWidth, spacerWidthOf } from '../geometry/layout'
 import { resolveResizeWidth, RESIZE_MIN_WIDTH } from '../interaction/resize-resolve'
 import { createClickGuard } from '../interaction/schedulers'
 
@@ -52,7 +52,8 @@ export function useColumnResize (host) {
       colLefts,
       colsWidth,
       contentWidth: colsWidth,
-      spacerWidth: Math.max(colsWidth, base.stickyWidth)
+      // relayout 中 stickyWidth = containerWidth，两式同源（spacerWidthOf 单一事实源）
+      spacerWidth: spacerWidthOf(colsWidth, base.stickyWidth)
     })
   }
 

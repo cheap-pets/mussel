@@ -1,4 +1,4 @@
-/** 分区 1 单元格区域 + 分区 3 固定列 + spanKeepRows 帧机制 */
+/** 分区 1 单元格区域 + 分区 3 固定列 + itemHits 窗口裁剪 */
 import { drawCell } from '../cell-paint/cell-painters.js'
 import {
   rowBackground,
@@ -13,21 +13,21 @@ import { regionsForRows, spanRegionRect, spanCellKindOf } from '../spans/spans.j
 import { isGridlineMode, paintGridlines } from './paint-gridlines'
 import { recordNumberOf } from '../shared/cell-identity'
 
-// spanKeepRows：本帧 region pass 实际绘制过内容的锚行集合，与 itemHits 收集同一
-// 次遍历产出（避免双源漂移）；经 begin/endSpanFrame 封装读写，时序为
-// 置空 → 收集 → 消费 → 复位
-let spanKeepRows = null
+/** paint 帧结束：按当前可视窗口裁剪 itemHits（窗口外行删除，长滚不增长） */
+export function endSpanFrame (itemHits, viewRows, spans) {
+  if (!itemHits) return
 
-/** paint 入口帧开始：spans 非 null 时建本帧锚行集合，否则复位 null */
-export function beginSpanFrame (spans) {
-  spanKeepRows = spans ? new Set() : null
-}
+  // 豁免集 = 与窗口相交的区域锚行：锚行可滚出窗口上方（row < start）而区域
+  // 仍部分可见，其条目须保留供点击/悬停命中。按窗口相交计算而非「本帧实际
+  // 绘制过的区域」——header 帧/局部脏区帧（hover、选中、单格）不绘制相交区域，
+  // 依赖帧内容会把这些条目误删
+  const keepRows = new Set()
 
-/** paint 入口帧结束：按可视窗口裁剪 itemHits（keepRows = 本帧锚行集合）并复位 */
-export function endSpanFrame (itemHits, viewRows) {
-  if (itemHits) trimItemHits(itemHits, viewRows, spanKeepRows)
+  for (const region of regionsForRows(spans, viewRows.start, viewRows.end)) {
+    keepRows.add(region.row)
+  }
 
-  spanKeepRows = null
+  trimItemHits(itemHits, viewRows, keepRows)
 }
 
 // —— 分区 1：单元格区域（滚动区与固定区共用，含行背景） ——
@@ -44,12 +44,13 @@ function setItemHitGroup (itemHits, row, col, rects) {
 }
 
 /** 绘制批次结束按当前可视窗口行 [start, end) 裁剪（窗口外行删除，长滚不增长）；
-    keepRows = 本帧 region pass 锚行集合，仅豁免 row ≥ end 的锚行 */
+    keepRows = 与窗口相交的区域锚行（见 endSpanFrame），锚行 < start 的跨行长
+    区域条目豁免保留 */
 function trimItemHits (itemHits, viewRows, keepRows) {
   const { start, end } = viewRows
 
   for (const row of itemHits.keys()) {
-    if (row < start || (row >= end && !(keepRows && keepRows.has(row)))) itemHits.delete(row)
+    if ((row < start || row >= end) && !keepRows.has(row)) itemHits.delete(row)
   }
 }
 
@@ -177,8 +178,6 @@ function paintSpanRegions (ctx, state, records, columns, rows, cols, W, H) {
     const col = columns?.[region.col]
 
     if (record == null || !col) continue
-
-    if (spanKeepRows) spanKeepRows.add(region.row)
 
     drawCellClipped(
       ctx,

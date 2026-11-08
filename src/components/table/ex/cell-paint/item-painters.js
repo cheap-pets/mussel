@@ -176,23 +176,29 @@ function reportHitRect (onItemRect, item, index, x, width, centerY, theme) {
   }
 }
 
+/** img 条目宽：空 src / 加载中 / 失败不占位（null）；加载完成计等比布局宽
+    （请求与回调闭包同 drawCellImage） */
+function measureImageItem (item, { contentWidth, contentHeight, padding, onImageLoad, row, colIndex }) {
+  const src = item.attrs?.src
+
+  // 空 src 不发起请求（与绘制端 drawCellImage 同款守卫）
+  if (!src) return null
+
+  const entry = requestImage(src, onImageLoad ? () => onImageLoad(row, colIndex) : undefined)
+
+  // 加载中 / 失败不占位；加载完成后经回调触发重绘
+  if (entry.status !== 'loaded') return null
+
+  return imageLayoutSize(entry.image, contentHeight - padding, contentWidth).width
+}
+
 function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, onImageLoad, measure, row, colIndex }) {
   const kind = resolveItemKind(item)
 
   if (kind === 'check') return CHECK_SIZE
 
   if (kind === 'img') {
-    const src = item.attrs?.src
-
-    // 空 src 不发起请求（与绘制端 drawCellImage 同款守卫）
-    if (!src) return null
-
-    const entry = requestImage(src, onImageLoad ? () => onImageLoad(row, colIndex) : undefined)
-
-    // 加载中 / 失败不占位；加载完成后经回调触发重绘
-    if (entry.status !== 'loaded') return null
-
-    return imageLayoutSize(entry.image, contentHeight - padding, contentWidth).width
+    return measureImageItem(item, { contentWidth, contentHeight, padding, onImageLoad, row, colIndex })
   }
 
   if (kind === 'icon') {
@@ -210,6 +216,20 @@ function measureItem (ctx, item, { contentWidth, contentHeight, padding, theme, 
   return Math.min(width, contentWidth)
 }
 
+/** icon 条目落地：size 收进右缘剩余（measureItem 同式） */
+function drawIconItem (ctx, item, x, centerY, { maxWidth, theme, onImageLoad, row, colIndex }) {
+  if (maxWidth <= 0) return
+
+  drawIconGlyph(ctx, item.icon, {
+    x,
+    centerY,
+    size: Math.min(item.size, maxWidth),
+    // 色名查表，缺省/未知回退 textColor（drawDisplayText 同口径）
+    color: (item.color && theme?.colors?.[item.color]?.color) || theme?.textColor,
+    onLoad: onImageLoad ? () => onImageLoad(row, colIndex) : undefined
+  })
+}
+
 function drawItem (ctx, item, x, centerY, {
   maxWidth, contentHeight, padding, theme, onImageLoad, measure, index, hoverItem, row, colIndex
 }) {
@@ -223,21 +243,7 @@ function drawItem (ctx, item, x, centerY, {
 
   if (kind === 'tag') return drawTag(ctx, item, x, centerY, { maxWidth, theme, measure })
 
-  if (kind === 'icon') {
-    // size 收进右缘剩余（measureItem 同式）
-    if (maxWidth <= 0) return
-
-    drawIconGlyph(ctx, item.icon, {
-      x,
-      centerY,
-      size: Math.min(item.size, maxWidth),
-      // 色名查表，缺省/未知回退 textColor（drawDisplayText 同口径）
-      color: (item.color && theme?.colors?.[item.color]?.color) || theme?.textColor,
-      onLoad: onImageLoad ? () => onImageLoad(row, colIndex) : undefined
-    })
-
-    return
-  }
+  if (kind === 'icon') return drawIconItem(ctx, item, x, centerY, { maxWidth, theme, onImageLoad, row, colIndex })
 
   if (kind == null) return
 

@@ -2281,7 +2281,7 @@ export const checks = [
   },
   {
     name: 'icon 列：非法值/未注册名空产物 + dev warn、null 静默不 warn、占位文本落地',
-    fn: () => {
+    fn: (isRerun) => {
       const col = prepareColumn({ field: 'v', type: 'icon' })
       const warnings = []
       const originalWarn = console.warn
@@ -2295,7 +2295,13 @@ export const checks = [
         assertEqual(warnings.length - before, 0, 'null 值不 warn')
 
         assert(!content(col, { v: 123 }).items, '非 string 空产物')
-        assert(warnings.some(w => w.includes('实际类型 number')), '非 string dev warn 一次')
+        // 固定消息键的 warn-once（@/utils/warn）重跑被去重：首跑要求发出，
+        // 重跑按去重语义断言未重复触发（未注册名键含 Date.now() 不受影响）
+        if (isRerun) {
+          assert(!warnings.some(w => w.includes('实际类型 number')), '非 string dev warn 未重复触发（warn-once 去重）')
+        } else {
+          assert(warnings.some(w => w.includes('实际类型 number')), '非 string dev warn 一次')
+        }
 
         const unregName = `noRegIcon${Date.now()}`
 

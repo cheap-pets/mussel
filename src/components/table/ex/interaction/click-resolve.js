@@ -182,7 +182,9 @@ function findHitItem (hit, rects) {
  * 条目点击命中：hit.x/hit.y 对 painter itemHits（Map<row, Map<col,
  * Array<{ kind, index, rect, disabled, link? }>>>，视口坐标）反查命中条目。
  * dots '...' 超限省略条目同样命中（对齐 DOM 版 dots 绑定 events.click）；
- * 窗口外行不在集合内 → null。link/tag/button 命中，progress/img 不回报矩形
+ * 窗口外行不在集合内 → null（例外：与窗口相交的合并区域锚行豁免保留，
+ * 见 paint-body endSpanFrame——命中坐标经 resolveSpanCell 归一到主格行）。
+ * link/tag/button 命中，progress/img 不回报矩形
  * （DOM 版无对应事件）；disabled/link 语义见 findHitItem。
  *
  * @param {Object} params.hit hitTest 产出（消费 x/y/rowIndex/colIndex）

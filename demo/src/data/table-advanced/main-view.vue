@@ -16,7 +16,7 @@
 
     <demo-section
       title="固定列"
-      note="fixed-left-columns 固定左侧 N 列，横向滚动时固定列跟随（需列声明像素宽）"
+      note="fixed-left-columns 固定左侧 N 列，横向滚动时固定列跟随（需列声明像素宽）；hover-mode cross 验证列指示条被固定列遮挡时的裁剪"
       wide>
       <mu-table
         :columns="wideColumns"
@@ -24,6 +24,7 @@
         :fixed-left-columns="2"
         key-field="id"
         gridlines="column"
+        hover-mode="cross"
         table-width="fit-content"
         style="max-height: 360px" />
     </demo-section>

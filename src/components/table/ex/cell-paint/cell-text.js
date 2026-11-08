@@ -159,6 +159,52 @@ function alignedLeftX (align, anchorX, width) {
   return anchorX
 }
 
+/** 多行路径（drawTextValue 首分支）：wrapLines 首行槽位锚起排；行宽走注入
+    measure 缓存；未实绘任何可见行（全行零宽）返回 undefined */
+function drawWrappedText (ctx, rect, display, align, {
+  padding, theme, color, measure, wrapCache, maxLines, centerY, rightInset, underline
+}) {
+  const contentWidth = rect.width - padding * 2
+  const lineHeight = cellLineHeightOf(theme)
+  const { lines } = wrapLines({
+    text: String(display), font: cellFontOf(theme), maxWidth: contentWidth, measure, cache: wrapCache, maxLines
+  })
+
+  ctx.fillStyle = color || theme?.textColor
+  ctx.textAlign = align
+
+  const anchor = centeredTextAnchor(ctx, centerY)
+
+  ctx.textBaseline = anchor.baseline
+
+  const anchorX = textAnchorX(rect, align, padding, rightInset)
+  let y = anchor.y
+  let widest = 0
+
+  for (const line of lines) {
+    // 行宽走注入 measure 缓存（wrapLines 同源）；下划线 x 与文本起点同口径
+    const lineWidth = measure(line, cellFontOf(theme))
+
+    ctx.fillText(line, anchorX, y)
+
+    if (underline && lineWidth > 0) {
+      ctx.fillRect(alignedLeftX(align, anchorX, lineWidth), linkUnderlineY(y), lineWidth, 1)
+    }
+
+    if (lineWidth > widest) widest = lineWidth
+    y += lineHeight
+  }
+
+  if (!(widest > 0)) return
+
+  return {
+    x: alignedLeftX(align, anchorX, widest),
+    y: centerY - lineHeight / 2,
+    width: widest,
+    height: lines.length * lineHeight
+  }
+}
+
 // 文本取值落地：字符串 + maxLines>1 → wrapLines 多行（与 row-geometry 同一函数
 // 与缓存；measure 未注入时回退单行省略），首行槽位锚起排；其余 → 单行省略
 // （垂直锚 = 槽位中心，与多行首行同式）。color 为 canvas 通道色名查表产物。
@@ -176,47 +222,14 @@ export function drawTextValue (ctx, rect, display, align, {
   if (contentWidth <= 0) return
 
   const text = String(display)
-  const lineHeight = cellLineHeightOf(theme)
 
   if (maxLines > 1 && typeof measure === 'function' && text) {
-    const { lines } = wrapLines({
-      text, font: cellFontOf(theme), maxWidth: contentWidth, measure, cache: wrapCache, maxLines
+    return drawWrappedText(ctx, rect, display, align, {
+      padding, theme, color, measure, wrapCache, maxLines, centerY, rightInset, underline
     })
-
-    ctx.fillStyle = color || theme?.textColor
-    ctx.textAlign = align
-
-    const anchor = centeredTextAnchor(ctx, centerY)
-
-    ctx.textBaseline = anchor.baseline
-
-    const anchorX = textAnchorX(rect, align, padding, rightInset)
-    let y = anchor.y
-    let widest = 0
-
-    for (const line of lines) {
-      // 行宽走注入 measure 缓存（wrapLines 同源）；下划线 x 与文本起点同口径
-      const lineWidth = measure(line, cellFontOf(theme))
-
-      ctx.fillText(line, anchorX, y)
-
-      if (underline && lineWidth > 0) {
-        ctx.fillRect(alignedLeftX(align, anchorX, lineWidth), linkUnderlineY(y), lineWidth, 1)
-      }
-
-      if (lineWidth > widest) widest = lineWidth
-      y += lineHeight
-    }
-
-    if (!(widest > 0)) return
-
-    return {
-      x: alignedLeftX(align, anchorX, widest),
-      y: centerY - lineHeight / 2,
-      width: widest,
-      height: lines.length * lineHeight
-    }
   }
+
+  const lineHeight = cellLineHeightOf(theme)
 
   const { text: single, width } = ellipsize({
     text,

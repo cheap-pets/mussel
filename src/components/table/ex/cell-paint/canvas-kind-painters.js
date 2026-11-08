@@ -135,7 +135,9 @@ export function drawButton (ctx, rect, content, {
   const font = link ? cellFontOf(theme) : tagFontOf(theme)
   const measureFn = measureOf(ctx, measure)
   const buttonHeight = buttonHeightOf(theme)
-  const { entries, offset } = layoutButtonEntries(buttons, rect, rightBound, padding, font, measureFn, link, buttonHeight)
+  const { entries, offset } = layoutButtonEntries(
+    buttons, rect, rightBound, padding, font, measureFn, link, buttonHeight
+  )
 
   if (!entries.length) return
 
@@ -223,14 +225,19 @@ function ellipsizeButton (button, x, rightBound, font, measureFn, link, buttonHe
     条目同源）；disabled 恒置灰不悬停。形态互斥：icon-only（caption 空）图标于
     条目起点 x、centerY 垂直锚，宽 = 图标本体（无 pill 几何）；caption-only
     （icon 恒 null）文字于条目起点 x */
+/** link 形态 button 文本色：disabled 置灰；hover 走 hover 谱系回退链 */
+function buttonLinkTextColorOf (theme, colored, hovered, disabled) {
+  if (disabled) return theme?.textColorMuted || theme?.gray
+
+  if (hovered) return colored?.hover ?? colored?.color ?? theme?.primaryColor
+
+  return colored?.color ?? theme?.primaryColor
+}
+
 function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad) {
   const disabled = isTruthyAttr(button.disabled)
   const colored = theme?.colors?.[resolveColorName(button.color, record)]
-  const textColor = disabled
-    ? (theme?.textColorMuted || theme?.gray)
-    : (hovered
-        ? (colored?.hover ?? colored?.color ?? theme?.primaryColor)
-        : (colored?.color ?? theme?.primaryColor))
+  const textColor = buttonLinkTextColorOf(theme, colored, hovered, disabled)
 
   if (icon) {
     drawIconGlyph(ctx, icon, { x, centerY, size: BUTTON_ICON_SIZE, color: textColor, onLoad })
@@ -259,7 +266,9 @@ function drawButtonLink (ctx, button, text, width, x, centerY, record, theme, fo
 // controlHeightSmall 快照；icon-only（caption 空）图标 12px 在 pill 内水平垂直
 // 居中，色用同一文本色变量（常态 buttonTextOf、hover 反转 bgNormal）；caption-only
 // 文字走 pill 内 TAG_PADDING_X 内距路径
-function drawButtonPill (ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad, buttonHeight) {
+function drawButtonPill (
+  ctx, button, text, width, x, centerY, record, theme, font, hovered, icon, onLoad, buttonHeight
+) {
   const disabled = isTruthyAttr(button.disabled)
   const colored = theme?.colors?.[resolveColorName(button.color, record)]
   const y = centerY - buttonHeight / 2

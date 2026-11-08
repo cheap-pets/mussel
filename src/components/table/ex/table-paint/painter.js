@@ -8,13 +8,14 @@
     layout = relayout() 快照（含 rowGeometry 引用）；spans（合并单元格
     buildSpans 产物 | null）null 走逐行单遍原路径，非 null 走两遍式 + 网格线分段
     + 脏区归一扩展；itemHits = Map<row, Map<col, rects>> 条目命中矩形，按格整组
-    替换收集、批次结束按可视行裁剪（veil 格整组清空）；onImageLoad (row, col) 由
+    替换收集、批次结束按可视窗口行裁剪——与窗口相交的合并区域锚行豁免
+    （锚行可滚出窗口上方，见 endSpanFrame；veil 格整组清空）；onImageLoad (row, col) 由
     createPainter 接管为 invalidateCell（行窗口校验在 invalidate 内）；树关 =
     flatInfo null（含 parentKeys 平行数组，spans 树父链切断数据源）。
     脏区 region 形状：{ rows: [from, to) } 行横带 / { cols: [from, to) } 列竖带 /
     { cell } 单格 / { header: true } 表头整幅 / { colFrom } 自该列至画布右端竖带 +
     表头（左界取列左缘：列宽变化影响该列截断与右侧所有列位置，防加宽残影） */
-import { beginSpanFrame, endSpanFrame, paintCellRange, paintFixedArea } from './paint-body.js'
+import { endSpanFrame, paintCellRange, paintFixedArea } from './paint-body.js'
 import { paintGridlines } from './paint-gridlines.js'
 import { paintHeader } from './paint-header.js'
 import { paintOverlay } from './paint-overlay.js'
@@ -226,15 +227,13 @@ function paint (ctx, state, region) {
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-  beginSpanFrame(state.spans)
-
   const stats = isFullPaintRegion(region)
     ? paintFull(ctx, state)
     : paintRegion(ctx, state, region)
 
   if (stats) stats.elapsed = performance.now() - startedAt
 
-  if (state.itemHits) endSpanFrame(state.itemHits, state.layout.viewRows)
+  if (state.itemHits) endSpanFrame(state.itemHits, state.layout.viewRows, state.spans)
 
   return stats
 }

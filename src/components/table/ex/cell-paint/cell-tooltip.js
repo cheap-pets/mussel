@@ -63,6 +63,23 @@ function horizontalItemsOverflowOf (items, params) {
   return total > params.contentWidth
 }
 
+/** button 组计宽上下文（drawButton 同式切换：link 形态字体取正文、无 pill 内距） */
+function buttonMeasureContextOf (theme, link) {
+  return {
+    font: link ? cellFontOf(theme) : tagFontOf(theme),
+    padX: link ? 0 : TAG_PADDING_X,
+    buttonHeight: buttonHeightOf(theme)
+  }
+}
+
+/** icon-only button 宽（caption 空时）：无有效 icon 返回 null 哨兵；pill =
+    controlHeightSmall 快照 / link = 图标本体（drawButton 同式） */
+function iconButtonWidthOf (button, link, buttonHeight) {
+  const icon = button.icon ? resolveIconEntry(button.icon) : null
+
+  return icon ? (link ? BUTTON_ICON_SIZE : buttonHeight) : null
+}
+
 /** button 组溢出（drawButton 逐 pill 累加等价式）：x 越右缘 break / caption 空且
     无有效 icon 哨兵终止（其后仍有按钮 = 内容被丢弃）——形态互斥：caption 非空 →
     caption-only（icon 忽略不解析、零查表零 warn，计宽 = 内距 + caption 全文，
@@ -70,9 +87,7 @@ function horizontalItemsOverflowOf (items, params) {
     快照 / link = 图标本体 12），放不下该条目不绘制终止计溢出；link 形态无 pill
     内边距、字体取正文（drawButton 同式切换） */
 function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, link }) {
-  const font = link ? cellFontOf(theme) : tagFontOf(theme)
-  const padX = link ? 0 : TAG_PADDING_X
-  const buttonHeight = buttonHeightOf(theme)
+  const { font, padX, buttonHeight } = buttonMeasureContextOf(theme, link)
   let consumed = 0
 
   for (let i = 0; i < buttons.length; i++) {
@@ -91,15 +106,13 @@ function buttonsOverflowOf (buttons, { contentWidth, padding, theme, measure, li
       continue
     }
 
-    const icon = button.icon ? resolveIconEntry(button.icon) : null
+    const iconWidth = iconButtonWidthOf(button, link, buttonHeight)
 
-    if (!icon) return i < buttons.length - 1
+    if (iconWidth == null) return i < buttons.length - 1
 
-    const width = link ? BUTTON_ICON_SIZE : buttonHeight
+    if (consumed + iconWidth > contentWidth) return true
 
-    if (consumed + width > contentWidth) return true
-
-    consumed += width + padding
+    consumed += iconWidth + padding
   }
 
   return false

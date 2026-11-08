@@ -179,20 +179,26 @@
       col._ctrlClass = [getCellAlignClass(align)]
       col._render = type.compile ? type.compile(el, true) : (type.render || type)
 
-      // 固定列定位需像素宽度：遇无像素宽或超出 fixedLeftColumns 的列即停止累加，
-      // 该列标 last-fixed-col（自身仍 sticky，其右缘即 onResize 计算的 fixedColumnsWidth）
+      // 固定列恰好钉住前 fixedLeftColumns 列（文档口径「固定左侧 N 列」）：
+      // idx ≥ fixed 起退出固定区；固定区内遇无像素宽列，该列自身仍 sticky 但
+      // 终止累加。last-fixed-col = 末个固定列（onResize 以其右缘计 fixedColumnsWidth，
+      // 兼作固定区分界线）；fixed ≥ 列数时末列兜底标记，保证 fixedColumnsWidth 可算
       if (left != null) {
         const widthPx = getPixelNumber(width)
 
-        col._fixed = true
-        col._ctrlStyle = { left: `${left}px` }
-        col._ctrlClass.push('fixed-col')
-
-        if (widthPx && idx < fixed) {
-          left += widthPx
-        } else {
+        if (idx >= fixed) {
           left = null
-          col._ctrlClass.push('last-fixed-col')
+        } else {
+          col._fixed = true
+          col._ctrlStyle = { left: `${left}px` }
+          col._ctrlClass.push('fixed-col')
+
+          if (!widthPx || idx === fixed - 1 || idx === props.columns.length - 1) {
+            col._ctrlClass.push('last-fixed-col')
+          }
+
+          if (widthPx) left += widthPx
+          else left = null
         }
       }
 
@@ -277,10 +283,11 @@
     const scrollLeft = tableEl.value.parentNode.scrollLeft
 
     // 指示条随内容滚动（非视口坐标）：sticky 格的 offsetLeft 已含滚动位移，固定列 offset=0 即对齐；
-    // 非固定列部分滚入固定区下方时右移 scrollLeft，裁掉被固定列遮住的部分
-    const offset = column._fixed || cellLeft >= fixedWidth + scrollLeft
+    // 非固定列被固定列实际遮挡量 = 固定区右缘（视口 x = fixedWidth）到该列左缘
+    // （视口 x = cellLeft − scrollLeft）的距离，按遮挡量右移裁掉被遮部分
+    const offset = column._fixed
       ? 0
-      : scrollLeft
+      : Math.max(0, fixedWidth + scrollLeft - cellLeft)
 
     hoverStyle['--hover-col-left'] = `${pos.left + offset}px`
     hoverStyle['--hover-col-width'] = `${cell.offsetWidth - offset}px`
