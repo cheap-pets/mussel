@@ -158,6 +158,27 @@
 
   const selectedRecKey = computed(() => resolveSelectedKey(props))
 
+  // 固定列恰好钉住前 fixedLeftColumns 列（文档口径「固定左侧 N 列」）：
+  // idx ≥ fixed 起退出固定区；固定区内遇无像素宽列，该列自身仍 sticky 但
+  // 终止累加。last-fixed-col = 末个固定列（onResize 以其右缘计 fixedColumnsWidth，
+  // 兼作固定区分界线）；fixed ≥ 列数时末列兜底标记，保证 fixedColumnsWidth 可算。
+  // 返回下一列的累计 left；null 表示固定区终止
+  function applyFixedColumn (col, idx, left, fixed, columnCount) {
+    if (idx >= fixed) return null
+
+    const widthPx = getPixelNumber(col._colStyle.width)
+
+    col._fixed = true
+    col._ctrlStyle = { left: `${left}px` }
+    col._ctrlClass.push('fixed-col')
+
+    if (!widthPx || idx === fixed - 1 || idx === columnCount - 1) {
+      col._ctrlClass.push('last-fixed-col')
+    }
+
+    return widthPx ? left + widthPx : null
+  }
+
   const internalColumns = computed(() => {
     const fixed = props.fixedLeftColumns
 
@@ -179,27 +200,8 @@
       col._ctrlClass = [getCellAlignClass(align)]
       col._render = type.compile ? type.compile(el, true) : (type.render || type)
 
-      // 固定列恰好钉住前 fixedLeftColumns 列（文档口径「固定左侧 N 列」）：
-      // idx ≥ fixed 起退出固定区；固定区内遇无像素宽列，该列自身仍 sticky 但
-      // 终止累加。last-fixed-col = 末个固定列（onResize 以其右缘计 fixedColumnsWidth，
-      // 兼作固定区分界线）；fixed ≥ 列数时末列兜底标记，保证 fixedColumnsWidth 可算
       if (left != null) {
-        const widthPx = getPixelNumber(width)
-
-        if (idx >= fixed) {
-          left = null
-        } else {
-          col._fixed = true
-          col._ctrlStyle = { left: `${left}px` }
-          col._ctrlClass.push('fixed-col')
-
-          if (!widthPx || idx === fixed - 1 || idx === props.columns.length - 1) {
-            col._ctrlClass.push('last-fixed-col')
-          }
-
-          if (widthPx) left += widthPx
-          else left = null
-        }
+        left = applyFixedColumn(col, idx, left, fixed, props.columns.length)
       }
 
       col.placeholder ??= props.placeholder

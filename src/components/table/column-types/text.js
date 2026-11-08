@@ -49,7 +49,9 @@ export const TextColumn = {
       if (!value || Array.isArray(value)) return null
 
       const text = value
-      const color = getColor(record, value) || null
+      const rawColor = getColor(record, value) || null
+      // link 列链色缺省 primary；非 link 列保持原色
+      const color = isLink ? (rawColor || 'primary') : rawColor
       const title = showTitle && text
       const lineClamp = getLineClamp(record, value)
 
@@ -58,13 +60,13 @@ export const TextColumn = {
         // drawDisplayText 不会误报命中
         return {
           text,
-          color: isLink ? (color || 'primary') : color,
+          color,
           title,
           link: isLink || null
         }
       }
 
-      return domRenderOf({ text, title, color: isLink ? (color || 'primary') : color, isLink, lineClamp })
+      return domRenderOf({ text, title, color, isLink, lineClamp })
     }
   }
 }

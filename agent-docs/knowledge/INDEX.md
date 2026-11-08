@@ -48,3 +48,4 @@
 - Vue reactive 代理引用相等比较恒 false `pitfall` `code@worktree(2026-10-28)`：代理 ≠ 原对象 / 另一代理——断言对象同一性须 `toRaw` 后比较原引用。
 - 自检断言 Intl 数字格式化结果失败 `pitfall` `code@worktree(2026-10-28)`：手写期望值易错（分组分隔、尾零：`'1,234.50'` 实为 `'1,234.5'`）——先 node 复算实际输出。
 - npm 后台脚本记录的是 shell PID，dev 服务杀不掉 `pitfall` `code@worktree(2026-10-28)`：shell PID ≠ node 服务进程——按端口 netstat 定位实际 PID 再 taskkill，事后验证端口释放。
+- lint exit 0 假阴性：裸 glob 退化为单层匹配 `pitfall` `code@worktree(2026-11-08)`：Git Bash globstar 默认 off，未加引号的 `src/**/*.scss` 被 shell 展开成单层（10/55 文件）；全量 lint glob 须加引号交工具展开，用 find | wc -l 核对覆盖数。

@@ -34,6 +34,25 @@ function iconSizeOf (iconOption) {
   return Number.isFinite(n) && n > 0 ? n : DEFAULT_ICON_SIZE
 }
 
+// dom 通道落地：svg 与 cls 统一挂 mu-icon（svg 优先——同时含两者时不叠 cls 渲染
+// glyph）；size 经内联 font-size 生效（text-{color}/mu-icon 的 1em 随之）
+function domRenderOf ({ icon, color, size, title }) {
+  return {
+    class: 'mu-table__icon-cell',
+    items: [{
+      is: 'span',
+      text: null,
+      title,
+      attrs: {
+        class: ['mu-icon', icon.svg ? null : icon.cls, color && `text-${color}`],
+        style: [{ fontSize: `${size}px` }],
+        ...(icon.svg ? { innerHTML: icon.svg } : null) // 无 svg（cls 形态）省略键
+      },
+      events: {}
+    }]
+  }
+}
+
 export const IconColumn = {
   // icon 列惯例居中（同 enum / rec_no 的类型级 align 字段）
   align: 'center',
@@ -83,22 +102,7 @@ export const IconColumn = {
         }
       }
 
-      // DOM 条目：svg 与 cls 统一挂 mu-icon（svg 优先——同时含两者时不叠 cls 渲染
-      // glyph）；size 经内联 font-size 生效（text-{color}/mu-icon 的 1em 随之）
-      return {
-        class: 'mu-table__icon-cell',
-        items: [{
-          is: 'span',
-          text: null,
-          title,
-          attrs: {
-            class: ['mu-icon', icon.svg ? null : icon.cls, color && `text-${color}`],
-            style: [{ fontSize: `${size}px` }],
-            ...(icon.svg ? { innerHTML: icon.svg } : null) // 无 svg（cls 形态）省略键
-          },
-          events: {}
-        }]
-      }
+      return domRenderOf({ icon, color, size, title })
     }
   }
 }

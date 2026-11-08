@@ -57,27 +57,36 @@ function deactivate (el) {
   observer?.unobserve(el)
 }
 
+// 单条 WeakRef 的周期清算：返回 false 表示该条应出表
+function sweepRef (ref) {
+  const el = ref.deref()
+  const st = el && state.get(el)
+
+  if (!el || !st) return false
+
+  if (!st.observed && !st.dormant) {
+    st.inRefs = false
+    return false
+  }
+
+  if (!st.seenConnected) {
+    if (el.isConnected) st.seenConnected = true
+  } else if (!el.isConnected) {
+    observer?.unobserve(el)
+    st.observed = false
+    st.dormant = true
+  } else if (st.dormant) {
+    observer?.observe(el)
+    st.observed = true
+    st.dormant = false
+  }
+
+  return true
+}
+
 function sweep () {
   for (const ref of refs) {
-    const el = ref.deref()
-    const st = el && state.get(el)
-
-    if (!el || !st) {
-      refs.delete(ref)
-    } else if (!st.observed && !st.dormant) {
-      refs.delete(ref)
-      st.inRefs = false
-    } else if (!st.seenConnected) {
-      if (el.isConnected) st.seenConnected = true
-    } else if (!el.isConnected) {
-      observer?.unobserve(el)
-      st.observed = false
-      st.dormant = true
-    } else if (st.dormant) {
-      observer?.observe(el)
-      st.observed = true
-      st.dormant = false
-    }
+    if (!sweepRef(ref)) refs.delete(ref)
   }
 
   if (!refs.size) {
