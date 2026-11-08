@@ -24,7 +24,7 @@
   "cyan", "teal", "green", "lime", "yellow", "orange"
 ) {
   .bg-#{$v}, .mu-bg-#{$v} {
-    background-color: var(--mu-#{$v}-color);
+    background-color: var(--mu-#{$v});
   }
 
   .bg-#{$v}-translucent, .mu-bg-#{$v}-translucent {
