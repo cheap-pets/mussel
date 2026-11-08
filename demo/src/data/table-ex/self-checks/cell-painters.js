@@ -152,7 +152,7 @@ function drawRecorded (col, record, options = {}) {
  * canvas 2d 上下文代理：记录 fillText（text/x/y + 调用时 fillStyle）、fill
  * （调用时 fillStyle）、fillRect（x/y/width/height + fillStyle——link 悬停下划线
  * 断言，A5 行）、stroke（strokeStyle——button 悬停反转边框色断言）与 drawImage
- * （x/y/width/height——icon/editButton 图标绘制断言，20261105）。文本取色
+ * （x/y/width/height——icon/cellButton 图标绘制断言，20261105）。文本取色
  * 断言避免像素抗锯齿噪声，直接捕获 fillStyle。set 派发到 target 本体（默认 set
  * 的 receiver 为 proxy，会触发原生 setter 的品牌检查抛 Illegal invocation）。
  */
@@ -2465,7 +2465,7 @@ export const checks = [
     }
   },
   {
-    name: 'resolveIconEntry：注册命中返回原引用 / 未注册返回 null（editButton 门控同源）',
+    name: 'resolveIconEntry：注册命中返回原引用 / 未注册返回 null（cellButton 门控同源）',
     fn: () => {
       assertEqual(resolveIconEntry('demoGlyphA'), icons.demoGlyphA, '已注册 → 注册表项原引用')
       assertEqual(resolveIconEntry('iconProbeSvg'), icons.iconProbeSvg, 'svg 形态命中')

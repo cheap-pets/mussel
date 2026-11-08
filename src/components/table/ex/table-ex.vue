@@ -150,7 +150,7 @@
     'tree-expand',
     'tree-collapse',
     'cell-item-click',
-    'edit-button-click'
+    'cell-button-click'
   ])
 
   const rootEl = shallowRef()
@@ -185,6 +185,10 @@
   // onPointerMove 经 resolveItemClick 求值；paintState.hoverItem 在 syncPaintState
   // 以本值归一（hoverMode none 恒 null）
   const hoverItem = shallowRef(null)
+  // 格按钮悬停（两态色）：{ row, col } | null 锚格坐标，onPointerMove 经
+  // isCellButtonHit 求值（与光标 pointer 判定同口径）；paintState.cellButtonHover
+  // 在 syncPaintState 以本值归一（hoverMode none 恒 null）
+  const cellButtonHover = shallowRef(null)
   const cursor = ref('default')
   // 单元格选中：{ row, col } | null 锚格坐标
   // （合并区域经 resolveSpanCell 归一）；paintState.selectedCell 在 syncPaintState
@@ -239,6 +243,7 @@
     selectedKey,
     hover,
     hoverItem,
+    cellButtonHover,
     cursor,
     selectedCell,
     getPreparedColumns: () => preparedColumns.value,

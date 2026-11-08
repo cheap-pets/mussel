@@ -46,7 +46,7 @@
           @tree-expand="onTreeExpand"
           @tree-collapse="onTreeCollapse"
           @column-resize="onColumnResize"
-          @edit-button-click="onEditButtonClick">
+          @cell-button-click="onCellButtonClick">
           <template v-if="emptyVariant === 'slot'" #empty>
             <div class="ct-empty-slot">
               自定义空态（#empty 插槽）
@@ -465,15 +465,15 @@
           validate: value =>
             (String(value).includes('错误') ? '备注不能包含"错误"字样' : true)
         },
-        // 问题 5 夹具（20261105 改造）：hover 格内最右侧编辑按钮——icon 收敛为
+        // 问题 5 夹具（20261105 改造）：hover 格内最右侧格按钮——icon 收敛为
         // 注册名（内置 dots；pencil 未内置），onClick 属性移除、改组件
-        // @edit-button-click 监听（payload { record, recordIndex, column }）
-        editButton: { icon: 'dots' }
+        // @cell-button-click 监听（payload { record, recordIndex, column }）
+        cellButton: { icon: 'dots' }
       },
-      // cls 形态 editButton 夹具（终验 UNVERIFIED 补齐）：icon = installIcons 注入类名
+      // cls 形态 cellButton 夹具（终验 UNVERIFIED 补齐）：icon = installIcons 注入类名
       // demoGlyphA（svg 形态见备注列 dots）——hover 显示注入 glyph、点击走同一
-      // @edit-button-click 链
-      { caption: '启用', field: 'active', type: 'bool', width: 80, color: (r, v) => (v ? 'success' : null), editable: true, editor: true, editButton: { icon: 'demoGlyphA' } },
+      // @cell-button-click 链
+      { caption: '启用', field: 'active', type: 'bool', width: 80, color: (r, v) => (v ? 'success' : null), editable: true, editor: true, cellButton: { icon: 'demoGlyphA' } },
       // 等级列：enum 类型（20261104）——options 显示映射（显示 label）+ 编辑 select
       // 下拉（column.options 原样通道，提交 number）；number 纯数值演示由数量列覆盖
       {
@@ -1190,10 +1190,10 @@
     logEvent('cell-item-click', payload)
   }
 
-  // 编辑按钮派发（20261105 改造）：onClick 属性移除后改组件事件监听，payload
+  // 格按钮派发（20261105 改造）：onClick 属性移除后改组件事件监听，payload
   // { record, recordIndex, column } 与旧 onClick 参数一致
-  function onEditButtonClick (payload) {
-    logEvent('edit-button-click', payload)
+  function onCellButtonClick (payload) {
+    logEvent('cell-button-click', payload)
   }
 
   // DOM 版参照：同列定义、同数据源前 20 行（10 万行 DOM 全量渲染不可行，取视口对齐子集）

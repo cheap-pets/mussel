@@ -1,6 +1,6 @@
 /** table-ex 编辑状态机：编辑器生命周期状态机（open/commit/cancel）
     与 blur 兜底判定。类型/props/开值/提交值规整链在 editor-resolve.js；编辑盒几何
-    （editorRectOf / editorGridlineFlagsOf / editButtonRectOf / computeEditorStyle）在
+    （editorRectOf / editorGridlineFlagsOf / cellButtonRectOf / computeEditorStyle）在
     editor-geometry.js（paint / interaction 层直引该文件，不经本模块中转） */
 import { markRaw, reactive, watch } from 'vue'
 import { isFunction, isObject, isString } from '@/utils/type'

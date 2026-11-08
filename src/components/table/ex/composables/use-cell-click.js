@@ -1,5 +1,5 @@
 /**
- * click 单一入口派发 composable：表头/树槽/编辑按钮/条目/选中/check 事件链
+ * click 单一入口派发 composable：表头/树槽/格按钮/条目/选中/check 事件链
  * + 编辑开启（openEditorAt/focusEditor）+ editing veil watch。
  */
 /**
@@ -9,10 +9,10 @@
  * @host-writes onClick
  * @host-calls getThemeWatcher（壳）, resolveRecordKey（壳）, cellEditableOf（壳）,
  *   getEditingCellRef / setEditingCellRef（壳）, getPainter（壳）, editor.open /
- *   editor.state（壳 editor 控制器）, hitAt（提供方 use-pointer）,
- *   applyTreeToggle（提供方 use-tree-rows）, invalidate / invalidateRow
- *   （提供方 use-paint-state）, clearCellSelection / selectCell
- *   （提供方 use-cell-select）, hideCellTooltip（提供方 use-cell-tooltip）
+ *   editor.state（壳 editor 控制器）, hitAt / getCommittedEditCell
+ *   （提供方 use-pointer）, applyTreeToggle（提供方 use-tree-rows）,
+ *   invalidate / invalidateRow（提供方 use-paint-state）, clearCellSelection /
+ *   selectCell（提供方 use-cell-select）, hideCellTooltip（提供方 use-cell-tooltip）
  */
 import { nextTick, watch } from 'vue'
 
@@ -21,7 +21,7 @@ import { regionAt, spanRectOf } from '../spans/spans'
 import { computeEditorStyle } from '../editing/editor-geometry'
 import { resolveEditorType } from '../editing/editor-resolve'
 import { resolveCellContent } from '../cell-paint/cell-content'
-import { isEditButtonHit } from '../interaction/edit-button'
+import { isCellButtonHit } from '../interaction/cell-button'
 import { recordNumberOf } from '../shared/cell-identity'
 
 /**
@@ -48,21 +48,24 @@ export function useCellClick (host) {
     )
   }
 
-  /** 编辑按钮派发（局部交互——对齐树槽先例：不选中行、不发 cell-click、
-      不开编辑；走组件 emit 'edit-button-click' 而非属性回调，column 传原始
-      列引用）；命中并派发返回 true */
-  function tryEditButtonClick (hit, record, col) {
+  /** 格按钮派发（局部交互——对齐树槽先例：不选中行、不发 cell-click、
+      不开编辑；走组件 emit 'cell-button-click' 而非属性回调，column 传原始
+      列引用）；命中并派发返回 true。编辑态门控（A3）：被编辑格与同手势
+      pointerdown 刚 commit 的格均不派发 */
+  function tryCellButtonClick (hit, record, col) {
     if (
-      !isEditButtonHit(hit, col, {
+      !isCellButtonHit(hit, col, {
         layout: host.layout.value,
         spans: host.spans.value,
-        snapshot: host.getThemeWatcher()?.snapshot
+        snapshot: host.getThemeWatcher()?.snapshot,
+        editingCell: host.getEditingCellRef(),
+        committedEditCell: host.getCommittedEditCell()
       })
     ) {
       return false
     }
 
-    emit('edit-button-click', {
+    emit('cell-button-click', {
       record,
       recordIndex: hit.rowIndex,
       column: col._raw ?? col
@@ -186,8 +189,8 @@ export function useCellClick (host) {
       return
     }
 
-    // 编辑按钮命中判定在树槽之前
-    if (tryEditButtonClick(hit, record, col)) return
+    // 格按钮命中判定在树槽之前
+    if (tryCellButtonClick(hit, record, col)) return
 
     // 树槽判定消费原始 hit（树列不参与合并归一改写）
     if (tryToggleTreeRow(rawHit, record)) return

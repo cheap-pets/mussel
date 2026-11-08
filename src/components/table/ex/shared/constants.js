@@ -25,7 +25,7 @@ export const FONT_SIZE_FALLBACK = 14
 export const FONT_FAMILY_FALLBACK = 'sans-serif'
 
 /** 行顶内容内缩 1px：行格线画在下一行矩形顶部（占用本格矩形内 1px）。全部
-    垂直锚（文字/树箭头/items/progress/button/编辑按钮）统一为「格顶 +
+    垂直锚（文字/树箭头/items/progress/button/格按钮）统一为「格顶 +
     ROW_TOP_INSET + (ROW_HEIGHT − ROW_TOP_INSET) / 2」行线间空白中点式（与
     lineHeight/padding 解耦），与 gridlines 模式无关，对所有行（含 r = 0）
     取同一值 */
@@ -39,10 +39,10 @@ export const ROW_HEIGHT_FALLBACK = 36
     （快照未定义/0 时 buttonHeightOf 取本值） */
 export const CONTROL_HEIGHT_SMALL_FALLBACK = 24
 
-/** 列定义自定义编辑按钮（column.editButton）命中/绘制区规格：24×24 区右缘
+/** 列定义格按钮（column.cellButton）命中/绘制区规格：24×24 区右缘
     贴格内容区右缘，16px 图标居中其中 */
-export const EDIT_BUTTON_AREA = 24
-export const EDIT_BUTTON_ICON_SIZE = 16
+export const CELL_BUTTON_AREA = 24
+export const CELL_BUTTON_ICON_SIZE = 16
 
 // —— 视觉常量（跨 item-painters / canvas-kind-painters / cell-tooltip / link-items 共享）——
 

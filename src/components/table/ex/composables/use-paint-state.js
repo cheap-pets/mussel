@@ -7,7 +7,8 @@
 /**
  * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads props, emit, layout, displayRows, flatRows, spans, treeExpanded,
- *   wiredColumns, selectedKey, hover, hoverItem, resizeGuideX, selectedCell
+ *   wiredColumns, selectedKey, hover, hoverItem, cellButtonHover, resizeGuideX,
+ *   selectedCell
  * @host-writes paintState, syncPaintState, redraw, invalidate, invalidateRow
  * @host-calls resolveRecordKey（壳）, cellEditableOf（壳）, getMeasure（壳）,
  *   getWrapCache（壳）, getEditingCellRef（壳）, getThemeWatcher（壳）,
@@ -51,6 +52,7 @@ export function usePaintState (host) {
     placeholder: props.placeholder,
     hover: null,
     hoverItem: null,
+    cellButtonHover: null,
     editingCell: null,
     resizeGuideX: null,
     // { row, col } | null 锚格坐标
@@ -89,6 +91,8 @@ export function usePaintState (host) {
     // hoverMode none 总开关归一：条目 hover 色在表体 pass（drawCell）绘制，
     // 不经 paintOverlay 的 hoverMode 门控，切到 none 后（指针不动）须由本处立即置 null
     paintState.hoverItem = props.hoverMode === 'none' ? null : host.hoverItem.value
+    // 格按钮两态色同受总开关归一（同 hoverItem 口径）
+    paintState.cellButtonHover = props.hoverMode === 'none' ? null : host.cellButtonHover.value
     paintState.editingCell = host.getEditingCellRef()
     paintState.resizeGuideX = host.resizeGuideX.value
     // 与 hover 同级原地同步

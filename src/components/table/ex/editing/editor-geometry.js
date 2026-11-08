@@ -1,12 +1,12 @@
 /** 编辑几何纯函数（自 editor.js 按关注点拆出）：编辑盒矩形 /
-    格线占位标志 / 编辑按钮区矩形 / 浮层定位——paint（paint-overlay）与
-    interaction（edit-button）层消费的跨模块共享原语。零 vue / form 依赖，
+    格线占位标志 / 格按钮区矩形 / 浮层定位——paint（paint-overlay）与
+    interaction（cell-button）层消费的跨模块共享原语。零 vue / form 依赖，
     仅镜像常量（constants.js）；定位所需布局数据由调用方传入 */
 import {
   CELL_PADDING_FALLBACK,
   ROW_TOP_INSET,
   ROW_HEIGHT_FALLBACK,
-  EDIT_BUTTON_AREA
+  CELL_BUTTON_AREA
 } from '../shared/constants'
 
 /** 编辑浮层盒矩形（单一事实源：hover 描边与浮层盒同源，painter import 同一函数）。
@@ -44,19 +44,19 @@ export function editorGridlineFlagsOf ({
   }
 }
 
-/** 编辑按钮区矩形（单一事实源：painter 绘制与壳命中共用）。右缘贴格内容区右缘，
+/** 格按钮区矩形（单一事实源：painter 绘制与壳命中共用）。右缘贴格内容区右缘，
     垂直中心 = 行线间空白中点原式（与单元格文字垂直锚同一槽位公式，不使用 rect.height） */
-export function editButtonRectOf (
+export function cellButtonRectOf (
   rect,
   { padding = CELL_PADDING_FALLBACK, rowHeight = ROW_HEIGHT_FALLBACK } = {}
 ) {
   const centerY = rect.y + ROW_TOP_INSET + (rowHeight - ROW_TOP_INSET) / 2
 
   return {
-    x: rect.x + rect.width - padding - EDIT_BUTTON_AREA,
-    y: centerY - EDIT_BUTTON_AREA / 2,
-    width: EDIT_BUTTON_AREA,
-    height: EDIT_BUTTON_AREA
+    x: rect.x + rect.width - padding - CELL_BUTTON_AREA,
+    y: centerY - CELL_BUTTON_AREA / 2,
+    width: CELL_BUTTON_AREA,
+    height: CELL_BUTTON_AREA
   }
 }
 

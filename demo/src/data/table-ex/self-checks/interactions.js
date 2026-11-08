@@ -376,29 +376,31 @@ export const checks = [
   {
     name: 'resolvePointerdown：editing 先提交再续命中；手柄开拖拽',
     fn: () => {
-      // editing 中画布 pointerdown：先同步 commit，再继续正常命中（含手柄开拖）
+      // editing 中画布 pointerdown：先同步 commit，再继续正常命中（含手柄开拖）；
+      // 返回形状 [commitEditing, committedEditCell, startResize]，editingCell 未传
+      // 时快照归一 null（A3 门控快照链见 use-pointer committedEditCell）
       assertArray(
         Object.values(resolvePointerdown({ editing: {}, hit: { resizeCol: -1 } })),
-        [true, false],
+        [true, null, false],
         'editing 中 commit'
       )
       assertArray(
         Object.values(resolvePointerdown({ editing: null, hit: { resizeCol: -1 } })),
-        [false, false],
+        [false, null, false],
         '非 editing 不 commit'
       )
       assertArray(
         Object.values(resolvePointerdown({ editing: {}, hit: { resizeCol: 2 } })),
-        [true, true],
+        [true, null, true],
         'editing + 手柄：提交且开拖'
       )
       assertArray(
         Object.values(resolvePointerdown({ editing: null, hit: { resizeCol: 2 } })),
-        [false, true],
+        [false, null, true],
         '手柄开拖拽'
       )
 
-      return 'commit 先行；手柄开拖'
+      return 'commit 先行；快照键随返回；手柄开拖'
     }
   },
   {

@@ -16,10 +16,10 @@
  * 编辑盒矩形定位（20261028：editorRectOf 格线占位内缩 + editorGridlineFlagsOf
  * 标志派生，computeEditorStyle 矩形贴格线内侧与 hover 描边同位——全编辑器
  * 类型同矩形仅 bordered 标记差异、gridlines/blankTail 门控、固定列横向滚动
- * 两态对照、变高行、height 防负值）/ 编辑按钮区矩形
- * editButtonRectOf（20261027 问题 5：right-align x = 格右 − padding − 24、
+ * 两态对照、变高行、height 防负值）/ 格按钮区矩形
+ * cellButtonRectOf（20261027 问题 5：right-align x = 格右 − padding − 24、
  * centerY = 格顶 + ROW_TOP_INSET + padding + lineHeight/2 首行槽位式；20261105
- * 随 editButton 改名与 resolveIconEntry 门控收敛）/
+ * 随 cellButton 改名与 resolveIconEntry 门控收敛）/
  * select 编辑器 options 三级来源（editor.props.options > column.options >
  * mappings 派生 [{value,label}] 且排除 default；字符串原值提交仍为 key 字符串、
  * 数值原值类型保持）/ blur 兜底面板判定
@@ -32,7 +32,7 @@
  */
 import { toRaw } from 'vue'
 import { createEditorController, isInDropdownPanel, resolveBlurFallback } from '@/components/table/ex/editing/editor.js'
-import { editorRectOf, editButtonRectOf, computeEditorStyle } from '@/components/table/ex/editing/editor-geometry.js'
+import { editorRectOf, cellButtonRectOf, computeEditorStyle } from '@/components/table/ex/editing/editor-geometry.js'
 import {
   NON_EDITABLE_TYPES,
   EDITOR_COMPONENTS,
@@ -674,28 +674,28 @@ export const checks = [
     }
   },
   {
-    name: 'editButtonRectOf：right-align + 行线中点 centerY（20261027 问题 5 / A5；20261028 解耦 lineHeight）',
+    name: 'cellButtonRectOf：right-align + 行线中点 centerY（20261027 问题 5 / A5；20261028 解耦 lineHeight）',
     fn: () => {
       // 默认参（padding 8 / rowHeight 36）：区右缘贴格内容区右缘（right-align）
       // x = 格右 − padding − 24；centerY = 格顶 + ROW_TOP_INSET(1) + (rowHeight − 1)/2
-      const area = editButtonRectOf({ x: 0, y: 0, width: 160, height: 36 })
+      const area = cellButtonRectOf({ x: 0, y: 0, width: 160, height: 36 })
 
       assertArray([area.x, area.y, area.width, area.height], [128, 6.5, 24, 24], '默认参几何（centerY = 0+1+17.5 = 18.5）')
 
       // centerY 为行线中点式而非 rect.height/2：超高行（h=88，行高被多行列撑大）
       // 锚不变——与单元格文字首行、树箭头中心同一公式（Q2 统一槽位式）
-      const tall = editButtonRectOf({ x: 0, y: 0, width: 160, height: 88 })
+      const tall = cellButtonRectOf({ x: 0, y: 0, width: 160, height: 88 })
 
       assertEqual(tall.y, 6.5, '超高行 centerY 恒 18.5（槽位锚，不使用 rect.height）')
       assertEqual(tall.x, 128, '超高行 right-align 不变')
 
       // 自定义 padding/rowHeight 同式：x = 40+200−12−24 = 204；centerY = 40+1+43/2 = 62.5 → y = 50.5
-      const custom = editButtonRectOf({ x: 40, y: 40, width: 200, height: 60 }, { padding: 12, rowHeight: 44 })
+      const custom = cellButtonRectOf({ x: 40, y: 40, width: 200, height: 60 }, { padding: 12, rowHeight: 44 })
 
       assertArray([custom.x, custom.y, custom.width, custom.height], [204, 50.5, 24, 24], '自定义 padding/rowHeight 同式')
 
       // 偏移格同式：x = 100+120−8−24 = 188；centerY = 200+1+17.5 = 218.5 → y = 206.5
-      const offset = editButtonRectOf({ x: 100, y: 200, width: 120, height: 36 })
+      const offset = cellButtonRectOf({ x: 100, y: 200, width: 120, height: 36 })
 
       assertArray([offset.x, offset.y, offset.width, offset.height], [188, 206.5, 24, 24], '偏移格同式')
 
@@ -703,22 +703,22 @@ export const checks = [
     }
   },
   {
-    name: 'editButton 门控 resolveIconEntry：注册名命中（绘制/命中生效）、未注册名判失败（不绘制不命中）',
+    name: 'cellButton 门控 resolveIconEntry：注册名命中（绘制/命中生效）、未注册名判失败（不绘制不命中）',
     fn: () => {
-      // 一次性注册夹具名（svg 形态；editButton.icon 协议 = 注册名）
-      const editIconName = `editGateProbe${Date.now()}`
+      // 一次性注册夹具名（svg 形态；cellButton.icon 协议 = 注册名）
+      const cellIconName = `cellGateProbe${Date.now()}`
 
       install(
-        { [editIconName]: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h20v20H2z" fill="currentColor"/></svg>' },
+        { [cellIconName]: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h20v20H2z" fill="currentColor"/></svg>' },
         'svg'
       )
 
-      assertEqual(resolveIconEntry(editIconName), icons[editIconName], '已注册名 → 注册表项原引用（绘制/命中门控放行）')
+      assertEqual(resolveIconEntry(cellIconName), icons[cellIconName], '已注册名 → 注册表项原引用（绘制/命中门控放行）')
 
-      const unregName = `noRegEdit${Date.now()}`
+      const unregName = `noRegCell${Date.now()}`
 
       assertEqual(resolveIconEntry(unregName), null, '未注册名 → null（不绘制、不命中、无 pointer）')
-      assertEqual(resolveIconEntry(undefined), null, '未配 editButton（undefined）→ null（点击落既有选中/编辑链）')
+      assertEqual(resolveIconEntry(undefined), null, '未配 cellButton（undefined）→ null（点击落既有选中/编辑链）')
 
       return '注册名放行 / 未注册与未配列 null（两边一致判失败）'
     }

@@ -11,7 +11,7 @@ import { warn } from '@/utils/warn'
 const DEFAULT_ICON_SIZE = 16
 
 /** 注册名 → icons 注册表项原引用：icon 列 compile / button 图标绘制 /
-    paintEditButton / isEditButtonHit 四处共用的单一查表入口。未注册 dev warn
+    paintCellButton / isCellButtonHit 四处共用的单一查表入口。未注册 dev warn
     一次（不设负缓存——注册表可运行时 install）；返回 null 由调用方分支处理 */
 export function resolveIconEntry (name) {
   if (!isString(name) || name === '') return null

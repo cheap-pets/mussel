@@ -1,5 +1,5 @@
 /**
- * table-ex 主题模块：--mu-* 变量探针读取、主题快照（21 固定字段 + colors
+ * table-ex 主题模块：--mu-* 变量探针读取、主题快照（22 固定字段 + colors
  * 固定 17 色 map）、暗色切换感知、透明度叠加与文本测量缓存。
  * 只负责快照读取与变更信号（onChange/refresh 通知通道）；行高重估等几何
  * 消费归组件壳。
@@ -100,6 +100,8 @@ function readColors (probe) {
 export function readSnapshot (probe) {
   return {
     textColor: readVar(probe, '--mu-text-color-normal'),
+    // 柔和文字色（--mu-text-color-soft）：格按钮默认态图标色（20261108）
+    textColorSoft: readVar(probe, '--mu-text-color-soft'),
     textColorMuted: readVar(probe, '--mu-text-color-muted'),
     borderColor: readVar(probe, '--mu-border-color-normal'),
     borderColorSoft: readVar(probe, '--mu-border-color-soft'),
@@ -231,7 +233,7 @@ function colorsEqual (a, b) {
 }
 
 /**
- * 快照相等判定（mutation 变更抑制门控）：21 固定字段逐键严格相等 + colors
+ * 快照相等判定（mutation 变更抑制门控）：22 固定字段逐键严格相等 + colors
  * 每色 color/translucent/hover 严格相等。滚动状态 class 翻转等与主题无关的
  * 观察根 attribute 变更，重读快照结果不变 → 不通知 onChange，壳侧行几何
  * 不被误 rebuild（已精算行高丢失、滚动条回缩的触发源）。

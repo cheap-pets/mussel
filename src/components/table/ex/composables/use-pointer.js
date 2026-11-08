@@ -6,18 +6,19 @@
 /**
  * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads props, canvasEl, layout, wiredColumns, flatRows, spans,
- *   paintState, hover, hoverItem, cursor
- * @host-writes hitAt, onPointerMove, onPointerLeave, onPointerDown
- * @host-calls getThemeWatcher（壳）, cellEditableOf（壳）, isTooltipEnabled（壳）,
- *   editor.state / editor.commit（壳 editor 控制器）, syncPaintState / invalidate
- *   （提供方 use-paint-state）, scheduleCellTooltip / delayHideCellTooltip /
- *   hideCellTooltip（提供方 use-cell-tooltip）, startResize
- *   （提供方 use-column-resize）
+ *   paintState, hover, hoverItem, cellButtonHover, cursor
+ * @host-writes hitAt, onPointerMove, onPointerLeave, onPointerDown,
+ *   getCommittedEditCell
+ * @host-calls getThemeWatcher（壳）, getEditingCellRef（壳）, cellEditableOf（壳）,
+ *   isTooltipEnabled（壳）, editor.state / editor.commit（壳 editor 控制器）,
+ *   syncPaintState / invalidate（提供方 use-paint-state）, scheduleCellTooltip /
+ *   delayHideCellTooltip / hideCellTooltip（提供方 use-cell-tooltip）,
+ *   startResize（提供方 use-column-resize）
  */
 import { resolveCursor, hitTest, resolvePointerdown } from '../interaction/hit-test'
 import { resolveItemClick } from '../interaction/click-resolve'
 import { resolveSpanCell, regionAt } from '../spans/spans'
-import { isEditButtonHit } from '../interaction/edit-button'
+import { isCellButtonHit } from '../interaction/cell-button'
 import { isSamePoint } from '../shared/cell-identity'
 
 /**
@@ -182,7 +183,7 @@ export function usePointer (host) {
 
   /** 条目悬停接线：经既有 resolveItemClick 求值，变化时对 prev/next 格去重逐格
       失效；独立于 updateHover（同格内条目间移动不触发 hover 变化）；
-      hoverMode none 恒 null（与编辑按钮绘制同受总开关抑制） */
+      hoverMode none 恒 null（与格按钮绘制同受总开关抑制） */
   function updateHoverItem (hit) {
     const prev = host.hoverItem.value
     const next = props.hoverMode === 'none'
@@ -197,10 +198,45 @@ export function usePointer (host) {
     for (const cell of hoverItemCells(prev, next)) host.invalidate({ cell })
   }
 
+  /** 格按钮悬停态（两态色）：isCellButtonHit 与光标 pointer 判定同口径求值，
+    指针落在按钮区矩形内 → { row, col } 锚格坐标；变化时对 prev/next 格逐格失效
+    （按钮色随态重绘，同格内进出按钮区不触发 hover 变化须由此驱动）；
+    hoverMode none 恒 null（与格按钮绘制同受总开关抑制） */
+  function updateCellButtonHover (hit) {
+    const prev = host.cellButtonHover.value
+
+    let next = null
+
+    if (hit && !hit.isHeader && props.hoverMode !== 'none') {
+      const col = hit.colIndex >= 0 ? host.wiredColumns.value[hit.colIndex] : null
+
+      if (
+        isCellButtonHit(hit, col, {
+          layout: host.layout.value,
+          spans: host.spans.value,
+          snapshot: host.getThemeWatcher()?.snapshot,
+          editingCell: host.getEditingCellRef()
+        })
+      ) {
+        next = { row: hit.rowIndex, col: hit.colIndex }
+      }
+    }
+
+    if (isSamePoint(prev, next)) return
+
+    host.cellButtonHover.value = next
+    host.paintState.cellButtonHover = next
+
+    for (const cell of [prev, next]) {
+      if (cell) host.invalidate({ cell })
+    }
+  }
+
   /** 光标覆盖：resolveCursor 结果之后追加判定，仅覆盖表体 text/default——条目
-      （link/button 且非禁用）与编辑按钮区为 pointer；link 条目以 item.link !==
+      （link/button 且非禁用）与格按钮区为 pointer；link 条目以 item.link !==
       false 门控（list 非 link 列条目无指针反馈，列级语义，与 isLinkEntryHovered
-      同谓词）；col-resize 手柄与表头 pointer 不覆盖 */
+      同谓词）；col-resize 手柄与表头 pointer 不覆盖；编辑中格按钮不绘制亦无
+      pointer 反馈（editingCell 门控，A3） */
   function applyItemCursor (hit) {
     if (hit.resizeCol >= 0 || hit.isHeader) return
 
@@ -216,10 +252,11 @@ export function usePointer (host) {
     const col = hit.colIndex >= 0 ? host.wiredColumns.value[hit.colIndex] : null
 
     if (
-      isEditButtonHit(hit, col, {
+      isCellButtonHit(hit, col, {
         layout: host.layout.value,
         spans: host.spans.value,
-        snapshot: host.getThemeWatcher()?.snapshot
+        snapshot: host.getThemeWatcher()?.snapshot,
+        editingCell: host.getEditingCellRef()
       })
     ) {
       host.cursor.value = 'pointer'
@@ -240,6 +277,7 @@ export function usePointer (host) {
 
     updateHoverItem(result.hit)
     updateHover(result.hit)
+    updateCellButtonHover(result.hit)
 
     applyItemCursor(result.hit)
 
@@ -251,22 +289,34 @@ export function usePointer (host) {
     host.cursor.value = 'default'
     updateHoverItem(null)
     updateHover(null)
+    updateCellButtonHover(null)
 
     // tooltip：清调度与去重键；面板仍归属本组件锚点时延迟收起（isAnchorIn
     // 守卫，不误杀他组件 tooltip）
     host.delayHideCellTooltip()
   }
 
+  // 本手势 pointerdown commit 的被编辑格快照（A3）：commit 触发的 veil 清理
+  // watcher 在微任务中清空 editingCellRef，先于同手势 click 执行；click 决策链
+  // 凭本快照抑制被编辑格格按钮。每次 pointerdown 重置（无编辑手势 = null）
+  let committedEditCell = null
+
   function onPointerDown (event) {
     const result = hitAt(event)
 
     if (!result) return
 
-    const decision = resolvePointerdown({ editing: host.editor.state.editing, hit: result.hit })
+    const decision = resolvePointerdown({
+      editing: host.editor.state.editing,
+      editingCell: host.getEditingCellRef(),
+      hit: result.hit
+    })
 
     // editing 中画布 pointerdown 先同步提交再续行命中：点击其他单元格一步
     // 完成「提交 + 选中新行」
     if (decision.commitEditing) host.editor.commit()
+
+    committedEditCell = decision.committedEditCell
 
     // 拖拽收起 tooltip（状态失效类：手柄拖宽即列几何失效，去重键同步清空）
     if (decision.startResize) {
@@ -279,6 +329,7 @@ export function usePointer (host) {
     hitAt,
     onPointerMove,
     onPointerLeave,
-    onPointerDown
+    onPointerDown,
+    getCommittedEditCell: () => committedEditCell
   }
 }

@@ -1,16 +1,17 @@
-/** 分区 5 覆盖层（hover 编辑感知/不可编辑灰描边/单元格选中描边/树箭头主色/编辑按钮） */
+/** 分区 5 覆盖层（hover 编辑感知/不可编辑灰描边/单元格选中描边/树箭头主色/格按钮） */
 import { drawTreeArrow } from '../cell-paint/cell-painters.js'
 import { drawIconGlyph } from '../cell-paint/icon-image.js'
-import { editorRectOf, editorGridlineFlagsOf, editButtonRectOf } from '../editing/editor-geometry.js'
+import { editorRectOf, editorGridlineFlagsOf, cellButtonRectOf } from '../editing/editor-geometry.js'
 import { resolveIconEntry } from '../../column-types/icon'
 import { expandableAt, isExpandedKey } from '../shared/tree.js'
+import { isSamePoint } from '../shared/cell-identity.js'
 import {
   TREE_INDENT,
   CELL_PADDING_FALLBACK,
   ROW_TOP_INSET,
   ROW_HEIGHT_FALLBACK,
-  EDIT_BUTTON_AREA,
-  EDIT_BUTTON_ICON_SIZE
+  CELL_BUTTON_AREA,
+  CELL_BUTTON_ICON_SIZE
 } from '../shared/constants.js'
 import { viewportColX, viewportRowY, contentRightXOf, contentBottomYOf, rowsOf, recordKeyOf, withClip } from './paint-utils'
 import { regionAt, spanRectOf } from '../spans/spans.js'
@@ -182,17 +183,22 @@ function paintCellSelection (ctx, state) {
   strokeBodyFrame(ctx, state, selected.col, rect, state.theme.primaryColor)
 }
 
-/** 编辑按钮绘制（覆盖层最上层）：hover 格所在列配 editButton.icon（注册名查表，
-    未注册不绘制）时经 drawIconGlyph 绘制（svg 走 requestIconImage 缓存管线），
-    onLoad 经 state.onImageLoad 转 invalidateCell */
-function paintEditButton (ctx, state, hover) {
+/** 格按钮绘制（覆盖层最上层）：hover 格所在列配 cellButton.icon（注册名查表，
+    未注册不绘制）且非编辑中格（A3：被编辑格按钮让位编辑 veil，其余格照画）时经
+    drawIconGlyph 绘制（svg 走 requestIconImage 缓存管线），onLoad 经
+    state.onImageLoad 转 invalidateCell。两态色：默认 = textColorSoft（柔和
+    文字色），指针落在按钮区矩形内（state.cellButtonHover，与 isCellButtonHit
+    光标判定同口径）= primaryColor */
+function paintCellButton (ctx, state, hover) {
+  if (isSamePoint(state.editingCell, hover)) return
+
   const column = state.columns?.[hover.col]
-  const icon = resolveIconEntry(column?.editButton?.icon)
+  const icon = resolveIconEntry(column?.cellButton?.icon)
 
   if (!icon) return
 
   const { theme } = state
-  const rect = editButtonRectOf(
+  const rect = cellButtonRectOf(
     spanRectOf(state.layout, hover.row, hover.col, state.spans),
     {
       padding: theme?.cellPadding || CELL_PADDING_FALLBACK,
@@ -201,16 +207,16 @@ function paintEditButton (ctx, state, hover) {
   )
 
   drawIconGlyph(ctx, icon, {
-    x: rect.x + (EDIT_BUTTON_AREA - EDIT_BUTTON_ICON_SIZE) / 2,
+    x: rect.x + (CELL_BUTTON_AREA - CELL_BUTTON_ICON_SIZE) / 2,
     centerY: rect.y + rect.height / 2,
-    size: EDIT_BUTTON_ICON_SIZE,
-    color: theme.textColor,
+    size: CELL_BUTTON_ICON_SIZE,
+    color: isSamePoint(state.cellButtonHover, hover) ? theme.primaryColor : theme.textColorSoft,
     onLoad: () => state.onImageLoad?.(hover.row, hover.col)
   })
 }
 
 /** hover 叠加（顺序固定）：高亮底色 → 可编辑格描边（蓝）→ 不可编辑格描边
-    （浅灰，谓词互补）→ 树箭头主色 → 编辑按钮。统一裁剪到表体区：高亮矩形按视口
+    （浅灰，谓词互补）→ 树箭头主色 → 格按钮。统一裁剪到表体区：高亮矩形按视口
     y 起画，行滚入表头后半透明 hover 底色会叠上表头底色形成变色带（行带/列带/
     单格脏区路径外层 clip 已收敛到表体区，此处裁剪对它们为冗余交集）；调宽参考线
     不在此函数，全高不受影响 */
@@ -232,7 +238,7 @@ function paintHoverOverlay (ctx, state, hover, mode) {
 
       paintTreeArrowAccent(ctx, state)
 
-      paintEditButton(ctx, state, hover)
+      paintCellButton(ctx, state, hover)
     }
   })
 }

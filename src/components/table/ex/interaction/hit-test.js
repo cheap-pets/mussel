@@ -137,15 +137,19 @@ export function resolveCursor (hit, columns, deps = {}) {
 /**
  * 画布 pointerdown 决策：editing 中不屏蔽命中——先同步 commit 当前编辑再继续
  * 正常命中处理（点击其他单元格一步完成「提交 + 选中新行」）；startResize =
- * 命中表头调宽手柄（壳据此绑 window 级 pointermove/pointerup）。
+ * 命中表头调宽手柄（壳据此绑 window 级 pointermove/pointerup）；committedEditCell
+ * = commit 前被编辑格快照（editingCellRef 由 veil 清理 watcher 在微任务中清空，
+ * 晚于本决策的同手势 click 链须凭本快照抑制被编辑格格按钮，A3）。
  *
  * @param {Object} [params.editing] 当前编辑状态（编辑中为非空）
+ * @param {Object|null} [params.editingCell] 编辑格行列 { row, col }（壳 editingCellRef）
  * @param {Object} params.hit hitTest 产出
- * @returns {{ commitEditing: Boolean, startResize: Boolean }}
+ * @returns {{ commitEditing: Boolean, committedEditCell: Object|null, startResize: Boolean }}
  */
-export function resolvePointerdown ({ editing, hit }) {
+export function resolvePointerdown ({ editing, editingCell, hit }) {
   return {
     commitEditing: Boolean(editing),
+    committedEditCell: editing ? editingCell ?? null : null,
     startResize: Boolean(hit?.resizeCol >= 0)
   }
 }
@@ -155,8 +159,9 @@ function isBodyCellHit (hit) {
   return Boolean(hit) && !hit.isHeader && hit.colIndex >= 0 && hit.rowIndex >= 0
 }
 
-/** 格编辑中判定（editingCell 为壳持有的编辑格行列 { row, col }） */
-function isEditingCell (editingCell, hit) {
+/** 格编辑中判定（editingCell 为壳持有的编辑格行列 { row, col }；消费方：tooltip
+    门控与格按钮命中门控 cell-button.js） */
+export function isEditingCell (editingCell, hit) {
   return Boolean(editingCell) &&
     editingCell.row === hit.rowIndex &&
     editingCell.col === hit.colIndex

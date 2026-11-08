@@ -61,7 +61,7 @@ export function requestIconImage (icon, color, onLoad) {
   return requestImage(src, onLoad)
 }
 
-/** 图标字形绘制（icon 列 drawItem / button 图标 / paintEditButton 三处共用）：
+/** 图标字形绘制（icon 列 drawItem / button 图标 / paintCellButton 三处共用）：
     icon = 注册表项原引用（resolveIconEntry 查表产物，非注册表形态不入此函数）。
     svg 路径复用 requestIconImage 缓存管线（loaded 才 drawImage）；cls 路径直读
     注册表项（码点解析已由 icons 模块 install 时完成，本模块无解析状态机）——

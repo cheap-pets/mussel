@@ -12,7 +12,7 @@
  * hover 列带止于末行底部、表头背景同口径截断；20261107 斑马越界修复：斑马色同
  * 止于末列右缘，延伸区补 bgNormal）；树箭头 hover 主色与常态箭头同槽位 centerY（问题 1）；
  * veil 编辑格跳绘 + itemHits 显式清空（问题 6）；rightInset 注入门控与 painter 路径
- * 槽位锚（问题 1/9，stub ctx 记录 fillText）；编辑按钮加载中不半绘制、hoverMode none
+ * 槽位锚（问题 1/9，stub ctx 记录 fillText）；格按钮加载中不半绘制、hoverMode none
  * 整体抑制（问题 5，加载像素与点击回调归浏览器）；blankTail 末列右缘线（问题 9）；
  * 另覆盖：选中/斑马纹底色、虚拟滚动窗口一致性、脏区调度（行横带/单格/表头/调宽
  * 竖带）、createPainter 契约。
@@ -24,7 +24,7 @@
  */
 import { drawRegion, createPainter } from '@/components/table/ex/table-paint/painter.js'
 import { cellRectAt } from '@/components/table/ex/table-paint/paint-utils.js'
-import { editButtonRectOf } from '@/components/table/ex/editing/editor-geometry.js'
+import { cellButtonRectOf } from '@/components/table/ex/editing/editor-geometry.js'
 import { relayout } from '@/components/table/ex/geometry/layout.js'
 import { prepareColumn } from '@/components/table/ex/cell-paint/cell-content.js'
 import { requestIconImage } from '@/components/table/ex/cell-paint/icon-image.js'
@@ -52,6 +52,8 @@ const FIXED_COLS = 1
 
 const THEME = {
   textColor: 'rgba(24, 24, 24, 1)',
+  // 格按钮默认态图标色（20261108 两态色）
+  textColorSoft: 'rgba(96, 102, 112, 1)',
   borderColor: 'rgba(208, 213, 219, 1)',
   borderColorSoft: 'rgba(232, 236, 241, 1)',
   borderColorStrong: 'rgba(153, 158, 165, 1)',
@@ -1131,37 +1133,37 @@ export const checks = [
     }
   },
   {
-    name: '编辑按钮绘制调用路径：hover 态加载中不半绘制、hoverMode=none 整体抑制（问题 5，像素归浏览器）',
+    name: '格按钮绘制调用路径：hover 态加载中不半绘制、hoverMode=none 整体抑制（问题 5，像素归浏览器）',
     fn: () => withCanvas(canvas => {
       const painter = createPainter({ canvas })
       // SVG 串每次运行唯一（imageCache 模块级跨检查持存，固定串会命中历史缓存条目
-      // 使「加载中」前提失效）；20261105 editButton 收敛注册名协议——一次性 svg 经
+      // 使「加载中」前提失效）；20261105 cellButton 收敛注册名协议——一次性 svg 经
       // install 注册后引用注册名（resolveIconEntry 查表门控，直传串会判失败空转）
-      const editIconName = `editBtnProbe${Date.now()}`
+      const cellIconName = `cellBtnProbe${Date.now()}`
 
       install({
-        [editIconName]: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">' +
+        [cellIconName]: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">' +
           `<path d="M3 17v4h4l11-11-4-4L3 17z" fill="currentColor" data-stamp="${Date.now()}"/></svg>`
       }, 'svg')
 
       const buttonColumns = RAW_COLUMNS
-        .map(col => (col.field === 'amount' ? { ...col, editButton: { icon: editIconName } } : col))
+        .map(col => (col.field === 'amount' ? { ...col, cellButton: { icon: cellIconName } } : col))
         .map(col => prepareColumn(col, { placeholder: '--' }))
       const hover = { row: 0, col: 3 }
       // 按钮区矩形（editor.js 单一事实源）：金额格 (300, 36, 120, 36) → 区 (388, 42.5) 24×24
       // （centerY = 格顶 36 + 1 + (36−1)/2 = 54.5，与文字锚同槽位式）
-      const area = editButtonRectOf(cellRectAt(makeState({ columns: buttonColumns }).layout, 0, 3), {
+      const area = cellButtonRectOf(cellRectAt(makeState({ columns: buttonColumns }).layout, 0, 3), {
         padding: THEME.cellPadding,
         rowHeight: THEME.rowHeight
       })
 
-      assertEqual(`${area.x},${area.y},${area.width},${area.height}`, '388,42.5,24,24', '编辑按钮区矩形')
+      assertEqual(`${area.x},${area.y},${area.width},${area.height}`, '388,42.5,24,24', '格按钮区矩形')
 
       // 同步绘制帧内图标必为 loading（data URL onload 异步），证明「不半绘制」前提
-      // （经注册表项 svg 请求，与 paintEditButton 同源）
-      assertEqual(requestIconImage(icons[editIconName].svg, THEME.textColor).status, 'loading', '首帧图标加载中')
+      // （经注册表项 svg 请求，与 paintCellButton 同源；默认态两态色 = textColorSoft）
+      assertEqual(requestIconImage(icons[cellIconName].svg, THEME.textColorSoft).status, 'loading', '首帧图标加载中')
 
-      // 帧 A：icon 首次请求（loading，不得 drawImage）；帧 B：无 editButton 同 hover
+      // 帧 A：icon 首次请求（loading，不得 drawImage）；帧 B：无 cellButton 同 hover
       // 对照（按钮区 hover 带底色对齐，隔离「半绘制」单变量）
       painter.draw(makeState({ columns: buttonColumns, hover }))
       const controlCanvas = document.createElement('canvas')
@@ -1172,7 +1174,7 @@ export const checks = [
 
       assertRegionSame(controlCanvas, canvas, area.x, area.y, area.width, area.height, '加载中按钮区不半绘制')
 
-      // hoverMode none：paintOverlay 整体抑制（含编辑按钮），与真·无 hover 帧整幅一致
+      // hoverMode none：paintOverlay 整体抑制（含格按钮），与真·无 hover 帧整幅一致
       // （对照帧须 makeState({})——makeState({ hover }) 是整行高亮带，并非「无 hover 帧」）
       const plainCanvas = document.createElement('canvas')
 
@@ -1181,7 +1183,7 @@ export const checks = [
       createPainter({ canvas: plainCanvas }).draw(makeState({}))
 
       drawRegion(canvas.getContext('2d'), makeState({ columns: buttonColumns, hover, hoverMode: 'none' }), null)
-      assertRegionSame(plainCanvas, canvas, 0, 0, W, H, 'hoverMode=none 与无 hover 帧整幅一致（编辑按钮一并抑制）')
+      assertRegionSame(plainCanvas, canvas, 0, 0, W, H, 'hoverMode=none 与无 hover 帧整幅一致（格按钮一并抑制）')
 
       painter.dispose()
 

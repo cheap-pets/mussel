@@ -1,8 +1,8 @@
 /**
  * table-ex 自检断言 — theme 模块（G1-b，G2-6 扩 hover）。
  *
- * 覆盖 02-design.md G1-b 判据：快照 21 固定字段计数（14 色 + 字号/字体 + 5 尺寸，
- * 含 bgStrong/textColorMuted/bgDisabled；controlHeightSmall 二轮新增——button pill
+ * 覆盖 02-design.md G1-b 判据：快照 22 固定字段计数（15 色 + 字号/字体 + 5 尺寸，
+ * 含 bgStrong/textColorMuted/bgDisabled/textColorSoft；controlHeightSmall 二轮新增——button pill
  * 高，设计期曾有、已随 C3 清理移除的 controlHeight 由其取代）+ colors 固定
  * 17 色形态（12 彩色 + 5 语义，gray 不入，每色 color+translucent+hover 三形态）+
  * bgStrong 半透明形态 + hover 悬停色专项（02-design.md A7：语义色取
@@ -241,14 +241,14 @@ export const checks = [
     }
   },
   {
-    name: 'readSnapshot：快照 21 固定字段齐全，颜色/字号/字体/尺寸形态正确',
+    name: 'readSnapshot：快照 22 固定字段齐全，颜色/字号/字体/尺寸形态正确',
     fn: () =>
       withFixture('', fixture => {
         const probe = createProbe(fixture)
         const snapshot = readSnapshot(probe)
 
         const colorKeys = [
-          'textColor', 'textColorMuted', 'borderColor', 'borderColorSoft', 'borderColorStrong',
+          'textColor', 'textColorSoft', 'textColorMuted', 'borderColor', 'borderColorSoft', 'borderColorStrong',
           'bgNormal', 'bgFill', 'bgStripe', 'bgStrong', 'bgDisabled',
           'selectBg', 'hoverBg', 'primaryColor', 'gray'
         ]
@@ -270,16 +270,16 @@ export const checks = [
 
         assert(snapshot.colors && typeof snapshot.colors === 'object', '快照.colors 缺失')
 
-        // 21 固定字段（14 色 + 字号/字体 + 5 尺寸）+ colors map = 22 键
+        // 22 固定字段（15 色 + 字号/字体 + 5 尺寸）+ colors map = 23 键
         const fixedCount = colorKeys.length + 2 + Object.keys(pxKeys).length
-        assert(fixedCount === 21, `固定字段计数口径应为 21，实际 ${fixedCount}`)
+        assert(fixedCount === 22, `固定字段计数口径应为 22，实际 ${fixedCount}`)
         assert(
           Object.keys(snapshot).length === fixedCount + 1,
-          `快照应含 ${fixedCount + 1} 个键（21 固定字段 + colors），实际 ${Object.keys(snapshot).length}`
+          `快照应含 ${fixedCount + 1} 个键（22 固定字段 + colors），实际 ${Object.keys(snapshot).length}`
         )
 
         probe.remove()
-        return `${Object.keys(snapshot).length} 键：21 固定字段（14 色 + 字号/字体 + 5 尺寸）+ colors`
+        return `${Object.keys(snapshot).length} 键：22 固定字段（15 色 + 字号/字体 + 5 尺寸）+ colors`
       })
   },
   {
