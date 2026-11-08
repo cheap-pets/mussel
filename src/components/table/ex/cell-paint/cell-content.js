@@ -7,14 +7,12 @@ import { MAX_LINES_LIMIT } from '../shared/text-wrap'
 import { cellLineHeightOf } from './cell-text'
 
 // 取值链与 DOM 版同款（internalColumns 列准备 + cells 取值）：_text(record) 非 null
-// 直接作为显示文本，否则 value = _value(record) ?? record[field]，纯文本列短路免
-// render。class/style 为 DOM 通道字段忽略，canvas 通道条目自带 kind 协议字段
-// （link/tag），颜色经平铺 color/danger 直取不走 class 解析。_mapText 为 enum
-// 独有，仅供 row-geometry 估高取显示文本，不参与绘制取值。
+// 直接作为显示文本，否则 value = _value(record) ?? record[field]。class/style 为
+// DOM 通道字段忽略，canvas 通道条目自带 kind 协议字段（link/tag），颜色经平铺
+// color/danger 直取。_mapText 为 enum 独有，仅供 row-geometry 估高取显示文本。
 // 模块隔离：不 import theme.js / layout.js，主题色与 colors 经 drawCell 的 theme
-// 快照参数传入。canvas 专属类型（progress）不入列类型注册表，prepareColumn 在
-// resolveColumnType 之前分发；button 已入注册表，经 compile 产 canvasKind 同走
-// drawCanvasKindContent 分发
+// 快照参数传入。progress 分发见 createColumnRender，button 经 compile 产
+// canvasKind 同走 drawCanvasKindContent 分发
 const CANVAS_ONLY_TYPES = { progress: true }
 
 // —— 列准备（table.vue internalColumns 的 canvas 等价物，仅保留绘制所需字段） ——
@@ -26,9 +24,8 @@ function clampLimit (value, fallback) {
   return Number.isFinite(n) ? Math.min(Math.max(n, 1), MAX_LINES_LIMIT) : fallback
 }
 
-// _render 构建：canvas 专属类型（progress）不经 resolveColumnType 产物
-// （回退 TextColumn 会绘制文本），直接产出 canvasKind render；普通类型 compile 优先，
-// 其次类型对象/函数自身作为 render
+// _render 构建：progress 不经 resolveColumnType（回退 TextColumn 会绘制文本），直接
+// 产 canvasKind render；普通类型 compile 优先，其次类型对象/函数自身作为 render
 function createColumnRender (column, type, canvasOnlyKind) {
   if (canvasOnlyKind === 'progress') {
     const getProgressOption = ensureFn(column.progressOption)
@@ -123,7 +120,6 @@ export function resolveCellContent (col, { record, recordNumber, emit }) {
 
   if (text != null) return { text }
 
-  // value 传字符串等非函数值经 ensureFn 包装后恒为函数，不会抛错
   const value = col._value(record) ?? (col.field ? record[col.field] : undefined)
 
   // 数组门控置于 _plainText 短路之前，直渲路径一并覆盖

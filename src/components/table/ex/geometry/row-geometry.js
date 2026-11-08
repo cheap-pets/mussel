@@ -1,5 +1,6 @@
-/** table-ex 行几何策略：等高/变高双模式统一接口，painter / layout /
-    interactions / editor 全部经几何接口取行坐标，不感知模式 */
+/** table-ex 行几何策略：等高/变高双模式统一接口，table-paint / layout /
+    interaction / editing 全部经几何接口取行坐标，不感知模式；含行高估高/精算
+    算法（computeRowHeights/ensureRowMeasured） */
 import { estimateLineCount, wrapLines, cellFontOf } from '../shared/text-wrap'
 import { CELL_PADDING_FALLBACK } from '../shared/constants'
 import { spanHeightRoleOf } from '../spans/spans'
@@ -364,8 +365,7 @@ export function computeRowHeights ({
       let value
 
       if (desc.graphicItem) {
-        // 行数恒 1：与空值计数 0 在 rowHeight ≥ 2×padding + lineHeight 配置下
-        // 等价（默认主题 36 ≥ 34），免 valueOf（_value 回调不执行）
+        // 行数恒 1：与空值 0 在 flat 度量下两值行高等价（36 ≥ 34），免 valueOf
         count = 1
       } else if (desc.isEntry) {
         // 条目列：render 计数真值（估高/精算同路径，不折行）

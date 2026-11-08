@@ -6,7 +6,7 @@
  * 级联分段与树父链切断 → SpansIndex；另有命中归一（resolveSpanCell）、区域
  * 矩形（spanRectOf / spanRegionRect）、行高分层数据链（spanHeightRoleOf）。
  *
- * 行号为平铺行号（displayRows 下标，与 painter/interactions 口径一致）。
+ * 行号为平铺行号（displayRows 下标，与 painter/interaction 口径一致）。
  * 无任何有效区域时 buildSpans 返回 null（快路径标记），全部查询函数对 null spans
  * 短路——无合并表格零开销走原路径。零 DOM、零 canvas，不持有状态。
  */

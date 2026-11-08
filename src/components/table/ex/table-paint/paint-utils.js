@@ -31,7 +31,7 @@ export function viewportRowY (layout, row) {
   return layout.headHeight + layout.rowGeometry.topAt(row) - layout.scrollTop
 }
 
-/** 单元格视口矩形（interactions / editor / 自检共用） */
+/** 单元格视口矩形（use-table-api getCellRect 坐标辅助 / 自检基准式共用） */
 export function cellRectAt (layout, row, col) {
   return {
     x: viewportColX(layout, col),

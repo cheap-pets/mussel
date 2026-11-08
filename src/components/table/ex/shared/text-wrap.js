@@ -22,7 +22,7 @@ export const MAX_LINES_LIMIT = 10
 
 /**
  * 单元格正文字体串（theme 快照 → canvas font）：绘制与行高计算共用。
- * 表头字体带 500 字重（见 painter.headerFontOf），不在此合并。
+ * 表头字体带 500 字重（见 table-paint/paint-header.js 的 headerFontOf），不在此合并。
  */
 export function cellFontOf (theme) {
   return `${theme?.fontSize || FONT_SIZE_FALLBACK}px ${theme?.fontFamily || FONT_FAMILY_FALLBACK}`
@@ -73,7 +73,6 @@ export function tokenize (text) {
   while (index < source.length) {
     const ch = source[index]
 
-    // 空白与 CJK 集合重叠（如 U+3000 同落 CJK 区间），必须保持空白优先的同序判定
     const code = source.charCodeAt(index)
 
     if (isWhitespaceCode(code)) {
@@ -85,7 +84,7 @@ export function tokenize (text) {
       // 此前暂存的行首空白并入词首（current 在该点只可能是空串或纯空白累积，
       // 判首字符码点即可）
       if (current && isWhitespaceCode(current.charCodeAt(0))) {
-        // 仅含空白：作为词首前缀保留
+        // 仅含空白：作为词首前缀保留（空块需注释豁免 no-empty）
       } else {
         push()
       }

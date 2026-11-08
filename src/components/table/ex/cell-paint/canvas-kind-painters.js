@@ -103,7 +103,6 @@ function layoutButtonEntries (buttons, rect, rightBound, padding, font, measureF
     const button = buttons[i] ?? EMPTY_BUTTON
     const ellipsized = ellipsizeButton(button, x, rightBound, font, measureFn, link, buttonHeight)
 
-    // ellipsize 空文本 → null 哨兵，停止绘制后续按钮
     if (!ellipsized) break
 
     entries.push({ button, index: i, ...ellipsized })

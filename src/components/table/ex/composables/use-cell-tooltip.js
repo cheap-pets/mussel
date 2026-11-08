@@ -1,7 +1,7 @@
 /**
  * 单元格 tooltip 壳级编排 composable（title 列协议）。
  *
- * 决策纯函数在 interactions.resolveTooltipTarget / cell-tooltip.resolveCellTooltip，
+ * 决策纯函数在 interaction/hit-test.resolveTooltipTarget / cell-paint/cell-tooltip.resolveCellTooltip，
  * 本 composable 持有显示定时器、去重键与合成锚点：pointermove 格身份去重 +
  * TOOLTIP_SHOW_DELAY 延迟调度（move 内不求值内容）；滚动/拖拽/编辑/relayout/
  * 重绘 watch/卸载经 hideCellTooltip 收起并同步清去重键（不清则回到同格被去重
@@ -22,7 +22,7 @@
 import { inject, shallowRef } from 'vue'
 import { TOOLTIP_SHOW_DELAY } from '@/components/tooltip/tooltip-core'
 import { CELL_PADDING_FALLBACK, ROW_TOP_INSET, TREE_INDENT } from '../shared/constants'
-import { resolveTooltipTarget } from '../interaction/interactions'
+import { resolveTooltipTarget } from '../interaction/hit-test'
 import { resolveCellTooltip } from '../cell-paint/cell-tooltip'
 import { regionAt, spanRectOf } from '../spans/spans'
 import { isSamePoint, recordNumberOf } from '../shared/cell-identity'

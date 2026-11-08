@@ -1,11 +1,12 @@
 /**
- * 指针交互 composable：决策纯函数来自 interactions.js，本 composable 执行
- * 状态更新与光标切换；clickGuard/startResize 来自 use-column-resize 经 host 转发。
+ * 指针交互 composable：决策纯函数来自 interaction/hit-test.js 与
+ * interaction/click-resolve.js，本 composable 执行状态更新与光标切换；
+ * clickGuard/startResize 来自 use-column-resize 经 host 转发。
  */
 /**
  * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
- * @host-reads props, canvasEl, layout, wiredColumns, spans, paintState, hover,
- *   hoverItem, cursor
+ * @host-reads props, canvasEl, layout, wiredColumns, flatRows, spans,
+ *   paintState, hover, hoverItem, cursor
  * @host-writes hitAt, onPointerMove, onPointerLeave, onPointerDown
  * @host-calls getThemeWatcher（壳）, cellEditableOf（壳）, isTooltipEnabled（壳）,
  *   editor.state / editor.commit（壳 editor 控制器）, syncPaintState / invalidate
@@ -13,7 +14,8 @@
  *   hideCellTooltip（提供方 use-cell-tooltip）, startResize
  *   （提供方 use-column-resize）
  */
-import { resolveCursor, hitTest, resolveItemClick, resolvePointerdown } from '../interaction/interactions'
+import { resolveCursor, hitTest, resolvePointerdown } from '../interaction/hit-test'
+import { resolveItemClick } from '../interaction/click-resolve'
 import { resolveSpanCell, regionAt } from '../spans/spans'
 import { isEditButtonHit } from '../interaction/edit-button'
 import { isSamePoint } from '../shared/cell-identity'
@@ -150,7 +152,6 @@ export function usePointer (host) {
     for (const region of hoverRegions(prev, next, props.hoverMode || 'row', host.spans.value)) host.invalidate(region)
   }
 
-  /** 条目悬停相等判定：行列 + 条目身份（kind/index）+ disabled 全等 */
   function isSameHoverItem (prev, next) {
     if (prev == null || next == null) return (prev == null) === (next == null)
 

@@ -333,7 +333,7 @@
 
   // 4. 行几何策略：uniform/variable 双模式几何、估高扫描输入签名（scanSignature）、
   // 精算缓存失效签名（measureSignature）、进窗精算/单行重估与锚定补偿。
-  // 注入 getter 清单见 geometry/row-geometry-controller.js 文件头 @getters 声明
+  // 注入 getter 清单见 geometry/row-geometry-controller.js 的 @param deps 声明
   const rowGeometry = createRowGeometryController({
     getRows: () => displayRows.value,
     getColumns: () => wiredColumns.value,

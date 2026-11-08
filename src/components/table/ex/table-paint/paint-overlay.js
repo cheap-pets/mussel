@@ -92,9 +92,51 @@ function paintHoverHighlight (ctx, layout, hover, mode, rowValid, colValid, span
   }
 }
 
-/** 可编辑格 hover 感知：1px 主色描边，矩形与编辑浮层盒 import 同一 editorRectOf
-    同源同位（贴格线内侧，合并区域按区域矩形 + 区域外缘格线内缩）；不占布局、
-    随 hover 带重绘生效 */
+/** 描边矩形链单一事实源（hover 可编辑/hover 不可编辑/选中三站点同源）：
+    合并区域矩形（spanRectOf，普通格退化原式）→ 区域外缘格线内缩
+    （editorRectOf + editorGridlineFlagsOf 8 字段，与编辑浮层盒 import 同一
+    同源同位） */
+function cellFrameOf (state, row, col) {
+  const { layout, spans } = state
+  const region = regionAt(spans, row, col)
+
+  return editorRectOf(
+    spanRectOf(layout, row, col, spans),
+    editorGridlineFlagsOf({
+      rowIndex: row,
+      colIndex: col,
+      colCount: layout.colWidths.length,
+      stickyWidth: layout.stickyWidth,
+      contentWidth: layout.contentWidth,
+      gridlines: state.gridlines,
+      rowFrom: region?.rowFrom,
+      colTo: region?.colTo
+    })
+  )
+}
+
+/** 表体区描边块单一事实源（三站点同源）：滚动区格（col ≥ fixedCount）裁掉
+    [0, fixedWidth)——水平滚入固定列覆盖区时描边仅可见段绘制、固定列格不裁，
+    合并区域恒不跨固定列边界锚列归类即区域归类；y 自 headHeight 起（垂直滚入
+    表头区为同类缺口一并收敛，与外层 clip 交集冗余但独立成立）；1px 描边贴格线
+    内侧（+0.5/−1 半像素对齐） */
+function strokeBodyFrame (ctx, state, col, rect, strokeStyle) {
+  const { layout } = state
+
+  ctx.strokeStyle = strokeStyle
+  ctx.lineWidth = 1
+  const clipX0 = col < layout.fixedCount ? 0 : layout.fixedWidth
+
+  withClip(
+    ctx,
+    [clipX0, layout.headHeight, layout.stickyWidth - clipX0, layout.stickyHeight - layout.headHeight],
+    () => {
+      ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
+    }
+  )
+}
+
+/** 可编辑格 hover 感知：1px 主色描边；不占布局、随 hover 带重绘生效 */
 function paintHoverEditorStroke (ctx, state, hover) {
   if (!state.editable || !state.isCellEditableFn) return
 
@@ -102,77 +144,26 @@ function paintHoverEditorStroke (ctx, state, hover) {
 
   if (!column || !state.isCellEditableFn(column)) return
 
-  const { layout, spans } = state
-  const region = regionAt(spans, hover.row, hover.col)
-  const rect = editorRectOf(
-    spanRectOf(layout, hover.row, hover.col, spans),
-    editorGridlineFlagsOf({
-      rowIndex: hover.row,
-      colIndex: hover.col,
-      colCount: layout.colWidths.length,
-      stickyWidth: layout.stickyWidth,
-      contentWidth: layout.contentWidth,
-      gridlines: state.gridlines,
-      rowFrom: region?.rowFrom,
-      colTo: region?.colTo
-    })
-  )
+  const rect = cellFrameOf(state, hover.row, hover.col)
 
-  ctx.strokeStyle = state.theme.primaryColor
-  ctx.lineWidth = 1
-  // 滚动区格裁掉 [0, fixedWidth)：部分滚入固定列覆盖区时描边仅可见段绘制
-  // （与 paintCellSelection 同源）；y 取表体区（与外层 clip 交集冗余但独立成立）；
-  // 合并区域恒不跨固定列边界，锚列归类即区域归类
-  const clipX0 = hover.col < layout.fixedCount ? 0 : layout.fixedWidth
-
-  withClip(
-    ctx,
-    [clipX0, layout.headHeight, layout.stickyWidth - clipX0, layout.stickyHeight - layout.headHeight],
-    () => {
-      ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
-    }
-  )
+  strokeBodyFrame(ctx, state, hover.col, rect, state.theme.primaryColor)
 }
 
-/** 不可编辑格 hover 感知：1px 浅灰（borderColorSoft）描边，矩形链与
-    paintHoverEditorStroke 逐字同源；谓词与可编辑格绘制条件严格互补（恒不同时
-    触发，勿改写）——editable 全局关闭 = 全部列不可编辑，全格落灰描边 */
+/** 不可编辑格 hover 感知：1px 浅灰（borderColorSoft）描边，矩形链与描边块经
+    cellFrameOf/strokeBodyFrame 与可编辑格同源；谓词与可编辑格绘制条件严格互补
+    （恒不同时触发，勿改写）——editable 全局关闭 = 全部列不可编辑，全格落灰描边 */
 function paintHoverPlainStroke (ctx, state, hover) {
   const column = state.columns?.[hover.col]
 
   if (state.editable && state.isCellEditableFn && column && state.isCellEditableFn(column)) return
 
-  const { layout, spans } = state
-  const region = regionAt(spans, hover.row, hover.col)
-  const rect = editorRectOf(
-    spanRectOf(layout, hover.row, hover.col, spans),
-    editorGridlineFlagsOf({
-      rowIndex: hover.row,
-      colIndex: hover.col,
-      colCount: layout.colWidths.length,
-      stickyWidth: layout.stickyWidth,
-      contentWidth: layout.contentWidth,
-      gridlines: state.gridlines,
-      rowFrom: region?.rowFrom,
-      colTo: region?.colTo
-    })
-  )
+  const rect = cellFrameOf(state, hover.row, hover.col)
 
-  ctx.strokeStyle = state.theme.borderColorSoft
-  ctx.lineWidth = 1
-  const clipX0 = hover.col < layout.fixedCount ? 0 : layout.fixedWidth
-
-  withClip(
-    ctx,
-    [clipX0, layout.headHeight, layout.stickyWidth - clipX0, layout.stickyHeight - layout.headHeight],
-    () => {
-      ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
-    }
-  )
+  strokeBodyFrame(ctx, state, hover.col, rect, state.theme.borderColorSoft)
 }
 
-/** 选中格主色描边：state.selectedCell 为锚格坐标（合并区域经 spanRectOf 取区域
-    矩形 + 区域外缘格线内缩，与 hover 描边同源同位）；独立于 hover 反馈——
+/** 选中格主色描边：state.selectedCell 为锚格坐标（矩形链与描边块经
+    cellFrameOf/strokeBodyFrame 与 hover 描边同源同位）；独立于 hover 反馈——
     hoverMode none 仅抑制 hover 覆盖层，选中照画；与 hover 描边同格叠加时本函数
     后画覆盖，最终观感为蓝；row/col 越界守卫（就地 splice 删行悬空索引不崩溃） */
 function paintCellSelection (ctx, state) {
@@ -180,42 +171,15 @@ function paintCellSelection (ctx, state) {
 
   if (!selected) return
 
-  const { layout, spans } = state
   const rowCount = rowsOf(state)?.length ?? 0
   const rowValid = selected.row >= 0 && selected.row < rowCount
-  const colValid = selected.col >= 0 && selected.col < layout.colWidths.length
+  const colValid = selected.col >= 0 && selected.col < state.layout.colWidths.length
 
   if (!rowValid || !colValid) return
 
-  const region = regionAt(spans, selected.row, selected.col)
-  const rect = editorRectOf(
-    spanRectOf(layout, selected.row, selected.col, spans),
-    editorGridlineFlagsOf({
-      rowIndex: selected.row,
-      colIndex: selected.col,
-      colCount: layout.colWidths.length,
-      stickyWidth: layout.stickyWidth,
-      contentWidth: layout.contentWidth,
-      gridlines: state.gridlines,
-      rowFrom: region?.rowFrom,
-      colTo: region?.colTo
-    })
-  )
+  const rect = cellFrameOf(state, selected.row, selected.col)
 
-  ctx.strokeStyle = state.theme.primaryColor
-  ctx.lineWidth = 1
-  // 覆盖层晚于固定列区绘制，滚动区选中格水平滚入固定列覆盖区后描边会压在固定列
-  // 上——滚动区格（col ≥ fixedCount）裁掉 [0, fixedWidth)，固定列格不裁；y 自
-  // headHeight 起（选中格垂直滚入表头区为同类缺口，一并收敛）
-  const clipX0 = selected.col < layout.fixedCount ? 0 : layout.fixedWidth
-
-  withClip(
-    ctx,
-    [clipX0, layout.headHeight, layout.stickyWidth - clipX0, layout.stickyHeight - layout.headHeight],
-    () => {
-      ctx.strokeRect(rect.left + 0.5, rect.top + 0.5, rect.width - 1, rect.height - 1)
-    }
-  )
+  strokeBodyFrame(ctx, state, selected.col, rect, state.theme.primaryColor)
 }
 
 /** 编辑按钮绘制（覆盖层最上层）：hover 格所在列配 editButton.icon（注册名查表，
@@ -279,7 +243,6 @@ export function paintOverlay (ctx, state) {
 
   if (hover && mode !== 'none') paintHoverOverlay(ctx, state, hover, mode)
 
-  // 选中格描边独立于 hover 反馈，自带表体区裁剪
   paintCellSelection(ctx, state)
 
   // 调宽拖拽参考线：1px 主色、全高

@@ -4,8 +4,8 @@
  */
 /**
  * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
- * @host-reads props, displayRows, treeOptions, scrollEl, layout, selectedCell,
- *   spans, selectedKey, rowGeometry（消费 mode / topAt）
+ * @host-reads props, displayRows, treeOptions, scrollEl, canvasEl, layout,
+ *   selectedCell, spans, selectedKey, rowGeometry（消费 mode / topAt）
  * @host-writes scrollToRecord, getLayoutInfo, getThemeSnapshot, getCellRect
  * @host-calls genRecordKey（壳）, getPainter（壳）, getLastRelayout（壳）,
  *   getThemeWatcher（壳）, invalidateRow（提供方 use-paint-state）
@@ -13,7 +13,7 @@
 import { watch } from 'vue'
 
 import { warn } from '@/utils/warn'
-import { cellRectAt } from '../table-paint/painter'
+import { cellRectAt } from '../table-paint/paint-utils'
 
 /**
  * @param {Object} host host 袋（消费面见文件头 @host-* 声明）

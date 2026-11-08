@@ -60,7 +60,7 @@
 }
 
 // 投影条：变量无法进 canvas，box-shadow 方案保变量纯度（A7；统一 --mu-shadow-float，
-// 不复刻 table.scss:155 的硬编码 rgba 双阴影）
+// 不复刻 base/table.scss 的硬编码 rgba 双阴影）
 .mu-table-ex__header-shadow,
 .mu-table-ex__bottom-shadow {
   pointer-events: none;

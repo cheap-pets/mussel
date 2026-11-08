@@ -276,7 +276,6 @@ export function paintHeader (ctx, state) {
   const { layout, theme } = state
   const W = layout.stickyWidth
   const headHeight = layout.headHeight
-  // 末列右缘视口 x（contentRightXOf 共享式）
   const contentRightX = contentRightXOf(layout)
 
   // 不透明底盖住下方所有层；背景同末线 cap 至末列右缘——列少时右缘以右不再绘

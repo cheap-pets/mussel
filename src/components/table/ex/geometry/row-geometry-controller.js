@@ -7,7 +7,7 @@
  * （精算缓存失效签名：列宽 + 字号/字体/行高/padding，变化即整体清空 record
  * 引用级精算缓存；仅颜色变化的暗色切换不失效）。
  * 不变量：精算回填导致锚行上方总高变化 Δ 经 scrollTop 一次补偿写入；能力经
- * getter 注入（见 createRowGeometryController 的 ctx），控制器不直接触 DOM。
+ * getter 注入（见 createRowGeometryController 的 deps），控制器不直接触 DOM。
  */
 import { OVERSCAN } from './layout'
 import {
@@ -30,7 +30,7 @@ function autoRowSpanMarkOf (value) {
 /**
  * 创建行几何控制器（组件壳 setup 内创建并持有，onMounted 前可用——getter 惰性求值）。
  *
- * @param {Object} ctx 组件壳注入的惰性上下文，getter 清单：
+ * @param {Object} deps 组件壳注入的惰性上下文，getter 清单：
  * - getRows / getColumns：行集合（树开 = 平铺行数组）/ 已接线内部列
  * - getTreeIndents：树形列缩进回调 (colIndex, row) => px | null
  * - getRecordsOffset：rec_no 序号偏移
@@ -42,7 +42,7 @@ function autoRowSpanMarkOf (value) {
  * - getLayout / setLayout：layout shallowRef 读写
  * - relayout：壳 relayoutAndRedraw（uniform→variable 升级重估）
  */
-export function createRowGeometryController (ctx) {
+export function createRowGeometryController (deps) {
   // —— 状态 ——
 
   let mode = 'uniform'
@@ -74,7 +74,7 @@ export function createRowGeometryController (ctx) {
       重建但语义不变时免重扫 */
   function estimateColumnSignature (columns) {
     return columns.map(col =>
-      `${ctx.getColumnKey(col._raw)}|${col.type}|${col._maxLines}|${col._maxItems}` +
+      `${deps.getColumnKey(col._raw)}|${col.type}|${col._maxLines}|${col._maxItems}` +
       `|${col.multiline === true}|${col._isTreeColumn === true}|${autoRowSpanMarkOf(col._autoRowSpan)}`
     ).join(';')
   }
@@ -82,7 +82,7 @@ export function createRowGeometryController (ctx) {
   /** 变高候选列判定：maxLines>1 或 multiline 配置即入候选（函数形态配置存在
       即算，具体值经 _resolveMaxLines(record) 行级求值）；数组值/多条目经估高扫描发现 */
   function isVariableCandidate () {
-    return ctx.getColumns().some(col => (col._maxLines ?? 1) > 1 || col.multiline)
+    return deps.getColumns().some(col => (col._maxLines ?? 1) > 1 || col.multiline)
   }
 
   /** 每次 relayout 均执行——估高跳过重扫时同样执行，保证签名漂移后旧精算值
@@ -132,11 +132,11 @@ export function createRowGeometryController (ctx) {
 
   function measureContext () {
     return {
-      columns: ctx.getColumns(),
-      theme: ctx.getTheme(),
-      measure: ctx.getMeasure(),
-      wrapCache: ctx.getWrapCache(),
-      treeIndents: ctx.getTreeIndents()
+      columns: deps.getColumns(),
+      theme: deps.getTheme(),
+      measure: deps.getMeasure(),
+      wrapCache: deps.getWrapCache(),
+      treeIndents: deps.getTreeIndents()
     }
   }
 
@@ -169,11 +169,9 @@ export function createRowGeometryController (ctx) {
     }
   }
 
-  /**
-   * 估高扫描落地：更新 lastScan* 状态 → computeRowHeights 全量估高 → 变高判定
-   * （现有变高几何 / 变高候选列 / 估高发现多条目）命中则模式升级 + 精算真值
-   * 混入 + 变高几何重建。返回 rebuild=true 时壳须以返回 geometry 重跑 relayout。
-   */
+  /** 估高扫描落地：更新 lastScan* 状态 → computeRowHeights 全量估高 → 变高判定
+      （现有变高几何 / 变高候选列 / 估高发现多条目）命中则模式升级 + 精算真值
+      混入 + 变高几何重建。返回 rebuild=true 时壳须以返回 geometry 重跑 relayout */
   function rescanRowHeights (rows, columns, colWidths, theme, metricsSig, columnSig, spans) {
     lastScanRows = rows
     lastScanColumnSig = columnSig
@@ -185,9 +183,9 @@ export function createRowGeometryController (ctx) {
       columns,
       colWidths,
       theme,
-      measure: ctx.getMeasure(),
-      wrapCache: ctx.getWrapCache(),
-      treeIndents: ctx.getTreeIndents(),
+      measure: deps.getMeasure(),
+      wrapCache: deps.getWrapCache(),
+      treeIndents: deps.getTreeIndents(),
       spans
     })
 
@@ -218,7 +216,7 @@ export function createRowGeometryController (ctx) {
     if (!hasArrayValues) return
 
     upgradeToVariable()
-    ctx.relayout()
+    deps.relayout()
   }
 
   /** 锚定补偿 + contentHeight/spacer 同步（同帧批次内一次写入） */
@@ -232,7 +230,7 @@ export function createRowGeometryController (ctx) {
 
     const totalHeight = geometry.totalHeight
 
-    ctx.setLayout({
+    deps.setLayout({
       ...cur,
       contentHeight: cur.headHeight + totalHeight,
       spacerHeight: Math.max(0, cur.headHeight + totalHeight - cur.stickyHeight)
@@ -243,20 +241,20 @@ export function createRowGeometryController (ctx) {
       render 计数、与宽度无关，其余场景恒 0）；与 remeasureVisibleRows 的
       循环外提口径同一规则 */
   function measuredSnapshot (row, height) {
-    const treeIndents = ctx.getTreeIndents()
+    const treeIndents = deps.getTreeIndents()
     let indent = 0
 
     if (treeIndents && isVariableCandidate()) {
-      const treeColIndex = ctx.getColumns().findIndex(col => col._isTreeColumn)
+      const treeColIndex = deps.getColumns().findIndex(col => col._isTreeColumn)
 
       if (treeColIndex >= 0) indent = treeIndents(treeColIndex, row) || 0
     }
 
-    return { height, indent, recordsVersion: ctx.getRecordsVersion?.() ?? 0 }
+    return { height, indent, recordsVersion: deps.getRecordsVersion?.() ?? 0 }
   }
 
   function remeasureVariableRow (row, cur, rows) {
-    const el = ctx.getScrollEl()
+    const el = deps.getScrollEl()
     const geometry = variableGeometry
 
     if (!el || !geometry) return
@@ -265,11 +263,11 @@ export function createRowGeometryController (ctx) {
     const prevTopAtAnchor = geometry.topAt(anchorRow)
     const height = ensureRowMeasured({
       record: rows[row],
-      recordNumber: (ctx.getRecordsOffset() || 0) + row + 1,
+      recordNumber: recordNumberOf(deps.getRecordsOffset(), row),
       colWidths: cur.colWidths,
       ...measureContext(),
       row,
-      spans: ctx.getSpans?.() ?? null
+      spans: deps.getSpans?.() ?? null
     })
 
     measuredRowHeights.set(rows[row], measuredSnapshot(row, height))
@@ -305,7 +303,7 @@ export function createRowGeometryController (ctx) {
      * @returns {{ geometry: Object, scanCount: Number, rebuild: Boolean }}
      */
     resolveForRelayout ({ colWidths, theme }) {
-      const spans = ctx.getSpans?.() ?? null
+      const spans = deps.getSpans?.() ?? null
 
       if (spans !== lastSpansRef) {
         measuredRowHeights = new WeakMap()
@@ -314,8 +312,8 @@ export function createRowGeometryController (ctx) {
 
       syncMeasuredHeightCache(colWidths, theme)
 
-      const rows = ctx.getRows() ?? []
-      const columns = ctx.getColumns()
+      const rows = deps.getRows() ?? []
+      const columns = deps.getColumns()
       const metricsSig = `${theme.rowHeight}|${theme.cellPadding}|${theme.cellLineHeight}`
       const columnsChanged = lastScanColumns !== columns
       const columnSig = columnsChanged ? estimateColumnSignature(columns) : lastScanColumnSig
@@ -360,29 +358,27 @@ export function createRowGeometryController (ctx) {
       }
     },
 
-    /**
-     * 进窗精算（滚动帧调用）：可视窗口 ±OVERSCAN 逐行处理。命中精算缓存快照
-     * （几何值 + recordsVersion + 树缩进全匹配）的行直接跳过——此时
-     * updateHeight(row, cached.height) 恒返回 0，测量侧零重算；未命中行精算
-     * → 写快照 → updateHeight → Δ 累计滚动锚定 + contentHeight/spacer 同步。
-     * uniform 模式零成本跳过。
-     */
+    /** 进窗精算（滚动帧调用）：可视窗口 ±OVERSCAN 逐行处理。命中精算缓存快照
+        （几何值 + recordsVersion + 树缩进全匹配）的行直接跳过——此时
+        updateHeight(row, cached.height) 恒返回 0，测量侧零重算；未命中行精算
+        → 写快照 → updateHeight → Δ 累计滚动锚定 + contentHeight/spacer 同步；
+        uniform 模式零成本跳过 */
     // 每行热路径：拆分引入参数打包与调用开销，复杂度收益低于回归风险
     // eslint-disable-next-line complexity
     remeasureVisibleRows () {
-      const cur = ctx.getLayout()
-      const el = ctx.getScrollEl()
+      const cur = deps.getLayout()
+      const el = deps.getScrollEl()
 
       if (!cur || !el || mode !== 'variable' || !variableGeometry) return
 
-      const rows = ctx.getRows() ?? []
+      const rows = deps.getRows() ?? []
       const { start, end } = variableGeometry.visibleRange(el.scrollTop, cur.viewH, OVERSCAN)
       const anchorRow = variableGeometry.offsetToRow(el.scrollTop)
       const prevTopAtAnchor = variableGeometry.topAt(anchorRow)
       const base = measureContext()
-      const spans = ctx.getSpans?.() ?? null
-      const recordsOffset = ctx.getRecordsOffset() || 0
-      const version = ctx.getRecordsVersion?.() ?? 0
+      const spans = deps.getSpans?.() ?? null
+      const recordsOffset = deps.getRecordsOffset() || 0
+      const version = deps.getRecordsVersion?.() ?? 0
       const { columns, treeIndents } = base
       const needIndent = !!treeIndents && isVariableCandidate()
       const treeColIndex = needIndent
@@ -418,30 +414,15 @@ export function createRowGeometryController (ctx) {
 
       if (!delta) return
 
-      const shift = computeAnchorShift({
-        prevTopAtAnchor,
-        nextTopAtAnchor: variableGeometry.topAt(anchorRow)
-      })
-
-      if (shift) el.scrollTop += shift
-
-      const totalHeight = variableGeometry.totalHeight
-
-      ctx.setLayout({
-        ...cur,
-        contentHeight: cur.headHeight + totalHeight,
-        spacerHeight: Math.max(0, cur.headHeight + totalHeight - cur.stickyHeight)
-      })
+      syncAnchoredLayout(cur, el, variableGeometry, anchorRow, prevTopAtAnchor)
     },
 
-    /**
-     * 单行行高重估（编辑提交 nextTick 调用）：variable 单行精算 + updateHeight
-     * + 锚定 + 布局同步；uniform 判定该行是否引入数组值/多条目 → 模式升级 +
-     * 壳全量 relayout。
-     */
+    /** 单行行高重估（编辑提交 nextTick 调用）：variable 单行精算 + updateHeight
+        + 锚定 + 布局同步；uniform 判定该行是否引入数组值/多条目 → 模式升级 +
+        壳全量 relayout */
     remeasureRow (row) {
-      const cur = ctx.getLayout()
-      const rows = ctx.getRows()
+      const cur = deps.getLayout()
+      const rows = deps.getRows()
 
       if (!isRowInRange(row, cur, rows)) return
 

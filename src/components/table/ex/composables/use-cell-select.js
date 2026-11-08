@@ -91,12 +91,11 @@ export function useCellSelect (host) {
       key === 'ArrowLeft' || key === 'ArrowRight'
   }
 
-  /** 箭头组合键放行判定：带 ctrl/meta/alt 不处理（组合键语义归浏览器/系统） */
+  /** 箭头组合键放行（组合键语义归浏览器/系统） */
   function arrowActionOf (event) {
     return event.ctrlKey || event.metaKey || event.altKey ? null : 'move'
   }
 
-  /** KeyC 组合判定：ctrl/meta 且不带 shift/alt → 复制；其余放行 */
   function copyActionOf (event) {
     const primary = event.ctrlKey || event.metaKey
 

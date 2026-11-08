@@ -15,8 +15,7 @@ import { buttonHeightOf, EMPTY_BUTTON } from './canvas-kind-painters'
 // 触发期惰性求值（绘制热路径零改动）：组件壳在 TOOLTIP_SHOW_DELAY 定时器内调用
 // resolveCellTooltip，复用与绘制同一套原语（resolveCellContent / wrapLines /
 // capMaxLinesOf / 测量与 wrapCache），溢出判定与绘制行为逐项等价，不引入第二套
-// 测量式；img 条目只读缓存条目（getImageEntry），判定期不调用 requestImage、
-// 不发起加载。
+// 测量式；img 条目只读缓存（getImageEntry），判定期不调用 requestImage、不发起加载
 
 const TOOLTIP_NOOP = () => {}
 

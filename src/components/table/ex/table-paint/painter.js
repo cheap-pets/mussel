@@ -413,6 +413,3 @@ export function createPainter ({ canvas } = {}) {
 
   return api
 }
-
-// re-export：自检 / interactions / editor / table-ex.vue 共用 cellRectAt
-export { cellRectAt } from './paint-utils.js'

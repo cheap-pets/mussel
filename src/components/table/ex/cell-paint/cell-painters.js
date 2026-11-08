@@ -13,9 +13,8 @@ import { drawItems, itemClassOf, isLinkEntryHovered, linkHoverColorOf, linkTextC
 import { drawLinkItems } from './link-items'
 import { drawProgress, drawButton } from './canvas-kind-painters'
 
-// 视觉常量镜像 DOM 规格：check 方框 = column-types/style.scss
-// .mu-table__cell-check（与表头 painter.drawHeaderCheck 同规格，规格变更两处
-// 同步）；tag pill / button 图标规格常量见 constants.js
+// 视觉常量镜像 DOM 规格：check 方框 = column-types/style.scss .mu-table__cell-check
+// （与表头 paint-header.js drawHeaderCheck 同规格，规格变更两处同步）；tag pill / button 图标规格常量见 constants.js
 
 // —— canvas 落地 ——
 

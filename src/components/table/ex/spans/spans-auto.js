@@ -113,7 +113,7 @@ function advanceSegment (seg, key, row, segStartByCol, colIndex, close) {
 }
 
 /** 入口 A —— 列级 autoRowSpan：true（显示值含 mappings）/ string 字段键 /
-    Function 键；Object.is 键比较；空值不参与且为分段边界；级联分段（右侧列
+    Function 键；Object.is 键比较；空值不参与且为分段边界（小计行隔离）；级联分段（右侧列
     分段在左侧列分段起点处切断）；树父链切断（levels 变化或 parentKeys 不同）；
     spanMethod 占用格切断且分段不跨过 */
 export function applyAutoRowSpan (spanCtx, index, occupied) {
@@ -125,8 +125,7 @@ export function applyAutoRowSpan (spanCtx, index, occupied) {
   const levels = flatInfo?.levels
   const parentKeys = flatInfo?.parentKeys
 
-  // 各 autoRowSpan 列最近一次分段起点（列序处理，右侧列级联切断的判定源；
-  // close 后保留——分段起点不因段结束而消失，即使段长 1 也成立）
+  // 各 autoRowSpan 列最近一次分段起点（级联切断判定源；close 后保留，段长 1 也成立）
   const segStartByCol = new Map()
   const trueWarned = new Set()
 
@@ -159,15 +158,12 @@ export function applyAutoRowSpan (spanCtx, index, occupied) {
         continue
       }
 
-      // 树父链切断
       if (isTreeBoundary(levels, parentKeys, row)) close(row)
 
-      // 级联分段
       if (isCascadeBoundary(segStartByCol, autoCols, colIndex, row)) close(row)
 
       const key = autoSpanKeyOf(col, mode, records[row])
 
-      // 空值不参与合并：分段边界（小计行隔离）
       if (isEmptyKey(key)) {
         close(row)
 

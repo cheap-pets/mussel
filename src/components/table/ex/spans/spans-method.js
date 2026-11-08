@@ -260,7 +260,7 @@ export function applySpanMethod (spanCtx, index, occupied) {
 
     for (const name of Object.keys(declared)) {
       for (const colIndex of resolveDeclColumns(columns, name, warnedKeys, emitWarn)) {
-        // 列级接管：返回某列键即接管，该列 autoRowSpan 对全表失效
+        // 列级接管（语义见 spans-auto collectAutoRowSpanColumns）
         takenOver.add(colIndex)
 
         const col = columns[colIndex]

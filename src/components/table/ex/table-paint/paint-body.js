@@ -279,9 +279,9 @@ function clipIfPartial (ctx, rect, W, H) {
   return true
 }
 
-// 单元格内容绘制：完全可见格跳过 clip；spanOpts（region pass 专用）：
-// regionHeight = 区域矩形高（内容垂直居中与行数上限）、rightInset 按区域末列取
-// 右缘列线占位（普通格缺省按本列求值）
+// 单元格内容绘制。spanOpts（region pass 专用）：regionHeight = 区域矩形高
+// （内容垂直居中与行数上限）、rightInset 按区域末列取右缘列线占位
+// （普通格缺省按本列求值）
 function drawCellClipped (ctx, state, col, record, recordNumber, rect, row, colIndex, recordKey, W, H, spanOpts) {
   if (veilEditingCell(state, row, colIndex)) return
 

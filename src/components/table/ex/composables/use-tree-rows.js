@@ -83,7 +83,7 @@ export function useTreeRows (host) {
     })
   })
 
-  // 读行集合（painter/interactions/editor 全消费方经此取行）
+  // 读行集合（painter/interaction/editor 全消费方经此取行）
   const displayRows = computed(() => (props.tree ? flatRows.value?.rows ?? [] : props.records))
 
   // 列接线：树开且未显式指定 treeNode 时缺省首个数据列为树形列；

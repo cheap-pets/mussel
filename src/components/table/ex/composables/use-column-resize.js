@@ -17,7 +17,7 @@ import { shallowRef } from 'vue'
 
 import { getPixelNumber } from '@/utils/size'
 import { computePrefixSums, resolveTypeMinWidth } from '../geometry/layout'
-import { resolveResizeWidth, RESIZE_MIN_WIDTH } from '../interaction/interactions'
+import { resolveResizeWidth, RESIZE_MIN_WIDTH } from '../interaction/resize-resolve'
 import { createClickGuard } from '../interaction/schedulers'
 
 /**

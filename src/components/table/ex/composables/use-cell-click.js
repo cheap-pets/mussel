@@ -16,7 +16,7 @@
  */
 import { nextTick, watch } from 'vue'
 
-import { resolveCellClick, resolveCellClickOpen, resolveHeaderClick, resolveItemClick, resolveTreeToggle } from '../interaction/interactions'
+import { resolveCellClick, resolveCellClickOpen, resolveHeaderClick, resolveItemClick, resolveTreeToggle } from '../interaction/click-resolve'
 import { regionAt, spanRectOf } from '../spans/spans'
 import { computeEditorStyle } from '../editing/editor-geometry'
 import { resolveEditorType } from '../editing/editor-resolve'
@@ -131,7 +131,6 @@ export function useCellClick (host) {
 
     runEvents(events)
 
-    // check 翻转后 nextTick 重绘该行
     if (toggled) nextTick(() => host.invalidateRow(hit.rowIndex))
 
     // 先发完整选中/cell-click 链再开编辑，父级一次收到全部事件，选中态与编辑态一致；
@@ -181,7 +180,6 @@ export function useCellClick (host) {
 
     if (record == null) return
 
-    // 空白延伸区命中（beyondCols）无对应列，仅选中行
     if (!col) {
       if (hit.beyondCols) selectRowOnly(record)
 

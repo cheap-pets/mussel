@@ -5,14 +5,13 @@ import { resolveColumnType } from '../../column-types'
 /** 滚动虚拟窗口上下各多绘的行数 */
 export const OVERSCAN = 2
 
-/** 调宽手柄命中距离：距列缘 <= 4px */
+/** 调宽手柄命中距离（px） */
 export const RESIZE_HANDLE = 4
 
-// 预设类型默认宽度与最小宽度双值表。仅 table-ex 消费（不改 column-types/*.js
-// 的 width 字段）；仅在 solveWidths 弹性分支作初始宽与最小宽基线，定宽链
-// widthOverrides ?? col.width ?? type.width 与 clamp 不动。
-// 无 type/空 type 列回退 text；对象/函数自定义类型与未知类型字符串回退 _fallback；
-// enum 为废弃兼容条目（缺省宽与移除前一致）
+// 类型默认/最小宽度双值表，仅 table-ex 消费（不改 column-types/*.js 的 width
+// 字段）：仅在 solveWidths 弹性分支作初始宽与最小宽基线，定宽链
+// widthOverrides ?? col.width ?? type.width 与 clamp 不动。无 type/空 type 回退
+// text，未知/自定义类型回退 _fallback；enum 为废弃兼容条目（缺省宽与移除前一致）
 export const TYPE_DEFAULT_WIDTHS = {
   text: { width: 160, minWidth: 80 },
   number: { width: 100, minWidth: 60 },
@@ -36,7 +35,7 @@ function typeNameOf (col) {
   return col.type == null ? 'text' : '_fallback'
 }
 
-/** 类型最小宽：调宽拖拽下限缺省值；真正 clamp 在 interactions.resolveResizeWidth，
+/** 类型最小宽：调宽拖拽下限缺省值；真正 clamp 在 interaction/resolveResizeWidth，
     本模块不 clamp */
 export function resolveTypeMinWidth (col) {
   return TYPE_DEFAULT_WIDTHS[typeNameOf(col)]?.minWidth
@@ -90,8 +89,7 @@ function distributeRemain (widths, maxes, flexes, remain) {
   }
 }
 
-// 宽度求解：定宽列 widthOverrides[key] ?? col.width ?? type.width 取 px 后
-// clamp；未定宽列初始宽 clamp(TYPE_DEFAULT_WIDTHS[type].width, minWidth ??
+// 宽度求解：定宽列取 px 后 clamp；未定宽列初始宽 clamp(类型默认宽, minWidth ??
 // 类型 minWidth, maxWidth)，下限复用循环头部已解析的 min（字符串 '80px' 防
 // NaN）；remain = containerWidth − 全部已定宽，> 0 经 distributeRemain 摊派、
 // <= 0 保持初始宽（总宽超出容器 → 横向滚动）
