@@ -26,7 +26,7 @@
 
 ## 前置步骤：确认源目录
 
-0. **退出检查**（先做，命中任一即停止升级流程，回到 `SKILL.md` 步骤 2）：
+0. **退出检查**（先做，命中任一即停止升级流程，回到 mussel-ui skill 默认 UI 路径）：
    - 用户消息未出现"升级 / 迁移 / V4"等明确意图词；
    - `package.json` 中 mussel 版本 ≥ 4，且用户未要求迁移既有代码；
    - 任务是新增/修改类，目标文件在 git 中为 untracked / 新建；
@@ -116,7 +116,7 @@
 
 **项目**：{项目名称}
 **日期**：{今天}
-**生成工具**：Mussel UI Skill
+**生成工具**：mussel3to4 Skill
 
 ## 范围概览
 {简要概述}
@@ -222,6 +222,6 @@
 
 ## Mussel 4 速查表
 
-升级完成后编写新代码时，查阅 `SKILL.md` 的组件速查表与步骤 2 路由表（8 大类组件 API）、`references/styles.md`（原子样式）与 `references/install.md`（安装初始化）。
+升级完成后编写新代码时，查阅 mussel-ui skill 的组件速查表与步骤 2 路由表（8 大类组件 API），及 `../../mussel-ui/references/styles.md`（原子样式）与 `../../mussel-ui/references/install.md`（安装初始化）（参见 mussel-ui skill）。
 
 > 迁移规则中的「目标写法」列均使用 Mussel 4 语法，具体属性/事件/插槽的完整 API 请查阅上述参考文件。

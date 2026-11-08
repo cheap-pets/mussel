@@ -8,7 +8,7 @@
 
 ### 1.1 基本色
 
-用于图标着色、装饰性元素，**不直接用于文本或背景**，应优先使用语义扩展色。
+用于图标着色、装饰性元素、分类标识与数据可视化等**非语义**场景；状态语义用语义扩展色（§1.2）。文本用 `.text-{基本色}`（§2.4），背景用 `.bg-{基本色}` 与 `-translucent` 变体（§2.3）。
 
 | 变量 | 含义 |
 |------|------|
@@ -446,6 +446,11 @@ justify-items 可用值：normal, start, center, end, stretch；justify-self 可
 | .bg-disabled      | 禁用状态背景色   |
 | .bg-overlay       | 弹出层背景色     |
 | .bg-mask          | 遮罩层背景色     |
+| .bg-primary / .bg-secondary / .bg-success / .bg-warning / .bg-danger | 功能色实底背景 |
+| .bg-{基本色}（gray + 12 基本色，共 13） | 基本色实底背景，非语义场景（变量 `--mu-{基本色}`） |
+| .bg-{color}-translucent（color = 上述 5 功能色 + gray + 12 基本色，共 18） | 透明背景变体，适合 hover、标签底色 |
+
+`.bg-*` 与 `.mu-bg-*` 两套类名均存在且等价（`.bg-none` 除外，background.scss:1-3）。
 
 **阴影：**
 
@@ -457,6 +462,9 @@ justify-items 可用值：normal, start, center, end, stretch；justify-self 可
 | .shadow-modal            | 模态窗口阴影         |
 | .shadow-focus            | 焦点阴影（需 :focus）  |
 | .shadow-focus-within     | 焦点阴影（需 :focus-within） |
+| .shadow-none             | 清除阴影（**无 `mu-` 前缀别名**） |
+
+`.shadow-float/popup/layer/modal/focus/focus-within` 与 `mu-shadow-*` 等价（box-shadow.scss:5-17）。
 
 **圆角：**
 
@@ -535,6 +543,14 @@ justify-items 可用值：normal, start, center, end, stretch；justify-self 可
 | .text-success           | --mu-success-color       | 成功色文本 |
 | .text-warning           | --mu-warning-color       | 警告色文本 |
 | .text-danger            | --mu-danger-color        | 危险色文本 |
+
+**基本色文本颜色：**
+
+| 类名                    | 变量名                   | 说明       |
+| ----------------------- | ------------------------ | ---------- |
+| .text-{基本色}（gray + 12 基本色，共 13） | --mu-{基本色} | 非语义场景着色（分类标签、数据可视化、MuTag 着色）；规范 1-A 明文例外；状态语义仍用功能色（规范 1-C） |
+
+`.text-*` 与 `.mu-text-*` 等价（覆盖中性 5 / 功能色 5 / 基本色 13，typography.scss:37-58）。
 
 **文本对齐：**
 

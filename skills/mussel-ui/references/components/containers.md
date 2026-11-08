@@ -79,6 +79,56 @@
 
 ---
 
+## 折叠面板
+
+### MuCollapse
+
+可折叠面板。置于 MuCollapseGroup 中由组管理展开；独立使用时用 v-model:expanded 或 default-expanded 控制。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `expanded` | Boolean | — | 双向绑定展开状态（独立使用时；组内由 MuCollapseGroup 的 `expanded` 数组管理） |
+| `id` | String\|Number | 自动生成 | 组内唯一标识；外部绑定组 `expanded` 数组时需显式设置（`default-expand` 用自动生成 id 即可） |
+| `title` | String | — | 标题文字；未提供 `header` 插槽时渲染 |
+| `disabled` | Boolean | — | 禁用（组或自身任一禁用即生效，禁用时强制收起） |
+| `default-expanded` | Boolean | — | 非受控默认展开（仅独立使用且未绑定 `expanded` 时生效） |
+| `arrow` | Boolean | `true` | 标题右侧展开箭头 |
+| `expand-trigger` | String | `header` | `header`（点标题栏切换）\| `custom`（自行调用作用域 `toggle`） |
+
+| 插槽 | 作用域 / 说明 |
+|------|------|
+| `default` | 面板内容 |
+| `header` | 覆盖整个标题栏（含标题与箭头）：`{ expanded, disabled, toggle }`；提供后 `title` 与 `header-prepend` / `header-append` 不再渲染 |
+| `header-prepend` / `header-append` | 标题前后附加：`{ expanded, disabled, toggle }` |
+
+| 事件 | 参数 | 说明 |
+|------|------|------|
+| `header-click` | — | 标题栏点击（`expand-trigger="custom"` 时需自行调用作用域 `toggle`） |
+
+```html
+<mu-collapse-group v-model:expanded="expandedIds" accordion default-expand="first">
+  <mu-collapse id="basic" title="基本信息">
+    <!-- 面板内容 -->
+  </mu-collapse>
+  <mu-collapse id="extra" title="附加信息">
+    <!-- 面板内容 -->
+  </mu-collapse>
+</mu-collapse-group>
+```
+
+### MuCollapseGroup
+
+折叠面板组容器；相邻子面板间自动渲染分隔线。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `expanded` | Array | `[]` | 双向绑定展开中的面板 id 数组；未绑定时 `default-expand` 才生效 |
+| `accordion` | Boolean | — | 手风琴，同时仅展开一个 |
+| `disabled` | Boolean | — | 禁用全部子面板 |
+| `default-expand` | String | — | `first` \| `all`；accordion 下 `all` 回退 `first` 并 dev 警告 |
+
+---
+
 ## 模态与抽屉
 
 ### MuDialog
@@ -210,26 +260,7 @@ Dialog 通常封装成独立组件：内部维护 `visible`，对外只暴露 `s
 </style>
 ```
 
-父组件调用：
-
-```vue
-<template>
-  <mu-button caption="编辑" @click="open" />
-  <my-dialog ref="dialogRef" />
-</template>
-
-<script setup>
-  import { shallowRef } from 'vue'
-
-  import MyDialog from './my-dialog.vue'
-
-  const dialogRef = shallowRef()
-
-  function open () {
-    dialogRef.value?.show({ id: 1, name: 'Tom' })
-  }
-</script>
-```
+父组件以 `ref` 调用子组件暴露的 `show(data)`。
 
 ---
 

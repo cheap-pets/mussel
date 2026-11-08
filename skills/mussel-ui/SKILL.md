@@ -1,19 +1,19 @@
 ---
 name: mussel-ui
 author: Scrollbar.W
-date: 2026-11-06
+date: 2026-11-08
 description: >
   编写、修改、Review 使用 MUSSEL 4 组件库的 Vue 界面代码时使用。
-  用户明确要求将旧版 Mussel（Mussel 3，或 Mussel 1 / @mctech/mussel）升级到 Mussel 4 时也需使用，
-  如："升级到 Mussel 4"、"迁移到新版 Mussel"。
+  旧版 Mussel（Mussel 3，或 Mussel 1 / @mctech/mussel）升级到 Mussel 4 的迁移任务不使用本 skill，
+  分别改用 mussel-3to4 / mussel-1to4 skill。
 ---
 
 # MUSSEL 4 开发 Skill
 
-> 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token、M3→4 与 M1→4 迁移），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
+> 本 Skill 仅覆盖 MUSSEL 组件库的特定约束（组件选型、Props、样式 Token），不涉及 Vue 通用写法（Composition API、`<script setup>`、响应式、生命周期等）。
 
 > **版本检查**：
-本文档及 `references/` 基于 MUSSEL `4.3.*`（当前 `4.3.0`），最后核对日期 **2026-11-06**。
+本文档及 `references/` 基于 MUSSEL `4.3.*`（当前 `4.3.1`），最后核对日期 **2026-11-08**。
 开始前确认项目中依赖的 `mussel` 版本，若不符合，需进行提示确认。
 若组件库源码与本文档描述出现冲突，**以源码为准**，并按实际情况订正对应 `references/` 文件。
 
@@ -22,33 +22,9 @@ description: >
 ### 步骤 1：识别任务类型
 
 **默认路径：新建 / 修改 / Review UI**（绝大多数任务走这条）
-→ 直接进入步骤 2，只查阅 `references/components/*` 与 `references/styles.md`，**不要**加载 `references/upgrade-v3/` 与 `references/upgrade-v1/` 下的文件。
+→ 直接进入步骤 2，只查阅 `references/components/*` 与 `references/styles.md`。
 
-**升级路径（opt-in）**：先按源版本选路线，再核对进入条件（需**全部**满足）——
-
-**路线 A：Mussel 3（`mussel` 3.x，Vue 3）→ 4**
-1. 用户明确表达"升级 / 迁移 / 把 V3 改成 V4"；
-2. 任务目标是改写既有页面/组件，而非新增功能；
-3. 目标源文件当前按 Mussel 3 编写（`package.json` 中 mussel < 4，或文件本身使用 `mu-editor`、`mu-box`、`theme:`、`mu-tree-view` 四类 V3 模式）。
-
-**路线 B：Mussel 1（`@mctech/mussel`，Vue 2）→ 4**
-1. 用户明确表达"升级 / 迁移 / 从 Mussel 1（@mctech/mussel）改到 Mussel 4"；
-2. 任务目标是改写既有页面/组件/工程，而非新增功能；
-3. 源代码基于 Vue 2 + `@mctech/mussel`（`package.json` 可见，或代码出现 `mu-editor`/`mu-flex-box`/`new Vue(` 等痕迹）。
-
-> 不确定是否属升级任务时，先询问用户，不要凭代码痕迹自动启动升级流程。默认路径中如复用了 V3/V1 代码片段，直接用 V4 写法实现即可，**不要**触发升级流程。
-
-进入升级模式后：流程与规则分文件、按阶段加载，不走后续步骤。
-- **路线 A（V3→V4）**：
-  - 分析/计划/执行**流程**：读 `references/upgrade-v3/process.md`（分析阶段需完整读）。
-  - 执行阶段按处理类别跳转 `references/upgrade-v3/rules.md` 对应「迁移规则 N」按需查，不必整文件重读：
-    1 全局配置 → 2 CSS 变量与 CSS 类 → 3 布局系统 → 4 图标 → 5 组件迁移 → 6 新增组件。
-- **路线 B（V1→V4）**：Vue 2 → Vue 3 + 组件库双重换代，差异远大于 V3→V4，**不得**套用路线 A 的规则：
-  - 先读 `references/upgrade-v1/overview.md`（v1 版本档次判定、变化总览、组件去向速查表）。
-  - 分析/计划/执行**流程**：读 `references/upgrade-v1/process.md`（分析阶段需完整读）。
-  - 规则按需查 `references/upgrade-v1/rules.md`：
-    1 框架迁移（Vue 2→3）→ 2 全局配置 → 3 CSS 变量与类 → 4 布局系统 → 5 图标 → 6 组件迁移 → 7 无对应与移除项 → 8 新增能力。
-  - 写 v4 目标代码时的完整组件 API 与样式 Token 查阅 `references/components/*` 与 `references/styles.md`。
+**升级任务**：Mussel 3 → 4、Mussel 1（`@mctech/mussel`，Vue 2）→ 4 的升级迁移不属本 skill，分别使用 `mussel3to4` / `mussel1to4` skill。
 
 ### 步骤 2：按需查阅 API 与样式
 
@@ -75,15 +51,7 @@ description: >
 
 ### 步骤 3：生成后自检
 
-生成代码后，用 `references/principles.md` 的**核心规范**（第 2–5 条为硬性禁止，共 4 条）和文末**快速自检清单**（「硬性禁止」7 项 + 「优先级要求」1 项）逐条核对，该文件每条均附 Good/Bad 示例。硬性禁止任一项违反即视为不合规。
-
----
-
-## 安装与初始化
-
-应用启动时通过 `install(app, options)` 挂载 Mussel，一次完成组件注册、滚动条指令、图标、主题色、多语言，并注入 `$mussel` 上下文（含运行时换肤 `setupColors`）。
-
-`options` 全字段、`$mussel` 上下文与 `installIcons` 查阅 `references/install.md`。
+生成代码后，逐条核对 `references/principles.md` 核心规范与文末快速自检清单，硬性禁止项任一违反即不合规。
 
 ---
 
@@ -112,6 +80,8 @@ description: >
 |------|------|
 | `<mu-tabs>` + `<mu-tab-panel>` | 页签切换内容区 |
 | `<mu-tab-bar>` | 独立页签栏，内容区自行管理 |
+| `<mu-collapse>` | 可折叠面板，独立使用或置于 MuCollapseGroup |
+| `<mu-collapse-group>` | 折叠面板组，`accordion` 手风琴模式 |
 | `<mu-dialog>` | 模态对话框，遮罩居中 |
 | `<mu-drawer>` | 抽屉，从边缘滑出（`position` 默认 bottom） |
 
@@ -130,6 +100,7 @@ description: >
 | `<mu-form>` | 表单容器；声明式用 form-row/form-field，数据驱动用 :model/:items |
 | `<mu-input>` | 文本/数字/密码输入 |
 | `<mu-search-input>` | 带防抖与搜索图标的过滤输入框 |
+| `<mu-input-group>` | 输入框成组容器，相邻输入控件包装为视觉整体 |
 | `<mu-select>` | 单选下拉，不可输入 |
 | `<mu-combo-box>` | 单选下拉，`editable` 可手动输入 |
 | `<mu-multi-select>` | 多选下拉 |
@@ -162,6 +133,7 @@ description: >
 | `<mu-table-ex>` | canvas 高性能表格，仅 `mussel.ex` 版本含；API 与 `mu-table` 同源，扩展单元格编辑、列宽拖拽、树形、`progress` / `button` 列 |
 | `<mu-list-item>` + `<mu-list-divider>` | 列表项与分隔线（需自行用容器包裹渲染） |
 | `<mu-tree>` + `<mu-tree-node>` | 树形结构；支持勾选、懒加载、节点按钮 |
+| `<mu-tag>` | 单个标签（静态展示、不可删除、可着色） |
 | `<mu-tags>` | 标签组；`removable` 可删除，`max` 截断省略 |
 | `<mu-calendar>` | 内嵌月历，用于页面内日期展示与选择 |
 | `<mu-pagination>` | 分页，常与 `mu-table` 配合置于表格下方 |

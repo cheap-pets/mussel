@@ -244,10 +244,7 @@ const items = [
 - 默认渲染 `MuOption` 而非 `MuDropdownItem`（`is` 覆写的基线组件，如混入 `{ is: 'mu-dropdown-item', action: 'edit' }` 动作项）
 - 纯字符串项视为 `{ value }`（如 `['admin', 'user']`），而非 `{ label }`
 
-**value-mode 使用场景：** 默认 `normal`，modelValue 为纯 `value`，回显文字靠从当前 `options`（或插槽选项）反查 `label`，查不到时直接显示原始 `value`。设为 `composite` 后 modelValue 为 `{ value, label }`（`MuMultiSelect` 为该结构的数组），选中时 `label` 随值一并存储，回显不再依赖 `options`。适用场景：
-
-- **options 动态变化 / 异步加载**（搜索过滤、级联联动、懒加载）：选中后 `options` 被替换或清空时，`normal` 回显会退化为原始 `value`（如显示 `admin` 而非 `管理员`）；`composite` 始终稳定回显。
-- **提交数据需同时携带 `label`**：后端要求 `{ value, label }` 结构时直接提交 modelValue，免去二次查表。
+**value-mode 使用场景：** `composite` 适用：① options 动态变化 / 异步加载（`normal` 回显退化为原始 value）；② 提交数据需同时携带 `label`。
 
 ```javascript
 const role = ref('admin')                              // normal

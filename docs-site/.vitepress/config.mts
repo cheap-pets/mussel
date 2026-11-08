@@ -134,6 +134,7 @@ export default defineConfig({
             { text: '右键菜单 MuContextMenu', link: '/components/context-menu' },
             { text: '页签 MuTabs', link: '/components/tabs' },
             { text: '页签栏 MuTabBar', link: '/components/tab-bar' },
+            { text: '折叠面板 MuCollapse', link: '/components/collapse' },
             { text: '对话框 MuDialog', link: '/components/dialog' },
             { text: '抽屉 MuDrawer', link: '/components/drawer' }
           ]
@@ -149,6 +150,7 @@ export default defineConfig({
             { text: '高性能表格 MuTableEx', link: '/components/table-ex' },
             { text: '分页 MuPagination', link: '/components/pagination' },
             { text: '树 MuTree', link: '/components/tree' },
+            { text: '标签 MuTag', link: '/components/tag' },
             { text: '标签组 MuTags', link: '/components/tags' },
             { text: '列表项 MuListItem', link: '/components/list-item' }
           ]

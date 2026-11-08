@@ -2,14 +2,14 @@
 
 > Mussel 1（`@mctech/mussel`，Vue 2.7）→ Mussel 4（`mussel`，Vue 3）是**框架 + 组件库的双重换代**，
 > 跨度远大于 V3→V4：v1 的 API 与 V3 差异很大（编辑器体系、布局体系、样式体系均不同），
-> **不能**用 `references/upgrade-v3/`（V3→V4）的迁移规则直接套用。本目录独立覆盖 v1→v4 全部已知差异。
+> **不能**用 mussel3to4 skill（V3→V4）的迁移规则直接套用。本目录独立覆盖 v1→v4 全部已知差异。
 
 > **版本检查**：v1 侧基于 Mussel 1 仓库 `1.9`（含 0.1.x 早期版本差异说明）；v4 侧版本基准与核对日期以本 skill `SKILL.md` 的版本声明为准。开始前确认项目 mussel 源版本（`@mctech/mussel` 0.1.x ~ 1.x）与目标版本（`mussel` 4.x）。若组件库源码与本文描述冲突，**以源码为准**，并按实际情况订正对应文件。
 
 **本目录文件分工**：
 - **流程**（退出检查 → 确认源目录与版本档次 → 分析 → 计划 → 执行）：`process.md`（分析阶段需完整读）。
 - **规则**（权威迁移规则，按章节按需查）：`rules.md` —— 1 框架迁移（Vue 2→3）→ 2 全局配置 → 3 CSS 变量与类 → 4 布局系统 → 5 图标 → 6 组件迁移 → 7 无对应与移除项 → 8 新增能力。
-- 写 v4 目标代码时的完整组件 Props/Events/Slots 与样式 Token，查阅本 skill 的 `references/components/*` 与 `references/styles.md`。
+- 写 v4 目标代码时的完整组件 Props/Events/Slots 与样式 Token，查阅 mussel-ui skill 的 `../../mussel-ui/references/components/*` 与 `../../mussel-ui/references/styles.md`。
 
 ## 早期 v1 的重要约束
 

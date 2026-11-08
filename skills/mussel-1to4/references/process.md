@@ -35,7 +35,7 @@
 - 检测到的 v1 痕迹仅出现在 `node_modules/`、`docs/` 或测试夹具中，业务源码已是 v4。
 
 > 升级流程是 opt-in。若不确定是否应进入，先询问用户。
-> Mussel 3（`mussel` 3.x，Vue 3）→ 4 的升级**不走本流程**，改用本 skill 的 `references/upgrade-v3/`。
+> Mussel 3（`mussel` 3.x，Vue 3）→ 4 的升级**不走本流程**，改用 mussel3to4 skill。
 
 ---
 
@@ -100,7 +100,7 @@
 
 **项目**：{项目名称}
 **日期**：{今天}
-**生成工具**：mussel-ui Skill（V1→V4 升级路径）
+**生成工具**：mussel1to4 Skill
 **源版本档次**：{早期 v1（无原子样式）/ 中期 / 后期}
 
 ## 范围概览

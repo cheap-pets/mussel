@@ -439,6 +439,54 @@ setupColors({ primary: '#be4bdb' })  // 默认写入当前应用根元素
 
 
 
+### MuCollapse
+
+可折叠面板。置于 MuCollapseGroup 中由组管理展开；独立使用时用 `v-model:expanded` 或 `default-expanded` 控制。
+
+| 属性名称        | 类型             | 默认值   | 说明                                                                 |
+| --------------- | ---------------- | -------- | -------------------------------------------------------------------- |
+| expanded        | Boolean          | —        | 双向绑定展开状态（独立使用时；组内由 MuCollapseGroup 的 `expanded` 数组管理） |
+| id              | String \| Number | 自动生成 | 组内唯一标识；外部绑定组 `expanded` 数组时需显式设置（`default-expand` 用自动生成 id 即可） |
+| title           | String           | —        | 标题文字；未提供 `header` 插槽时渲染                                 |
+| disabled        | Boolean          | —        | 禁用（组或自身任一禁用即生效，禁用时强制收起）                       |
+| default-expanded | Boolean         | —        | 非受控默认展开（仅独立使用且未绑定 `expanded` 时生效）               |
+| arrow           | Boolean          | `true`   | 标题右侧展开箭头                                                     |
+| expand-trigger  | String           | `header` | `header`（点标题栏切换）\| `custom`（自行调用作用域 `toggle`）       |
+
+| 插槽名称                | 作用域 / 说明                                                    |
+| ----------------------- | ---------------------------------------------------------------- |
+| default                 | 面板内容                                                          |
+| header                  | 覆盖整个标题栏（含标题与箭头）：`{ expanded, disabled, toggle }`；提供后 `title` 与 `header-prepend` / `header-append` 不再渲染 |
+| header-prepend / header-append | 标题前后附加：`{ expanded, disabled, toggle }`            |
+
+| 事件         | 参数 | 说明                                                                  |
+| ------------ | ---- | --------------------------------------------------------------------- |
+| header-click | —    | 标题栏点击（`expand-trigger="custom"` 时需自行调用作用域 `toggle`）   |
+
+### MuCollapseGroup
+
+折叠面板组容器；相邻子面板间自动渲染分隔线。
+
+| 属性名称      | 类型    | 默认值 | 说明                                                       |
+| ------------- | ------- | ------ | ---------------------------------------------------------- |
+| expanded      | Array   | `[]`   | 双向绑定展开中的面板 id 数组；未绑定时 `default-expand` 才生效 |
+| accordion     | Boolean | —      | 手风琴，同时仅展开一个                                     |
+| disabled      | Boolean | —      | 禁用全部子面板                                             |
+| default-expand | String | —      | `first` \| `all`；accordion 下 `all` 回退 `first` 并 dev 警告 |
+
+```html
+<mu-collapse-group v-model:expanded="expandedIds" accordion default-expand="first">
+  <mu-collapse id="basic" title="基本信息">
+    <!-- 面板内容 -->
+  </mu-collapse>
+  <mu-collapse id="extra" title="附加信息">
+    <!-- 面板内容 -->
+  </mu-collapse>
+</mu-collapse-group>
+```
+
+
+
 ### MuDialog
 
 模态对话框
@@ -1567,6 +1615,31 @@ const ctxMenu = shallowRef()
 | -------- | --------------------------------- |
 | default  | 树节点模板，作用域参数为 node     |
 | buttons  | 树节点工具模板，作用域参数为 node |
+
+
+
+### MuTag
+
+单个标签（静态展示、不可删除）；标签组（removable / max 截断）用 MuTags。
+
+| 属性名称 | 类型    | 默认值 | 说明                                                             |
+| -------- | ------- | ------ | ---------------------------------------------------------------- |
+| color    | String  | —      | 12 基本色（red/pink/grape/violet/indigo/blue/cyan/teal/green/lime/yellow/orange）+ 5 功能色（primary/secondary/success/warning/danger，不含 gray）；设置后文字与底色同色系（`text-{color}` + `bg-{color}-translucent`） |
+| flat     | Boolean | —      | 去除内描边                                                       |
+| pill     | Boolean | —      | 全圆角形态                                                       |
+
+| 插槽名称 | 说明     |
+| -------- | -------- |
+| default  | 标签内容 |
+
+默认形态：灰底 + 同色系内描边，高 20px、字号 12px。
+
+```html
+<mu-tag>Default</mu-tag>
+<mu-tag color="success">Success</mu-tag>
+<mu-tag color="pink" pill>Pink pill</mu-tag>
+<mu-tag color="success" flat>Success flat</mu-tag>
+```
 
 
 

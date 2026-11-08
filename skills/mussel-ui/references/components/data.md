@@ -68,6 +68,24 @@
 
 ---
 
+### MuTag
+
+单个标签（静态展示、不可删除）；标签组（removable / max 截断）用 MuTags。
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `color` | String | — | 12 基本色（red/pink/grape/violet/indigo/blue/cyan/teal/green/lime/yellow/orange）+ 5 功能色（primary/secondary/success/warning/danger，**不含 gray**）；设置后文字与底色同色系（`text-{color}` + `bg-{color}-translucent`） |
+| `flat` | Boolean | — | 去除内描边 |
+| `pill` | Boolean | — | 全圆角形态 |
+
+| 插槽 | 说明 |
+|------|------|
+| `default` | 标签内容 |
+
+默认形态：灰底 + 同色系内描边，高 20px、字号 12px（tag.scss:1-25）
+
+---
+
 ### MuTags
 
 标签组。

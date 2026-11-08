@@ -73,3 +73,6 @@ n: 2 ~ 4 像素值，1px 用无后缀类；方向支持 `-x` / `-y` / `-t` / `-r
 | `.shadow-modal` | 模态窗口阴影 |
 | `.shadow-focus` | 焦点阴影（需 `:focus`） |
 | `.shadow-focus-within` | 焦点阴影（需 `:focus-within`） |
+| `.shadow-none` | 清除阴影（**无 `mu-` 前缀别名**） |
+
+`.shadow-float/popup/layer/modal/focus/focus-within` 与 `.mu-shadow-*` 等价。

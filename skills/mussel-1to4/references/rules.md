@@ -8,7 +8,7 @@
 
 > 本文件为 API 变更的**单一事实源**；`process.md` 分析阶段不维护独立的逐项线索清单，而是按本文件各章节的「Mussel 1」列标识符逐节生成 grep 线索（机制见 `process.md`「阶段一」）。
 >
-> Mussel 4 目标写法的完整组件 API 与样式 Token 以 `references/components/*` 与 `references/styles.md` 为单源；本文件「目标写法」列只保留迁移所需的一行速查，不展开 v4 用法。
+> Mussel 4 目标写法的完整组件 API 与样式 Token 以 mussel-ui skill 的 `../../mussel-ui/references/components/*` 与 `../../mussel-ui/references/styles.md` 为单源；本文件「目标写法」列只保留迁移所需的一行速查，不展开 v4 用法。
 
 > 章节顺序 = 执行顺序。**框架迁移（第 1 节）是硬前提**：`@mctech/mussel` 不能运行在 Vue 3 上，必须先完成 Vue 3 化与安装入口改写（第 2 节），项目才能启动验证；之后按 3 → 4 → 5 → 6 处理，7 收尾。
 
@@ -101,7 +101,7 @@ install(app, {
 | 导出 | `import { setTheme, variables } from '@mctech/mussel'` | `setTheme`/`variables` **不再导出**；换肤走 `$mussel.setupColors` |
 | 语言 | `variables.lang = 'zh'` | `install` 的 `locale` / `localeResources` |
 
-v1 `variables.js` 中非颜色配置（字号、控件高度、圆角、阴影等）在 v4 中一律改为覆盖 CSS 变量（`--mu-font-size`、`--mu-radius-*`、`--mu-shadow-*` 等，完整清单见 `references/styles.md`）。
+v1 `variables.js` 中非颜色配置（字号、控件高度、圆角、阴影等）在 v4 中一律改为覆盖 CSS 变量（`--mu-font-size`、`--mu-radius-*`、`--mu-shadow-*` 等，完整清单见 mussel-ui skill 的 `../../mussel-ui/references/styles.md`）。
 
 ### 2.3 图标注册
 
@@ -185,8 +185,9 @@ v1 `base-styles` 提供的 `mu-*` 工具类（1.0.x）在 v4 中大部分移除�
 | `.mu-background-light-grey` / `-grey` | `.bg-fill` / `style` | v4 灰底原子类有限，逐个确认 |
 | `.mu-background-highlight` | `.bg-strong` + `style="color: #fff"` | v1 同时设置反白文字色；v4 bg-strong 为浅色底，视觉差异大需确认 |
 | `.mu-background-disabled` | `.bg-disabled` | v1 需 `[disabled]` 属性才生效，注意场景 |
-| `.mu-background-primary` / `-success` / `-danger` / `-warning` | `style="background: var(--mu-primary-color)"` | v4 无彩色背景原子类；注意 v1 `-danger` 误引用 success-color（v1 bug 渲染绿色），迁移后变红属修正非回归 |
-| `.mu-background-info` / `.mu-background-hover` | 无对应 | 人工处理 |
+| `.mu-background-primary` / `-success` / `-danger` / `-warning` | `.bg-primary` / `.bg-success` / `.bg-danger` / `.bg-warning` | 注意 v1 `-danger` 误引用 success-color（v1 bug 渲染绿色），迁移后变红属修正非回归 |
+| `.mu-background-hover` | `.bg-gray-translucent` | 与 v3 变量映射（`--mu-background-hover` → `--mu-gray-translucent`）口径一致；v1 为实色时迁移后变半透明，视觉差异需确认；v1 类若为 `background` 简写需改 `background-color` 覆盖 |
+| `.mu-background-info` | 无对应 | 人工处理 |
 | `.mu-bordered` / `[class^="mu-"][border]` 属性选择器 | `.border` / `.border-t` / `.border-r` / `.border-b` / `.border-l` / `.border-x` / `.border-y`（彩色加 `.border-primary` / `.border-danger`，虚线 `.border-dashed`） | `border~="x2"` → `.border-2`；`border~="none"` → `style="border: 0"` |
 | `[class^="mu-"][margin~="all|hori|vert|top|left|right|bottom"]` × `1/x2/x4` | `.m-1x` ~ `.m-4x` / `.mx-*` / `.my-*` / `.mt-*` / `.ml-*` / `.mr-*` / `.mb-*` | v1 档位 all=8px/half，x2=16px/unit，x4=32px/double → 1x/2x/4x |
 | `[class^="mu-"][padding~="..."]` 同上 | `.p-*` / `.px-*` / `.py-*` / `.pt-*` / `.pl-*` / `.pr-*` / `.pb-*` | 同上 |
@@ -281,7 +282,7 @@ late v1 项目若使用了 `class="mu-box"` + `layout=`/`position=`/`width=`/`he
 
 ### 5.2 内置图标名映射
 
-v4 内置名：`X`、`check`、`x`、`ok`、`info`、`alert`、`question`、`chevronUp/Down/Left/Right`、`arrowDownLeft`、`arrowUpRight`、`list`、`grid`、`dots`、`search`、`file`、`folder`、`folderOpen`、`sun`、`moon`、`star`、`starred`（filled）、`leftCollapse` / `leftExpand`（侧栏收起/展开）、`clock`、`calendar`、`loading`（自带 spin 动画），以及带旋转动画的组合图标 `windowClose`（dialog 关闭按钮自动使用）、`treeNodeExpand`（tree 展开箭头自动使用）、`dropdownExpand`（dropdown 展开箭头自动使用）。**注意大小写敏感**。
+v4 内置图标名全集（32 个，**大小写敏感**）见 mussel-ui skill 的 `../../mussel-ui/references/components/data.md`『MuTable → 列类型（type）』内 `icon` 列 blockquote 的「内置注册名 32 个」。
 
 | Mussel 1 | Mussel 4 | 说明 |
 |----------|----------|------|
@@ -313,7 +314,7 @@ v4 内置名：`X`、`check`、`x`、`ok`、`info`、`alert`、`question`、`che
 
 ## 6. 组件迁移
 
-> 各组件「目标写法」的完整 Props/Events/Slots 以 `references/components/*` 为准。
+> 各组件「目标写法」的完整 Props/Events/Slots 以 mussel-ui skill 的 `../../mussel-ui/references/components/*` 为准。
 
 ### 6.1 按钮系
 
@@ -405,7 +406,7 @@ v1 多选场景按单行高度设计，且迁移多发生在 `mu-form-row` / 表
 | `label-width` / `label-align` | 同名 | v4 `label-align` 仅 `left|right|top`，`center` 不再支持 |
 | `<mu-form-field label label-width label-align>` | 同名 | 新增 `prop`/`input`/`required`/`error`/`suffix`/`width`；v1 的 `size` 是**宽度语义**（v4 `width`，`1` → `100%`），**不是 flex 因子**；`size` 也非布局组件独有——`mu-form-field`/`kaka-grid`/`mu-editor` 等继承 FlexItem 的 `size`，须按所属组件分流迁移，不能统一改 `flex-N` |
 | `<mu-form-row>` | 同名 | |
-| （无） | `:model` + `:items` 数据驱动表单 | 新能力，简单表单可一并改写（见 `references/components/form.md`） |
+| （无） | `:model` + `:items` 数据驱动表单 | 新能力，简单表单可一并改写（见 mussel-ui skill `../../mussel-ui/references/components/form.md`） |
 
 **mu-form-field 细则**：
 - 默认插槽一旦有内容（含空字符串插值）即**不再渲染兜底输入组件** → 只读文本展示直接放插槽。
@@ -495,7 +496,7 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 | `<mu-table-column field label width align>` | `columns: [{ field, caption, width, align, type }]` | `label` → `caption`；`type` 默认 `text` |
 | `cell-text`（值或 fn） | `text` / `value`（fn） | |
 | `cell-title` / `cell-class` / `cell-style` | `title` / `class` / `style`（fn） | |
-| `cell-html` | 无对应 | 用列 items/自定义渲染（见 `references/components/data.md`） |
+| `cell-html` | 无对应 | 用列 items/自定义渲染（见 mussel-ui skill `../../mussel-ui/references/components/data.md`） |
 | `<mu-table-check-column>` | `{ type: 'check', field, headerCheckbox }` | |
 | `<mu-table-button-column>` | `{ type: 'link', links: [{ caption, danger, disabled }] }` | 无 `action` 字段；点击统一 `@cell-item-click`（payload `{ record, column, link }`），v1 `@buttonclick` 改绑此事件 |
 | `<mu-table-combo-column>` / `<mu-table-edit-column>` / `<mu-table-search-column>` | **无对应** | v4 无表格编辑/搜索列，需人工设计（弹窗编辑、行内自定义渲染） |
@@ -524,7 +525,7 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 | `<mu-sort-icon direction="up\|down">` | 同名同 API | 无破坏性变更 |
 | `<mu-paging-bar :page-index :eof :reload display-list>`（0.1.x ~ 中期） | `<mu-pagination v-model:page-index :page-size :total>` | **模型重写**：v1 早期按当前页 + `eof`（无总数）驱动，`reload` 刷新按钮与 `display-list` 页码形态无对应；v4 按总数派生页数 |
 | `<mu-pagination>`（后期 1.x） | 同名 `mu-pagination` | **模型仍需重写**：v1 双模型 `limit`/`offset`（`:limit.sync`/`:offset.sync`）或 `pageCount`/`pageIndex`/`dataCount`；v4 仅 `page-index`/`page-size`/`total`。`dataCount` → `total`；`limit` → `page-size`（`update:limit` → `update:page-size`）；`offset` → 换算 `page-index`（offset / limit）；`pageCount` → 换算 `total = pageCount × pageSize`；`eof`/`disabled`/`button-style` 无对应，`small` → `size="small"`；`quick-jumper`/`page-size-options` 同名保留 |
-| `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（`references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
+| `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（mussel-ui skill `../../mussel-ui/references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
 | `<mu-context-menu :menu-lists :client-x :client-y>` | `<mu-context-menu :menus>` + `show(event)` | **API 重构**：v1 项 `{ btnName, iconClass, handler, children, disabled }` → v4 dropdown-items 结构 `{ label, icon, action, disabled }`；`handler` 回调改 `@action`/`@itemclick` 事件；定位改 `show(contextmenuEvent)`（按 pageX/pageY），`client-x`/`client-y` props 移除；v1 `children` 嵌套子菜单无对应（v4 面板为平铺列表） |
 | `<mu-scroll-box>` | `<mu-scroll-box>` | v1 基于 mussel-scrollbar 外挂实现，v4 内置，用法不变 |
 | `<mu-expander v-model title>` | `<mu-collapse>` / 自研 | v1 为 Vue2 `model` 选项（prop `expanded`）。首选 v4 `mu-collapse` / `mu-collapse-group`；自研路径：沿用 v1 契约（`expanded` prop + `change` 事件 + `#header` 插槽）与 `.mu-expander*` 原类名（零样式迁移，承接既有样式钩子），折叠动画用 `grid-template-rows: 0fr/1fr` |
@@ -533,7 +534,7 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 
 ### 6.11 导航菜单（sidebar-menu → side-menu / menu）
 
-v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item>`，激活靠 `selectMode` 或逐项 `v-model`）→ v4 **数据驱动重写**为 `<mu-side-menu :items>`（侧边）或 `<mu-menu :items>`（横向顶栏）。完整 API 见 `references/components/navigation.md`。
+v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item>`，激活靠 `selectMode` 或逐项 `v-model`）→ v4 **数据驱动重写**为 `<mu-side-menu :items>`（侧边）或 `<mu-menu :items>`（横向顶栏）。完整 API 见 mussel-ui skill 的 `../../mussel-ui/references/components/navigation.md`。
 
 > ⚠️ **组件可用性**：若目标项目依赖的 mussel 未包含 `mu-side-menu` / `mu-menu`，构建照常通过，**运行时才报 `Failed to resolve component`**（无任何构建告警）。执行前先确认项目依赖的 mussel 已包含这两个组件；缺失时与用户确认策略：按目标 API 落地并升级依赖，或回退为自研等价组件。
 
@@ -610,7 +611,7 @@ v1 无对应、迁移时可一并使用的 v4 能力：
 
 | 能力 | 说明 |
 |------|------|
-| `mu-collapse` / `mu-collapse-group` | 折叠面板/组（v1 `mu-expander` 的首选去向，见 6.10） |
+| `mu-collapse` / `mu-collapse-group` | 折叠面板/组（v1 `mu-expander` 的首选去向，见 6.10；API 见 mussel-ui skill 的 `../../mussel-ui/references/components/containers.md`） |
 | `mu-select` / `mu-multi-select` | 下拉单选/多选（替代 combo-box 部分用法）；`mu-multi-select` 由 combo-box `:multiple="true"` 迁移时须加 `nowrap`（见 6.2） |
 | `mu-date-range-input` | 日期区间选择（单面板两次点击定区间） |
 | `mu-segmented` | 分段选择器（可替代 toggle 双按钮模式） |

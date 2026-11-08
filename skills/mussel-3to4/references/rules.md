@@ -6,7 +6,7 @@
 
 **升级流程**（分析 → 计划 → 执行）见同级目录 `process.md`。
 
-> ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**，否则会出现「分析漏检」或「grep 命中但无规则」的不一致。v4 侧事实（组件 API、样式 Token）以 `references/components/*` 与 `references/styles.md` 为单源，本文件只保留迁移所需的一行速查，不展开 v4 用法。
+> ⚠️ **同步约束（SYNC-RULES）**：本文件为 API 变更的**权威定义**；`process.md` 分析阶段有一份对应的「grep 线索清单」。修改本文件任一迁移规则（新增/移除/重命名废弃项）**必须同步 `process.md` 的线索清单**，否则会出现「分析漏检」或「grep 命中但无规则」的不一致。v4 侧事实（组件 API、样式 Token）以 mussel-ui skill 的 `../../mussel-ui/references/components/*` 与 `../../mussel-ui/references/styles.md` 为单源，本文件只保留迁移所需的一行速查，不展开 v4 用法。
 
 > 章节顺序 = 执行顺序：**全局配置是升级第一步**（应用入口 `install` 改写后才能启动验证后续迁移），因此从第 1 节「全局配置」开始；CSS 变量迁移与布局迁移相互独立，但 CSS 变量改完后即可验证主题色，故 CSS（第 2 节）先于布局（第 3 节）。
 
@@ -42,7 +42,7 @@
 
 ### 安装方式
 
-> 完整 `install` API（options 字段、`$mussel` 上下文、`installIcons`）见 `references/install.md`。
+> 完整 `install` API（options 字段、`$mussel` 上下文、`installIcons`）见 `../../mussel-ui/references/install.md`（参见 mussel-ui skill）。
 
 #### 导入与调用
 
@@ -149,7 +149,7 @@ export { install, installIcons, EventInterceptor, colors, icons }
 
 > `colors` 为包含全部派生色（基础色、语义色及其调色板/灰阶）的运行时对象，可在运行时读取色板或用于自定义渲染（如色板选择器）。
 >
-> M3 运行时换肤函数 `setTheme(option)` 在 M4 中不再导出，改为挂载到 `$mussel` 上下文：`$mussel.setupColors(customColors, rootElement?)`。详见 `references/install.md`「运行时换肤」。
+> M3 运行时换肤函数 `setTheme(option)` 在 M4 中不再导出，改为挂载到 `$mussel` 上下文：`$mussel.setupColors(customColors, rootElement?)`。详见 `../../mussel-ui/references/install.md`「运行时换肤」（参见 mussel-ui skill）。
 
 ---
 
@@ -278,7 +278,7 @@ Mussel 4 新增：
 
 ### 新增原子类（Mussel 4）
 
-Mussel 4 新增了完整的原子类系统。完整列表见 `references/styles.md`，主要类别：
+Mussel 4 新增了完整的原子类系统。完整列表见 mussel-ui skill 的 `../../mussel-ui/references/styles.md`，主要类别：
 
 **布局**：`.flex`、`.inline-flex`、`.block`、`.inline-block`、`.grid`、`.inline-grid`、`.contents`、`.hidden`、`.flex-row`、`.flex-col`、`.flex-1`、`.items-center`、`.justify-between`、`.gap-{n}x`
 
@@ -288,9 +288,9 @@ Mussel 4 新增了完整的原子类系统。完整列表见 `references/styles.
 
 **边框**：`.border`、`.border-2`、`.border-3`、`.border-4`、`.border-primary`、`.border-danger`、`.border-soft`、`.border-strong`、`.border-dashed`、`.border-dotted`
 
-**文本**：`.text-strong`、`.text-normal`、`.text-muted`、`.text-subtle`、`.text-soft`、`.text-primary`、`.text-secondary`、`.text-success`、`.text-warning`、`.text-danger`、`.text-ellipsis`、`.line-clamp`
+**文本**：`.text-strong`、`.text-normal`、`.text-muted`、`.text-subtle`、`.text-soft`、`.text-primary`、`.text-secondary`、`.text-success`、`.text-warning`、`.text-danger`、`.text-{基本色}`（gray + 12 基本色，共 13 色）、`.text-ellipsis`、`.line-clamp`
 
-**背景**：`.bg-normal`、`.bg-strong`、`.bg-fill`、`.bg-disabled`、`.bg-overlay`、`.bg-mask`（斑马纹只有 `--mu-bg-stripe` 变量，无对应原子类）
+**背景**：`.bg-normal`、`.bg-strong`、`.bg-fill`、`.bg-disabled`、`.bg-overlay`、`.bg-mask`、`.bg-primary` / `.bg-secondary` / `.bg-success` / `.bg-warning` / `.bg-danger`（功能色实底）、`.bg-{基本色}`（gray + 12 基本色，共 13 色，基本色实底）、`.bg-{功能色}-translucent` / `.bg-gray-translucent` / `.bg-{基本色}-translucent`（透明变体共 18 个）（斑马纹只有 `--mu-bg-stripe` 变量，无对应原子类）
 
 **溢出**：`.overflow-auto`、`.overflow-hidden`、`.overflow-visible`、`.overflow-clip`
 
@@ -634,7 +634,7 @@ root.value.addEventListener(…)
 
 ### 5.1 MuDialog
 
-> 完整 MuDialog API：`references/components/containers.md`
+> 完整 MuDialog API：`../../mussel-ui/references/components/containers.md`（参见 mussel-ui skill）
 
 #### 属性变更
 
@@ -651,7 +651,7 @@ root.value.addEventListener(…)
 | _(无)_ | `body-style` prop | 为 `.mu-dialog__body` 添加内联样式（如 `{ padding: '16px 24px' }`） |
 | _(无)_ | `body-scrollbar` prop | 启用 body 内置滚动条 |
 
-> `dismissible` 取值 `true` / `'esc'` / `'mask'`，不设置则不自动关闭（完整语义见 `references/components/containers.md`）。
+> `dismissible` 取值 `true` / `'esc'` / `'mask'`，不设置则不自动关闭（完整语义见 mussel-ui skill 的 `../../mussel-ui/references/components/containers.md`）。
 
 #### 事件变更
 
@@ -1116,7 +1116,7 @@ const items = [
 ]
 ```
 
-`input` 属性支持的类型完整清单见 `references/components/form.md`（`text` / `memo` / `date` / `week` / `month` / `quarter` / `year` / `time` / `color` / `segmented` / `select` / `multi-select` / `check-group` / `radio-group`）。
+`input` 属性支持的类型完整清单见 mussel-ui skill 的 `../../mussel-ui/references/components/form.md`（`text` / `memo` / `date` / `week` / `month` / `quarter` / `year` / `time` / `color` / `segmented` / `select` / `multi-select` / `check-group` / `radio-group`）。
 items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数组子行、`{ is: '组件名' }` 自定义组件。
 
 ---
@@ -1174,7 +1174,7 @@ Mussel 4 新增 `buttonStyle` 属性：`'normal' | 'outline' | 'text' | 'link'`�
 
 #### MuBadge
 
-V3 仅有 `.mu-badge` CSS 类（无组件，`secondary` / `danger` 属性选择器变体）。V4 新增 `<mu-badge>` 组件（API 见 `references/components/basic.md`），颜色用 `color="secondary/danger/…"` 属性；V3 的属性写法仍兼容但已弃用。
+V3 仅有 `.mu-badge` CSS 类（无组件，`secondary` / `danger` 属性选择器变体）。V4 新增 `<mu-badge>` 组件（API 见 mussel-ui skill 的 `../../mussel-ui/references/components/basic.md`），颜色用 `color="secondary/danger/…"` 属性；V3 的属性写法仍兼容但已弃用。
 
 #### MuIcon
 
@@ -1297,7 +1297,7 @@ Mussel 3 中，`<mu-check>` 和 `<mu-radio>` 在没有 `label` 时渲染裸 `<in
 
 ## 6. 新增组件
 
-Mussel 4 新增以下组件（V3 均无对应，`mu-*` 标签直接可用），可用于替代手工实现。完整 API 见 `SKILL.md` 组件速查表路由的对应参考文件。
+Mussel 4 新增以下组件（V3 均无对应，`mu-*` 标签直接可用），可用于替代手工实现。完整 API 见 mussel-ui skill 组件速查表路由的对应参考文件（`../../mussel-ui/references/components/*`）。
 
 | 组件 | 用途 |
 |------|------|
