@@ -38,8 +38,18 @@ export default {
       if (this.flexCenter) {
         result.push('flex-center')
       } else {
-        if (this.alignItems) result.push(`items-${this.alignItems}`)
-        if (this.justifyContent) result.push(`justify-${this.justifyContent}`)
+        if (this.alignItems) {
+          result.push(`items-${this.alignItems}`)
+        }
+
+        if (this.justifyContent) {
+          const value = this.justifyContent
+            .replace(/^space-/, '')
+            .replace(/^left$/, 'start')
+            .replace(/^right$/, 'end')
+
+          result.push(`justify-${value}`)
+        }
       }
 
       if (this.flexWrap) {

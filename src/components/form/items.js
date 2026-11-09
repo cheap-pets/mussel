@@ -48,17 +48,15 @@ function useItems (props, itemTypes) {
   const items = computed(() => {
     const result = []
 
-    props
-      .items
-      .forEach(el => {
-        const type = itemTypes.find(t => t.check(el))
+    props.items?.forEach(el => {
+      const type = itemTypes.find(t => t.check(el))
 
-        if (type) {
-          const item = type.build(el)
-          item.key = keyGen(el)
-          result.push(item)
-        }
-      })
+      if (type) {
+        const item = type.build(el)
+        item.key = keyGen(el)
+        result.push(item)
+      }
+    })
 
     return result
   })

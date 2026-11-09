@@ -15,6 +15,7 @@
         :name="el.name"
         :icon="el.icon"
         :caption="el.caption"
+        :title="el.title"
         :disabled="el.disabled"
         :active="activeTab === el.name"
         @click="onTabClick(el.name)" />

@@ -5,7 +5,8 @@
       size === 'small' && 'mu-tab-button--small',
       active && 'mu-tab-button--active',
       disabled && 'mu-tab-button--disabled'
-    ]">
+    ]"
+    :title="title">
     <mu-icon v-if="icon" :icon="icon" />
     <span v-if="buttonCaption">{{ buttonCaption }}</span>
   </a>
@@ -20,6 +21,7 @@
     name: String,
     icon: String,
     caption: String,
+    title: String,
     active: Boolean,
     disabled: Boolean
   })
