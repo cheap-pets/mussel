@@ -351,8 +351,8 @@ const filteredItems = computed(() =>
 | `value-type` | String | `'date'` | 输出值类型：`'date'`（默认，输出 Date 对象）\| `'string'`（按 `value-format` 输出字符串） |
 | `value-format` | String | `yyyy-MM-dd` | 仅 `value-type="string"` 时生效的输出格式 |
 | `week-starts-on` | Number | `0` | 每周起始日（0=周日 ~ 6=周六）；默认读全局 `calendar.weekStartsOn` 配置 |
-| `min` | Date\|String | — | 最小可选值 |
-| `max` | Date\|String | — | 最大可选值 |
+| `min` | Date\|String | — | 已声明，当前版本未生效（不做可选范围限制） |
+| `max` | Date\|String | — | 已声明，当前版本未生效（不做可选范围限制） |
 | `dropdown-class` | String | — | 下拉面板附加 class |
 | (其他) | — | — | 透传 `MuInput` 属性（`placeholder`/`clearable`/`size`/`prefix`/`suffix`/`disabled`/`readonly` 等）及 `MuDropdown` 的 `dropdown-` 前缀属性 |
 
@@ -378,8 +378,8 @@ const filteredItems = computed(() =>
 | `value-type` | String | `'date'` | 输出值类型：`'date'`（默认，输出 Date 对象）\| `'string'`（按 `value-format` 输出字符串） |
 | `value-format` | String | `yyyy-MM-dd` | 仅 `value-type="string"` 时生效的输出格式 |
 | `week-starts-on` | Number | `0` | 每周起始日（0=周日 ~ 6=周六）；默认读全局 `calendar.weekStartsOn` 配置 |
-| `min` | Date\|String | — | 最小可选值 |
-| `max` | Date\|String | — | 最大可选值 |
+| `min` | Date\|String | — | 已声明，当前版本未生效（不做可选范围限制） |
+| `max` | Date\|String | — | 已声明，当前版本未生效（不做可选范围限制） |
 | `dropdown-class` | String | — | 下拉面板附加 class |
 | (其他) | — | — | 透传规则同 `MuDateInput` |
 

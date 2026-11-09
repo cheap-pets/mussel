@@ -41,7 +41,7 @@
 3. 验证路径有效性：
    - 目录存在且可读
    - 包含 Vue 组件文件（`.vue`）
-   - 包含 Mussel 3 依赖的迹象（`package.json` 中 mussel 版本 < 4、或 `.vue`/`.js`/`.css` 文件中存在 `mu-editor`、`mu-box`、`theme:`、`mu-tree-view` 四类 Mussel 3 模式）
+   - 包含 Mussel 3 依赖的迹象（`package.json` 中 mussel 版本 < 4、或 `.vue`/`.js`/`.css` 文件中存在 `mu-editor`、`mu-box`、`theme:`、`mu-tabs-buttons` 四类 Mussel 3 模式）
 4. 若路径无效或不包含 Mussel 3 代码，向用户报告原因并重新确认。
 5. 确认后，后续所有阶段均基于此目录操作。
 
@@ -62,13 +62,13 @@
 
    **CSS 变量与 CSS 类**：
    - 废弃 CSS 变量：`--mu-gray-dark`、`--mu-text-color-reversed`、`--mu-text-color-weak`、`--mu-background-normal`、`--mu-background-hover`、`--mu-background-disabled`、`--mu-primary-color-shadow`、`--mu-unit-spacing-size`、`--mu-editor-text-color`、`--mu-text-color-placeholder`
-   - 废弃 CSS 类：`mu-editor`→`mu-input`、`mu-text-ellipsis`→`text-ellipsis`、`mu-text-color-weak`→`text-muted`
+   - 废弃 CSS 类：`mu-editor`→`mu-input`、`mu-text-ellipsis`→`text-ellipsis`（`.mu-text-ellipsis` 别名在 V4 仍生效，可保留）、`mu-text-color-weak`→`text-muted`
 
    **布局系统**：
-   - 已移除组件：`<mu-box>`、`<mu-h-box>`、`<mu-v-box>`
+   - 已移除组件：`<mu-box>`（注意：`<mu-h-box>` / `<mu-v-box>` 组件在 V4 **保留**且 props 兼容，只是不再吃 HTML 布局属性，见 rules.md 3.2）
    - 废弃 CSS 类：`mu-box`、`mu-h-box`、`mu-v-box`、`mu-space`→`flex-space`、`mu-divider`→`flex-divider`、`mu-flex-item`、`mu-bg-transparent`、`mu-bg-white`、`mu-bg-black`、`mu-bg-x-color`
    - 废弃属性选择器：`layout=`、`flex=`、`margin=`、`padding=`、`padding-x/y`、`margin-x/y`、`margin-top/bottom/left/right`、`padding-top/bottom/left/right`、`border`、`border-right/left/top/bottom/x/y`、`position=`、`width=`、`height=`、`overflow=`、`align-items=`、`align-self=`、`justify-content=`、`content-center`、`flex-wrap`、`inline`、`reverse`、`collapsible`、`gap=`
-   - ref 连带变更：`<mu-box ref="...">` / `<mu-h-box ref="...">` / `<mu-v-box ref="...">`（模板）+ 对应 `{refName}.value.$el`（脚本），见 rules.md 3.5
+   - ref 连带变更：`<mu-box ref="...">`（模板）+ 对应 `{refName}.value.$el`（脚本）；`mu-h-box` / `mu-v-box` 的 ref 仍是组件实例，`.$el` 用法不变，见 rules.md 3.5
 
    **图标**：
    - `icon="dropdown"` → `icon="chevronDown"`
@@ -77,14 +77,14 @@
    - 已移除组件：`<mu-editor>`、`<mu-tabs-buttons>`
    - Tree 相关：`<mu-tree-nodes>`（V4 不再注册，见 rules.md 5.7）
    - 推荐迁移：`<mu-option>`、`<mu-tree-node>`、`<mu-dropdown-item>` 等
-   - 废弃属性：`mask-action`、`:moveable`、`dialog-style`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`:tab-bar-params`、`:messages`（Notifier→`:notifications`）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
+   - 废弃属性：`mask-action`、`:moveable`、`dialog-style`、`:clear-button`、`dropdown-align`、`sticky-target`、`reserve-icon-place`、`:tab-bar-params`、`<mu-notifier :messages>`（组件已移除→`inject('$mussel').messageBox.notify()`，见 rules.md 5.10）、`:tab-items`（TabBar→`:tab-buttons`）、`dropdown-icon="dropdown"`→`"dropdownExpand"`
    - 废弃事件：`@tab-change`、`@close-button-click`、`@mask-click`
    - 行为差异（非废弃，需人工审核）：
      - `<mu-dialog>` 同时使用 `action: 'hide'`/`'close'` 按钮与 `@button-click` handler（V3 hide 按钮不触发，V4 全触发，见 rules.md 5.1）
      - `<mu-tabs>` 的 `@tab-click` handler 使用了 tab 对象的字段（事件名与 V3 一致，但 payload 从完整 tab 对象变为 tab `name` 字符串；V3 中 `@tab-click` 与 `@button-click` 合并为单个 `@tab-click`，见 rules.md 5.5）
      - `<mu-tabs>` 传入了 `:on-tabchange`（V3 中它不是事件，而是组件通过 `$attrs.onTabchange` 捕获的用户自定义方法，返回 `false` 阻止切换；V4 已移除该机制，需升级为 `:active-tab` + `@update:active-tab` 受控模式，见 rules.md 5.5）
    - 废弃插槽：`<template #left>`/`#right`（ComboBox→`prefix`/`suffix` 属性）、`<template #tab-bar>`（Tabs→`#tab-bar-prepend`/`#tab-bar-append`）、`<template #client>`/`#header-prepend`/`#header-append`/`#footer-prepend`/`#footer-append`（Dialog→`#body`/`#header`/`#footer`）
-   - 废弃子组件属性：`title`（TabButton）、`divider`（ListDivider）、`value`（ListItem）
+   - 废弃子组件属性：`title`（TabButton；悬浮提示改用 `mu-tab-panel` 的 `title`）、`divider`（ListDivider）、`value`（ListItem）
    - 缺少 `mu-box` class 的 `<mu-form-field>`/`<mu-form>`
    - 非 box 组件上的 `width="100%"`
    - Dialog CSS 选择器 `> .mu-dialog`（Mussel 4 改为绑在 dialog 层）

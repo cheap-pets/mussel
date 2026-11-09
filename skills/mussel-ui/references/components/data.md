@@ -120,8 +120,8 @@
 | `value-type` | String | `'date'` | 输出值类型：`'date'`（默认，输出 Date 对象）\| `'string'`（按 `value-format` 输出字符串） |
 | `value-format` | String | `yyyy-MM-dd` | 仅 `value-type="string"` 时生效的输出格式 |
 | `week-starts-on` | Number | `0` | 每周起始日（0=周日 ~ 6=周六）；默认读全局 `calendar.weekStartsOn` 配置 |
-| `min` | Date\|String | — | 最小可选日期 |
-| `max` | Date\|String | — | 最大可选日期 |
+| `min` | Date\|String | — | 已声明，当前版本未生效（不做可选范围限制） |
+| `max` | Date\|String | — | 已声明，当前版本未生效（不做可选范围限制） |
 
 ---
 
@@ -307,7 +307,7 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；p
 | `tree-collapse` | `{ key, record, level }` | 展开箭头 toggle 收起 |
 | `update:cell-value` | `{ record, recordIndex, column, value }` | check 翻转与编辑提交（较 `MuTable` 多 `recordIndex`）|
 | `cell-item-click` | `{ record, recordIndex, column, item/tag/button }` | 条目点击（较 `MuTable` 多 `recordIndex`；载荷键 `link` / `list` 列为 `item`、`tag` 列 `tag`、`button` 列 `button`）|
-| `edit-button-click` | `{ record, recordIndex, column }` | 点击列 `editButton` 图标按钮（不选中行、不开编辑）|
+| `cell-button-click` | `{ record, recordIndex, column }` | 点击列 `cellButton` 图标按钮（不选中行、不开编辑）|
 
 | 插槽 | 说明 |
 |------|------|
@@ -330,7 +330,7 @@ canvas 渲染的高性能表格：只绘制可视区域，适合大数据量；p
 |------|------|------|
 | `editable` | Boolean | 列级编辑开关，`false` 关闭 |
 | `editor` | Boolean\|Object | 编辑器配置：`true` 按列类型自动选择；对象 `{ type, props, validate, border }`，见下方「单元格编辑」|
-| `editButton` | Object | `{ icon }`：hover 时单元格右侧显示图标按钮（`icon` 为 `installIcons` 注册名），点击发 `edit-button-click` 事件（载荷 `{ record, recordIndex, column }`），不触发选中 / 编辑 |
+| `cellButton` | Object | `{ icon }`：hover 时单元格右侧显示图标按钮（`icon` 为 `installIcons` 注册名），点击发 `cell-button-click` 事件（载荷 `{ record, recordIndex, column }`），不触发选中 / 编辑 |
 | `maxLines` | Number | 文本最大行数（1–10）：`> 1` 时自动折行，超出省略；替代 `multiline` + `lineClamp`（两者仍兼容）|
 | `maxItems` | Number | `link` / `list` 条目列最大显示条数（1–10，默认 10），超出以 `...` 省略（canvas 绘制层；DOM 通道用 `linkOption.max` / `listOption.max` / `tagOption.max`）|
 | `resizable` | Boolean | `false` 禁止拖拽该列宽；`minWidth`（缺省取列类型最小宽，兜底 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |

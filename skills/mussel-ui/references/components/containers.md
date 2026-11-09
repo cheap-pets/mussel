@@ -49,7 +49,7 @@
 | `name` | String | 页签唯一标识；建议显式设置（省略时无法被 `active-tab` 匹配） |
 | `caption` | String | 页签按钮标题 |
 | `icon` | String | 页签按钮图标 |
-| `title` | String | 页签按钮 tooltip |
+| `title` | String | 页签按钮悬浮提示（原生 tooltip） |
 | `disabled` | Boolean | 是否禁用 |
 | `tab-order` | Number | 手动排序（默认按 DOM 顺序） |
 

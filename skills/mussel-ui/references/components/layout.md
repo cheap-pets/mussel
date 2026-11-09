@@ -13,7 +13,7 @@
 | `inline` | Boolean | `false` | — | `.inline-flex`（默认 `.flex`） |
 | `gap` | String | — | `none` \| `half` \| `1x` \| `2x` \| `3x` \| `4x` | `.gap-{n}x` / `.gap-half` / `.gap-none` |
 | `align-items` | String | — | `center` \| `start` \| `end` \| `baseline` \| `stretch` \| `flex-start` \| `flex-end` | `.items-{value}` |
-| `justify-content` | String | — | `start` \| `end` \| `left` \| `right` \| `baseline` \| `center` \| `stretch` \| `flex-start` \| `flex-end` \| `space-around` \| `space-between` \| `space-evenly` | `.justify-{value}` |
+| `justify-content` | String | — | `start` \| `end` \| `left` \| `right` \| `baseline` \| `center` \| `stretch` \| `flex-start` \| `flex-end` \| `space-around` \| `space-between` \| `space-evenly` | `.justify-{value}`（`space-*` 值对应 `.justify-around` / `.justify-between` / `.justify-evenly`；`left` / `right` 无对应原子类，按 `start` / `end` 处理） |
 | `flex-wrap` | Boolean\|String | — | `true` \| `nowrap` \| `wrap` \| `wrap-reverse` | `.flex-wrap` / `.flex-nowrap` |
 | `flex-center` | Boolean | — | — | `.flex-center`（同时设 `items-center; justify-center`，**优先级高于 align/justify**） |
 | `flex-reverse` | Boolean | — | 仅对 `row` / `col` 方向生效 | 翻转为 `flex-row-reverse` / `flex-col-reverse` |
@@ -42,7 +42,7 @@
 </mu-h-box>
 
 <!-- 原子类形式（等价） -->
-<div class="flex flex-row gap-2x items-center justify-space-between">
+<div class="flex flex-row gap-2x items-center justify-between">
   <span>标题</span>
   <mu-button caption="操作" />
 </div>

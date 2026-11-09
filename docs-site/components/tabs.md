@@ -17,7 +17,7 @@
     <mu-tab-panel name="list" caption="列表" icon="list">
       列表内容（Tab 1）
     </mu-tab-panel>
-    <mu-tab-panel name="detail" caption="详情">
+    <mu-tab-panel name="detail" caption="详情" title="详情页签">
       详情内容（Tab 2）
     </mu-tab-panel>
     <mu-tab-panel name="settings" caption="设置" disabled>
@@ -31,11 +31,13 @@
   <mu-tab-panel name="list" caption="列表" icon="list">
     <!-- 列表内容 -->
   </mu-tab-panel>
-  <mu-tab-panel name="detail" caption="详情" :disabled="!selectedId">
+  <mu-tab-panel name="detail" caption="详情" :disabled="!selectedId" title="详情页签">
     <!-- 详情内容 -->
   </mu-tab-panel>
 </mu-tabs>
 ```
+
+设置 `title` 属性可为页签按钮添加悬浮提示（浏览器原生 tooltip）。
 
 ## 页签风格 `tab-style`
 
@@ -136,6 +138,6 @@
 | `name` | String | 页签唯一标识；建议显式设置（省略时无法被 `active-tab` 匹配） |
 | `caption` | String | 页签按钮标题 |
 | `icon` | String | 页签按钮图标 |
-| `title` | String | 页签按钮 tooltip |
+| `title` | String | 页签按钮悬浮提示（原生 tooltip） |
 | `disabled` | Boolean | 是否禁用 |
 | `tab-order` | Number | 手动排序（默认按 DOM 顺序） |

@@ -76,7 +76,7 @@
 | `mu-tabs-header` | `mu-tab-bar` |
 | `mu-tab-panel` | `mu-tab-panel`（`label`→`caption`） |
 | `mu-dropdown` / `mu-dropdown-panel` / `mu-dropdown-item` | 同名（`#dropdown` 插槽→`#dropdown-items` 推荐） |
-| `mu-expander` | **无对应**（自行实现折叠） |
+| `mu-expander` | `mu-collapse` / `mu-collapse-group`（首选；自研路径见 rules 6.10） |
 | `mu-dialog` | `mu-dialog`（`v-model:visible`；`mask-action`→`dismissible`，**默认行为翻转**） |
 | `mu-modal` / `mu-base-modal` / `mu-base-dialog` / `mu-dialog-wrapper` | **移除**（内部组件，统一用 `mu-dialog`） |
 | `mu-drawer` | `mu-drawer`（**`position` 默认 right→bottom**） |

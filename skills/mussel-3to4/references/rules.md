@@ -241,6 +241,8 @@ export { install, installIcons, EventInterceptor, colors, icons }
 
 此规则适用于 Vue 模板中的 class 属性和 CSS/SCSS 中的选择器。
 
+> 非破坏性：V4 仍保留 `.mu-text-ellipsis` 作为等价别名，旧类名继续生效；`.text-ellipsis` 为推荐写法，新增/改写代码时使用。
+
 ### 颜色变体变更
 
 Mussel 3 中每个基本色有 `dark`、`light`、`shadow` 变体（如 `--mu-red-dark`）。在 Mussel 4 中**全部移除**。
@@ -266,11 +268,12 @@ Mussel 4 新增：
 .mu-root {
   --mu-mask-background: var(--mu-bg-mask);
   --mu-divider-color: var(--mu-border-color-soft);
+  --mu-border-color: var(--mu-border-color-normal);
   --mu-background-hover: var(--mu-gray-translucent);
   --mu-unit-spacing-size: var(--mu-base-spacing);
   --mu-list-item-hover-background: var(--mu-gray-translucent);
   --mu-text-color-weak: var(--mu-text-color-muted);
-  --mu-button-border-color-normal: var(--mu-border-color);
+  --mu-button-border-color-normal: var(--mu-border-color-normal);
   --mu-background-normal: var(--mu-bg-normal);
   --mu-primary-color-shadow: var(--mu-primary-translucent);
 }
@@ -315,12 +318,12 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 
 ### 3.2 组件变更
 
-| 组件 | Mussel 3 渲染 | Mussel 4 渲染 | 迁移方式 |
-|------|---------------|---------------|----------|
-| `<mu-h-box>` | `<div class="mu-h-box">` | `<div class="flex">` | 改为 `<div class="flex ...">` |
-| `<mu-v-box>` | `<div class="mu-v-box">` | `<div class="flex flex-col">` | 改为 `<div class="flex flex-col ...">` |
-| `<mu-grid-box>` | `<div class="mu-grid-box">` + 属性选择器 | `<div class="grid">` + 内联 style | **保留组件**，但 `width`/`height`/`padding` 等属性需改用 `style` 或原子类 |
-| `<mu-grid-cell>` | `<div>` + 属性选择器 | `<div>` + 内联 style | **保留组件**，通过 `:col-start`/`:col-end`/`:row-start`/`:row-end` props 传值 |
+| 组件 | Mussel 4 现状 | 迁移方式 |
+|------|---------------|----------|
+| `<mu-box>` | **组件已移除**，标签不再注册 | 改为 `<div>` + 原子类（等价于原 `mu-h-box`/`mu-v-box` 用 `class="flex"` / `class="flex flex-col"`） |
+| `<mu-h-box>` / `<mu-v-box>` | **组件保留**，内部渲染 `flex` 原子类；flex 相关 props 兼容（`inline` / `gap` / `align-items` / `justify-content` / `flex-wrap` / `flex-center` / `flex-reverse`） | 可原样保留。但 V3 写在组件上的 HTML 布局属性（`flex=`、`padding=`、`margin=`、`width=`、`border` 等）不再有样式，需改为原子类或 `style`；简单场景也可改写为 `<div class="flex ...">` / `<div class="flex flex-col ...">` |
+| `<mu-grid-box>` | **保留组件**，固定渲染 `.grid` | `width`/`height`/`padding` 等非 props 属性需改用 `style` 或原子类 |
+| `<mu-grid-cell>` | **保留组件**，props 不变（`col-start`/`col-span`/`col-end`/`row-start`/`row-span`/`row-end`） | 其上的 `margin=` 等属性改原子类 |
 
 ### 3.3 属性选择器 → 原子类 / 内联样式 完整映射
 
@@ -332,8 +335,8 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | `layout="grid"` | `class="grid"` | |
 | `class="mu-h-box"` | `class="flex"` | |
 | `class="mu-v-box"` | `class="flex flex-col"` | |
-| `class="mu-h-box"` (组件) | `<div class="flex ...">` | 替换为 div |
-| `class="mu-v-box"` (组件) | `<div class="flex flex-col ...">` | 替换为 div |
+| `<mu-h-box>`（组件） | 保留组件，或 `<div class="flex ...">` | 组件在 V4 仍可用（见 3.2）；改 div 为可选的简化写法 |
+| `<mu-v-box>`（组件） | 保留组件，或 `<div class="flex flex-col ...">` | 同上 |
 | `content-center` | `class="flex-center"` | 同时设置 align-items: center 和 justify-content: center |
 | `flex-wrap` | `class="flex-wrap"` | 注意：旧版还额外设置 `align-items: flex-start`，如需保留需加上 `class="items-start"` |
 | `inline` | `class="inline-flex"` | |
@@ -366,8 +369,8 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 | `align-self="stretch"` | `class="self-stretch"` |
 | `align-self="center"` | `class="self-center"` |
 | `justify-content="center"` | `class="justify-center"` |
-| `justify-content="space-between"` | `class="justify-space-between"` |
-| `justify-content="space-around"` | `class="justify-space-around"` |
+| `justify-content="space-between"` | `class="justify-between"` |
+| `justify-content="space-around"` | `class="justify-around"` |
 | `justify-content="end"` | `class="justify-end"` |
 
 #### 间距
@@ -421,8 +424,8 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 
 #### 尺寸
 
-> 此规则不仅适用于 `mu-box`，也适用于所有未将 `width` / `height` 定义为 props 的 `<mu-*>` 组件（如 `mu-form-field`、`mu-grid-box` 等）。
-> `mu-drawer`、`mu-dialog` 等组件已通过 `sizeProps` 声明了 `width` / `height` props，无需迁移。
+> 此规则不仅适用于 `mu-box`，也适用于所有未将 `width` / `height` 定义为 props 的 `<mu-*>` 组件（如 `mu-grid-box`、`mu-tabs` 等）。
+> `mu-dialog`、`mu-drawer`、`mu-form-field`、`mu-dropdown-panel` 等组件已声明 `width` / `height` props，无需迁移（清单见 5.12）。
 
 | Mussel 3 | Mussel 4 | 说明 |
 |----------|----------|------|
@@ -571,9 +574,11 @@ Mussel 4 移除了 `.mu-box` 的所有 CSS 属性选择器样式，简化了布�
 
 > ⚠️ 此项涉及 JS 逻辑变更（事件监听器绑定/解绑、DOM 操作等），**无法完全自动升级**，需人工逐个审核 ref 用法。
 
-V3 中 `<mu-box>`（含 `<mu-h-box>`、`<mu-v-box>`）是 Vue 组件，`ref` 拿到的是组件实例，需通过 `.$el` 才能访问根 DOM。V4 中这些标签退化为原生 `<div>`，`ref` 直接拿到 DOM 元素，**多余的 `.$el` 必须去掉**，否则取到 `undefined`。
+**仅适用于 `<mu-box>`**（组件已移除）。V3 中 `<mu-box>` 是 Vue 组件，`ref` 拿到的是组件实例，需通过 `.$el` 才能访问根 DOM。V4 中该标签不再注册，`ref` 直接拿到 DOM 元素，**多余的 `.$el` 必须去掉**，否则取到 `undefined`。
 
-适用范围：`ref` 直接标在 `<mu-box>` / `<mu-h-box>` / `<mu-v-box>` 元素上（同一模板内）。
+`<mu-h-box>` / `<mu-v-box>` 组件在 V4 **保留**，`ref` 仍是组件实例，`.$el` 用法不变，**无需迁移**。
+
+适用范围：`ref` 直接标在 `<mu-box>` 元素上（同一模板内）。
 
 ```html
 <!-- 升级前：ref 在 mu-box 组件上 -->
@@ -587,7 +592,7 @@ const root = ref(null)
 root.value.$el.addEventListener(…)
 </script>
 
-<!-- 升级后：mu-box 退化为原生 div -->
+<!-- 升级后：mu-box 改为普通元素 -->
 <template>
   <div class="overflow-auto" ref="root">…</div>
 </template>
@@ -603,22 +608,24 @@ root.value.addEventListener(…)
 
 | 项 | 变更 |
 |----|------|
-| 模板侧 | `<mu-box ref="x">` / `<mu-h-box ref="x">` / `<mu-v-box ref="x">` → `<div ref="x">`（ref 名保持不变） |
-| 脚本侧 | `x.value.$el` → `x.value`（`x` 为上述 ref 名） |
-| 不适用场景 | ref 标在「以 mu-box 为根的子组件」上（如 `<Child ref="c" />`，Child 的 template 根是 mu-box）：`c.value.$el` 仍按 Vue 标准方式取根 DOM，**不要去掉 `.$el`**（`c.value` 是组件实例，不是 DOM） |
+| 模板侧 | `<mu-box ref="x">` → `<div ref="x">`（ref 名保持不变；`mu-h-box` / `mu-v-box` 保留组件、不改） |
+| 脚本侧 | `x.value.$el` → `x.value`（仅 `x` 为 mu-box 上的 ref 名） |
+| 不适用场景 1 | `<mu-h-box ref>` / `<mu-v-box ref>`：组件仍在，`x.value.$el` 照旧可用 |
+| 不适用场景 2 | ref 标在「以 mu-box 为根的子组件」上（如 `<Child ref="c" />`，Child 的 template 根是 mu-box）：子组件自身改写为 div 后 `c.value` 才是 DOM；若子组件根仍是组件，`c.value.$el` 仍按 Vue 标准方式取根 DOM，**不要盲目去掉 `.$el`** |
 
-**升级检查方法**：先 grep `<mu-box ref=` / `<mu-h-box ref=` / `<mu-v-box ref=` 找出所有「带 ref 的 mu-box」，记下 ref 名，再到对应文件的 `<script>` 中搜索 `{refName}.value.$el` 逐一改写。
+**升级检查方法**：先 grep `<mu-box ref=` 找出所有「带 ref 的 mu-box」，记下 ref 名，再到对应文件的 `<script>` 中搜索 `{refName}.value.$el` 逐一改写。
 
 ### 3.6 升级检查清单
 
 对每个涉及 `mu-box` 的文件，按 3.1 / 3.3 各映射表逐项检查。表格之外需注意：
 
 - `flex="N"` 规则适用于所有 `<mu-*>` 组件（如 `mu-form-field`），不限 `mu-box`
-- `width=` / `height=` 规则适用于所有未声明 `width`/`height` props 的组件；例外（已声明 props）：`mu-form`、`mu-dialog`、`mu-tabs`
+- `width=` / `height=` 规则适用于所有未声明 `width`/`height` props 的组件；例外（已声明 props）：`mu-dialog`、`mu-drawer`、`mu-form-field`、`mu-dropdown-panel`（见 5.12）
 - `class="mu-box mu-bg-normal"` → `class="bg-normal"`（`mu-box` 一并移除）
+- `<mu-h-box>` / `<mu-v-box>` 组件保留：去掉其上的 V3 HTML 布局属性（改原子类），flex 相关 props 可原样保留
 - `<mu-grid-box>` 上非 props 的属性（`width`、`height`、`padding`）→ `style` 或原子类
 - `<mu-grid-cell>` 上的 `margin=` → `class="m-*x"`
-- `<mu-box ref="x">` / `<mu-h-box ref="x">` / `<mu-v-box ref="x">`：脚本中 `x.value.$el` → `x.value`（见 3.5，注意区分 ref 是否在子组件上）
+- `<mu-box ref="x">`：脚本中 `x.value.$el` → `x.value`（仅 mu-box，见 3.5；`mu-h-box`/`mu-v-box` 的 ref 不变）
 
 ---
 
@@ -756,8 +763,8 @@ function onDialogVisibleChange (value, trigger) {
 |------|------|
 | `mu-dialog_center` 已移除 | 不再有居中包裹层，header/body/footer 直接在 `.mu-dialog` 内 |
 | `side-panel` 插槽已移除 | 侧面板不再支持，需自行实现 |
-| padding 模式变更 | Mussel 3 通过 `.mu-dialog_center > *` 自动给所有子元素加 padding；Mussel 4 用 `--mu-dialog-padding` 变量，仅 header/footer 有 padding，body 需手动添加 |
-| 关闭按钮变更 | Mussel 3 使用 `<mu-icon icon="x">`；Mussel 4 使用 `<mu-icon-button icon="windowClose" danger>` |
+| padding 模式变更 | Mussel 3 通过 `.mu-dialog_center > *` 自动给所有子元素加 padding；Mussel 4 仅 header/footer 有水平 padding（2 倍 `--mu-base-spacing`），body 无 padding，需手动添加 |
+| 关闭按钮变更 | Mussel 3 使用 `<mu-icon icon="x">`；Mussel 4 使用 `<mu-icon icon="windowClose" danger>` |
 | header 内部结构 | 新增 `mu-dialog__header-content` 包裹层（图标 + 标题 + header slot） |
 | 移除插槽 | `client`、`header-prepend`、`header-append`、`footer-prepend`、`footer-append` 已移除 |
 | 尺寸默认值变更 | `min-width` 360→320，`max-width/height` 90%→100% |
@@ -823,7 +830,7 @@ const dialogEl = dialogRef.value.dialogEl // dialog 层（.mu-dialog）
 
 #### Body 内容迁移（含默认 slot 内边距补偿）
 
-Mussel 3 的 `.mu-dialog_center > *` 给所有子元素（含 header/body/footer）自动加 `padding: 16px 24px`，默认 slot 内容天然有内边距。Mussel 4 的 `.mu-dialog__body` 无 padding（`--mu-dialog-padding` 仅作用于 header/footer），默认 slot 内容会紧贴边缘。**检测**：M3 下内容与边缘有间距的 dialog，升级后贴边。
+Mussel 3 的 `.mu-dialog_center > *` 给所有子元素（含 header/body/footer）自动加 `padding: 16px 24px`，默认 slot 内容天然有内边距。Mussel 4 的 `.mu-dialog__body` 无 padding（水平 padding 仅作用于 header/footer，基于 2 倍 `--mu-base-spacing`），默认 slot 内容会紧贴边缘。**检测**：M3 下内容与边缘有间距的 dialog，升级后贴边。
 
 若原默认插槽内有为 padding/layout 添加的包裹 div，优先用 `body-class` / `body-style` / `body-scrollbar` 属性替代，消除多余 DOM 层级：
 
@@ -905,8 +912,8 @@ buttons: ['#OK', '#CANCEL', { caption: '自定义', color: 'primary' }]
 | `@click` | `@click` | 不变，传原生 `Event` |
 | `@focus` | `@focus` | 参数变更：V3 传组件 ref，V4 传原生 `Event` |
 | `@blur` | `@blur` | 参数变更：V3 传组件 ref，V4 传原生 `Event` |
-| `@enterkey` | `@enter` | 重命名；参数变更：V3 传组件 ref，V4 无参数 |
-| `@esckey` | `@esc` | 重命名；参数变更：V3 传组件 ref，V4 无参数 |
+| `@enterkey` | `@enter` | 重命名；参数变更：V3 传组件 ref，V4 传原生键盘事件对象 |
+| `@esckey` | `@esc` | 重命名；参数变更：V3 传组件 ref，V4 传原生键盘事件对象 |
 | _(无)_ | `@keydown` | 新增，传原生 `Event` |
 | _(无)_ | `@prefix-click` | 新增，前置按钮点击 |
 | _(无)_ | `@suffix-click` | 新增，后置按钮点击 |
@@ -1018,7 +1025,7 @@ V4 不再全局注册（`MuTabBar` 内部组件）。直接使用 `<mu-tab-butto
 
 | Mussel 3 | Mussel 4 | 备注 |
 |----------|----------|------|
-| `title` | _(已移除)_ | |
+| `title` | _(已移除)_ | 悬浮提示改用 `<mu-tab-panel title="...">`（原生 tooltip） |
 
 #### 事件变更
 
@@ -1116,7 +1123,7 @@ const items = [
 ]
 ```
 
-`input` 属性支持的类型完整清单见 mussel-ui skill 的 `../../mussel-ui/references/components/form.md`（`text` / `memo` / `date` / `week` / `month` / `quarter` / `year` / `time` / `color` / `segmented` / `select` / `multi-select` / `check-group` / `radio-group`）。
+`input` 属性支持的类型完整清单见 mussel-ui skill 的 `../../mussel-ui/references/components/form.md`（`text` / `memo` / `date` / `date-range` / `week` / `month` / `quarter` / `year` / `time` / `color` / `segmented` / `select` / `multi-select` / `check-group` / `radio-group`）。
 items 数组还支持：字符串标题、`'hr'` 分隔线、`'->'` 换行、数组子行、`{ is: '组件名' }` 自定义组件。
 
 ---
@@ -1195,9 +1202,21 @@ V3 仅有 `.mu-badge` CSS 类（无组件，`secondary` / `danger` 属性选择�
 
 ### 5.10 MuNotifier
 
-| Mussel 3 | Mussel 4 | 备注 |
-|----------|----------|------|
-| `:messages` | `:notifications` | 属性重命名 |
+`<mu-notifier>` 组件在 Mussel 4 中**已移除**（不再注册）。浮动通知统一改走命令式 API：
+
+| Mussel 3 | Mussel 4 |
+|----------|----------|
+| `<mu-notifier :messages="messages">` | `inject('$mussel').messageBox.notify({ title, message, type, duration })` |
+
+```js
+// Mussel 4：单条通知
+const { messageBox } = inject('$mussel')
+messageBox.notify({ title: '保存成功', message: '记录已更新', type: 'success', duration: 3000 })
+// 纯字符串形式
+messageBox.notify('记录已更新')
+```
+
+> V4 内部通知列表由 `messageBox.notify` 维护，无对外可绑定的通知列表属性；多条通知按调用顺序自动展示与消失（默认 3s）。
 
 ---
 
@@ -1290,8 +1309,8 @@ Mussel 3 中，`<mu-check>` 和 `<mu-radio>` 在没有 `label` 时渲染裸 `<in
 
 #### width 属性
 
-仍支持 `width` 属性的组件：**form、dialog、tabs**。
-其他所有组件（包括 box）：`width="100%"` → `style="width: 100%;"`。
+仍声明 `width`（及 `height`）props 的组件：**`mu-dialog`、`mu-drawer`、`mu-form-field`、`mu-dropdown-panel`**（另有 `mu-split-h-box` / `mu-split-v-box` 的 `left-width` / `right-width` / `top-height` / `bottom-height`）。
+其他所有组件（包括 box、tabs）：`width="100%"` → `style="width: 100%;"`（V3 依赖的 `[width=...]` CSS 属性选择器已在 V4 移除，属性写法不再有样式效果）。
 
 ---
 
@@ -1304,18 +1323,22 @@ Mussel 4 新增以下组件（V3 均无对应，`mu-*` 标签直接可用），�
 | MuSelect | 下拉单选框 |
 | MuMultiSelect | 下拉多选框（带标签显示） |
 | MuDateInput | 日期/周/月/季度/年选择器 |
+| MuDateRangeInput | 日期区间选择（单面板两次点击定区间） |
 | MuTimeInput | 时间选择器（时/分/秒列式滚动） |
 | MuColorInput | 颜色选择器（HEX 输入 + 内置 130 色色板） |
 | MuSearchInput | 带防抖与搜索图标的过滤输入框 |
 | MuSegmented | 分段选择器 |
 | MuCheckGroup / MuRadioGroup | 数据驱动复选/单选组（`options` 数组 + `v-model`） |
-| MuTable | 数据表格，支持多种列类型（text、check、bool、enum、date、link、tag 等） |
+| MuTable | 数据表格，支持多种列类型（text、check、bool、enum、date、link、tag 等）；`MuTableEx` 为 canvas 高性能表格（仅 ex 版 `dist/mussel.ex.js` 含），扩展单元格编辑、列宽拖拽、树形、合并单元格 |
 | MuCalendar | 月历组件 |
+| MuTag | 单个标签（静态展示、可着色） |
 | MuTags | 标签组，支持展开/收起 |
 | MuBadge | 徽章/角标（V3 仅有 `.mu-badge` CSS 类，无组件） |
-| MuList | 列表容器，支持滚动条（`MuListItem` / `MuListDivider` V3 已有） |
-| MuDrawer | 抽屉面板（上/右/下/左） |
+| MuDrawer | 抽屉面板（上/右/下/左，支持 `resizable` 拖拽调整大小） |
 | MuContextMenu | 右键上下文菜单 |
+| MuTooltip / `v-mu-tooltip` | 文字提示气泡（组件 + 指令两种形态） |
+| MuCollapse / MuCollapseGroup | 可折叠面板 / 折叠面板组 |
+| MuSideMenu / MuMenu | 侧边导航菜单 / 横向导航菜单（数据驱动） |
 | MuSplitHBox / MuSplitVBox | 可拖拽、可收拢的弹性分隔布局（分隔条为内部组件） |
 | MuScrollArea | 单轴滚动区，溢出时以位移按钮代替滚动条 |
 | MuToolbar | 工具栏容器 |
@@ -1325,3 +1348,5 @@ Mussel 4 新增以下组件（V3 均无对应，`mu-*` 标签直接可用），�
 | MuSortIcon | 排序方向指示图标 |
 | MuInputGroup | 输入框分组 |
 | MuFlexDivider / MuFlexSpace / MuFlexBreak | flex 辅助元素（V3 为 `mu-divider` / `mu-space` CSS 类） |
+
+> 列表项仍由 `MuListItem` / `MuListDivider` 渲染（V3 已有），V4 未提供 `<mu-list>` 列表容器组件，需自行用容器包裹。

@@ -289,7 +289,7 @@ function spanMethod ({ record, prevRecord, columns }) {
 | `tree-collapse` | `{ key, record, level }` | 展开箭头 toggle 收起 |
 | `update:cell-value` | `{ record, recordIndex, column, value }` | check 翻转与编辑提交（较 MuTable 多 `recordIndex`）|
 | `cell-item-click` | `{ record, recordIndex, column, item/tag/button }` | 条目点击（较 MuTable 多 `recordIndex`；载荷键 `link` / `list` 列为 `item`、`tag` 列 `tag`、`button` 列 `button`）|
-| `edit-button-click` | `{ record, recordIndex, column }` | 点击列 `editButton` 图标按钮（不选中行、不开编辑）|
+| `cell-button-click` | `{ record, recordIndex, column }` | 点击列 `cellButton` 图标按钮（不选中行、不开编辑）|
 
 | 插槽 | 说明 |
 |------|------|
@@ -312,7 +312,7 @@ function spanMethod ({ record, prevRecord, columns }) {
 |------|------|------|
 | `editable` | Boolean | 列级编辑开关，`false` 关闭 |
 | `editor` | Boolean\|Object | 编辑器配置：`true` 按列类型自动选择；对象 `{ type, props, validate, border }`，见下 |
-| `editButton` | Object | `{ icon }`：hover 时单元格右侧显示图标按钮（`icon` 为 `installIcons` 注册名），点击发 `edit-button-click` 事件（载荷 `{ record, recordIndex, column }`），不触发选中 / 编辑 |
+| `cellButton` | Object | `{ icon }`：hover 时单元格右侧显示图标按钮（`icon` 为 `installIcons` 注册名），点击发 `cell-button-click` 事件（载荷 `{ record, recordIndex, column }`），不触发选中 / 编辑 |
 | `maxLines` | Number | 文本最大行数（1–10）：`> 1` 时自动折行，超出省略；替代 `multiline` + `lineClamp`（两者仍兼容）|
 | `maxItems` | Number | `link` / `list` 条目列最大显示条数（1–10，默认 10），超出以 `...` 省略（canvas 绘制层；DOM 通道用 `linkOption.max` / `listOption.max` / `tagOption.max`）|
 | `resizable` | Boolean | `false` 禁止拖拽该列宽；`minWidth`（缺省取列类型最小宽，兜底 40）/ `maxWidth` 限制拖拽范围；固定列不可拖拽 |
@@ -321,22 +321,21 @@ function spanMethod ({ record, prevRecord, columns }) {
 | `progressOption` | Object\|Function | `progress` 列：`{ color, showText }`，`color` 为主题色名（缺省 `primary`），`showText: false` 隐藏百分比；可为 `record => option` |
 
 > [!IMPORTANT]
-> **v4.3.0 破坏性变更（`editorButton` → `editButton`）**：v4.2.0 引入的 `editorButton` 旧协议已移除，无兼容层。
-> - 键名 `column.editorButton` → `column.editButton`（即使 `icon` 已是注册名也须改键名）。
+> **破坏性变更（格按钮协议更名，无兼容层）**：v4.3.0 曾对格按钮协议做一次破坏性调整，现版本（4.3.1）键名与事件为 `column.cellButton` / `@cell-button-click`；`column.editorButton` 旧协议及其余历史键名均已移除，迁移到现版本须改键名。
 > - `icon` 仅接受 `installIcons` 注册名：svg 字符串先注册再引用；图片 URL 不再支持，转为 svg 字符串或 icon-font class 注册。
-> - `onClick` 属性移除，改组件事件 `@edit-button-click`，载荷形状不变。
+> - `onClick` 属性已移除，改组件事件 `@cell-button-click`，载荷 `{ record, recordIndex, column }`。
 >
 > ```javascript
-> // v4.2.0
+> // 旧协议
 > const columns = [{ field: 'amount', editorButton: { icon: pencilSvg, onClick: p => edit(p.record) } }]
 >
-> // v4.3.0
+> // 现版本
 > installIcons({ pencil: pencilSvg })
-> const columns = [{ field: 'amount', editButton: { icon: 'pencil' } }]
+> const columns = [{ field: 'amount', cellButton: { icon: 'pencil' } }]
 > ```
 >
 > ```html
-> <mu-table-ex :columns="columns" @edit-button-click="p => edit(p.record)" />
+> <mu-table-ex :columns="columns" @cell-button-click="p => edit(p.record)" />
 > ```
 
 ### 扩展列类型

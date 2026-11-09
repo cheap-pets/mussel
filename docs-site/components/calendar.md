@@ -24,10 +24,10 @@
 
 ## 可选范围与起始日
 
-`min` / `max` 限制可选日期范围；`week-starts-on` 控制每周起始日（默认读全局 `calendar.weekStartsOn` 配置）：
+`min` / `max` 已声明但当前版本未生效（不限制可选日期范围）；`week-starts-on` 控制每周起始日（默认读全局 `calendar.weekStartsOn` 配置）：
 
 ```html
-<mu-calendar v-model="date" min="2026-01-01" max="2026-12-31" :week-starts-on="1" />
+<mu-calendar v-model="date" :week-starts-on="1" />
 ```
 
 ## 在表单中使用
@@ -48,4 +48,4 @@
 | `value-type` | String | `'date'` | 输出值类型：`'date'`（Date 对象）\| `'string'`（按 `value-format` 输出字符串） |
 | `value-format` | String | `yyyy-MM-dd` | 仅 `value-type="string"` 时生效的输出格式 |
 | `week-starts-on` | Number | `0` | 每周起始日（0=周日 ~ 6=周六） |
-| `min` / `max` | Date\|String | — | 最小 / 最大可选日期 |
+| `min` / `max` | Date\|String | — | 已声明，当前版本未生效（不做可选范围限制） |

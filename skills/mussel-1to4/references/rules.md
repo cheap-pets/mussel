@@ -367,7 +367,7 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `<mu-input>`（裸 `<input>` 封装：props `type`/`disabled`/`autofocus`） | `<mu-input>` | 同名不同物；`autofocus` 移除（v4 未暴露 `focus()`，用 `ref.$el.querySelector('input')?.focus()` 或挂载后聚焦）；事件按上表 |
 | `<mu-editor>` | `<mu-input>` | 主路径；label 场景改 `<mu-form-field label="...">` 包裹 |
 | `<mu-search-box>` | `<mu-search-input>` | 防抖内置（`debounce-delay`）；**下拉候选模式（`options`/`value-mode`/`popup-style`）无对应**——候选场景改 `mu-select`（不可输入）或 `mu-combo-box editable`（可输入过滤）；`emit-null-on-input` 无对应 |
-| `<mu-combo-box>` | `<mu-combo-box>` | `:multiple="true"` → 拆分 `<mu-multi-select>`（**须加 `nowrap` attribute**，见下）；`fields`（自定义字段名 `{value,label}`）→ 无，用 computed 映射为 `{value,label}[]`（v4 `option-key` prop 已声明但实现未生效，勿依赖）；`popup-max-height`/`popup-style` 无对应；`<mu-option>` 子组件 → `:options` 数据或 `#dropdown-items` 插槽 |
+| `<mu-combo-box>` | `<mu-combo-box>` | `:multiple="true"` → 拆分 `<mu-multi-select>`（**须加 `nowrap` attribute**，见下）；`fields`（自定义字段名 `{value,label}`）→ 无，用 computed 映射为 `{value,label}[]`（v4 `option-key` 仅为选项 key，不改 value/label 取值字段）；`popup-max-height`/`popup-style` 无对应；`<mu-option>` 子组件 → `:options` 数据或 `#dropdown-items` 插槽 |
 | `<mu-option>` | 移除手写 | v4 仍有该组件但推荐 `options`/`dropdown-items` 驱动 |
 | `<mu-date-editor>` | `<mu-date-input>` | `select-mode="date|month|year"` → `type="date|week|month|quarter|year"`；`range-start`/`range-end`（日期边界）→ **无对应**（人工）；`format` 保留；`language` → 全局 `locale`；`marked`/`marked-dates` → 无；`popup-width/height` → `dropdown-width`/`dropdown-height`（透传）；`range-start`/`range-end` 对应的 `min`/`max` 在 v4 已声明未实现，边界限制需人工 |
 | `<mu-time-editor>` | `<mu-time-input>` | v1 为 AM/PM 12 小时制，v4 为 24 小时列式滚动，**值格式需人工核对** |
@@ -376,7 +376,7 @@ v1 的 `mu-editor` 家族在 v4 统一为 `mu-input` 与 `mu-*-input`。**组件
 | `<mu-button-editor>`（省略号按钮型编辑器） | **无对应** | `<mu-dropdown-button>` + `#dropdown-items` 或自定义弹层组合 |
 | `<mu-popup-editor>`（自定义弹层编辑器基座） | **无对应** | `<mu-dropdown-panel>` / `<mu-drawer>` 组合，人工设计 |
 
-**受控对象值迁移**：v1 `mu-combo-box` 受控传 `{value, label}` 对象的用法迁到 v4 `mu-select` / `mu-combo-box` 时**必须显式 `value-mode="composite"`**；漏写则回显 `[object Object]`，构建与 console 均无告警。`option-key` prop 已声明但实现未生效，勿依赖（见上表 combo-box 行）。
+**受控对象值迁移**：v1 `mu-combo-box` 受控传 `{value, label}` 对象的用法迁到 v4 `mu-select` / `mu-combo-box` 时**必须显式 `value-mode="composite"`**；漏写则回显 `[object Object]`，构建与 console 均无告警。v4 `option-key` 不能替代字段映射（见上表 combo-box 行）。
 
 **多选迁移须加 `nowrap`**：`:multiple="true"` 的 `mu-combo-box` 改 `mu-multi-select` 时，标签上**必须显式写 `nowrap`**（attribute，非 prop）：
 
@@ -465,7 +465,7 @@ v1 多选场景按单行高度设计，且迁移多发生在 `mu-form-row` / 表
 | `@change` | `@update:active-tab` | payload 为 name 字符串（不变） |
 | （无） | `@tab-click` | v4 新增，payload 为 name |
 | `:tab-items="[...]"` | `:tab-buttons="[...]"` | 用 `<mu-tab-panel>` 声明式时无需此属性（两侧都自动收集） |
-| tab item 对象 `{ name, label, icon, title, disabled }` | `{ name, caption, icon, disabled }` | 页签文案字段 `label` → `caption`（与 `mu-tab-panel` 同理）：**漏改会静默回显 `name` 字面量，构建 0 告警**；`title`（悬浮提示）v4 页签无对应，勿并入 caption |
+| tab item 对象 `{ name, label, icon, title, disabled }` | `{ name, caption, icon, disabled }` | 页签文案字段 `label` → `caption`（与 `mu-tab-panel` 同理）：**漏改会静默回显 `name` 字面量，构建 0 告警**；`title`（悬浮提示）改用 `<mu-tab-panel title="...">`（原生 tooltip），勿并入 caption |
 | `tab-style="simple|card"` | `tab-style` | v4 值：`simple` / `lined-simple` / `card` / `button` / `small-button`；v1 `simple` 按视觉确认是否改 `lined-simple` |
 | `tab-position="top|bottom|left|right"` | 同名 | |
 | `model-control` | 移除 | 拦截切换改受控模式：`:active-tab` + `@update:active-tab` 回调中决定是否赋值 |
@@ -496,15 +496,15 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 | `<mu-table-column field label width align>` | `columns: [{ field, caption, width, align, type }]` | `label` → `caption`；`type` 默认 `text` |
 | `cell-text`（值或 fn） | `text` / `value`（fn） | |
 | `cell-title` / `cell-class` / `cell-style` | `title` / `class` / `style`（fn） | |
-| `cell-html` | 无对应 | 用列 items/自定义渲染（见 mussel-ui skill `../../mussel-ui/references/components/data.md`） |
+| `cell-html` | 无对应 | 按内容选内置列（`list` / `tag` / `button` / `icon`）或自定义类型 `compile`（见 mussel-ui skill `../../mussel-ui/references/components/data.md`） |
 | `<mu-table-check-column>` | `{ type: 'check', field, headerCheckbox }` | |
-| `<mu-table-button-column>` | `{ type: 'link', links: [{ caption, danger, disabled }] }` | 无 `action` 字段；点击统一 `@cell-item-click`（payload `{ record, column, link }`），v1 `@buttonclick` 改绑此事件 |
+| `<mu-table-button-column>` | `{ type: 'button', buttons: [{ caption, icon, color, disabled }] }`（链接形态用 `type: 'link'` + `links`） | 无 `action` 字段；点击统一 `@cell-item-click`（payload `{ record, column, button }`），v1 `@buttonclick` 改绑此事件 |
 | `<mu-table-combo-column>` / `<mu-table-edit-column>` / `<mu-table-search-column>` | **无对应** | v4 无表格编辑/搜索列，需人工设计（弹窗编辑、行内自定义渲染） |
 | `fixed="left"`（列固定） | 表级 `:fixed-left-columns="n"` | v1 另支持 `fixed="right"`，v4 仅左侧固定，右侧无对应 |
 | `gridline="row|column|both|none"`（默认 row） | `gridlines="row|column|all|none"`（默认 all） | `both` → `all`；默认值变化 |
 | `hover-mode` | 同名沿用 | 值域不变（none/row/column/cross/cell），默认 'row' |
 | `row-height` / `selected-field` | 无对应 | `selected-field`（勾选列存储字段）与行高亮选中是两个概念：勾选用 check 列 `field`；行高亮用 `selected-record` / `selected-record-key` / `key-field` |
-| 列类型 | v4 内置 `text` / `rec_no` / `check` / `bool` / `enum` / `date` / `datetime` / `number` / `currency` / `link` / `tag` / `img` | 可替代大量手写 cellText/cellHtml |
+| 列类型 | v4 内置 `text` / `rec_no` / `check` / `bool` / `enum` / `date` / `datetime` / `number` / `currency` / `link` / `list` / `tag` / `button` / `img` / `icon` | 可替代大量手写 cellText/cellHtml |
 
 ### 6.9 树
 
@@ -525,7 +525,7 @@ v1 `<mu-table>` + `<mu-table-*-column>` 子组件列 → v4 `<mu-table :records 
 | `<mu-sort-icon direction="up\|down">` | 同名同 API | 无破坏性变更 |
 | `<mu-paging-bar :page-index :eof :reload display-list>`（0.1.x ~ 中期） | `<mu-pagination v-model:page-index :page-size :total>` | **模型重写**：v1 早期按当前页 + `eof`（无总数）驱动，`reload` 刷新按钮与 `display-list` 页码形态无对应；v4 按总数派生页数 |
 | `<mu-pagination>`（后期 1.x） | 同名 `mu-pagination` | **模型仍需重写**：v1 双模型 `limit`/`offset`（`:limit.sync`/`:offset.sync`）或 `pageCount`/`pageIndex`/`dataCount`；v4 仅 `page-index`/`page-size`/`total`。`dataCount` → `total`；`limit` → `page-size`（`update:limit` → `update:page-size`）；`offset` → 换算 `page-index`（offset / limit）；`pageCount` → 换算 `total = pageCount × pageSize`；`eof`/`disabled`/`button-style` 无对应，`small` → `size="small"`；`quick-jumper`/`page-size-options` 同名保留 |
-| `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（mussel-ui skill `../../mussel-ui/references/components/data.md`）；`range-start`/`range-end`/`marked` 核对 |
+| `<mu-calendar v-model :select-mode marked>` | `<mu-calendar v-model>` | `select-mode` → 见 v4 日历 API（mussel-ui skill `../../mussel-ui/references/components/data.md`）；`range-start`/`range-end` 边界 → `min`/`max` 已声明未实现（同 date-input），需人工；`marked` 无对应 |
 | `<mu-context-menu :menu-lists :client-x :client-y>` | `<mu-context-menu :menus>` + `show(event)` | **API 重构**：v1 项 `{ btnName, iconClass, handler, children, disabled }` → v4 dropdown-items 结构 `{ label, icon, action, disabled }`；`handler` 回调改 `@action`/`@itemclick` 事件；定位改 `show(contextmenuEvent)`（按 pageX/pageY），`client-x`/`client-y` props 移除；v1 `children` 嵌套子菜单无对应（v4 面板为平铺列表） |
 | `<mu-scroll-box>` | `<mu-scroll-box>` | v1 基于 mussel-scrollbar 外挂实现，v4 内置，用法不变 |
 | `<mu-expander v-model title>` | `<mu-collapse>` / 自研 | v1 为 Vue2 `model` 选项（prop `expanded`）。首选 v4 `mu-collapse` / `mu-collapse-group`；自研路径：沿用 v1 契约（`expanded` prop + `change` 事件 + `#header` 插槽）与 `.mu-expander*` 原类名（零样式迁移，承接既有样式钩子），折叠动画用 `grid-template-rows: 0fr/1fr` |
@@ -547,7 +547,7 @@ v1 手写标签嵌套（`<mu-sidebar-menu>` > `<mu-menu-group>` > `<mu-menu-item
 | `selectMode="auto"`（菜单内部管理激活态） | `@item-click` 赋值，或直接 `v-model:active-item` | v4 激活统一收敛为 `active-item`（传项对象） |
 | `selectMode="manual"` + 逐项 `<mu-menu-item v-model="active">` | `v-model:active-item` 单点受控 | 分散在各行的 active 收敛到一处；点击叶子自动写激活 |
 | 组/项 `@click` / `@change` | `@item-click`（payload 为 item 对象） | 组与叶子均触发；v4 无逐项 `change` |
-| `collapsible` / `collapse-button-position` / `floatable` / `disabled-float` / `dark-mode` / `border` | 无对应 | v4 无内置收起按钮与浮动/暗色侧栏；收起按钮放 `#header`/`#footer` 插槽自行实现（作用域参数 `collapsed`） |
+| `collapsible` / `collapse-button-position` / `floatable` / `disabled-float` / `dark-mode` / `border` | 无对应 | v4 无内置收起按钮与浮动/暗色侧栏；收起按钮放 `#footer` 插槽自行实现（作用域参数 `collapsed`，`#header` 收起态不渲染）；收起态本身可用 `v-model:collapsed` / `rail`（见第 8 节） |
 | `mu-menu-group` 的 `#header` 自定义组头 / `selectable`（组可选） | 无对应 | 数据驱动仅 `label`/`icon`；可选组用普通叶子项模拟 |
 | 激活项需手动展开父组（v1 mounted 钩子） | 内置 | `active-item` 变更自动展开一级组并滚动定位 |
 | （无） | `v-model:favorites` 收藏、`rail` 图标列、`auto-expand-top` | 新能力，可同时启用 |
@@ -619,7 +619,7 @@ v1 无对应、迁移时可一并使用的 v4 能力：
 | `mu-side-menu` / `mu-menu` | 数据驱动侧边/横向导航菜单（收藏、`rail` 图标列、弹层下钻；v1 sidebar-menu 的重写目标） |
 | `mu-tooltip` / `v-mu-tooltip` | 文字提示气泡（v1 无对应） |
 | 数据驱动 `<mu-form :model :items>` | 简单表单免手写 form-field |
-| `mu-table` 列类型 | `enum`/`tag`/`currency`/`date` 等替代手写 cellText |
+| `mu-table` 列类型 | `enum`/`tag`/`list`/`button`/`icon`/`currency`/`date` 等替代手写 cellText/cellHtml |
 | `mu-toolbar` / `mu-bar` / `mu-scroll-area` | 工具栏/条形容器/单轴滚动区 |
 | `mu-split-h-box` / `mu-split-v-box`（`collapsible`） | 可收拢分隔布局 |
 | `mu-status-box` / `mu-tags` / `mu-badge` / `mu-icon-button` 增强 | 占位图/标签组/徽章 |

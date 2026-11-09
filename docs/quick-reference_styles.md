@@ -121,6 +121,7 @@
 | 变量名称        | 说明                                                       |
 | --------------- | ---------------------------------------------------------- |
 | --mu-bg-normal  | 页面默认背景                                               |
+| --mu-bg-muted   | 弱强调背景：介于 bg-normal 与 bg-strong 之间的半透明灰罩（亮色黑 4%、暗色白 4%）；库内暂未消费，供自定义样式使用 |
 | --mu-bg-strong  | 强调区域背景，例如导航栏、头部工具栏、底部工具栏           |
 | --mu-bg-fill    | 填充背景，例如分段控件底色、区块内嵌容器、表头            |
 | --mu-bg-stripe  | 斑马纹交替行背景，用于表格等                               |
@@ -358,7 +359,7 @@
 | ---------------- | -------------- |
 | .justify-{value} | justify-content |
 
-可用值：normal, start, end, left, right, baseline, center, stretch, flex-start, flex-end, around, between, evenly（`around`/`between`/`evenly` 对应 `space-*`）
+可用值：normal, start, end, baseline, center, stretch, flex-start, flex-end, around, between, evenly（`around`/`between`/`evenly` 对应 `space-*`）
 
 **justify-content（安全对齐，防溢出截断）：**
 

@@ -24,7 +24,7 @@ description: >
 **默认路径：新建 / 修改 / Review UI**（绝大多数任务走这条）
 → 直接进入步骤 2，只查阅 `references/components/*` 与 `references/styles.md`。
 
-**升级任务**：Mussel 3 → 4、Mussel 1（`@mctech/mussel`，Vue 2）→ 4 的升级迁移不属本 skill，分别使用 `mussel3to4` / `mussel1to4` skill。
+**升级任务**：Mussel 3 → 4、Mussel 1（`@mctech/mussel`，Vue 2）→ 4 的升级迁移不属本 skill，分别使用 `mussel-3to4` / `mussel-1to4` skill。
 
 ### 步骤 2：按需查阅 API 与样式
 

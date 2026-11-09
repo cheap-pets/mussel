@@ -364,5 +364,5 @@ body    { font-family: 'PingFang SC', sans-serif; }
 
 ---
 
-> **已废弃 API 不在本文件列出**。Mussel 3 → 4 的属性废弃与替代方案集中在 mussel3to4 skill 的 `../../mussel3to4/references/rules.md`「迁移规则 5 组件迁移」中，生成迁移相关代码时查阅该 skill。
+> **已废弃 API 不在本文件列出**。Mussel 3 → 4 的属性废弃与替代方案集中在 mussel-3to4 skill 的 `../../mussel-3to4/references/rules.md`「迁移规则 5 组件迁移」中，生成迁移相关代码时查阅该 skill。
 
