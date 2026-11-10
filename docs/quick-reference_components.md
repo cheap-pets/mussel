@@ -887,7 +887,7 @@ const items = [
 | width       | String \| Number | 字段宽度                                         |
 | suffix      | String           | 字段后缀文字（如单位）                           |
 | required    | Boolean          | 是否必填（添加必填样式并参与表单校验）           |
-| error       | String           | 手动设置校验错误信息                             |
+| error       | String \| Boolean | 手动设置校验错误：字符串显示错误文案，`true` 仅显样式（须 `:error="true"`） |
 
 **input 配置：**
 

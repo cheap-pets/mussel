@@ -76,7 +76,7 @@
 | `width` | String\|Number | 字段宽度 |
 | `suffix` | String | 字段后缀文字（如单位） |
 | `required` | Boolean | 是否必填（添加必填样式并参与表单校验） |
-| `error` | Boolean\|String | 手动设置校验错误：字符串显示错误文案，`true` 仅显示错误样式不显示文案 |
+| `error` | Boolean\|String | 手动设置校验错误：字符串显示错误文案，`true` 仅显示错误样式不显示文案（仅样式须写 `:error="true"`，裸写 `error` 不生效） |
 
 **input 配置：**
 

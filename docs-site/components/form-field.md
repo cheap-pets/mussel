@@ -100,10 +100,12 @@
 </mu-form-field>
 
 <!-- 仅错误样式 -->
-<mu-form-field label="备注" error>
+<mu-form-field label="备注" :error="true">
   <mu-input v-model="form.memo" />
 </mu-form-field>
 ```
+
+> 仅错误样式须写 `:error="true"`，裸写 `error` 属性会被解析为空字符串，不生效。
 
 > 在 `MuForm` 内通过 `rules` 校验时无需手动设置 `error`，校验状态自动同步。
 
@@ -119,4 +121,4 @@
 | `width` | String\|Number | 字段宽度（Number 为比例） |
 | `suffix` | String | 字段后缀文字（如单位） |
 | `required` | Boolean | 是否必填（添加必填样式并参与表单校验） |
-| `error` | Boolean\|String | 手动设置校验错误：字符串显示错误文案，`true` 仅显示错误样式不显示文案 |
+| `error` | Boolean\|String | 手动设置校验错误：字符串显示错误文案，`true` 仅显示错误样式不显示文案（仅样式须写 `:error="true"`，裸写 `error` 不生效） |

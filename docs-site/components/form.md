@@ -55,7 +55,7 @@
 
 ## 声明式用法
 
-`label-width` / `label-align` 统一控制标签；`MuFormRow` 在一行内水平排列多个字段；`required` 添加必填样式并参与校验；`error` 手动设置错误状态（字符串显示文案，`true` 仅显示错误样式）。
+`label-width` / `label-align` 统一控制标签；`MuFormRow` 在一行内水平排列多个字段；`required` 添加必填样式并参与校验；`error` 手动设置错误状态（字符串显示文案，`true` 仅显示错误样式；仅样式须写 `:error="true"`，裸写 `error` 不生效）。
 
 <div class="mu-demo mu-demo-col" style="align-items: stretch;">
   <mu-form label-width="80px" label-align="right" style="max-width: 640px;">
