@@ -9,8 +9,10 @@
     </label>
     <div class="mu-form-field__input">
       <slot>
-        <component :is="control.is" v-if="control.vModel" v-bind="control.attrs" v-model="form.model[prop]" />
-        <component :is="control.is" v-else v-bind="control.attrs" />
+        <template v-if="control">
+          <component :is="control.is" v-if="control.vModel" v-bind="control.attrs" v-model="form.model[prop]" />
+          <component :is="control.is" v-else v-bind="control.attrs" />
+        </template>
       </slot>
       <span v-if="fieldError && fieldError !== true" class="mu-form-field__error text-ellipsis">{{ fieldError }}</span>
     </div>
@@ -60,6 +62,9 @@
 
   const control = computed(() => {
     const { prop, input } = props
+
+    // 无 input 且无 prop：纯布局占位，不渲染默认控件
+    if (input == null && prop == null) return null
 
     const vModel = Boolean(form.model && prop)
     const inputOption = isObject(input) ? input : { type: input }

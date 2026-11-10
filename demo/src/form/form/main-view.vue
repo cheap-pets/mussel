@@ -10,6 +10,7 @@
         class="demo-form demo-form--border"
         label-width="60px"
         label-align="right">
+        <mu-form-field label="Text 0" input="text" />
         <mu-form-field label="Text 1" :width="1 / 3">
           <mu-input value="Value 1" />
         </mu-form-field>
