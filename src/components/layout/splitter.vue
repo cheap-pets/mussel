@@ -31,7 +31,7 @@
     size: {
       type: String,
       default: 'normal',
-      validator: v => ['zero', 'slim', 'normal'].includes(v)
+      validator: v => ['none', 'slim', 'normal'].includes(v)
     },
     shape: {
       type: String,

@@ -57,9 +57,9 @@
 
     <demo-section
       title="分隔条样式"
-      note="splitter.size 控制厚度（zero / slim / normal），shape 控制形态（line / pill），collapseHandle 显示折叠手柄；切换选项后拖动体验不同">
+      note="splitter.size 控制厚度（none / slim / normal），shape 控制形态（line / pill），collapseHandle 显示折叠手柄；切换选项后拖动体验不同">
       <div class="demo-row">
-        <mu-select v-model="splitterSize" style="width: 130px;" prefix="Size:" :options="['zero', 'slim', 'normal']" />
+        <mu-select v-model="splitterSize" style="width: 130px;" prefix="Size:" :options="['none', 'slim', 'normal']" />
         <mu-select v-model="splitterShape" style="width: 120px;" prefix="Shape:" :options="['line', 'pill']" />
         <mu-switch v-model="collapseHandle" label="Collapse handle" />
       </div>
@@ -121,13 +121,13 @@
 
     <demo-section
       title="边界与回归"
-      note="zero 尺寸分隔条仍可拖拽（热区保留）；left-style min-width 限制拖拽下限，拖到最小宽度后不再收缩；折叠手柄点击后栏收起、再点展开">
+      note="none 尺寸分隔条仍可拖拽（热区保留）；left-style min-width 限制拖拽下限，拖到最小宽度后不再收缩；折叠手柄点击后栏收起、再点展开">
       <div class="demo-row">
-        <mu-switch v-model="zeroSize" label="Zero size" />
+        <mu-switch v-model="noneSize" label="None size" />
       </div>
       <mu-split-h-box
         class="demo-split-frame demo-mt"
-        :splitter="{ size: zeroSize ? 'zero' : 'normal', resizable: true, collapsible: true, collapseHandle: true }"
+        :splitter="{ size: noneSize ? 'none' : 'normal', resizable: true, collapsible: true, collapseHandle: true }"
         left-class="mu-bg-strong"
         left-style="min-width: 200px"
         right-class="mu-bg-strong">
@@ -169,7 +169,7 @@
   const splitterSize = ref('normal')
   const splitterShape = ref('line')
   const collapseHandle = ref(true)
-  const zeroSize = ref(false)
+  const noneSize = ref(false)
 
   const leftHover = ref(false)
   const rightHover = ref(false)
