@@ -1,4 +1,5 @@
-/** 横排条目绘制与命中矩形：check/tag/img/icon/link/text 条目、条目色板 */
+/** 横排条目绘制与命中矩形：check/tag/img/icon/link/text 条目、条目色板、
+    tag 列 +n 溢出汇聚 */
 import {
   CHECK_SIZE,
   CHECK_RADIUS,
@@ -72,10 +73,11 @@ export function linkHoverColorOf (item, theme) {
   return palette?.hover ?? palette?.color ?? theme?.primaryColor
 }
 
-// items 行绘制：超出右缘的条目丢弃；link/tag 条目矩形经 onItemRect 回报
-// （painter itemHits 命中来源）
+// items 行绘制：超出右缘的条目丢弃（tagOverflowBadge 时改绘 +n 汇聚 pill）；
+// link/tag 条目矩形经 onItemRect 回报（painter itemHits 命中来源）
 export function drawItems (ctx, rect, items, {
-  align, padding, theme, onImageLoad, onItemRect, measure, centerY, rightInset, hoverItem, row, colIndex
+  align, padding, theme, onImageLoad, onItemRect, measure, centerY, rightInset, hoverItem, row, colIndex,
+  tagOverflowBadge = false
 }) {
   const gap = padding
   const contentWidth = rect.width - padding * 2
@@ -85,11 +87,20 @@ export function drawItems (ctx, rect, items, {
 
   const { positions, offset, visible } = layoutItemPositions(items, widths, gap)
 
-  // 内容超宽时回退左对齐（溢出部分被右缘丢弃，不向两侧外溢）
-  const start = itemsStartX(rect, align, padding, offset, visible, contentWidth, rightInset)
+  // tag 列 +n 溢出汇聚：溢出（丢弃将发生 ⇔ offset > contentWidth）且全 tag 时
+  // 预留 pill 逐项全宽排布；无解返回 null 回退现状
+  const plan = tagOverflowBadge && offset > contentWidth
+    ? tagOverflowPlanOf(ctx, items, widths, gap, contentWidth, measure, theme)
+    : null
+
+  // 内容超宽时回退左对齐（溢出部分被右缘丢弃，不向两侧外溢）；pill 模式整组
+  // （前缀 + pill）按对齐协议分布
+  const start = itemsStartX(rect, align, padding, plan ? plan.groupWidth : offset, visible, contentWidth, rightInset)
   const rightBound = rect.x + rect.width - padding
 
-  for (let i = 0; i < items.length; i++) {
+  const limit = plan ? plan.shown : items.length
+
+  for (let i = 0; i < limit; i++) {
     if (positions[i] == null) continue
 
     const x = start + positions[i]
@@ -114,6 +125,65 @@ export function drawItems (ctx, rect, items, {
     // 命中矩形 = 绘制区域（纵向随条目形态，横向随实绘宽）
     if (onItemRect) reportHitRect(onItemRect, items[i], i, x, width, centerY, theme)
   }
+
+  if (plan) {
+    drawTagOverflowPill(ctx, plan, start + positions[plan.shown - 1] + widths[plan.shown - 1] + gap, {
+      centerY, rightBound, theme, measure, onItemRect
+    })
+  }
+}
+
+/** tag 列溢出汇聚方案：k = 整组（k 条全宽 + k×gap（含 pill 前间隙）+ pill 宽）
+    ≤ contentWidth 的最大前缀数（k ≥ 1；pill 宽 = `+n` 文本 + 2×TAG_PADDING_X）；
+    混排非 tag 条目（自定义 tags 产物防御）或无解返回 null（回退现状截断/丢弃）。
+    n 与剩余项全文在此一次算定随 plan 携带（绘制与 tooltip 同帧一致） */
+function tagOverflowPlanOf (ctx, items, widths, gap, contentWidth, measure, theme) {
+  if (!items.length || !items.every(item => resolveItemKind(item) === 'tag')) return null
+
+  const measureFn = measureOf(ctx, measure)
+  let prefix = 0
+  let plan = null
+
+  for (let k = 1; k < items.length; k++) {
+    prefix += widths[k - 1] + gap
+
+    const pillText = `+${items.length - k}`
+    const pillWidth = measureFn(pillText, tagFontOf(theme)) + TAG_PADDING_X * 2
+
+    if (prefix + pillWidth <= contentWidth) {
+      plan = {
+        shown: k,
+        pillText,
+        pillWidth,
+        groupWidth: prefix + pillWidth,
+        // 与 cell-tooltip.joinTooltipText 同口径（'；' join、滤空）；不跨文件
+        // import——cell-tooltip 已 import 本模块，反向成环
+        title: items.slice(k)
+          .map(item => String(item.text ?? ''))
+          .filter(text => text !== '')
+          .join('；')
+      }
+    }
+  }
+
+  return plan
+}
+
+/** +n 灰色汇聚 pill：drawTag 无 color 灰路径（边/字 theme.gray = --mu-gray、
+    底 theme.hoverBg = --mu-gray-translucent，零新增色值）；命中矩形携带
+    text/title（use-cell-tooltip plus 分支消费 tooltip 内容）；index -1 = 合成
+    条目（emitDomItemClick 经 items[-1] 判空短路，不发 cell-item-click） */
+function drawTagOverflowPill (ctx, plan, x, { centerY, rightBound, theme, measure, onItemRect }) {
+  drawTag(ctx, { kind: 'tag', text: plan.pillText }, x, centerY, { maxWidth: rightBound - x, theme, measure })
+
+  onItemRect?.({
+    kind: 'tag-overflow',
+    index: -1,
+    rect: { x, y: centerY - TAG_HEIGHT / 2, width: plan.pillWidth, height: TAG_HEIGHT },
+    disabled: false,
+    text: plan.pillText,
+    title: plan.title
+  })
 }
 
 /** 逐条目横向起点：测量失败条目 null 跳过不占位 */

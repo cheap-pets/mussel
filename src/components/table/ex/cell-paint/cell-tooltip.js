@@ -1,4 +1,4 @@
-/** 单元格 tooltip 求值（title 列协议） */
+/** 单元格 tooltip 求值（title 列协议 v2：默认开启，title:false/''/0 关闭） */
 import {
   CHECK_SIZE,
   TAG_PADDING_X,
@@ -22,6 +22,12 @@ const TOOLTIP_NOOP = () => {}
 /** tooltip 全文串：逐项 String 化、过滤空串后 '；' 连接（文本路径直接 String 化） */
 function joinTooltipText (parts) {
   return parts.map(part => String(part ?? '')).filter(part => part !== '').join('；')
+}
+
+/** title 协议自动形态（未设置/true）：溢出才提示全文；false/''/0 与自定义
+    String·Function 均非自动（use-cell-tooltip +n pill 分支同源判定） */
+export function isAutoTitle (raw) {
+  return raw === true || raw == null
 }
 
 /** 条目宽（tooltip 只读口径，与 measureItem 同式）：check 计 CHECK_SIZE、tag 计
@@ -211,7 +217,7 @@ function resolveTooltipCustomTitle (col, record) {
  * @param {Number|null} [params.regionHeight] 合并区域矩形高（钳制 maxLines，与绘制同式）
  * @param {Function} params.measure 测量回调（measureFn，走缓存）
  * @returns {{ content: String, overflowOnly: Boolean, overflow: Boolean } | null}
- *   无 title 配置 / progress・check・img / 全文为空 → null
+ *   title:false/''/0、progress・check・img、全文为空 → null（未设置 title 视为默认开启）
  */
 export function resolveCellTooltip (
   col,
@@ -219,13 +225,12 @@ export function resolveCellTooltip (
 ) {
   const raw = col.title
 
-  // falsy（false/''/0/null/undefined）不生效（对齐 DOM 版 title 只对 truthy 生效，
-  // 不得被 String(false) 成 'false'）
-  if (!raw) return null
+  // title 协议 v2（默认开启）：未设置/true → 溢出才显示全文；false/''/0 → 不提示
+  // （''/0 维持旧口径，防 String(0) 幻影）；String/Function → 恒显示自定义文本
+  if (raw === false || raw === '' || raw === 0) return null
+  if (!isAutoTitle(raw)) return resolveTooltipCustomTitle(col, record)
 
-  if (raw !== true) return resolveTooltipCustomTitle(col, record)
-
-  // true = 溢出才显示单元格全文：无可提示文本源的类型直接排除
+  // 以下自动路径不变（true 形态原逻辑）：无可提示文本源的类型直接排除
   if (col.type === 'check') return null
 
   const content = resolveCellContent(col, { record, recordNumber, emit: TOOLTIP_NOOP })

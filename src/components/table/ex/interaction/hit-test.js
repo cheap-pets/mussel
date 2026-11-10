@@ -167,22 +167,43 @@ export function isEditingCell (editingCell, hit) {
     editingCell.col === hit.colIndex
 }
 
+/** 矩形命中判定（click-resolve.isItemRectHit 同式；两模块互 import 成环，就近镜像） */
+function isPointInRect (x, y, rect) {
+  return x >= rect.x && x < rect.x + rect.width && y >= rect.y && y < rect.y + rect.height
+}
+
+/** +n 汇聚 pill 命中：该格 tag-overflow 矩形含指针且携带非空 title（空 title =
+    无剩余内容，不构成 plus 目标） */
+function findTagOverflowPill (hit, itemHits) {
+  const rects = itemHits?.get(hit.rowIndex)?.get(hit.colIndex)
+
+  return rects?.find(entry =>
+    entry?.kind === 'tag-overflow' && entry.title && isPointInRect(hit.x, hit.y, entry.rect)
+  ) ?? null
+}
+
 /**
- * tooltip 触发门控（title 列协议）：hoverMode 'none' / 拖拽中 / 表头 / 行列越界
- * （含 beyondCols 的 col=-1）/ 命中列无 truthy title / 编辑中格 → null；否则
- * { row, col }（hit 已经 resolveSpanCell 归一，合并区域即锚格）。
+ * tooltip 触发门控（title 列协议 v2，默认开启）：hoverMode 'none' / 拖拽中 / 表头 /
+ * 行列越界（含 beyondCols 的 col=-1）/ 命中列显式 title === false / 编辑中格 → null；
+ * 否则 { row, col }（hit 已经 resolveSpanCell 归一，合并区域即锚格）。
+ * 命中 +n 汇聚 pill 时附 `plus: true`（tag 列溢出 pill，title:false 已先整体拦截）。
  *
  * @param {Object} params.hit hitTest 产出（hitAt 出口归一后的 hit）
  * @param {Array} params.columns 已准备内部列（wiredColumns，读取列级 title）
  * @param {String} [params.hoverMode] hoverMode prop（'none' 时 hover 通道同门控抑制）
  * @param {Object|null} [params.editingCell] 编辑中格 { row, col }（编辑格不提示）
  * @param {Boolean} [params.resizing=false] 列宽拖拽中
- * @returns {{ row: Number, col: Number } | null}
+ * @param {Map} [params.itemHits] painter 条目命中矩形集合（paintState.itemHits；
+ *   tag-overflow pill 命中检测用，缺省无 plus）
+ * @returns {{ row: Number, col: Number, plus?: Boolean } | null}
  */
-export function resolveTooltipTarget ({ hit, columns, hoverMode, editingCell, resizing = false } = {}) {
+export function resolveTooltipTarget ({ hit, columns, hoverMode, editingCell, resizing = false, itemHits } = {}) {
   if (!isBodyCellHit(hit) || hoverMode === 'none' || resizing) return null
   if (isEditingCell(editingCell, hit)) return null
-  if (!columns?.[hit.colIndex]?.title) return null
+  if (columns?.[hit.colIndex]?.title === false) return null
 
-  return { row: hit.rowIndex, col: hit.colIndex }
+  // +n 汇聚 pill（tag 列溢出）：命中 → 目标附 plus 标记；title:false 已在上一行整体拦截
+  const pill = findTagOverflowPill(hit, itemHits)
+
+  return { row: hit.rowIndex, col: hit.colIndex, ...(pill ? { plus: true } : null) }
 }

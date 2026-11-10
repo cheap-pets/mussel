@@ -75,7 +75,7 @@ export function prepareColumn (column, { placeholder } = {}) {
   col._text = ensureFn(column.text)
   col._value = ensureFn(column.value)
   // title 列协议（tooltip 求值闭包，base/table.vue internalColumns 的 _title 同款；
-  // 原始字段经 {...column} 保留，resolveTooltipTarget 按其真值做门控）
+  // 原始字段经 {...column} 保留，resolveTooltipTarget 仅按 title === false 显式关闭门控）
   col._title = ensureFn(column.title)
 
   col._maxLines = column.maxLines != null ? clampLimit(column.maxLines, null) : null

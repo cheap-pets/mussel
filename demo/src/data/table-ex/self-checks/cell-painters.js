@@ -29,10 +29,10 @@
  * fillRect 下划线（recordingCtx 增记 fillRect/stroke）；button pill 悬停反转三色；
  * itemHits 条目 disabled 字段。
  *
- * resolveCellTooltip（title 列协议，20261030-table-ex-cell-tooltip）：falsy 门控、
- * 自定义 String/Function title、true 形态文本/横排条目（check/img/tag 计宽）/
- * link·list 竖排/button 组溢出判定矩阵、maxLines 与 regionHeight 钳制、line-clamp 改道
- * （A9 后无数组文本形态）。
+ * resolveCellTooltip（title 列协议 v2，默认开启）：未设置/true → 溢出才显示全文，
+ * false/''/0 → null，自定义 String/Function title 恒显示；文本/横排条目（check/img/tag
+ * 计宽）/link·list 竖排/button 组溢出判定矩阵、maxLines 与 regionHeight 钳制、
+ * line-clamp 改道（A9 后无数组文本形态）。
  *
  * 断言全部同步执行（runChecks 不支持异步）；img 加载完成后的重绘联动属 painter
  * 集成行为，此处只断言加载状态、crossOrigin 与未加载前空格（data URI 每次运行
@@ -1990,11 +1990,20 @@ export const checks = [
     }
   },
   {
-    name: 'resolveCellTooltip：falsy 门控与无文本源类型（title:false/无 title/空串/0/check/progress/img/null 文本）',
+    name: 'resolveCellTooltip：默认开启与 falsy 抑制及无文本源类型（未设置/true 溢出才显示；title:false/空串/0/check/progress/img/null 文本）',
     fn: () => {
-      // falsy 不生效（对齐 DOM 版 title 只对 truthy 生效，不得被 String(false) 成 'false'）
+      // false/''/0 维持旧口径不提示（防 String(false)/String(0) 幻影）；未设置/true → 溢出才显示全文
       assert(tooltipOf({ field: 'v', title: false }, { v: '甲' }) === null, 'title:false 应不生效（不得 String(false)）')
-      assert(tooltipOf({ field: 'v' }, { v: '甲' }) === null, '无 title 应返回 null')
+      // 未设置 title → 默认开启（v2）：短文本返回全文但不显示，长文本溢出
+      const plain = tooltipOf({ field: 'v' }, { v: '甲' })
+
+      assertEqual(plain?.content, '甲', '未设置 title 默认开启：短文本返回全文')
+      assertEqual(plain?.overflow, false, '未设置 title 且短文本：overflow false（壳据此不显示）')
+      assertEqual(
+        tooltipOf({ field: 'v' }, { v: '一二三四五六七八九十'.repeat(2) })?.overflow,
+        true,
+        '未设置 title 且长文本：20 字 ×9px = 180 > 144 → overflow true'
+      )
       assert(tooltipOf({ field: 'v', title: '' }, { v: '甲' }) === null, 'title 空串应不生效')
       assert(tooltipOf({ field: 'v', title: 0 }, { v: 1 }) === null, 'title 0 应不生效')
       assert(tooltipOf({ field: 'v', title: () => '' }, { v: '甲' }) === null, '_title 返回空串应返回 null')
@@ -2008,7 +2017,7 @@ export const checks = [
       )
       assert(tooltipOf({ field: 'empty', title: true }, { empty: null }) === null, '文本源 null → null')
 
-      return 'title:false/无 title/空串/0/空串返回/check/progress/img/null 文本源均返回 null'
+      return '未设置默认开启（短文本 overflow:false / 长文本 overflow:true）；title:false/空串/0/空串返回/check/progress/img/null 文本源均返回 null'
     }
   },
   {
@@ -2722,6 +2731,58 @@ export const checks = [
       assertEqual(LinkColumn.compile({ linkOption: { max: 1 } }).count({}, ['a', 'b']), 1, 'linkOption.max 截断生效')
 
       return 'canvas 挂 count / dom 不挂 / 非数组与空 entries 0 / 空标签过滤 / max 负·小数·字符串 slice 同源 / link 单值·数组·max 截断'
+    }
+  },
+  {
+    name: 'drawItems：tag 列 +n 溢出汇聚（全宽前缀 + 灰 pill +n、n = 隐藏数、命中回报；未溢出/无解回退）',
+    fn: () => {
+      const col = prepareColumn({ field: 'v', type: 'tag' })
+      const rects = []
+      const { calls } = drawRecorded(
+        col,
+        { v: ['甲甲甲', '乙乙乙', '丙丙丙', '丁丁丁'] },
+        { measure: fakeMeasure, onItemRect: r => rects.push(r) }
+      )
+
+      assertArray(calls.fillText.map(c => c.text), ['甲甲甲', '乙乙乙', '+2'], '前缀 2 条全宽 + pill \'+2\'（隐藏 2 条）')
+
+      const pill = rects.find(r => r.kind === 'tag-overflow')
+
+      assert(pill, '应回报 tag-overflow 命中矩形')
+      assertEqual(pill.text, '+2', 'pill 文本 = 隐藏条数 n')
+      assertEqual(pill.title, '丙丙丙；丁丁丁', 'pill title = 剩余项全文 \'；\' join')
+      assertEqual(pill.index, -1, '合成条目 index -1（点击派发判空短路）')
+      assert(pill.disabled === false, 'pill 非禁用')
+      assertArray([pill.rect.x, pill.rect.width], [110, 34], 'pill x = 末条右缘 102 + 8px 间隙 = 110、宽 = 18 + 16 内距')
+      assertEqual(calls.fillText[2].fillStyle, cssColorOf(THEME.gray), 'pill 文字灰（--mu-gray）')
+      assertEqual(calls.fill[2].fillStyle, cssColorOf(THEME.hoverBg), 'pill 底 hoverBg（gray translucent 等价）')
+
+      // 裁决：pill 渲染不受 title 控制（title:false 列仍出 +n，仅抑制其 tooltip）
+      const noTitle = []
+
+      drawRecorded(prepareColumn({ field: 'v', type: 'tag', title: false }), { v: ['甲甲甲', '乙乙乙', '丙丙丙', '丁丁丁'] }, { measure: fakeMeasure, onItemRect: r => noTitle.push(r) })
+
+      assert(noTitle.some(r => r.kind === 'tag-overflow'), 'title:false 列仍回报 +n pill（渲染不受 title 控制）')
+
+      // 未溢出：2×43 + 8 = 94 ≤ 144 → 无 pill、常规回报不变
+      const fits = []
+
+      drawRecorded(col, { v: ['甲甲甲', '乙乙乙'] }, { measure: fakeMeasure, onItemRect: r => fits.push(r) })
+
+      assert(!fits.some(r => r.kind === 'tag-overflow'), '未溢出不回报 pill')
+      assertArray(fits.map(r => `${r.kind}:${r.index}`), ['tag:0', 'tag:1'], '常规条目回报不受影响')
+
+      // 无解回退：首条 cap 144 后 144 + 8 + 34 > 144 → k=0 → 现状截断/丢弃
+      const fallback = drawRecorded(col, { v: ['甲'.repeat(20), '乙乙乙'] }, { measure: fakeMeasure })
+      const fallbackRects = []
+
+      drawRecorded(col, { v: ['甲'.repeat(20), '乙乙乙'] }, { measure: fakeMeasure, onItemRect: r => fallbackRects.push(r) })
+
+      assertEqual(fallback.calls.fillText.length, 1, '回退：仅首条省略截断，乙乙乙丢弃（现状）')
+      assert(fallback.calls.fillText[0].text.endsWith('...'), '首条省略截断（现状行为）')
+      assert(!fallbackRects.some(r => r.kind === 'tag-overflow'), '回退不回报 pill')
+
+      return '溢出 k=2 + pill(+2) 计宽/位置/回报；title:false 仍渲染 pill；未溢出无 pill；无解回退现状'
     }
   }
 ]

@@ -6,6 +6,8 @@
 
 - [table 列类型体系 v2：类型协议、enum/color、compile 双通道](./project/table-column-types-v2.md) `convention` `code@worktree(2026-11-06)`：list 条目协议/link 壳委托/enum 映射独占/color 双端/text.link 双端 hover；compile 双通道产物与 `v-on="item.events ?? {}"` 兜底。
 - [table-ex 调用层级关系结构图数据](./project/table-ex-structure-map.md) `fact` `code@ee16eb4`：table-ex 结构分析/重构任务先读本文件（分层模型/依赖图/调用链/host 袋）；代码重构后同步更新。
+- [table-ex 溢出 tooltip title 协议](./project/table-ex-overflow-tooltip-title-protocol.md) `convention` `code@worktree(2026-11-10)`：title 未设置/null 视同 true，溢出才自动提示，仅显式 false 抑制；DOM 版 mu-table 仍仅 truthy，属有意分叉。
+- [table-ex tag 列 +n 溢出汇聚 tag](./project/table-ex-tag-overflow-plusn.md) `convention` `code@worktree(2026-11-10)`：放不下时末尾渲染灰 +n pill（n=隐藏数，无解回退），pill 命中弹剩余项 tooltip，受 title:false 抑制（渲染与提示分离）。
 
 ## 绘制与几何
 

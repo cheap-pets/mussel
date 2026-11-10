@@ -196,7 +196,8 @@ function drawContentItems (
     rightInset,
     hoverItem,
     row,
-    colIndex
+    colIndex,
+    tagOverflowBadge: col.type === 'tag'
   })
 }
 

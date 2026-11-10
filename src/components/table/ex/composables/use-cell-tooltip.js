@@ -13,7 +13,7 @@
 /**
  * host 消费面声明（供依赖审计 grep；「壳」= table-ex.vue host 字面量成员）
  * @host-reads rootEl, props, wiredColumns, flatRows, displayRows, layout, spans,
- *   resizeGuideX
+ *   resizeGuideX, paintState
  * @host-writes tooltipAnchorEl, tooltipController, scheduleCellTooltip,
  *   hideCellTooltip, delayHideCellTooltip
  * @host-calls getThemeWatcher（壳）, getMeasure（壳）, getWrapCache（壳）,
@@ -23,9 +23,19 @@ import { inject, shallowRef } from 'vue'
 import { TOOLTIP_SHOW_DELAY } from '@/components/tooltip/tooltip-core'
 import { CELL_PADDING_FALLBACK, ROW_TOP_INSET, TREE_INDENT } from '../shared/constants'
 import { resolveTooltipTarget } from '../interaction/hit-test'
-import { resolveCellTooltip } from '../cell-paint/cell-tooltip'
+import { resolveCellTooltip, isAutoTitle } from '../cell-paint/cell-tooltip'
 import { regionAt, spanRectOf } from '../spans/spans'
 import { isSamePoint, recordNumberOf } from '../shared/cell-identity'
+
+/** plus 感知格身份比较（isSamePoint 单一事实源之上叠加 plus 维度） */
+function isSameTooltipCell (a, b) {
+  return isSamePoint(a, b) && Boolean(a?.plus) === Boolean(b?.plus)
+}
+
+/** +n pill 条目查找（绘制帧携带，每格至多一条） */
+function findPlusEntry (itemHits, cell) {
+  return itemHits?.get(cell.row)?.get(cell.col)?.find(entry => entry?.kind === 'tag-overflow') ?? null
+}
 
 /**
  * @param {Object} host host 袋（消费面见文件头 @host-* 声明）
@@ -47,8 +57,8 @@ export function useCellTooltip (host) {
   }
 
   /** pointermove 尾部调度：格身份（{row, col}）去重，同格内移动零开销；换格才
-      重排定时器。无 title 目标（表头/越界/编辑中/none）→ 延迟收起（300ms 宽限，
-      同 v-mu-tooltip mouseleave 语义）；有目标格 → 清面板挂起的 hide 计时器
+      重排定时器。无 tooltip 目标（表头/越界/编辑中/none/title:false 列）→ 延迟收起
+      （300ms 宽限，同 v-mu-tooltip mouseleave 语义）；有目标格 → 清面板挂起的 hide 计时器
       （先排定的 hide 会先于 show 触发 = 退出动画 + 再入场闪一次），不主动 hide，
       面板保持可见由下一次 showCellTooltip 写锚点 + updatePosition 重定向 */
   function scheduleCellTooltip (hit) {
@@ -59,10 +69,11 @@ export function useCellTooltip (host) {
       columns: host.wiredColumns.value,
       hoverMode: host.props.hoverMode,
       editingCell: host.getEditingCellRef(),
-      resizing: host.resizeGuideX.value != null
+      resizing: host.resizeGuideX.value != null,
+      itemHits: host.paintState.itemHits
     })
 
-    if (isSamePoint(next, tooltipCell)) return
+    if (isSameTooltipCell(next, tooltipCell)) return
 
     clearTooltipTimer()
     tooltipCell = next
@@ -135,7 +146,7 @@ export function useCellTooltip (host) {
   function showCellTooltip (cell) {
     if (!tooltipController || !tooltipAnchorEl.value) return
     // 过期守卫：定时器触发时去重键已变化（换格/收起）则放弃本次显示
-    if (!isSamePoint(tooltipCell, cell)) return
+    if (!isSameTooltipCell(tooltipCell, cell)) return
 
     const context = tooltipContextOf(cell)
 
@@ -145,9 +156,24 @@ export function useCellTooltip (host) {
       return
     }
 
+    // +n 汇聚 pill（title 协议自动形态专属）：内容 = 绘制帧携带的剩余项全文，
+    // 锚点 = pill 视口矩形（canvas 视口坐标，与 spanRectOf 同坐标系）；非自动
+    // 形态（false/''/0/自定义）与 pill 条目缺失（数据/几何已变）均落回格级路径
+    if (cell.plus && isAutoTitle(context.col.title)) {
+      const entry = findPlusEntry(host.paintState.itemHits, cell)
+
+      if (entry?.title) {
+        placeTooltipAnchor(entry.rect)
+        tooltipController.show(tooltipAnchorEl.value, { content: entry.title, placement: 'top', trigger: 'hover' })
+        tooltipController.updatePosition()
+
+        return
+      }
+    }
+
     const tip = resolveCellTooltip(context.col, context.params)
 
-    // 无可显示内容（无 title / 无文本源 / 未溢出 / 空串）：收起上一格残留。
+    // 无可显示内容（显式关闭 / 无文本源 / 未溢出 / 空串）：收起上一格残留。
     // 只用 hideTooltip 不清 tooltipCell——保留去重键，否则同格内每次 pointermove
     // 都会重排 300ms 定时器并重复求值（本格确无提示）
     if (!tip || tip.content === '' || (tip.overflowOnly && !tip.overflow)) {

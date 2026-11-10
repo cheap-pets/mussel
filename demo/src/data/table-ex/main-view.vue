@@ -402,6 +402,9 @@
           : undefined,
         textLink: i < 5 ? `链接 ${n}` : undefined,
         legacyArray: i < 3 ? ['甲', '乙'] : undefined,
+        // A1/A3 夹具（20261110-table-ex-overflow-tooltip）：偶数行短文本 /
+        // 奇数行长文本（31 字 ≈ 403px > 内容宽 134 → 溢出）
+        longText: i % 2 === 0 ? '短文本' : '极长文本夹具：用于验证单元格文字溢出时悬停自动显示完整内容提示',
         empty: null
       }
     }
@@ -438,6 +441,10 @@
         // tooltip 夹具（20261030）：函数 title 恒显示（ex 侧与 DOM 版原生 title 文案对照）
         title: record => `状态码：${record.status}`
       },
+      // A1/A3 夹具（20261110-table-ex-overflow-tooltip）：未设置 title → 溢出自动
+      // tooltip（奇数行长文本）；title:false 显式抑制对照列（同数据溢出不提示）
+      { caption: '长文本（溢出提示）', field: 'longText', width: 150 },
+      { caption: '长文本（title:false）', field: 'longText', width: 150, title: false },
       {
         caption: '数量',
         field: 'count',
@@ -708,7 +715,10 @@
         { icon: 'demoGlyphA' },
         { caption: '编辑', icon: 'clock' },
         { caption: '删除', color: 'red', icon: 'noRegBtnGlyph' }
-      ]
+      ],
+      // A2 夹具（20261110-table-ex-overflow-tooltip）：未溢出对照（合计远小于内容宽 134）
+      tagsOverflow: ['短标', '甲'],
+      buttonsOverflow: [{ caption: '短' }]
     },
     {
       id: 2,
@@ -731,7 +741,11 @@
       progress: 75,
       progressColor: 'warning',
       icon: 'demoGlyphA',
-      buttons: [{ caption: '详情', color: 'indigo' }, { caption: '禁用', disabled: true }]
+      buttons: [{ caption: '详情', color: 'indigo' }, { caption: '禁用', disabled: true }],
+      // A2 夹具（20261110-table-ex-overflow-tooltip）：8 标签远超内容宽 134；
+      // 第二个 caption 18 字远超首个按钮后的剩余宽 → 均必然溢出
+      tagsOverflow: Array.from({ length: 8 }, (_, i) => `溢出标签${i + 1}`),
+      buttonsOverflow: [{ caption: '短' }, { caption: '这是一条超长按钮文字标题溢出提示夹具' }]
     },
     {
       id: 3,
@@ -780,6 +794,16 @@
 
   const itemColumns = [
     { caption: '名称', field: 'name', width: 120 },
+    // A2 夹具（20261110-table-ex-overflow-tooltip）：tag 横排与 button 组
+    // 溢出自动 tooltip（row2 溢出 / row1 未溢出对照）
+    { caption: '标签（溢出）', field: 'tagsOverflow', type: 'tag', width: 150 },
+    { caption: '按钮（溢出）', field: 'buttonsOverflow', type: 'button', width: 150, buttons: record => record.buttonsOverflow },
+    // +n 夹具（20261110-tag-overflow-plus-n）：tag 列溢出 +n 汇聚 pill。右对齐使
+    // pill 右缘恒贴内容区右缘（hover 定位确定性，itemsStartX right 分支）；
+    // title:false 对照列验证 +n tooltip 受 title 协议抑制（设计裁决）；field 复用
+    // tagsOverflow（row1 未溢出 / row2 8 标签溢出，与「标签（溢出）」列同源）
+    { caption: '标签（+n）', field: 'tagsOverflow', type: 'tag', width: 150, align: 'right' },
+    { caption: '标签（+n·title:false）', field: 'tagsOverflow', type: 'tag', width: 150, align: 'right', title: false },
     // link 恢复不可编辑（问题 4，decisions [S1]）：摘除原 editable/editor 配置；
     // tooltip 夹具（20261030）：第 4 行 12 条 > maxItems 10 → dots 溢出用例
     { caption: '链接（三态）', field: 'links', type: 'link', width: 170, title: true },

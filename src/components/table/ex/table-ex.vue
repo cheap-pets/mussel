@@ -457,13 +457,13 @@
   Object.assign(host, apiApi)
   const { scrollToRecord, getLayoutInfo, getThemeSnapshot, getCellRect } = apiApi
 
-  // —— 单元格 tooltip 开关（title 列协议）：依赖 wiredColumns，留 useTreeRows 之后 ——
-  const tooltipEnabled = computed(() => wiredColumns.value.some(col => Boolean(col?.title)))
+  // —— 单元格 tooltip 开关（title 列协议 v2：默认开启，title:false 显式关闭）：依赖 wiredColumns，留 useTreeRows 之后 ——
+  const tooltipEnabled = computed(() => wiredColumns.value.some(col => col?.title !== false))
 
   // 控制器缺失的降级提示（utils/warn once 去重）
   watch(tooltipEnabled, enabled => {
     if (enabled && !tooltipController) {
-      devWarn('列配置了 title，但 $mussel.tooltip 控制器不存在（宿主未安装 mussel 或未走完整 install），单元格 tooltip 功能关闭')
+      devWarn('单元格 tooltip 默认开启（title 列协议），但 $mussel.tooltip 控制器不存在（宿主未安装 mussel 或未走完整 install），功能已关闭；如需显式关闭请配置列 title:false')
     }
   }, { immediate: true })
 

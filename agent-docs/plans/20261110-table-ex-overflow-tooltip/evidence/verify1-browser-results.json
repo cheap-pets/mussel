@@ -1,0 +1,67 @@
+{
+  "env": {
+    "urlPrefix": "http://localhost:3000/data/table-ex/",
+    "probe": "HTTP 200 before verification",
+    "tool": "playwright mcp + browser_run_code_unsafe (page.mouse.move / page.evaluate)",
+    "assertBasis": "DOM computed display + textContent of .mu-tooltip-panel; window.__canvasTable.getCellRect viewport coords"
+  },
+  "A4_default_scene": {
+    "url": "?bust=20261110-verify1",
+    "trigger": "onMounted auto run (no manual rerun clicked)",
+    "checkItemCount": 243,
+    "failCount": 0,
+    "headText": "自检结果（243/243 通过）"
+  },
+  "A4_items_scene": {
+    "url": "?scene=items&bust=20261110-verify1-a2",
+    "checkItemCount": 243,
+    "failCount": 0,
+    "headText": "自检结果（243/243 通过）"
+  },
+  "A1": {
+    "url": "?bust=20261110-verify1",
+    "step1_overflowCell_row1_col4": {
+      "action": "scrollIntoView('.ct-stage') -> mouse.move(5,5) wait 800ms -> hover center of getCellRect(1,4) -> wait 600ms",
+      "panel": { "exists": true, "display": "block", "text": "极长文本夹具：用于验证单元格文字溢出时悬停自动显示完整内容提示" }
+    },
+    "step3_nonOverflowCell_row0_col4": {
+      "action": "move away (5,5) wait 800ms -> hover center of getCellRect(0,4) -> wait 700ms",
+      "panel": { "display": "none" },
+      "note": "compliant path (leave-and-reenter per knowledge playwright-delay-hide-popup-testing); direct vertical move from row1 is intercepted by the panel itself, see operationArtifact"
+    },
+    "operationArtifact": {
+      "desc": "direct move from (1,4) to (0,4) center: panel (placement top, rect x447 y60 w320 h38.7, pointer-events:auto) physically covers (0,4); elementFromPoint at (0,4) center = SPAN inside DIV.mu-tooltip-panel -> canvas gets no pointermove -> panel stays with old content for >1700ms",
+      "classification": "pre-existing tooltip panel hover semantics (panel is interactive); show/hide path untouched by this task; does not affect A1 verdict"
+    }
+  },
+  "A3": {
+    "url": "?scene=default&bust=20261110-verify1-a3",
+    "step1_titleFalseCell_row1_col5_freshPage": {
+      "action": "hover center of getCellRect(1,5) -> wait 600ms",
+      "panel": "absent"
+    },
+    "step2_afterShownThenMove": {
+      "action": "hover getCellRect(1,4) 600ms (panel shown: display block + full text) -> move to getCellRect(1,5) center -> wait 800ms",
+      "panelBefore": { "display": "block", "text": "极长文本夹具：用于验证单元格文字溢出时悬停自动显示完整内容提示" },
+      "panelAfter": { "display": "none" }
+    }
+  },
+  "A2": {
+    "url": "?scene=items&bust=20261110-verify1-a2",
+    "sceneActivated": { "colWidthsLen": 13, "first3": [120, 150, 150] },
+    "row1_col1_tagOverflow": {
+      "action": "hover getCellRect(1,1) center -> 600ms",
+      "panel": { "display": "block", "text": "溢出标签1；溢出标签2；溢出标签3；溢出标签4；溢出标签5；溢出标签6；溢出标签7；溢出标签8" }
+    },
+    "row1_col2_buttonOverflow": {
+      "action": "hover getCellRect(1,2) center -> 600ms",
+      "panel": { "display": "block", "text": "短；这是一条超长按钮文字标题溢出提示夹具" }
+    },
+    "row0_col1_noOverflow": { "action": "leave 800ms -> hover getCellRect(0,1) -> 700ms", "panel": { "display": "none" } },
+    "row0_col2_noOverflow": { "action": "leave 800ms -> hover getCellRect(0,2) -> 700ms", "panel": { "display": "none" } }
+  },
+  "consoleError": {
+    "message": "Failed to load resource: net::ERR_INVALID_URL @ data:image/png;base64,AAAA1",
+    "classification": "pre-existing demo fixture invalid data-URI (img self-check fixture); not in any file touched by this task"
+  }
+}

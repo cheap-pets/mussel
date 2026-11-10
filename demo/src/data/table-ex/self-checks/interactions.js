@@ -14,8 +14,8 @@
  * context 缺省回归）、拖拽误触抑制（pointerup 后延时清除）、
  * editing 中 pointerdown 先提交再续命中、光标决策与 rAF 合帧。
  *
- * resolveTooltipTarget（title 列协议门控，20261030-table-ex-cell-tooltip）：
- * none/拖拽/表头/行列越界/无 title 列/编辑中格 → null，正常格 → { row, col }。
+ * resolveTooltipTarget（title 列协议 v2，默认开启）：none/拖拽/表头/行列越界/
+ * 编辑中格/title:false 列 → null，正常格（含未设置 title）→ { row, col }。
  */
 import {
   hitTest,
@@ -781,9 +781,9 @@ export const checks = [
     }
   },
   {
-    name: 'resolveTooltipTarget：门控（none/拖拽/表头/越界/编辑格/无 title 列 → null；正常格 → {row,col}）',
+    name: 'resolveTooltipTarget：门控（none/拖拽/表头/越界/编辑格/title:false 列 → null；未设置/空串放行 → {row,col}）',
     fn: () => {
-      const columns = [{}, { title: true }, { title: '提示' }, { title: false }]
+      const columns = [{}, { title: true }, { title: '提示' }, { title: false }, { title: '' }]
       const bodyHit = { isHeader: false, colIndex: 1, rowIndex: 3 }
       const base = { hit: bodyHit, columns, hoverMode: 'row', editingCell: null, resizing: false }
       const target = resolveTooltipTarget(base)
@@ -804,8 +804,25 @@ export const checks = [
         [3, 1],
         '编辑其他格不抑制本格'
       )
-      assertEqual(resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 0, rowIndex: 3 } }), null, '无 title 列不触发')
-      assertEqual(resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 3, rowIndex: 3 } }), null, 'title:false 列不触发（falsy 同口径）')
+      assertArray(
+        (() => {
+          const t = resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 0, rowIndex: 3 } })
+
+          return [t.row, t.col]
+        })(),
+        [3, 0],
+        '未设置 title 默认开启，门控放行'
+      )
+      assertEqual(resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 3, rowIndex: 3 } }), null, 'title:false 显式关闭不触发')
+      assertArray(
+        (() => {
+          const t = resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 4, rowIndex: 3 } })
+
+          return [t.row, t.col]
+        })(),
+        [3, 4],
+        '空串仅由求值层归一，门控放行'
+      )
       assertArray(
         (() => {
           const t = resolveTooltipTarget({ ...base, hit: { isHeader: false, colIndex: 2, rowIndex: 0 } })
@@ -817,7 +834,39 @@ export const checks = [
       )
       assertEqual(resolveTooltipTarget({ ...base, hit: null }), null, 'hit 缺失安全')
 
-      return '正常格 {row,col}；表头/越界/none/拖拽/编辑格/无 title/false 列均 null'
+      return '正常格 {row,col}；表头/越界/none/拖拽/编辑格/title:false 列均 null；未设置与空串放行'
+    }
+  },
+  {
+    name: 'resolveTooltipTarget：+n 汇聚 pill（tag-overflow 矩形含指针 → {row,col,plus:true}；title:false 拦截 / 空 title·矩形外·itemHits 缺省 → 无 plus）',
+    fn: () => {
+      const columns = [{}, { title: true }, { title: false }]
+      const pillEntry = {
+        kind: 'tag-overflow',
+        index: -1,
+        rect: { x: 40, y: 100, width: 34, height: 20 },
+        disabled: false,
+        text: '+2',
+        title: '丙；丁'
+      }
+      // col 0/1 = 自动形态；col 2 = title:false（门控拦截）；col 4 未配置列
+      // （title 未设置 = 自动形态）但条目 title 为空串 → 空 title 分支
+      const itemHits = new Map([
+        [3, new Map([[0, [pillEntry]], [1, [pillEntry]], [2, [pillEntry]], [4, [{ ...pillEntry, title: '' }]]])]
+      ])
+      const base = { columns, hoverMode: 'row', editingCell: null, resizing: false, itemHits }
+      const hit = colIndex => ({ isHeader: false, colIndex, rowIndex: 3, x: 50, y: 110 })
+      const flat = target => target && [target.row, target.col, Boolean(target.plus)]
+
+      assertArray(flat(resolveTooltipTarget({ ...base, hit: hit(0) })), [3, 0, true], 'pill 命中（未设置 title）→ plus 目标')
+      assertArray(flat(resolveTooltipTarget({ ...base, hit: hit(1) })), [3, 1, true], 'title:true 列 pill 命中 → plus 目标')
+      assertEqual(resolveTooltipTarget({ ...base, hit: hit(2) }), null, 'title:false 列 pill 命中仍 null（门控先于 plus）')
+      assertArray(flat(resolveTooltipTarget({ ...base, hit: hit(4) })), [3, 4, false], '空 title pill（无剩余内容）→ 常规目标')
+      assertArray(flat(resolveTooltipTarget({ ...base, hit: { ...hit(0), x: 10 } })), [3, 0, false], '同格 pill 矩形外 → 常规目标')
+      assertArray(flat(resolveTooltipTarget({ ...base, itemHits: undefined, hit: hit(0) })), [3, 0, false], 'itemHits 缺省无 plus（回归）')
+      assertEqual(resolveTooltipTarget({ ...base, hit: hit(0), resizing: true }), null, '拖拽中整体 null（含 pill）')
+
+      return 'pill 命中 plus / title:false 抑制 / 空 title·矩形外·缺省无 plus'
     }
   }
 ]
