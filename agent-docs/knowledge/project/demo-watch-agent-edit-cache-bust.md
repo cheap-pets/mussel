@@ -12,7 +12,7 @@
 
 ## 做法
 
-- 错误：Edit 改源码后直接访问 `http://localhost:3000/data/<name>/` 断言新行为。
+- 错误：Edit 改源码后直接访问对应 demo 页断言新行为。
 - 正确：
   1. `touch demo/src/<受影响文件>`，轮询 `demo/dist/<对应产物>` mtime 变化确认重建（产物内容不变时 size 不变，勿以 size 判断）。
   2. playwright 访问 URL 加 cache-bust 查询参数（如 `?v=<时间戳>`），避免命中启发式缓存。
@@ -20,4 +20,4 @@
 
 ## 来源
 
-- vite demo:build（npm run demo:build）watch 行为；响应头实测 2026-11-08（curl -I localhost:3000）。
+- vite demo:build（npm run demo:build）watch 行为；响应头实测 2026-11-08（curl -I demo 静态服务）。

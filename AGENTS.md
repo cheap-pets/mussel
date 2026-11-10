@@ -69,7 +69,7 @@ npm run docs:build     # 构建文档站静态产物
 npm run pub            # 构建 + npm publish
 ```
 
-无测试框架，通过 demo 页面验证组件行为。demo 页面按 `demo/src/<name>/` 组织（`main-view.vue` + `main.js`），访问 `http://localhost:3000/<name>/`。
+无测试框架，通过 demo 页面验证组件行为。demo 页面按 `demo/src/<分类>/<name>/` 组织（`main-view.vue` + `main.js`）。各页面访问地址见 [demo/README.md](demo/README.md)「本地预览」一节，验证时按该文档取地址；新增、删除或调整 demo 页面时，须同步更新该地址清单。
 
 
 

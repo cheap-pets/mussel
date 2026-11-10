@@ -8,7 +8,7 @@
 "/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" \
   --headless=new --disable-gpu --no-first-run \
   --dump-dom --enable-logging=stderr --virtual-time-budget=8000 \
-  "http://localhost:3000/__test.html" > dom.html 2> console.log
+  "<demo 服务根>/__test.html" > dom.html 2> console.log
 ```
 
 - stdout：JS 执行后的完整 DOM（`--virtual-time-budget` 等待脚本跑完），可 grep class/结构断言。

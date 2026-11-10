@@ -13,5 +13,5 @@ src/components/table/ex/cell-paint/cell-content.js、cell-paint/cell-tooltip.js�
 ## 注意
 
 - 控制器缺失宿主（不完整 install）下 devWarn once 去重提示，关闭方式 `title: false`。
-- 验证：`http://localhost:3000/data/table-ex/?scene=default`（文本+title:false）与 `?scene=items`（tag/button），悬停须先移出 tooltip 面板（pointer-events:auto 物理覆盖上方格，直接垂直移入被拦截为既有语义）。
+- 验证：demo 页 `data/table-ex`（地址见 AGENTS.md 引用的 `demo/README.md`），`?scene=default`（文本+title:false）与 `?scene=items`（tag/button），悬停须先移出 tooltip 面板（pointer-events:auto 物理覆盖上方格，直接垂直移入被拦截为既有语义）。
 - `cell-tooltip.js` 有 eslint complexity warning（12>10），设计真值矩阵所致，属已知豁免。

@@ -19,7 +19,7 @@
 - [Teleport 弹层与宿主组件的 CSS 变量级联断裂](./project/teleport-popup-css-vars.md) `pitfall`：弹层 Teleport 到根后宿主类上的组件级 CSS 变量不生效；弹层类须重复声明默认值。
 - [级联延时收起：hide 不可向上清祖先计时器](./project/cascade-delay-hide-clears-ancestor-timer.md) `pitfall`：链离开后祖先面板滞留不关——hide 向上清了祖先未触发计时器；hide 只清自身。
 - [集中样式拆分到各组件后，同特异性覆盖规则跨文件失效](./project/css-split-equal-specificity-order.md) `pitfall`：叠加态样式盖不住——覆盖对随 import 顺序漂移失效；覆盖规则须随被覆盖选择器同文件置尾。
-- [demo 页 URL 前缀 /data/ 与新增页构建重启](./project/demo-watch-new-entry-restart.md) `pitfall` `code@worktree(2026-10-30)`：`/<name>/` 404——验证页实际在 `/data/<name>/`（AGENTS.md 表述过时）；新增页须 catalog.js 登记 + 重启 demo:build。
+- [新增 demo 页须登记 catalog 并重启构建](./project/demo-watch-new-entry-restart.md) `pitfall` `code@worktree(2026-11-10)`：新增页未登记/未重启访问 404——watch 只跟踪已进 input 的模块图；须 catalog.js 登记 + 重启 demo:build。页面地址统一见 AGENTS.md 引用的 `demo/README.md`。
 - [demo watch 重建会清空 demo/dist](./project/demo-watch-wipes-dist.md) `pitfall`：手工放入的临时资产重建后 404 / `Vue is not defined`——watch 重建清空 outDir；资产随用随放。
 - [demo 验证：编辑工具写入不触发 watch 重建 + 浏览器缓存旧 bundle](./project/demo-watch-agent-edit-cache-bust.md) `pitfall` `code@worktree(2026-11-08)`：Edit 改 demo/src 后页面仍旧 bundle——touch 源文件触发重建；server 无 Cache-Control，playwright 访问须加 cache-bust 参数。
 - [Playwright 验证延时收起弹层：整场景须单调用内完成](./project/playwright-delay-hide-popup-testing.md) `pitfall`：调用间隙链自关、同坐标重进无 mouseenter——hover→停留→断言须单脚本完成，重开前先移出移入。

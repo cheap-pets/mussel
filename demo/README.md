@@ -22,24 +22,84 @@ demo/
 └── dist/                      # 构建输出（demo/dist/<分类>/<页面>/）
 ```
 
-40 个页面 + 首页，页面清单见 `src/catalog.js`，首页 `http://localhost:3000` 可导航到全部页面。
-
-## 构建
-
-```bash
-# 先构建主库
-npm run build
-
-# 构建并监听 demo（watch 模式，同时在 3000 端口托管 demo/dist）
-npm run demo:build
-```
+44 个页面 + 首页（数量以 `src/catalog.js` 为准）。
 
 ## 本地预览
 
-`npm run demo:build` 会自动启动静态服务：
+静态服务由 `npm run demo:build`（watch）内置，服务根 `http://localhost:3000`，首页可导航到全部页面；下方地址均相对服务根。
 
-- 首页: http://localhost:3000
-- 组件示例: http://localhost:3000/form/input/ 等（URL 与 `demo/src` 目录一致，内部链接统一带尾斜杠）
+URL 规则：`/<分类>/<页面>/`，与 `demo/src` 目录及 `catalog.js` 的 `path` 一致，统一带尾斜杠。
+
+### 基础元素 basics（/basics/）
+
+- icon/ · Icon 图标
+- badge/ · Badge/Tags 徽标与标签
+
+### 按钮 buttons（/buttons/）
+
+- button/ · Button 按钮
+- group/ · ButtonGroup 按钮组
+
+### 表单 form（/form/）
+
+- input/ · Input 输入框
+- selection/ · 选择控件 Check/Radio/Switch/Segmented
+- select/ · Select 选择器
+- combo-box/ · ComboBox 组合框
+- color-input/ · ColorInput 颜色输入
+- date-input/ · DateInput 日期输入
+- date-range-input/ · DateRangeInput 日期范围
+- time-input/ · TimeInput 时间输入
+- form/ · Form 表单
+
+### 数据展示 data（/data/）
+
+- calendar/ · Calendar 日历
+- table/ · Table 表格（基础）
+- table-advanced/ · Table 表格（进阶）
+- table-ex-basic/ · TableEx 画布表格（基础）
+- table-ex-scene/ · TableEx 画布表格（场景）
+- table-ex/ · TableEx 画布表格（验证页）
+- table-ex-benchmark/ · TableEx 性能基准
+- tree/ · Tree 树（基础）
+- tree-advanced/ · Tree 树（进阶）
+- list/ · List 列表
+- collapse/ · Collapse 折叠面板
+
+### 导航 navigation（/navigation/）
+
+- tabs/ · Tabs 标签页
+- menu/ · Menu 菜单
+- side-menu/ · SideMenu 侧边菜单
+- pagination/ · Pagination 分页
+
+### 反馈 feedback（/feedback/）
+
+- message/ · Message 消息
+- status-box/ · StatusBox 状态块
+- tooltip/ · Tooltip 提示
+
+### 弹层 overlay（/overlay/）
+
+- dropdown/ · Dropdown 下拉
+- context-menu/ · ContextMenu 右键菜单
+- dialog/ · Dialog 对话框
+- drawer/ · Drawer 抽屉
+
+### 布局 layout（/layout/）
+
+- box/ · Box 布局盒
+- split-box/ · SplitBox 分割
+- grid-box/ · GridBox 网格
+- bar/ · Bar 工具栏
+- scrollbar/ · Scrollbar 滚动
+
+### 进阶 advanced（/advanced/）
+
+- gesture/ · Gesture 手势
+- colors/ · 颜色系统
+- case-form/ · 案例：综合表单
+- case-grid-designer/ · 案例：网格设计器
 
 ## 添加新页面
 
@@ -86,4 +146,3 @@ createVueApp(MainView)
 - 使用 `common/template.html` 生成各页面 HTML（自动注入标题与相对根路径）
 - `home/` 生成 `dist/index.html`
 - 通过 `mussel` 别名直接引用源码
-- catalog 是配置的加载期依赖，修改后需重启 `npm run demo:build`
