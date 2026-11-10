@@ -39,7 +39,7 @@
     labelAlign: { type: String, validator: v => ['left', 'right', 'top'].includes(v) },
     required: Boolean,
     suffix: String,
-    error: [Boolean, String]
+    error: { type: [String, Boolean], default: false }
   })
 
   const form = inject('form', {})

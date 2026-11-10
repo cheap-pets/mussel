@@ -29,10 +29,10 @@
             error="Text 3 不正确">
             <mu-input value="Value 3" />
           </mu-form-field>
-          <mu-form-field class="flex-1" label="Text 4" error>
+          <mu-form-field class="flex-1" label="Text 4" :error="true">
             <mu-input input-style="underline" value="Value 4" />
           </mu-form-field>
-          <mu-form-field class="flex-1" label="Text 5" error>
+          <mu-form-field class="flex-1" label="Text 5" :error="true">
             <mu-input input-style="solid" value="Value 5" />
           </mu-form-field>
         </mu-form-row>
