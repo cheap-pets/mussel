@@ -29,6 +29,7 @@
 - mu-split-box 侧栏面板初始尺寸 `pitfall` `code@9517eb6`：侧栏初始仅约 37px 无拖拽余地——`__start/__end` flex-grow:0 且 basis auto；须给 min-width 或固定宽。
 - mu-dialog / mu-drawer 的 dismissible 无默认值 `pitfall` `code@9517eb6`：不传 dismissible 时 ESC 与遮罩点击均不关闭；需此交互须显式传 dismissible。
 - [eslint 报错爆量 13 万：demo/dist 被拾取](./project/eslint-demo-dist-false-positives.md) `pitfall` `code@worktree(2026-10-30)`：`demo/**` glob 拾取 demo/dist 产物假报错；项目用全局 eslint 8.57.0，.eslintignore 须含 demo/dist，口径限 src 与 demo/src。
+- [icons cls 图标重试链死循环](./project/icons-glyph-retry-infinite-loop.md) `pitfall` `code@worktree(2026-11-14)`：cls 类不存在时页面冻结——runGlyphRetry 提前清守卫致重入重置两跳预算成微任务死循环；守卫须保持到链终态。
 
 ## Global
 

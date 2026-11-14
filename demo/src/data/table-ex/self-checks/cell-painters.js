@@ -2362,6 +2362,31 @@ export const checks = [
     }
   },
   {
+    // 失败路径回归（icons/index.js 重试链死循环修复）：runChecks 同步执行，两跳
+    // （fonts.ready 微任务 + rAF）在本次同步窗口外完成，终态断言放重跑（isRerun）；
+    // 修复前该夹具触发微任务级死循环，页面冻结、自检面板无法渲染
+    name: 'icons install：样式表不存在的 cls 两跳重试后 failed 终止（重试链可终止，不冻结页面）',
+    fn: (isRerun) => {
+      const cls = 'mu-glyph-not-defined'
+
+      if (!icons.noGlyphProbe) install({ noGlyphProbe: cls }, 'cls')
+
+      const entry = icons.noGlyphProbe
+
+      assert(entry != null, '失败路径夹具应注册成功')
+
+      if (isRerun) {
+        assertEqual(entry.glyphStatus, 'failed', '不存在的 class 两跳重试后 failed（链终止，不再重试）')
+      } else {
+        assertEqual(entry.glyphStatus, 'pending', 'install 后重试首跳执行前为 pending')
+      }
+
+      return isRerun
+        ? '不存在 class → 两跳后 failed 终态（微任务循环已消除）'
+        : '不存在 class 登记 pending（终态断言见重跑）'
+    }
+  },
+  {
     name: 'drawIconGlyph：cls 路径 fillText（glyph/font/x/color）、svg 路径同步 Image 桩 drawImage 尺寸 = size',
     fn: () => {
       // cls 路径：icon 列 default size 16 → font 16px、glyph 直绘

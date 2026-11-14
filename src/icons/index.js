@@ -68,8 +68,13 @@ function decodeGlyphContent (content) {
 
   if (!text || text === 'none') return ''
 
+  // 超出 Unicode 上界（如 \ffffff）按无效处理返回 ''，防 fromCodePoint 抛错中断解析链
   return text.includes('\\')
-    ? text.replace(/\\([0-9a-fA-F]{1,6})\s?/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    ? text.replace(/\\([0-9a-fA-F]{1,6})\s?/g, (_, hex) => {
+      const codePoint = parseInt(hex, 16)
+
+      return codePoint <= 0x10FFFF ? String.fromCodePoint(codePoint) : ''
+    })
     : text
 }
 
@@ -110,7 +115,10 @@ function parseGlyphOf (icon, key) {
 
 // 两跳重试调度（模块级去重，一次调度覆盖全部 pending 条目）：① fonts.ready（样式表
 // 未就绪多因 CSS 晚注入）；② 再一帧 rAF 兜底（fonts.ready 先于 icon CSS 注入就绪的
-// 场景）；无 FontFaceSet 仅剩 rAF 一跳。两跳后仍失败 → failed + dev warn，不再重试
+// 场景）；无 FontFaceSet 仅剩 rAF 一跳。两跳后仍失败 → failed + dev warn，不再重试。
+// retryScheduled 须保持 true 至链终态（全部成功 / failed 清空）后才复位：执行期间
+// parseGlyphOf 失败会重入本函数，若提前复位会使重入绕过去重、重置 retryHopsLeft，
+// 两跳预算永不耗尽——fonts.ready 已兑现时为微任务级死循环（页面冻结）
 function scheduleGlyphRetry () {
   if (retryScheduled) return
 
@@ -125,7 +133,6 @@ function scheduleGlyphRetry () {
 }
 
 function runGlyphRetry () {
-  retryScheduled = false
   retryHopsLeft--
 
   for (const [icon, key] of [...pendingSet]) {
@@ -133,14 +140,19 @@ function runGlyphRetry () {
     parseGlyphOf(icon, key)
   }
 
-  if (!pendingSet.size) return
+  if (!pendingSet.size) {
+    retryScheduled = false
+    return
+  }
 
   if (retryHopsLeft > 0) {
-    retryScheduled = true
     requestAnimationFrame(runGlyphRetry)
 
     return
   }
+
+  // 复位先于 warn：warn 抛错也不阻断后续 install 的重试调度
+  retryScheduled = false
 
   for (const [icon, key] of pendingSet) {
     icon.glyphStatus = GLYPH_FAILED
@@ -155,6 +167,7 @@ function runGlyphRetry () {
   }
 
   pendingSet.clear()
+  clearGlyphContainer()
 }
 
 // 字体待就绪统一 flush（模块级单次订阅）：tofu 替换重绘（flush whenGlyphReady 登记
@@ -183,7 +196,14 @@ function flushReady (icon) {
 
   readyCallbacks.delete(icon)
 
-  for (const callback of queue) callback()
+  // 回调异常异步暴露：同步抛错会中断 runGlyphRetry / fonts flush 的状态流转
+  for (const callback of queue) {
+    try {
+      callback()
+    } catch (error) {
+      setTimeout(() => { throw error })
+    }
+  }
 }
 
 /** 就绪回调（表格侧重绘桥）：pending 条目与字体待就绪条目（ready 但字体未加载，
@@ -225,6 +245,13 @@ function resolveGlyphOf (key, icon) {
     }
 
     return
+  }
+
+  // 同名重注册（cls 变化或旧项非 ready）：旧 pending 条目按 key 移出重试集，
+  // 防为已废弃 class 重试或发 failed warn；新对象由 parseGlyphOf 重新入链
+  if (pendingSet.has(old)) {
+    pendingSet.delete(old)
+    readyCallbacks.delete(old)
   }
 
   parseGlyphOf(icon, key)
