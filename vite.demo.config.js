@@ -178,8 +178,15 @@ function serveDemoDist () {
   let server
 
   const stop = () => {
-    server?.close()
+    if (!server) return
+    server.close()
+    server.closeAllConnections()
     server = null
+  }
+
+  const shutdown = () => {
+    stop()
+    process.exit(0)
   }
 
   const start = () => {
@@ -191,8 +198,9 @@ function serveDemoDist () {
       console.log(`\n  demo 静态服务已启动 → http://localhost:${port}\n`)
     })
 
-    process.on('SIGINT', stop)
-    process.on('SIGTERM', stop)
+    // once：首次信号优雅关服退出，再次信号恢复默认强杀
+    process.once('SIGINT', shutdown)
+    process.once('SIGTERM', shutdown)
   }
 
   return {

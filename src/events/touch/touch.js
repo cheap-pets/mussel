@@ -69,10 +69,14 @@ function calcTouchState (event, isEnd) {
 function updateHoldState () {
   if (gs.activeElement) return
 
+  let active = false
+
   for (const key in gs.touches) {
     const touch = gs.touches[key]
 
     if (touch.state === 'end') continue
+
+    active = true
 
     const { timestamp, startTime } = touch
     const now = +new Date()
@@ -89,7 +93,21 @@ function updateHoldState () {
     })
   }
 
-  gs.holdTimer = setTimeout(updateHoldState, 100)
+  // 无活动触点不重挂：end/cancel 未达（序列被中断）时心跳链自终止，
+  // 不再依赖下一个触摸事件来 clearHoldTimer（否则 100ms 空转永续）
+  if (active) gs.holdTimer = setTimeout(updateHoldState, 100)
+}
+
+function clearGestureState (ctx) {
+  gs.currentTouches = {}
+
+  delete gs.activeElement
+  delete gs.activeGesture
+  delete gs.touches
+  delete gs.changedTouches
+  delete gs.targetTouches
+
+  delete ctx.validRecognizers
 }
 
 function updateGestureState (event) {
@@ -103,6 +121,13 @@ function updateGestureState (event) {
   event.__prevent = true
 
   clearHoldTimer()
+
+  // 系统打断：手势整体作废，清账不识别（走识别链会把取消当 end 误判 tap/press）
+  if (event.type === 'touchcancel') {
+    clearGestureState(this)
+
+    return
+  }
 
   if (!this.validRecognizers) this.validRecognizers = { ...this.recognizers }
 
@@ -131,15 +156,7 @@ function updateGestureState (event) {
 
   const recognized = this.recognize(event)
   if (touches.length === 0) {
-    gs.currentTouches = {}
-
-    delete gs.activeElement
-    delete gs.activeGesture
-    delete gs.touches
-    delete gs.changedTouches
-    delete gs.targetTouches
-
-    delete this.validRecognizers
+    clearGestureState(this)
   } else if (!recognized) {
     gs.holdTimer = setTimeout(updateHoldState, 100)
   }
@@ -183,6 +200,9 @@ export function bind (el, options) {
   el.addEventListener('touchstart', ctx.updateGestureState, options)
   el.addEventListener('touchmove', ctx.updateGestureState, options)
   el.addEventListener('touchend', ctx.updateGestureState, options)
+  // 系统打断（来电/通知中心/手势导航）发 touchcancel 而非 touchend，
+  // 不监听则触摸状态残留、心跳链失去唯一清理入口
+  el.addEventListener('touchcancel', ctx.updateGestureState, options)
 }
 
 export function unbind (el, options) {
@@ -191,6 +211,12 @@ export function unbind (el, options) {
   el.removeEventListener('touchstart', ctx.updateGestureState, options)
   el.removeEventListener('touchmove', ctx.updateGestureState, options)
   el.removeEventListener('touchend', ctx.updateGestureState, options)
+  el.removeEventListener('touchcancel', ctx.updateGestureState, options)
+
+  // 绑定移除后 end/cancel 不再被处理，挂起的心跳链须在此终止
+  // （gs 为全局单例：并发其他元素的静止长按心跳会被一并清掉，
+  // 该手指下一次 move 会重挂，影响可忽略）
+  clearHoldTimer()
 
   delete el[GESTURE_CONTEXT_PROP]
 }
