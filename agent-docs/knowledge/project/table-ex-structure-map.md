@@ -1,8 +1,9 @@
 # table-ex 调用层级关系结构图数据
 
-> 基准：工作区（HEAD `ee16eb4` + table-ex 结构重构批次 B1–B6 改动未提交，2026-11-07 验证 PASS；批次定义与验证记录见 `agent-docs/plans/20261107-table-ex-reforge/02-design.md`）。
+> 基准：工作区（HEAD `710d515` + 20261118-table-fixes 批次未提交；结构重构 B1–B6 已提交 `c542dd0`，见 `agent-docs/plans/20261107-table-ex-reforge/02-design.md`）。
 > 用途：agent 检索与分析的结构底图。代码重构后须同步更新本文件。
 > 同步：2026-11-08 工作区改名 edit-button → cell-button（事件 cell-button-click、配置键 cellButton）并加编辑格门控；相关文件名与符号已更新。
+> 同步：2026-11-18 缺陷修复批次（`agent-docs/plans/20261118-table-fixes/`）：isCappedDotsItem 加 `kind === 'link'` 门控、resolveEditorProps 收敛外部传入 editorType 单次求值、column-resize 补 pointercancel（cancel≈up）、取值链与 orderBy 解析收敛至 `../utils.js`（readCellValue / parseOrderBy）；tag 溢出 +n pill 行为见知识库专条。
 
 ## 1. 分层模型
 
@@ -10,12 +11,12 @@
 
 | 层 | 目录/文件 | 职责 | 依赖的下层 |
 |---|---|---|---|
-| L0 壳 | `table-ex.vue`（474 行） | props/emits、模板、host 袋构建、12 步组装、defineExpose | L1 全部 + spans/cell-content/paint-utils/editing×2/controller 直引 |
+| L0 壳 | `table-ex.vue`（480 行） | props/emits、模板、host 袋构建、12 步组装、defineExpose | L1 全部 + spans/cell-content/paint-utils/editing×2/controller 直引 |
 | L1 编排 | `composables/`（10 文件） | 功能纵切：树/tooltip/点击/选中/指针/列宽/绘制状态/relayout/实例/API；注册全部 watch 与生命周期 | L2/L3/L4 + 外部 tooltip-core |
 | L2 管线与控制器 | `table-paint/painter.js`、`geometry/row-geometry-controller.js`、`editing/editor.js` | 有状态闭包工厂：rAF 合帧绘制调度、行高双模式几何、编辑状态机 | L3/L4 |
 | L3 领域纯函数 | `table-paint/`（body/gridlines/header/overlay/utils）、`geometry/`（layout/row-geometry）、`interaction/`（6 文件：hit-test/click-resolve/resize-resolve/cell-button/cell-selection/schedulers）、`spans/`（合并索引）、`cell-paint/`（取值与绘制分发）、`editing/`（editor-geometry/editor-resolve 纯函数） | 单向数据变换：画分区、算几何、判命中、建索引、解析单元格内容/编辑盒几何与规整 | L4 + column-types/mappings |
 | L4 共享原语 | `shared/`（constants/text-wrap/theme/tree/cell-identity）、`geometry/fenwick.js` | 常量、文本测量/折行、主题观察、树平铺、格身份/行序号、BIT | 无（text-wrap→constants 一条 L4 内边，其余零内部依赖） |
-| 外部对接 | `../column-types/`（16 类型双通道 compile）、`../mappings`、`@/icons`、`form/index.js` | 列类型协议、映射、图标、编辑器表单组件 | — |
+| 外部对接 | `../column-types/`（16 类型双通道 compile）、`../mappings`、`../utils.js`（readCellValue 取值链 / parseOrderBy 解析，2026-11-18 收敛）、`@/icons`、`form/index.js` | 列类型协议、映射、共享取值与排序解析、图标、编辑器表单组件 | — |
 
 环依赖 NONE；跨目录边见 §6.3（paint/interaction 层直引 editing 纯函数模块 editor-geometry，非反向边）。
 
@@ -237,6 +238,6 @@ click 树箭头槽 → resolveTreeToggle → applyTreeToggle [use-tree-rows]
 - spans 构建顺序协议：applySpanMethod 先跑写 `takenOver`，applyAutoRowSpan 后跑读。
 
 ### 6.5 已知潜在缺陷（分析时注意）
-- `fenwick.rebuild` 换 tree 不复算 `power`，行数跨 2 幂边界后 findRowAtOffset 步长失配（未修复）。
 - paintBodyRow/Spans 背景带：近同构重复（未收敛）。
 - 已收敛（2026-11-07 结构重构 B5/B6）：paint-overlay 描边三函数 → cellFrameOf/strokeBodyFrame；controller 内联锚定块 → syncAnchoredLayout；isSameCell/Hover → shared/cell-identity.js isSamePoint 单一事实源（isSameHoverItem 五字段语义不同，保留独立）；hitTest JSDoc 已列全 12 字段。
+- 已修复（2026-11-18 批次）：isCappedDotsItem tag 列 dots 误判（`kind === 'link'` 门控）；resolveEditorProps 双口径（外部传入 editorType，record 不再 undefined）；column-resize pointercancel 缺失（cancel≈up 提交，对齐 resize-shared）；fenwick.rebuild 变长失配（同步重算 n/power，TODO 已消除）。

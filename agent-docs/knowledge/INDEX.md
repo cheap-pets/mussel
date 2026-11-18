@@ -31,6 +31,7 @@
 - [eslint 报错爆量 13 万：demo/dist 被拾取](./project/eslint-demo-dist-false-positives.md) `pitfall` `code@worktree(2026-10-30)`：`demo/**` glob 拾取 demo/dist 产物假报错；项目用全局 eslint 8.57.0，.eslintignore 须含 demo/dist，口径限 src 与 demo/src。
 - [icons cls 图标重试链死循环](./project/icons-glyph-retry-infinite-loop.md) `pitfall` `code@worktree(2026-11-14)`：cls 类不存在时页面冻结——runGlyphRetry 提前清守卫致重入重置两跳预算成微任务死循环；守卫须保持到链终态。
 - [touch 手势心跳链无法自终止](./project/touch-hold-timer-infinite-chain.md) `pitfall` `code@worktree(2026-11-14)`：触摸被打断后 100ms hold 心跳永续空转——须无活动触点不重挂 + 监听 touchcancel（清账不识别）+ unbind 清 timer。
+- 拖拽 pointercancel 统一按抬起提交 `convention` `code@worktree(2026-11-18)`：cancel≈up 提交当前值不回滚（scroll-area/splitter/resize-shared/track-pointer-events/column-resize 六处一致）；新拖拽须挂与 pointerup 同一处理器并成对移除。
 
 ## Global
 

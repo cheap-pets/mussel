@@ -1,0 +1,6 @@
+BRANCH: dev
+HEAD: 710d515c28ec79c90e47836411bfbf996bfb1158
+HEAD_SHORT: 710d515c
+DIRTY_COUNT: 1
+--- FILES ---
+04309546436564cb5f9805aa1f9b4932c74cf6d1	agent-docs/plans/20261118-table-fixes/decisions.md
