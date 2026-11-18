@@ -14,13 +14,19 @@ function buildFenwick (values) {
   return tree
 }
 
-export function createFenwick (values) {
-  const n = values.length
-  let tree = buildFenwick(values)
-  // 倍增下降起始步长（≤ n 的最高 2 幂，随创建时 n 定死）
+/** 倍增下降起始步长（≤ n 的最高 2 幂） */
+function highestPow2 (n) {
   let power = 1
 
   while (power * 2 <= n) power *= 2
+
+  return power
+}
+
+export function createFenwick (values) {
+  let n = values.length
+  let tree = buildFenwick(values)
+  let power = highestPow2(n)
 
   return {
     add (index, delta) {
@@ -50,11 +56,11 @@ export function createFenwick (values) {
 
       return pos
     },
-    // TODO 换树不复算 n/power：变长入参时 findRowAtOffset 起始步长与上界按
-    // 旧行数失配（定位错行）、prefix/add 按旧 n 截断；现调用方
-    // applyEstimatedHeights 仅行数不变时触达，支持变长 rebuild 须先修此处
+    /** 整体重建 O(n)：同步 n/power/tree，支持变长入参 */
     rebuild (nextValues) {
+      n = nextValues.length
       tree = buildFenwick(nextValues)
+      power = highestPow2(n)
     }
   }
 }
