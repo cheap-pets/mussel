@@ -128,12 +128,17 @@
 
     <demo-section
       title="边界与回归"
-      note="空数据显示占位、placeholder 替换空值、disabled 链接不可点、text 列数组值落占位（不再按元素拆行/序列化）"
+      note="空数据显示占位、columns 空数组渲染不崩溃、placeholder 替换空值、disabled 链接不可点、text 列数组值落占位（不再按元素拆行/序列化）"
       regression
       vertical>
       <mu-table
         :columns="basicColumns"
         :records="[]"
+        style="max-height: 200px" />
+      <mu-table
+        :columns="[]"
+        :records="records"
+        key-field="id"
         style="max-height: 200px" />
       <mu-table
         :columns="linkColumns"

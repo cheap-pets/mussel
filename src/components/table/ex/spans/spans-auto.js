@@ -1,15 +1,15 @@
 /** 入口 A —— 列级 autoRowSpan 级联分段 */
+import { readCellValue } from '../../utils'
 import { isOccupied, registerRegion } from './spans-method'
 
 function isEmptyKey (key) {
   return key == null || key === ''
 }
 
-/** 列显示值（row-geometry valueOf 同款取值链：_value → field，映射列经 _mapText；
+/** 列显示值（utils.readCellValue 单一事实源：_value → field，映射列经 _mapText；
     autoRowSpan true 形态的分组键，含 mappings 映射显示值） */
 function displayValueOf (col, record) {
-  const fromFn = typeof col._value === 'function' ? col._value(record) : undefined
-  const value = fromFn ?? (col.field ? record?.[col.field] : undefined)
+  const value = readCellValue(col, record)
 
   if (col._mapText) {
     const mapped = col._mapText(value)

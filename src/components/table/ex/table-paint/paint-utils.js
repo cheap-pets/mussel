@@ -1,4 +1,5 @@
 /** 绘制共享工具：视口换算 / 行背景 / 排序解析 / clip（painter 簇共享层） */
+import { parseOrderBy } from '../../utils'
 
 export const FALLBACK_DPR = 1
 
@@ -92,12 +93,12 @@ export function rowBackground (state, row) {
   return baseRowBackground(state, row)
 }
 
-// —— 排序方向（table.vue 同款解析） ——
+// —— 排序方向（table.vue 同款解析，utils.parseOrderBy 单一事实源） ——
 
 export function sortDirectionOf (orderBy) {
   if (!orderBy) return {}
 
-  const [field, direction] = String(orderBy).replace(':', ' ').split(' ')
+  const { field, direction } = parseOrderBy(orderBy)
 
   return { [field]: direction === 'desc' ? 'down' : 'up' }
 }

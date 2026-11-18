@@ -538,6 +538,48 @@ export const checks = [
     }
   },
   {
+    name: 'resolveEditorProps 第二参：外部 editorType 透传（函数 lineClamp 收真实 record，B2 双口径消除）',
+    fn: () => {
+      const record = { deep: true }
+      const received = []
+      const column = {
+        type: 'text',
+        editor: true,
+        _resolveMaxLines: rec => {
+          received.push(rec)
+
+          return rec.deep ? 3 : 1
+        }
+      }
+
+      // 外部先算 editorType（editor.open 同款链：带 rawValue/record）
+      const editorType = resolveEditorType(column, { rawValue: '多行文本', record })
+
+      assertEqual(editorType, 'textarea', '函数 lineClamp deep → textarea')
+      assertEqual(received.includes(record), true, '行级求值回调收到真实 record（非 undefined）')
+
+      // 外部 editorType 传入后不再二次求值（回调不触发、不抛错）
+      const callsBefore = received.length
+      const props = resolveEditorProps(column, { editorType, record })
+
+      assertEqual(received.length, callsBefore, '外部 editorType 透传不二次求值')
+      assertArray(eventKeysOf(props), [], 'text textarea props 无注入键')
+
+      // 外部 editorType 驱动注入逻辑（一致性）：select 照常注入 options
+      const selectProps = resolveEditorProps(
+        { type: 'enum', editor: true, mappings: { a: 'A' } },
+        { editorType: 'select' }
+      )
+
+      assertArray(selectProps.options, [{ value: 'a', label: 'A' }], '外部 select editorType 照常注入 options')
+
+      // 兼容回归：无第二参 raw column 形态（内部解析，不抛错）
+      assertEqual(resolveEditorProps({ type: 'number', editor: true }).type, 'number', '无第二参回退内部解析')
+
+      return '外部 editorType 透传消除二次求值；lineClamp 回调收真实 record；raw column 兼容'
+    }
+  },
+  {
     name: '编辑盒矩形 computeEditorStyle：浮层盒贴格线内侧（20261028 与 hover 描边同位）、全类型同矩形、border 两态、固定列/滚动列/变高行',
     fn: () => {
       // C4 起 rowGeometry 必传：等高基线经 uniform 几何构造（36×3）。

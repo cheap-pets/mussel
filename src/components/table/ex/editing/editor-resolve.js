@@ -41,6 +41,8 @@ export function isCellEditable ({ editable = false, column } = {}) {
 /** text 列编辑器形态判定（行级求值）：开值为数组或 maxLines > 1 → 'textarea'，否则 'input' */
 function resolveTextLikeEditorType (column, rawValue, record) {
   const resolveMaxLines = typeof column?._resolveMaxLines === 'function'
+    // else 支的 _maxLines ?? maxLines 为 raw column（未 prepare）防御兼容形态，
+    // 与 prepared 列读取式有意并存（不统一、不删除）
     ? column._resolveMaxLines(record)
     : (column?._maxLines ?? column?.maxLines ?? 1)
 
@@ -148,10 +150,13 @@ export function resolveSelectOptions (column) {
 }
 
 /** 编辑器 props 解析：column.editor.props 透传；number/currency 缺省 input 注入
-    { type: 'number' }；select 未显式配 options 时注入 resolveSelectOptions 产物 */
-export function resolveEditorProps (column) {
+    { type: 'number' }；select 未显式配 options 时注入 resolveSelectOptions 产物。
+    editorType 由外部传入（editor.open 已按 { rawValue, record } 算出的开值，
+    消除二次求值双口径——函数形态 lineClamp 依赖真实 record 行级求值）；
+    缺省时内部解析（原无第二参 raw column 调用形态向后兼容，record 可选透传） */
+export function resolveEditorProps (column, { editorType: resolvedType, record } = {}) {
   const props = { ...(isObject(column?.editor) ? column.editor.props : {}) }
-  const editorType = resolveEditorType(column)
+  const editorType = resolvedType ?? resolveEditorType(column, { record })
 
   if (
     editorType === 'input' &&

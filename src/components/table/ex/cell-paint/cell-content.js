@@ -3,6 +3,7 @@ import { ensureFn } from '@/utils/type'
 import { resolveColumnType } from '../../column-types'
 import { createDisplayMapper } from '../../mappings'
 import { EnumColumn } from '../../column-types/enum'
+import { readCellValue } from '../../utils'
 import { MAX_LINES_LIMIT } from '../shared/text-wrap'
 import { cellLineHeightOf } from './cell-text'
 
@@ -120,7 +121,7 @@ export function resolveCellContent (col, { record, recordNumber, emit }) {
 
   if (text != null) return { text }
 
-  const value = col._value(record) ?? (col.field ? record[col.field] : undefined)
+  const value = readCellValue(col, record)
 
   // 数组门控置于 _plainText 短路之前，直渲路径一并覆盖
   if (isArrayValueRejected(col, value)) return {}

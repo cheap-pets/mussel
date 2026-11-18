@@ -16,7 +16,8 @@
  */
 import { nextTick, watch } from 'vue'
 
-import { resolveCellClick, resolveCellClickOpen, resolveHeaderClick, resolveItemClick, resolveTreeToggle } from '../interaction/click-resolve'
+import { resolveCellClick, resolveCellClickOpen, resolveHeaderClick, resolveItemClick, resolveTreeToggle, isCappedDotsItem } from '../interaction/click-resolve'
+import { readCellValue } from '../../utils'
 import { regionAt, spanRectOf } from '../spans/spans'
 import { computeEditorStyle } from '../editing/editor-geometry'
 import { resolveEditorType } from '../editing/editor-resolve'
@@ -215,7 +216,7 @@ export function useCellClick (host) {
   }
 
   function emitButtonItemClick (item, record, col, raw, recordNumber, row) {
-    const value = col._value?.(record) ?? (col.field != null ? record?.[col.field] : undefined)
+    const value = readCellValue(col, record)
     const produced = col._render?.({ record, recordNumber, value, emit })
     const button = produced?.buttons?.[item.index]
 
@@ -257,14 +258,6 @@ export function useCellClick (host) {
     canvasItem.onItemClick?.()
   }
 
-  /** _maxItems 截断省略条目判定（绘制层 dots；render 内 linkOption.max dots 经
-      onItemClick 自持 '...' payload，不在此判） */
-  function isCappedDotsItem (item, items, col) {
-    const maxItems = col._maxItems ?? 10
-
-    return items.length > maxItems && item.index === maxItems - 1
-  }
-
   /** disabled 存在性判定（与绘制侧 linkTextColorOf 同一谓词） */
   function isDisabledAttr (disabled) {
     return disabled != null && disabled !== false
@@ -282,9 +275,7 @@ export function useCellClick (host) {
 
     if (!cur) return
 
-    const rawValue =
-      col._value?.(record) ??
-      (col.field != null ? record?.[col.field] : undefined)
+    const rawValue = readCellValue(col, record)
 
     const editorType = resolveEditorType(col, { rawValue, record })
     const border = isObjectEditor(col.editor) ? col.editor.border !== false : true

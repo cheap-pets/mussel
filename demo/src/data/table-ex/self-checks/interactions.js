@@ -25,6 +25,7 @@ import {
 } from '@/components/table/ex/interaction/hit-test.js'
 import {
   resolveOrderByNext,
+  isCappedDotsItem,
   isCheckHeaderColumn,
   resolveHeaderClick,
   resolveCellClick,
@@ -37,6 +38,8 @@ import {
   resolveResizeWidth
 } from '@/components/table/ex/interaction/resize-resolve.js'
 import { createClickGuard, createFrameScheduler } from '@/components/table/ex/interaction/schedulers.js'
+import { useColumnResize } from '@/components/table/ex/composables/use-column-resize.js'
+import { parseOrderBy } from '@/components/table/utils.js'
 import { resolveTypeMinWidth } from '@/components/table/ex/geometry/layout.js'
 import { createUniformRowGeometry } from '@/components/table/ex/geometry/row-geometry.js'
 import { getPixelNumber } from '@/utils/size'
@@ -212,6 +215,19 @@ export const checks = [
       assertEqual(resolveOrderByNext('name', 'name'), 'name:asc', '无方向后缀按无处理')
 
       return "'' → 'f:asc' → 'f:desc' → ''；异常值回 asc"
+    }
+  },
+  {
+    name: "parseOrderBy：单一事实源解析（null/undefined 空串化、'a:b:c' 仅替换第一个冒号）",
+    fn: () => {
+      assertArray([parseOrderBy('name:asc').field, parseOrderBy('name:asc').direction], ['name', 'asc'], '常规 field:direction')
+      assertArray([parseOrderBy(null).field, parseOrderBy(null).direction], ['', undefined], 'null → 空 field（行为不变）')
+      assertArray([parseOrderBy(undefined).field, parseOrderBy(undefined).direction], ['', undefined], 'undefined → 空 field')
+      assertArray([parseOrderBy('a:b:c').field, parseOrderBy('a:b:c').direction], ['a', 'b:c'], "'a:b:c' 仅替换第一个冒号 → direction 'b:c'")
+      assertArray([parseOrderBy('name').field, parseOrderBy('name').direction], ['name', undefined], '无冒号仅 field')
+      assertEqual(resolveOrderByNext('a:b:c', 'a'), 'a:asc', "direction 'b:c' 非法按无处理（next 推进回归）")
+
+      return "null/undefined → ['', undefined]；'a:b:c' → 'a' + 'b:c'；仅替换首冒号"
     }
   },
   {
@@ -608,6 +624,21 @@ export const checks = [
     }
   },
   {
+    name: 'isCappedDotsItem：kind 门控（link 超限末位判 dots；tag 超限不误判——B1）',
+    fn: () => {
+      const col = { _maxItems: 10 }
+      const overflow = Array.from({ length: 11 }, () => ({}))
+
+      assertEqual(isCappedDotsItem({ kind: 'link', index: 9 }, overflow, col), true, 'link 列超限末位判 dots')
+      assertEqual(isCappedDotsItem({ kind: 'tag', index: 9 }, overflow, col), false, 'tag 列超限第 10 个不误判（+n pill 协议，B1）')
+      assertEqual(isCappedDotsItem({ kind: 'link', index: 8 }, overflow, col), false, '非末位不判')
+      assertEqual(isCappedDotsItem({ kind: 'link', index: 9 }, overflow.slice(0, 10), col), false, '未超限不判')
+      assertEqual(isCappedDotsItem({ kind: 'link', index: 9 }, overflow, {}), true, '_maxItems 缺省 10（11 条超限）')
+
+      return 'link 超限末位 true；tag 恒 false；未超限/非末位 false；_maxItems 缺省 10'
+    }
+  },
+  {
     name: 'resolveCursor 三参 context：树槽 pointer / 叶行槽内 default / 可编辑格 text / 缺省回归',
     fn: () => {
       const columns = [{}, { _isTreeColumn: true }, { editor: true }]
@@ -867,6 +898,65 @@ export const checks = [
       assertEqual(resolveTooltipTarget({ ...base, hit: hit(0), resizing: true }), null, '拖拽中整体 null（含 pill）')
 
       return 'pill 命中 plus / title:false 抑制 / 空 title·矩形外·缺省无 plus'
+    }
+  },
+  {
+    name: 'useColumnResize·pointercancel：cancel ≈ up（监听释放、参考线清除、宽度按当前值提交——B4）',
+    fn: () => {
+      const events = []
+      let relayoutCount = 0
+      let setLayoutCount = 0
+      let layout = {
+        colWidths: [200],
+        colLefts: [0],
+        colsWidth: 200,
+        contentWidth: 200,
+        stickyWidth: 300,
+        scrollLeft: 0
+      }
+      const rawColumn = { caption: '列', field: 'name' }
+      const host = {
+        emit: (name, payload) => events.push({ name, payload }),
+        getPreparedColumns: () => [{ ...rawColumn, _raw: rawColumn, _key: 'k0', type: 'text' }],
+        getLayout: () => layout,
+        setLayout: next => {
+          layout = next
+          setLayoutCount++
+        },
+        getCanvasEl: () => ({ getBoundingClientRect: () => ({ left: 0 }) }),
+        invalidate: () => {},
+        relayout: () => {
+          relayoutCount++
+        }
+      }
+      const { resizeGuideX, widthOverrides, startResize } = useColumnResize(host)
+
+      startResize(new PointerEvent('pointerdown'), { resizeCol: 0 })
+
+      // move：clientX 300 − canvasRect.left 0 − columnLeft 0 → 宽 300（> 初始 200）
+      window.dispatchEvent(new PointerEvent('pointermove', { clientX: 300 }))
+
+      assertEqual(setLayoutCount, 1, '拖拽 move 写入覆盖几何')
+      assertEqual(widthOverrides.k0, 300, '宽度覆盖 = 300')
+      assertEqual(resizeGuideX.value, 300, '参考线视口 x 跟随')
+
+      // pointercancel ≈ pointerup：按当前宽度提交并释放
+      window.dispatchEvent(new PointerEvent('pointercancel'))
+
+      assertEqual(resizeGuideX.value, null, 'cancel 后参考线清除')
+      assertEqual(relayoutCount, 1, 'cancel 后 relayout')
+      assertEqual(events.length, 1, '仅发一次 column-resize')
+      assertEqual(events[0].name, 'column-resize', '事件名')
+      assertEqual(events[0].payload.column, rawColumn, 'payload 列为原始列')
+      assertEqual(events[0].payload.width, 300, '宽度按当前值提交')
+
+      // 监听已释放：后续 move 不再改几何
+      window.dispatchEvent(new PointerEvent('pointermove', { clientX: 500 }))
+
+      assertEqual(setLayoutCount, 1, 'cancel 后 move 不再写入几何（监听释放）')
+      assertEqual(widthOverrides.k0, 300, '宽度定格 300')
+
+      return 'cancel≈up：监听释放、参考线清除、宽度按当前值提交'
     }
   }
 ]

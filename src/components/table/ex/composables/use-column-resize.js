@@ -57,7 +57,7 @@ export function useColumnResize (host) {
     })
   }
 
-  /** 表头手柄 pointerdown 开拖：window 级 pointermove/pointerup 接线 */
+  /** 表头手柄 pointerdown 开拖：window 级 pointermove/pointerup/pointercancel 接线 */
   function startResize (event, hit) {
     const colIndex = hit.resizeCol
     const col = host.getPreparedColumns()[colIndex]
@@ -99,9 +99,13 @@ export function useColumnResize (host) {
       host.invalidate({ colFrom: colIndex })
     }
 
+    // pointerup 与 pointercancel 同处理器（对齐 modal/resize-shared.js 统一语义：
+    // cancel ≈ up——触屏/系统手势接管后按当前宽度提交，监听释放、参考线清除、
+    // clickGuard 走 release 延时清除，不残留 armed 状态）
     const onUp = () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
 
       // pointerup 后延时清除残留 flag
       clickGuard.release()
@@ -116,6 +120,7 @@ export function useColumnResize (host) {
 
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
   }
 
   function resetOverrides () {

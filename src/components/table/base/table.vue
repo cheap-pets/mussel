@@ -59,7 +59,7 @@
   import { getPixelNumber } from '@/utils/size'
   import { getCellAlignClass } from '@/utils/style'
 
-  import { resolveSelectedKey } from '../utils'
+  import { parseOrderBy, resolveSelectedKey } from '../utils'
   import { resolveColumnType } from '../column-types'
 
   import TableRow from './table-row.vue'
@@ -148,8 +148,7 @@
   const sortDirection = computed(() => {
     if (!props.orderBy) return {}
 
-    const [field, direction] =
-      props.orderBy.replace(':', ' ').split(' ')
+    const { field, direction } = parseOrderBy(props.orderBy)
 
     return {
       [field]: direction === 'desc' ? 'down' : 'up'
@@ -209,7 +208,8 @@
       return col
     })
 
-    columns.at(-1)._ctrlClass.push('last-col')
+    // columns 省略（默认 []）或传空数组时无末列可标记，守卫跳过
+    columns.at(-1)?._ctrlClass.push('last-col')
 
     return columns
   })

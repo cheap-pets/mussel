@@ -13,9 +13,10 @@ import {
   resolveEditorProps,
   resolveEditorType
 } from './editor-resolve'
+import { readCellValue } from '../../utils'
 
 // 模块隔离：不 import layout.js / theme.js / cell-painters.js / spans.js；
-// mappings.js 为零依赖共享模块可用；定位所需布局数据由组件壳传入
+// mappings.js 与 table/utils.js 为零依赖共享模块可用；定位所需布局数据由组件壳传入
 
 // 提交矩阵：input 走 Enter；textarea Ctrl/Cmd+Enter 显式提交（Enter 换行）；
 // select/date/switch 值变化即提交且保持编辑态；Esc 取消；validate 失败不关闭
@@ -172,9 +173,9 @@ export function createEditorController ({ onCommit } = {}) {
     if (state.editing) commit()
     if (state.editing) return false
 
-    // 当前显示值经 column.value 取值（非格式化文本）；rawValue 锚定形态判定与提交规整
-    const rawValue = column._value?.(record) ??
-      (column.field != null ? record?.[column.field] : undefined)
+    // 当前显示值经 column.value 取值（非格式化文本，utils.readCellValue 单一
+    // 事实源）；rawValue 锚定形态判定与提交规整
+    const rawValue = readCellValue(column, record)
     const editorType = resolveEditorType(column, { rawValue, record })
 
     context = { column, record, recordIndex, rawValue }
@@ -184,7 +185,7 @@ export function createEditorController ({ onCommit } = {}) {
     const editing = {
       editorType,
       component: markRaw(EDITOR_COMPONENTS[editorType]),
-      props: resolveEditorProps(column),
+      props: resolveEditorProps(column, { editorType, record }),
       events: buildEvents(editorType),
       commitOnValueChange: editorType !== 'input' && editorType !== 'textarea',
       value: normalizeEditorOpenValue({ column, editorType, value: rawValue }),

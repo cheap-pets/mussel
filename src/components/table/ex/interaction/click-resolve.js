@@ -4,18 +4,20 @@
  * （check 翻转/选中）、单击开编辑门控。只含纯决策函数，不绑定任何事件；
  * 命中检测与光标判定见 hit-test.js，调宽 clamp 见 resize-resolve.js。
  */
+import { parseOrderBy } from '../../utils'
 import { isTreeArrowSlot } from './hit-test'
 
 /**
  * 排序 next：无 → asc → desc → 无（清空为 ''）。orderBy 解析同 table.vue
- * sortDirection；本模块不持排序状态（图标方向由 orderBy prop 驱动）。
+ * sortDirection（utils.parseOrderBy 单一事实源）；本模块不持排序状态
+ * （图标方向由 orderBy prop 驱动）。
  *
  * @param {String} orderBy 当前值（'field:asc' 格式，可为空）
  * @param {String} field 点击列的字段名
  * @returns {String} 'field:asc' | 'field:desc' | ''
  */
 export function resolveOrderByNext (orderBy, field) {
-  const [currentField, direction] = String(orderBy ?? '').replace(':', ' ').split(' ')
+  const { field: currentField, direction } = parseOrderBy(orderBy)
 
   if (currentField !== field || (direction !== 'asc' && direction !== 'desc')) {
     return `${field}:asc`
@@ -200,6 +202,25 @@ export function resolveItemClick ({ hit, itemHits } = {}) {
   if (!rects) return null
 
   return findHitItem(hit, rects)
+}
+
+/**
+ * _maxItems 截断省略条目判定（绘制层 dots）：条目数超 _maxItems 且命中末个
+ * 绘制条目、且 kind 为 'link'（list/link 的 canvas 条目 kind 恒 'link'）才判
+ * dots——dots 仅 link/list 列 drawLinkItems 产出。tag 列走 drawItems 无
+ * maxItems 截断（溢出走 +n pill，tooltip-only 协议），kind 'tag' 不进 dots
+ * 分支，超限列第 10 个真实 tag 点击不误发 '...'。render 内 linkOption.max
+ * dots 经 onItemClick 自持 '...' payload，不在此判。
+ *
+ * @param {Object} item 命中条目（resolveItemClick 产物，含 kind/index）
+ * @param {Array} items 单元格 canvas 条目集（resolveCellContent 产物）
+ * @param {Object} col 已准备内部列
+ * @returns {Boolean}
+ */
+export function isCappedDotsItem (item, items, col) {
+  const maxItems = col._maxItems ?? 10
+
+  return item.kind === 'link' && items.length > maxItems && item.index === maxItems - 1
 }
 
 /**

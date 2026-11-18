@@ -4,6 +4,7 @@
 import { estimateLineCount, wrapLines, cellFontOf } from '../shared/text-wrap'
 import { CELL_PADDING_FALLBACK } from '../shared/constants'
 import { spanHeightRoleOf } from '../spans/spans'
+import { readCellValue } from '../../utils'
 import { createFenwick } from './fenwick'
 
 /** 主题快照缺字段时的容错回退（与 --row-height / --cell-line-height 缺省一致） */
@@ -41,11 +42,10 @@ function resolveMaxLinesOf (col, record) {
   return 1
 }
 
-/** 字段取值（resolveCellContent 同款链，估高/精算与绘制同源）：映射列经
+/** 字段取值（utils.readCellValue 单一事实源，估高/精算与绘制同源）：映射列经
     _mapText 按显示文本取值（mapper 返回对象取 .text）；数组原值穿透 */
 function valueOf (col, record) {
-  const fromFn = typeof col._value === 'function' ? col._value(record) : undefined
-  const value = fromFn ?? (col.field ? record?.[col.field] : undefined)
+  const value = readCellValue(col, record)
 
   if (col._mapText) {
     const mapped = col._mapText(value)
